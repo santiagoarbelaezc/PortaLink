@@ -1,0 +1,45 @@
+{
+  "general": {
+    "authorName": "Santiago Arbeláez",
+    "primaryColor": "#000000",
+    "favicon": "favicon.ico"
+  },
+  "hero": {
+    "title": "Creative Developer",
+    "subtitle": "Santiago Arbeláez",
+    "description": "Building digital experiences with passion and precision.",
+    "backgroundImage": "hero-portrait.png",
+    "ctaText": "Ver Proyectos"
+  },
+  "about": {
+    "text": "Desarrollador apasionado con experiencia en Angular y diseño UI/UX.",
+    "avatarImage": "about-portrait.png",
+    "visible": true
+  },
+  "skills": [
+    { "name": "Angular", "percentage": 95, "icon": "angular", "order": 1 },
+    { "name": "TypeScript", "percentage": 90, "icon": "typescript", "order": 2 },
+    { "name": "SCSS", "percentage": 85, "icon": "sass", "order": 3 }
+  ],
+  "portfolio": [
+    {
+      "id": "1",
+      "title": "Portfolio Personal",
+      "description": "Diseño y desarrollo de portafolio premium con transiciones cinematográficas.",
+      "techStack": ["Angular 21", "TypeScript 5.9", "SCSS"],
+      "images": ["project-1.png"],
+      "liveUrl": "https://santiago-arbelaez.com",
+      "githubUrl": "https://github.com/santiagoarbelaez",
+      "featured": true,
+      "order": 1
+    }
+  ],
+  "contact": {
+    "email": "santiago@example.com",
+    "social": [
+      { "platform": "LinkedIn", "url": "https://linkedin.com/in/santiago" },
+      { "platform": "GitHub", "url": "https://github.com/santiago" }
+    ],
+    "formActive": true
+  }
+}
