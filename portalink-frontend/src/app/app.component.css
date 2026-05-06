@@ -1,0 +1,15 @@
+/* ===============================================================
+   DYNAMIC BACKGROUND — Fills the entire viewport behind all content
+   The background color is interpolated by ScrollColorService
+================================================================ */
+.dynamic-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  background: #ffffff; /* Initial white — Angular overrides this after hydration */
+  transition: background 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}

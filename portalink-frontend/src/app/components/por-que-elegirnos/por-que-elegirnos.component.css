@@ -1,0 +1,11 @@
+.pqe-section {
+  padding: 120px 0;
+  background-color: transparent;
+}
+
+@media (max-width: 768px) {
+  .pqe-section {
+    padding: 80px 0;
+  }
+}
+
