@@ -9,6 +9,7 @@ import { ContactComponent } from '../../components/contact/contact.component';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { ScrollColorService } from '../../services/scroll-color.service';
 import { PortfolioConfigService } from '../../services/portfolio-config.service';
+import { AiChatFloatingComponent } from '../../components/ai-chat-floating/ai-chat-floating.component';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -23,8 +24,10 @@ import { Subscription } from 'rxjs';
         SkillsComponent,
         ContactComponent,
         FooterComponent,
+        AiChatFloatingComponent,
     ],
     template: `
+    <app-ai-chat-floating></app-ai-chat-floating>
     <div class="dynamic-bg" [style.background]="currentBackground"></div>
     <main class="relative" *ngIf="portfolioData()">
       <app-navbar></app-navbar>

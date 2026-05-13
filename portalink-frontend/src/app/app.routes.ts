@@ -31,5 +31,9 @@ export const routes: Routes = [
       { path: '', redirectTo: 'hero', pathMatch: 'full' }
     ]
   },
+  {
+    path: 'design-showcase',
+    loadComponent: () => import('./pages/design-showcase/design-showcase.component').then(m => m.DesignShowcaseComponent)
+  },
   { path: '**', redirectTo: '' }
 ];

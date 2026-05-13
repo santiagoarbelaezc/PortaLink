@@ -2,16 +2,17 @@ import { Component, OnInit, AfterViewInit, Inject, PLATFORM_ID } from '@angular/
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
-import { MagneticDirective } from '../../shared/directives/magnetic.directive';
+import { AiChatFloatingComponent } from '../../components/ai-chat-floating/ai-chat-floating.component';
 
 declare var AOS: any;
 
 @Component({
     selector: 'app-linktree',
     standalone: true,
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, RouterModule, AiChatFloatingComponent],
     template: `
     <div class="lt-wrapper">
+      <app-ai-chat-floating></app-ai-chat-floating>
       <div class="lt-container">
         
         <main class="lt-main-grid">
@@ -29,12 +30,12 @@ declare var AOS: any;
           <section class="lt-col-info">
             <header class="lt-info-header" data-aos="fade-down">
               <div class="flex items-center gap-4 mb-4">
-                <div class="h-px w-10 bg-accent-cyan"></div>
-                <span class="text-accent-cyan text-[10px] uppercase tracking-[0.4em] font-bold">Santiago Arbeláez</span>
+                <div class="h-px w-10 lt-line-accent"></div>
+                <span class="lt-label-accent text-[10px] uppercase tracking-[0.4em] font-bold">Santiago Arbeláez</span>
               </div>
-              <h1 class="text-5xl md:text-7xl font-headline uppercase leading-[0.9] tracking-tighter text-white">
-                Creador<br/>Digital<br/>
-                <span class="text-accent-cyan">& Desarrollador</span>
+              <h1 class="text-5xl md:text-7xl font-headline uppercase leading-[0.9] tracking-tighter">
+                <span class="lt-title-main">Creador<br/>Digital</span><br/>
+                <span class="lt-title-accent">& Desarrollador</span>
               </h1>
             </header>
 
@@ -157,15 +158,21 @@ declare var AOS: any;
   `,
     styles: [`
     :host {
-      --accent-cyan: #8B5E3C;
-      --bg-dark: #070707;
-      --card-bg: rgba(255,255,255,0.02);
+      --accent-gold: #F5C84A;
+      --accent-gold-deep: #C8901A;
+      --accent-glow: rgba(245, 200, 74, 0.15);
+      --bg-dark: #080808;
+      --card-bg: rgba(255, 255, 255, 0.025);
+      --card-border: rgba(255, 255, 255, 0.06);
       --transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .lt-wrapper {
       min-height: 100vh;
       background: var(--bg-dark);
+      background-image:
+        radial-gradient(ellipse 55% 45% at 85% 15%, rgba(245, 200, 74, 0.06) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 35% at 5% 90%, rgba(200, 144, 26, 0.04) 0%, transparent 55%);
       display: flex;
       justify-content: center;
       align-items: flex-start;
@@ -186,12 +193,32 @@ declare var AOS: any;
     }
 
     /* IMAGE */
+    /* TITLE ACCENT CLASSES */
+    .lt-title-main {
+      color: #ffffff;
+    }
+    .lt-title-accent {
+      background: linear-gradient(90deg, #F5C84A 0%, #FFF1A8 50%, #C8901A 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .lt-label-accent {
+      color: var(--accent-gold);
+    }
+    .lt-line-accent {
+      background: var(--accent-gold);
+      height: 1px;
+      width: 40px;
+    }
+
     .lt-image-container {
       border-radius: 40px;
       overflow: hidden;
       aspect-ratio: 4/5.5;
-      border: 1px solid rgba(255,255,255,0.05);
+      border: 1px solid rgba(255, 255, 255, 0.06);
       background: #111;
+      box-shadow: 0 0 60px rgba(245, 200, 74, 0.04);
     }
     .lt-main-img {
       width: 100%;
@@ -213,15 +240,18 @@ declare var AOS: any;
       align-items: center;
       justify-content: space-between;
       padding: 25px 40px;
-      background: var(--accent-cyan);
+      background: #111;
       border-radius: 24px;
       text-decoration: none;
       transition: var(--transition);
+      border: 1px solid rgba(245, 200, 74, 0.25);
+      box-shadow: 0 0 24px rgba(245, 200, 74, 0.06);
     }
     .lt-card-main:hover {
       transform: translateY(-5px);
-      filter: brightness(1.1);
-      box-shadow: 0 20px 40px rgba(139, 94, 60, 0.15);
+      background: #161616;
+      border-color: rgba(245, 200, 74, 0.5);
+      box-shadow: 0 20px 60px rgba(245, 200, 74, 0.12);
     }
 
     .lt-btn-icon {
@@ -244,13 +274,14 @@ declare var AOS: any;
       background: var(--card-bg);
       border-radius: 20px;
       text-decoration: none;
-      border: 1px solid rgba(255,255,255,0.03);
+      border: 1px solid var(--card-border);
       transition: var(--transition);
     }
     .lt-card-social:hover {
-      background: rgba(255,255,255,0.05);
-      border-color: var(--accent-cyan);
+      background: rgba(245, 200, 74, 0.04);
+      border-color: rgba(245, 200, 74, 0.25);
       transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(245, 200, 74, 0.06);
     }
 
     .lt-social-icon {
@@ -291,8 +322,8 @@ declare var AOS: any;
       /* Botones vibrantes en móvil */
       .lt-card-social { 
         padding: 20px 25px; 
-        background: rgba(255,255,255,0.04); 
-        border-color: rgba(255,255,255,0.08);
+        background: rgba(255, 255, 255, 0.03);
+        border-color: rgba(255, 255, 255, 0.07);
       }
       .lt-card-social:active {
         background: rgba(255,255,255,0.08);
