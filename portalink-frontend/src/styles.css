@@ -8,7 +8,7 @@
   --obsidian-950: #000000;
   --obsidian-900: #0D0D0D;
   --obsidian-800: #141414;
-  --accent-cyan: #8B5E3C;
+  --accent-cyan: #00F5FF;
   --accent-gold: #FFD700;
 }
 
@@ -16,7 +16,7 @@
   html {
     scroll-behavior: smooth;
     cursor: auto;
-    background: #ffffff; /* Ensure initial page paint is white before Angular boots */
+    background: #000000; 
   }
 
   body {
@@ -28,7 +28,7 @@
   }
 
   h1, h2, h3, h4 {
-    @apply font-headline;
+    @apply font-headline text-white;
     font-weight: 800;
     letter-spacing: -0.04em;
     line-height: 1;

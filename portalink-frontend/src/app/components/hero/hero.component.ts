@@ -13,18 +13,18 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
         <!-- Text Content -->
         <div class="order-2 lg:order-1">
           <div class="overflow-hidden mb-4">
-            <h2 class="text-accent-cyan font-sans text-sm tracking-[0.3em] uppercase opacity-0 animate-fade-up" style="animation-delay: 0.8s;">
+            <h2 class="text-white/60 font-sans text-sm tracking-[0.3em] uppercase opacity-0 animate-fade-up" style="animation-delay: 0.8s;">
               {{ data?.title || 'Digital Visionary & Developer' }}
             </h2>
           </div>
 
           <h1 class="text-5xl sm:text-7xl md:text-9xl font-headline leading-none mb-6 md:mb-8" style="letter-spacing: -0.04em;">
             <span class="block overflow-hidden">
-              <span class="block animate-fade-up text-black" style="animation-delay: 1.0s;">{{ data?.subtitle || 'SANTIAGO' }}</span>
+              <span class="block animate-fade-up text-accent-cyan" style="animation-delay: 1.0s;">{{ data?.subtitle || 'SANTIAGO' }}</span>
             </span>
           </h1>
           
-          <p class="text-lg md:text-xl text-black/60 max-w-md animate-fade-up mb-12" style="animation-delay: 1.4s;">
+          <p class="text-lg md:text-xl text-white/60 max-w-md animate-fade-up mb-12" style="animation-delay: 1.4s;">
             {{ data?.description }}
           </p>
 
@@ -50,7 +50,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
             (mousemove)="onImageMove($event)"
             (mouseleave)="onImageLeave()">
 
-            <div class="absolute -inset-4 rounded-3xl -z-10" style="background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.08);"></div>
+            <div class="absolute -inset-4 rounded-3xl -z-10" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,245,255,0.1);"></div>
 
             <div class="w-full h-full rounded-2xl overflow-hidden border shadow-xl group" style="border-color: rgba(0,0,0,0.10);">
               <img
@@ -66,8 +66,8 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
       </div>
 
       <div class="hidden md:flex absolute bottom-10 left-1/2 -translate-x-1/2 flex-col items-center gap-2" style="opacity: 0.35;">
-        <span class="text-[10px] uppercase tracking-[0.3em] text-black">Scroll</span>
-        <div class="w-px h-12 bg-gradient-to-b from-black to-transparent"></div>
+        <span class="text-[10px] uppercase tracking-[0.3em] text-white">Scroll</span>
+        <div class="w-px h-12 bg-gradient-to-b from-accent-cyan to-transparent"></div>
       </div>
     </section>
   `,
@@ -92,7 +92,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
       position: absolute;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: #00e5ff; /* Cyan accent */
+      background: var(--accent-cyan);
       transform: translateY(100%);
       transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       z-index: 0;

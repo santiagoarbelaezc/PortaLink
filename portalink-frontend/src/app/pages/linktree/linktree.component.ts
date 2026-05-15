@@ -33,7 +33,7 @@ declare var AOS: any;
                 <div class="h-px w-10 lt-line-accent"></div>
                 <span class="lt-label-accent text-[10px] uppercase tracking-[0.4em] font-bold">Santiago Arbeláez</span>
               </div>
-              <h1 class="text-5xl md:text-7xl font-headline uppercase leading-[0.9] tracking-tighter">
+              <h1 class="text-3xl md:text-7xl font-headline uppercase leading-[0.9] tracking-tighter">
                 <span class="lt-title-main">Creador<br/>Digital</span><br/>
                 <span class="lt-title-accent">& Desarrollador</span>
               </h1>
@@ -158,12 +158,12 @@ declare var AOS: any;
   `,
     styles: [`
     :host {
-      --accent-gold: #F5C84A;
-      --accent-gold-deep: #C8901A;
-      --accent-glow: rgba(245, 200, 74, 0.15);
-      --bg-dark: #080808;
-      --card-bg: rgba(255, 255, 255, 0.025);
-      --card-border: rgba(255, 255, 255, 0.06);
+      --accent-celeste: #00F5FF;
+      --accent-celeste-deep: #00B4D8;
+      --accent-glow: rgba(0, 245, 255, 0.15);
+      --bg-dark: #000000;
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --card-border: rgba(0, 245, 255, 0.15);
       --transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
@@ -171,8 +171,8 @@ declare var AOS: any;
       min-height: 100vh;
       background: var(--bg-dark);
       background-image:
-        radial-gradient(ellipse 55% 45% at 85% 15%, rgba(245, 200, 74, 0.06) 0%, transparent 55%),
-        radial-gradient(ellipse 40% 35% at 5% 90%, rgba(200, 144, 26, 0.04) 0%, transparent 55%);
+        radial-gradient(circle at 85% 15%, rgba(0, 245, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 5% 90%, rgba(0, 245, 255, 0.05) 0%, transparent 50%);
       display: flex;
       justify-content: center;
       align-items: flex-start;
@@ -198,16 +198,16 @@ declare var AOS: any;
       color: #ffffff;
     }
     .lt-title-accent {
-      background: linear-gradient(90deg, #F5C84A 0%, #FFF1A8 50%, #C8901A 100%);
+      background: linear-gradient(90deg, #00F5FF 0%, #FFFFFF 50%, #00B4D8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
     .lt-label-accent {
-      color: var(--accent-gold);
+      color: var(--accent-celeste);
     }
     .lt-line-accent {
-      background: var(--accent-gold);
+      background: var(--accent-celeste);
       height: 1px;
       width: 40px;
     }
@@ -216,9 +216,9 @@ declare var AOS: any;
       border-radius: 40px;
       overflow: hidden;
       aspect-ratio: 4/5.5;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      background: #111;
-      box-shadow: 0 0 60px rgba(245, 200, 74, 0.04);
+      border: 1px solid var(--card-border);
+      background: #050505;
+      box-shadow: 0 0 60px rgba(0, 245, 255, 0.05);
     }
     .lt-main-img {
       width: 100%;
@@ -240,18 +240,18 @@ declare var AOS: any;
       align-items: center;
       justify-content: space-between;
       padding: 25px 40px;
-      background: #111;
+      background: #0a0a0a;
       border-radius: 24px;
       text-decoration: none;
       transition: var(--transition);
-      border: 1px solid rgba(245, 200, 74, 0.25);
-      box-shadow: 0 0 24px rgba(245, 200, 74, 0.06);
+      border: 1.5px solid var(--accent-celeste);
+      box-shadow: 0 0 20px rgba(0, 245, 255, 0.1);
     }
     .lt-card-main:hover {
       transform: translateY(-5px);
-      background: #161616;
-      border-color: rgba(245, 200, 74, 0.5);
-      box-shadow: 0 20px 60px rgba(245, 200, 74, 0.12);
+      background: #0f0f0f;
+      border-color: #ffffff;
+      box-shadow: 0 20px 60px rgba(0, 245, 255, 0.2);
     }
 
     .lt-btn-icon {
@@ -278,10 +278,10 @@ declare var AOS: any;
       transition: var(--transition);
     }
     .lt-card-social:hover {
-      background: rgba(245, 200, 74, 0.04);
-      border-color: rgba(245, 200, 74, 0.25);
+      background: rgba(0, 245, 255, 0.05);
+      border-color: var(--accent-celeste);
       transform: translateY(-4px);
-      box-shadow: 0 12px 32px rgba(245, 200, 74, 0.06);
+      box-shadow: 0 12px 32px rgba(0, 245, 255, 0.1);
     }
 
     .lt-social-icon {
@@ -311,7 +311,7 @@ declare var AOS: any;
     @media (max-width: 768px) {
       .lt-wrapper { padding: 40px 20px; height: auto; overflow: visible; }
       .lt-main-grid { grid-template-columns: 1fr; gap: 40px; }
-      .lt-image-container { max-width: 280px; margin: 0 auto; }
+      .lt-image-container { max-width: 190px; margin: 0 auto; }
       .lt-main-img { filter: grayscale(0%) brightness(1); } /* Brillo total en móvil */
       
       .lt-info-header { text-align: center; }

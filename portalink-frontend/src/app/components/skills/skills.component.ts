@@ -41,7 +41,7 @@ import { CommonModule } from '@angular/common';
     .animate-marquee { animation: marquee 40s linear infinite; }
     .animate-marquee-reverse { animation: marquee 40s linear infinite reverse; }
     @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-    .glass-card { background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); border-radius: 1rem; }
+    .glass-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; }
   `]
 })
 export class SkillsComponent {

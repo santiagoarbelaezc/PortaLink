@@ -68,11 +68,11 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
     </section>
   `,
     styles: [`
-    .glass-card { background: rgba(0,0,0,0.02); backdrop-filter: blur(10px); }
+    .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); }
     .btn-primary-custom {
-      background: white; color: black; border-radius: 9999px; padding: 1.25rem; transition: all 0.3s;
+      background: var(--accent-cyan); color: black; border-radius: 9999px; padding: 1.25rem; transition: all 0.3s;
     }
-    .btn-primary-custom:hover { background: #00e5ff; color: black; transform: scale(1.02); }
+    .btn-primary-custom:hover { background: white; color: black; transform: scale(1.02); }
   `]
 })
 export class ContactComponent {

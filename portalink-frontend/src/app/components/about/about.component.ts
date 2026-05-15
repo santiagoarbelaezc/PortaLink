@@ -18,7 +18,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
             </div>
 
             <!-- Decorative corner element -->
-            <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-40" style="border: 1px solid rgba(0,0,0,0.15);"></div>
+            <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-40" style="border: 1px solid rgba(255,255,255,0.1);"></div>
           </div>
 
           <!-- Bio Content -->
@@ -28,10 +28,10 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
                 <div class="h-px w-12 bg-accent-cyan"></div>
                 <span class="text-accent-cyan text-xs uppercase tracking-[0.4em]">Philosophy</span>
               </div>
-              <h2 class="text-5xl md:text-7xl mb-8 text-black">Designing the Future, <br/><span class="font-light italic text-accent-cyan" style="letter-spacing: -0.02em;">One Pixel at a Time.</span></h2>
+              <h2 class="text-5xl md:text-7xl mb-8 text-white">Designing the Future, <br/><span class="font-light italic text-white/80" style="letter-spacing: -0.02em;">One Pixel at a Time.</span></h2>
             </div>
 
-            <div class="space-y-6 leading-relaxed text-black/55" appReveal [delay]="400">
+            <div class="space-y-6 leading-relaxed text-white/70" appReveal [delay]="400">
               <p class="whitespace-pre-line text-xl leading-relaxed">
                 {{ data?.text || 'As a multi-disciplinary creator based in the digital space, I blend clean frontend architecture with high-end aesthetic vision.' }}
               </p>
@@ -41,8 +41,8 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
             <div class="flex flex-wrap gap-3 pt-8" appReveal [delay]="600">
               <div *ngFor="let skill of highlightSkills"
                    class="px-5 py-2 rounded-full cursor-default transition-colors"
-                   style="border: 1px solid rgba(0,0,0,0.15); background: rgba(0,0,0,0.04);">
-                <span class="text-xs uppercase tracking-widest text-black/70">{{ skill }}</span>
+                   style="border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03);">
+                <span class="text-xs uppercase tracking-widest text-white/70">{{ skill }}</span>
               </div>
             </div>
           </div>

@@ -12,12 +12,12 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
     <!-- DESKTOP: Top pill navbar (md+)              -->
     <!-- ═══════════════════════════════════════════ -->
     <nav class="hidden md:block fixed top-0 left-0 w-full z-[9000] px-6 py-5">
-      <div class="max-w-7xl mx-auto flex items-center justify-between px-8 py-3 rounded-full bg-white border border-black/10 shadow-lg">
+      <div class="max-w-7xl mx-auto flex items-center justify-between px-8 py-3 rounded-full bg-black/80 border border-white/10 backdrop-blur-xl shadow-2xl">
 
         <!-- Logo -->
         <div class="flex items-center gap-2 cursor-pointer" appMagnetic [appMagnetic]="0.2" routerLink="/">
           <svg width="36" height="36" viewBox="0 0 40 40">
-            <path d="M10 30V10H20C25 10 25 15 20 15H10" stroke="#000000" stroke-width="2" fill="none" />
+            <path d="M10 30V10H20C25 10 25 15 20 15H10" stroke="#ffffff" stroke-width="2" fill="none" />
             <path d="M25 30V10" stroke="var(--accent-cyan)" stroke-width="2" fill="none" />
           </svg>
         </div>
@@ -26,14 +26,14 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
         <div class="flex items-center gap-8">
           <a *ngFor="let item of desktopItems"
              (click)="scrollTo(item.link, $event)"
-             class="nav-link text-sm font-medium tracking-widest uppercase cursor-pointer hover:text-accent-cyan transition-colors text-black/65"
+             class="nav-link text-sm font-medium tracking-widest uppercase cursor-pointer hover:text-accent-cyan transition-colors text-white/70"
              appMagnetic [appMagnetic]="0.3">
             {{ item.name }}
           </a>
         </div>
 
         <!-- CTA -->
-        <button (click)="scrollTo('#contact', $event)" class="flex items-center gap-2 px-7 py-3 rounded-full text-black border border-black/20 hover:border-accent-cyan transition-all duration-300"
+        <button (click)="scrollTo('#contact', $event)" class="flex items-center gap-2 px-7 py-3 rounded-full text-white border border-white/20 hover:border-accent-cyan transition-all duration-300"
                 appMagnetic [appMagnetic]="0.1">
           <span class="text-xs font-bold tracking-widest uppercase">Contacto</span>
           <div class="w-1.5 h-1.5 rounded-full bg-accent-cyan animate-pulse"></div>
@@ -45,14 +45,14 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
     <!-- MOBILE: Bottom app-style tab bar           -->
     <!-- ═══════════════════════════════════════════ -->
     <nav class="md:hidden fixed bottom-4 left-4 right-4 z-[9000]">
-      <div class="flex items-center justify-around py-2 px-1 rounded-2xl backdrop-blur-xl border border-black/10 shadow-2xl bg-white/90">
+      <div class="flex items-center justify-around py-2 px-1 rounded-2xl backdrop-blur-xl border border-white/10 shadow-2xl bg-black/80">
         <a *ngFor="let item of mobileItems"
            (click)="scrollTo(item.link, $event)"
            class="mobile-nav-item flex flex-col items-center gap-1 px-4 py-2 rounded-xl cursor-pointer transition-all duration-200 active:bg-black/5">
           <!-- Icon -->
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-               class="text-black/60">
+               class="text-white/60">
             <ng-container *ngIf="item.icon === 'home'">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
               <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -75,7 +75,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
               <polyline points="22,6 12,13 2,6"></polyline>
             </ng-container>
           </svg>
-          <span class="text-[9px] font-bold uppercase tracking-wider text-black/50">
+          <span class="text-[9px] font-bold uppercase tracking-wider text-white/50">
             {{ item.name }}
           </span>
         </a>
