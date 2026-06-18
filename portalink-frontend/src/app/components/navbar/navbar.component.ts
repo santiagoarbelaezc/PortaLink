@@ -18,7 +18,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
         <div class="flex items-center gap-2 cursor-pointer" appMagnetic [appMagnetic]="0.2" routerLink="/">
           <svg width="36" height="36" viewBox="0 0 40 40">
             <path d="M10 30V10H20C25 10 25 15 20 15H10" stroke="#ffffff" stroke-width="2" fill="none" />
-            <path d="M25 30V10" stroke="var(--accent-cyan)" stroke-width="2" fill="none" />
+            <path d="M25 30V10" stroke="#ffffff" stroke-width="2" fill="none" />
           </svg>
         </div>
 
@@ -26,17 +26,17 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
         <div class="flex items-center gap-8">
           <a *ngFor="let item of desktopItems"
              (click)="scrollTo(item.link, $event)"
-             class="nav-link text-sm font-medium tracking-widest uppercase cursor-pointer hover:text-accent-cyan transition-colors text-white/70"
+             class="nav-link text-sm font-medium tracking-widest uppercase cursor-pointer hover:text-white transition-colors text-white/70"
              appMagnetic [appMagnetic]="0.3">
             {{ item.name }}
           </a>
         </div>
 
         <!-- CTA -->
-        <button (click)="scrollTo('#contact', $event)" class="flex items-center gap-2 px-7 py-3 rounded-full text-white border border-white/20 hover:border-accent-cyan transition-all duration-300"
+        <button (click)="scrollTo('#contact', $event)" class="flex items-center gap-2 px-7 py-3 rounded-none text-white border border-white/20 hover:border-white transition-all duration-300"
                 appMagnetic [appMagnetic]="0.1">
           <span class="text-xs font-bold tracking-widest uppercase">Contacto</span>
-          <div class="w-1.5 h-1.5 rounded-full bg-accent-cyan animate-pulse"></div>
+          <div class="w-1.5 h-1.5 bg-white animate-pulse"></div>
         </button>
       </div>
     </nav>
@@ -91,7 +91,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
       left: 0;
       width: 0;
       height: 1px;
-      background: var(--accent-cyan);
+      background: #FFFFFF;
       transition: width 0.3s ease;
     }
     .nav-link:hover::after { width: 100%; }

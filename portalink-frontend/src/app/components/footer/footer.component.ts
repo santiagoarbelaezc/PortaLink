@@ -21,13 +21,13 @@ import { CommonModule } from '@angular/common';
           </div>
           
           <div class="flex gap-8">
-            <a href="#" class="text-[10px] uppercase tracking-widest hover:text-accent-cyan transition-colors">Privacy</a>
-            <a href="#" class="text-[10px] uppercase tracking-widest hover:text-accent-cyan transition-colors">Terms</a>
-            <a href="#" class="text-[10px] uppercase tracking-widest hover:text-accent-cyan transition-colors">Back to top</a>
+            <a href="#" class="text-[10px] uppercase tracking-widest hover:text-white transition-colors">Privacy</a>
+            <a href="#" class="text-[10px] uppercase tracking-widest hover:text-white transition-colors">Terms</a>
+            <a href="#" class="text-[10px] uppercase tracking-widest hover:text-white transition-colors">Back to top</a>
           </div>
 
           <div class="flex items-center gap-3">
-             <div class="w-1.5 h-1.5 rounded-full bg-accent-gold"></div>
+             <div class="w-1.5 h-1.5 bg-white/50"></div>
              <span class="text-xs uppercase tracking-widest italic font-editorial">Luxury Tech & Design</span>
           </div>
         </div>

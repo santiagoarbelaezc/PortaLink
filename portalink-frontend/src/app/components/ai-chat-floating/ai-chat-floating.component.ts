@@ -9,24 +9,19 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <!-- Floating Button -->
+    <!-- Floating Container -->
     <div class="fixed bottom-8 right-8 z-[500]">
+      
+      <!-- Open Chat Button -->
       <button 
+        *ngIf="!isOpen"
         (click)="toggleChat()"
-        class="group relative flex h-24 w-24 items-center justify-center rounded-full bg-transparent transition-all duration-500 hover:scale-110 active:scale-95 border-none overflow-visible shadow-none"
-        [ngClass]="{'rotate-90': isOpen}"
+        class="group relative flex h-20 w-20 items-center justify-center rounded-full bg-transparent transition-all duration-500 hover:scale-110 active:scale-95 border-none overflow-visible shadow-none"
       >
         <div class="relative flex items-center justify-center w-full h-full">
-          <!-- Robot Icon/Avatar (Larger and no container) -->
-          <img *ngIf="!isOpen" src="assets/images/rotbot4.png" class="w-full h-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]" alt="Rotbot">
-          
-          <!-- Close Icon -->
-          <div *ngIf="isOpen" class="w-16 h-16 bg-black rounded-full flex items-center justify-center border-2 border-white shadow-2xl">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </div>
+          <!-- Technological Glow (Cyan) -->
+          <div class="absolute inset-0 rounded-full bg-cyan-500/20 blur-xl group-hover:bg-cyan-400/40 transition-all"></div>
+          <img src="assets/images/rotbot4.png" class="w-full h-full object-contain relative z-10 drop-shadow-[0_0_15px_rgba(34,211,238,0.4)]" alt="Rotbot">
         </div>
       </button>
 
@@ -34,69 +29,91 @@ import { FormsModule } from '@angular/forms';
       <div 
         *ngIf="isOpen"
         [@chatAnimation]
-        class="absolute bottom-20 right-0 w-[350px] md:w-[400px] overflow-hidden rounded-[32px] border-2 border-black bg-white shadow-[0_30px_60px_rgba(0,0,0,0.25)]"
+        class="absolute bottom-0 right-0 w-[350px] md:w-[400px] overflow-hidden rounded-2xl border border-cyan-500/30 bg-black shadow-[0_0_40px_rgba(34,211,238,0.15)] origin-bottom-right font-sans"
       >
         <!-- Header -->
-        <div class="flex items-center gap-4 border-b-2 border-black bg-white p-5">
-          <div class="relative">
-            <div class="w-12 h-12 rounded-full border-2 border-black bg-gray-50 overflow-hidden flex items-center justify-center p-1">
-              <img src="assets/images/rotbot4.png" class="w-full h-full object-contain" alt="Rotbot">
+        <div class="flex items-center justify-between border-b border-cyan-500/20 bg-black px-5 py-4 relative overflow-hidden">
+          <!-- Cyber Scanner Line -->
+          <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50"></div>
+          
+          <div class="flex items-center gap-3 relative z-10">
+            <div class="w-8 h-8 rounded-md bg-cyan-500/10 flex items-center justify-center p-1 border border-cyan-500/30 shadow-[inset_0_0_10px_rgba(34,211,238,0.1)]">
+              <img src="assets/images/rotbot4.png" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]" alt="Rotbot">
             </div>
-            <div class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-black"></div>
-          </div>
-          <div>
-            <h3 class="font-headline text-2xl uppercase tracking-widest text-black leading-none">Rotbot Assistant</h3>
-            <div class="flex items-center gap-1.5 mt-1">
-               <span class="w-1.5 h-1.5 rounded-full bg-black animate-pulse"></span>
-               <p class="text-[9px] uppercase tracking-[0.2em] text-black/60">En línea ahora</p>
+            <div>
+              <h3 class="font-sans text-base font-bold text-white tracking-wide leading-none">RotBot <span class="text-cyan-400 font-medium">IA</span></h3>
+              <div class="flex items-center gap-1.5 mt-1">
+                 <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_5px_rgba(34,211,238,0.8)]"></span>
+                 <p class="text-[9px] uppercase tracking-widest text-cyan-400/70 font-sans font-medium">System Active</p>
+              </div>
             </div>
           </div>
+          
+          <!-- Close Button -->
+          <button (click)="toggleChat()" class="relative z-10 p-2 text-cyan-400/50 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-md transition-all">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
         </div>
 
         <!-- Messages Area -->
-        <div #scrollContainer class="h-[380px] overflow-y-auto p-6 space-y-6 scroll-smooth bg-[#fdfdfd]">
-          <div *ngFor="let msg of messages" [ngClass]="{'flex justify-end': msg.role === 'user'}">
+        <div #scrollContainer class="h-[380px] overflow-y-auto p-5 space-y-6 scroll-smooth bg-black custom-scrollbar">
+          <div *ngFor="let msg of messages" class="flex w-full" [ngClass]="{'justify-end': msg.role === 'user', 'justify-start': msg.role === 'assistant'}">
+            
+            <!-- Assistant Avatar in message -->
+            <div *ngIf="msg.role === 'assistant'" class="w-8 h-8 rounded-md bg-cyan-500/10 flex-shrink-0 flex items-center justify-center mr-3 p-1 border border-cyan-500/20">
+              <img src="assets/images/rotbot4.png" class="w-full h-full object-contain" alt="Rotbot">
+            </div>
+
+            <!-- Message Bubble -->
             <div 
               [ngClass]="{
-                'bg-white border-2 border-black text-black rounded-[24px] rounded-tl-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]': msg.role === 'assistant',
-                'bg-black text-white rounded-[24px] rounded-tr-none shadow-lg': msg.role === 'user'
+                'text-white/90 text-[15px] font-light tracking-wide leading-relaxed': msg.role === 'assistant',
+                'bg-cyan-500/10 border border-cyan-500/20 text-white font-light tracking-wide rounded-xl rounded-tr-sm px-4 py-3 text-[15px] leading-relaxed max-w-[85%] backdrop-blur-sm shadow-[0_0_15px_rgba(34,211,238,0.05)]': msg.role === 'user'
               }"
-              class="max-w-[85%] p-4 text-[13px] font-medium leading-relaxed tracking-tight"
             >
               {{ msg.content }}
             </div>
           </div>
+
           <!-- Typing Indicator -->
-          <div *ngIf="isTyping" class="flex items-center gap-1 text-black p-4 bg-white border-2 border-black w-fit rounded-[24px] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <div class="w-1.5 h-1.5 bg-current rounded-full animate-bounce"></div>
-            <div class="w-1.5 h-1.5 bg-current rounded-full animate-bounce [animation-delay:0.2s]"></div>
-            <div class="w-1.5 h-1.5 bg-current rounded-full animate-bounce [animation-delay:0.4s]"></div>
+          <div *ngIf="isTyping" class="flex items-center gap-3 w-full">
+            <div class="w-8 h-8 rounded-md bg-cyan-500/10 flex-shrink-0 flex items-center justify-center p-1 border border-cyan-500/20">
+              <img src="assets/images/rotbot4.png" class="w-full h-full object-contain" alt="Rotbot">
+            </div>
+            <div class="flex items-center gap-1 text-cyan-400/50">
+              <div class="w-1 h-3 bg-current animate-pulse"></div>
+              <div class="w-1 h-3 bg-current animate-pulse [animation-delay:0.2s]"></div>
+              <div class="w-1 h-3 bg-current animate-pulse [animation-delay:0.4s]"></div>
+            </div>
           </div>
         </div>
 
         <!-- Input Area -->
-        <div class="border-t-2 border-black bg-white p-6">
+        <div class="bg-black p-4 pt-3 border-t border-cyan-500/20">
           <form (submit)="sendMessage()" class="relative">
             <input 
               type="text" 
               [(ngModel)]="userInput"
               name="userInput"
-              placeholder="Pregúntale algo a Rotbot..."
-              class="w-full rounded-[18px] border-2 border-black bg-white p-4 pr-12 text-sm text-black font-bold transition-all focus:ring-0 focus:outline-none placeholder:text-black/30 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+              placeholder="Escribe tu mensaje..."
+              class="w-full rounded-lg border border-cyan-500/20 bg-transparent py-3 pl-4 pr-12 text-[15px] text-white font-light tracking-wide transition-all focus:ring-0 focus:outline-none focus:border-cyan-400 focus:bg-cyan-500/5 focus:shadow-[0_0_10px_rgba(34,211,238,0.15)] placeholder:text-cyan-200/30"
             />
             <button 
               type="submit"
               [disabled]="!userInput.trim()"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-black transition-transform hover:scale-110 disabled:opacity-20"
+              class="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 bg-cyan-500/10 text-cyan-400 rounded-md transition-all hover:bg-cyan-500/30 disabled:opacity-30 disabled:hover:bg-cyan-500/10 border border-cyan-500/20"
             >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="22" y1="2" x2="11" y2="13"></line>
                 <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
               </svg>
             </button>
           </form>
-          <div class="flex justify-center mt-4">
-             <span class="text-[8px] uppercase tracking-[0.4em] text-black/40">Powered by PortaLink & Rotbot AI</span>
+          <div class="flex justify-center mt-3">
+             <span class="text-[9px] uppercase tracking-widest text-cyan-400/30 font-sans font-medium">Powered by Portalink</span>
           </div>
         </div>
       </div>
@@ -109,28 +126,28 @@ import { FormsModule } from '@angular/forms';
     .font-headline {
       font-family: var(--font-headline);
     }
-    ::-webkit-scrollbar {
-      width: 6px;
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
     }
-    ::-webkit-scrollbar-track {
-      background: transparent;
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.2);
     }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.1);
-      border-radius: 10px;
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(59, 130, 246, 0.2);
+      border-radius: 4px;
     }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(0, 0, 0, 0.2);
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(59, 130, 246, 0.4);
     }
   `],
   animations: [
     trigger('chatAnimation', [
       transition(':enter', [
-        style({ transform: 'translateY(30px) scale(0.9)', opacity: 0 }),
-        animate('600ms cubic-bezier(0.16, 1, 0.3, 1)', style({ transform: 'translateY(0) scale(1)', opacity: 1 }))
+        style({ transform: 'scale(0.95)', opacity: 0 }),
+        animate('300ms cubic-bezier(0.16, 1, 0.3, 1)', style({ transform: 'scale(1)', opacity: 1 }))
       ]),
       transition(':leave', [
-        animate('400ms cubic-bezier(0.16, 1, 0.3, 1)', style({ transform: 'translateY(30px) scale(0.9)', opacity: 0 }))
+        animate('200ms cubic-bezier(0.16, 1, 0.3, 1)', style({ transform: 'scale(0.95)', opacity: 0 }))
       ])
     ])
   ]

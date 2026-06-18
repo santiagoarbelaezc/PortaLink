@@ -40,73 +40,88 @@ declare var AOS: any;
             </header>
 
             <div class="lt-links-container" data-aos="fade-up">
-              <!-- Main CTA -->
-              <a routerLink="/portfolio" class="lt-card-main group mb-6">
+
+              <!-- TikTok -->
+              <a href="https://www.tiktok.com/@santiagoarbelaezc" target="_blank" class="lt-card-social group lt-item-tiktok">
+                <div class="flex justify-between w-full mb-4">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
+                    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
+                  </svg>
+                  <span class="text-white/20 group-hover:text-white transition-colors">↗</span>
+                </div>
+                <div>
+                  <h4 class="text-base md:text-xl font-headline uppercase text-white/50 group-hover:text-white transition-colors">TikTok</h4>
+                  <span class="text-[8px] uppercase tracking-[0.2em] text-white/30 group-hover:text-white transition-colors mt-1 block">Videos</span>
+                </div>
+              </a>
+
+              <!-- Instagram -->
+              <a href="https://www.instagram.com/santiagoarbelaezc/" target="_blank" class="lt-card-social group lt-item-insta">
+                <div class="flex justify-between w-full mb-4">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                  </svg>
+                  <span class="text-white/20 group-hover:text-white transition-colors">↗</span>
+                </div>
+                <div>
+                  <h4 class="text-base md:text-xl font-headline uppercase text-white/50 group-hover:text-white transition-colors">Instagram</h4>
+                  <span class="text-[8px] uppercase tracking-[0.2em] text-white/30 group-hover:text-white transition-colors mt-1 block">Photos</span>
+                </div>
+              </a>
+
+              <!-- Portafolio Main CTA -->
+              <a routerLink="/portfolio" class="lt-card-main group lt-item-portfolio">
                 <div class="flex items-center gap-6">
                   <div class="lt-icon-wrapper">
-                    <!-- Icono Profesional Vectorial de Portafolio -->
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/80 group-hover:text-white transition-colors">
-                      <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                      <rect x="2" y="7" width="20" height="14" rx="0" ry="0"></rect>
                       <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
                     </svg>
                   </div>
                   <div class="lt-card-body">
-                    <h3 class="text-3xl font-headline uppercase text-white">Portafolio</h3>
-                    <p class="text-[8px] uppercase tracking-[0.3em] text-white/40 mt-1">Ingeniería & Proyectos</p>
+                    <h3 class="text-2xl md:text-3xl font-headline uppercase text-white">Proyectos</h3>
+                    <p class="text-[8px] uppercase tracking-[0.3em] text-white/50 mt-1">Ingeniería & Desarrollo</p>
                   </div>
                 </div>
-                <div class="lt-action-line">
-                  <div class="w-10 h-px bg-white/20 group-hover:w-20 group-hover:bg-white transition-all duration-700"></div>
-                  <span class="text-white/20 group-hover:text-white transition-colors text-xl">↗</span>
+                <div class="lt-action-line hidden md:flex">
+                  <div class="w-10 h-px bg-white/30 group-hover:w-20 group-hover:bg-white transition-all duration-700"></div>
+                  <span class="text-white/30 group-hover:text-white transition-colors text-xl">↗</span>
+                </div>
+                <span class="md:hidden text-white/30 group-hover:text-white transition-colors">↗</span>
+              </a>
+
+              <!-- WhatsApp -->
+              <a href="https://wa.me/573000000000" target="_blank" class="lt-card-social group lt-item-wa">
+                <div class="flex justify-between w-full mb-4">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
+                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                  </svg>
+                  <span class="text-white/20 group-hover:text-white transition-colors">↗</span>
+                </div>
+                <div>
+                  <h4 class="text-base md:text-xl font-headline uppercase text-white/50 group-hover:text-white transition-colors">WhatsApp</h4>
+                  <span class="text-[8px] uppercase tracking-[0.2em] text-white/30 group-hover:text-white transition-colors mt-1 block">Chat</span>
                 </div>
               </a>
 
-              <!-- Social Grid -->
-              <div class="lt-social-grid">
-                <a href="https://www.tiktok.com/@santiagoarbelaezc" target="_blank" class="lt-card-social group">
-                  <div class="flex items-center gap-5">
-                    <img src="assets/icons/tiktok.png" alt="TikTok" class="lt-social-icon" />
-                    <div>
-                      <h4 class="text-xl font-headline uppercase text-white/40 group-hover:text-white transition-colors">TikTok</h4>
-                      <span class="text-[8px] uppercase tracking-widest text-white/20 group-hover:text-accent-cyan transition-colors mt-1">Videos</span>
-                    </div>
-                  </div>
-                  <span class="text-white/5 group-hover:text-accent-cyan group-hover:translate-x-1 transition-all">↗</span>
-                </a>
+              <!-- LinkedIn -->
+              <a href="https://www.linkedin.com/in/santiago-arbelaez-contreras-9830b5290/" target="_blank" class="lt-card-social group lt-item-linkedin">
+                <div class="flex justify-between w-full mb-4">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
+                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                    <rect x="2" y="9" width="4" height="12"></rect>
+                    <circle cx="4" cy="4" r="2"></circle>
+                  </svg>
+                  <span class="text-white/20 group-hover:text-white transition-colors">↗</span>
+                </div>
+                <div>
+                  <h4 class="text-base md:text-xl font-headline uppercase text-white/50 group-hover:text-white transition-colors">LinkedIn</h4>
+                  <span class="text-[8px] uppercase tracking-[0.2em] text-white/30 group-hover:text-white transition-colors mt-1 block">Work</span>
+                </div>
+              </a>
 
-                <a href="https://www.instagram.com/santiagoarbelaezc/" target="_blank" class="lt-card-social group">
-                  <div class="flex items-center gap-5">
-                    <img src="assets/icons/instagram.png" alt="Instagram" class="lt-social-icon" />
-                    <div>
-                      <h4 class="text-xl font-headline uppercase text-white/40 group-hover:text-white transition-colors">Instagram</h4>
-                      <span class="text-[8px] uppercase tracking-widest text-white/20 group-hover:text-accent-cyan transition-colors mt-1">Photos</span>
-                    </div>
-                  </div>
-                  <span class="text-white/5 group-hover:text-accent-cyan group-hover:translate-x-1 transition-all">↗</span>
-                </a>
-
-                <a href="https://wa.me/573000000000" target="_blank" class="lt-card-social group">
-                  <div class="flex items-center gap-5">
-                    <img src="assets/icons/whatsapp.png" alt="WhatsApp" class="lt-social-icon" />
-                    <div>
-                      <h4 class="text-xl font-headline uppercase text-white/40 group-hover:text-white transition-colors">WhatsApp</h4>
-                      <span class="text-[8px] uppercase tracking-widest text-white/20 group-hover:text-accent-cyan transition-colors mt-1">Chat</span>
-                    </div>
-                  </div>
-                  <span class="text-white/5 group-hover:text-accent-cyan group-hover:translate-x-1 transition-all">↗</span>
-                </a>
-
-                <a href="https://www.linkedin.com/in/santiago-arbelaez-contreras-9830b5290/" target="_blank" class="lt-card-social group">
-                  <div class="flex items-center gap-5">
-                    <img src="assets/icons/linkedin.png" alt="LinkedIn" class="lt-social-icon" />
-                    <div>
-                      <h4 class="text-xl font-headline uppercase text-white/40 group-hover:text-white transition-colors">LinkedIn</h4>
-                      <span class="text-[8px] uppercase tracking-widest text-white/20 group-hover:text-accent-cyan transition-colors mt-1">Work</span>
-                    </div>
-                  </div>
-                  <span class="text-white/5 group-hover:text-accent-cyan group-hover:translate-x-1 transition-all">↗</span>
-                </a>
-              </div>
             </div>
           </section>
 
@@ -120,11 +135,11 @@ declare var AOS: any;
     </div>
 
     <!-- PWA Install Modal -->
-    <div *ngIf="showInstallModal" class="fixed inset-0 z-[200] flex items-end md:items-center justify-center p-6 bg-black/80 backdrop-blur-sm" (click)="closeModal()">
-      <div class="bg-[#111] border border-white/10 rounded-[32px] w-full max-w-md p-8 shadow-2xl animate-slide-up" (click)="$event.stopPropagation()">
+    <div *ngIf="showInstallModal" class="fixed inset-0 z-[200] flex items-end md:items-center justify-center p-6 bg-black/90 backdrop-blur-md" (click)="closeModal()">
+      <div class="bg-[#050505] border border-white/20 rounded-none w-full max-w-md p-8 shadow-2xl animate-slide-up" (click)="$event.stopPropagation()">
         <div class="flex justify-center mb-6">
-          <div class="w-16 h-16 bg-accent-cyan rounded-2xl flex items-center justify-center shadow-lg shadow-accent-cyan/20">
-             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <div class="w-16 h-16 bg-white flex items-center justify-center shadow-none">
+             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           </div>
         </div>
         
@@ -134,18 +149,18 @@ declare var AOS: any;
         </p>
 
         <!-- Android Button -->
-        <button *ngIf="!isIOS" (click)="installPWA()" class="w-full bg-accent-cyan text-white py-4 rounded-2xl font-bold uppercase tracking-widest text-xs hover:brightness-110 transition-all mb-4">
+        <button *ngIf="!isIOS" (click)="installPWA()" class="w-full bg-white text-black py-4 font-bold uppercase tracking-widest text-xs hover:bg-gray-200 transition-colors mb-4 border border-white">
           Instalar Ahora
         </button>
 
         <!-- iOS Instructions -->
         <div *ngIf="isIOS" class="space-y-4">
-          <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
-            <div class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-white text-[10px] font-bold">1</div>
+          <div class="flex items-center gap-4 bg-white/5 p-4 border border-white/20">
+            <div class="w-8 h-8 bg-white/10 flex items-center justify-center text-white text-[10px] font-bold">1</div>
             <p class="text-white/80 text-[11px]">Pulsa el botón <b>Compartir</b> en Safari.</p>
           </div>
-          <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
-            <div class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-white text-[10px] font-bold">2</div>
+          <div class="flex items-center gap-4 bg-white/5 p-4 border border-white/20">
+            <div class="w-8 h-8 bg-white/10 flex items-center justify-center text-white text-[10px] font-bold">2</div>
             <p class="text-white/80 text-[11px]">Selecciona <b>"Añadir a la pantalla de inicio"</b>.</p>
           </div>
         </div>
@@ -158,31 +173,60 @@ declare var AOS: any;
   `,
     styles: [`
     :host {
-      --accent-celeste: #00F5FF;
-      --accent-celeste-deep: #00B4D8;
-      --accent-glow: rgba(0, 245, 255, 0.15);
+      --accent-main: #FFFFFF;
+      --accent-secondary: #AAAAAA;
       --bg-dark: #000000;
-      --card-bg: rgba(255, 255, 255, 0.03);
-      --card-border: rgba(0, 245, 255, 0.15);
+      --card-bg: rgba(255, 255, 255, 0.02);
+      --card-border: rgba(255, 255, 255, 0.2);
       --transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .lt-wrapper {
       min-height: 100vh;
       background: var(--bg-dark);
-      background-image:
-        radial-gradient(circle at 85% 15%, rgba(0, 245, 255, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 5% 90%, rgba(0, 245, 255, 0.05) 0%, transparent 50%);
       display: flex;
       justify-content: center;
       align-items: flex-start;
       padding: 60px 40px;
       overflow-y: auto;
+      position: relative;
+    }
+
+    /* Elegant Grid Background with Mask */
+    .lt-wrapper::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+      background-position: center center;
+      mask-image: radial-gradient(ellipse at 50% 50%, black 10%, transparent 80%);
+      -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 10%, transparent 80%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Vertical architectural line */
+    .lt-wrapper::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1px;
+      height: 100%;
+      background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.05) 15%, rgba(255, 255, 255, 0.05) 85%, transparent);
+      z-index: 0;
+      pointer-events: none;
     }
 
     .lt-container {
       width: 100%;
       max-width: 1200px;
+      position: relative;
+      z-index: 1;
     }
 
     .lt-main-grid {
@@ -192,110 +236,137 @@ declare var AOS: any;
       align-items: flex-start;
     }
 
-    /* IMAGE */
     /* TITLE ACCENT CLASSES */
     .lt-title-main {
       color: #ffffff;
     }
     .lt-title-accent {
-      background: linear-gradient(90deg, #00F5FF 0%, #FFFFFF 50%, #00B4D8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: var(--accent-secondary);
     }
     .lt-label-accent {
-      color: var(--accent-celeste);
+      color: var(--accent-secondary);
     }
     .lt-line-accent {
-      background: var(--accent-celeste);
+      background: var(--accent-main);
       height: 1px;
-      width: 40px;
+      width: 60px;
     }
 
     .lt-image-container {
-      border-radius: 40px;
       overflow: hidden;
       aspect-ratio: 4/5.5;
       border: 1px solid var(--card-border);
       background: #050505;
-      box-shadow: 0 0 60px rgba(0, 245, 255, 0.05);
+      position: relative;
     }
+    /* Architectural corner markers for image */
+    .lt-image-container::before, .lt-image-container::after {
+      content: '';
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      border: 1px solid #fff;
+      z-index: 2;
+      transition: var(--transition);
+    }
+    .lt-image-container::before {
+      top: 10px; left: 10px;
+      border-right: none; border-bottom: none;
+    }
+    .lt-image-container::after {
+      bottom: 10px; right: 10px;
+      border-left: none; border-top: none;
+    }
+    .lt-portrait-wrapper:hover .lt-image-container::before {
+      top: 5px; left: 5px;
+    }
+    .lt-portrait-wrapper:hover .lt-image-container::after {
+      bottom: 5px; right: 5px;
+    }
+
     .lt-main-img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      filter: grayscale(100%) brightness(0.6);
+      filter: grayscale(100%) brightness(0.6) contrast(1.2);
       transition: var(--transition);
     }
     .lt-portrait-wrapper:hover .lt-main-img {
-      filter: grayscale(0%) brightness(0.9);
-      transform: scale(1.03);
+      filter: grayscale(100%) brightness(0.9) contrast(1.1);
+      transform: scale(1.02);
     }
 
     /* CARDS */
-    .lt-links-container { margin-top: 60px; }
+    .lt-links-container { 
+      margin-top: 60px; 
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .lt-item-portfolio { grid-column: span 2; order: 1; }
+    .lt-item-tiktok { grid-column: span 1; order: 2; }
+    .lt-item-insta { grid-column: span 1; order: 3; }
+    .lt-item-wa { grid-column: span 1; order: 4; }
+    .lt-item-linkedin { grid-column: span 1; order: 5; }
 
     .lt-card-main {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 25px 40px;
-      background: #0a0a0a;
-      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--card-border);
       text-decoration: none;
       transition: var(--transition);
-      border: 1.5px solid var(--accent-celeste);
-      box-shadow: 0 0 20px rgba(0, 245, 255, 0.1);
+      position: relative;
+    }
+    .lt-card-main::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 0%; height: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      transition: var(--transition);
+      z-index: 0;
+    }
+    .lt-card-main:hover::before {
+      width: 100%;
+    }
+    .lt-card-main > * {
+      position: relative;
+      z-index: 1;
     }
     .lt-card-main:hover {
-      transform: translateY(-5px);
-      background: #0f0f0f;
-      border-color: #ffffff;
-      box-shadow: 0 20px 60px rgba(0, 245, 255, 0.2);
+      border-color: var(--accent-main);
     }
 
-    .lt-btn-icon {
-      width: 45px;
-      height: 45px;
-      object-fit: contain;
-      opacity: 0.8;
-    }
-
-    .lt-social-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
     .lt-card-social {
       display: flex;
-      align-items: center;
+      flex-direction: column;
+      align-items: flex-start;
       justify-content: space-between;
-      padding: 24px 30px;
+      padding: 20px 24px;
       background: var(--card-bg);
-      border-radius: 20px;
-      text-decoration: none;
       border: 1px solid var(--card-border);
+      text-decoration: none;
+      transition: var(--transition);
+      position: relative;
+    }
+    .lt-card-social::after {
+      content: '+';
+      position: absolute;
+      bottom: 8px; right: 12px;
+      color: rgba(255,255,255,0.1);
+      font-size: 14px;
+      font-weight: 300;
       transition: var(--transition);
     }
     .lt-card-social:hover {
-      background: rgba(0, 245, 255, 0.05);
-      border-color: var(--accent-celeste);
-      transform: translateY(-4px);
-      box-shadow: 0 12px 32px rgba(0, 245, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--accent-main);
     }
-
-    .lt-social-icon {
-      width: 32px;
-      height: 32px;
-      object-fit: contain;
-      filter: grayscale(100%) invert(1);
-      opacity: 0.2;
-      transition: var(--transition);
-    }
-    .lt-card-social:hover .lt-social-icon {
-      filter: grayscale(0%) invert(0);
-      opacity: 1;
-      transform: scale(1.1);
+    .lt-card-social:hover::after {
+      color: var(--accent-main);
     }
 
     .lt-action-line {
@@ -305,43 +376,51 @@ declare var AOS: any;
     }
 
     /* FOOTER */
-    .lt-footer { margin-top: 80px; border-top: 1px solid rgba(255,255,255,0.03); padding-top: 30px; }
-    .lt-copy { font-size: 8px; color: rgba(255,255,255,0.1); }
+    .lt-footer { 
+      margin-top: 80px; 
+      border-top: 1px solid rgba(255,255,255,0.1); 
+      padding-top: 30px; 
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .lt-copy { font-size: 9px; color: rgba(255,255,255,0.4); letter-spacing: 0.2em; }
 
     @media (max-width: 768px) {
       .lt-wrapper { padding: 40px 20px; height: auto; overflow: visible; }
       .lt-main-grid { grid-template-columns: 1fr; gap: 40px; }
-      .lt-image-container { max-width: 190px; margin: 0 auto; }
-      .lt-main-img { filter: grayscale(0%) brightness(1); } /* Brillo total en móvil */
+      .lt-image-container { max-width: 220px; margin: 0 auto; }
+      .lt-main-img { filter: grayscale(100%) brightness(0.9); } 
       
       .lt-info-header { text-align: center; }
       .lt-info-header .flex { justify-content: center; }
       
-      .lt-social-grid { grid-template-columns: 1fr; gap: 12px; }
+      .lt-links-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-top: 40px;
+      }
+
+      /* Mobile Order: 2 links, 1 link, 2 links */
+      .lt-item-tiktok { order: 1; grid-column: span 1; }
+      .lt-item-insta { order: 2; grid-column: span 1; }
+      .lt-item-portfolio { order: 3; grid-column: span 2; }
+      .lt-item-wa { order: 4; grid-column: span 1; }
+      .lt-item-linkedin { order: 5; grid-column: span 1; }
       
-      /* Botones vibrantes en móvil */
       .lt-card-social { 
-        padding: 20px 25px; 
+        padding: 16px 20px; 
         background: rgba(255, 255, 255, 0.03);
-        border-color: rgba(255, 255, 255, 0.07);
       }
       .lt-card-social:active {
         background: rgba(255,255,255,0.08);
-        transform: scale(0.98);
       }
       .lt-card-social h4 { color: white; opacity: 0.9; }
       .lt-card-social span { opacity: 0.6; }
       
-      .lt-social-icon { 
-        filter: grayscale(0%) invert(0); 
-        opacity: 0.9; 
-        transform: scale(1);
-      }
-      
-      .lt-card-main { padding: 25px; }
-      .lt-card-main:active { transform: scale(0.98); }
+      .lt-card-main { padding: 20px; }
 
-      .lt-footer { text-align: center; margin-top: 60px; }
+      .lt-footer { justify-content: center; text-align: center; margin-top: 60px; }
     }
 
     @keyframes slide-up {

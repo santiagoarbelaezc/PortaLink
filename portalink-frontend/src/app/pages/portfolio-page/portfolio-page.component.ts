@@ -34,11 +34,11 @@ import { Subscription } from 'rxjs';
       <app-hero [data]="portfolioData().hero"></app-hero>
       
       <section class="rotbot-banner">
-        <video autoplay muted loop playsinline class="video-bg">
+        <video autoplay [muted]="true" onvolumechange="this.muted=true; this.volume=0;" volume="0" loop playsinline class="video-bg">
           <source src="assets/videos/video-robot.mp4" type="video/mp4">
         </video>
         <div class="content" data-aos="fade-up">
-          <h2 class="banner-title tracking-tight text-white">Habla con <span class="text-accent-cyan">Rotbot</span></h2>
+          <h2 class="banner-title tracking-tight text-white">Habla con <span class="text-white">Rotbot</span></h2>
           <p class="banner-subtitle">EL ASISTENTE VIRTUAL</p>
         </div>
       </section>
@@ -69,8 +69,8 @@ import { Subscription } from 'rxjs';
       display: flex;
       align-items: center;
       justify-content: center;
-      border-top: 1px solid rgba(0, 245, 255, 0.3);
-      border-bottom: 1px solid rgba(0, 245, 255, 0.3);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .video-bg {
@@ -109,8 +109,8 @@ import { Subscription } from 'rxjs';
       font-weight: 300;
     }
 
-    .text-accent-cyan {
-      color: #00F5FF;
+    .text-white {
+      color: #FFFFFF;
     }
   `]
 })

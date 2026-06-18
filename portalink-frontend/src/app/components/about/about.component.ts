@@ -13,20 +13,22 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
 
           <!-- Image with Clip-path -->
           <div class="relative" appReveal>
-            <div class="aspect-[4/5] overflow-hidden rounded-3xl" style="clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);">
-              <img [src]="data?.avatarImage || 'about-portrait.png'" alt="Creative Profile" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" />
+            <div class="aspect-[4/5] overflow-hidden border border-white/20 relative">
+              <div class="absolute top-2 left-2 w-3 h-3 border-t border-l border-white/50 z-10"></div>
+              <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-white/50 z-10"></div>
+              <img [src]="data?.avatarImage || 'about-portrait.png'" alt="Creative Profile" class="w-full h-full object-cover grayscale brightness-75 hover:brightness-100 hover:grayscale-0 transition-all duration-700" />
             </div>
 
             <!-- Decorative corner element -->
-            <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-40" style="border: 1px solid rgba(255,255,255,0.1);"></div>
+            <div class="absolute -top-4 -right-4 w-20 h-20 border border-white/10 opacity-40"></div>
           </div>
 
           <!-- Bio Content -->
           <div class="space-y-8">
             <div appReveal>
               <div class="flex items-center gap-4 mb-4">
-                <div class="h-px w-12 bg-accent-cyan"></div>
-                <span class="text-accent-cyan text-xs uppercase tracking-[0.4em]">Philosophy</span>
+                <div class="h-px w-12 bg-white/50"></div>
+                <span class="text-white/50 text-xs uppercase tracking-[0.4em]">Philosophy</span>
               </div>
               <h2 class="text-5xl md:text-7xl mb-8 text-white">Designing the Future, <br/><span class="font-light italic text-white/80" style="letter-spacing: -0.02em;">One Pixel at a Time.</span></h2>
             </div>
@@ -40,9 +42,8 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
             <!-- Skills pills -->
             <div class="flex flex-wrap gap-3 pt-8" appReveal [delay]="600">
               <div *ngFor="let skill of highlightSkills"
-                   class="px-5 py-2 rounded-full cursor-default transition-colors"
-                   style="border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03);">
-                <span class="text-xs uppercase tracking-widest text-white/70">{{ skill }}</span>
+                   class="px-5 py-2 rounded-none cursor-default transition-colors border border-white/20 bg-white/5 hover:bg-white group">
+                <span class="text-xs uppercase tracking-widest text-white/70 group-hover:text-black">{{ skill }}</span>
               </div>
             </div>
           </div>

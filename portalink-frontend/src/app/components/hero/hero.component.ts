@@ -20,7 +20,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
 
           <h1 class="text-5xl sm:text-7xl md:text-9xl font-headline leading-none mb-6 md:mb-8" style="letter-spacing: -0.04em;">
             <span class="block overflow-hidden">
-              <span class="block animate-fade-up text-accent-cyan" style="animation-delay: 1.0s;">{{ data?.subtitle || 'SANTIAGO' }}</span>
+              <span class="block animate-fade-up text-white/80" style="animation-delay: 1.0s;">{{ data?.subtitle || 'SANTIAGO' }}</span>
             </span>
           </h1>
           
@@ -50,15 +50,19 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
             (mousemove)="onImageMove($event)"
             (mouseleave)="onImageLeave()">
 
-            <div class="absolute -inset-4 rounded-3xl -z-10" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,245,255,0.1);"></div>
+            <div class="absolute -inset-4 rounded-none -z-10" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.15);">
+              <!-- Architectural corner markers -->
+              <div class="absolute top-2 left-2 w-3 h-3 border-t border-l border-white/50"></div>
+              <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-white/50"></div>
+            </div>
 
-            <div class="w-full h-full rounded-2xl overflow-hidden border shadow-xl group" style="border-color: rgba(0,0,0,0.10);">
+            <div class="w-full h-full rounded-none overflow-hidden border group" style="border-color: rgba(255,255,255,0.2);">
               <img
                 [src]="data?.backgroundImage || 'hero-portrait.png'"
                 alt="Santiago"
-                class="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-700"
+                class="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-700 grayscale brightness-75 contrast-125"
               />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
             </div>
 
           </div>
@@ -67,7 +71,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
 
       <div class="hidden md:flex absolute bottom-10 left-1/2 -translate-x-1/2 flex-col items-center gap-2" style="opacity: 0.35;">
         <span class="text-[10px] uppercase tracking-[0.3em] text-white">Scroll</span>
-        <div class="w-px h-12 bg-gradient-to-b from-accent-cyan to-transparent"></div>
+        <div class="w-px h-12 bg-gradient-to-b from-white to-transparent"></div>
       </div>
     </section>
   `,
@@ -92,7 +96,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
       position: absolute;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: var(--accent-cyan);
+      background: #FFFFFF;
       transform: translateY(100%);
       transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       z-index: 0;
