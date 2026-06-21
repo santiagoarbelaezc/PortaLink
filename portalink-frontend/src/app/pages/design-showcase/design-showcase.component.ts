@@ -86,7 +86,7 @@ interface DesignSlide {
         </div>
 
         <!-- Video Side -->
-        <div class="flex-[1.5] w-full min-h-[300px] md:min-h-[600px] relative rounded-[2.5rem] overflow-hidden shadow-[0_0_80px_rgba(0,245,255,0.15)] border border-white/10 group">
+        <div class="flex-[1.2] w-full min-h-[300px] md:min-h-[600px] relative rounded-[2.5rem] overflow-hidden shadow-[0_0_80px_rgba(0,245,255,0.15)] border border-white/10 group">
           <video #heroVideo [autoplay]="true" [loop]="true" [muted]="true" playsinline class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000">
             <source src="assets/videos/rotbot-design.mp4" type="video/mp4">
           </video>
