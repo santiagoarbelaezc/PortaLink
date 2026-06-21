@@ -18,7 +18,7 @@ interface DesignSlide {
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="relative h-screen bg-black text-white font-sans selection:bg-accent-cyan selection:text-black overflow-y-auto overflow-x-hidden snap-y snap-mandatory scroll-smooth custom-scrollbar">
+    <div #scrollContainer class="relative h-screen bg-black text-white font-sans selection:bg-accent-cyan selection:text-black overflow-y-auto overflow-x-hidden snap-y snap-mandatory scroll-smooth custom-scrollbar">
       
       <!-- Grid Background (Linktree style) -->
       <div class="fixed inset-0 pointer-events-none z-0" 
@@ -43,36 +43,41 @@ interface DesignSlide {
       </nav>
 
       <!-- HERO BANNER SECTION (Top) -->
-      <section id="hero-section" class="relative h-screen w-full snap-start flex flex-col md:flex-row bg-transparent overflow-hidden items-stretch p-8 pt-32 md:p-16 md:pt-32 md:px-20 gap-12 md:gap-16 z-10">
+      <section id="hero-section" class="relative h-screen w-full snap-start flex flex-col md:flex-row bg-transparent overflow-hidden items-center p-8 pt-32 md:p-16 md:pt-32 md:px-20 gap-12 md:gap-16 z-10">
         <!-- Text Content Side -->
         <div class="flex-1 flex flex-col justify-center text-left z-10 w-full py-8 md:pl-8">
-          <span class="text-cyan-400 font-mono text-[12px] md:text-[14px] tracking-[0.5em] mb-6">ROTBOT.AI // SYSTEMS</span>
-          <h2 class="text-6xl md:text-[110px] font-headline uppercase leading-[0.8] tracking-tighter text-white mb-10">
-            Sistemas<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-white">Funcionales</span>
+          <div class="flex items-center gap-4 mb-6">
+            <div class="h-px w-10 bg-cyan-400/40"></div>
+            <span class="text-cyan-400 font-mono text-[12px] md:text-[14px] tracking-[0.5em] uppercase">ROTBOT.AI // SYSTEMS</span>
+          </div>
+          
+          <h2 class="text-6xl md:text-[110px] uppercase leading-[0.8] tracking-tighter text-white pr-4 mb-10" style="font-family: 'Roboto', sans-serif !important; font-weight: 800;">
+            Sistemas<br>Funcionales
           </h2>
           
-          <div class="space-y-5 mb-12">
-             <p class="text-white/80 text-base md:text-lg font-light flex items-center gap-4">
-                <span class="w-2 h-2 bg-cyan-400 rounded-full"></span>
-                Sistemas para mi negocio
-             </p>
-             <p class="text-white/80 text-base md:text-lg font-light flex items-center gap-4">
-                <span class="w-2 h-2 bg-cyan-400 rounded-full"></span>
-                Gestión de ventas de tu negocio
-             </p>
-             <p class="text-white/80 text-base md:text-lg font-light flex items-center gap-4">
-                <span class="w-2 h-2 bg-cyan-400 rounded-full"></span>
-                E-commerce para vender en línea
-             </p>
-             <p class="text-white/80 text-base md:text-lg font-light flex items-center gap-4">
-                <span class="w-2 h-2 bg-cyan-400 rounded-full"></span>
-                Personalizar tu propia landing page
-             </p>
-             <p class="text-white/80 text-base md:text-lg font-light flex items-center gap-4">
-                <span class="w-2 h-2 bg-cyan-400 rounded-full"></span>
-                Integración de tu propia IA
-             </p>
-          </div>
+          <!-- Premium bullet list (Normal description) -->
+          <ul class="space-y-5 mb-12">
+             <li class="text-white/80 text-base md:text-lg font-light flex items-center gap-4 hover:text-white transition-colors duration-300">
+                <span class="w-1.5 h-1.5 bg-cyan-400 rounded-full shadow-[0_0_8px_#00f5ff]"></span>
+                <span>Sistemas para mi negocio</span>
+             </li>
+             <li class="text-white/80 text-base md:text-lg font-light flex items-center gap-4 hover:text-white transition-colors duration-300">
+                <span class="w-1.5 h-1.5 bg-cyan-400 rounded-full shadow-[0_0_8px_#00f5ff]"></span>
+                <span>Gestión de ventas de tu negocio</span>
+             </li>
+             <li class="text-white/80 text-base md:text-lg font-light flex items-center gap-4 hover:text-white transition-colors duration-300">
+                <span class="w-1.5 h-1.5 bg-cyan-400 rounded-full shadow-[0_0_8px_#00f5ff]"></span>
+                <span>E-commerce para vender en línea</span>
+             </li>
+             <li class="text-white/80 text-base md:text-lg font-light flex items-center gap-4 hover:text-white transition-colors duration-300">
+                <span class="w-1.5 h-1.5 bg-cyan-400 rounded-full shadow-[0_0_8px_#00f5ff]"></span>
+                <span>Personalizar tu propia landing page</span>
+             </li>
+             <li class="text-white/80 text-base md:text-lg font-light flex items-center gap-4 hover:text-white transition-colors duration-300">
+                <span class="w-1.5 h-1.5 bg-cyan-400 rounded-full shadow-[0_0_8px_#00f5ff]"></span>
+                <span>Integración de tu propia IA</span>
+             </li>
+          </ul>
 
           <div class="flex flex-wrap gap-4 items-center">
             <button class="w-fit px-10 py-5 bg-white text-black font-bold uppercase tracking-[0.2em] text-xs rounded-full hover:bg-cyan-400 hover:text-black transition-all duration-500 flex items-center gap-3 group/btn">
@@ -85,13 +90,13 @@ interface DesignSlide {
           </div>
         </div>
 
-        <!-- Video Side -->
+        <!-- Video Side (Reverted to original min-h dimensions) -->
         <div class="flex-[1.2] w-full min-h-[300px] md:min-h-[600px] relative rounded-[2.5rem] overflow-hidden shadow-[0_0_80px_rgba(0,245,255,0.15)] border border-white/10 group">
           <video #heroVideo [autoplay]="true" [loop]="true" [muted]="true" playsinline class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000">
             <source src="assets/videos/rotbot-design.mp4" type="video/mp4">
           </video>
           <div class="absolute inset-0 bg-gradient-to-tr from-cyan-500/10 to-transparent pointer-events-none"></div>
-          <div class="absolute inset-0 rounded-[2rem] ring-1 ring-inset ring-white/10 pointer-events-none"></div>
+          <div class="absolute inset-0 rounded-[2.5rem] ring-1 ring-inset ring-white/10 pointer-events-none"></div>
         </div>
       </section>
 
@@ -104,7 +109,7 @@ interface DesignSlide {
         <section 
           *ngFor="let design of designs; let i = index" 
           [id]="design.id"
-          class="relative h-full w-full flex-shrink-0 snap-start flex items-center justify-center p-4 pt-32 md:p-20 md:pt-40"
+          class="relative h-full w-full flex-shrink-0 snap-start flex items-center justify-center p-4 pt-24 pb-36 md:p-20 md:pt-32 md:pb-48"
         >
           <!-- Mockup Browser Frame -->
           <div class="relative w-full max-w-5xl aspect-[16/10] md:aspect-video rounded-[32px] overflow-hidden shadow-[0_80px_150px_-30px_rgba(0,0,0,0.7)] border border-white/10 animate-fade-in-up z-10">
@@ -207,7 +212,7 @@ interface DesignSlide {
                 <div class="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-300/30 rounded-full blur-[100px]"></div>
                 <div class="flex gap-8 mb-12 z-10">
                    <div class="w-24 h-24 bg-blue-500 rounded-3xl shadow-[inset_-8px_-8px_15px_rgba(0,0,0,0.2),8px_8px_15px_rgba(255,255,255,0.5)] rotate-12"></div>
-                   <div class="w-24 h-24 bg-yellow-400 rounded-full shadow-[inset_-8px_-8px_15px_rgba(0,0,0,0.2),8px_8px_15_rgba(255,255,255,0.5)] -rotate-12"></div>
+                   <div class="w-24 h-24 bg-yellow-400 rounded-full shadow-[inset_-8px_-8px_15_rgba(255,255,255,0.5)] -rotate-12"></div>
                 </div>
                 <h2 class="text-7xl md:text-[140px] font-black text-[#1a1a1a] tracking-tighter leading-[0.8] text-center z-10">Bubbly<br><span class="text-blue-600">Studio</span></h2>
               </div>
@@ -267,20 +272,21 @@ interface DesignSlide {
 
             </div>
 
-            <!-- Overlay Controls -->
+            <!-- Overlay Controls (Sharper Linktree architectural card layout) -->
             <div class="absolute bottom-12 left-12 right-12 flex justify-between items-end pointer-events-none z-[110]">
-              <div class="bg-black/80 backdrop-blur-xl p-8 rounded-[32px] border border-white/10 max-w-sm pointer-events-auto shadow-2xl translate-y-4 animate-reveal">
-                <div class="flex items-center gap-3 mb-4">
-                  <div class="h-2 w-2 rounded-full bg-accent-cyan animate-pulse"></div>
-                  <h4 class="text-white font-headline uppercase text-lg tracking-widest">{{ design.name }}</h4>
+              <div class="bg-black/90 backdrop-blur-2xl p-6 rounded-none border border-white/20 max-w-xs pointer-events-auto shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] relative group/card">
+                <!-- Corner architectural ticks -->
+                <div class="absolute top-2 left-2 w-3 h-3 border-t border-l border-white/40 group-hover/card:border-white transition-colors duration-500"></div>
+                <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-white/40 group-hover/card:border-white transition-colors duration-500"></div>
+
+                <div class="flex items-center gap-3 mb-3">
+                  <div class="h-1.5 w-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#00f5ff] animate-pulse"></div>
+                  <h4 class="text-white font-headline uppercase text-base tracking-widest">{{ design.name }}</h4>
                 </div>
-                <p class="text-[11px] text-white/50 leading-relaxed mb-6 font-light">{{ design.description }}</p>
-                <button (click)="useDesign()" class="group w-full py-4 bg-white text-black text-[10px] font-black uppercase rounded-2xl hover:bg-accent-cyan transition-all duration-500 flex items-center justify-center gap-3">
-                  <span>Implementar este diseño</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="transition-transform group-hover:translate-x-1">
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                    <polyline points="12 5 19 12 12 19"></polyline>
-                  </svg>
+                <p class="text-[10px] text-white/50 leading-relaxed mb-5 font-light">{{ design.description }}</p>
+                <button (click)="useDesign()" class="group/btn w-full py-3 bg-white hover:bg-cyan-400 text-black text-[9px] font-bold uppercase tracking-widest transition-all duration-500 flex items-center justify-center gap-2">
+                  <span>Implementar diseño</span>
+                  <span class="text-xs transition-transform group-hover/btn:translate-x-1">↗</span>
                 </button>
               </div>
             </div>
@@ -290,8 +296,8 @@ interface DesignSlide {
         </main>
       </section>
 
-      <!-- Carousel Navigation UI -->
-      <div *ngIf="isCarouselVisible" class="fixed bottom-12 left-1/2 -translate-x-1/2 z-[150] flex flex-col items-center gap-6 pointer-events-auto animate-reveal">
+      <!-- Carousel Navigation UI (Linktree sharp architectural border style) -->
+      <div *ngIf="isCarouselVisible" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[150] flex flex-col items-center gap-6 pointer-events-auto animate-reveal">
         <div class="flex gap-2">
           <button 
             *ngFor="let d of designs; let i = index" 
@@ -301,16 +307,19 @@ interface DesignSlide {
           ></button>
         </div>
         
-        <div class="flex items-center gap-10 bg-black/80 backdrop-blur-3xl px-12 py-5 rounded-[2rem] border border-white/10">
-          <button (click)="prev()" class="text-white/30 hover:text-white transition-all hover:scale-125 hover:-translate-x-1">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+        <div class="flex items-center gap-10 bg-black/95 backdrop-blur-3xl px-10 py-4 rounded-none border border-white/20 relative group/nav">
+          <div class="absolute top-1.5 left-1.5 w-2 h-2 border-t border-l border-white/30"></div>
+          <div class="absolute bottom-1.5 right-1.5 w-2 h-2 border-b border-r border-white/30"></div>
+
+          <button (click)="prev()" class="text-white/40 hover:text-white transition-all hover:scale-110 hover:-translate-x-0.5">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
           </button>
-          <div class="flex flex-col items-center min-w-[80px]">
-            <span class="text-[10px] font-bold tracking-[0.4em] text-cyan-400 mb-1">DESIGN</span>
-            <span class="text-xs font-mono text-white/50 tracking-widest">{{ activeIndex + 1 }} / {{ designs.length }}</span>
+          <div class="flex flex-col items-center min-w-[70px]">
+            <span class="text-[9px] font-bold tracking-[0.3em] text-white/50 mb-0.5">DESIGN</span>
+            <span class="text-[11px] font-mono text-cyan-400 tracking-widest font-bold">{{ activeIndex + 1 }} / {{ designs.length }}</span>
           </div>
-          <button (click)="next()" class="text-white/30 hover:text-white transition-all hover:scale-125 hover:translate-x-1">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+          <button (click)="next()" class="text-white/40 hover:text-white transition-all hover:scale-110 hover:translate-x-0.5">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
           </button>
         </div>
       </div>
@@ -329,7 +338,7 @@ interface DesignSlide {
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     
-    .font-headline { font-family: 'Bebas Neue', sans-serif; }
+    .font-headline { font-family: 'Roboto', sans-serif; }
     .font-serif { font-family: 'DM Serif Display', serif; }
     .text-gold { color: var(--gold); }
     .bg-gold { background-color: var(--gold); }
@@ -374,6 +383,7 @@ interface DesignSlide {
 export class DesignShowcaseComponent implements OnInit, AfterViewInit {
   @ViewChild('carousel') carousel!: ElementRef;
   @ViewChild('heroVideo') heroVideo!: ElementRef<HTMLVideoElement>;
+  @ViewChild('scrollContainer') scrollContainer!: ElementRef;
 
   designs: DesignSlide[] = [
     { id: 'elegant', name: 'The Silk Portfolio', description: 'Mesh gradients dinámicos, tipografía serif fluida y estética editorial de alta gama.', styleTag: 'elegant', bgClass: 'bg-[#0A0A0A]', textClass: 'text-white', accentClass: 'bg-gold', fontClass: 'font-serif' },
@@ -402,15 +412,22 @@ export class DesignShowcaseComponent implements OnInit, AfterViewInit {
       this.updateActiveIndex();
     });
 
+    // Play immediately on load
+    if (this.heroVideo && this.heroVideo.nativeElement) {
+      this.heroVideo.nativeElement.play().catch(e => console.log('Autoplay blocked:', e));
+    }
+
     // Intersection Observer to pause video when scrolling away and show navigation UI
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.target.id === 'hero-section') {
           if (this.heroVideo && this.heroVideo.nativeElement) {
             if (entry.isIntersecting) {
-              this.heroVideo.nativeElement.play();
+              this.heroVideo.nativeElement.play().catch(err => {});
             } else {
-              this.heroVideo.nativeElement.pause();
+              if (this.scrollContainer && this.scrollContainer.nativeElement && this.scrollContainer.nativeElement.scrollTop > 100) {
+                this.heroVideo.nativeElement.pause();
+              }
             }
           }
         }
@@ -419,7 +436,10 @@ export class DesignShowcaseComponent implements OnInit, AfterViewInit {
           this.cdr.detectChanges();
         }
       });
-    }, { threshold: 0.1 });
+    }, { 
+      root: this.scrollContainer.nativeElement,
+      threshold: 0.1 
+    });
 
     const heroSection = document.getElementById('hero-section');
     if (heroSection) observer.observe(heroSection);
