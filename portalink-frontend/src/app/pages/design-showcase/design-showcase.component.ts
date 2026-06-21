@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 
@@ -107,7 +107,7 @@ interface DesignSlide {
           class="relative h-full w-full flex-shrink-0 snap-start flex items-center justify-center p-4 pt-32 md:p-20 md:pt-40"
         >
           <!-- Mockup Browser Frame -->
-          <div class="relative w-full max-w-[1400px] aspect-[16/10] md:aspect-[16/9] rounded-[32px] overflow-hidden shadow-[0_80px_150px_-30px_rgba(0,0,0,0.7)] border border-white/10 animate-fade-in-up z-10">
+          <div class="relative w-full max-w-5xl aspect-[16/10] md:aspect-video rounded-[32px] overflow-hidden shadow-[0_80px_150px_-30px_rgba(0,0,0,0.7)] border border-white/10 animate-fade-in-up z-10">
             
             <!-- Browser Header -->
             <div class="h-12 bg-[#0c0c0c] flex items-center px-8 gap-3 border-b border-white/5 relative z-50">
@@ -392,7 +392,7 @@ export class DesignShowcaseComponent implements OnInit, AfterViewInit {
   activeIndex = 0;
   isCarouselVisible = false;
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
   }
@@ -416,6 +416,7 @@ export class DesignShowcaseComponent implements OnInit, AfterViewInit {
         }
         if (entry.target.id === 'projects-carousel') {
           this.isCarouselVisible = entry.isIntersecting;
+          this.cdr.detectChanges();
         }
       });
     }, { threshold: 0.1 });
