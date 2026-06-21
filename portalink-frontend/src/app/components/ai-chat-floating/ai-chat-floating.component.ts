@@ -10,18 +10,16 @@ import { FormsModule } from '@angular/forms';
   imports: [CommonModule, FormsModule],
   template: `
     <!-- Floating Container -->
-    <div class="fixed bottom-8 right-0 z-[500]">
+    <div class="fixed bottom-8 -right-8 z-[500]">
       
       <!-- Open Chat Button -->
       <button 
         *ngIf="!isOpen"
         (click)="toggleChat()"
-        class="group relative flex h-32 w-28 items-center justify-end bg-transparent transition-all duration-500 hover:scale-110 active:scale-95 border-none overflow-visible shadow-none origin-right"
+        class="group relative flex h-[320px] w-[220px] items-center justify-end bg-transparent transition-all duration-500 hover:scale-110 active:scale-95 border-none overflow-visible shadow-none origin-right"
       >
         <div class="relative flex items-center justify-end w-full h-full">
-          <!-- Technological Glow (Cyan) -->
-          <div class="absolute inset-0 bg-cyan-500/10 blur-xl group-hover:bg-cyan-400/30 transition-all rounded-l-full"></div>
-          <img src="assets/images/robot-izquierda.png" class="h-full w-auto object-contain object-right relative z-10 drop-shadow-[0_0_15px_rgba(34,211,238,0.4)] translate-x-2" alt="Rotbot">
+          <img src="assets/images/robot-izquierda.png" class="h-full w-auto object-contain object-right relative z-10 translate-x-10" alt="Rotbot">
         </div>
       </button>
 
