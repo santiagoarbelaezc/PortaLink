@@ -41,6 +41,27 @@ declare var AOS: any;
 
             <div class="lt-links-container" data-aos="fade-up">
 
+              <!-- Portafolio Main CTA -->
+              <a routerLink="/portfolio" class="lt-card-main group lt-item-portfolio">
+                <div class="flex items-center gap-6">
+                  <div class="lt-icon-wrapper">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/80 group-hover:text-white transition-colors">
+                      <rect x="2" y="7" width="20" height="14" rx="0" ry="0"></rect>
+                      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                    </svg>
+                  </div>
+                  <div class="lt-card-body">
+                    <h3 class="text-2xl md:text-3xl font-headline uppercase text-white">Proyectos</h3>
+                    <p class="text-[8px] uppercase tracking-[0.3em] text-white/50 mt-1">Ingeniería & Desarrollo</p>
+                  </div>
+                </div>
+                <div class="lt-action-line hidden md:flex">
+                  <div class="w-10 h-px bg-white/30 group-hover:w-20 group-hover:bg-white transition-all duration-700"></div>
+                  <span class="text-white/30 group-hover:text-white transition-colors text-xl">↗</span>
+                </div>
+                <span class="md:hidden text-white/30 group-hover:text-white transition-colors">↗</span>
+              </a>
+
               <!-- TikTok -->
               <a href="https://www.tiktok.com/@santiagoarbelaezc" target="_blank" class="lt-card-social group lt-item-tiktok">
                 <div class="flex justify-between w-full mb-4">
@@ -69,27 +90,6 @@ declare var AOS: any;
                   <h4 class="text-base md:text-xl font-headline uppercase text-white/50 group-hover:text-white transition-colors">Instagram</h4>
                   <span class="text-[8px] uppercase tracking-[0.2em] text-white/30 group-hover:text-white transition-colors mt-1 block">Photos</span>
                 </div>
-              </a>
-
-              <!-- Portafolio Main CTA -->
-              <a routerLink="/portfolio" class="lt-card-main group lt-item-portfolio">
-                <div class="flex items-center gap-6">
-                  <div class="lt-icon-wrapper">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/80 group-hover:text-white transition-colors">
-                      <rect x="2" y="7" width="20" height="14" rx="0" ry="0"></rect>
-                      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-                    </svg>
-                  </div>
-                  <div class="lt-card-body">
-                    <h3 class="text-2xl md:text-3xl font-headline uppercase text-white">Proyectos</h3>
-                    <p class="text-[8px] uppercase tracking-[0.3em] text-white/50 mt-1">Ingeniería & Desarrollo</p>
-                  </div>
-                </div>
-                <div class="lt-action-line hidden md:flex">
-                  <div class="w-10 h-px bg-white/30 group-hover:w-20 group-hover:bg-white transition-all duration-700"></div>
-                  <span class="text-white/30 group-hover:text-white transition-colors text-xl">↗</span>
-                </div>
-                <span class="md:hidden text-white/30 group-hover:text-white transition-colors">↗</span>
               </a>
 
               <!-- WhatsApp -->
@@ -186,9 +186,10 @@ declare var AOS: any;
       background: var(--bg-dark);
       display: flex;
       justify-content: center;
-      align-items: flex-start;
+      align-items: center;
       padding: 60px 40px;
-      overflow-y: auto;
+      overflow: hidden;
+      height: 100vh;
       position: relative;
     }
 
@@ -233,7 +234,14 @@ declare var AOS: any;
       display: grid;
       grid-template-columns: 1fr 1.4fr;
       gap: 80px;
-      align-items: flex-start;
+      align-items: stretch;
+    }
+    
+    .lt-col-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
     }
 
     /* TITLE ACCENT CLASSES */
@@ -298,17 +306,17 @@ declare var AOS: any;
 
     /* CARDS */
     .lt-links-container { 
-      margin-top: 60px; 
+      margin-top: 0; 
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 16px;
     }
 
-    .lt-item-portfolio { grid-column: span 2; order: 1; }
-    .lt-item-tiktok { grid-column: span 1; order: 2; }
-    .lt-item-insta { grid-column: span 1; order: 3; }
-    .lt-item-wa { grid-column: span 1; order: 4; }
-    .lt-item-linkedin { grid-column: span 1; order: 5; }
+    .lt-item-portfolio { grid-column: span 2; }
+    .lt-item-tiktok { grid-column: span 1; }
+    .lt-item-insta { grid-column: span 1; }
+    .lt-item-wa { grid-column: span 1; }
+    .lt-item-linkedin { grid-column: span 1; }
 
     .lt-card-main {
       display: flex;
@@ -401,12 +409,12 @@ declare var AOS: any;
         margin-top: 40px;
       }
 
-      /* Mobile Order: 2 links, 1 link, 2 links */
-      .lt-item-tiktok { order: 1; grid-column: span 1; }
-      .lt-item-insta { order: 2; grid-column: span 1; }
-      .lt-item-portfolio { order: 3; grid-column: span 2; }
-      .lt-item-wa { order: 4; grid-column: span 1; }
-      .lt-item-linkedin { order: 5; grid-column: span 1; }
+      /* Mobile grid layout */
+      .lt-item-portfolio { grid-column: span 2; }
+      .lt-item-tiktok { grid-column: span 1; }
+      .lt-item-insta { grid-column: span 1; }
+      .lt-item-wa { grid-column: span 1; }
+      .lt-item-linkedin { grid-column: span 1; }
       
       .lt-card-social { 
         padding: 16px 20px; 
