@@ -73,7 +73,7 @@ import { FormsModule } from '@angular/forms';
               </p>
               <p class="mb-2 text-cyan-400/80">Puedo ayudarte a implementar:</p>
               <ul class="text-left list-disc list-inside space-y-1.5 text-[13px] text-white/60 mx-auto w-fit">
-                <li>Sistemas para restaurantes.</li>
+                <li>Sistemas para mi negocio.</li>
                 <li>Software para llevar las ventas de tu negocio.</li>
                 <li>E-commerce para vender en línea.</li>
                 <li>Personalización de tu propia landing page.</li>

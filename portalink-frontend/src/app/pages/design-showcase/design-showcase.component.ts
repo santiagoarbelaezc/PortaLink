@@ -18,19 +18,19 @@ interface DesignSlide {
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="relative min-h-screen bg-black text-white font-sans selection:bg-accent-cyan selection:text-black overflow-hidden">
+    <div class="relative h-screen bg-black text-white font-sans selection:bg-accent-cyan selection:text-black overflow-y-auto overflow-x-hidden snap-y snap-mandatory scroll-smooth custom-scrollbar">
       
       <!-- Grid Background (Linktree style) -->
-      <div class="absolute inset-0 pointer-events-none z-0" 
+      <div class="fixed inset-0 pointer-events-none z-0" 
            style="background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px); background-size: 40px 40px; background-position: center center; mask-image: radial-gradient(ellipse at 50% 50%, black 10%, transparent 80%); -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 10%, transparent 80%);">
       </div>
       <!-- Vertical line accent -->
-      <div class="absolute top-0 bottom-0 left-1/2 w-[1px] pointer-events-none z-0 hidden md:block -translate-x-1/2" style="background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.05) 15%, rgba(255, 255, 255, 0.05) 85%, transparent);"></div>
+      <div class="fixed top-0 bottom-0 left-1/2 w-[1px] pointer-events-none z-0 hidden md:block -translate-x-1/2" style="background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.05) 15%, rgba(255, 255, 255, 0.05) 85%, transparent);"></div>
 
       <!-- Subtle Glow (Removed to match linktree pure black) -->
 
       <!-- Top Navigation -->
-      <nav class="absolute top-0 left-0 right-0 z-[100] flex items-start md:items-center justify-between p-8 md:p-12 pointer-events-auto">
+      <nav class="fixed top-0 left-0 right-0 z-[100] flex items-start md:items-center justify-between px-8 py-6 md:px-12 md:py-8 pointer-events-auto bg-gradient-to-b from-black/80 to-transparent">
         <a routerLink="/" class="group flex items-center gap-3 text-white/50 transition-colors hover:text-white">
           <div class="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 transition-all group-hover:scale-110 group-hover:border-white/30">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -40,30 +40,74 @@ interface DesignSlide {
           </div>
           <span class="text-[10px] uppercase tracking-[0.3em] font-bold hidden md:inline-block">Volver</span>
         </a>
-        <div class="text-right flex flex-col items-end">
-          <div class="flex items-center justify-end gap-4 mb-4">
-            <span class="text-[10px] uppercase tracking-[0.4em] font-bold text-white/50">PortaLink</span>
-            <div class="h-px w-10 bg-white/50"></div>
-          </div>
-          <h1 class="text-4xl md:text-7xl font-headline uppercase leading-[0.9] tracking-tighter text-right">
-            <span class="text-white">Design</span><br/>
-            <span class="text-white/50">Showcase</span>
-          </h1>
-        </div>
       </nav>
 
-      <!-- Carousel Container -->
-      <main 
-        #carousel
-        class="flex h-screen w-full snap-x snap-mandatory overflow-x-auto scroll-smooth no-scrollbar"
-      >
+      <!-- HERO BANNER SECTION (Top) -->
+      <section class="relative h-screen w-full snap-start flex flex-col md:flex-row bg-transparent overflow-hidden items-stretch p-8 pt-32 md:p-16 md:pt-32 md:px-20 gap-12 md:gap-16 z-10">
+        <!-- Text Content Side -->
+        <div class="flex-1 flex flex-col justify-center text-left z-10 w-full py-8 md:pl-8">
+          <span class="text-cyan-400 font-mono text-[12px] md:text-[14px] tracking-[0.5em] mb-6">ROTBOT.AI // SYSTEMS</span>
+          <h2 class="text-6xl md:text-[110px] font-headline uppercase leading-[0.8] tracking-tighter text-white mb-10">
+            Sistemas<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-white">Funcionales</span>
+          </h2>
+          
+          <div class="space-y-5 mb-12">
+             <p class="text-white/80 text-base md:text-lg font-light flex items-center gap-4">
+                <span class="w-2 h-2 bg-cyan-400 rounded-full"></span>
+                Sistemas para mi negocio
+             </p>
+             <p class="text-white/80 text-base md:text-lg font-light flex items-center gap-4">
+                <span class="w-2 h-2 bg-cyan-400 rounded-full"></span>
+                Gestión de ventas de tu negocio
+             </p>
+             <p class="text-white/80 text-base md:text-lg font-light flex items-center gap-4">
+                <span class="w-2 h-2 bg-cyan-400 rounded-full"></span>
+                E-commerce para vender en línea
+             </p>
+             <p class="text-white/80 text-base md:text-lg font-light flex items-center gap-4">
+                <span class="w-2 h-2 bg-cyan-400 rounded-full"></span>
+                Personalizar tu propia landing page
+             </p>
+             <p class="text-white/80 text-base md:text-lg font-light flex items-center gap-4">
+                <span class="w-2 h-2 bg-cyan-400 rounded-full"></span>
+                Integración de tu propia IA
+             </p>
+          </div>
+
+          <div class="flex flex-wrap gap-4 items-center">
+            <button class="w-fit px-10 py-5 bg-white text-black font-bold uppercase tracking-[0.2em] text-xs rounded-full hover:bg-cyan-400 hover:text-black transition-all duration-500 flex items-center gap-3 group/btn">
+              <span>Crear mi proyecto</span>
+            </button>
+            <button (click)="scrollToProjects()" class="w-fit px-10 py-5 bg-transparent border border-white/20 text-white font-bold uppercase tracking-[0.2em] text-xs rounded-full hover:bg-white/10 transition-all duration-500 flex items-center gap-3 group/btn2">
+              <span>Ver Diseños</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="group-hover/btn2:translate-y-1 transition-transform"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Video Side -->
+        <div class="flex-[1.5] w-full min-h-[300px] md:min-h-[600px] relative rounded-[2.5rem] overflow-hidden shadow-[0_0_80px_rgba(0,245,255,0.15)] border border-white/10 group">
+          <video #heroVideo [autoplay]="true" [loop]="true" [muted]="true" playsinline class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000">
+            <source src="assets/videos/rotbot-design.mp4" type="video/mp4">
+          </video>
+          <div class="absolute inset-0 bg-gradient-to-tr from-cyan-500/10 to-transparent pointer-events-none"></div>
+          <div class="absolute inset-0 rounded-[2rem] ring-1 ring-inset ring-white/10 pointer-events-none"></div>
+        </div>
+      </section>
+
+      <!-- Carousel Container (Bottom) -->
+      <section id="projects-carousel" class="h-screen w-full snap-start relative z-10 flex flex-col">
+        <main 
+          #carousel
+          class="flex h-full w-full snap-x snap-mandatory overflow-x-auto scroll-smooth no-scrollbar"
+        >
         <section 
           *ngFor="let design of designs; let i = index" 
           [id]="design.id"
           class="relative h-full w-full flex-shrink-0 snap-start flex items-center justify-center p-4 pt-32 md:p-20 md:pt-40"
         >
           <!-- Mockup Browser Frame -->
-          <div class="relative w-full max-w-5xl aspect-[16/10] md:aspect-video rounded-[32px] overflow-hidden shadow-[0_80px_150px_-30px_rgba(0,0,0,0.7)] border border-white/10 animate-fade-in-up z-10">
+          <div class="relative w-full max-w-[1400px] aspect-[16/10] md:aspect-[16/9] rounded-[32px] overflow-hidden shadow-[0_80px_150px_-30px_rgba(0,0,0,0.7)] border border-white/10 animate-fade-in-up z-10">
             
             <!-- Browser Header -->
             <div class="h-12 bg-[#0c0c0c] flex items-center px-8 gap-3 border-b border-white/5 relative z-50">
@@ -243,10 +287,11 @@ interface DesignSlide {
 
           </div>
         </section>
-      </main>
+        </main>
+      </section>
 
-      <!-- Carousel Navigation UI -->
-      <div class="fixed bottom-12 left-1/2 -translate-x-1/2 z-[150] flex flex-col items-center gap-8">
+      <!-- Carousel Navigation UI (fixed to bottom right for elegance, or centered) -->
+      <div class="fixed bottom-12 left-1/2 -translate-x-1/2 z-[150] flex flex-col items-center gap-8 pointer-events-auto">
         <div class="flex gap-3">
           <button 
             *ngFor="let d of designs; let i = index" 
@@ -277,6 +322,10 @@ interface DesignSlide {
       --accent-cyan: #00F5FF;
       --gold: #C5A059;
     }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     
@@ -324,17 +373,9 @@ interface DesignSlide {
 })
 export class DesignShowcaseComponent implements OnInit, AfterViewInit {
   @ViewChild('carousel') carousel!: ElementRef;
+  @ViewChild('heroVideo') heroVideo!: ElementRef<HTMLVideoElement>;
 
   designs: DesignSlide[] = [
-    { id: 'elegant', name: 'The Silk Portfolio', description: 'Mesh gradients dinámicos, tipografía serif fluida y estética editorial de alta gama.', styleTag: 'elegant', bgClass: 'bg-[#0A0A0A]', textClass: 'text-white', accentClass: 'bg-gold', fontClass: 'font-serif' },
-    { id: 'minimal', name: 'Void Architecture', description: 'El poder del vacío absoluto. Tipografía masiva y espaciado matemático perfecto.', styleTag: 'minimal', bgClass: 'bg-white', textClass: 'text-black', accentClass: 'bg-black', fontClass: 'font-sans' },
-    { id: 'brutalist', name: 'Raw Energy', description: 'Neo-brutalismo puro. Sombras duras, colores vibrantes y una actitud sin filtros.', styleTag: 'brutalist', bgClass: 'bg-yellow-400', textClass: 'text-black', accentClass: 'bg-black', fontClass: 'font-sans' },
-    { id: 'retro', name: 'Synthwave Arcade', description: 'Una oda a los 80s con grids en perspectiva, scanlines y neones pulsantes.', styleTag: 'retro', bgClass: 'bg-black', textClass: 'text-white', accentClass: 'bg-pink-500', fontClass: 'font-sans' },
-    { id: 'dark', name: 'Ghost in the Shell', description: 'Cyberpunk técnico. Interfaces neurales, fuentes monoespaciadas y oscuridad absoluta.', styleTag: 'dark', bgClass: 'bg-black', textClass: 'text-[#00FF41]', accentClass: 'bg-[#00FF41]', fontClass: 'font-mono' },
-    { id: 'colorful', name: 'Bubbly Studio', description: 'Claymorphism y formas 3D suaves. Una explosión de alegría visual y optimismo.', styleTag: 'colorful', bgClass: 'bg-pink-100', textClass: 'text-blue-600', accentClass: 'bg-yellow-500', fontClass: 'font-sans' },
-    { id: 'futuristic', name: 'Quantum HUD', description: 'Interfaces del futuro. Glassmorphism extremo, elementos rotatorios y azul eléctrico.', styleTag: 'futuristic', bgClass: 'bg-[#000510]', textClass: 'text-white', accentClass: 'bg-cyan-400', fontClass: 'font-sans' },
-    { id: 'editorial', name: 'The Master Archive', description: 'Inspirado en revistas de moda. Grillas asimétricas y tipografía de gran formato.', styleTag: 'editorial', bgClass: 'bg-white', textClass: 'text-black', accentClass: 'bg-black', fontClass: 'font-serif' },
-    { id: 'organic', name: 'Human Rhythm', description: 'Formas líquidas y tonos tierra. El diseño digital volviendo a sus raíces naturales.', styleTag: 'organic', bgClass: 'bg-[#F4F1EA]', textClass: '#4A3728', accentClass: 'bg-[#D2B48C]', fontClass: 'font-serif' },
     { id: 'luxury', name: 'Maison Prestige', description: 'Mármol, lino y oro. La cúspide de la elegancia corporativa y personal.', styleTag: 'luxury', bgClass: 'bg-[#FDFCF8]', textClass: 'text-[#1a1a1a]', accentClass: 'bg-[#C5A059]', fontClass: 'font-serif' }
   ];
 
@@ -344,25 +385,43 @@ export class DesignShowcaseComponent implements OnInit, AfterViewInit {
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      const style = params['style'];
-      if (style) {
-        this.activeId = style;
-        setTimeout(() => this.scrollTo(style), 500);
-      }
-    });
   }
 
   ngAfterViewInit() {
     this.carousel.nativeElement.addEventListener('scroll', () => {
       this.updateActiveIndex();
     });
+
+    // Intersection Observer to pause video when scrolling away
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (this.heroVideo && this.heroVideo.nativeElement) {
+          if (entry.isIntersecting) {
+            this.heroVideo.nativeElement.play();
+          } else {
+            this.heroVideo.nativeElement.pause();
+          }
+        }
+      });
+    }, { threshold: 0.2 });
+
+    const heroSection = document.querySelector('section.snap-start');
+    if (heroSection) observer.observe(heroSection);
+  }
+
+  scrollToProjects() {
+    const projectsEl = document.getElementById('projects-carousel');
+    if (projectsEl) {
+      projectsEl.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 
   scrollTo(id: string) {
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+      this.activeId = id;
+      this.activeIndex = this.designs.findIndex(d => d.id === id);
     }
   }
 
