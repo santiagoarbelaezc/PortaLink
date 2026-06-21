@@ -18,32 +18,38 @@ interface DesignSlide {
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="min-h-screen bg-[#050505] text-white font-sans selection:bg-accent-cyan selection:text-black overflow-hidden">
+    <div class="relative min-h-screen bg-black text-white font-sans selection:bg-accent-cyan selection:text-black overflow-hidden">
       
-      <!-- Hyper-Aesthetic Background Glow -->
-      <div class="fixed inset-0 pointer-events-none">
-        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent-cyan/10 blur-[120px] rounded-full"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 blur-[120px] rounded-full"></div>
+      <!-- Grid Background (Linktree style) -->
+      <div class="absolute inset-0 pointer-events-none z-0" 
+           style="background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px); background-size: 40px 40px; background-position: center center; mask-image: radial-gradient(ellipse at 50% 50%, black 10%, transparent 80%); -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 10%, transparent 80%);">
       </div>
+      <!-- Vertical line accent -->
+      <div class="absolute top-0 bottom-0 left-1/2 w-[1px] pointer-events-none z-0 hidden md:block -translate-x-1/2" style="background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.05) 15%, rgba(255, 255, 255, 0.05) 85%, transparent);"></div>
+
+      <!-- Subtle Glow (Removed to match linktree pure black) -->
 
       <!-- Top Navigation -->
-      <nav class="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between p-8 md:p-12 bg-gradient-to-b from-black/80 to-transparent backdrop-blur-sm">
-        <a routerLink="/" class="group flex items-center gap-3 text-white/60 transition-colors hover:text-white">
+      <nav class="absolute top-0 left-0 right-0 z-[100] flex items-start md:items-center justify-between p-8 md:p-12 pointer-events-auto">
+        <a routerLink="/" class="group flex items-center gap-3 text-white/50 transition-colors hover:text-white">
           <div class="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 transition-all group-hover:scale-110 group-hover:border-white/30">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="19" y1="12" x2="5" y2="12"></line>
               <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
           </div>
-          <span class="text-[10px] uppercase tracking-[0.3em] font-bold">Volver al inicio</span>
+          <span class="text-[10px] uppercase tracking-[0.3em] font-bold hidden md:inline-block">Volver</span>
         </a>
-        <div class="text-center">
-          <h1 class="font-headline text-3xl md:text-5xl uppercase tracking-tighter leading-none">
-            Porta<span class="text-accent-cyan">Link</span> <span class="text-white/20">Showcase</span>
+        <div class="text-right flex flex-col items-end">
+          <div class="flex items-center justify-end gap-4 mb-4">
+            <span class="text-[10px] uppercase tracking-[0.4em] font-bold text-white/50">PortaLink</span>
+            <div class="h-px w-10 bg-white/50"></div>
+          </div>
+          <h1 class="text-4xl md:text-7xl font-headline uppercase leading-[0.9] tracking-tighter text-right">
+            <span class="text-white">Design</span><br/>
+            <span class="text-white/50">Showcase</span>
           </h1>
-          <p class="text-[8px] uppercase tracking-[0.5em] text-white/40 mt-2">Curated Premium Identities</p>
         </div>
-        <div class="hidden md:block w-32"></div>
       </nav>
 
       <!-- Carousel Container -->
@@ -54,10 +60,10 @@ interface DesignSlide {
         <section 
           *ngFor="let design of designs; let i = index" 
           [id]="design.id"
-          class="relative h-full w-full flex-shrink-0 snap-start flex items-center justify-center p-4 md:p-20"
+          class="relative h-full w-full flex-shrink-0 snap-start flex items-center justify-center p-4 pt-32 md:p-20 md:pt-40"
         >
           <!-- Mockup Browser Frame -->
-          <div class="relative w-full max-w-7xl aspect-[16/10] md:aspect-video rounded-[32px] overflow-hidden shadow-[0_80px_150px_-30px_rgba(0,0,0,0.7)] border border-white/10 animate-fade-in-up">
+          <div class="relative w-full max-w-5xl aspect-[16/10] md:aspect-video rounded-[32px] overflow-hidden shadow-[0_80px_150px_-30px_rgba(0,0,0,0.7)] border border-white/10 animate-fade-in-up z-10">
             
             <!-- Browser Header -->
             <div class="h-12 bg-[#0c0c0c] flex items-center px-8 gap-3 border-b border-white/5 relative z-50">

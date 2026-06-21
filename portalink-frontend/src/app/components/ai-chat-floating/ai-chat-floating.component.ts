@@ -15,6 +15,7 @@ import { FormsModule } from '@angular/forms';
       <!-- Open Chat Button -->
       <button 
         *ngIf="!isOpen"
+        [@buttonAnimation]
         (click)="toggleChat()"
         class="group relative flex h-[320px] w-[220px] items-center justify-end bg-transparent transition-all duration-500 hover:scale-110 active:scale-95 border-none overflow-visible shadow-none origin-right"
       >
@@ -27,7 +28,7 @@ import { FormsModule } from '@angular/forms';
       <div 
         *ngIf="isOpen"
         [@chatAnimation]
-        class="absolute bottom-0 right-0 w-[350px] md:w-[400px] overflow-hidden rounded-2xl border border-cyan-500/30 bg-black shadow-[0_0_40px_rgba(34,211,238,0.15)] origin-bottom-right font-sans"
+        class="absolute bottom-0 right-12 md:right-16 w-[90vw] md:w-[450px] overflow-hidden rounded-2xl border border-cyan-500/30 bg-black shadow-[0_0_40px_rgba(34,211,238,0.15)] origin-bottom-right font-sans"
       >
         <!-- Header -->
         <div class="flex items-center justify-between border-b border-cyan-500/20 bg-black px-5 py-4 relative overflow-hidden">
@@ -36,7 +37,7 @@ import { FormsModule } from '@angular/forms';
           
           <div class="flex items-center gap-3 relative z-10">
             <div class="w-8 h-8 rounded-md bg-cyan-500/10 flex items-center justify-center p-1 border border-cyan-500/30 shadow-[inset_0_0_10px_rgba(34,211,238,0.1)]">
-              <img src="assets/images/robot-izquierda.png" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]" alt="Rotbot">
+              <img src="assets/images/rotbot.png" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]" alt="Rotbot">
             </div>
             <div>
               <h3 class="font-sans text-base font-bold text-white tracking-wide leading-none">RotBot <span class="text-cyan-400 font-medium">IA</span></h3>
@@ -57,12 +58,35 @@ import { FormsModule } from '@angular/forms';
         </div>
 
         <!-- Messages Area -->
-        <div #scrollContainer class="h-[380px] overflow-y-auto p-5 space-y-6 scroll-smooth bg-black custom-scrollbar">
+        <div #scrollContainer class="h-[450px] overflow-y-auto p-5 space-y-6 scroll-smooth bg-black custom-scrollbar">
+          
+          <!-- Welcome Intro Section -->
+          <div class="flex flex-col items-center justify-center text-center pb-8 border-b border-cyan-500/10 mt-2 mb-2">
+            <div class="w-64 h-64 mb-6 relative">
+              <div class="absolute inset-0 bg-cyan-500/10 rounded-full blur-3xl"></div>
+              <img src="assets/images/rotbot.png" class="w-full h-full object-contain relative z-10 drop-shadow-[0_0_20px_rgba(34,211,238,0.2)] scale-110" alt="Rotbot Full">
+            </div>
+            <h2 class="text-2xl font-bold text-white mb-3 tracking-wide">RotBot <span class="text-cyan-400">IA</span></h2>
+            <div class="text-[14px] text-white/70 font-light leading-relaxed px-2 max-w-[95%]">
+              <p class="mb-3">
+                Soy tu asistente virtual inteligente. Más allá de explorar diseños visuales, estoy aquí para guiarte en la construcción de <strong>sistemas completamente funcionales</strong>. 
+              </p>
+              <p class="mb-2 text-cyan-400/80">Puedo ayudarte a implementar:</p>
+              <ul class="text-left list-disc list-inside space-y-1.5 text-[13px] text-white/60 mx-auto w-fit">
+                <li>Sistemas para restaurantes.</li>
+                <li>Software para llevar las ventas de tu negocio.</li>
+                <li>E-commerce para vender en línea.</li>
+                <li>Personalización de tu propia landing page.</li>
+                <li>Integración de tu propia Inteligencia Artificial.</li>
+              </ul>
+            </div>
+          </div>
+
           <div *ngFor="let msg of messages" class="flex w-full" [ngClass]="{'justify-end': msg.role === 'user', 'justify-start': msg.role === 'assistant'}">
             
             <!-- Assistant Avatar in message -->
             <div *ngIf="msg.role === 'assistant'" class="w-8 h-8 rounded-md bg-cyan-500/10 flex-shrink-0 flex items-center justify-center mr-3 p-1 border border-cyan-500/20">
-              <img src="assets/images/robot-izquierda.png" class="w-full h-full object-contain" alt="Rotbot">
+              <img src="assets/images/rotbot.png" class="w-full h-full object-contain" alt="Rotbot">
             </div>
 
             <!-- Message Bubble -->
@@ -79,7 +103,7 @@ import { FormsModule } from '@angular/forms';
           <!-- Typing Indicator -->
           <div *ngIf="isTyping" class="flex items-center gap-3 w-full">
             <div class="w-8 h-8 rounded-md bg-cyan-500/10 flex-shrink-0 flex items-center justify-center p-1 border border-cyan-500/20">
-              <img src="assets/images/robot-izquierda.png" class="w-full h-full object-contain" alt="Rotbot">
+              <img src="assets/images/rotbot.png" class="w-full h-full object-contain" alt="Rotbot">
             </div>
             <div class="flex items-center gap-1 text-cyan-400/50">
               <div class="w-1 h-3 bg-current animate-pulse"></div>
@@ -141,11 +165,20 @@ import { FormsModule } from '@angular/forms';
   animations: [
     trigger('chatAnimation', [
       transition(':enter', [
-        style({ transform: 'scale(0.95)', opacity: 0 }),
-        animate('300ms cubic-bezier(0.16, 1, 0.3, 1)', style({ transform: 'scale(1)', opacity: 1 }))
+        style({ transform: 'translateY(30px) scale(0.95)', opacity: 0 }),
+        animate('400ms cubic-bezier(0.16, 1, 0.3, 1)', style({ transform: 'translateY(0) scale(1)', opacity: 1 }))
       ]),
       transition(':leave', [
-        animate('200ms cubic-bezier(0.16, 1, 0.3, 1)', style({ transform: 'scale(0.95)', opacity: 0 }))
+        animate('300ms cubic-bezier(0.16, 1, 0.3, 1)', style({ transform: 'translateY(30px) scale(0.95)', opacity: 0 }))
+      ])
+    ]),
+    trigger('buttonAnimation', [
+      transition(':enter', [
+        style({ transform: 'translateX(100px)', opacity: 0 }),
+        animate('400ms 100ms cubic-bezier(0.16, 1, 0.3, 1)', style({ transform: 'translateX(0)', opacity: 1 }))
+      ]),
+      transition(':leave', [
+        animate('300ms cubic-bezier(0.16, 1, 0.3, 1)', style({ transform: 'translateX(100px)', opacity: 0 }))
       ])
     ])
   ]
@@ -157,7 +190,7 @@ export class AiChatFloatingComponent implements OnInit, AfterViewChecked {
   userInput = '';
   isTyping = false;
   messages: { role: 'assistant' | 'user'; content: string }[] = [
-    { role: 'assistant', content: '¡Hola! Soy Rotbot, tu asistente personal. ¿Quieres ver un estilo de portafolio específico? Prueba escribiendo "luxury", "minimal" o "brutalist".' }
+    { role: 'assistant', content: '¡Hola! Cuéntame qué tipo de sistema tienes en mente, o pregúntame cómo podemos integrar IA en tu próximo proyecto. ¿En qué te puedo ayudar hoy?' }
   ];
 
   private styleKeywords: { [key: string]: string } = {
