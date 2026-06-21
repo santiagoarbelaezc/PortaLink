@@ -10,18 +10,18 @@ import { FormsModule } from '@angular/forms';
   imports: [CommonModule, FormsModule],
   template: `
     <!-- Floating Container -->
-    <div class="fixed bottom-8 right-8 z-[500]">
+    <div class="fixed bottom-8 right-0 z-[500]">
       
       <!-- Open Chat Button -->
       <button 
         *ngIf="!isOpen"
         (click)="toggleChat()"
-        class="group relative flex h-20 w-20 items-center justify-center rounded-full bg-transparent transition-all duration-500 hover:scale-110 active:scale-95 border-none overflow-visible shadow-none"
+        class="group relative flex h-32 w-28 items-center justify-end bg-transparent transition-all duration-500 hover:scale-110 active:scale-95 border-none overflow-visible shadow-none origin-right"
       >
-        <div class="relative flex items-center justify-center w-full h-full">
+        <div class="relative flex items-center justify-end w-full h-full">
           <!-- Technological Glow (Cyan) -->
-          <div class="absolute inset-0 rounded-full bg-cyan-500/20 blur-xl group-hover:bg-cyan-400/40 transition-all"></div>
-          <img src="assets/images/rotbot4.png" class="w-full h-full object-contain relative z-10 drop-shadow-[0_0_15px_rgba(34,211,238,0.4)]" alt="Rotbot">
+          <div class="absolute inset-0 bg-cyan-500/10 blur-xl group-hover:bg-cyan-400/30 transition-all rounded-l-full"></div>
+          <img src="assets/images/robot-izquierda.png" class="h-full w-auto object-contain object-right relative z-10 drop-shadow-[0_0_15px_rgba(34,211,238,0.4)] translate-x-2" alt="Rotbot">
         </div>
       </button>
 
@@ -38,7 +38,7 @@ import { FormsModule } from '@angular/forms';
           
           <div class="flex items-center gap-3 relative z-10">
             <div class="w-8 h-8 rounded-md bg-cyan-500/10 flex items-center justify-center p-1 border border-cyan-500/30 shadow-[inset_0_0_10px_rgba(34,211,238,0.1)]">
-              <img src="assets/images/rotbot4.png" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]" alt="Rotbot">
+              <img src="assets/images/robot-izquierda.png" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]" alt="Rotbot">
             </div>
             <div>
               <h3 class="font-sans text-base font-bold text-white tracking-wide leading-none">RotBot <span class="text-cyan-400 font-medium">IA</span></h3>
@@ -64,7 +64,7 @@ import { FormsModule } from '@angular/forms';
             
             <!-- Assistant Avatar in message -->
             <div *ngIf="msg.role === 'assistant'" class="w-8 h-8 rounded-md bg-cyan-500/10 flex-shrink-0 flex items-center justify-center mr-3 p-1 border border-cyan-500/20">
-              <img src="assets/images/rotbot4.png" class="w-full h-full object-contain" alt="Rotbot">
+              <img src="assets/images/robot-izquierda.png" class="w-full h-full object-contain" alt="Rotbot">
             </div>
 
             <!-- Message Bubble -->
@@ -81,7 +81,7 @@ import { FormsModule } from '@angular/forms';
           <!-- Typing Indicator -->
           <div *ngIf="isTyping" class="flex items-center gap-3 w-full">
             <div class="w-8 h-8 rounded-md bg-cyan-500/10 flex-shrink-0 flex items-center justify-center p-1 border border-cyan-500/20">
-              <img src="assets/images/rotbot4.png" class="w-full h-full object-contain" alt="Rotbot">
+              <img src="assets/images/robot-izquierda.png" class="w-full h-full object-contain" alt="Rotbot">
             </div>
             <div class="flex items-center gap-1 text-cyan-400/50">
               <div class="w-1 h-3 bg-current animate-pulse"></div>

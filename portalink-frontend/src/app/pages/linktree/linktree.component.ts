@@ -126,12 +126,12 @@ declare var AOS: any;
           </section>
 
         </main>
-
-        <footer class="lt-footer" data-aos="fade-in">
-           <p class="lt-copy tracking-[0.3em] uppercase">© {{ currentYear }} S.A. PORTFOLIO — Digital Architecture</p>
-        </footer>
-
       </div>
+
+      <footer class="lt-footer" data-aos="fade-in">
+         <p class="lt-copy tracking-[0.3em] uppercase">© {{ currentYear }} S.A. PORTFOLIO — Digital Architecture</p>
+      </footer>
+
     </div>
 
     <!-- PWA Install Modal -->
@@ -385,12 +385,18 @@ declare var AOS: any;
 
     /* FOOTER */
     .lt-footer { 
-      margin-top: 80px; 
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 80px);
+      max-width: 1200px;
       border-top: 1px solid rgba(255,255,255,0.1); 
-      padding-top: 30px; 
+      padding-top: 20px; 
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
+      z-index: 10;
     }
     .lt-copy { font-size: 9px; color: rgba(255,255,255,0.4); letter-spacing: 0.2em; }
 
@@ -428,7 +434,15 @@ declare var AOS: any;
       
       .lt-card-main { padding: 20px; }
 
-      .lt-footer { justify-content: center; text-align: center; margin-top: 60px; }
+      .lt-footer { 
+        position: relative; 
+        bottom: auto; 
+        left: auto; 
+        transform: none; 
+        width: 100%; 
+        margin-top: 60px; 
+        padding-bottom: 20px;
+      }
     }
 
     @keyframes slide-up {
