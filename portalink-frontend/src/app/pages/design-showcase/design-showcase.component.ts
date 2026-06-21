@@ -43,7 +43,7 @@ interface DesignSlide {
       </nav>
 
       <!-- HERO BANNER SECTION (Top) -->
-      <section class="relative h-screen w-full snap-start flex flex-col md:flex-row bg-transparent overflow-hidden items-stretch p-8 pt-32 md:p-16 md:pt-32 md:px-20 gap-12 md:gap-16 z-10">
+      <section id="hero-section" class="relative h-screen w-full snap-start flex flex-col md:flex-row bg-transparent overflow-hidden items-stretch p-8 pt-32 md:p-16 md:pt-32 md:px-20 gap-12 md:gap-16 z-10">
         <!-- Text Content Side -->
         <div class="flex-1 flex flex-col justify-center text-left z-10 w-full py-8 md:pl-8">
           <span class="text-cyan-400 font-mono text-[12px] md:text-[14px] tracking-[0.5em] mb-6">ROTBOT.AI // SYSTEMS</span>
@@ -290,27 +290,27 @@ interface DesignSlide {
         </main>
       </section>
 
-      <!-- Carousel Navigation UI (fixed to bottom right for elegance, or centered) -->
-      <div class="fixed bottom-12 left-1/2 -translate-x-1/2 z-[150] flex flex-col items-center gap-8 pointer-events-auto">
-        <div class="flex gap-3">
+      <!-- Carousel Navigation UI -->
+      <div *ngIf="isCarouselVisible" class="fixed bottom-12 left-1/2 -translate-x-1/2 z-[150] flex flex-col items-center gap-6 pointer-events-auto animate-reveal">
+        <div class="flex gap-2">
           <button 
             *ngFor="let d of designs; let i = index" 
             (click)="scrollTo(d.id)"
             class="h-1.5 transition-all duration-700 rounded-full"
-            [ngClass]="activeId === d.id ? 'w-12 bg-accent-cyan' : 'w-4 bg-white/10 hover:bg-white/30'"
+            [ngClass]="activeId === d.id ? 'w-10 bg-cyan-400 shadow-[0_0_10px_rgba(0,245,255,0.5)]' : 'w-3 bg-white/20 hover:bg-white/40'"
           ></button>
         </div>
         
-        <div class="flex items-center gap-12 bg-black/60 backdrop-blur-2xl px-10 py-4 rounded-full border border-white/10 shadow-2xl">
-          <button (click)="prev()" class="text-white/30 hover:text-white transition-all hover:scale-125">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+        <div class="flex items-center gap-10 bg-black/80 backdrop-blur-3xl px-12 py-5 rounded-[2rem] border border-white/10">
+          <button (click)="prev()" class="text-white/30 hover:text-white transition-all hover:scale-125 hover:-translate-x-1">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
           </button>
-          <div class="flex flex-col items-center">
-            <span class="text-[10px] font-black tracking-[0.6em] text-accent-cyan mb-1">DESIGN</span>
-            <span class="text-xs font-mono text-white/40">{{ activeIndex + 1 }} / {{ designs.length }}</span>
+          <div class="flex flex-col items-center min-w-[80px]">
+            <span class="text-[10px] font-bold tracking-[0.4em] text-cyan-400 mb-1">DESIGN</span>
+            <span class="text-xs font-mono text-white/50 tracking-widest">{{ activeIndex + 1 }} / {{ designs.length }}</span>
           </div>
-          <button (click)="next()" class="text-white/30 hover:text-white transition-all hover:scale-125">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+          <button (click)="next()" class="text-white/30 hover:text-white transition-all hover:scale-125 hover:translate-x-1">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
           </button>
         </div>
       </div>
@@ -376,11 +376,21 @@ export class DesignShowcaseComponent implements OnInit, AfterViewInit {
   @ViewChild('heroVideo') heroVideo!: ElementRef<HTMLVideoElement>;
 
   designs: DesignSlide[] = [
+    { id: 'elegant', name: 'The Silk Portfolio', description: 'Mesh gradients dinámicos, tipografía serif fluida y estética editorial de alta gama.', styleTag: 'elegant', bgClass: 'bg-[#0A0A0A]', textClass: 'text-white', accentClass: 'bg-gold', fontClass: 'font-serif' },
+    { id: 'minimal', name: 'Void Architecture', description: 'El poder del vacío absoluto. Tipografía masiva y espaciado matemático perfecto.', styleTag: 'minimal', bgClass: 'bg-white', textClass: 'text-black', accentClass: 'bg-black', fontClass: 'font-sans' },
+    { id: 'brutalist', name: 'Raw Energy', description: 'Neo-brutalismo puro. Sombras duras, colores vibrantes y una actitud sin filtros.', styleTag: 'brutalist', bgClass: 'bg-yellow-400', textClass: 'text-black', accentClass: 'bg-black', fontClass: 'font-sans' },
+    { id: 'retro', name: 'Synthwave Arcade', description: 'Una oda a los 80s con grids en perspectiva, scanlines y neones pulsantes.', styleTag: 'retro', bgClass: 'bg-black', textClass: 'text-white', accentClass: 'bg-pink-500', fontClass: 'font-sans' },
+    { id: 'dark', name: 'Ghost in the Shell', description: 'Cyberpunk técnico. Interfaces neurales, fuentes monoespaciadas y oscuridad absoluta.', styleTag: 'dark', bgClass: 'bg-black', textClass: 'text-[#00FF41]', accentClass: 'bg-[#00FF41]', fontClass: 'font-mono' },
+    { id: 'colorful', name: 'Bubbly Studio', description: 'Claymorphism y formas 3D suaves. Una explosión de alegría visual y optimismo.', styleTag: 'colorful', bgClass: 'bg-pink-100', textClass: 'text-blue-600', accentClass: 'bg-yellow-500', fontClass: 'font-sans' },
+    { id: 'futuristic', name: 'Quantum HUD', description: 'Interfaces del futuro. Glassmorphism extremo, elementos rotatorios y azul eléctrico.', styleTag: 'futuristic', bgClass: 'bg-[#000510]', textClass: 'text-white', accentClass: 'bg-cyan-400', fontClass: 'font-sans' },
+    { id: 'editorial', name: 'The Master Archive', description: 'Inspirado en revistas de moda. Grillas asimétricas y tipografía de gran formato.', styleTag: 'editorial', bgClass: 'bg-white', textClass: 'text-black', accentClass: 'bg-black', fontClass: 'font-serif' },
+    { id: 'organic', name: 'Human Rhythm', description: 'Formas líquidas y tonos tierra. El diseño digital volviendo a sus raíces naturales.', styleTag: 'organic', bgClass: 'bg-[#F4F1EA]', textClass: '#4A3728', accentClass: 'bg-[#D2B48C]', fontClass: 'font-serif' },
     { id: 'luxury', name: 'Maison Prestige', description: 'Mármol, lino y oro. La cúspide de la elegancia corporativa y personal.', styleTag: 'luxury', bgClass: 'bg-[#FDFCF8]', textClass: 'text-[#1a1a1a]', accentClass: 'bg-[#C5A059]', fontClass: 'font-serif' }
   ];
 
   activeId = 'elegant';
   activeIndex = 0;
+  isCarouselVisible = false;
 
   constructor(private route: ActivatedRoute) {}
 
@@ -392,21 +402,29 @@ export class DesignShowcaseComponent implements OnInit, AfterViewInit {
       this.updateActiveIndex();
     });
 
-    // Intersection Observer to pause video when scrolling away
+    // Intersection Observer to pause video when scrolling away and show navigation UI
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        if (this.heroVideo && this.heroVideo.nativeElement) {
-          if (entry.isIntersecting) {
-            this.heroVideo.nativeElement.play();
-          } else {
-            this.heroVideo.nativeElement.pause();
+        if (entry.target.id === 'hero-section') {
+          if (this.heroVideo && this.heroVideo.nativeElement) {
+            if (entry.isIntersecting) {
+              this.heroVideo.nativeElement.play();
+            } else {
+              this.heroVideo.nativeElement.pause();
+            }
           }
         }
+        if (entry.target.id === 'projects-carousel') {
+          this.isCarouselVisible = entry.isIntersecting;
+        }
       });
-    }, { threshold: 0.2 });
+    }, { threshold: 0.1 });
 
-    const heroSection = document.querySelector('section.snap-start');
+    const heroSection = document.getElementById('hero-section');
     if (heroSection) observer.observe(heroSection);
+    
+    const carouselSection = document.getElementById('projects-carousel');
+    if (carouselSection) observer.observe(carouselSection);
   }
 
   scrollToProjects() {
