@@ -28,7 +28,7 @@ import { FormsModule } from '@angular/forms';
       <div 
         *ngIf="isOpen"
         [@chatAnimation]
-        class="chat-panel absolute bottom-0 right-12 md:right-16 w-[90vw] md:w-[440px] overflow-hidden rounded-[24px] border shadow-2xl origin-bottom-right font-sans"
+        [class]="isFullScreen ? 'chat-panel chat-panel-fullscreen fixed inset-0 w-full h-full md:w-full md:h-full flex flex-col overflow-hidden rounded-none border z-[995] font-sans' : 'chat-panel absolute bottom-0 right-12 md:right-16 w-[90vw] md:w-[440px] overflow-hidden rounded-[24px] border shadow-2xl origin-bottom-right font-sans flex flex-col'"
       >
         <!-- Header -->
         <div class="chat-header flex items-center justify-between border-b px-5 py-4 relative overflow-hidden">
@@ -50,17 +50,32 @@ import { FormsModule } from '@angular/forms';
             </div>
           </div>
           
-          <!-- Close Button -->
-          <button (click)="toggleChat()" class="relative z-10 p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition-all">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
+          <!-- Actions Container -->
+          <div class="flex items-center gap-1.5 relative z-10">
+            <!-- Fullscreen Toggle Button -->
+            <button (click)="toggleFullScreen()" class="p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition-all" [title]="isFullScreen ? 'Restaurar Pantalla' : 'Pantalla Completa'">
+              <!-- Maximize Icon -->
+              <svg *ngIf="!isFullScreen" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+              </svg>
+              <!-- Minimize Icon -->
+              <svg *ngIf="isFullScreen" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 14h6v6m10-6h-6v6M4 10h6V4m10 6h-6V4"></path>
+              </svg>
+            </button>
+            
+            <!-- Close Button -->
+            <button (click)="toggleChat()" class="p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <!-- Messages Area -->
-        <div #scrollContainer class="h-[430px] overflow-y-auto p-5 space-y-6 scroll-smooth custom-scrollbar" style="overscroll-behavior: contain;">
+        <div #scrollContainer [class]="isFullScreen ? 'flex-grow overflow-y-auto scroll-smooth custom-scrollbar fullscreen-messages-area space-y-6' : 'h-[430px] overflow-y-auto p-5 space-y-6 scroll-smooth custom-scrollbar'" style="overscroll-behavior: contain;">
           
           <!-- Welcome Intro Section -->
           <div class="flex flex-col items-center justify-center text-center pb-6 border-b mt-2 mb-2 welcome-border">
@@ -264,6 +279,20 @@ import { FormsModule } from '@angular/forms';
     .theme-light .custom-scrollbar::-webkit-scrollbar-thumb {
       background: rgba(0, 0, 0, 0.08);
     }
+    .fullscreen-messages-area {
+      padding-top: 2rem !important;
+      padding-bottom: 7.5rem !important;
+      padding-left: 1.5rem !important;
+      padding-right: 1.5rem !important;
+    }
+    @media (min-width: 768px) {
+      .fullscreen-messages-area {
+        padding-top: 6.5rem !important;
+        padding-bottom: 2.5rem !important;
+        padding-left: 4rem !important;
+        padding-right: 4rem !important;
+      }
+    }
   `],
   animations: [
     trigger('chatAnimation', [
@@ -313,6 +342,8 @@ export class AiChatFloatingComponent implements OnInit {
     'orgánico': 'organic'
   };
 
+  isFullScreen = false;
+
   constructor(private router: Router) {}
 
   ngOnInit() {}
@@ -334,6 +365,9 @@ export class AiChatFloatingComponent implements OnInit {
 
   toggleChat() {
     this.isOpen = !this.isOpen;
+    if (!this.isOpen) {
+      this.isFullScreen = false; // Reset fullscreen state when closing
+    }
     if (this.isOpen) {
       // Ensure we start from the top
       setTimeout(() => {
@@ -342,6 +376,13 @@ export class AiChatFloatingComponent implements OnInit {
         } catch (err) {}
       }, 100);
     }
+  }
+
+  toggleFullScreen() {
+    this.isFullScreen = !this.isFullScreen;
+    setTimeout(() => {
+      this.scrollToBottom();
+    }, 100);
   }
 
   sendMessage() {
