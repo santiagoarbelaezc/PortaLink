@@ -5,7 +5,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
 @Component({
     selector: 'app-hero',
     standalone: true,
-    imports: [CommonModule, MagneticDirective],
+    imports: [CommonModule],
     template: `
     <section id="hero" class="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
 

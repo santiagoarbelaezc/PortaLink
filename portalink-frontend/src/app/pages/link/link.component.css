@@ -226,7 +226,7 @@
 .lt-copy { font-size: 9px; color: var(--text-secondary); letter-spacing: 0.2em; }
 
 @media (max-width: 768px) {
-  .lt-wrapper { padding: 100px 20px 40px; height: auto; overflow: visible; }
+  .lt-wrapper { padding: 100px 20px 120px; height: auto; overflow: visible; flex-direction: column; }
   .lt-main-grid { grid-template-columns: 1fr; gap: 40px; }
   .lt-image-container { max-width: 220px; margin: 0 auto; }
   .lt-main-img { filter: grayscale(100%) brightness(0.9); } 

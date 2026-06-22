@@ -2,17 +2,12 @@ import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
-import { AiChatFloatingComponent } from '../../components/ai-chat-floating/ai-chat-floating.component';
-import { NavbarComponent } from '../../components/navbar/navbar.component';
-
 @Component({
     selector: 'app-link',
     standalone: true,
-    imports: [CommonModule, RouterModule, AiChatFloatingComponent, NavbarComponent],
+    imports: [CommonModule, RouterModule],
     template: `
     <div class="lt-wrapper">
-      <app-navbar></app-navbar>
-      <app-ai-chat-floating></app-ai-chat-floating>
       <div class="lt-container">
         
         <main class="lt-main-grid">
@@ -29,10 +24,6 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
           <!-- COLUMN 2: INFO & LINKS -->
           <section class="lt-col-info">
             <header class="lt-info-header">
-              <div class="flex items-center gap-4 mb-4">
-                <div class="h-px w-10 lt-line-accent"></div>
-                <span class="lt-label-accent text-[10px] uppercase tracking-[0.4em] font-bold">Santiago Arbeláez</span>
-              </div>
               <h1 class="text-3xl md:text-7xl font-headline uppercase leading-[0.9] tracking-tighter">
                 <span class="lt-title-main">Creador<br/>Digital</span><br/>
                 <span class="lt-title-accent">& Desarrollador</span>
@@ -127,11 +118,6 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
 
         </main>
       </div>
-
-      <footer class="lt-footer">
-         <p class="lt-copy tracking-[0.3em] uppercase">© {{ currentYear }} S.A. PORTFOLIO — Digital Architecture</p>
-      </footer>
-
     </div>
 
     <!-- PWA Install Modal -->

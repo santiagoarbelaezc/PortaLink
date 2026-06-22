@@ -1,12 +1,11 @@
 import { Component, inject, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
-import { MagneticDirective } from '../../shared/directives/magnetic.directive';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
 
 @Component({
     selector: 'app-navbar',
     standalone: true,
-    imports: [CommonModule, MagneticDirective, RouterModule],
+    imports: [CommonModule, RouterModule],
     template: `
     <!-- ═══════════════════════════════════════════ -->
     <!-- DESKTOP: Top pill navbar (md+)              -->
@@ -72,16 +71,38 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
     <!-- ═══════════════════════════════════════════ -->
     <!-- MOBILE: Bottom app-style tab bar           -->
     <!-- ═══════════════════════════════════════════ -->
-    <nav class="md:hidden fixed bottom-4 left-4 right-4 z-[9000]">
-      <div class="flex items-center justify-around py-2 px-1 rounded-none backdrop-blur-xl border shadow-2xl transition-all duration-500"
-           style="background: var(--nav-bg); border-color: var(--card-border);">
-        <a *ngFor="let item of mobileItems"
+    <nav class="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[9000] w-[92%] max-w-[360px]">
+      <div #tabBar 
+           (touchstart)="onTouchStart($event)"
+           (touchmove)="onTouchMove($event)"
+           (touchend)="onTouchEnd()"
+           (mousedown)="onMouseDown($event)"
+           class="relative flex items-center justify-around py-2 px-1.5 rounded-full border shadow-2xl transition-all duration-500 overflow-hidden"
+           [style.background]="currentTheme === 'light' ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.88)'"
+           [style.borderColor]="currentTheme === 'light' ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.12)'">
+        
+        <!-- Draggable active selection background pill -->
+        <div class="absolute top-1/2 -translate-y-1/2 h-[42px] rounded-full pointer-events-none"
+             [style.background]="currentTheme === 'light' ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.12)'"
+             [style.width.px]="pillWidth"
+             [style.transform]="'translate3d(' + pillOffset + 'px, -50%, 0)'"
+             [style.transition]="isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'">
+        </div>
+
+        <!-- Tab Items -->
+        <a *ngFor="let item of mobileItems; let i = index"
            (click)="scrollTo(item.link, $event)"
-           class="mobile-nav-item flex flex-col items-center gap-1 px-4 py-2 rounded-none cursor-pointer transition-all duration-200">
+           [class.active]="activeSection === item.link"
+           class="mobile-nav-item flex flex-col items-center justify-center w-12 h-12 rounded-full cursor-pointer transition-all duration-200 relative z-10">
+          
           <!-- Icon -->
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-               stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-               class="text-white/60">
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+               [class.text-black]="currentTheme === 'light' && activeSection === item.link"
+               [class.text-black\/50]="currentTheme === 'light' && activeSection !== item.link"
+               [class.text-white]="currentTheme !== 'light' && activeSection === item.link"
+               [class.text-white\/60]="currentTheme !== 'light' && activeSection !== item.link"
+               class="transition-colors">
             <ng-container *ngIf="item.icon === 'home'">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
               <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -103,14 +124,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
               <polyline points="2 17 12 22 22 17"></polyline>
               <polyline points="2 12 12 17 22 12"></polyline>
             </ng-container>
-            <ng-container *ngIf="item.icon === 'mail'">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-              <polyline points="22,6 12,13 2,6"></polyline>
-            </ng-container>
           </svg>
-          <span class="text-[9px] font-bold uppercase tracking-wider text-white/50">
-            {{ item.name }}
-          </span>
         </a>
       </div>
     </nav>
@@ -147,7 +161,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
       opacity: 1;
       transform: translateX(-50%) scale(1);
     }
-    .mobile-nav-item:active { transform: scale(0.95); }
+    .mobile-nav-item:active { transform: scale(0.92); }
   `]
 })
 export class NavbarComponent implements OnInit {
@@ -166,12 +180,20 @@ export class NavbarComponent implements OnInit {
     { name: 'Links',     link: '/links',     icon: 'link'   },
     { name: 'Proyectos', link: '#portfolio', icon: 'grid'   },
     { name: 'Perfil',    link: '#about',     icon: 'user'   },
-    { name: 'Servicios', link: '#skills',    icon: 'layers' },
-    { name: 'Contacto',  link: '#contact',   icon: 'mail'   },
+    { name: 'Servicios', link: '#skills',    icon: 'layers' }
   ];
 
   currentTheme = 'dark';
   activeSection = '#hero';
+
+  // Dragging active pill state
+  isDragging = false;
+  startX = 0;
+  startPillOffset = 0;
+  pillOffset = 8;
+  pillWidth = 50;
+  private containerLeft = 0;
+  private containerWidth = 0;
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -186,6 +208,15 @@ export class NavbarComponent implements OnInit {
   ngOnInit() {
     if (typeof window !== 'undefined') {
       this.onWindowScroll();
+      setTimeout(() => this.updatePillPosition(), 150);
+
+      this.router.events.subscribe(event => {
+        if (event instanceof NavigationEnd) {
+          setTimeout(() => {
+            this.onWindowScroll();
+          }, 100);
+        }
+      });
     }
   }
 
@@ -193,9 +224,9 @@ export class NavbarComponent implements OnInit {
   onWindowScroll() {
     if (typeof window === 'undefined') return;
 
-    // Detect if we are on the links route
     if (this.router.url.includes('/links')) {
       this.activeSection = '/links';
+      this.updatePillPosition();
       return;
     }
 
@@ -205,14 +236,114 @@ export class NavbarComponent implements OnInit {
     for (const section of sections) {
       const el = document.getElementById(section);
       if (el) {
-        const top = el.offsetTop - 140; // navbar offset
+        const top = el.offsetTop - 140; 
         const height = el.offsetHeight;
         if (scrollPosition >= top && scrollPosition < top + height) {
           this.activeSection = '#' + section;
+          this.updatePillPosition();
           break;
         }
       }
     }
+  }
+
+  updatePillPosition() {
+    if (typeof document === 'undefined') return;
+    setTimeout(() => {
+      const activeItem = document.querySelector('.mobile-nav-item.active') as HTMLElement;
+      if (activeItem) {
+        this.pillOffset = activeItem.offsetLeft;
+        this.pillWidth = activeItem.clientWidth;
+      } else {
+        const index = this.mobileItems.findIndex(item => item.link === this.activeSection);
+        if (index !== -1) {
+          const itemWidth = 64; 
+          this.pillOffset = 8 + (index * itemWidth);
+          this.pillWidth = 50;
+        }
+      }
+    }, 50);
+  }
+
+  @HostListener('window:mousemove', ['$event'])
+  onMouseMove(event: MouseEvent) {
+    this.handleDrag(event.clientX);
+  }
+
+  @HostListener('window:mouseup')
+  onMouseUp() {
+    this.endDrag();
+  }
+
+  @HostListener('window:touchmove', ['$event'])
+  onTouchMove(event: TouchEvent) {
+    if (event.touches.length > 0) {
+      this.handleDrag(event.touches[0].clientX);
+    }
+  }
+
+  @HostListener('window:touchend')
+  onTouchEnd() {
+    this.endDrag();
+  }
+
+  onMouseDown(event: MouseEvent) {
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    this.startDrag(event.clientX, rect.left);
+  }
+
+  onTouchStart(event: TouchEvent) {
+    if (event.touches.length > 0) {
+      const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+      this.startDrag(event.touches[0].clientX, rect.left);
+    }
+  }
+
+  startDrag(clientX: number, containerLeft: number) {
+    if (typeof document === 'undefined') return;
+    const container = document.querySelector('.mobile-nav-item.active')?.parentElement as HTMLElement;
+    if (!container) return;
+
+    this.isDragging = true;
+    this.containerLeft = containerLeft;
+    this.containerWidth = container.clientWidth;
+    this.startX = clientX - this.containerLeft;
+    this.startPillOffset = this.pillOffset;
+  }
+
+  handleDrag(clientX: number) {
+    if (!this.isDragging) return;
+    const currentX = clientX - this.containerLeft;
+    const deltaX = currentX - this.startX;
+    const maxOffset = this.containerWidth - this.pillWidth - 8;
+    this.pillOffset = Math.max(8, Math.min(this.startPillOffset + deltaX, maxOffset));
+  }
+
+  endDrag() {
+    if (!this.isDragging) return;
+    this.isDragging = false;
+
+    if (typeof document === 'undefined') return;
+    const items = Array.from(document.querySelectorAll('.mobile-nav-item')) as HTMLElement[];
+    if (items.length === 0) return;
+
+    const pillCenter = this.pillOffset + (this.pillWidth / 2);
+    let closestIndex = 0;
+    let minDistance = Infinity;
+
+    items.forEach((item, index) => {
+      const itemCenter = item.offsetLeft + (item.clientWidth / 2);
+      const distance = Math.abs(pillCenter - itemCenter);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestIndex = index;
+      }
+    });
+
+    const targetItem = this.mobileItems[closestIndex];
+    this.scrollTo(targetItem.link, new CustomEvent('dummy') as any);
+    this.activeSection = targetItem.link;
+    this.updatePillPosition();
   }
 
   setTheme(theme: string) {
@@ -241,7 +372,7 @@ export class NavbarComponent implements OnInit {
   }
 
   scrollTo(link: string, event: Event) {
-    event.preventDefault();
+    if (event) event.preventDefault();
     if (link.startsWith('#')) {
       const targetId = link.replace('#', '');
       const isRoot = this.router.url === '/' || this.router.url === '/proyectos';
