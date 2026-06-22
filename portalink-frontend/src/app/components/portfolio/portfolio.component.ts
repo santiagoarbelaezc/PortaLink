@@ -8,14 +8,6 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
     standalone: true,
     imports: [CommonModule, RevealDirective, RouterModule],
     template: `
-    <!-- Botón Volver para Móvil -->
-    <a [routerLink]="['/']" class="md:hidden fixed top-6 left-6 z-[100] flex items-center gap-3 bg-black/60 backdrop-blur-xl border border-white/10 px-5 py-2.5 rounded-full text-white no-underline shadow-2xl active:scale-90 transition-all duration-300">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="m15 18-6-6 6-6"/>
-      </svg>
-      <span class="text-[10px] uppercase tracking-[0.2em] font-bold">Volver</span>
-    </a>
-
     <section id="portfolio" class="py-20 md:py-32 px-6">
       <div class="container mx-auto">
         <!-- Section Header -->

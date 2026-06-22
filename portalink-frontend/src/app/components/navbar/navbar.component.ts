@@ -1,4 +1,4 @@
-import { Component, inject, HostListener, OnInit } from '@angular/core';
+import { Component, inject, HostListener, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 
@@ -167,6 +167,8 @@ import { RouterModule, Router, NavigationEnd } from '@angular/router';
 export class NavbarComponent implements OnInit {
   private router = inject(Router);
 
+  @ViewChild('tabBar') tabBarElement!: ElementRef;
+
   desktopItems = [
     { name: 'Inicio',    link: '#hero',      icon: 'fa-solid fa-shapes' },
     { name: 'Links',     link: '/links',     icon: 'fa-solid fa-compass' },
@@ -208,12 +210,19 @@ export class NavbarComponent implements OnInit {
   ngOnInit() {
     if (typeof window !== 'undefined') {
       this.onWindowScroll();
-      setTimeout(() => this.updatePillPosition(), 150);
+      
+      // Call multiple times to ensure layout has settled
+      setTimeout(() => this.updatePillPosition(), 50);
+      setTimeout(() => this.updatePillPosition(), 200);
+      setTimeout(() => this.updatePillPosition(), 500);
 
       this.router.events.subscribe(event => {
         if (event instanceof NavigationEnd) {
           setTimeout(() => {
             this.onWindowScroll();
+            // Trigger pill updates on navigation
+            this.updatePillPosition();
+            setTimeout(() => this.updatePillPosition(), 200);
           }, 100);
         }
       });
@@ -230,9 +239,16 @@ export class NavbarComponent implements OnInit {
       return;
     }
 
-    const sections = ['hero', 'portfolio', 'about', 'skills'];
     const scrollPosition = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
 
+    // Default to hero if scrolled close to top
+    if (scrollPosition < 100) {
+      this.activeSection = '#hero';
+      this.updatePillPosition();
+      return;
+    }
+
+    const sections = ['hero', 'portfolio', 'about', 'skills'];
     for (const section of sections) {
       const el = document.getElementById(section);
       if (el) {
@@ -262,7 +278,7 @@ export class NavbarComponent implements OnInit {
           this.pillWidth = 50;
         }
       }
-    }, 50);
+    }, 150);
   }
 
   @HostListener('window:mousemove', ['$event'])
