@@ -86,3 +86,66 @@
   background: rgba(0, 0, 0, 0.45) !important;
   border-color: rgba(255, 255, 255, 0.15) !important;
 }
+
+/* Mobile responsive styles for the AI Agent Banner */
+@media (max-width: 767px) {
+  .rotbot-banner {
+    height: 110vh !important;
+    background: #000000 !important;
+  }
+  .video-bg {
+    height: 55% !important;
+    top: 22.5% !important;
+    object-fit: cover;
+  }
+  .overlay {
+    background: linear-gradient(to bottom, 
+      #000000 0%, 
+      rgba(0,0,0,0.9) 22.5%, 
+      transparent 35%, 
+      transparent 65%, 
+      rgba(0,0,0,0.9) 77.5%, 
+      #000000 100%
+    ) !important;
+  }
+
+  /* Position container and grid to span full height */
+  .rotbot-banner .container {
+    height: 100% !important;
+    min-height: 110vh !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: stretch !important;
+  }
+
+  .rotbot-banner .grid {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    height: 100% !important;
+    width: 100% !important;
+    padding: 4vh 24px !important;
+    gap: 0 !important;
+  }
+
+  /* Top Margin Area (approx 0% - 22.5%) */
+  .rotbot-banner .text-left.max-w-xl {
+    height: 22.5vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+  }
+
+  /* Bottom Margin Area (approx 77.5% - 100%) */
+  .rotbot-banner .flex.flex-col.gap-6.lg\:items-end {
+    height: 28vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    margin-top: auto !important;
+  }
+  
+  .rotbot-banner .glass-option-card {
+    padding: 12px 16px !important; /* Make cards slightly more compact for mobile space */
+  }
+}
