@@ -9,7 +9,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
     template: `
     <section id="hero" class="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
 
-      <div class="container mx-auto px-6 pt-20 pb-28 md:pt-32 md:pb-0 grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center relative z-10">
+      <div class="container mx-auto px-6 pt-20 pb-28 md:pt-32 md:pb-0 grid grid-cols-1 lg:grid-cols-[42%_58%] gap-8 md:gap-12 items-center relative z-10">
         <!-- Text Content -->
         <div class="order-2 lg:order-1">
           <div class="flex items-center gap-4 mb-4">
@@ -62,12 +62,12 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
         </div>
 
         <!-- Apple Product Cards Column -->
-        <div class="order-1 lg:order-2 w-full py-6 overflow-visible">
-          <!-- Horizontal Scroll Wrapper -->
-          <div class="flex gap-6 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-6 w-full px-6 md:px-8 scroll-pl-6 md:scroll-pl-8">
+        <div class="order-1 lg:order-2 w-full py-6 overflow-visible lg:-ml-8 xl:-ml-14">
+          <!-- Horizontal Scroll Wrapper (Smooth continuous scroll without snapping) -->
+          <div class="flex gap-6 overflow-x-auto no-scrollbar pb-6 w-full px-6 md:px-8">
             <!-- Card Loop -->
             <div *ngFor="let card of cards" 
-                 class="snap-start shrink-0 w-[290px] sm:w-[330px] flex flex-col items-center text-center lg:items-start lg:text-left">
+                 class="shrink-0 w-[270px] sm:w-[310px] flex flex-col items-center text-center lg:items-start lg:text-left">
               <!-- Card Image Box (Taller and Larger) -->
               <div class="relative w-full aspect-[3/4.2] rounded-[24px] sm:rounded-[32px] overflow-hidden border transition-all duration-500 shadow-xl group"
                    [style.background]="'var(--card-bg)'"
@@ -105,11 +105,6 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
             </div>
           </div>
         </div>
-      </div>
-
-      <div class="hidden md:flex absolute bottom-10 left-1/2 -translate-x-1/2 flex-col items-center gap-2" style="opacity: 0.35;">
-        <span class="text-[10px] uppercase tracking-[0.3em]" style="color: var(--text-secondary);">Scroll</span>
-        <div class="w-px h-12" style="background: linear-gradient(to bottom, var(--text-secondary), transparent);"></div>
       </div>
     </section>
   `,

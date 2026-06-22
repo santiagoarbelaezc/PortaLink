@@ -3,15 +3,15 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 import { AiChatFloatingComponent } from '../../components/ai-chat-floating/ai-chat-floating.component';
-
-
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 
 @Component({
     selector: 'app-link',
     standalone: true,
-    imports: [CommonModule, RouterModule, AiChatFloatingComponent],
+    imports: [CommonModule, RouterModule, AiChatFloatingComponent, NavbarComponent],
     template: `
     <div class="lt-wrapper">
+      <app-navbar></app-navbar>
       <app-ai-chat-floating></app-ai-chat-floating>
       <div class="lt-container">
         
@@ -51,7 +51,7 @@ import { AiChatFloatingComponent } from '../../components/ai-chat-floating/ai-ch
                     </svg>
                   </div>
                   <div class="lt-card-body">
-                    <h3 class="text-2xl md:text-3xl font-headline uppercase text-white">Proyectos</h3>
+                    <h3 class="text-2xl md:text-3xl font-headline uppercase text-white">Descubre más</h3>
                     <p class="text-[8px] uppercase tracking-[0.3em] text-white/50 mt-1">Ingeniería & Desarrollo</p>
                   </div>
                 </div>

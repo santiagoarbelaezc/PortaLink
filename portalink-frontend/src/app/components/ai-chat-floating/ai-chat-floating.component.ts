@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewChecked, OnInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewChecked, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
@@ -213,6 +213,15 @@ export class AiChatFloatingComponent implements OnInit, AfterViewChecked {
   constructor(private router: Router) {}
 
   ngOnInit() {}
+
+  @HostListener('window:open-ai-chat', ['$event'])
+  onOpenAiChat(event: any) {
+    this.isOpen = true;
+    if (event.detail && event.detail.message) {
+      this.userInput = event.detail.message;
+      this.sendMessage();
+    }
+  }
 
   ngAfterViewChecked() {
     this.scrollToBottom();
