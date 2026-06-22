@@ -11,7 +11,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
 
       <div class="container mx-auto px-6 pt-20 pb-28 md:pt-32 md:pb-0 grid grid-cols-1 lg:grid-cols-[42%_58%] gap-8 md:gap-12 items-center relative z-10">
         <!-- Text Content -->
-        <div class="order-2 lg:order-1">
+        <div class="w-full">
           <div class="flex items-center gap-4 mb-4">
             <div class="h-px w-10" style="background-color: var(--text-primary); opacity: 0.4;"></div>
             <span class="text-[10px] uppercase tracking-[0.4em] font-bold" style="color: var(--text-secondary);">
@@ -62,7 +62,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
         </div>
 
         <!-- Apple Product Cards Column -->
-        <div class="order-1 lg:order-2 w-full py-6 overflow-visible lg:-ml-8 xl:-ml-14">
+        <div class="w-full py-6 overflow-visible lg:-ml-8 xl:-ml-14">
           <!-- Horizontal Scroll Wrapper (Smooth continuous scroll without snapping) -->
           <div class="flex gap-6 overflow-x-auto no-scrollbar pb-6 w-full px-6 md:px-8">
             <!-- Card Loop -->
