@@ -21,12 +21,12 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
 
           <h1 class="text-6xl sm:text-8xl md:text-[100px] font-headline uppercase leading-[0.9] tracking-tighter mb-6 md:mb-8">
             <span class="block overflow-hidden">
-              <span class="block animate-fade-up text-white" style="animation-delay: 1.0s;">
+              <span class="block animate-fade-up" style="animation-delay: 1.0s; color: var(--text-primary);">
                 {{ firstName }}
               </span>
             </span>
             <span class="block overflow-hidden" *ngIf="lastName">
-              <span class="block animate-fade-up text-white/50" style="animation-delay: 1.2s;">
+              <span class="block animate-fade-up" style="animation-delay: 1.2s; color: var(--text-secondary);">
                 {{ lastName }}
               </span>
             </span>

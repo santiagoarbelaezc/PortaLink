@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { MagneticDirective } from '../../shared/directives/magnetic.directive';
 
 @Component({
@@ -11,44 +11,76 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
     <!-- ═══════════════════════════════════════════ -->
     <!-- DESKTOP: Top pill navbar (md+)              -->
     <!-- ═══════════════════════════════════════════ -->
-    <nav class="hidden md:block fixed top-0 left-0 w-full z-[9000] px-6 py-5">
-      <div class="max-w-7xl mx-auto flex items-center justify-between px-8 py-3 rounded-full bg-black/80 border border-white/10 backdrop-blur-xl shadow-2xl">
+    <nav class="hidden md:block fixed top-0 left-0 w-full z-[9000] px-12 py-5 backdrop-blur-xl transition-all duration-500"
+         style="background: var(--nav-bg); border-bottom: 1px solid var(--card-border);">
+      <div class="w-full flex items-center justify-between">
 
-        <!-- Logo -->
-        <div class="flex items-center gap-2 cursor-pointer" appMagnetic [appMagnetic]="0.2" routerLink="/">
-          <svg width="36" height="36" viewBox="0 0 40 40">
-            <path d="M10 30V10H20C25 10 25 15 20 15H10" stroke="#ffffff" stroke-width="2" fill="none" />
-            <path d="M25 30V10" stroke="#ffffff" stroke-width="2" fill="none" />
-          </svg>
+        <!-- Left: Branding metadata -->
+        <div class="flex items-center gap-4">
+          <span class="text-[9px] uppercase tracking-[0.4em] font-bold transition-colors duration-500" style="color: var(--text-secondary);">S.A. // PORTFOLIO</span>
         </div>
 
-        <!-- Nav Links -->
-        <div class="flex items-center gap-8">
+        <!-- Center: Nav Links -->
+        <div class="flex items-center gap-8 justify-center">
           <a *ngFor="let item of desktopItems"
              (click)="scrollTo(item.link, $event)"
-             class="nav-link text-sm font-medium tracking-widest uppercase cursor-pointer hover:text-white transition-colors text-white/70"
-             appMagnetic [appMagnetic]="0.3">
+             class="nav-link text-xs font-bold tracking-widest uppercase cursor-pointer hover:text-white transition-colors"
+             style="color: var(--text-secondary);"
+             appMagnetic [appMagnetic]="0.2">
             {{ item.name }}
           </a>
         </div>
 
-        <!-- CTA -->
-        <button (click)="scrollTo('#contact', $event)" class="flex items-center gap-2 px-7 py-3 rounded-none text-white border border-white/20 hover:border-white transition-all duration-300"
-                appMagnetic [appMagnetic]="0.1">
-          <span class="text-xs font-bold tracking-widest uppercase">Contacto</span>
-          <div class="w-1.5 h-1.5 bg-white animate-pulse"></div>
-        </button>
+        <!-- Right: Theme Selector & Contact CTA -->
+        <div class="flex items-center gap-6">
+          <!-- Theme Switcher Desktop (Sharp Architectural Squares) -->
+          <div class="flex items-center gap-2 border px-3 py-1.5 rounded-none transition-all duration-500"
+               style="border-color: var(--card-border); background: var(--card-bg);">
+            <button (click)="setTheme('dark')" 
+                    class="w-3.5 h-3.5 rounded-none bg-black border border-white/20 transition-all hover:scale-110 focus:outline-none cursor-pointer"
+                    [class.ring-1]="currentTheme === 'dark'"
+                    [class.ring-white]="currentTheme === 'dark'"
+                    title="Tema Negro"></button>
+            <button (click)="setTheme('light')" 
+                    class="w-3.5 h-3.5 rounded-none bg-white border border-black/20 transition-all hover:scale-110 focus:outline-none cursor-pointer"
+                    [class.ring-1]="currentTheme === 'light'"
+                    [class.ring-blue-500]="currentTheme === 'light'"
+                    title="Tema Blanco"></button>
+            <button (click)="setTheme('red')" 
+                    class="w-3.5 h-3.5 rounded-none bg-red-600 border border-white/20 transition-all hover:scale-110 focus:outline-none cursor-pointer"
+                    [class.ring-1]="currentTheme === 'red'"
+                    [class.ring-yellow-400]="currentTheme === 'red'"
+                    title="Tema Rojo"></button>
+          </div>
+
+          <button (click)="scrollTo('#contact', $event)" 
+                  class="flex items-center gap-2 px-7 py-3 rounded-none text-white border transition-all duration-300 hover:bg-white/10"
+                  style="border-color: var(--card-border); color: var(--text-primary); background: transparent;"
+                  appMagnetic [appMagnetic]="0.1">
+            <span class="text-xs font-bold tracking-widest uppercase">Contacto</span>
+            <div class="w-1.5 h-1.5 bg-white" style="background-color: var(--text-primary);"></div>
+          </button>
+        </div>
       </div>
     </nav>
+
+    <!-- Mobile floating Theme Switcher (top right) -->
+    <div class="md:hidden fixed top-6 right-6 z-[9000] flex items-center gap-2.5 border px-3.5 py-2.5 rounded-none backdrop-blur-xl shadow-2xl transition-all duration-500"
+         style="background: var(--nav-bg); border-color: var(--card-border);">
+      <button (click)="setTheme('dark')" class="w-3.5 h-3.5 rounded-none bg-black border border-white/20 cursor-pointer focus:outline-none" [class.ring-1]="currentTheme === 'dark'" [class.ring-white]="currentTheme === 'dark'"></button>
+      <button (click)="setTheme('light')" class="w-3.5 h-3.5 rounded-none bg-white border border-black/20 cursor-pointer focus:outline-none" [class.ring-1]="currentTheme === 'light'" [class.ring-blue-500]="currentTheme === 'light'"></button>
+      <button (click)="setTheme('red')" class="w-3.5 h-3.5 rounded-none bg-red-600 border border-white/20 cursor-pointer focus:outline-none" [class.ring-1]="currentTheme === 'red'" [class.ring-yellow-400]="currentTheme === 'red'"></button>
+    </div>
 
     <!-- ═══════════════════════════════════════════ -->
     <!-- MOBILE: Bottom app-style tab bar           -->
     <!-- ═══════════════════════════════════════════ -->
     <nav class="md:hidden fixed bottom-4 left-4 right-4 z-[9000]">
-      <div class="flex items-center justify-around py-2 px-1 rounded-2xl backdrop-blur-xl border border-white/10 shadow-2xl bg-black/80">
+      <div class="flex items-center justify-around py-2 px-1 rounded-none backdrop-blur-xl border shadow-2xl transition-all duration-500"
+           style="background: var(--nav-bg); border-color: var(--card-border);">
         <a *ngFor="let item of mobileItems"
            (click)="scrollTo(item.link, $event)"
-           class="mobile-nav-item flex flex-col items-center gap-1 px-4 py-2 rounded-xl cursor-pointer transition-all duration-200 active:bg-black/5">
+           class="mobile-nav-item flex flex-col items-center gap-1 px-4 py-2 rounded-none cursor-pointer transition-all duration-200">
           <!-- Icon -->
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
@@ -56,6 +88,10 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
             <ng-container *ngIf="item.icon === 'home'">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
               <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </ng-container>
+            <ng-container *ngIf="item.icon === 'link'">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
             </ng-container>
             <ng-container *ngIf="item.icon === 'grid'">
               <rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect>
@@ -91,40 +127,82 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
       left: 0;
       width: 0;
       height: 1px;
-      background: #FFFFFF;
+      background: var(--text-primary);
       transition: width 0.3s ease;
     }
     .nav-link:hover::after { width: 100%; }
-    .mobile-nav-item:active { transform: scale(0.92); }
+    .mobile-nav-item:active { transform: scale(0.95); }
   `]
 })
 export class NavbarComponent {
+  private router = inject(Router);
+
   desktopItems = [
+    { name: 'Inicio',    link: '#hero' },
+    { name: 'Links',     link: '/links' },
     { name: 'Proyectos', link: '#portfolio' },
-    { name: 'Perfil', link: '#about' },
+    { name: 'Perfil',    link: '#about' },
     { name: 'Servicios', link: '#skills' }
   ];
 
   mobileItems = [
     { name: 'Inicio',    link: '#hero',      icon: 'home'   },
+    { name: 'Links',     link: '/links',     icon: 'link'   },
     { name: 'Proyectos', link: '#portfolio', icon: 'grid'   },
     { name: 'Perfil',    link: '#about',     icon: 'user'   },
     { name: 'Servicios', link: '#skills',    icon: 'layers' },
     { name: 'Contacto',  link: '#contact',   icon: 'mail'   },
   ];
 
-  scrollTo(link: string, event: Event) {
-    event.preventDefault();
-    const element = document.getElementById(link.replace('#', ''));
+  currentTheme = 'dark';
+
+  constructor() {
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('portfolio-theme') || 'dark';
+      this.setTheme(savedTheme);
+    }
+  }
+
+  setTheme(theme: string) {
+    this.currentTheme = theme;
+    if (typeof document !== 'undefined') {
+      const root = document.documentElement;
+      root.classList.remove('theme-dark', 'theme-light', 'theme-red');
+      if (theme !== 'dark') {
+        root.classList.add(`theme-${theme}`);
+      }
+      localStorage.setItem('portfolio-theme', theme);
+    }
+  }
+
+  private scrollIntoView(id: string) {
+    const element = document.getElementById(id);
     if (element) {
       const offset = 100;
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - offset;
-
       window.scrollTo({
         top: offsetPosition,
         behavior: 'smooth'
       });
     }
   }
+
+  scrollTo(link: string, event: Event) {
+    event.preventDefault();
+    if (link.startsWith('#')) {
+      const targetId = link.replace('#', '');
+      const isRoot = this.router.url === '/' || this.router.url === '/proyectos';
+      if (isRoot) {
+        this.scrollIntoView(targetId);
+      } else {
+        this.router.navigate(['/']).then(() => {
+          setTimeout(() => this.scrollIntoView(targetId), 200);
+        });
+      }
+    } else {
+      this.router.navigateByUrl(link);
+    }
+  }
 }
+

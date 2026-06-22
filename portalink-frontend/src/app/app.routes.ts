@@ -5,18 +5,23 @@ import { ProyectosComponent } from './pages/proyectos/proyectos.component';
 export const routes: Routes = [
   { 
     path: '', 
-    component: LinkComponent, 
-    data: { animation: 'LinkPage' } 
-  },
-  { 
-    path: 'proyectos', 
     component: ProyectosComponent, 
     data: { animation: 'ProyectosPage' } 
   },
+  { 
+    path: 'proyectos', 
+    redirectTo: '',
+    pathMatch: 'full'
+  },
   {
     path: 'portfolio',
-    redirectTo: 'proyectos',
+    redirectTo: '',
     pathMatch: 'full'
+  },
+  { 
+    path: 'links', 
+    component: LinkComponent, 
+    data: { animation: 'LinkPage' } 
   },
   { path: '**', redirectTo: '' }
 ];

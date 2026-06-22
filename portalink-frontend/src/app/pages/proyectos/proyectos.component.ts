@@ -28,7 +28,7 @@ import { Subscription } from 'rxjs';
     ],
     template: `
     <app-ai-chat-floating></app-ai-chat-floating>
-    <div class="dynamic-bg" [style.background]="currentBackground"></div>
+    <div class="dynamic-bg"></div>
     <main class="relative text-white" *ngIf="portfolioData()">
       <app-navbar></app-navbar>
       <app-hero [data]="portfolioData().hero"></app-hero>
