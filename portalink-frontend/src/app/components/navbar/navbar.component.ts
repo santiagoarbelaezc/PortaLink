@@ -41,12 +41,41 @@ import { RouterModule, Router, NavigationEnd } from '@angular/router';
         </div>
 
         <!-- Center: Nav Links with typography from Links component -->
-        <div class="flex items-center gap-16 justify-center">
+        <div class="flex items-center gap-10 justify-center">
           <a *ngFor="let item of desktopItems"
              (click)="scrollTo(item.link, $event)"
-             class="nav-link font-headline text-sm font-medium tracking-[0.08em] uppercase cursor-pointer py-1 flex items-center gap-2.5"
+             class="nav-link font-headline text-sm font-medium tracking-[0.08em] uppercase cursor-pointer py-1 flex items-center gap-2"
              [class.active]="activeSection === item.link">
-            <i [class]="item.icon + ' text-xs opacity-75'"></i>
+            
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 class="opacity-75 transition-colors">
+              <ng-container *ngIf="item.icon === 'home'">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </ng-container>
+              <ng-container *ngIf="item.icon === 'link'">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              </ng-container>
+              <ng-container *ngIf="item.icon === 'grid'">
+                <rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect>
+              </ng-container>
+              <ng-container *ngIf="item.icon === 'user'">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </ng-container>
+              <ng-container *ngIf="item.icon === 'layers'">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 17 12 22 22 17"></polyline>
+                <polyline points="2 12 12 17 22 12"></polyline>
+              </ng-container>
+              <ng-container *ngIf="item.icon === 'edit'">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </ng-container>
+            </svg>
             <span>{{ item.name }}</span>
           </a>
         </div>
@@ -147,6 +176,10 @@ import { RouterModule, Router, NavigationEnd } from '@angular/router';
               <polyline points="2 17 12 22 22 17"></polyline>
               <polyline points="2 12 12 17 22 12"></polyline>
             </ng-container>
+            <ng-container *ngIf="item.icon === 'edit'">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </ng-container>
           </svg>
         </a>
       </div>
@@ -159,12 +192,6 @@ import { RouterModule, Router, NavigationEnd } from '@angular/router';
       transition: color 0.25s ease;
     }
     .nav-link:hover, .nav-link.active {
-      color: var(--text-primary) !important;
-    }
-    .nav-link i {
-      transition: color 0.25s ease;
-    }
-    .nav-link:hover i, .nav-link.active i {
       color: var(--text-primary) !important;
     }
     .nav-link::after {
@@ -193,19 +220,21 @@ export class NavbarComponent implements OnInit {
   @ViewChild('tabBar') tabBarElement!: ElementRef;
 
   desktopItems = [
-    { name: 'Inicio',    link: '#hero',      icon: 'fa-solid fa-shapes' },
-    { name: 'Links',     link: '/links',     icon: 'fa-solid fa-compass' },
-    { name: 'Proyectos', link: '#portfolio', icon: 'fa-solid fa-folder-open' },
-    { name: 'Perfil',    link: '#about',     icon: 'fa-solid fa-id-card' },
-    { name: 'Servicios', link: '#skills',    icon: 'fa-solid fa-sliders' }
+    { name: 'Inicio',      link: '#hero',        icon: 'home'   },
+    { name: 'Links',       link: '/links',       icon: 'link'   },
+    { name: 'Proyectos',   link: '#portfolio',   icon: 'grid'   },
+    { name: 'Perfil',      link: '#about',       icon: 'user'   },
+    { name: 'Servicios',   link: '#skills',      icon: 'layers' },
+    { name: 'Crear Sitio', link: '/personalizar', icon: 'edit'   }
   ];
 
   mobileItems = [
-    { name: 'Inicio',    link: '#hero',      icon: 'home'   },
-    { name: 'Links',     link: '/links',     icon: 'link'   },
-    { name: 'Proyectos', link: '#portfolio', icon: 'grid'   },
-    { name: 'Perfil',    link: '#about',     icon: 'user'   },
-    { name: 'Servicios', link: '#skills',    icon: 'layers' }
+    { name: 'Inicio',      link: '#hero',        icon: 'home'   },
+    { name: 'Links',       link: '/links',       icon: 'link'   },
+    { name: 'Proyectos',   link: '#portfolio',   icon: 'grid'   },
+    { name: 'Perfil',      link: '#about',       icon: 'user'   },
+    { name: 'Servicios',   link: '#skills',      icon: 'layers' },
+    { name: 'Crear Sitio', link: '/personalizar', icon: 'edit'   }
   ];
 
   currentTheme = 'dark';

@@ -1,8 +1,9 @@
-import { Component, ElementRef, ViewChild, AfterViewChecked, OnInit, HostListener } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { FormsModule } from '@angular/forms';
+import { ChatStateService } from '../../services/chat-state.service';
 
 @Component({
   selector: 'app-ai-chat-floating',
@@ -28,7 +29,7 @@ import { FormsModule } from '@angular/forms';
       <div 
         *ngIf="isOpen"
         [@chatAnimation]
-        [class]="isFullScreen ? 'chat-panel chat-panel-fullscreen fixed inset-0 w-full h-full md:w-full md:h-full flex flex-col overflow-hidden rounded-none border z-[995] font-sans' : 'chat-panel absolute bottom-0 right-12 md:right-16 w-[90vw] md:w-[440px] overflow-hidden rounded-[24px] border shadow-2xl origin-bottom-right font-sans flex flex-col'"
+        class="chat-panel absolute bottom-0 right-12 md:right-16 w-[90vw] md:w-[440px] overflow-hidden rounded-[24px] border shadow-2xl origin-bottom-right font-sans flex flex-col"
       >
         <!-- Header -->
         <div class="chat-header flex items-center justify-between border-b px-5 py-4 relative overflow-hidden">
@@ -37,7 +38,7 @@ import { FormsModule } from '@angular/forms';
           
           <div class="flex items-center gap-3 relative z-10">
             <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center p-1.5 border border-white/10 shadow-[inset_0_0_10px_rgba(255,255,255,0.05)]">
-              <img src="assets/images/rotbot.png" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(0,245,255,0.3)]" alt="Rotbot">
+              <img src="assets/images/logo-rotbot.png" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(0,245,255,0.3)]" alt="Rotbot">
             </div>
             <div>
               <h3 class="font-sans text-sm font-bold tracking-wide leading-none" style="color: var(--text-primary);">
@@ -53,14 +54,10 @@ import { FormsModule } from '@angular/forms';
           <!-- Actions Container -->
           <div class="flex items-center gap-1.5 relative z-10">
             <!-- Fullscreen Toggle Button -->
-            <button (click)="toggleFullScreen()" class="p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition-all" [title]="isFullScreen ? 'Restaurar Pantalla' : 'Pantalla Completa'">
+            <button (click)="toggleFullScreen()" class="p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition-all" title="Pantalla Completa">
               <!-- Maximize Icon -->
-              <svg *ngIf="!isFullScreen" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
-              </svg>
-              <!-- Minimize Icon -->
-              <svg *ngIf="isFullScreen" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 14h6v6m10-6h-6v6M4 10h6V4m10 6h-6V4"></path>
               </svg>
             </button>
             
@@ -74,78 +71,82 @@ import { FormsModule } from '@angular/forms';
           </div>
         </div>
 
-        <!-- Messages Area -->
-        <div #scrollContainer [class]="isFullScreen ? 'flex-grow overflow-y-auto scroll-smooth custom-scrollbar fullscreen-messages-area space-y-6' : 'h-[430px] overflow-y-auto p-5 space-y-6 scroll-smooth custom-scrollbar'" style="overscroll-behavior: contain;">
-          
-          <!-- Welcome Intro Section -->
-          <div class="flex flex-col items-center justify-center text-center pb-6 border-b mt-2 mb-2 welcome-border">
-            <div class="w-60 h-60 mb-2 relative flex items-center justify-center overflow-visible">
-              <img src="assets/images/rotbot.png" class="w-52 h-52 object-contain relative z-10" alt="Rotbot Full">
-            </div>
-            <h2 class="text-lg font-headline uppercase tracking-wider mb-2" style="color: var(--text-primary);">
-              Sistemas con Rotbot IA
-            </h2>
-            <div class="text-[12px] font-light leading-relaxed px-4 max-w-[95%]" style="color: var(--text-secondary);">
-              <p class="mb-2">
-                ¡Hola! Soy RotBot, tu copiloto tecnológico. Estoy listo para guiarte en el diseño y desarrollo de sistemas a medida, e-commerce e integración de Inteligencia Artificial para potenciar tu negocio.
-              </p>
-            </div>
-          </div>
-
-          <div *ngFor="let msg of messages" class="flex w-full animate-fade-in" [ngClass]="{'justify-end': msg.role === 'user', 'justify-start': msg.role === 'assistant'}">
+        <!-- Messages + Input Container -->
+        <div class="flex flex-col flex-grow h-full overflow-hidden">
+          <!-- Messages Area -->
+          <div #scrollContainer class="h-[430px] overflow-y-auto p-5 space-y-6 scroll-smooth custom-scrollbar" style="overscroll-behavior: contain;">
             
-            <!-- Assistant Avatar in message -->
-            <div *ngIf="msg.role === 'assistant'" class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center mr-2.5 p-1 border avatar-bg">
-              <img src="assets/images/rotbot.png" class="w-full h-full object-contain" alt="Rotbot">
+            <!-- Welcome Intro Section -->
+            <div class="flex flex-col items-center justify-center text-center pb-6 border-b mt-2 mb-2 welcome-border">
+              <div class="w-60 h-60 mb-2 relative flex items-center justify-center overflow-visible">
+                <img src="assets/images/rotbot4.png" class="w-52 h-52 object-contain relative z-10" alt="Rotbot Full">
+              </div>
+              <h2 class="text-lg font-headline uppercase tracking-wider mb-2" style="color: var(--text-primary);">
+                Sistemas con Rotbot IA
+              </h2>
+              <div class="text-[12px] font-light leading-relaxed px-4 max-w-[95%]" style="color: var(--text-secondary);">
+                <p class="mb-2">
+                  ¡Hola! Soy RotBot, tu copiloto tecnológico. Estoy listo para guiarte en el diseño y desarrollo de sistemas a medida, e-commerce e integración de Inteligencia Artificial para potenciar tu negocio.
+                </p>
+              </div>
             </div>
 
-            <!-- Message Bubble -->
-            <div 
-              [ngClass]="{
-                'assistant-bubble py-2 text-[13.5px] leading-relaxed max-w-[72%]': msg.role === 'assistant',
-                'user-bubble px-4 py-3 rounded-2xl rounded-tr-sm text-[13.5px] leading-relaxed max-w-[85%] border shadow-sm': msg.role === 'user'
-              }"
-            >
-              {{ msg.content }}
+            <!-- Message List -->
+            <div *ngFor="let msg of chatService.messages" class="flex w-full animate-fade-in" [ngClass]="{'justify-end': msg.role === 'user', 'justify-start': msg.role === 'assistant'}">
+              
+              <!-- Assistant Avatar -->
+              <div *ngIf="msg.role === 'assistant'" class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center mr-2.5 p-1 border avatar-bg">
+                <img src="assets/images/logo-rotbot.png" class="w-full h-full object-contain" alt="Rotbot">
+              </div>
+
+              <!-- Message Bubble -->
+              <div 
+                [ngClass]="{
+                  'assistant-bubble py-2 text-[13.5px] leading-relaxed max-w-[72%]': msg.role === 'assistant',
+                  'user-bubble px-4 py-3 rounded-2xl rounded-tr-sm text-[13.5px] leading-relaxed max-w-[85%] border shadow-sm': msg.role === 'user'
+                }"
+              >
+                {{ msg.content }}
+              </div>
+            </div>
+
+            <!-- Typing Indicator -->
+            <div *ngIf="chatService.isTyping" class="flex items-center gap-3 w-full">
+              <div class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center p-1 border avatar-bg">
+                <img src="assets/images/logo-rotbot.png" class="w-full h-full object-contain" alt="Rotbot">
+              </div>
+              <div class="assistant-bubble py-2 flex items-center gap-1.5">
+                <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce"></div>
+                <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce [animation-delay:0.2s]"></div>
+                <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce [animation-delay:0.4s]"></div>
+              </div>
             </div>
           </div>
 
-          <!-- Typing Indicator -->
-          <div *ngIf="isTyping" class="flex items-center gap-3 w-full">
-            <div class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center p-1 border avatar-bg">
-              <img src="assets/images/rotbot.png" class="w-full h-full object-contain" alt="Rotbot">
+          <!-- Input Area -->
+          <div class="chat-input-area p-4 pt-3 border-t">
+            <form (submit)="sendMessage()" class="relative">
+              <input 
+                type="text" 
+                [(ngModel)]="chatService.userInput"
+                name="userInput"
+                placeholder="Pregúntale a Rotbot..."
+                class="chat-input w-full rounded-xl border py-3.5 pl-4 pr-12 text-[14px] font-light tracking-wide transition-all focus:ring-0 focus:outline-none"
+              />
+              <button 
+                type="submit"
+                [disabled]="!chatService.userInput.trim()"
+                class="chat-submit-btn absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-all"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+              </button>
+            </form>
+            <div class="flex justify-center mt-3">
+               <span class="text-[8px] uppercase tracking-widest font-sans font-medium opacity-30" style="color: var(--text-secondary);">Powered by Portalink IA</span>
             </div>
-            <div class="assistant-bubble py-2 flex items-center gap-1.5">
-              <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce"></div>
-              <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce [animation-delay:0.2s]"></div>
-              <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce [animation-delay:0.4s]"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Input Area -->
-        <div class="chat-input-area p-4 pt-3 border-t">
-          <form (submit)="sendMessage()" class="relative">
-            <input 
-              type="text" 
-              [(ngModel)]="userInput"
-              name="userInput"
-              placeholder="Pregúntale a Rotbot..."
-              class="chat-input w-full rounded-xl border py-3.5 pl-4 pr-12 text-[14px] font-light tracking-wide transition-all focus:ring-0 focus:outline-none"
-            />
-            <button 
-              type="submit"
-              [disabled]="!userInput.trim()"
-              class="chat-submit-btn absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-all"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="22" y1="2" x2="11" y2="13"></line>
-                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-              </svg>
-            </button>
-          </form>
-          <div class="flex justify-center mt-3">
-             <span class="text-[8px] uppercase tracking-widest font-sans font-medium opacity-30" style="color: var(--text-secondary);">Powered by Portalink IA</span>
           </div>
         </div>
       </div>
@@ -159,7 +160,8 @@ import { FormsModule } from '@angular/forms';
       font-family: var(--font-headline);
     }
     .chat-panel {
-      background: rgba(10, 10, 10, 0.82);
+      /* 100% Opacity Solid Background */
+      background: rgb(8, 8, 8);
       backdrop-filter: blur(30px);
       -webkit-backdrop-filter: blur(30px);
       border-color: rgba(255, 255, 255, 0.08);
@@ -167,7 +169,7 @@ import { FormsModule } from '@angular/forms';
       overscroll-behavior: contain;
     }
     .theme-light .chat-panel {
-      background: rgba(255, 255, 255, 0.9);
+      background: rgb(255, 255, 255);
       border-color: rgba(0, 0, 0, 0.06);
       box-shadow: 0 25px 60px rgba(0, 0, 0, 0.08), inset 0 0 1px rgba(0, 0, 0, 0.05);
       overscroll-behavior: contain;
@@ -192,27 +194,6 @@ import { FormsModule } from '@angular/forms';
     }
     .theme-light .welcome-border {
       border-color: rgba(0, 0, 0, 0.06);
-    }
-    .bg-accent-glow {
-      background-color: var(--accent-color, #00f5ff);
-    }
-    .animate-spin-slow {
-      animation: spin 12s linear infinite;
-    }
-    @keyframes spin {
-      100% { transform: rotate(360deg); }
-    }
-    .glass-mini-card {
-      background: rgba(255, 255, 255, 0.02);
-      border-color: rgba(255, 255, 255, 0.06);
-    }
-    .theme-light .glass-mini-card {
-      background: rgba(0, 0, 0, 0.01);
-      border-color: rgba(0, 0, 0, 0.04);
-    }
-    .glass-mini-card:hover {
-      border-color: var(--accent-color, #00f5ff) !important;
-      background: rgba(255, 255, 255, 0.05);
     }
     .avatar-bg {
       background: rgba(255, 255, 255, 0.04);
@@ -279,20 +260,6 @@ import { FormsModule } from '@angular/forms';
     .theme-light .custom-scrollbar::-webkit-scrollbar-thumb {
       background: rgba(0, 0, 0, 0.08);
     }
-    .fullscreen-messages-area {
-      padding-top: 2rem !important;
-      padding-bottom: 7.5rem !important;
-      padding-left: 1.5rem !important;
-      padding-right: 1.5rem !important;
-    }
-    @media (min-width: 768px) {
-      .fullscreen-messages-area {
-        padding-top: 6.5rem !important;
-        padding-bottom: 2.5rem !important;
-        padding-left: 4rem !important;
-        padding-right: 4rem !important;
-      }
-    }
   `],
   animations: [
     trigger('chatAnimation', [
@@ -319,11 +286,6 @@ export class AiChatFloatingComponent implements OnInit {
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
 
   isOpen = false;
-  userInput = '';
-  isTyping = false;
-  messages: { role: 'assistant' | 'user'; content: string }[] = [
-    { role: 'assistant', content: '¡Hola! Cuéntame qué tipo de sistema tienes en mente, o pregúntame cómo podemos integrar IA en tu próximo proyecto. ¿En qué te puedo ayudar hoy?' }
-  ];
 
   private styleKeywords: { [key: string]: string } = {
     'elegante': 'elegant',
@@ -342,9 +304,10 @@ export class AiChatFloatingComponent implements OnInit {
     'orgánico': 'organic'
   };
 
-  isFullScreen = false;
-
-  constructor(private router: Router) {}
+  constructor(
+    public chatService: ChatStateService,
+    private router: Router
+  ) {}
 
   ngOnInit() {}
 
@@ -352,10 +315,9 @@ export class AiChatFloatingComponent implements OnInit {
   onOpenAiChat(event: any) {
     this.isOpen = true;
     if (event.detail && event.detail.message) {
-      this.userInput = event.detail.message;
+      this.chatService.userInput = event.detail.message;
       this.sendMessage();
     }
-    // Ensure we start at the top on triggers
     setTimeout(() => {
       try {
         this.scrollContainer.nativeElement.scrollTop = 0;
@@ -365,11 +327,7 @@ export class AiChatFloatingComponent implements OnInit {
 
   toggleChat() {
     this.isOpen = !this.isOpen;
-    if (!this.isOpen) {
-      this.isFullScreen = false; // Reset fullscreen state when closing
-    }
     if (this.isOpen) {
-      // Ensure we start from the top
       setTimeout(() => {
         try {
           this.scrollContainer.nativeElement.scrollTop = 0;
@@ -379,44 +337,14 @@ export class AiChatFloatingComponent implements OnInit {
   }
 
   toggleFullScreen() {
-    this.isFullScreen = !this.isFullScreen;
-    setTimeout(() => {
-      this.scrollToBottom();
-    }, 100);
+    this.isOpen = false;
+    this.router.navigate(['/rotbot']);
   }
 
   sendMessage() {
-    if (!this.userInput.trim()) return;
-
-    const userText = this.userInput.trim();
-    this.messages.push({ role: 'user', content: userText });
-    this.userInput = '';
-    this.isTyping = true;
-    
-    // Scroll to bottom after user message
-    setTimeout(() => this.scrollToBottom(), 50);
-
-    // Simulate thinking
-    setTimeout(() => {
-      this.isTyping = false;
-      const detectedStyle = this.detectStyle(userText);
-      
-      this.messages.push({ 
-        role: 'assistant', 
-        content: `¡Entendido! Preparando la interfaz ${detectedStyle ? detectedStyle.toUpperCase() : 'PERSONALIZADA'}. Accediendo al sistema...` 
-      });
-      
-      // Scroll to bottom after assistant reply
-      setTimeout(() => this.scrollToBottom(), 50);
-
-      // Redirect after a small delay
-      setTimeout(() => {
-        this.router.navigate(['/design-showcase'], { 
-          queryParams: { style: detectedStyle || 'luxury' } 
-        });
-        this.isOpen = false;
-      }, 1200);
-    }, 1500);
+    if (!this.chatService.userInput.trim()) return;
+    this.isOpen = false;
+    this.router.navigate(['/rotbot']);
   }
 
   private detectStyle(text: string): string | null {

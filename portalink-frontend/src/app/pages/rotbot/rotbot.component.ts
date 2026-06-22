@@ -1,0 +1,436 @@
+import { Component, ElementRef, ViewChild, OnInit, AfterViewChecked } from '@angular/core';
+import { CommonModule, Location } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { ChatStateService } from '../../services/chat-state.service';
+
+@Component({
+  selector: 'app-rotbot-page',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule],
+  template: `
+    <div class="fixed inset-0 w-full h-full flex flex-col overflow-hidden font-sans page-container">
+      <!-- Header -->
+      <div class="chat-header flex items-center justify-between border-b px-6 py-5 relative overflow-hidden">
+        <!-- Cyber Scanner Line -->
+        <div class="absolute top-0 left-0 w-full h-[1px] scanner-line"></div>
+        
+        <div class="flex items-center gap-3 relative z-10">
+          <div class="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center p-1.5 border border-white/10 shadow-[inset_0_0_10px_rgba(255,255,255,0.05)]">
+            <img src="assets/images/logo-rotbot.png" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(0,245,255,0.3)]" alt="Rotbot">
+          </div>
+          <div>
+            <h3 class="font-sans text-sm font-bold tracking-wide leading-none" style="color: var(--text-primary);">
+              RotBot IA
+            </h3>
+            <div class="flex items-center gap-1.5 mt-1.5">
+               <span class="w-1.5 h-1.5 rounded-full animate-pulse shadow-[0_0_5px_var(--accent-color)]" style="background-color: var(--accent-color);"></span>
+               <p class="text-[8px] uppercase tracking-widest font-sans font-medium" style="color: var(--text-secondary); opacity: 0.7;">System Active</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Actions Container -->
+        <div class="flex items-center gap-4 relative z-10">
+          <!-- Volver al Inicio -->
+          <a routerLink="/" class="text-xs font-semibold uppercase tracking-wider flex items-center gap-2 hover:opacity-100 opacity-60 transition-all mr-2" style="color: var(--text-primary);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span class="hidden sm:inline">Volver al Inicio</span>
+          </a>
+
+          <!-- Back / Close Button -->
+          <button (click)="goBack()" class="p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition-all" title="Cerrar y Volver">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Chat Body Split (3 Columns) -->
+      <div class="flex flex-row flex-grow w-full overflow-hidden">
+        
+        <!-- Sidebar Izquierdo (Accesos Rápidos) -->
+        <div class="chat-sidebar hidden md:flex flex-col w-80 border-r py-8 px-6 gap-4 overflow-y-auto" style="border-color: rgba(255, 255, 255, 0.08);">
+          <h4 class="text-[11px] uppercase tracking-[0.2em] font-sans font-semibold opacity-40 mb-2" style="color: var(--text-secondary);">Accesos Rápidos</h4>
+          
+          <button (click)="sendShortcutMessage('Quiero E-commerce')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
+            <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
+            <span class="text-[13px] font-medium leading-snug" style="color: var(--text-primary);">Quiero un E-commerce</span>
+          </button>
+          
+          <button (click)="sendShortcutMessage('Muéstrame diseños móviles')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
+            <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
+            <span class="text-[13px] font-medium leading-snug" style="color: var(--text-primary);">Ver diseños móviles</span>
+          </button>
+          
+          <button (click)="sendShortcutMessage('Necesito un sistema para mi negocio')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
+            <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
+            <span class="text-[13px] font-medium leading-snug" style="color: var(--text-primary);">Sistema para mi negocio</span>
+          </button>
+          
+          <button (click)="sendShortcutMessage('Quiero una implementación de IA en mi negocio')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
+            <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
+            <span class="text-[13px] font-medium leading-snug" style="color: var(--text-primary);">Implementación de IA</span>
+          </button>
+
+          <h4 class="text-[11px] uppercase tracking-[0.2em] font-sans font-semibold opacity-40 mt-4 mb-2" style="color: var(--text-secondary);">Recomendaciones</h4>
+
+          <button (click)="sendShortcutMessage('Diseño de portafolio web premium')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
+            <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
+            <span class="text-[13px] font-medium leading-snug" style="color: var(--text-primary);">Portafolio web premium</span>
+          </button>
+
+          <button (click)="sendShortcutMessage('Optimización SEO y rendimiento')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
+            <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
+            <span class="text-[13px] font-medium leading-snug" style="color: var(--text-primary);">Optimización SEO</span>
+          </button>
+
+          <button (click)="sendShortcutMessage('Diseño UI/UX a medida')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
+            <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
+            <span class="text-[13px] font-medium leading-snug" style="color: var(--text-primary);">Diseño UI/UX a medida</span>
+          </button>
+
+          <button (click)="sendShortcutMessage('Infraestructura Cloud y bases de datos')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
+            <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
+            <span class="text-[13px] font-medium leading-snug" style="color: var(--text-primary);">Infraestructura Cloud</span>
+          </button>
+        </div>
+
+        <!-- Messages + Input Container (Centro) -->
+        <div class="flex flex-col flex-grow h-full overflow-hidden">
+          <!-- Messages Area -->
+          <div #scrollContainer class="flex-grow overflow-y-auto scroll-smooth custom-scrollbar messages-area space-y-6" style="overscroll-behavior: contain;">
+            
+            <!-- Welcome Intro Section -->
+            <div class="flex flex-col items-center justify-center text-center pb-6 border-b mt-2 mb-2 welcome-border">
+              <div class="w-80 h-80 mb-2 relative flex items-center justify-center overflow-visible">
+                <img src="assets/images/rotbot4.png" class="w-72 h-72 object-contain relative z-10" alt="Rotbot Full">
+              </div>
+              <h2 class="text-lg font-headline uppercase tracking-wider mb-2" style="color: var(--text-primary);">
+                Sistemas con Rotbot IA
+              </h2>
+              <div class="text-[12px] font-light leading-relaxed px-4 max-w-[95%]" style="color: var(--text-secondary);">
+                <p class="mb-2">
+                  ¡Hola! Soy RotBot, tu copiloto tecnológico. Estoy listo para guiarte en el diseño y desarrollo de sistemas a medida, e-commerce e integración de Inteligencia Artificial para potenciar tu negocio.
+                </p>
+              </div>
+            </div>
+
+            <!-- Messages List -->
+            <div *ngFor="let msg of chatService.messages" class="flex w-full px-6 md:px-16 animate-fade-in" [ngClass]="{'justify-end': msg.role === 'user', 'justify-start': msg.role === 'assistant'}">
+              
+              <!-- Assistant Avatar -->
+              <div *ngIf="msg.role === 'assistant'" class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center mr-2.5 p-1 border avatar-bg">
+                <img src="assets/images/logo-rotbot.png" class="w-full h-full object-contain" alt="Rotbot">
+              </div>
+
+              <!-- Message Bubble -->
+              <div 
+                [ngClass]="{
+                  'assistant-bubble py-2 text-[13.5px] leading-relaxed max-w-[72%]': msg.role === 'assistant',
+                  'user-bubble px-4 py-3 rounded-2xl rounded-tr-sm text-[13.5px] leading-relaxed max-w-[85%] border shadow-sm': msg.role === 'user'
+                }"
+              >
+                {{ msg.content }}
+              </div>
+            </div>
+
+            <!-- Typing Indicator -->
+            <div *ngIf="chatService.isTyping" class="flex items-center gap-3 w-full px-6 md:px-16">
+              <div class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center p-1 border avatar-bg">
+                <img src="assets/images/logo-rotbot.png" class="w-full h-full object-contain" alt="Rotbot">
+              </div>
+              <div class="assistant-bubble py-2 flex items-center gap-1.5">
+                <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce"></div>
+                <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce [animation-delay:0.2s]"></div>
+                <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce [animation-delay:0.4s]"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Input Area -->
+          <div class="chat-input-area p-6 border-t">
+            <form (submit)="sendMessage()" class="relative max-w-4xl mx-auto">
+              <input 
+                type="text" 
+                [(ngModel)]="chatService.userInput"
+                name="userInput"
+                placeholder="Pregúntale a Rotbot..."
+                class="chat-input w-full rounded-xl border py-4 pl-5 pr-14 text-[14px] font-light tracking-wide transition-all focus:ring-0 focus:outline-none"
+              />
+              <button 
+                type="submit"
+                [disabled]="!chatService.userInput.trim()"
+                class="chat-submit-btn absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-all"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+              </button>
+            </form>
+            <div class="flex justify-center mt-3">
+               <span class="text-[8px] uppercase tracking-widest font-sans font-medium opacity-30" style="color: var(--text-secondary);">Powered by Portalink IA</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Derecho (Info Rotbot) -->
+        <div class="chat-sidebar hidden md:flex flex-col w-80 border-l py-8 px-6 gap-6 overflow-y-auto" style="border-color: rgba(255, 255, 255, 0.08);">
+          <h4 class="text-[11px] uppercase tracking-[0.2em] font-sans font-semibold opacity-40 mb-2" style="color: var(--text-secondary);">¿Quién es Rotbot?</h4>
+          
+          <div class="flex flex-col items-center text-center gap-4 p-5 rounded-2xl border" style="background: rgba(255, 255, 255, 0.01); border-color: rgba(255, 255, 255, 0.06);">
+            <div class="w-24 h-24 rounded-2xl bg-white/5 flex items-center justify-center p-2 border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.05)]">
+              <img src="assets/images/logo-rotbot.png" class="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(0,245,255,0.4)]" alt="Rotbot Logo">
+            </div>
+            <div>
+              <h5 class="text-sm font-bold tracking-wide" style="color: var(--text-primary);">Copiloto Tecnológico</h5>
+              <p class="text-xs font-light mt-2 leading-relaxed" style="color: var(--text-secondary);">
+                Rotbot es una inteligencia artificial diseñada para asesorar y guiar en el desarrollo de soluciones digitales avanzadas, desarrollo a medida y automatizaciones de procesos comerciales.
+              </p>
+            </div>
+          </div>
+
+          <h4 class="text-[11px] uppercase tracking-[0.2em] font-sans font-semibold opacity-40 mt-2 mb-2" style="color: var(--text-secondary);">¿Tienes un Proyecto?</h4>
+
+          <button (click)="sendShortcutMessage('Quiero una implementación de IA en mi negocio')" class="shortcut-btn flex flex-col gap-2 p-5 rounded-xl text-left border transition-all duration-300">
+            <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--accent-color);">Oportunidad</span>
+            <span class="text-[13px] font-semibold leading-snug" style="color: var(--text-primary);">Quiero mi IA para mi negocio</span>
+            <p class="text-[11px] font-light opacity-70 leading-normal" style="color: var(--text-secondary);">
+              Empieza hoy la transformación digital y automatiza tu negocio con Inteligencia Artificial.
+            </p>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  `,
+  styles: [`
+    :host {
+      --font-headline: 'Bebas Neue', sans-serif;
+    }
+    .font-headline {
+      font-family: var(--font-headline);
+    }
+    .page-container {
+      /* 100% Opacity Background */
+      background: rgb(8, 8, 8);
+      z-index: 9999;
+    }
+    .theme-light .page-container {
+      background: rgb(255, 255, 255);
+    }
+    .chat-header {
+      border-color: rgba(255, 255, 255, 0.08);
+      background: rgb(8, 8, 8);
+    }
+    .theme-light .chat-header {
+      border-color: rgba(0, 0, 0, 0.06);
+      background: rgb(255, 255, 255);
+    }
+    .scanner-line {
+      background: linear-gradient(90deg, transparent, var(--accent-color, #00f5ff), transparent);
+      animation: scan 3s linear infinite;
+      opacity: 0.8;
+    }
+    @keyframes scan {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    .welcome-border {
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    .theme-light .welcome-border {
+      border-color: rgba(0, 0, 0, 0.06);
+    }
+    .avatar-bg {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    .theme-light .avatar-bg {
+      background: rgba(0, 0, 0, 0.02);
+      border-color: rgba(0, 0, 0, 0.05);
+    }
+    .assistant-bubble {
+      background: transparent;
+      border: none !important;
+      box-shadow: none !important;
+      color: var(--text-primary, #ffffff);
+      padding: 8px 0 !important;
+    }
+    .user-bubble {
+      background: var(--accent-color, #00f5ff);
+      border-color: var(--accent-color, #00f5ff);
+      color: #000000;
+      font-weight: 600;
+    }
+    .chat-input-area {
+      border-color: rgba(255, 255, 255, 0.08);
+      background: rgb(8, 8, 8);
+    }
+    .theme-light .chat-input-area {
+      border-color: rgba(0, 0, 0, 0.06);
+      background: rgb(255, 255, 255);
+    }
+    .chat-input {
+      background: rgba(255, 255, 255, 0.02);
+      border-color: rgba(255, 255, 255, 0.08);
+      color: var(--text-primary, #ffffff);
+    }
+    .theme-light .chat-input {
+      background: rgba(0, 0, 0, 0.01);
+      border-color: rgba(0, 0, 0, 0.06);
+    }
+    .chat-input:focus {
+      border-color: var(--accent-color, #00f5ff);
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: 0 0 15px rgba(0, 245, 255, 0.08);
+    }
+    .chat-submit-btn {
+      color: var(--accent-color, #00f5ff);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.1);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+    }
+    .theme-light .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.08);
+    }
+    .messages-area {
+      padding-top: 2rem !important;
+      padding-bottom: 2rem !important;
+    }
+    @media (min-width: 768px) {
+      .messages-area {
+        padding-top: 4rem !important;
+        padding-bottom: 2rem !important;
+      }
+    }
+    .chat-sidebar {
+      background: rgba(0, 0, 0, 0.15);
+    }
+    .theme-light .chat-sidebar {
+      background: rgba(0, 0, 0, 0.02);
+      border-color: rgba(0, 0, 0, 0.06) !important;
+    }
+    .shortcut-btn {
+      background: rgba(255, 255, 255, 0.02);
+      border-color: rgba(255, 255, 255, 0.06);
+    }
+    .theme-light .shortcut-btn {
+      background: rgba(0, 0, 0, 0.01);
+      border-color: rgba(0, 0, 0, 0.04);
+    }
+    .shortcut-btn:hover {
+      border-color: var(--accent-color, #00f5ff) !important;
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateY(-1px);
+    }
+    .theme-light .shortcut-btn:hover {
+      background: rgba(0, 0, 0, 0.02);
+    }
+  `]
+})
+export class RotbotComponent implements OnInit, AfterViewChecked {
+  @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
+
+  private styleKeywords: { [key: string]: string } = {
+    'elegante': 'elegant',
+    'luxury': 'luxury',
+    'minimalista': 'minimal',
+    'minimal': 'minimal',
+    'brutal': 'brutalist',
+    'brutalista': 'brutalist',
+    'retro': 'retro',
+    'oscuro': 'dark',
+    'colorful': 'colorful',
+    'colorido': 'colorful',
+    'futurista': 'futuristic',
+    'editorial': 'editorial',
+    'organico': 'organic',
+    'orgánico': 'organic'
+  };
+
+  constructor(
+    public chatService: ChatStateService,
+    private router: Router,
+    private location: Location
+  ) {}
+
+  ngOnInit() {
+    this.scrollToBottom();
+    if (this.chatService.userInput.trim()) {
+      setTimeout(() => {
+        this.sendMessage();
+      }, 300);
+    }
+  }
+
+  ngAfterViewChecked() {
+    this.scrollToBottom();
+  }
+
+  goBack() {
+    this.location.back();
+  }
+
+  sendShortcutMessage(text: string) {
+    this.chatService.userInput = text;
+    this.sendMessage();
+  }
+
+  sendMessage() {
+    if (!this.chatService.userInput.trim()) return;
+
+    const userText = this.chatService.userInput.trim();
+    this.chatService.addMessage('user', userText);
+    this.chatService.userInput = '';
+    this.chatService.isTyping = true;
+    
+    setTimeout(() => this.scrollToBottom(), 50);
+
+    // Simulate thinking
+    setTimeout(() => {
+      this.chatService.isTyping = false;
+      const detectedStyle = this.detectStyle(userText);
+      
+      this.chatService.addMessage('assistant', 
+        `¡Entendido! Preparando la interfaz ${detectedStyle ? detectedStyle.toUpperCase() : 'PERSONALIZADA'}. Accediendo al sistema...`
+      );
+      
+      setTimeout(() => this.scrollToBottom(), 50);
+
+      // Redirect after a small delay
+      setTimeout(() => {
+        this.router.navigate(['/design-showcase'], { 
+          queryParams: { style: detectedStyle || 'luxury' } 
+        });
+      }, 1200);
+    }, 1500);
+  }
+
+  private detectStyle(text: string): string | null {
+    const lowerText = text.toLowerCase();
+    for (const [key, value] of Object.entries(this.styleKeywords)) {
+      if (lowerText.includes(key)) return value;
+    }
+    return null;
+  }
+
+  private scrollToBottom(): void {
+    try {
+      this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+    } catch (err) {}
+  }
+}

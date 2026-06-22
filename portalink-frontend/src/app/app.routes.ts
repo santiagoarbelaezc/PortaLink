@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 import { LinkComponent } from './pages/link/link.component';
 import { ProyectosComponent } from './pages/proyectos/proyectos.component';
+import { RotbotComponent } from './pages/rotbot/rotbot.component';
+import { PersonalizarComponent } from './pages/personalizar/personalizar.component';
 
 export const routes: Routes = [
   { 
@@ -22,6 +24,16 @@ export const routes: Routes = [
     path: 'links', 
     component: LinkComponent, 
     data: { animation: 'LinkPage' } 
+  },
+  {
+    path: 'rotbot',
+    component: RotbotComponent,
+    data: { animation: 'RotbotPage' }
+  },
+  {
+    path: 'personalizar',
+    component: PersonalizarComponent,
+    data: { animation: 'PersonalizarPage' }
   },
   { path: '**', redirectTo: '' }
 ];
