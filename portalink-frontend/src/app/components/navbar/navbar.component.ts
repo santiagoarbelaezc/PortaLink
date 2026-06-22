@@ -14,19 +14,29 @@ import { RouterModule, Router, NavigationEnd } from '@angular/router';
          style="background: var(--nav-bg); border-bottom: 1px solid var(--card-border);">
       <div class="w-full flex items-center justify-between">
 
-        <!-- Left Side: Elegant borderless Theme Switcher with color indicators -->
-        <div class="flex items-center gap-4 flex-1">
-          <button (click)="setTheme('dark')" 
-                  class="relative w-5 h-5 flex items-center justify-center focus:outline-none cursor-pointer group"
-                  title="Tema Negro">
-            <span class="w-2.5 h-2.5 rounded-full bg-black border border-white/20 transition-transform duration-300 group-hover:scale-125"></span>
-            <span *ngIf="currentTheme === 'dark'" class="absolute inset-0 rounded-full border border-white/50"></span>
-          </button>
-          <button (click)="setTheme('light')" 
-                  class="relative w-5 h-5 flex items-center justify-center focus:outline-none cursor-pointer group"
-                  title="Tema Blanco">
-            <span class="w-2.5 h-2.5 rounded-full bg-white border border-black/20 transition-transform duration-300 group-hover:scale-125"></span>
-            <span *ngIf="currentTheme === 'light'" class="absolute inset-0 rounded-full border border-black/50"></span>
+        <!-- Left Side: Premium Theme Switcher -->
+        <div class="flex items-center flex-1">
+          <button (click)="toggleTheme()" 
+                  class="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer border hover:scale-105 active:scale-95"
+                  [style.background]="currentTheme === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)'"
+                  [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.12)'"
+                  [title]="currentTheme === 'light' ? 'Cambiar a Tema Oscuro' : 'Cambiar a Tema Claro'">
+            <!-- Moon Icon (Light Mode - click to go Dark) -->
+            <svg *ngIf="currentTheme === 'light'" class="w-5 h-5 text-neutral-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <!-- Sun Icon (Dark Mode - click to go Light) -->
+            <svg *ngIf="currentTheme === 'dark'" class="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
           </button>
         </div>
 
@@ -53,18 +63,29 @@ import { RouterModule, Router, NavigationEnd } from '@angular/router';
       </div>
     </nav>
 
-    <!-- Mobile floating Theme Switcher (top right) with Color Squares -->
-    <div class="md:hidden fixed top-6 right-6 z-[9000] flex items-center border rounded-none backdrop-blur-xl shadow-2xl transition-all duration-500"
-         style="background: var(--nav-bg); border-color: var(--card-border);">
-      <button (click)="setTheme('dark')" 
-              class="w-9 h-9 flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer"
-              [style.background]="currentTheme === 'dark' ? 'var(--text-primary)' : 'transparent'">
-        <span class="w-3 h-3 rounded-none bg-black border border-white/20"></span>
-      </button>
-      <button (click)="setTheme('light')" 
-              class="w-9 h-9 flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer"
-              [style.background]="currentTheme === 'light' ? 'var(--text-primary)' : 'transparent'">
-        <span class="w-3 h-3 rounded-none bg-white border border-black/20"></span>
+    <!-- Mobile floating Theme Switcher (top right) -->
+    <div class="md:hidden fixed top-6 right-6 z-[9000]">
+      <button (click)="toggleTheme()" 
+              class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer border shadow-lg backdrop-blur-md active:scale-95"
+              [style.background]="currentTheme === 'light' ? 'rgba(255,255,255,0.9)' : 'rgba(15,15,15,0.85)'"
+              [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.12)'"
+              [title]="currentTheme === 'light' ? 'Cambiar a Tema Oscuro' : 'Cambiar a Tema Claro'">
+        <!-- Moon Icon (Light Mode - click to go Dark) -->
+        <svg *ngIf="currentTheme === 'light'" class="w-5 h-5 text-neutral-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <!-- Sun Icon (Dark Mode - click to go Light) -->
+        <svg *ngIf="currentTheme === 'dark'" class="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
       </button>
     </div>
 
@@ -81,8 +102,10 @@ import { RouterModule, Router, NavigationEnd } from '@angular/router';
            [style.background]="currentTheme === 'light' ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.88)'"
            [style.borderColor]="currentTheme === 'light' ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.12)'">
         
+
+        
         <!-- Draggable active selection background pill -->
-        <div class="absolute top-1/2 -translate-y-1/2 h-[42px] rounded-full pointer-events-none"
+        <div class="absolute left-0 top-1/2 -translate-y-1/2 h-[42px] rounded-full pointer-events-none"
              [style.background]="currentTheme === 'light' ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.12)'"
              [style.width.px]="pillWidth"
              [style.transform]="'translate3d(' + pillOffset + 'px, -50%, 0)'"
@@ -165,7 +188,7 @@ import { RouterModule, Router, NavigationEnd } from '@angular/router';
   `]
 })
 export class NavbarComponent implements OnInit {
-  private router = inject(Router);
+  public router = inject(Router);
 
   @ViewChild('tabBar') tabBarElement!: ElementRef;
 
@@ -190,12 +213,15 @@ export class NavbarComponent implements OnInit {
 
   // Dragging active pill state
   isDragging = false;
+  hasDragged = false;
   startX = 0;
   startPillOffset = 0;
   pillOffset = 8;
   pillWidth = 50;
   private containerLeft = 0;
   private containerWidth = 0;
+
+  isManualScroll = false; // Prevents scroll listener from reverting the pill during smooth scroll
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -219,7 +245,7 @@ export class NavbarComponent implements OnInit {
       this.router.events.subscribe(event => {
         if (event instanceof NavigationEnd) {
           setTimeout(() => {
-            this.onWindowScroll();
+            if (!this.isManualScroll) this.onWindowScroll();
             // Trigger pill updates on navigation
             this.updatePillPosition();
             setTimeout(() => this.updatePillPosition(), 200);
@@ -231,7 +257,7 @@ export class NavbarComponent implements OnInit {
 
   @HostListener('window:scroll', [])
   onWindowScroll() {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || this.isManualScroll) return;
 
     if (this.router.url.includes('/links')) {
       this.activeSection = '/links';
@@ -266,7 +292,13 @@ export class NavbarComponent implements OnInit {
   updatePillPosition() {
     if (typeof document === 'undefined') return;
     setTimeout(() => {
-      const activeItem = document.querySelector('.mobile-nav-item.active') as HTMLElement;
+      let activeItem: HTMLElement | null = null;
+      if (this.tabBarElement && this.tabBarElement.nativeElement) {
+        activeItem = this.tabBarElement.nativeElement.querySelector('.mobile-nav-item.active') as HTMLElement;
+      } else {
+        activeItem = document.querySelector('.mobile-nav-item.active') as HTMLElement;
+      }
+
       if (activeItem) {
         this.pillOffset = activeItem.offsetLeft;
         this.pillWidth = activeItem.clientWidth;
@@ -317,10 +349,11 @@ export class NavbarComponent implements OnInit {
 
   startDrag(clientX: number, containerLeft: number) {
     if (typeof document === 'undefined') return;
-    const container = document.querySelector('.mobile-nav-item.active')?.parentElement as HTMLElement;
+    const container = this.tabBarElement?.nativeElement || document.querySelector('.mobile-nav-item.active')?.parentElement;
     if (!container) return;
 
     this.isDragging = true;
+    this.hasDragged = false;
     this.containerLeft = containerLeft;
     this.containerWidth = container.clientWidth;
     this.startX = clientX - this.containerLeft;
@@ -331,6 +364,11 @@ export class NavbarComponent implements OnInit {
     if (!this.isDragging) return;
     const currentX = clientX - this.containerLeft;
     const deltaX = currentX - this.startX;
+
+    if (Math.abs(deltaX) > 8) {
+      this.hasDragged = true;
+    }
+
     const maxOffset = this.containerWidth - this.pillWidth - 8;
     this.pillOffset = Math.max(8, Math.min(this.startPillOffset + deltaX, maxOffset));
   }
@@ -339,8 +377,16 @@ export class NavbarComponent implements OnInit {
     if (!this.isDragging) return;
     this.isDragging = false;
 
+    // If it was a simple click/tap without drag distance, let normal click logic proceed
+    if (!this.hasDragged) {
+      this.updatePillPosition();
+      return;
+    }
+
     if (typeof document === 'undefined') return;
-    const items = Array.from(document.querySelectorAll('.mobile-nav-item')) as HTMLElement[];
+    const container = this.tabBarElement?.nativeElement;
+    if (!container) return;
+    const items = Array.from(container.querySelectorAll('.mobile-nav-item')) as HTMLElement[];
     if (items.length === 0) return;
 
     const pillCenter = this.pillOffset + (this.pillWidth / 2);
@@ -374,6 +420,10 @@ export class NavbarComponent implements OnInit {
     }
   }
 
+  toggleTheme() {
+    this.setTheme(this.currentTheme === 'light' ? 'dark' : 'light');
+  }
+
   private scrollIntoView(id: string) {
     const element = document.getElementById(id);
     if (element) {
@@ -389,6 +439,13 @@ export class NavbarComponent implements OnInit {
 
   scrollTo(link: string, event: Event) {
     if (event) event.preventDefault();
+
+    this.activeSection = link;
+    this.updatePillPosition();
+
+    this.isManualScroll = true;
+    setTimeout(() => { this.isManualScroll = false; }, 800);
+
     if (link.startsWith('#')) {
       const targetId = link.replace('#', '');
       const isRoot = this.router.url === '/' || this.router.url === '/proyectos';
@@ -404,4 +461,3 @@ export class NavbarComponent implements OnInit {
     }
   }
 }
-
