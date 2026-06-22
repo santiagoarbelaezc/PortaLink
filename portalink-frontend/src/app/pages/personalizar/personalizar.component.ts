@@ -509,7 +509,7 @@ interface ProductItem {
         </aside>
 
         <!-- RIGHT PANEL: Giant Live Preview -->
-        <main class="flex-grow h-full bg-[#0d0d0f] overflow-y-auto p-10 flex flex-col items-center">
+        <main class="flex-grow h-full bg-[#0d0d0f] overflow-hidden p-10 flex flex-col items-center">
           <div class="w-full max-w-[1000px] flex items-center justify-between mb-4">
             <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-white/30">Previsualización del Sitio en Vivo</h2>
             <div class="flex gap-2">
@@ -523,7 +523,7 @@ interface ProductItem {
           </div>
 
           <!-- The Live Web Mockup Page -->
-          <div class="w-full max-w-[1000px] bg-white rounded-3xl border shadow-2xl overflow-hidden transition-all duration-500 flex flex-col justify-start min-h-[90%] {{ selectedFont }}"
+          <div class="w-full max-w-[1000px] h-[calc(100vh-180px)] bg-white rounded-3xl border shadow-2xl overflow-y-auto custom-scrollbar transition-all duration-500 flex flex-col justify-start {{ selectedFont }}"
                [style.background]="selectedTheme.bg"
                [style.borderColor]="selectedTheme.accent + '22'"
                [style.color]="selectedTheme.primary">
