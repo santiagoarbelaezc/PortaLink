@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, OnDestroy, effect } from '@angular/core';
+import { Component, inject, signal, OnInit, OnDestroy, effect, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { HeroComponent } from '../../components/hero/hero.component';
@@ -30,7 +30,7 @@ import { Subscription } from 'rxjs';
       <app-hero [data]="portfolioData().hero"></app-hero>
       
       <section class="rotbot-banner relative">
-        <video autoplay [muted]="true" onvolumechange="this.muted=true; this.volume=0;" volume="0" loop playsinline class="video-bg">
+        <video #robotVideo autoplay [muted]="true" onvolumechange="this.muted=true; this.volume=0;" volume="0" loop playsinline class="video-bg">
           <source src="assets/videos/video-robot.mp4" type="video/mp4">
         </video>
         <div class="overlay"></div>
@@ -120,6 +120,30 @@ export class ProyectosComponent implements OnInit, OnDestroy {
   currentBackground = '#000000';
   portfolioData = signal<any>(null);
   private sub?: Subscription;
+  private observer?: IntersectionObserver;
+  private videoEl?: HTMLVideoElement;
+
+  @ViewChild('robotVideo') set robotVideo(el: ElementRef<HTMLVideoElement> | undefined) {
+    if (el && el.nativeElement && !this.videoEl) {
+      this.videoEl = el.nativeElement;
+      this.setupIntersectionObserver();
+    }
+  }
+
+  setupIntersectionObserver() {
+    if (typeof window !== 'undefined' && 'IntersectionObserver' in window && this.videoEl) {
+      this.observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            this.videoEl?.play().catch(() => {});
+          } else {
+            this.videoEl?.pause();
+          }
+        });
+      }, { threshold: 0.05 });
+      this.observer.observe(this.videoEl);
+    }
+  }
 
   constructor() {
     // Initial sync with service
@@ -155,5 +179,8 @@ export class ProyectosComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.sub?.unsubscribe();
     window.removeEventListener('message', this.handleMessage);
+    if (this.observer) {
+      this.observer.disconnect();
+    }
   }
 }
