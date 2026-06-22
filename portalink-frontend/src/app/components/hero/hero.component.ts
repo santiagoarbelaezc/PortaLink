@@ -12,15 +12,23 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
       <div class="container mx-auto px-6 pt-20 pb-28 md:pt-32 md:pb-0 grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center relative z-10">
         <!-- Text Content -->
         <div class="order-2 lg:order-1">
-          <div class="overflow-hidden mb-4">
-            <h2 class="text-white/60 font-sans text-sm tracking-[0.3em] uppercase opacity-0 animate-fade-up" style="animation-delay: 0.8s;">
+          <div class="flex items-center gap-4 mb-4 opacity-0 animate-fade-up" style="animation-delay: 0.8s;">
+            <div class="h-px w-10 bg-white"></div>
+            <span class="text-white/50 text-[10px] uppercase tracking-[0.4em] font-bold">
               {{ data?.title || 'Digital Visionary & Developer' }}
-            </h2>
+            </span>
           </div>
 
-          <h1 class="text-5xl sm:text-7xl md:text-9xl font-headline leading-none mb-6 md:mb-8" style="letter-spacing: -0.04em;">
+          <h1 class="text-6xl sm:text-8xl md:text-[100px] font-headline uppercase leading-[0.9] tracking-tighter mb-6 md:mb-8">
             <span class="block overflow-hidden">
-              <span class="block animate-fade-up text-white/80" style="animation-delay: 1.0s;">{{ data?.subtitle || 'SANTIAGO' }}</span>
+              <span class="block animate-fade-up text-white" style="animation-delay: 1.0s;">
+                {{ firstName }}
+              </span>
+            </span>
+            <span class="block overflow-hidden" *ngIf="lastName">
+              <span class="block animate-fade-up text-white/50" style="animation-delay: 1.2s;">
+                {{ lastName }}
+              </span>
             </span>
           </h1>
           
@@ -32,12 +40,12 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
             <a (click)="scrollTo('#portfolio', $event)" 
                class="cta-button group cursor-pointer no-underline" 
                appMagnetic [appMagnetic]="0.2">
-              <span class="cta-text">{{ data?.ctaText || 'View Portfolio' }}</span>
-              <div class="cta-icon-wrapper">
-                <svg class="cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M7 17L17 7M17 7H7M17 7V17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </div>
+               <span class="cta-text">{{ data?.ctaText || 'View Portfolio' }}</span>
+               <div class="cta-icon-wrapper">
+                 <svg class="cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                   <path d="M7 17L17 7M17 7H7M17 7V17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                 </svg>
+               </div>
             </a>
           </div>
         </div>
@@ -154,6 +162,17 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
 export class HeroComponent {
   @Input() data: any;
   parallaxTransform = '';
+
+  get firstName(): string {
+    const name = this.data?.subtitle || 'SANTIAGO';
+    return name.split(' ')[0] || name;
+  }
+
+  get lastName(): string {
+    const name = this.data?.subtitle || '';
+    const parts = name.split(' ');
+    return parts.slice(1).join(' ') || '';
+  }
 
   onImageMove(e: MouseEvent) {
     const el = e.currentTarget as HTMLElement;
