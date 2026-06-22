@@ -95,7 +95,7 @@ import { filter } from 'rxjs';
               <span class="preview-url">santiago.dev/preview</span>
             </div>
             <div class="iframe-container">
-              <iframe #previewIframe src="/portfolio" frameborder="0"></iframe>
+              <iframe #previewIframe src="/proyectos" frameborder="0"></iframe>
             </div>
           </aside>
         </div>

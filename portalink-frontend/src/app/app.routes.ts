@@ -1,18 +1,23 @@
 import { Routes } from '@angular/router';
-import { LinktreeComponent } from './pages/linktree/linktree.component';
-import { PortfolioPageComponent } from './pages/portfolio-page/portfolio-page.component';
+import { LinkComponent } from './pages/link/link.component';
+import { ProyectosComponent } from './pages/proyectos/proyectos.component';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { 
     path: '', 
-    component: LinktreeComponent, 
-    data: { animation: 'LinktreePage' } 
+    component: LinkComponent, 
+    data: { animation: 'LinkPage' } 
   },
   { 
-    path: 'portfolio', 
-    component: PortfolioPageComponent, 
-    data: { animation: 'PortfolioPage' } 
+    path: 'proyectos', 
+    component: ProyectosComponent, 
+    data: { animation: 'ProyectosPage' } 
+  },
+  {
+    path: 'portfolio',
+    redirectTo: 'proyectos',
+    pathMatch: 'full'
   },
   {
     path: 'admin/login',
