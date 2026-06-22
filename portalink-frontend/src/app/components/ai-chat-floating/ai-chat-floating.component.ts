@@ -20,7 +20,7 @@ import { FormsModule } from '@angular/forms';
         class="group relative flex h-[280px] w-[190px] items-center justify-end bg-transparent border-none overflow-visible shadow-none origin-right"
       >
         <div class="relative flex items-center justify-end w-full h-full">
-          <img src="assets/images/robot-izquierda.png" class="h-full w-auto object-contain object-right relative z-10 translate-x-6" alt="Rotbot">
+          <img src="assets/images/robot-izquierda.png" class="h-full w-auto object-contain object-right relative z-10 translate-x-8" alt="Rotbot">
         </div>
       </button>
 
