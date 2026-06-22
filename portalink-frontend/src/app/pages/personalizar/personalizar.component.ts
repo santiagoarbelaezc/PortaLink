@@ -56,7 +56,9 @@ interface ProductItem {
                   <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 0 1-4-4V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v12a4 4 0 0 1-4 4zm0 0h12a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 0 1 2.828 0l2.829 2.829a2 2 0 0 1 0 2.828l-8.486 8.485M7 17h.01"></path></svg>
                   Estilo & Temas
                 </span>
-                <span class="text-xs text-white/40">{{ activeAccordion === 'style' ? '▲' : '▼' }}</span>
+                <svg class="w-3.5 h-3.5 text-white/40 transition-transform duration-300" [class.rotate-180]="activeAccordion === 'style'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
+                </svg>
               </button>
               
               <div class="accordion-content p-4 border-t flex flex-col gap-4" *ngIf="activeAccordion === 'style'">
@@ -85,6 +87,32 @@ interface ProductItem {
                   </select>
                 </div>
 
+                <!-- Button Roundness Selector -->
+                <div class="flex flex-col gap-2">
+                  <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Forma de Botones</label>
+                  <div class="grid grid-cols-3 gap-1 bg-white/5 p-1 rounded-xl border border-white/10">
+                    <button (click)="buttonStyle = 'rounded-none'" [class.active-btn-shape]="buttonStyle === 'rounded-none'" class="py-2 text-[10px] uppercase font-bold text-white/60 hover:text-white rounded-lg transition-all">
+                      Square
+                    </button>
+                    <button (click)="buttonStyle = 'rounded-xl'" [class.active-btn-shape]="buttonStyle === 'rounded-xl'" class="py-2 text-[10px] uppercase font-bold text-white/60 hover:text-white rounded-lg transition-all">
+                      Rounded
+                    </button>
+                    <button (click)="buttonStyle = 'rounded-full'" [class.active-btn-shape]="buttonStyle === 'rounded-full'" class="py-2 text-[10px] uppercase font-bold text-white/60 hover:text-white rounded-lg transition-all">
+                      Pill
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Card Border Glow Selector -->
+                <div class="flex flex-col gap-2">
+                  <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Bordes de Tarjeta</label>
+                  <select [(ngModel)]="cardBorderStyle" class="custom-select p-3 rounded-xl border text-xs text-white bg-transparent focus:outline-none">
+                    <option value="border-minimal">Fino Minimalista</option>
+                    <option value="border-glow">Neon Glow (Brillo)</option>
+                    <option value="border-glass">Efecto Glassmorphic</option>
+                  </select>
+                </div>
+
                 <!-- Title Font Size Slider -->
                 <div class="flex flex-col gap-2">
                   <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Tamaño del Título ({{ titleFontSize }}px)</label>
@@ -106,7 +134,9 @@ interface ProductItem {
                   <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="5" rx="1"></rect><rect x="3" y="11" width="18" height="10" rx="1"></rect></svg>
                   Cabecera (Navbar)
                 </span>
-                <span class="text-xs text-white/40">{{ activeAccordion === 'navbar' ? '▲' : '▼' }}</span>
+                <svg class="w-3.5 h-3.5 text-white/40 transition-transform duration-300" [class.rotate-180]="activeAccordion === 'navbar'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
+                </svg>
               </button>
               
               <div class="accordion-content p-4 border-t flex flex-col gap-4" *ngIf="activeAccordion === 'navbar'">
@@ -119,6 +149,20 @@ interface ProductItem {
                   <div class="flex flex-col gap-1.5">
                     <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Título del Logo</label>
                     <input type="text" [(ngModel)]="siteTitle" class="custom-input py-2.5 px-3 rounded-xl border text-xs text-white bg-transparent focus:outline-none" />
+                  </div>
+
+                  <!-- Brand Icon Selection -->
+                  <div class="flex flex-col gap-1.5">
+                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Icono de la Marca</label>
+                    <div class="grid grid-cols-4 gap-2">
+                      <button *ngFor="let iconOpt of brandIconOptions" (click)="brandIcon = iconOpt.id"
+                              [class.border-cyan-500]="brandIcon === iconOpt.id"
+                              [class.bg-white/5]="brandIcon === iconOpt.id"
+                              class="p-2.5 border border-white/10 rounded-xl flex flex-col items-center gap-1 hover:bg-white/5 transition-all text-white">
+                        <span class="opacity-80" [innerHTML]="iconOpt.svg"></span>
+                        <span class="text-[8px] uppercase font-bold tracking-tight opacity-55 mt-1">{{ iconOpt.name }}</span>
+                      </button>
+                    </div>
                   </div>
 
                   <div class="flex items-center justify-between toggle-row p-3 rounded-xl border" (click)="showLoginBtn = !showLoginBtn">
@@ -136,7 +180,9 @@ interface ProductItem {
                   <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                   Portada (Hero)
                 </span>
-                <span class="text-xs text-white/40">{{ activeAccordion === 'hero' ? '▲' : '▼' }}</span>
+                <svg class="w-3.5 h-3.5 text-white/40 transition-transform duration-300" [class.rotate-180]="activeAccordion === 'hero'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
+                </svg>
               </button>
               
               <div class="accordion-content p-4 border-t flex flex-col gap-4" *ngIf="activeAccordion === 'hero'">
@@ -179,7 +225,9 @@ interface ProductItem {
                   <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path></svg>
                   Información (About)
                 </span>
-                <span class="text-xs text-white/40">{{ activeAccordion === 'about' ? '▲' : '▼' }}</span>
+                <svg class="w-3.5 h-3.5 text-white/40 transition-transform duration-300" [class.rotate-180]="activeAccordion === 'about'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
+                </svg>
               </button>
               
               <div class="accordion-content p-4 border-t flex flex-col gap-4" *ngIf="activeAccordion === 'about'">
@@ -221,7 +269,9 @@ interface ProductItem {
                   <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0 1 12 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2m4 6h.01M5 20h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2z"></path></svg>
                   Servicios
                 </span>
-                <span class="text-xs text-white/40">{{ activeAccordion === 'services' ? '▲' : '▼' }}</span>
+                <svg class="w-3.5 h-3.5 text-white/40 transition-transform duration-300" [class.rotate-180]="activeAccordion === 'services'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
+                </svg>
               </button>
               
               <div class="accordion-content p-4 border-t flex flex-col gap-4" *ngIf="activeAccordion === 'services'">
@@ -264,7 +314,9 @@ interface ProductItem {
                   <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-8 2a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"></path></svg>
                   Carrusel de Productos
                 </span>
-                <span class="text-xs text-white/40">{{ activeAccordion === 'carousel' ? '▲' : '▼' }}</span>
+                <svg class="w-3.5 h-3.5 text-white/40 transition-transform duration-300" [class.rotate-180]="activeAccordion === 'carousel'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
+                </svg>
               </button>
               
               <div class="accordion-content p-4 border-t flex flex-col gap-4" *ngIf="activeAccordion === 'carousel'">
@@ -309,7 +361,9 @@ interface ProductItem {
                   <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 0 1-3.417.592l-2.147-6.15M18 13a3 3 0 1 0 0-6M5.436 13.683A4.001 4.001 0 0 1 7 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 0 1-1.564-.317z"></path></svg>
                   Banner Publicitario
                 </span>
-                <span class="text-xs text-white/40">{{ activeAccordion === 'banner' ? '▲' : '▼' }}</span>
+                <svg class="w-3.5 h-3.5 text-white/40 transition-transform duration-300" [class.rotate-180]="activeAccordion === 'banner'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
+                </svg>
               </button>
               
               <div class="accordion-content p-4 border-t flex flex-col gap-4" *ngIf="activeAccordion === 'banner'">
@@ -338,7 +392,9 @@ interface ProductItem {
                   <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 0 1 2-2h3.28a1 1 0 0 1 .94.725l.548 2.2a1 1 0 0 1-.321.988l-1.305.98a10.582 10.582 0 0 0 4.872 4.872l.98-1.305a1 1 0 0 1 .988-.321l2.2.548a1 1 0 0 1 .725.94V19a2 2 0 0 1-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                   Contacto
                 </span>
-                <span class="text-xs text-white/40">{{ activeAccordion === 'contact' ? '▲' : '▼' }}</span>
+                <svg class="w-3.5 h-3.5 text-white/40 transition-transform duration-300" [class.rotate-180]="activeAccordion === 'contact'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
+                </svg>
               </button>
               
               <div class="accordion-content p-4 border-t flex flex-col gap-4" *ngIf="activeAccordion === 'contact'">
@@ -364,14 +420,67 @@ interface ProductItem {
               </div>
             </div>
 
-            <!-- SECTION 9: FOOTER -->
+            <!-- SECTION 9: REDES SOCIALES -->
+            <div class="accordion-item border rounded-2xl overflow-hidden" [class.open]="activeAccordion === 'socials'">
+              <button (click)="toggleAccordion('socials')" class="w-full flex items-center justify-between p-4 bg-white/[0.01] hover:bg-white/[0.03] transition-all">
+                <span class="text-xs font-bold uppercase tracking-widest text-white/80 flex items-center gap-2.5">
+                  <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-.778.099-1.533.284-2.253"></path></svg>
+                  Redes Sociales
+                </span>
+                <svg class="w-3.5 h-3.5 text-white/40 transition-transform duration-300" [class.rotate-180]="activeAccordion === 'socials'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
+                </svg>
+              </button>
+              
+              <div class="accordion-content p-4 border-t flex flex-col gap-4" *ngIf="activeAccordion === 'socials'">
+                <!-- Instagram Link -->
+                <div class="flex flex-col gap-2 p-3 rounded-xl border border-white/5 bg-white/[0.01]">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold text-white">Instagram</span>
+                    <div class="custom-switch" [class.on]="showInstagram" (click)="showInstagram = !showInstagram"></div>
+                  </div>
+                  <input *ngIf="showInstagram" type="text" [(ngModel)]="instagramLink" placeholder="https://instagram.com/tu_perfil" class="custom-input py-2 px-3 rounded-lg border text-xs text-white bg-transparent focus:outline-none" />
+                </div>
+
+                <!-- TikTok Link -->
+                <div class="flex flex-col gap-2 p-3 rounded-xl border border-white/5 bg-white/[0.01]">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold text-white">TikTok</span>
+                    <div class="custom-switch" [class.on]="showTiktok" (click)="showTiktok = !showTiktok"></div>
+                  </div>
+                  <input *ngIf="showTiktok" type="text" [(ngModel)]="tiktokLink" placeholder="https://tiktok.com/@tu_perfil" class="custom-input py-2 px-3 rounded-lg border text-xs text-white bg-transparent focus:outline-none" />
+                </div>
+
+                <!-- WhatsApp Link -->
+                <div class="flex flex-col gap-2 p-3 rounded-xl border border-white/5 bg-white/[0.01]">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold text-white">WhatsApp</span>
+                    <div class="custom-switch" [class.on]="showWhatsapp" (click)="showWhatsapp = !showWhatsapp"></div>
+                  </div>
+                  <input *ngIf="showWhatsapp" type="text" [(ngModel)]="whatsappLink" placeholder="https://wa.me/573000000000" class="custom-input py-2 px-3 rounded-lg border text-xs text-white bg-transparent focus:outline-none" />
+                </div>
+
+                <!-- LinkedIn Link -->
+                <div class="flex flex-col gap-2 p-3 rounded-xl border border-white/5 bg-white/[0.01]">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold text-white">LinkedIn</span>
+                    <div class="custom-switch" [class.on]="showLinkedin" (click)="showLinkedin = !showLinkedin"></div>
+                  </div>
+                  <input *ngIf="showLinkedin" type="text" [(ngModel)]="linkedinLink" placeholder="https://linkedin.com/in/tu_perfil" class="custom-input py-2 px-3 rounded-lg border text-xs text-white bg-transparent focus:outline-none" />
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION 10: FOOTER -->
             <div class="accordion-item border rounded-2xl overflow-hidden" [class.open]="activeAccordion === 'footer'">
               <button (click)="toggleAccordion('footer')" class="w-full flex items-center justify-between p-4 bg-white/[0.01] hover:bg-white/[0.03] transition-all">
                 <span class="text-xs font-bold uppercase tracking-widest text-white/80 flex items-center gap-2.5">
                   <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                   Footer (Pie de Página)
                 </span>
-                <span class="text-xs text-white/40">{{ activeAccordion === 'footer' ? '▲' : '▼' }}</span>
+                <svg class="w-3.5 h-3.5 text-white/40 transition-transform duration-300" [class.rotate-180]="activeAccordion === 'footer'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
+                </svg>
               </button>
               
               <div class="accordion-content p-4 border-t flex flex-col gap-4" *ngIf="activeAccordion === 'footer'">
@@ -423,22 +532,35 @@ interface ProductItem {
             <nav *ngIf="includeNavbar" class="flex items-center justify-between px-8 py-5 border-b sticky top-0 backdrop-blur-md z-[10]"
                  [style.background]="selectedTheme.bg + 'ee'"
                  [style.borderColor]="selectedTheme.primary + '11'">
-              <span class="text-sm font-bold tracking-wider uppercase">{{ siteTitle || 'MI NEGOCIO' }}</span>
+              <div class="flex items-center gap-2">
+                <!-- Selected Brand Icon SVG -->
+                <span *ngIf="brandIcon" [style.color]="selectedTheme.accent" class="flex items-center" [ngSwitch]="brandIcon">
+                  <span *ngSwitchCase="'sparkles'" [innerHTML]="getBrandIconSvg('sparkles')"></span>
+                  <span *ngSwitchCase="'bolt'" [innerHTML]="getBrandIconSvg('bolt')"></span>
+                  <span *ngSwitchCase="'star'" [innerHTML]="getBrandIconSvg('star')"></span>
+                  <span *ngSwitchCase="'code'" [innerHTML]="getBrandIconSvg('code')"></span>
+                </span>
+                <span class="text-sm font-bold tracking-wider uppercase">{{ siteTitle || 'MI NEGOCIO' }}</span>
+              </div>
+              
               <div class="flex gap-6 items-center">
-                <span *ngIf="includeHero" class="text-[10px] uppercase tracking-widest font-semibold opacity-70">Inicio</span>
-                <span *ngIf="includeAbout" class="text-[10px] uppercase tracking-widest font-semibold opacity-70">Nosotros</span>
-                <span *ngIf="includeServices" class="text-[10px] uppercase tracking-widest font-semibold opacity-70">Servicios</span>
-                <span *ngIf="includeCarousel" class="text-[10px] uppercase tracking-widest font-semibold opacity-70">Productos</span>
-                <span *ngIf="includeContact" class="text-[10px] uppercase tracking-widest font-semibold opacity-70">Contacto</span>
+                <a href="#" (click)="scrollToMockupSection('prev-hero', $event)" *ngIf="includeHero" class="text-[10px] uppercase tracking-widest font-semibold opacity-70 hover:opacity-100 transition-opacity">Inicio</a>
+                <a href="#" (click)="scrollToMockupSection('prev-about', $event)" *ngIf="includeAbout" class="text-[10px] uppercase tracking-widest font-semibold opacity-70 hover:opacity-100 transition-opacity">Nosotros</a>
+                <a href="#" (click)="scrollToMockupSection('prev-services', $event)" *ngIf="includeServices" class="text-[10px] uppercase tracking-widest font-semibold opacity-70 hover:opacity-100 transition-opacity">Servicios</a>
+                <a href="#" (click)="scrollToMockupSection('prev-carousel', $event)" *ngIf="includeCarousel" class="text-[10px] uppercase tracking-widest font-semibold opacity-70 hover:opacity-100 transition-opacity">Productos</a>
+                <a href="#" (click)="scrollToMockupSection('prev-contact', $event)" *ngIf="includeContact" class="text-[10px] uppercase tracking-widest font-semibold opacity-70 hover:opacity-100 transition-opacity">Contacto</a>
               </div>
               <div class="flex items-center gap-3">
                 <button *ngIf="showLoginBtn" (click)="openLoginModal()" 
-                        class="px-4 py-2 rounded-xl text-[10px] uppercase tracking-wider font-semibold border transition-all hover:bg-white/5"
+                        [class]="buttonStyle"
+                        class="px-4 py-2 text-[10px] uppercase tracking-wider font-semibold border transition-all hover:bg-white/5"
                         [style.borderColor]="selectedTheme.primary + '22'"
                         [style.color]="selectedTheme.primary">
                   Ingresar
                 </button>
-                <button class="px-4 py-2 rounded-xl text-[10px] uppercase tracking-wider font-bold transition-all hover:scale-105 active:scale-95"
+                <button [class]="buttonStyle"
+                        (click)="scrollToMockupSection('prev-contact', $event)"
+                        class="px-4 py-2 text-[10px] uppercase tracking-wider font-bold transition-all hover:scale-105 active:scale-95"
                         [style.background]="selectedTheme.accent"
                         style="color: #000000;">
                   Contacto
@@ -447,7 +569,7 @@ interface ProductItem {
             </nav>
 
             <!-- 2. HERO MOCKUP -->
-            <section *ngIf="includeHero" class="px-8 md:px-16 py-20 flex flex-col gap-6 justify-center text-center md:text-left min-h-[500px]">
+            <section id="prev-hero" *ngIf="includeHero" class="px-8 md:px-16 py-20 flex flex-col gap-6 justify-center text-center md:text-left min-h-[500px]">
               <span class="text-xs font-bold uppercase tracking-[0.25em]" [style.color]="selectedTheme.accent" [style.fontSize.px]="bodyFontSize">
                 {{ heroSubtitle || 'ESPECIALIDAD DEL NEGOCIO' }}
               </span>
@@ -458,12 +580,14 @@ interface ProductItem {
                 {{ heroDescription || 'Descripción corta para capturar la atención de tus clientes y convencerlos.' }}
               </p>
               <div class="flex gap-4 items-center justify-center md:justify-start mt-4">
-                <button class="px-7 py-3.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all hover:scale-105"
+                <button [class]="buttonStyle"
+                        class="px-7 py-3.5 text-xs font-bold uppercase tracking-widest transition-all hover:scale-105"
                         [style.background]="selectedTheme.accent"
                         style="color: #000000;">
                   {{ heroCta1 || 'Empezar' }}
                 </button>
-                <button class="px-7 py-3.5 rounded-xl text-xs font-bold uppercase tracking-widest border transition-all hover:bg-white/5"
+                <button [class]="buttonStyle"
+                        class="px-7 py-3.5 text-xs font-bold uppercase tracking-widest border transition-all hover:bg-white/5"
                         [style.borderColor]="selectedTheme.primary + '22'"
                         [style.color]="selectedTheme.primary">
                   {{ heroCta2 || 'Ver Más' }}
@@ -472,7 +596,7 @@ interface ProductItem {
             </section>
 
             <!-- 3. ABOUT MOCKUP -->
-            <section *ngIf="includeAbout" class="px-8 md:px-16 py-16 border-t border-b grid grid-cols-1 md:grid-cols-12 gap-8 items-center"
+            <section id="prev-about" *ngIf="includeAbout" class="px-8 md:px-16 py-16 border-t border-b grid grid-cols-1 md:grid-cols-12 gap-8 items-center"
                      [style.borderColor]="selectedTheme.primary + '11'"
                      [style.background]="selectedTheme.lightTheme ? 'rgba(0,0,0,0.01)' : 'rgba(255,255,255,0.01)'">
               <div class="md:col-span-7 flex flex-col gap-4">
@@ -484,15 +608,19 @@ interface ProductItem {
               </div>
               
               <div class="md:col-span-5 grid grid-cols-2 gap-4">
-                <div class="p-6 rounded-2xl border text-center flex flex-col gap-2"
-                     [style.background]="selectedTheme.cardBg"
-                     [style.borderColor]="selectedTheme.primary + '11'">
+                <div class="p-6 rounded-2xl border text-center flex flex-col gap-2 transition-all"
+                     [style.background]="getCardStyles().background"
+                     [style.border-color]="getCardStyles()['border-color']"
+                     [style.box-shadow]="getCardStyles()['box-shadow']"
+                     [style.backdrop-filter]="getCardStyles()['backdrop-filter']">
                   <span class="text-3xl font-bold" [style.color]="selectedTheme.accent">{{ aboutStat1Val || '10+' }}</span>
                   <span class="text-[9px] uppercase tracking-widest opacity-60 font-semibold">{{ aboutStat1Lbl || 'Éxito' }}</span>
                 </div>
-                <div class="p-6 rounded-2xl border text-center flex flex-col gap-2"
-                     [style.background]="selectedTheme.cardBg"
-                     [style.borderColor]="selectedTheme.primary + '11'">
+                <div class="p-6 rounded-2xl border text-center flex flex-col gap-2 transition-all"
+                     [style.background]="getCardStyles().background"
+                     [style.border-color]="getCardStyles()['border-color']"
+                     [style.box-shadow]="getCardStyles()['box-shadow']"
+                     [style.backdrop-filter]="getCardStyles()['backdrop-filter']">
                   <span class="text-3xl font-bold" [style.color]="selectedTheme.accent">{{ aboutStat2Val || '100%' }}</span>
                   <span class="text-[9px] uppercase tracking-widest opacity-60 font-semibold">{{ aboutStat2Lbl || 'Garantizado' }}</span>
                 </div>
@@ -500,7 +628,7 @@ interface ProductItem {
             </section>
 
             <!-- 4. SERVICES MOCKUP -->
-            <section *ngIf="includeServices" class="px-8 md:px-16 py-20 flex flex-col gap-10">
+            <section id="prev-services" *ngIf="includeServices" class="px-8 md:px-16 py-20 flex flex-col gap-10">
               <div class="text-center flex flex-col gap-2 max-w-xl mx-auto">
                 <span class="text-[10px] font-bold uppercase tracking-widest opacity-40">Portafolio de Soluciones</span>
                 <h3 class="font-bold uppercase tracking-tight" [style.fontSize.px]="titleFontSize * 0.6">{{ servicesTitle || 'Nuestros Servicios' }}</h3>
@@ -508,8 +636,10 @@ interface ProductItem {
 
               <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div *ngFor="let srv of servicesList" class="p-6 rounded-2xl border flex flex-col gap-3 transition-all hover:scale-[1.02]"
-                     [style.background]="selectedTheme.cardBg"
-                     [style.borderColor]="selectedTheme.primary + '11'">
+                     [style.background]="getCardStyles().background"
+                     [style.border-color]="getCardStyles()['border-color']"
+                     [style.box-shadow]="getCardStyles()['box-shadow']"
+                     [style.backdrop-filter]="getCardStyles()['backdrop-filter']">
                   <span class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/10" [style.borderColor]="selectedTheme.accent + '33'">
                     <span [style.color]="selectedTheme.accent">★</span>
                   </span>
@@ -520,7 +650,7 @@ interface ProductItem {
             </section>
 
             <!-- 5. PRODUCTS CAROUSEL MOCKUP -->
-            <section *ngIf="includeCarousel" class="px-8 md:px-16 py-20 border-t border-b flex flex-col gap-8 overflow-hidden"
+            <section id="prev-carousel" *ngIf="includeCarousel" class="px-8 md:px-16 py-20 border-t border-b flex flex-col gap-8 overflow-hidden"
                      [style.borderColor]="selectedTheme.primary + '11'"
                      [style.background]="selectedTheme.lightTheme ? 'rgba(0,0,0,0.01)' : 'rgba(255,255,255,0.01)'">
               <div class="flex items-center justify-between">
@@ -536,9 +666,11 @@ interface ProductItem {
 
               <div class="relative w-full overflow-hidden">
                 <div class="flex gap-6 transition-transform duration-500" [style.transform]="'translateX(-' + (carouselIndex * 280) + 'px)'">
-                  <div *ngFor="let prod of productsList" class="w-[260px] flex-shrink-0 p-4 rounded-2xl border flex flex-col gap-3"
-                       [style.background]="selectedTheme.cardBg"
-                       [style.borderColor]="selectedTheme.primary + '11'">
+                  <div *ngFor="let prod of productsList" class="w-[260px] flex-shrink-0 p-4 rounded-2xl border flex flex-col gap-3 transition-all"
+                       [style.background]="getCardStyles().background"
+                       [style.border-color]="getCardStyles()['border-color']"
+                       [style.box-shadow]="getCardStyles()['box-shadow']"
+                       [style.backdrop-filter]="getCardStyles()['backdrop-filter']">
                     <div class="w-full h-40 rounded-xl bg-white/5 flex items-center justify-center relative overflow-hidden">
                       <span class="text-2xl opacity-40">📦</span>
                     </div>
@@ -546,7 +678,8 @@ interface ProductItem {
                       <h4 class="text-xs font-bold uppercase tracking-wide max-w-[70%] truncate">{{ prod.title }}</h4>
                       <span class="text-xs font-semibold" [style.color]="selectedTheme.accent">{{ prod.price }}</span>
                     </div>
-                    <button class="w-full py-2 rounded-xl text-[10px] uppercase font-bold tracking-widest text-center"
+                    <button [class]="buttonStyle"
+                            class="w-full py-2 text-[10px] uppercase font-bold tracking-widest text-center transition-all"
                             [style.background]="selectedTheme.accent"
                             style="color: #000000;">
                       Comprar Ahora
@@ -563,13 +696,14 @@ interface ProductItem {
               <h3 class="font-bold uppercase tracking-wide max-w-2xl" [style.fontSize.px]="titleFontSize * 0.5">
                 {{ bannerText || '¿Quieres cotizar tu proyecto a medida?' }}
               </h3>
-              <button class="px-6 py-3.5 bg-black text-white hover:bg-neutral-900 rounded-xl text-xs font-bold uppercase tracking-widest transition-all hover:scale-105">
+              <button [class]="buttonStyle"
+                      class="px-6 py-3.5 bg-black text-white hover:bg-neutral-900 text-xs font-bold uppercase tracking-widest transition-all hover:scale-105">
                 {{ bannerCta || 'Hablemos Hoy' }}
               </button>
             </section>
 
             <!-- 7. CONTACT MOCKUP -->
-            <section *ngIf="includeContact" class="px-8 md:px-16 py-20 grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+            <section id="prev-contact" *ngIf="includeContact" class="px-8 md:px-16 py-20 grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
               <div class="flex flex-col gap-4">
                 <span class="text-[10px] font-bold uppercase tracking-widest opacity-40">Resolvamos tus Dudas</span>
                 <h3 class="font-bold uppercase tracking-tight" [style.fontSize.px]="titleFontSize * 0.6">{{ contactTitle || 'Contáctanos' }}</h3>
@@ -589,13 +723,16 @@ interface ProductItem {
               </div>
 
               <!-- Contact Form Mockup -->
-              <div class="p-6 rounded-2xl border flex flex-col gap-3"
-                   [style.background]="selectedTheme.cardBg"
-                   [style.borderColor]="selectedTheme.primary + '11'">
+              <div class="p-6 rounded-2xl border flex flex-col gap-3 transition-all font-sans"
+                   [style.background]="getCardStyles().background"
+                   [style.border-color]="getCardStyles()['border-color']"
+                   [style.box-shadow]="getCardStyles()['box-shadow']"
+                   [style.backdrop-filter]="getCardStyles()['backdrop-filter']">
                 <input type="text" placeholder="Nombre completo" class="p-3 rounded-lg border text-xs bg-transparent focus:outline-none" [style.borderColor]="selectedTheme.primary + '11'" />
                 <input type="email" placeholder="Correo electrónico" class="p-3 rounded-lg border text-xs bg-transparent focus:outline-none" [style.borderColor]="selectedTheme.primary + '11'" />
                 <textarea rows="3" placeholder="Mensaje" class="p-3 rounded-lg border text-xs bg-transparent focus:outline-none resize-none" [style.borderColor]="selectedTheme.primary + '11'"></textarea>
-                <button class="w-full py-3 rounded-lg text-xs font-bold uppercase tracking-widest"
+                <button [class]="buttonStyle"
+                        class="w-full py-3 text-xs font-bold uppercase tracking-widest transition-all"
                         [style.background]="selectedTheme.accent"
                         style="color: #000000;">
                   Enviar Consulta
@@ -608,6 +745,33 @@ interface ProductItem {
                     [style.borderColor]="selectedTheme.primary + '11'"
                     [style.background]="selectedTheme.cardBg">
               <span class="opacity-60" [style.fontSize.px]="bodyFontSize - 2">{{ footerCopy || '© 2026 Todos los derechos reservados.' }}</span>
+              
+              <!-- Social Networks Mockup Links -->
+              <div class="flex items-center gap-4">
+                <a *ngIf="showInstagram && instagramLink" [href]="instagramLink" target="_blank" class="hover:opacity-100 opacity-60 transition-opacity" [style.color]="selectedTheme.accent">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                  </svg>
+                </a>
+                <a *ngIf="showTiktok && tiktokLink" [href]="tiktokLink" target="_blank" class="hover:opacity-100 opacity-60 transition-opacity" [style.color]="selectedTheme.accent">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 18c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3v-9h4v4"></path>
+                  </svg>
+                </a>
+                <a *ngIf="showWhatsapp && whatsappLink" [href]="whatsappLink" target="_blank" class="hover:opacity-100 opacity-60 transition-opacity" [style.color]="selectedTheme.accent">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 12a9 9 0 0 1 15-6.7L21 3l-2.3 3A9 9 0 1 1 3 12z"></path>
+                  </svg>
+                </a>
+                <a *ngIf="showLinkedin && linkedinLink" [href]="linkedinLink" target="_blank" class="hover:opacity-100 opacity-60 transition-opacity" [style.color]="selectedTheme.accent">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"></path>
+                  </svg>
+                </a>
+              </div>
+
               <div class="flex gap-6 opacity-60">
                 <span>Términos</span>
                 <span>Privacidad</span>
@@ -637,127 +801,128 @@ interface ProductItem {
       </div>
 
       <!-- LOGIN MOCKUP MODAL -->
-      <div *ngIf="showLoginModal" class="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm" (click)="closeLoginModal()">
-        <div class="bg-[#0c0c0e] border border-white/10 p-8 max-w-sm w-full rounded-2xl shadow-2xl flex flex-col gap-4 animate-scale-up" (click)="$event.stopPropagation()">
-          <div class="flex justify-between items-center">
-            <h4 class="text-lg font-bold text-white uppercase tracking-wide">Ingreso de Clientes</h4>
-            <button (click)="closeLoginModal()" class="text-white/40 hover:text-white text-lg">×</button>
+      <div *ngIf="showLoginModal" class="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md">
+        <div class="bg-white text-neutral-900 p-8 max-w-sm w-full rounded-3xl shadow-2xl flex flex-col gap-4 relative animate-scale-up">
+          <button (click)="closeLoginModal()" class="absolute top-4 right-4 text-neutral-400 hover:text-neutral-600 text-lg">✕</button>
+          <div class="flex flex-col gap-1">
+            <span class="text-[9px] font-bold uppercase tracking-widest text-[#00f5ff]" [style.color]="selectedTheme.accent">Área Privada</span>
+            <h4 class="text-lg font-bold uppercase">Iniciar Sesión</h4>
           </div>
           <div class="flex flex-col gap-3 mt-2">
-            <input type="email" placeholder="Usuario / Correo" class="p-3 rounded-lg border border-white/10 text-xs text-white bg-transparent focus:outline-none" />
-            <input type="password" placeholder="Contraseña" class="p-3 rounded-lg border border-white/10 text-xs text-white bg-transparent focus:outline-none" />
-            <button class="w-full py-3 rounded-lg text-xs font-bold uppercase tracking-widest text-black bg-[#00f5ff]" [style.background]="selectedTheme.accent">
-              Entrar
+            <input type="email" placeholder="Email" class="p-3 border rounded-xl text-xs focus:outline-none" />
+            <input type="password" placeholder="Contraseña" class="p-3 border rounded-xl text-xs focus:outline-none" />
+            <button class="w-full py-3 bg-neutral-900 text-white rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-neutral-800 transition-colors">
+              Ingresar
             </button>
-          </div>
-          <div class="flex justify-center text-[10px] text-white/40 uppercase tracking-widest gap-2">
-            <span>¿Olvidaste tu contraseña?</span>
-            <span>·</span>
-            <span>Registrarse</span>
           </div>
         </div>
       </div>
-      
+
     </div>
   `,
   styles: [`
     .page-wrapper {
-      background: var(--bg-primary, #050505);
-      color: var(--text-primary, #ffffff);
+      background-color: #07070a;
     }
     .custom-scrollbar::-webkit-scrollbar {
       width: 4px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
-      background: rgba(0,0,0,0.1);
+      background: transparent;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.1);
       border-radius: 4px;
     }
-    .custom-select {
-      background: rgba(255, 255, 255, 0.02);
-      border-color: rgba(255, 255, 255, 0.08);
-      color: var(--text-primary);
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.25);
     }
-    .custom-select option {
-      background: #0d0d0f;
-      color: white;
+    .accordion-item {
+      border-color: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.01);
+      transition: all 0.3s ease;
+    }
+    .accordion-item.open {
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .accordion-content {
+      border-color: rgba(255, 255, 255, 0.06);
     }
     .custom-input {
       background: rgba(255, 255, 255, 0.02);
       border-color: rgba(255, 255, 255, 0.08);
-      color: var(--text-primary);
+      transition: all 0.25s;
     }
     .custom-input:focus {
-      border-color: var(--accent-color, #00f5ff);
-      box-shadow: 0 0 15px rgba(0, 245, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .custom-select {
+      background: rgba(255, 255, 255, 0.02);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    .custom-select option {
+      background: #0d0d12;
+      color: #ffffff;
     }
     .theme-preset-btn {
       background: rgba(255, 255, 255, 0.01);
       border-color: rgba(255, 255, 255, 0.06);
     }
     .theme-preset-btn:hover {
+      background: rgba(255, 255, 255, 0.03);
       border-color: rgba(255, 255, 255, 0.15);
-      background: rgba(255, 255, 255, 0.02);
     }
     .theme-preset-btn.active-theme {
-      border-color: var(--accent-color, #00f5ff) !important;
+      border-color: #00f5ff;
       background: rgba(0, 245, 255, 0.03);
     }
+    .active-btn-shape {
+      background: rgba(255, 255, 255, 0.15) !important;
+      color: #ffffff !important;
+    }
     .toggle-row {
-      background: rgba(255, 255, 255, 0.01);
       border-color: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.01);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.2s;
     }
     .toggle-row:hover {
-      background: rgba(255, 255, 255, 0.02);
+      background: rgba(255, 255, 255, 0.03);
       border-color: rgba(255, 255, 255, 0.12);
     }
     .custom-switch {
-      width: 42px;
-      height: 24px;
-      border-radius: 12px;
+      width: 32px;
+      height: 18px;
+      border-radius: 999px;
       background: rgba(255, 255, 255, 0.1);
       position: relative;
-      transition: background 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      transition: background 0.3s;
     }
     .custom-switch::after {
       content: '';
-      position: absolute;
-      width: 18px;
-      height: 18px;
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
-      background: white;
-      top: 3px;
-      left: 3px;
-      transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      background: #ffffff;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: left 0.3s;
     }
     .custom-switch.on {
-      background: var(--accent-color, #00f5ff);
+      background: #00f5ff;
     }
     .custom-switch.on::after {
-      transform: translateX(18px);
-      background: #000000;
+      left: 16px;
     }
     .launch-btn {
-      background: var(--accent-color, #00f5ff);
+      background: #ffffff;
       color: #000000;
     }
     .launch-btn:hover {
-      box-shadow: 0 10px 25px rgba(0, 245, 255, 0.25);
-    }
-    .accordion-item {
-      border-color: rgba(255, 255, 255, 0.06);
-      background: rgba(255, 255, 255, 0.01);
-    }
-    .accordion-item.open {
-      border-color: rgba(255, 255, 255, 0.12);
-      background: rgba(255, 255, 255, 0.02);
-    }
-    .accordion-content {
-      border-color: rgba(255, 255, 255, 0.06);
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
     }
     @keyframes scaleUp {
       from { transform: scale(0.95); opacity: 0; }
@@ -777,6 +942,29 @@ export class PersonalizarComponent implements OnInit {
   siteTitle = 'PORTALINK STUDIO';
   showModal = false;
   showLoginModal = false;
+
+  // New Button and Card Style Variables
+  buttonStyle = 'rounded-xl';
+  cardBorderStyle = 'border-minimal';
+
+  // New Brand Icon Option (sparkles, bolt, star, code)
+  brandIcon = 'sparkles';
+  brandIconOptions = [
+    { id: 'sparkles', name: 'Sparkles', svg: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 21l-.813-5.096L3 15l5.096-.813L9 9l.813 5.096L15 15l-5.187.904zM18 5.25L17.25 9 16.5 5.25 12.75 4.5 16.5 3.75 17.25 0l.75 3.75L21.75 4.5 18 5.25z"></path></svg>' },
+    { id: 'bolt', name: 'Rayo', svg: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"></path></svg>' },
+    { id: 'star', name: 'Estrella', svg: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499c.195-.39.771-.39.966 0l2.3 4.699 5.188.755c.43.063.602.583.291.89l-3.754 3.66.887 5.168c.074.43-.378.757-.76.552L12 16.782l-4.638 2.44c-.381.205-.833-.122-.76-.552l.887-5.168L3.733 13.5a.75.75 0 01.291-.89l5.188-.755 2.3-4.7z"></path></svg>' },
+    { id: 'code', name: 'Código', svg: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"></path></svg>' }
+  ];
+
+  // New Social Networks Variables
+  showInstagram = true;
+  instagramLink = 'https://instagram.com/portalink';
+  showTiktok = true;
+  tiktokLink = 'https://tiktok.com/@portalink';
+  showWhatsapp = true;
+  whatsappLink = 'https://wa.me/573001234567';
+  showLinkedin = false;
+  linkedinLink = 'https://linkedin.com/company/portalink';
 
   // Navbar section state
   includeNavbar = true;
@@ -864,6 +1052,58 @@ export class PersonalizarComponent implements OnInit {
     this.selectedTheme = theme;
   }
 
+  // Card dynamic styles based on setting
+  getCardStyles() {
+    if (this.cardBorderStyle === 'border-glow') {
+      return {
+        'background': this.selectedTheme.cardBg,
+        'border-color': this.selectedTheme.accent + '66',
+        'box-shadow': `0 0 16px ${this.selectedTheme.accent}22`,
+        'backdrop-filter': 'blur(12px)'
+      };
+    } else if (this.cardBorderStyle === 'border-glass') {
+      return {
+        'background': this.selectedTheme.lightTheme ? 'rgba(255, 255, 255, 0.4)' : 'rgba(17, 17, 24, 0.35)',
+        'border-color': this.selectedTheme.lightTheme ? 'rgba(255, 255, 255, 0.5)' : 'rgba(255, 255, 255, 0.08)',
+        'backdrop-filter': 'blur(24px)',
+        '-webkit-backdrop-filter': 'blur(24px)',
+        'box-shadow': '0 8px 32px 0 rgba(0, 0, 0, 0.1)'
+      };
+    } else {
+      // border-minimal
+      return {
+        'background': this.selectedTheme.cardBg,
+        'border-color': this.selectedTheme.primary + '11',
+        'backdrop-filter': 'blur(4px)'
+      };
+    }
+  }
+
+  // Returns raw SVG paths for the Brand Icon
+  getBrandIconSvg(icon: string): string {
+    switch (icon) {
+      case 'sparkles':
+        return '<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 21l-.813-5.096L3 15l5.096-.813L9 9l.813 5.096L15 15l-5.187.904zM18 5.25L17.25 9 16.5 5.25 12.75 4.5 16.5 3.75 17.25 0l.75 3.75L21.75 4.5 18 5.25z"></path></svg>';
+      case 'bolt':
+        return '<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"></path></svg>';
+      case 'star':
+        return '<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499c.195-.39.771-.39.966 0l2.3 4.699 5.188.755c.43.063.602.583.291.89l-3.754 3.66.887 5.168c.074.43-.378.757-.76.552L12 16.782l-4.638 2.44c-.381.205-.833-.122-.76-.552l.887-5.168L3.733 13.5a.75.75 0 01.291-.89l5.188-.755 2.3-4.7z"></path></svg>';
+      case 'code':
+        return '<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"></path></svg>';
+      default:
+        return '';
+    }
+  }
+
+  // Scroll to a specific section inside the live preview
+  scrollToMockupSection(sectionId: string, event: Event) {
+    event.preventDefault();
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
   // Services Helpers
   addService() {
     const nextId = this.servicesList.length ? Math.max(...this.servicesList.map(s => s.id)) + 1 : 1;
@@ -926,7 +1166,11 @@ export class PersonalizarComponent implements OnInit {
     // Build the customization payload message for Rotbot
     let payload = `¡Hola! Quiero iniciar el desarrollo de mi landing page personalizada. Estos son mis requerimientos:\n\n`;
     payload += `🎨 **Estilo & Tema:** ${this.selectedTheme.name} (${this.selectedTheme.id})\n`;
-    payload += `🔤 **Tipografía:** ${this.selectedFont}\n\n`;
+    payload += `🔤 **Tipografía:** ${this.selectedFont}\n`;
+    payload += `🔘 **Estilo de Botones:** ${this.buttonStyle}\n`;
+    payload += `🗂️ **Estilo de Bordes:** ${this.cardBorderStyle}\n`;
+    payload += `🏷️ **Icono de Marca:** ${this.brandIcon}\n\n`;
+    
     payload += `**Secciones Configuradas:**\n`;
     
     if (this.includeNavbar) {
@@ -950,6 +1194,17 @@ export class PersonalizarComponent implements OnInit {
     if (this.includeContact) {
       payload += `- **Contacto:** Título: "${this.contactTitle}", Email: "${this.contactEmail}", Tel: "${this.contactPhone}"\n`;
     }
+    
+    // Social links summary
+    let activeSocials = [];
+    if (this.showInstagram && this.instagramLink) activeSocials.push(`Instagram: ${this.instagramLink}`);
+    if (this.showTiktok && this.tiktokLink) activeSocials.push(`TikTok: ${this.tiktokLink}`);
+    if (this.showWhatsapp && this.whatsappLink) activeSocials.push(`WhatsApp: ${this.whatsappLink}`);
+    if (this.showLinkedin && this.linkedinLink) activeSocials.push(`LinkedIn: ${this.linkedinLink}`);
+    if (activeSocials.length) {
+      payload += `- **Redes Sociales:** ${activeSocials.join(', ')}\n`;
+    }
+    
     if (this.includeFooter) {
       payload += `- **Pie de Página (Footer):** "${this.footerCopy}"\n`;
     }
