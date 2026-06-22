@@ -12,35 +12,46 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
       <div class="container mx-auto px-6 pt-20 pb-28 md:pt-32 md:pb-0 grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center relative z-10">
         <!-- Text Content -->
         <div class="order-2 lg:order-1">
-          <div class="flex items-center gap-4 mb-4 opacity-0 animate-fade-up" style="animation-delay: 0.8s;">
-            <div class="h-px w-10 bg-white"></div>
-            <span class="text-white/50 text-[10px] uppercase tracking-[0.4em] font-bold">
-              {{ data?.title || 'Digital Visionary & Developer' }}
+          <div class="flex items-center gap-4 mb-4">
+            <div class="h-px w-10" style="background-color: var(--text-primary); opacity: 0.4;"></div>
+            <span class="text-[10px] uppercase tracking-[0.4em] font-bold" style="color: var(--text-secondary);">
+              CREATIVE DEVELOPER
             </span>
           </div>
 
-          <h1 class="text-6xl sm:text-8xl md:text-[100px] font-headline uppercase leading-[0.9] tracking-tighter mb-6 md:mb-8">
-            <span class="block overflow-hidden">
-              <span class="block animate-fade-up" style="animation-delay: 1.0s; color: var(--text-primary);">
-                {{ firstName }}
-              </span>
-            </span>
-            <span class="block overflow-hidden" *ngIf="lastName">
-              <span class="block animate-fade-up" style="animation-delay: 1.2s; color: var(--text-secondary);">
-                {{ lastName }}
-              </span>
-            </span>
+          <h1 class="text-5xl sm:text-7xl md:text-[80px] font-headline uppercase leading-[0.95] tracking-tighter mb-6 md:mb-8">
+            <span style="color: var(--text-primary);">Soy </span>
+            <span style="color: var(--text-secondary);">Santiago Arbelaez.</span>
           </h1>
           
-          <p class="text-lg md:text-xl text-white/60 max-w-md animate-fade-up mb-12" style="animation-delay: 1.4s;">
-            {{ data?.description }}
+          <p class="text-base md:text-lg max-w-xl mb-10" style="color: var(--text-secondary); line-height: 1.65;">
+            Creador de contenido, diseñador y desarrollador. Ayudo a negocios a comunicar mejor lo que hacen y a construir su presencia digital desde cero.
           </p>
 
-          <div class="flex gap-4 opacity-0 animate-fade-up" style="animation-delay: 1.8s;">
+          <!-- Offerings List (2x2 Grid) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 mb-12">
+            <div class="flex items-center gap-3 font-headline uppercase text-[11px] font-extrabold tracking-widest" style="color: var(--text-secondary);">
+              <span class="w-1.5 h-1.5 rounded-none flex-shrink-0" style="background-color: var(--accent-color);"></span>
+              <span>e-commerce desde 0</span>
+            </div>
+            <div class="flex items-center gap-3 font-headline uppercase text-[11px] font-extrabold tracking-widest" style="color: var(--text-secondary);">
+              <span class="w-1.5 h-1.5 rounded-none flex-shrink-0" style="background-color: var(--accent-color);"></span>
+              <span>integración con IA</span>
+            </div>
+            <div class="flex items-center gap-3 font-headline uppercase text-[11px] font-extrabold tracking-widest" style="color: var(--text-secondary);">
+              <span class="w-1.5 h-1.5 rounded-none flex-shrink-0" style="background-color: var(--accent-color);"></span>
+              <span>aplicaciones móviles</span>
+            </div>
+            <div class="flex items-center gap-3 font-headline uppercase text-[11px] font-extrabold tracking-widest" style="color: var(--text-secondary);">
+              <span class="w-1.5 h-1.5 rounded-none flex-shrink-0" style="background-color: var(--accent-color);"></span>
+              <span>dashboard administrativo</span>
+            </div>
+          </div>
+
+          <div class="flex gap-4">
             <a (click)="scrollTo('#portfolio', $event)" 
-               class="cta-button group cursor-pointer no-underline" 
-               appMagnetic [appMagnetic]="0.2">
-               <span class="cta-text">{{ data?.ctaText || 'View Portfolio' }}</span>
+               class="cta-button group cursor-pointer no-underline">
+               <span class="cta-text">{{ data?.ctaText || 'Ver Proyectos' }}</span>
                <div class="cta-icon-wrapper">
                  <svg class="cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                    <path d="M7 17L17 7M17 7H7M17 7V17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -50,36 +61,55 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
           </div>
         </div>
 
-        <!-- Photo -->
-        <div class="order-1 lg:order-2 flex justify-center" style="perspective: 1000px;">
-          <div
-            class="relative w-[240px] h-[320px] sm:w-[300px] sm:h-[400px] md:w-[450px] md:h-[600px] transition-transform duration-200 ease-out"
-            [style.transform]="parallaxTransform"
-            (mousemove)="onImageMove($event)"
-            (mouseleave)="onImageLeave()">
+        <!-- Apple Product Cards Column -->
+        <div class="order-1 lg:order-2 w-full py-6 overflow-visible">
+          <!-- Horizontal Scroll Wrapper -->
+          <div class="flex gap-6 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-6 w-full px-6 md:px-8 scroll-pl-6 md:scroll-pl-8">
+            <!-- Card Loop -->
+            <div *ngFor="let card of cards" 
+                 class="snap-start shrink-0 w-[290px] sm:w-[330px] flex flex-col items-center text-center lg:items-start lg:text-left">
+              <!-- Card Image Box (Taller and Larger) -->
+              <div class="relative w-full aspect-[3/4.2] rounded-[24px] sm:rounded-[32px] overflow-hidden border transition-all duration-500 shadow-xl group"
+                   [style.background]="'var(--card-bg)'"
+                   [style.borderColor]="'var(--card-border)'">
+                <img
+                  [src]="card.options[card.activeIndex].src"
+                  [alt]="card.title"
+                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent"></div>
+              </div>
+              
+              <!-- Color Selector Dots -->
+              <div class="flex justify-center lg:justify-start items-center gap-2 mt-4 mb-3 h-5">
+                <button *ngFor="let opt of card.options; let oIdx = index"
+                        (click)="card.activeIndex = oIdx"
+                        class="w-4 h-4 rounded-full transition-all duration-300 focus:outline-none flex items-center justify-center relative cursor-pointer"
+                        [class.scale-110]="card.activeIndex === oIdx">
+                  <!-- The color dot itself -->
+                  <span class="w-2.5 h-2.5 rounded-full block" [style.backgroundColor]="opt.color"></span>
+                  <!-- Apple-style outer ring if selected -->
+                  <span *ngIf="card.activeIndex === oIdx" 
+                        class="absolute -inset-0.5 rounded-full border border-gray-400 dark:border-gray-500">
+                  </span>
+                </button>
+              </div>
 
-            <div class="absolute -inset-4 rounded-none -z-10" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.15);">
-              <!-- Architectural corner markers -->
-              <div class="absolute top-2 left-2 w-3 h-3 border-t border-l border-white/50"></div>
-              <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-white/50"></div>
+              <!-- Product Details -->
+              <h3 class="text-lg md:text-xl font-sans font-bold tracking-tight mb-2" style="color: var(--text-primary);">
+                {{ card.title }}
+              </h3>
+              <p class="text-xs md:text-sm leading-relaxed" style="color: var(--text-secondary);">
+                {{ card.description }}
+              </p>
             </div>
-
-            <div class="w-full h-full rounded-none overflow-hidden border group" style="border-color: rgba(255,255,255,0.2);">
-              <img
-                [src]="data?.backgroundImage || 'hero-portrait.png'"
-                alt="Santiago"
-                class="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-700 grayscale brightness-75 contrast-125"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
-            </div>
-
           </div>
         </div>
       </div>
 
       <div class="hidden md:flex absolute bottom-10 left-1/2 -translate-x-1/2 flex-col items-center gap-2" style="opacity: 0.35;">
-        <span class="text-[10px] uppercase tracking-[0.3em] text-white">Scroll</span>
-        <div class="w-px h-12 bg-gradient-to-b from-white to-transparent"></div>
+        <span class="text-[10px] uppercase tracking-[0.3em]" style="color: var(--text-secondary);">Scroll</span>
+        <div class="w-px h-12" style="background: linear-gradient(to bottom, var(--text-secondary), transparent);"></div>
       </div>
     </section>
   `,
@@ -150,43 +180,80 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
       stroke: #000;
     }
 
-    .animate-bounce-slow {
-      animation: bounce-slow 4s infinite ease-in-out;
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
     }
-    @keyframes bounce-slow {
-      0%, 100% { transform: translateY(0) rotate(-5deg); }
-      50% { transform: translateY(-12px) rotate(-2deg); }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
   `]
 })
 export class HeroComponent {
   @Input() data: any;
-  parallaxTransform = '';
 
-  get firstName(): string {
-    const name = this.data?.subtitle || 'SANTIAGO';
-    return name.split(' ')[0] || name;
-  }
-
-  get lastName(): string {
-    const name = this.data?.subtitle || '';
-    const parts = name.split(' ');
-    return parts.slice(1).join(' ') || '';
-  }
-
-  onImageMove(e: MouseEvent) {
-    const el = e.currentTarget as HTMLElement;
-    const rect = el.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = (e.clientY - rect.top) / rect.height;
-    const rotateX = (y - 0.5) * -16;
-    const rotateY = (x - 0.5) * 16;
-    this.parallaxTransform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-  }
-
-  onImageLeave() {
-    this.parallaxTransform = 'rotateX(0deg) rotateY(0deg)';
-  }
+  cards = [
+    {
+      title: 'E-commerce desde 0',
+      description: 'Plataformas de venta online a medida, rápidas y optimizadas para conversión.',
+      activeIndex: 0,
+      options: [
+        { src: 'project-1.png', color: '#E36B2B' }, // Orange-ish
+        { src: 'project-2.png', color: '#1E3A8A' }, // Dark Blue
+        { src: 'project-3.png', color: '#3B82F6' }  // Light Blue
+      ]
+    },
+    {
+      title: 'Integración IA',
+      description: 'Automatización de procesos y agentes inteligentes con modelos de lenguaje.',
+      activeIndex: 0,
+      options: [
+        { src: 'about-portrait.png', color: '#3B82F6' }, // Light Blue
+        { src: 'hero-portrait.png', color: '#E2E8F0' },  // White/Silver
+        { src: 'project-1.png', color: '#0F172A' }       // Dark Gray/Black
+      ]
+    },
+    {
+      title: 'Aplicaciones Móviles',
+      description: 'Experiencias nativas e híbridas fluidas con soporte multiplataforma.',
+      activeIndex: 0,
+      options: [
+        { src: 'project-3.png', color: '#A78BFA' }, // Light Purple
+        { src: 'project-2.png', color: '#86EFAC' }, // Light Green
+        { src: 'project-1.png', color: '#93C5FD' }  // Soft Blue
+      ]
+    },
+    {
+      title: 'Dashboard Administrativo',
+      description: 'Paneles de control modernos para gestionar tu negocio en tiempo real.',
+      activeIndex: 0,
+      options: [
+        { src: 'project-2.png', color: '#F43F5E' }, // Rose
+        { src: 'project-3.png', color: '#14B8A6' }, // Teal
+        { src: 'hero-portrait.png', color: '#1E293B' } // Dark Slate
+      ]
+    },
+    {
+      title: 'Diseño UI/UX',
+      description: 'Interfaces interactivas y flujos de usuario diseñados para enamorar.',
+      activeIndex: 0,
+      options: [
+        { src: 'about-portrait.png', color: '#EC4899' }, // Pink
+        { src: 'project-1.png', color: '#F59E0B' }, // Amber
+        { src: 'project-2.png', color: '#10B981' }  // Green
+      ]
+    },
+    {
+      title: 'Optimización SEO',
+      description: 'Estrategias de posicionamiento web para maximizar tu tráfico orgánico.',
+      activeIndex: 0,
+      options: [
+        { src: 'project-3.png', color: '#6366F1' }, // Indigo
+        { src: 'about-portrait.png', color: '#8B5CF6' }, // Violet
+        { src: 'hero-portrait.png', color: '#6B7280' }  // Gray
+      ]
+    }
+  ];
 
   scrollTo(link: string, event: Event) {
     event.preventDefault();

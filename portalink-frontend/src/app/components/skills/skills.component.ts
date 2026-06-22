@@ -7,19 +7,19 @@ import { CommonModule } from '@angular/common';
     standalone: true,
     imports: [CommonModule],
     template: `
-    <section id="skills" class="py-20 border-y border-white/5 overflow-hidden">
+    <section id="skills" class="py-20 border-y overflow-hidden" style="border-color: var(--card-border);">
       <!-- Marquee Wrapper -->
       <div class="relative flex overflow-hidden">
         <div class="flex animate-marquee whitespace-nowrap gap-12 py-10">
           <div *ngFor="let tech of (skills || defaultSkills).concat(skills || defaultSkills)" 
                class="flex items-center gap-4 px-8 py-4 glass-card group cursor-default hover:border-white/50">
             <div class="w-10 h-10 flex items-center justify-center opacity-40 group-hover:opacity-100 transition-opacity">
-              <i *ngIf="tech.icon" [class]="tech.icon" class="text-2xl text-white"></i>
-              <svg *ngIf="!tech.icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+              <i *ngIf="tech.icon" [class]="tech.icon" class="text-2xl" style="color: var(--text-primary);"></i>
+              <svg *ngIf="!tech.icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color: var(--text-primary);" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
             </div>
             <div class="flex flex-col">
-              <span class="font-headline text-3xl uppercase tracking-tighter text-white">{{ tech.name }}</span>
-              <span class="text-[10px] text-white/50 tracking-widest">{{ tech.percentage }}% Mastery</span>
+              <span class="font-headline text-3xl uppercase tracking-tighter" style="color: var(--text-primary);">{{ tech.name }}</span>
+              <span class="text-[10px] tracking-widest" style="color: var(--text-secondary);">{{ tech.percentage }}% Mastery</span>
             </div>
           </div>
         </div>
@@ -29,9 +29,10 @@ import { CommonModule } from '@angular/common';
       <div class="relative flex overflow-hidden mt-4">
         <div class="flex animate-marquee-reverse whitespace-nowrap gap-12 py-10">
           <div *ngFor="let skill of softSkills.concat(softSkills)" 
-               class="flex items-center gap-4 px-8 py-4 border border-white/10 rounded-none group cursor-default hover:bg-white/5 transition-colors">
-            <span class="text-xs uppercase tracking-[0.4em] text-white/40 group-hover:text-white transition-colors">{{ skill }}</span>
-            <div class="w-1.5 h-1.5 rounded-none bg-white/30"></div>
+               class="flex items-center gap-4 px-8 py-4 border rounded-none group cursor-default transition-colors hover:bg-black/5 dark:hover:bg-white/5"
+               style="border-color: var(--card-border);">
+            <span class="text-xs uppercase tracking-[0.4em] transition-colors" style="color: var(--text-secondary);">{{ skill }}</span>
+            <div class="w-1.5 h-1.5 rounded-none" style="background-color: var(--text-secondary); opacity: 0.35;"></div>
           </div>
         </div>
       </div>
@@ -41,7 +42,7 @@ import { CommonModule } from '@angular/common';
     .animate-marquee { animation: marquee 40s linear infinite; }
     .animate-marquee-reverse { animation: marquee 40s linear infinite reverse; }
     @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-    .glass-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 0; }
+    .glass-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 0; }
   `]
 })
 export class SkillsComponent {

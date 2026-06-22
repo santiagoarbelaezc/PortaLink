@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { MagneticDirective } from '../../shared/directives/magnetic.directive';
@@ -15,61 +15,58 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
          style="background: var(--nav-bg); border-bottom: 1px solid var(--card-border);">
       <div class="w-full flex items-center justify-between">
 
-        <!-- Left: Branding metadata -->
-        <div class="flex items-center gap-4">
-          <span class="text-[9px] uppercase tracking-[0.4em] font-bold transition-colors duration-500" style="color: var(--text-secondary);">S.A. // PORTFOLIO</span>
+        <!-- Left Side: Elegant borderless Theme Switcher with color indicators -->
+        <div class="flex items-center gap-4 flex-1">
+          <button (click)="setTheme('dark')" 
+                  class="relative w-5 h-5 flex items-center justify-center focus:outline-none cursor-pointer group"
+                  title="Tema Negro">
+            <span class="w-2.5 h-2.5 rounded-full bg-black border border-white/20 transition-transform duration-300 group-hover:scale-125"></span>
+            <span *ngIf="currentTheme === 'dark'" class="absolute inset-0 rounded-full border border-white/50"></span>
+          </button>
+          <button (click)="setTheme('light')" 
+                  class="relative w-5 h-5 flex items-center justify-center focus:outline-none cursor-pointer group"
+                  title="Tema Blanco">
+            <span class="w-2.5 h-2.5 rounded-full bg-white border border-black/20 transition-transform duration-300 group-hover:scale-125"></span>
+            <span *ngIf="currentTheme === 'light'" class="absolute inset-0 rounded-full border border-black/50"></span>
+          </button>
         </div>
 
-        <!-- Center: Nav Links -->
-        <div class="flex items-center gap-8 justify-center">
+        <!-- Center: Nav Links with typography from Links component -->
+        <div class="flex items-center gap-16 justify-center">
           <a *ngFor="let item of desktopItems"
              (click)="scrollTo(item.link, $event)"
-             class="nav-link text-xs font-bold tracking-widest uppercase cursor-pointer hover:text-white transition-colors"
-             style="color: var(--text-secondary);"
-             appMagnetic [appMagnetic]="0.2">
-            {{ item.name }}
+             class="nav-link font-headline text-sm font-medium tracking-[0.08em] uppercase cursor-pointer py-1 flex items-center gap-2.5"
+             [class.active]="activeSection === item.link">
+            <i [class]="item.icon + ' text-xs opacity-75'"></i>
+            <span>{{ item.name }}</span>
           </a>
         </div>
 
-        <!-- Right: Theme Selector & Contact CTA -->
-        <div class="flex items-center gap-6">
-          <!-- Theme Switcher Desktop (Sharp Architectural Squares) -->
-          <div class="flex items-center gap-2 border px-3 py-1.5 rounded-none transition-all duration-500"
-               style="border-color: var(--card-border); background: var(--card-bg);">
-            <button (click)="setTheme('dark')" 
-                    class="w-3.5 h-3.5 rounded-none bg-black border border-white/20 transition-all hover:scale-110 focus:outline-none cursor-pointer"
-                    [class.ring-1]="currentTheme === 'dark'"
-                    [class.ring-white]="currentTheme === 'dark'"
-                    title="Tema Negro"></button>
-            <button (click)="setTheme('light')" 
-                    class="w-3.5 h-3.5 rounded-none bg-white border border-black/20 transition-all hover:scale-110 focus:outline-none cursor-pointer"
-                    [class.ring-1]="currentTheme === 'light'"
-                    [class.ring-blue-500]="currentTheme === 'light'"
-                    title="Tema Blanco"></button>
-            <button (click)="setTheme('red')" 
-                    class="w-3.5 h-3.5 rounded-none bg-red-600 border border-white/20 transition-all hover:scale-110 focus:outline-none cursor-pointer"
-                    [class.ring-1]="currentTheme === 'red'"
-                    [class.ring-yellow-400]="currentTheme === 'red'"
-                    title="Tema Rojo"></button>
-          </div>
-
+        <!-- Right Side: Minimal Contact CTA -->
+        <div class="flex items-center justify-end flex-1">
+          <!-- Clean Solid Contact Button -->
           <button (click)="scrollTo('#contact', $event)" 
-                  class="flex items-center gap-2 px-7 py-3 rounded-none text-white border transition-all duration-300 hover:bg-white/10"
-                  style="border-color: var(--card-border); color: var(--text-primary); background: transparent;"
-                  appMagnetic [appMagnetic]="0.1">
-            <span class="text-xs font-bold tracking-widest uppercase">Contacto</span>
-            <div class="w-1.5 h-1.5 bg-white" style="background-color: var(--text-primary);"></div>
+                  class="px-6 py-2.5 rounded-none font-bold text-xs uppercase tracking-widest transition-all duration-300 hover:opacity-80 cursor-pointer"
+                  style="background: var(--text-primary); color: var(--bg-primary);">
+            Contacto
           </button>
         </div>
       </div>
     </nav>
 
-    <!-- Mobile floating Theme Switcher (top right) -->
-    <div class="md:hidden fixed top-6 right-6 z-[9000] flex items-center gap-2.5 border px-3.5 py-2.5 rounded-none backdrop-blur-xl shadow-2xl transition-all duration-500"
+    <!-- Mobile floating Theme Switcher (top right) with Color Squares -->
+    <div class="md:hidden fixed top-6 right-6 z-[9000] flex items-center border rounded-none backdrop-blur-xl shadow-2xl transition-all duration-500"
          style="background: var(--nav-bg); border-color: var(--card-border);">
-      <button (click)="setTheme('dark')" class="w-3.5 h-3.5 rounded-none bg-black border border-white/20 cursor-pointer focus:outline-none" [class.ring-1]="currentTheme === 'dark'" [class.ring-white]="currentTheme === 'dark'"></button>
-      <button (click)="setTheme('light')" class="w-3.5 h-3.5 rounded-none bg-white border border-black/20 cursor-pointer focus:outline-none" [class.ring-1]="currentTheme === 'light'" [class.ring-blue-500]="currentTheme === 'light'"></button>
-      <button (click)="setTheme('red')" class="w-3.5 h-3.5 rounded-none bg-red-600 border border-white/20 cursor-pointer focus:outline-none" [class.ring-1]="currentTheme === 'red'" [class.ring-yellow-400]="currentTheme === 'red'"></button>
+      <button (click)="setTheme('dark')" 
+              class="w-9 h-9 flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer"
+              [style.background]="currentTheme === 'dark' ? 'var(--text-primary)' : 'transparent'">
+        <span class="w-3 h-3 rounded-none bg-black border border-white/20"></span>
+      </button>
+      <button (click)="setTheme('light')" 
+              class="w-9 h-9 flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer"
+              [style.background]="currentTheme === 'light' ? 'var(--text-primary)' : 'transparent'">
+        <span class="w-3 h-3 rounded-none bg-white border border-black/20"></span>
+      </button>
     </div>
 
     <!-- ═══════════════════════════════════════════ -->
@@ -119,30 +116,49 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
     </nav>
   `,
     styles: [`
-    .nav-link { position: relative; }
+    .nav-link { 
+      position: relative; 
+      color: var(--text-secondary);
+      transition: color 0.25s ease;
+    }
+    .nav-link:hover, .nav-link.active {
+      color: var(--text-primary) !important;
+    }
+    .nav-link i {
+      transition: color 0.25s ease;
+    }
+    .nav-link:hover i, .nav-link.active i {
+      color: var(--text-primary) !important;
+    }
     .nav-link::after {
       content: '';
       position: absolute;
       bottom: -4px;
-      left: 0;
-      width: 0;
-      height: 1px;
+      left: 50%;
+      width: 3px;
+      height: 3px;
       background: var(--text-primary);
-      transition: width 0.3s ease;
+      border-radius: 50%;
+      opacity: 0;
+      transform: translateX(-50%) scale(0.5);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .nav-link:hover::after { width: 100%; }
+    .nav-link:hover::after, .nav-link.active::after { 
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+    }
     .mobile-nav-item:active { transform: scale(0.95); }
   `]
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
   private router = inject(Router);
 
   desktopItems = [
-    { name: 'Inicio',    link: '#hero' },
-    { name: 'Links',     link: '/links' },
-    { name: 'Proyectos', link: '#portfolio' },
-    { name: 'Perfil',    link: '#about' },
-    { name: 'Servicios', link: '#skills' }
+    { name: 'Inicio',    link: '#hero',      icon: 'fa-solid fa-shapes' },
+    { name: 'Links',     link: '/links',     icon: 'fa-solid fa-compass' },
+    { name: 'Proyectos', link: '#portfolio', icon: 'fa-solid fa-folder-open' },
+    { name: 'Perfil',    link: '#about',     icon: 'fa-solid fa-id-card' },
+    { name: 'Servicios', link: '#skills',    icon: 'fa-solid fa-sliders' }
   ];
 
   mobileItems = [
@@ -155,11 +171,47 @@ export class NavbarComponent {
   ];
 
   currentTheme = 'dark';
+  activeSection = '#hero';
 
   constructor() {
     if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('portfolio-theme') || 'dark';
+      let savedTheme = localStorage.getItem('portfolio-theme') || 'dark';
+      if (savedTheme === 'red') {
+        savedTheme = 'dark';
+      }
       this.setTheme(savedTheme);
+    }
+  }
+
+  ngOnInit() {
+    if (typeof window !== 'undefined') {
+      this.onWindowScroll();
+    }
+  }
+
+  @HostListener('window:scroll', [])
+  onWindowScroll() {
+    if (typeof window === 'undefined') return;
+
+    // Detect if we are on the links route
+    if (this.router.url.includes('/links')) {
+      this.activeSection = '/links';
+      return;
+    }
+
+    const sections = ['hero', 'portfolio', 'about', 'skills'];
+    const scrollPosition = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+
+    for (const section of sections) {
+      const el = document.getElementById(section);
+      if (el) {
+        const top = el.offsetTop - 140; // navbar offset
+        const height = el.offsetHeight;
+        if (scrollPosition >= top && scrollPosition < top + height) {
+          this.activeSection = '#' + section;
+          break;
+        }
+      }
     }
   }
 

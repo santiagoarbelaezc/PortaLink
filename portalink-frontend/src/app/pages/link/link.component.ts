@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 
 import { AiChatFloatingComponent } from '../../components/ai-chat-floating/ai-chat-floating.component';
 
-declare var AOS: any;
+
 
 @Component({
     selector: 'app-link',
@@ -18,7 +18,7 @@ declare var AOS: any;
         <main class="lt-main-grid">
           
           <!-- COLUMN 1: PORTRAIT -->
-          <aside class="lt-col-photo" data-aos="fade-right">
+          <aside class="lt-col-photo">
             <div class="lt-portrait-wrapper">
               <div class="lt-image-container">
                 <img src="about-portrait.png" alt="Santiago Arbelaez" class="lt-main-img" />
@@ -28,7 +28,7 @@ declare var AOS: any;
 
           <!-- COLUMN 2: INFO & LINKS -->
           <section class="lt-col-info">
-            <header class="lt-info-header" data-aos="fade-down">
+            <header class="lt-info-header">
               <div class="flex items-center gap-4 mb-4">
                 <div class="h-px w-10 lt-line-accent"></div>
                 <span class="lt-label-accent text-[10px] uppercase tracking-[0.4em] font-bold">Santiago Arbeláez</span>
@@ -39,7 +39,7 @@ declare var AOS: any;
               </h1>
             </header>
 
-            <div class="lt-links-container" data-aos="fade-up">
+            <div class="lt-links-container">
 
               <!-- Portafolio Main CTA -->
               <a routerLink="/proyectos" class="lt-card-main group lt-item-portfolio">
@@ -128,7 +128,7 @@ declare var AOS: any;
         </main>
       </div>
 
-      <footer class="lt-footer" data-aos="fade-in">
+      <footer class="lt-footer">
          <p class="lt-copy tracking-[0.3em] uppercase">© {{ currentYear }} S.A. PORTFOLIO — Digital Architecture</p>
       </footer>
 
@@ -195,16 +195,6 @@ export class LinkComponent implements OnInit {
         }
       });
 
-      if (typeof AOS !== 'undefined') {
-        setTimeout(() => {
-          AOS.init({
-            duration: 1000,
-            once: true,
-            mirror: true
-          });
-          AOS.refresh();
-        }, 100);
-      }
     }
   }
 

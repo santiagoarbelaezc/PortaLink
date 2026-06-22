@@ -17,9 +17,9 @@ module.exports = {
         }
       },
       fontFamily: {
-        headline: ['"Roboto"', 'sans-serif'],
-        editorial: ['"Roboto"', 'sans-serif'],
-        sans: ['"Roboto"', 'sans-serif'],
+        headline: ['"Inter Tight"', 'sans-serif'],
+        editorial: ['"Inter Tight"', 'sans-serif'],
+        sans: ['"Inter Tight"', 'sans-serif'],
       },
       animation: {
         'draw-svg': 'draw 2s ease-out forwards',
