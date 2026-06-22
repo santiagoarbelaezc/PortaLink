@@ -17,10 +17,10 @@ import { FormsModule } from '@angular/forms';
         *ngIf="!isOpen"
         [@buttonAnimation]
         (click)="toggleChat()"
-        class="group relative flex h-[320px] w-[220px] items-center justify-end bg-transparent transition-all duration-500 hover:scale-110 active:scale-95 border-none overflow-visible shadow-none origin-right"
+        class="group relative flex h-[280px] w-[190px] items-center justify-end bg-transparent border-none overflow-visible shadow-none origin-right"
       >
         <div class="relative flex items-center justify-end w-full h-full">
-          <img src="assets/images/robot-izquierda.png" class="h-full w-auto object-contain object-right relative z-10 translate-x-10" alt="Rotbot">
+          <img src="assets/images/robot-izquierda.png" class="h-full w-auto object-contain object-right relative z-10 translate-x-6" alt="Rotbot">
         </div>
       </button>
 
@@ -28,29 +28,31 @@ import { FormsModule } from '@angular/forms';
       <div 
         *ngIf="isOpen"
         [@chatAnimation]
-        class="absolute bottom-0 right-12 md:right-16 w-[90vw] md:w-[450px] overflow-hidden rounded-2xl border border-cyan-500/30 bg-black shadow-[0_0_40px_rgba(34,211,238,0.15)] origin-bottom-right font-sans"
+        class="chat-panel absolute bottom-0 right-12 md:right-16 w-[90vw] md:w-[440px] overflow-hidden rounded-[24px] border shadow-2xl origin-bottom-right font-sans"
       >
         <!-- Header -->
-        <div class="flex items-center justify-between border-b border-cyan-500/20 bg-black px-5 py-4 relative overflow-hidden">
+        <div class="chat-header flex items-center justify-between border-b px-5 py-4 relative overflow-hidden">
           <!-- Cyber Scanner Line -->
-          <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50"></div>
+          <div class="absolute top-0 left-0 w-full h-[1px] scanner-line"></div>
           
           <div class="flex items-center gap-3 relative z-10">
-            <div class="w-8 h-8 rounded-md bg-cyan-500/10 flex items-center justify-center p-1 border border-cyan-500/30 shadow-[inset_0_0_10px_rgba(34,211,238,0.1)]">
-              <img src="assets/images/rotbot.png" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]" alt="Rotbot">
+            <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center p-1.5 border border-white/10 shadow-[inset_0_0_10px_rgba(255,255,255,0.05)]">
+              <img src="assets/images/rotbot.png" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(0,245,255,0.3)]" alt="Rotbot">
             </div>
             <div>
-              <h3 class="font-sans text-base font-bold text-white tracking-wide leading-none">RotBot <span class="text-cyan-400 font-medium">IA</span></h3>
+              <h3 class="font-sans text-sm font-bold tracking-wide leading-none" style="color: var(--text-primary);">
+                RotBot IA
+              </h3>
               <div class="flex items-center gap-1.5 mt-1">
-                 <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_5px_rgba(34,211,238,0.8)]"></span>
-                 <p class="text-[9px] uppercase tracking-widest text-cyan-400/70 font-sans font-medium">System Active</p>
+                 <span class="w-1.5 h-1.5 rounded-full animate-pulse shadow-[0_0_5px_var(--accent-color)]" style="background-color: var(--accent-color);"></span>
+                 <p class="text-[8px] uppercase tracking-widest font-sans font-medium" style="color: var(--text-secondary); opacity: 0.7;">System Active</p>
               </div>
             </div>
           </div>
           
           <!-- Close Button -->
-          <button (click)="toggleChat()" class="relative z-10 p-2 text-cyan-400/50 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-md transition-all">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button (click)="toggleChat()" class="relative z-10 p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
@@ -58,42 +60,35 @@ import { FormsModule } from '@angular/forms';
         </div>
 
         <!-- Messages Area -->
-        <div #scrollContainer class="h-[450px] overflow-y-auto p-5 space-y-6 scroll-smooth bg-black custom-scrollbar">
+        <div #scrollContainer class="h-[430px] overflow-y-auto p-5 space-y-6 scroll-smooth custom-scrollbar" style="overscroll-behavior: contain;">
           
           <!-- Welcome Intro Section -->
-          <div class="flex flex-col items-center justify-center text-center pb-8 border-b border-cyan-500/10 mt-2 mb-2">
-            <div class="w-64 h-64 mb-6 relative">
-              <div class="absolute inset-0 bg-cyan-500/10 rounded-full blur-3xl"></div>
-              <img src="assets/images/rotbot.png" class="w-full h-full object-contain relative z-10 drop-shadow-[0_0_20px_rgba(34,211,238,0.2)] scale-110" alt="Rotbot Full">
+          <div class="flex flex-col items-center justify-center text-center pb-6 border-b mt-2 mb-2 welcome-border">
+            <div class="w-60 h-60 mb-2 relative flex items-center justify-center overflow-visible">
+              <img src="assets/images/rotbot.png" class="w-52 h-52 object-contain relative z-10" alt="Rotbot Full">
             </div>
-            <h2 class="text-2xl font-bold text-white mb-3 tracking-wide">RotBot <span class="text-cyan-400">IA</span></h2>
-            <div class="text-[14px] text-white/70 font-light leading-relaxed px-2 max-w-[95%]">
-              <p class="mb-3">
-                Soy tu asistente virtual inteligente. Más allá de explorar diseños visuales, estoy aquí para guiarte en la construcción de <strong>sistemas completamente funcionales</strong>. 
+            <h2 class="text-lg font-headline uppercase tracking-wider mb-2" style="color: var(--text-primary);">
+              Sistemas con Rotbot IA
+            </h2>
+            <div class="text-[12px] font-light leading-relaxed px-4 max-w-[95%]" style="color: var(--text-secondary);">
+              <p class="mb-2">
+                ¡Hola! Soy RotBot, tu copiloto tecnológico. Estoy listo para guiarte en el diseño y desarrollo de sistemas a medida, e-commerce e integración de Inteligencia Artificial para potenciar tu negocio.
               </p>
-              <p class="mb-2 text-cyan-400/80">Puedo ayudarte a implementar:</p>
-              <ul class="text-left list-disc list-inside space-y-1.5 text-[13px] text-white/60 mx-auto w-fit">
-                <li>Sistemas para mi negocio.</li>
-                <li>Software para llevar las ventas de tu negocio.</li>
-                <li>E-commerce para vender en línea.</li>
-                <li>Personalización de tu propia landing page.</li>
-                <li>Integración de tu propia Inteligencia Artificial.</li>
-              </ul>
             </div>
           </div>
 
-          <div *ngFor="let msg of messages" class="flex w-full" [ngClass]="{'justify-end': msg.role === 'user', 'justify-start': msg.role === 'assistant'}">
+          <div *ngFor="let msg of messages" class="flex w-full animate-fade-in" [ngClass]="{'justify-end': msg.role === 'user', 'justify-start': msg.role === 'assistant'}">
             
             <!-- Assistant Avatar in message -->
-            <div *ngIf="msg.role === 'assistant'" class="w-8 h-8 rounded-md bg-cyan-500/10 flex-shrink-0 flex items-center justify-center mr-3 p-1 border border-cyan-500/20">
+            <div *ngIf="msg.role === 'assistant'" class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center mr-2.5 p-1 border avatar-bg">
               <img src="assets/images/rotbot.png" class="w-full h-full object-contain" alt="Rotbot">
             </div>
 
             <!-- Message Bubble -->
             <div 
               [ngClass]="{
-                'text-white/90 text-[15px] font-light tracking-wide leading-relaxed': msg.role === 'assistant',
-                'bg-cyan-500/10 border border-cyan-500/20 text-white font-light tracking-wide rounded-xl rounded-tr-sm px-4 py-3 text-[15px] leading-relaxed max-w-[85%] backdrop-blur-sm shadow-[0_0_15px_rgba(34,211,238,0.05)]': msg.role === 'user'
+                'assistant-bubble py-2 text-[13.5px] leading-relaxed max-w-[72%]': msg.role === 'assistant',
+                'user-bubble px-4 py-3 rounded-2xl rounded-tr-sm text-[13.5px] leading-relaxed max-w-[85%] border shadow-sm': msg.role === 'user'
               }"
             >
               {{ msg.content }}
@@ -102,40 +97,40 @@ import { FormsModule } from '@angular/forms';
 
           <!-- Typing Indicator -->
           <div *ngIf="isTyping" class="flex items-center gap-3 w-full">
-            <div class="w-8 h-8 rounded-md bg-cyan-500/10 flex-shrink-0 flex items-center justify-center p-1 border border-cyan-500/20">
+            <div class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center p-1 border avatar-bg">
               <img src="assets/images/rotbot.png" class="w-full h-full object-contain" alt="Rotbot">
             </div>
-            <div class="flex items-center gap-1 text-cyan-400/50">
-              <div class="w-1 h-3 bg-current animate-pulse"></div>
-              <div class="w-1 h-3 bg-current animate-pulse [animation-delay:0.2s]"></div>
-              <div class="w-1 h-3 bg-current animate-pulse [animation-delay:0.4s]"></div>
+            <div class="assistant-bubble py-2 flex items-center gap-1.5">
+              <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce"></div>
+              <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce [animation-delay:0.2s]"></div>
+              <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce [animation-delay:0.4s]"></div>
             </div>
           </div>
         </div>
 
         <!-- Input Area -->
-        <div class="bg-black p-4 pt-3 border-t border-cyan-500/20">
+        <div class="chat-input-area p-4 pt-3 border-t">
           <form (submit)="sendMessage()" class="relative">
             <input 
               type="text" 
               [(ngModel)]="userInput"
               name="userInput"
-              placeholder="Escribe tu mensaje..."
-              class="w-full rounded-lg border border-cyan-500/20 bg-transparent py-3 pl-4 pr-12 text-[15px] text-white font-light tracking-wide transition-all focus:ring-0 focus:outline-none focus:border-cyan-400 focus:bg-cyan-500/5 focus:shadow-[0_0_10px_rgba(34,211,238,0.15)] placeholder:text-cyan-200/30"
+              placeholder="Pregúntale a Rotbot..."
+              class="chat-input w-full rounded-xl border py-3.5 pl-4 pr-12 text-[14px] font-light tracking-wide transition-all focus:ring-0 focus:outline-none"
             />
             <button 
               type="submit"
               [disabled]="!userInput.trim()"
-              class="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 bg-cyan-500/10 text-cyan-400 rounded-md transition-all hover:bg-cyan-500/30 disabled:opacity-30 disabled:hover:bg-cyan-500/10 border border-cyan-500/20"
+              class="chat-submit-btn absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-all"
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="22" y1="2" x2="11" y2="13"></line>
                 <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
               </svg>
             </button>
           </form>
           <div class="flex justify-center mt-3">
-             <span class="text-[9px] uppercase tracking-widest text-cyan-400/30 font-sans font-medium">Powered by Portalink</span>
+             <span class="text-[8px] uppercase tracking-widest font-sans font-medium opacity-30" style="color: var(--text-secondary);">Powered by Portalink IA</span>
           </div>
         </div>
       </div>
@@ -148,18 +143,126 @@ import { FormsModule } from '@angular/forms';
     .font-headline {
       font-family: var(--font-headline);
     }
+    .chat-panel {
+      background: rgba(10, 10, 10, 0.82);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border-color: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), inset 0 0 1px rgba(255, 255, 255, 0.1);
+      overscroll-behavior: contain;
+    }
+    .theme-light .chat-panel {
+      background: rgba(255, 255, 255, 0.9);
+      border-color: rgba(0, 0, 0, 0.06);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.08), inset 0 0 1px rgba(0, 0, 0, 0.05);
+      overscroll-behavior: contain;
+    }
+    .chat-header {
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    .theme-light .chat-header {
+      border-color: rgba(0, 0, 0, 0.06);
+    }
+    .scanner-line {
+      background: linear-gradient(90deg, transparent, var(--accent-color, #00f5ff), transparent);
+      animation: scan 3s linear infinite;
+      opacity: 0.8;
+    }
+    @keyframes scan {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    .welcome-border {
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    .theme-light .welcome-border {
+      border-color: rgba(0, 0, 0, 0.06);
+    }
+    .bg-accent-glow {
+      background-color: var(--accent-color, #00f5ff);
+    }
+    .animate-spin-slow {
+      animation: spin 12s linear infinite;
+    }
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+    .glass-mini-card {
+      background: rgba(255, 255, 255, 0.02);
+      border-color: rgba(255, 255, 255, 0.06);
+    }
+    .theme-light .glass-mini-card {
+      background: rgba(0, 0, 0, 0.01);
+      border-color: rgba(0, 0, 0, 0.04);
+    }
+    .glass-mini-card:hover {
+      border-color: var(--accent-color, #00f5ff) !important;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .avatar-bg {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    .theme-light .avatar-bg {
+      background: rgba(0, 0, 0, 0.02);
+      border-color: rgba(0, 0, 0, 0.05);
+    }
+    .assistant-bubble {
+      background: transparent;
+      border: none !important;
+      box-shadow: none !important;
+      color: var(--text-primary, #ffffff);
+      padding: 8px 0 !important;
+    }
+    .theme-light .assistant-bubble {
+      background: transparent;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    .user-bubble {
+      background: var(--accent-color, #00f5ff);
+      border-color: var(--accent-color, #00f5ff);
+      color: #000000;
+      font-weight: 600;
+    }
+    .theme-light .user-bubble {
+      color: #000000;
+    }
+    .chat-input-area {
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    .theme-light .chat-input-area {
+      border-color: rgba(0, 0, 0, 0.06);
+    }
+    .chat-input {
+      background: rgba(255, 255, 255, 0.02);
+      border-color: rgba(255, 255, 255, 0.08);
+      color: var(--text-primary, #ffffff);
+    }
+    .theme-light .chat-input {
+      background: rgba(0, 0, 0, 0.01);
+      border-color: rgba(0, 0, 0, 0.06);
+    }
+    .chat-input:focus {
+      border-color: var(--accent-color, #00f5ff);
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: 0 0 15px rgba(0, 245, 255, 0.08);
+    }
+    .chat-submit-btn {
+      color: var(--accent-color, #00f5ff);
+    }
     .custom-scrollbar::-webkit-scrollbar {
       width: 4px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
-      background: rgba(0,0,0,0.2);
+      background: rgba(0,0,0,0.1);
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: rgba(59, 130, 246, 0.2);
+      background: rgba(255, 255, 255, 0.05);
       border-radius: 4px;
     }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-      background: rgba(59, 130, 246, 0.4);
+    .theme-light .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.08);
     }
   `],
   animations: [
@@ -183,7 +286,7 @@ import { FormsModule } from '@angular/forms';
     ])
   ]
 })
-export class AiChatFloatingComponent implements OnInit, AfterViewChecked {
+export class AiChatFloatingComponent implements OnInit {
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
 
   isOpen = false;
@@ -221,14 +324,24 @@ export class AiChatFloatingComponent implements OnInit, AfterViewChecked {
       this.userInput = event.detail.message;
       this.sendMessage();
     }
-  }
-
-  ngAfterViewChecked() {
-    this.scrollToBottom();
+    // Ensure we start at the top on triggers
+    setTimeout(() => {
+      try {
+        this.scrollContainer.nativeElement.scrollTop = 0;
+      } catch (err) {}
+    }, 100);
   }
 
   toggleChat() {
     this.isOpen = !this.isOpen;
+    if (this.isOpen) {
+      // Ensure we start from the top
+      setTimeout(() => {
+        try {
+          this.scrollContainer.nativeElement.scrollTop = 0;
+        } catch (err) {}
+      }, 100);
+    }
   }
 
   sendMessage() {
@@ -238,6 +351,9 @@ export class AiChatFloatingComponent implements OnInit, AfterViewChecked {
     this.messages.push({ role: 'user', content: userText });
     this.userInput = '';
     this.isTyping = true;
+    
+    // Scroll to bottom after user message
+    setTimeout(() => this.scrollToBottom(), 50);
 
     // Simulate thinking
     setTimeout(() => {
@@ -248,6 +364,9 @@ export class AiChatFloatingComponent implements OnInit, AfterViewChecked {
         role: 'assistant', 
         content: `¡Entendido! Preparando la interfaz ${detectedStyle ? detectedStyle.toUpperCase() : 'PERSONALIZADA'}. Accediendo al sistema...` 
       });
+      
+      // Scroll to bottom after assistant reply
+      setTimeout(() => this.scrollToBottom(), 50);
 
       // Redirect after a small delay
       setTimeout(() => {
