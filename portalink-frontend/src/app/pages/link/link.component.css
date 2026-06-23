@@ -357,7 +357,7 @@
   .lt-image-container { 
     max-width: none; 
     width: calc(100% + 32px); 
-    margin: 0 -16px; 
+    margin: -2px -16px 0; 
     aspect-ratio: 1.7/1; 
     border-left: none;
     border-right: none;

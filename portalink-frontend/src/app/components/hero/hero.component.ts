@@ -19,15 +19,15 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
             </span>
           </div>
 
-          <h1 class="text-5xl sm:text-7xl md:text-[80px] font-headline uppercase leading-[0.95] tracking-tighter mb-6 md:mb-8">
-            <span style="color: var(--text-primary);">{{ getTranslation().soy }}</span>
-            <span style="color: var(--accent-color);">Santiago Arbelaez.</span>
+          <h1 class="text-5xl sm:text-7xl md:text-[80px] font-headline uppercase leading-[0.95] tracking-tighter mb-6 md:mb-8 hero-title">
+            <span class="title-soy">{{ getTranslation().soy }}</span>
+            <span class="title-name">Santiago Arbelaez.</span>
           </h1>
           
           <p class="text-base md:text-lg max-w-xl mb-10" style="color: var(--text-secondary); line-height: 1.65;">
             {{ getTranslation().description }}
           </p>
-
+ 
           <!-- Offerings List (2x2 Grid) -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 mb-12">
             <div *ngFor="let offering of getTranslation().offerings" class="flex items-center gap-3 font-headline uppercase text-[11px] font-extrabold tracking-widest" style="color: var(--text-secondary);">
@@ -35,7 +35,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
               <span>{{ offering }}</span>
             </div>
           </div>
-
+ 
           <div class="flex gap-4">
             <a (click)="scrollTo('#portfolio', $event)" 
                class="cta-button group cursor-pointer no-underline">
@@ -48,7 +48,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
             </a>
           </div>
         </div>
-
+ 
         <!-- Apple Product Cards Column -->
         <div class="w-full py-6 overflow-visible lg:-ml-8 xl:-ml-14">
           <!-- Horizontal Scroll Wrapper (Smooth continuous scroll without snapping) -->
@@ -61,9 +61,9 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
                    [style.background]="'var(--card-bg)'"
                    [style.borderColor]="'var(--card-border)'">
                 <img
-                  [src]="card.options[card.activeIndex].src"
-                  [alt]="getCardTitle(cIdx)"
-                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                   [src]="card.options[card.activeIndex].src"
+                   [alt]="getCardTitle(cIdx)"
+                   class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent"></div>
               </div>
@@ -82,7 +82,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
                   </span>
                 </button>
               </div>
-
+ 
               <!-- Product Details -->
               <h3 class="text-lg md:text-xl font-sans font-bold tracking-tight mb-2" style="color: var(--text-primary);">
                 {{ getCardTitle(cIdx) }}
@@ -97,6 +97,18 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
     </section>
   `,
     styles: [`
+    .hero-title .title-soy {
+      color: #a3a3a3;
+    }
+    .hero-title .title-name {
+      color: #ffffff;
+    }
+    .theme-light .hero-title .title-soy {
+      color: #000000;
+    }
+    .theme-light .hero-title .title-name {
+      color: #4b5563;
+    }
     .cta-button {
       display: inline-flex;
       align-items: center;
@@ -111,7 +123,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
       overflow: hidden;
       box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     }
-
+ 
     .cta-button::before {
       content: '';
       position: absolute;
@@ -122,11 +134,11 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
       transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       z-index: 0;
     }
-
+ 
     .cta-button:hover::before {
       transform: translateY(0);
     }
-
+ 
     .cta-text {
       position: relative;
       z-index: 1;
@@ -136,11 +148,11 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
       font-size: 0.75rem;
       transition: color 0.4s;
     }
-
+ 
     .cta-button:hover .cta-text {
       color: #000;
     }
-
+ 
     .cta-icon-wrapper {
       position: relative;
       z-index: 1;
@@ -148,21 +160,21 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
       display: flex; align-items: center; justify-content: center;
       transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
-
+ 
     .cta-button:hover .cta-icon-wrapper {
       transform: translate(3px, -3px);
     }
-
+ 
     .cta-icon {
       width: 100%; height: 100%;
       stroke: #fff;
       transition: stroke 0.4s;
     }
-
+ 
     .cta-button:hover .cta-icon {
       stroke: #000;
     }
-
+ 
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
