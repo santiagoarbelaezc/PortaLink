@@ -16,7 +16,10 @@ import { RouterModule } from '@angular/router';
           <aside class="lt-col-photo">
             <div class="lt-portrait-wrapper">
               <div class="lt-image-container">
-                <img src="about-portrait.png" alt="Santiago Arbelaez" class="lt-main-img" />
+                <img src="about-portrait.png" alt="Santiago Arbelaez" class="lt-main-img lt-bg-blur" />
+                <div class="lt-profile-overlay">
+                  <img src="assets/icons/logo-link.png" alt="Santiago Arbelaez" class="lt-profile-logo" />
+                </div>
               </div>
             </div>
           </aside>

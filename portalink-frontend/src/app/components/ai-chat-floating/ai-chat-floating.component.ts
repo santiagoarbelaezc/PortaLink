@@ -326,6 +326,10 @@ export class AiChatFloatingComponent implements OnInit {
   }
 
   toggleChat() {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      this.router.navigate(['/rotbot']);
+      return;
+    }
     this.isOpen = !this.isOpen;
     if (this.isOpen) {
       setTimeout(() => {
