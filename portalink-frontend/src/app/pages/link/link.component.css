@@ -31,16 +31,7 @@
 
 /* Vertical architectural line */
 .lt-wrapper::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 1px;
-  height: 100%;
-  background: linear-gradient(to bottom, transparent, var(--card-border) 15%, var(--card-border) 85%, transparent);
-  z-index: 0;
-  pointer-events: none;
+  display: none;
 }
 
 .lt-container {
@@ -495,9 +486,7 @@
   -webkit-mask-image: none;
 }
 
-.theme-light .lt-wrapper::after {
-  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.04) 15%, rgba(0, 0, 0, 0.04) 85%, transparent);
-}
+
 
 .theme-light .lt-image-container {
   background: #ffffff;

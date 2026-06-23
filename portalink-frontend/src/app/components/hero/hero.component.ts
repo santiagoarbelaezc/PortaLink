@@ -1,11 +1,12 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MagneticDirective } from '../../shared/directives/magnetic.directive';
-
+ 
 @Component({
     selector: 'app-hero',
     standalone: true,
     imports: [CommonModule],
+    encapsulation: ViewEncapsulation.None,
     template: `
     <section id="hero" class="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
 
@@ -107,7 +108,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
       color: #000000;
     }
     .theme-light .hero-title .title-name {
-      color: #4b5563;
+      color: #333333;
     }
     .cta-button {
       display: inline-flex;
