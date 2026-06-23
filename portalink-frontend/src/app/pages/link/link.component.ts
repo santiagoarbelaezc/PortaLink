@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, Inject, PLATFORM_ID, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, Inject, PLATFORM_ID, ViewEncapsulation, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
@@ -131,7 +131,7 @@ import { RouterModule } from '@angular/router';
                 <span class="text-[9px] uppercase tracking-[0.1em]" style="color: var(--text-secondary);">{{ modelingImages.length }} Photos</span>
               </div>
               <div class="space-y-6">
-                <div *ngFor="let img of modelingImages" class="lt-reveal-item overflow-hidden relative border aspect-[3/4]" style="border-color: var(--card-border);">
+                <div #revealItem *ngFor="let img of modelingImages" class="lt-reveal-item overflow-hidden relative border aspect-[3/4]" style="border-color: var(--card-border);">
                   <img [src]="img.src" [alt]="img.alt" class="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-700" />
                   <div class="absolute inset-0 bg-gradient-to-t from-[#000000]/70 via-transparent to-transparent flex items-end p-4">
                     <span class="text-[9px] font-headline uppercase tracking-[0.3em] text-white/50">{{ img.alt }}</span>
@@ -187,6 +187,7 @@ import { RouterModule } from '@angular/router';
     encapsulation: ViewEncapsulation.None
 })
 export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChildren('revealItem') revealItems!: QueryList<ElementRef>;
   currentYear = new Date().getFullYear();
   deferredPrompt: any;
   showInstallModal = false;
@@ -196,9 +197,9 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   private observer?: IntersectionObserver;
 
   modelingImages = [
-    { src: 'assets/model_1.png', alt: 'Editorial Portrait I' },
-    { src: 'assets/model_2.png', alt: 'Editorial Portrait II' },
-    { src: 'assets/model_3.png', alt: 'Editorial Portrait III' }
+    { src: 'assets/images/model_1.png', alt: 'Editorial Portrait I' },
+    { src: 'assets/images/model_2.png', alt: 'Editorial Portrait II' },
+    { src: 'assets/images/model_3.png', alt: 'Editorial Portrait III' }
   ];
 
   translations: any = {
@@ -268,29 +269,38 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {
-      // Scroll Reveal Intersection Observer
-      setTimeout(() => {
-        const revealItems = document.querySelectorAll('.lt-reveal-item');
-        if (revealItems.length > 0) {
-          const observerOptions = {
-            root: null,
-            rootMargin: '0px 0px -50px 0px', // Trigger slightly before the item enters the view
-            threshold: 0.05
-          };
-          this.observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-              if (entry.isIntersecting) {
-                entry.target.classList.add('revealed');
-              }
-            });
-          }, observerOptions);
-
-          revealItems.forEach(item => {
-            this.observer?.observe(item);
-          });
-        }
-      }, 100);
+      // Setup observer with current list of elements
+      this.setupObserver(this.revealItems.toArray());
+      // Re-setup if list changes
+      this.revealItems.changes.subscribe((items: QueryList<ElementRef>) => {
+        this.setupObserver(items.toArray());
+      });
     }
+  }
+
+  setupObserver(elements: ElementRef[]) {
+    if (this.observer) {
+      this.observer.disconnect();
+    }
+    if (elements.length === 0) return;
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px 0px 100px 0px', // Trigger 100px before entering viewport
+      threshold: 0.01
+    };
+
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+        }
+      });
+    }, observerOptions);
+
+    elements.forEach(el => {
+      this.observer?.observe(el.nativeElement);
+    });
   }
 
   ngOnDestroy() {
