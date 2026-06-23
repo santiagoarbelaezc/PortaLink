@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MagneticDirective } from '../../shared/directives/magnetic.directive';
 
@@ -15,43 +15,31 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
           <div class="flex items-center gap-4 mb-4">
             <div class="h-px w-10" style="background-color: var(--text-primary); opacity: 0.4;"></div>
             <span class="text-[10px] uppercase tracking-[0.4em] font-bold" style="color: var(--text-secondary);">
-              CREADOR DIGITAL
+              {{ getTranslation().subtitle }}
             </span>
           </div>
 
           <h1 class="text-5xl sm:text-7xl md:text-[80px] font-headline uppercase leading-[0.95] tracking-tighter mb-6 md:mb-8">
-            <span style="color: var(--text-primary);">Soy </span>
+            <span style="color: var(--text-primary);">{{ getTranslation().soy }}</span>
             <span style="color: var(--accent-color);">Santiago Arbelaez.</span>
           </h1>
           
           <p class="text-base md:text-lg max-w-xl mb-10" style="color: var(--text-secondary); line-height: 1.65;">
-            Creador de contenido, diseñador y desarrollador. Ayudo a negocios a comunicar mejor lo que hacen y a construir su presencia digital desde cero.
+            {{ getTranslation().description }}
           </p>
 
           <!-- Offerings List (2x2 Grid) -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 mb-12">
-            <div class="flex items-center gap-3 font-headline uppercase text-[11px] font-extrabold tracking-widest" style="color: var(--text-secondary);">
+            <div *ngFor="let offering of getTranslation().offerings" class="flex items-center gap-3 font-headline uppercase text-[11px] font-extrabold tracking-widest" style="color: var(--text-secondary);">
               <span class="w-1.5 h-1.5 rounded-none flex-shrink-0" style="background-color: var(--accent-color);"></span>
-              <span>e-commerce desde 0</span>
-            </div>
-            <div class="flex items-center gap-3 font-headline uppercase text-[11px] font-extrabold tracking-widest" style="color: var(--text-secondary);">
-              <span class="w-1.5 h-1.5 rounded-none flex-shrink-0" style="background-color: var(--accent-color);"></span>
-              <span>integración con IA</span>
-            </div>
-            <div class="flex items-center gap-3 font-headline uppercase text-[11px] font-extrabold tracking-widest" style="color: var(--text-secondary);">
-              <span class="w-1.5 h-1.5 rounded-none flex-shrink-0" style="background-color: var(--accent-color);"></span>
-              <span>aplicaciones móviles</span>
-            </div>
-            <div class="flex items-center gap-3 font-headline uppercase text-[11px] font-extrabold tracking-widest" style="color: var(--text-secondary);">
-              <span class="w-1.5 h-1.5 rounded-none flex-shrink-0" style="background-color: var(--accent-color);"></span>
-              <span>dashboard administrativo</span>
+              <span>{{ offering }}</span>
             </div>
           </div>
 
           <div class="flex gap-4">
             <a (click)="scrollTo('#portfolio', $event)" 
                class="cta-button group cursor-pointer no-underline">
-               <span class="cta-text">{{ data?.ctaText || 'Ver Proyectos' }}</span>
+               <span class="cta-text">{{ getCtaText() }}</span>
                <div class="cta-icon-wrapper">
                  <svg class="cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                    <path d="M7 17L17 7M17 7H7M17 7V17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -66,7 +54,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
           <!-- Horizontal Scroll Wrapper (Smooth continuous scroll without snapping) -->
           <div class="flex gap-6 overflow-x-auto no-scrollbar pb-6 w-full px-6 md:px-8">
             <!-- Card Loop -->
-            <div *ngFor="let card of cards" 
+            <div *ngFor="let card of cards; let cIdx = index" 
                  class="shrink-0 w-[270px] sm:w-[310px] flex flex-col items-center text-center lg:items-start lg:text-left">
               <!-- Card Image Box (Taller and Larger) -->
               <div class="relative w-full aspect-[3/4.2] rounded-[24px] sm:rounded-[32px] overflow-hidden border transition-all duration-500 shadow-xl group"
@@ -74,7 +62,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
                    [style.borderColor]="'var(--card-border)'">
                 <img
                   [src]="card.options[card.activeIndex].src"
-                  [alt]="card.title"
+                  [alt]="getCardTitle(cIdx)"
                   class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent"></div>
@@ -97,10 +85,10 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
 
               <!-- Product Details -->
               <h3 class="text-lg md:text-xl font-sans font-bold tracking-tight mb-2" style="color: var(--text-primary);">
-                {{ card.title }}
+                {{ getCardTitle(cIdx) }}
               </h3>
               <p class="text-xs md:text-sm leading-relaxed" style="color: var(--text-secondary);">
-                {{ card.description }}
+                {{ getCardDescription(cIdx) }}
               </p>
             </div>
           </div>
@@ -184,13 +172,92 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
     }
   `]
 })
-export class HeroComponent {
+export class HeroComponent implements OnInit, OnDestroy {
   @Input() data: any;
+
+  currentLanguage = 'es';
+
+  translations: any = {
+    es: {
+      subtitle: 'CREADOR DIGITAL',
+      soy: 'Soy ',
+      description: 'Creador de contenido, diseñador y desarrollador. Ayudo a negocios a comunicar mejor lo que hacen y a construir su presencia digital desde cero.',
+      offerings: [
+        'e-commerce desde 0',
+        'integración con IA',
+        'aplicaciones móviles',
+        'dashboard administrativo'
+      ],
+      ctaText: 'Ver Proyectos',
+      cards: [
+        {
+          title: 'E-commerce desde 0',
+          description: 'Plataformas de venta online a medida, rápidas y optimizadas para conversión.'
+        },
+        {
+          title: 'Integración IA',
+          description: 'Automatización de procesos y agentes inteligentes con modelos de lenguaje.'
+        },
+        {
+          title: 'Aplicaciones Móviles',
+          description: 'Experiencias nativas e híbridas fluidas con soporte multiplataforma.'
+        },
+        {
+          title: 'Dashboard Administrativo',
+          description: 'Paneles de control modernos para gestionar tu negocio en tiempo real.'
+        },
+        {
+          title: 'Diseño UI/UX',
+          description: 'Interfaces interactivas y flujos de usuario diseñados para enamorar.'
+        },
+        {
+          title: 'Optimización SEO',
+          description: 'Estrategias de posicionamiento web para maximizar tu tráfico orgánico.'
+        }
+      ]
+    },
+    en: {
+      subtitle: 'DIGITAL CREATOR',
+      soy: 'I am ',
+      description: 'Content creator, designer, and developer. I help businesses communicate better what they do and build their digital presence from scratch.',
+      offerings: [
+        'e-commerce from scratch',
+        'AI integration',
+        'mobile applications',
+        'admin dashboard'
+      ],
+      ctaText: 'View Projects',
+      cards: [
+        {
+          title: 'E-commerce from scratch',
+          description: 'Custom online sales platforms, fast and optimized for conversion.'
+        },
+        {
+          title: 'AI Integration',
+          description: 'Process automation and intelligent agents using language models.'
+        },
+        {
+          title: 'Mobile Applications',
+          description: 'Smooth native and hybrid experiences with multiplatform support.'
+        },
+        {
+          title: 'Administrative Dashboard',
+          description: 'Modern control panels to manage your business in real-time.'
+        },
+        {
+          title: 'UI/UX Design',
+          description: 'Interactive interfaces and user flows designed to make users fall in love.'
+        },
+        {
+          title: 'SEO Optimization',
+          description: 'Web positioning strategies to maximize your organic traffic.'
+        }
+      ]
+    }
+  };
 
   cards = [
     {
-      title: 'E-commerce desde 0',
-      description: 'Plataformas de venta online a medida, rápidas y optimizadas para conversión.',
       activeIndex: 0,
       options: [
         { src: 'project-1.png', color: '#E36B2B' }, // Orange-ish
@@ -199,8 +266,6 @@ export class HeroComponent {
       ]
     },
     {
-      title: 'Integración IA',
-      description: 'Automatización de procesos y agentes inteligentes con modelos de lenguaje.',
       activeIndex: 0,
       options: [
         { src: 'about-portrait.png', color: '#3B82F6' }, // Light Blue
@@ -209,8 +274,6 @@ export class HeroComponent {
       ]
     },
     {
-      title: 'Aplicaciones Móviles',
-      description: 'Experiencias nativas e híbridas fluidas con soporte multiplataforma.',
       activeIndex: 0,
       options: [
         { src: 'project-3.png', color: '#A78BFA' }, // Light Purple
@@ -219,8 +282,6 @@ export class HeroComponent {
       ]
     },
     {
-      title: 'Dashboard Administrativo',
-      description: 'Paneles de control modernos para gestionar tu negocio en tiempo real.',
       activeIndex: 0,
       options: [
         { src: 'project-2.png', color: '#F43F5E' }, // Rose
@@ -229,8 +290,6 @@ export class HeroComponent {
       ]
     },
     {
-      title: 'Diseño UI/UX',
-      description: 'Interfaces interactivas y flujos de usuario diseñados para enamorar.',
       activeIndex: 0,
       options: [
         { src: 'about-portrait.png', color: '#EC4899' }, // Pink
@@ -239,8 +298,6 @@ export class HeroComponent {
       ]
     },
     {
-      title: 'Optimización SEO',
-      description: 'Estrategias de posicionamiento web para maximizar tu tráfico orgánico.',
       activeIndex: 0,
       options: [
         { src: 'project-3.png', color: '#6366F1' }, // Indigo
@@ -249,6 +306,47 @@ export class HeroComponent {
       ]
     }
   ];
+
+  ngOnInit() {
+    if (typeof window !== 'undefined') {
+      this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
+      window.addEventListener('portfolio-language-change', this.onLanguageChange);
+    }
+  }
+
+  ngOnDestroy() {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('portfolio-language-change', this.onLanguageChange);
+    }
+  }
+
+  onLanguageChange = (event: any) => {
+    this.currentLanguage = event.detail.language;
+  };
+
+  getTranslation() {
+    return this.translations[this.currentLanguage] || this.translations['es'];
+  }
+
+  getCtaText() {
+    if (this.data && this.data.ctaText) {
+      if (this.currentLanguage === 'en' && this.data.ctaText === 'Ver Proyectos') {
+        return 'View Projects';
+      }
+      return this.data.ctaText;
+    }
+    return this.getTranslation().ctaText;
+  }
+
+  getCardTitle(index: number) {
+    const t = this.getTranslation();
+    return t.cards[index]?.title || '';
+  }
+
+  getCardDescription(index: number) {
+    const t = this.getTranslation();
+    return t.cards[index]?.description || '';
+  }
 
   scrollTo(link: string, event: Event) {
     event.preventDefault();

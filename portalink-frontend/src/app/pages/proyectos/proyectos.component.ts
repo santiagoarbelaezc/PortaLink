@@ -41,10 +41,10 @@ import { Subscription } from 'rxjs';
             <!-- Left Side: Header -->
             <div class="text-left max-w-xl">
               <span class="text-[10px] uppercase tracking-[0.4em] font-bold block mb-4" style="color: var(--text-secondary);">
-                INTELLIGENT AGENT
+                {{ getTranslation().agentLabel }}
               </span>
               <h2 class="text-4xl sm:text-5xl md:text-6xl font-headline uppercase leading-[1.05] tracking-tighter mb-4 text-white">
-                Habla con <span style="color: var(--accent-color);">Rotbot</span>, tu asistente, para lo que necesites
+                {{ getTranslation().title }}<span style="color: var(--accent-color);">Rotbot</span>{{ getTranslation().titleAsistente }}
               </h2>
             </div>
             
@@ -53,13 +53,13 @@ import { Subscription } from 'rxjs';
               <div class="w-full lg:max-w-xl flex flex-col gap-4 text-left">
                 
                 <!-- Option Card 1 -->
-                <div (click)="openChatWithMessage('Necesito asesoría')" 
+                <div (click)="openChatWithMessage(getTranslation().option1Msg)" 
                      class="glass-option-card border p-6 rounded-[24px] transition-all duration-300 hover:translate-x-2 flex items-center justify-between group cursor-pointer"
                      style="border-color: var(--card-border); background: rgba(0,0,0,0.45);">
                   <div class="flex items-center gap-4">
                     <div class="w-2.5 h-2.5 rounded-full transition-all duration-300 group-hover:scale-150 shadow-[0_0_8px_var(--accent-color)]" style="background-color: var(--accent-color);"></div>
                     <span class="text-sm sm:text-base font-bold tracking-wide uppercase text-white opacity-85 group-hover:opacity-100 transition-opacity">
-                      ¿Necesitas asesoría?
+                      {{ getTranslation().option1Label }}
                     </span>
                   </div>
                   <svg class="w-5 h-5 text-white/50 group-hover:text-white transition-all transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -68,13 +68,13 @@ import { Subscription } from 'rxjs';
                 </div>
                 
                 <!-- Option Card 2 -->
-                <div (click)="openChatWithMessage('Necesito agendar una cita')" 
+                <div (click)="openChatWithMessage(getTranslation().option2Msg)" 
                      class="glass-option-card border p-6 rounded-[24px] transition-all duration-300 hover:translate-x-2 flex items-center justify-between group cursor-pointer"
                      style="border-color: var(--card-border); background: rgba(0,0,0,0.45);">
                   <div class="flex items-center gap-4">
                     <div class="w-2.5 h-2.5 rounded-full transition-all duration-300 group-hover:scale-150 shadow-[0_0_8px_var(--accent-color)]" style="background-color: var(--accent-color);"></div>
                     <span class="text-sm sm:text-base font-bold tracking-wide uppercase text-white opacity-85 group-hover:opacity-100 transition-opacity">
-                      ¿Necesitas agendar una cita?
+                      {{ getTranslation().option2Label }}
                     </span>
                   </div>
                   <svg class="w-5 h-5 text-white/50 group-hover:text-white transition-all transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -83,13 +83,13 @@ import { Subscription } from 'rxjs';
                 </div>
                 
                 <!-- Option Card 3 -->
-                <div (click)="openChatWithMessage('Quiero crear un diseño para mi negocio')" 
+                <div (click)="openChatWithMessage(getTranslation().option3Msg)" 
                      class="glass-option-card border p-6 rounded-[24px] transition-all duration-300 hover:translate-x-2 flex items-center justify-between group cursor-pointer"
                      style="border-color: var(--card-border); background: rgba(0,0,0,0.45);">
                   <div class="flex items-center gap-4">
                     <div class="w-2.5 h-2.5 rounded-full transition-all duration-300 group-hover:scale-150 shadow-[0_0_8px_var(--accent-color)]" style="background-color: var(--accent-color);"></div>
                     <span class="text-sm sm:text-base font-bold tracking-wide uppercase text-white opacity-85 group-hover:opacity-100 transition-opacity">
-                      ¿Quieres crear un diseño para tu negocio?
+                      {{ getTranslation().option3Label }}
                     </span>
                   </div>
                   <svg class="w-5 h-5 text-white/50 group-hover:text-white transition-all transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -119,9 +119,35 @@ export class ProyectosComponent implements OnInit, OnDestroy {
   
   currentBackground = '#000000';
   portfolioData = signal<any>(null);
+  currentLanguage = 'es';
   private sub?: Subscription;
   private observer?: IntersectionObserver;
   private videoEl?: HTMLVideoElement;
+
+  translations: any = {
+    es: {
+      agentLabel: 'AGENTE INTELIGENTE',
+      title: 'Habla con ',
+      titleAsistente: ', tu asistente, para lo que necesites',
+      option1Label: '¿Necesitas asesoría?',
+      option1Msg: 'Necesito asesoría',
+      option2Label: '¿Necesitas agendar una cita?',
+      option2Msg: 'Necesito agendar una cita',
+      option3Label: '¿Quieres crear un diseño para tu negocio?',
+      option3Msg: 'Quiero crear un diseño para mi negocio'
+    },
+    en: {
+      agentLabel: 'INTELLIGENT AGENT',
+      title: 'Speak with ',
+      titleAsistente: ', your assistant, for anything you need',
+      option1Label: 'Need consultation?',
+      option1Msg: 'I need consultation',
+      option2Label: 'Need to schedule an appointment?',
+      option2Msg: 'I need to schedule an appointment',
+      option3Label: 'Want to create a design for your business?',
+      option3Msg: 'I want to create a design for my business'
+    }
+  };
 
   @ViewChild('robotVideo') set robotVideo(el: ElementRef<HTMLVideoElement> | undefined) {
     if (el && el.nativeElement && !this.videoEl) {
@@ -162,6 +188,19 @@ export class ProyectosComponent implements OnInit, OnDestroy {
     
     // Listen for live preview updates from parent dashboard
     window.addEventListener('message', this.handleMessage);
+
+    if (typeof window !== 'undefined') {
+      this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
+      window.addEventListener('portfolio-language-change', this.onLanguageChange);
+    }
+  }
+
+  onLanguageChange = (event: any) => {
+    this.currentLanguage = event.detail.language;
+  };
+
+  getTranslation() {
+    return this.translations[this.currentLanguage] || this.translations['es'];
   }
 
   handleMessage = (event: MessageEvent) => {
@@ -181,6 +220,9 @@ export class ProyectosComponent implements OnInit, OnDestroy {
     window.removeEventListener('message', this.handleMessage);
     if (this.observer) {
       this.observer.disconnect();
+    }
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('portfolio-language-change', this.onLanguageChange);
     }
   }
 }
