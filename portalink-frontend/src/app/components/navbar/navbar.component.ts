@@ -94,7 +94,7 @@ import { RouterModule, Router, NavigationEnd } from '@angular/router';
         <div class="flex items-center justify-end flex-1">
           <!-- Clean Solid Contact Button -->
           <button (click)="scrollTo('#contact', $event)" 
-                  class="px-6 py-2.5 rounded-none font-bold text-xs uppercase tracking-widest transition-all duration-300 hover:opacity-80 cursor-pointer"
+                  class="px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-300 hover:opacity-80 cursor-pointer"
                   style="background: var(--text-primary); color: var(--bg-primary);">
             {{ getContactLabel() }}
           </button>
