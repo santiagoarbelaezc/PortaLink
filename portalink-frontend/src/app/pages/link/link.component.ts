@@ -18,7 +18,7 @@ import { RouterModule } from '@angular/router';
               <div class="lt-image-container">
                 <img src="about-portrait.png" alt="Santiago Arbelaez" class="lt-main-img lt-bg-blur" />
                 <div class="lt-profile-overlay">
-                  <img src="assets/icons/logo-link.png" alt="Santiago Arbelaez" class="lt-profile-logo" />
+                  <img src="assets/icons/mi-logo.png" alt="Santiago Arbelaez" class="lt-profile-logo" />
                 </div>
               </div>
             </div>
@@ -27,10 +27,13 @@ import { RouterModule } from '@angular/router';
           <!-- COLUMN 2: INFO & LINKS -->
           <section class="lt-col-info">
             <header class="lt-info-header">
-              <h1 class="text-3xl md:text-7xl font-headline uppercase leading-[0.9] tracking-tighter">
-                <span class="lt-title-main">{{ getTranslation().creador }}<br/>{{ getTranslation().digital }}</span><br/>
-                <span class="lt-title-accent">{{ getTranslation().desarrollador }}</span>
+              <h1 class="text-5xl md:text-[80px] font-headline uppercase leading-[0.9] tracking-tighter">
+                <span style="color: var(--text-primary);">{{ getTranslation().soy }}</span><br class="md:hidden"/>
+                <span style="color: var(--accent-color, #00f5ff);">Santiago Arbelaez.</span>
               </h1>
+              <p class="text-[10px] md:text-xs uppercase tracking-[0.4em] mt-3 md:mt-4 opacity-60 font-headline" style="color: var(--text-secondary);">
+                {{ getTranslation().creador }} {{ getTranslation().digital }} {{ getTranslation().desarrollador }}
+              </p>
             </header>
 
             <div class="lt-links-container">
@@ -176,6 +179,7 @@ export class LinkComponent implements OnInit, OnDestroy {
 
   translations: any = {
     es: {
+      soy: 'Soy ',
       creador: 'Creador',
       digital: 'Digital',
       desarrollador: '& Desarrollador',
@@ -195,6 +199,7 @@ export class LinkComponent implements OnInit, OnDestroy {
       ahoraNo: 'Ahora no'
     },
     en: {
+      soy: 'I am ',
       creador: 'Digital',
       digital: 'Creator',
       desarrollador: '& Developer',
