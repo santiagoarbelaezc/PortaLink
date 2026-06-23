@@ -42,10 +42,10 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
             </div>
 
             <!-- Skills pills -->
-            <div class="flex flex-wrap gap-3 pt-8" appReveal [delay]="600">
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-8 w-full max-w-xl" appReveal [delay]="600">
               <div *ngFor="let skill of getTranslation().highlightSkills"
-                   class="px-5 py-2 rounded-none cursor-default transition-colors border border-white/20 bg-white/5 hover:bg-white group">
-                <span class="text-xs uppercase tracking-widest text-white/70 group-hover:text-black">{{ skill }}</span>
+                   class="px-4 py-3.5 rounded-xl cursor-default transition-all duration-500 border border-white/10 bg-white/[0.02] backdrop-blur-md hover:bg-white/[0.07] hover:border-white/25 hover:-translate-y-0.5 flex items-center justify-center text-center">
+                <span class="text-[10px] sm:text-[11px] uppercase tracking-[0.2em] font-medium text-white/60 transition-colors">{{ skill }}</span>
               </div>
             </div>
           </div>
@@ -71,7 +71,7 @@ export class AboutComponent implements OnInit, OnDestroy {
       bioMap: {
         'Transformo ideas abstractas en realidades interactivas que conectan con las personas. Ayudo a marcas y emprendedores a conceptualizar, diseñar y lanzar plataformas digitales atractivas y fáciles de usar, impulsando el crecimiento real de sus negocios.': 'Transformo ideas abstractas en realidades interactivas que conectan con las personas. Ayudo a marcas y emprendedores a conceptualizar, diseñar y lanzar plataformas digitales atractivas y fáciles de usar, impulsando el crecimiento real de sus negocios.'
       },
-      highlightSkills: ['Dirección Creativa', 'Diseño de Negocios', 'Desarrollo Visual', 'Narrativa Digital', 'Aplicaciones Móviles', 'Catálogo Digital', 'Integración con IA']
+      highlightSkills: ['Dirección Creativa', 'Diseño de Negocios', 'Desarrollo Visual', 'Aplicaciones Móviles', 'Catálogo Digital', 'Integración con IA']
     },
     en: {
       philosophy: 'Profile',
@@ -80,7 +80,7 @@ export class AboutComponent implements OnInit, OnDestroy {
       bioMap: {
         'Transformo ideas abstractas en realidades interactivas que conectan con las personas. Ayudo a marcas y emprendedores a conceptualizar, diseñar y lanzar plataformas digitales atractivas y fáciles de usar, impulsando el crecimiento real de sus negocios.': 'I transform abstract ideas into interactive realities that connect with people. I help brands and entrepreneurs conceptualize, design, and launch attractive, easy-to-use digital platforms, driving real growth for their businesses.'
       },
-      highlightSkills: ['Creative Direction', 'Business Design', 'Visual Development', 'Digital Storytelling', 'Mobile Applications', 'Digital Catalog', 'AI Integration']
+      highlightSkills: ['Creative Direction', 'Business Design', 'Visual Development', 'Mobile Applications', 'Digital Catalog', 'AI Integration']
     }
   };
 

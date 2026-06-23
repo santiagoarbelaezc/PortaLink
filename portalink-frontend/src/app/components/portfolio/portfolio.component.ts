@@ -6,7 +6,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
 @Component({
     selector: 'app-portfolio',
     standalone: true,
-    imports: [CommonModule, RevealDirective, RouterModule],
+    imports: [CommonModule, RouterModule],
     template: `
     <section id="portfolio" class="py-20 md:py-32 overflow-hidden relative">
       <div class="container mx-auto px-6">

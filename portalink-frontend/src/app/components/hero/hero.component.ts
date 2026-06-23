@@ -29,11 +29,11 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
             {{ getTranslation().description }}
           </p>
  
-          <!-- Offerings List (2x2 Grid) -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 mb-12">
-            <div *ngFor="let offering of getTranslation().offerings" class="flex items-center gap-3 font-headline uppercase text-[11px] font-extrabold tracking-widest" style="color: var(--text-secondary);">
-              <span class="w-1.5 h-1.5 rounded-none flex-shrink-0" style="background-color: var(--accent-color);"></span>
-              <span>{{ offering }}</span>
+          <!-- Offerings List (2x2 Grid of Pills) -->
+          <div class="grid grid-cols-2 gap-3 mb-12 w-full max-w-xl">
+            <div *ngFor="let offering of getTranslation().offerings" 
+                 class="px-4 py-3.5 rounded-xl cursor-default transition-all duration-500 border border-white/10 bg-white/[0.02] backdrop-blur-md hover:bg-white/[0.07] hover:border-white/25 hover:-translate-y-0.5 flex items-center justify-center text-center">
+              <span class="text-[10px] sm:text-[11px] uppercase tracking-[0.2em] font-medium text-white/60 transition-colors">{{ offering }}</span>
             </div>
           </div>
  
