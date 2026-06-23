@@ -123,6 +123,23 @@ import { RouterModule } from '@angular/router';
               </a>
 
             </div>
+
+            <!-- Mobile Modeling Book Gallery -->
+            <div class="block md:hidden mt-14 lt-gallery-section">
+              <div class="flex items-center justify-between mb-6 px-1">
+                <h3 class="text-sm font-headline uppercase tracking-[0.25em]" style="color: var(--text-primary);">{{ getTranslation().retratos }}</h3>
+                <span class="text-[9px] uppercase tracking-[0.1em]" style="color: var(--text-secondary);">{{ modelingImages.length }} Photos</span>
+              </div>
+              <div class="space-y-6">
+                <div *ngFor="let img of modelingImages" class="lt-reveal-item overflow-hidden relative border aspect-[3/4]" style="border-color: var(--card-border);">
+                  <img [src]="img.src" [alt]="img.alt" class="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-700" />
+                  <div class="absolute inset-0 bg-gradient-to-t from-[#000000]/70 via-transparent to-transparent flex items-end p-4">
+                    <span class="text-[9px] font-headline uppercase tracking-[0.3em] text-white/50">{{ img.alt }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </section>
 
         </main>
@@ -176,6 +193,13 @@ export class LinkComponent implements OnInit, OnDestroy {
   isIOS = false;
   isStandalone = false;
   currentLanguage = 'es';
+  private observer?: IntersectionObserver;
+
+  modelingImages = [
+    { src: 'assets/model_1.png', alt: 'Editorial Portrait I' },
+    { src: 'assets/model_2.png', alt: 'Editorial Portrait II' },
+    { src: 'assets/model_3.png', alt: 'Editorial Portrait III' }
+  ];
 
   translations: any = {
     es: {
@@ -189,6 +213,7 @@ export class LinkComponent implements OnInit, OnDestroy {
       fotos: 'Fotos',
       chat: 'Chat',
       empleo: 'Profesional',
+      retratos: 'EDITORIAL / BOOK',
       instalarTitulo: 'Instalar PortaLink',
       instalarDescIOS: 'Añade esta aplicación a tu pantalla de inicio para acceder rápidamente a mi portafolio y redes.',
       instalarDescOther: 'Instala la aplicación para una experiencia más rápida y sin distracciones.',
@@ -209,6 +234,7 @@ export class LinkComponent implements OnInit, OnDestroy {
       fotos: 'Photos',
       chat: 'Chat',
       empleo: 'Work',
+      retratos: 'EDITORIAL / PORTRAITS',
       instalarTitulo: 'Install PortaLink',
       instalarDescIOS: 'Add this application to your home screen to quickly access my portfolio and networks.',
       instalarDescOther: 'Install the application for a faster experience without distractions.',
@@ -237,12 +263,38 @@ export class LinkComponent implements OnInit, OnDestroy {
 
       this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
       window.addEventListener('portfolio-language-change', this.onLanguageChange);
+
+      // Scroll Reveal Intersection Observer
+      setTimeout(() => {
+        const revealItems = document.querySelectorAll('.lt-reveal-item');
+        if (revealItems.length > 0) {
+          const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+          };
+          this.observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+              }
+            });
+          }, observerOptions);
+
+          revealItems.forEach(item => {
+            this.observer?.observe(item);
+          });
+        }
+      }, 400);
     }
   }
 
   ngOnDestroy() {
     if (isPlatformBrowser(this.platformId)) {
       window.removeEventListener('portfolio-language-change', this.onLanguageChange);
+      if (this.observer) {
+        this.observer.disconnect();
+      }
     }
   }
 
