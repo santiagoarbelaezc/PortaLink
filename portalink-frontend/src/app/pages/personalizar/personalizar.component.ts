@@ -523,7 +523,7 @@ interface ProductItem {
           </div>
 
           <!-- The Live Web Mockup Page -->
-          <div class="w-full max-w-[1000px] h-[calc(100vh-180px)] bg-white rounded-3xl border shadow-2xl overflow-y-auto custom-scrollbar transition-all duration-500 flex flex-col justify-start {{ selectedFont }}"
+          <div class="w-full max-w-[1000px] h-[calc(100vh-180px)] bg-white rounded-3xl border shadow-2xl overflow-y-auto custom-scrollbar transition-all duration-500 flex flex-col justify-start web-mockup-container {{ selectedFont }}"
                [style.background]="selectedTheme.bg"
                [style.borderColor]="selectedTheme.accent + '22'"
                [style.color]="selectedTheme.primary">
@@ -821,6 +821,12 @@ interface ProductItem {
     </div>
   `,
   styles: [`
+    .web-mockup-container h1,
+    .web-mockup-container h2,
+    .web-mockup-container h3,
+    .web-mockup-container h4 {
+      color: inherit;
+    }
     .page-wrapper {
       background-color: #07070a;
     }

@@ -43,6 +43,17 @@
       "githubUrl": "#",
       "featured": false,
       "order": 2
+    },
+    {
+      "id": "3",
+      "title": "E-Commerce Premium",
+      "description": "Plataforma de comercio electrónico completa con pasarela de pagos integrada y panel de administración.",
+      "techStack": ["Angular", "Node.js", "MongoDB"],
+      "images": ["project-2.png"],
+      "liveUrl": "#",
+      "githubUrl": "#",
+      "featured": false,
+      "order": 3
     }
   ],
   "contact": {

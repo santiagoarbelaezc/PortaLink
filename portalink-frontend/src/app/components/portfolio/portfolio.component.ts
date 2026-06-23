@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, AfterViewInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
@@ -8,85 +8,268 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
     standalone: true,
     imports: [CommonModule, RevealDirective, RouterModule],
     template: `
-    <section id="portfolio" class="py-20 md:py-32 px-6">
-      <div class="container mx-auto">
+    <section id="portfolio" class="py-20 md:py-32 overflow-hidden relative">
+      <div class="container mx-auto px-6">
         <!-- Section Header -->
-        <div class="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8" appReveal>
-          <div>
-            <div class="flex items-center gap-4 mb-4">
-              <div class="h-px w-12 bg-white/50"></div>
-              <span class="text-white/50 text-xs uppercase tracking-[0.4em]">Curation</span>
+        <div class="mb-16 md:mb-24">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="h-px w-12 bg-white/50"></div>
+            <span class="text-white/50 text-xs uppercase tracking-[0.4em]">Portafolio</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-headline uppercase leading-none tracking-tighter">Proyectos Destacados</h2>
+        </div>
+
+        <!-- Carousel Container -->
+        <div #carouselContainer
+             class="relative w-full h-[320px] sm:h-[450px] lg:h-[600px] flex items-center justify-start select-none overflow-visible">
+          
+          <!-- Cards Track -->
+          <div class="flex items-center gap-[var(--card-gap)] transition-transform duration-700 ease-out"
+               [style.transform]="getTransform()">
+            
+            <div *ngFor="let project of projects; let i = index"
+                 (click)="goTo(i)"
+                 [class.active-card]="i === currentIndex"
+                 [class.inactive-card]="i !== currentIndex"
+                 class="carousel-card relative flex-shrink-0 w-[var(--card-w)] aspect-[16/9] rounded-[24px] sm:rounded-[36px] overflow-hidden border border-white/10 transition-all duration-700 cursor-pointer">
+              
+              <!-- Background Image -->
+              <img [src]="project.images && project.images.length > 0 ? project.images[0] : 'project-1.png'" 
+                   [alt]="project.title" 
+                   class="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 card-bg-img" />
+              
+              <!-- Cinematic Gradient Vignette -->
+              <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/45 to-black/10 sm:bg-gradient-to-r sm:from-black/95 sm:via-black/55 sm:to-transparent transition-opacity duration-700 content-overlay"></div>
+
+              <!-- Active Card Content (Only fully visible on active card) -->
+              <div class="absolute inset-0 flex flex-col justify-end p-6 sm:p-12 lg:p-14 text-left transition-all duration-700 content-details">
+                
+                <!-- Tag / Category -->
+                <span class="text-[10px] sm:text-[11px] uppercase tracking-[0.4em] font-bold block mb-2 sm:mb-4 text-white/40">
+                  {{ project.techStack && project.techStack.length > 0 ? project.techStack[0] : 'Diseño Web' }}
+                </span>
+
+                <!-- Massive Bold Headline (Apple TV+ Style) -->
+                <h3 class="font-headline uppercase leading-[0.9] tracking-tighter text-2xl sm:text-4xl lg:text-[54px] max-w-3xl mb-3 sm:mb-6 title-accent-color title-glow">
+                  {{ project.title }}
+                </h3>
+
+                <!-- Description & CTAs -->
+                <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 mt-2">
+                  <!-- Ver Ahora Button -->
+                  <a *ngIf="project.liveUrl" [href]="project.liveUrl" target="_blank"
+                     (click)="$event.stopPropagation()"
+                     class="inline-flex items-center justify-center px-6 py-3 sm:px-9 sm:py-4 rounded-full bg-white text-black font-bold text-[10px] sm:text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all w-fit">
+                    Ver ahora
+                  </a>
+
+                  <!-- Meta/Tech stack & short description -->
+                  <p class="text-white/60 text-[10px] sm:text-xs font-medium leading-relaxed max-w-md sm:max-w-xl hidden sm:block">
+                    <span class="font-bold text-white uppercase tracking-wider mr-1.5">{{ project.techStack.slice(0, 3).join(' • ') }}</span> 
+                    • {{ project.description }}
+                  </p>
+                </div>
+
+              </div>
+
+              <!-- Custom Logo Overlay on top right (Aesthetic detail) -->
+              <div class="absolute top-4 right-4 sm:top-6 sm:right-6 opacity-60 text-white flex items-center gap-1 text-[10px] sm:text-xs font-semibold tracking-wider">
+                <span>PORTALINK</span>
+                <span style="color: var(--accent-color, #00f5ff);">+</span>
+              </div>
+
             </div>
-            <h2 class="text-5xl md:text-7xl">Selected Works</h2>
           </div>
         </div>
 
-        <!-- Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-8">
-          <div *ngFor="let project of projects; let i = index" 
-               class="flex flex-col group"
-               appReveal [delay]="i * 100">
-            
-            <!-- Image Container -->
-            <div class="relative rounded-none overflow-hidden glass border border-white/10 aspect-[16/9] mb-6 md:mb-0">
-              <img [src]="project.images && project.images.length > 0 ? project.images[0] : 'project-1.png'" [alt]="project.title" 
-                   class="w-full h-full object-cover transition-all duration-1000 group-hover:scale-105 grayscale brightness-75 group-hover:brightness-100 group-hover:grayscale-0" />
-              
-              <!-- Desktop Overlay (Hidden on mobile) -->
-              <div class="hidden md:flex absolute inset-0 bg-black/80 translate-y-full group-hover:translate-y-0 transition-transform duration-500 flex-col justify-between p-10">
-                <div class="flex justify-between items-start">
-                  <div class="flex gap-2">
-                    <span *ngFor="let tech of project.techStack" class="text-[10px] uppercase tracking-widest text-white/60 border border-white/20 px-2 py-1 rounded-none">
-                      {{ tech }}
-                    </span>
-                  </div>
-                  <span *ngIf="project.featured" class="text-white/60 text-xs">★ Featured</span>
-                </div>
-                
-                <div>
-                  <h3 class="text-4xl mb-4 font-headline uppercase leading-none text-white">{{ project.title }}</h3>
-                  <p class="text-white/60 mb-8 text-sm leading-relaxed max-w-xs">
-                    {{ project.description }}
-                  </p>
-                  <div class="flex gap-6">
-                    <a *ngIf="project.liveUrl" [href]="project.liveUrl" target="_blank" class="flex items-center gap-3 group/btn no-underline text-white">
-                      <span class="text-xs uppercase tracking-widest font-bold">Live Demo</span>
-                      <div class="w-8 h-px bg-white group-hover/btn:w-12 transition-all group-hover/btn:bg-white"></div>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Mobile Info (Visible only on mobile) -->
-            <div class="md:hidden space-y-4 px-2">
-              <div class="flex justify-between items-center">
-                <h3 class="text-3xl font-headline uppercase text-white">{{ project.title }}</h3>
-                <span *ngIf="project.featured" class="text-white/50 text-[10px] uppercase tracking-widest font-bold">Featured</span>
-              </div>
-              <p class="text-white/60 text-sm leading-relaxed">
-                {{ project.description }}
-              </p>
-              <div class="flex flex-wrap gap-2 mb-4">
-                <span *ngFor="let tech of project.techStack" class="text-[9px] uppercase tracking-tighter text-white/40">
-                  #{{ tech.replace(' ', '') }}
-                </span>
-              </div>
-              <a *ngIf="project.liveUrl" [href]="project.liveUrl" target="_blank" class="inline-flex items-center gap-4 group/btn no-underline text-white/60">
-                <span class="text-xs uppercase tracking-[0.3em] font-bold">Explorar Demo</span>
-                <div class="w-10 h-px bg-white/30"></div>
-              </a>
-            </div>
-
-          </div>
+        <!-- Indicator Dots -->
+        <div class="flex justify-center gap-2 mt-8 sm:mt-12 z-20 relative">
+          <button *ngFor="let dot of projects; let i = index"
+                  (click)="goTo(i)"
+                  [class.active-dot]="i === currentIndex"
+                  class="w-2 h-2 rounded-full bg-white/20 hover:bg-white/40 transition-all duration-300"></button>
         </div>
       </div>
     </section>
   `,
     styles: [`
-    .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); }
+    :host {
+      --card-w: 92vw;
+      --card-gap: 16px;
+    }
+    @media (min-width: 640px) {
+      :host {
+        --card-w: 86vw;
+        --card-gap: 20px;
+      }
+    }
+    @media (min-width: 1024px) {
+      :host {
+        --card-w: 82vw;
+        --card-gap: 24px;
+        max-width: 1200px;
+      }
+    }
+
+    .carousel-card {
+      transform: scale(0.9);
+      opacity: 0.35;
+      filter: blur(2px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      max-width: 1000px;
+    }
+    .carousel-card.active-card {
+      transform: scale(1);
+      opacity: 1;
+      filter: blur(0);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 245, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .carousel-card.inactive-card:hover {
+      opacity: 0.6;
+      filter: blur(0.5px);
+    }
+
+    /* Content detail animations */
+    .content-details {
+      opacity: 0;
+      transform: translateY(30px);
+      pointer-events: none;
+    }
+    .active-card .content-details {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .content-overlay {
+      opacity: 0;
+    }
+    .active-card .content-overlay {
+      opacity: 1;
+    }
+
+    /* Accent color dynamic mapping for title */
+    .title-accent-color {
+      color: var(--accent-color, #adff2f);
+    }
+
+    /* Apple-style massive title glow */
+    .title-glow {
+      text-shadow: 0 0 35px rgba(255, 255, 255, 0.1);
+    }
+
+    /* Indicator dots */
+    .active-dot {
+      background-color: #ffffff !important;
+      width: 24px;
+    }
+
+    .card-bg-img {
+      transform: scale(1.05);
+    }
+    .active-card:hover .card-bg-img {
+      transform: scale(1.08);
+    }
   `]
 })
-export class PortfolioComponent {
+export class PortfolioComponent implements AfterViewInit, OnDestroy {
   @Input() projects: any[] = [];
+  currentIndex = 0;
+  private lastWheelTime = 0;
+  private wheelListener = (e: WheelEvent) => this.onWheel(e);
+
+  @ViewChild('carouselContainer', { static: false }) containerRef?: ElementRef;
+
+  ngAfterViewInit() {
+    if (this.containerRef) {
+      this.containerRef.nativeElement.addEventListener('wheel', this.wheelListener, { passive: false });
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.containerRef) {
+      this.containerRef.nativeElement.removeEventListener('wheel', this.wheelListener);
+    }
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    // Triggers change detection on window resize to recalculate computed transform
+  }
+
+  prev() {
+    if (this.currentIndex > 0) {
+      this.currentIndex--;
+    }
+  }
+
+  next() {
+    if (this.currentIndex < this.projects.length - 1) {
+      this.currentIndex++;
+    }
+  }
+
+  goTo(index: number) {
+    this.currentIndex = index;
+  }
+
+  // Returns the exact CSS transform string to center/align cards properly
+  getTransform(): string {
+    if (typeof window === 'undefined') {
+      return `translateX(0px)`;
+    }
+
+    // Determine sizes matching CSS media queries
+    const width = window.innerWidth;
+    let cardW = width * 0.92;
+    let gap = 16;
+
+    if (width >= 640 && width < 1024) {
+      cardW = width * 0.86;
+      gap = 20;
+    } else if (width >= 1024) {
+      cardW = Math.min(1000, width * 0.82);
+      gap = 24;
+    }
+
+    const containerWidth = Math.min(1280, width - 48); // container mx-auto px-6 (48px padding total)
+    const totalTrackWidth = this.projects.length * cardW + (this.projects.length - 1) * gap;
+    
+    // Target translation for alignment
+    let tx = -this.currentIndex * (cardW + gap);
+
+    // Clamp translation so the last card aligns perfectly with the right edge of the container
+    const maxTx = containerWidth - totalTrackWidth;
+    if (tx < maxTx && totalTrackWidth > containerWidth) {
+      tx = maxTx;
+    }
+
+    // Never translate positively to the right
+    if (tx > 0) {
+      tx = 0;
+    }
+
+    return `translateX(${tx}px)`;
+  }
+
+  onWheel(event: WheelEvent) {
+    const deltaX = event.deltaX;
+    const absX = Math.abs(deltaX);
+    const absY = Math.abs(event.deltaY);
+    
+    // Only react to horizontal scrolling gestures (vertical scroll is ignored completely)
+    if (absX > 5 && absX > absY) {
+      event.preventDefault();
+      
+      const now = Date.now();
+      if (now - this.lastWheelTime > 500) { // Cooldown to slide cleanly
+        this.lastWheelTime = now;
+        if (deltaX > 0) {
+          this.next();
+        } else {
+          this.prev();
+        }
+      }
+    }
+  }
 }
