@@ -953,6 +953,7 @@ interface ProductItem {
   `]
 })
 export class PersonalizarComponent implements OnInit {
+  showEditor = false;
   // General & Styling States
   activeAccordion = 'style';
   selectedFont = 'font-sans';
@@ -1311,6 +1312,17 @@ export class PersonalizarComponent implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit() {}
+
+  routerToRotbot(message: string) {
+    this.router.navigate(['/rotbot']).then(() => {
+      setTimeout(() => {
+        const event = new CustomEvent('open-ai-chat', {
+          detail: { message }
+        });
+        window.dispatchEvent(event);
+      }, 500);
+    });
+  }
 
   toggleAccordion(section: string) {
     if (this.activeAccordion === section) {
