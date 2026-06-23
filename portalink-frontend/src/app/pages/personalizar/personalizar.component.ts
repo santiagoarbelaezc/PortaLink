@@ -36,67 +36,136 @@ interface ProductItem {
       <!-- Vista de Planes & Servicios -->
       <div *ngIf="!showEditor" class="flex-grow w-full pt-20 overflow-y-auto custom-scrollbar flex flex-col items-center">
         
-        <!-- Hero/Banner Planes -->
-        <div class="w-full max-w-6xl px-6 py-12 md:py-16 text-center">
+        <!-- Hero/Banner Paquetes -->
+        <div class="w-full max-w-7xl px-6 py-12 md:py-16 text-center">
           <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-[#00f5ff]" [style.color]="selectedTheme.accent">Especialidades Portalink</span>
-          <h1 class="text-4xl md:text-6xl font-headline uppercase tracking-tight text-white mt-3">Planes de Desarrollo & Sistemas</h1>
+          <h1 class="text-4xl md:text-6xl font-headline uppercase tracking-tight text-white mt-3">Paquetes de Desarrollo & Sistemas</h1>
           <p class="text-sm md:text-base text-white/60 mt-4 max-w-2xl mx-auto leading-relaxed">
             Elige la solución que mejor se adapte a tu negocio. Configura tu landing page premium en tiempo real o implementa integraciones inteligentes a medida.
           </p>
         </div>
-
-        <!-- Grid de Planes -->
-        <div class="w-full max-w-6xl px-6 grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 items-start">
+        <!-- Grid de Paquetes -->
+        <div class="w-full max-w-7xl px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 items-stretch">
           
-          <!-- Plan 1: E-commerce Personalizable -->
+          <!-- Paquete 1: Landing Page -->
           <div (click)="showEditor = true" 
-               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative pt-8 px-8 pb-8 min-h-[580px]">
+               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative pt-8 px-6 pb-8 h-full lg:mt-8">
             <span class="absolute top-5 right-5 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider" 
                   [style.background]="selectedTheme.accent + '22'" 
                   [style.color]="selectedTheme.accent">
               -50%
             </span>
             <div class="flex-grow flex flex-col">
-              <h3 class="text-xl font-bold uppercase tracking-wide text-white mb-4">E-commerce</h3>
+              <h3 class="text-lg font-bold uppercase tracking-wide text-white mb-4">Landing Page</h3>
               
               <div class="mb-5">
-                <span class="line-through text-xs opacity-50 block mb-1">COP 399.000</span>
+                <span class="line-through text-xs opacity-50 block mb-1">COP 199.000</span>
                 <div class="text-2xl font-headline font-bold text-white tracking-wide">
-                  COP 199.000<span class="text-xs font-normal opacity-60">/mes</span>
+                  COP 99.000<span class="text-xs font-normal opacity-60">/mes</span>
                 </div>
               </div>
 
               <!-- Button outlined -->
               <button class="w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-300 border border-white/20 text-white hover:bg-white hover:text-black hover:border-white mb-4">
-                Adquirir el plan
+                Adquirir el paquete
               </button>
 
               <p class="text-[10px] text-white/50 leading-relaxed mb-6">
-                Se renueva a COP 299.000/mes. Cancela cuando quieras.
+                Se renueva a COP 149.000/mes. Cancela cuando quieras.
               </p>
               
               <div class="h-px w-full bg-white/10 mb-6"></div>
               
               <ul class="space-y-3.5">
                 <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <span class="opacity-80">⚙</span> Editor Visual Interactivo
+                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  Sitio de una sola página
                 </li>
                 <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <span class="opacity-80">🎨</span> Múltiples secciones premium
+                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  Diseño responsive premium
                 </li>
                 <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <span class="opacity-80">📦</span> Configuración de Catálogo
+                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  Formulario de contacto
                 </li>
                 <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <span class="opacity-80">⚡</span> Soporte técnico premium
+                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  Hosting y SSL incluidos
                 </li>
               </ul>
             </div>
           </div>
 
-          <!-- Plan 2: Inteligencia Artificial Integrada (MÁS VENDIDO) -->
+          <!-- Paquete 2: E-commerce -->
+          <div (click)="showEditor = true" 
+               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative pt-8 px-6 pb-8 h-full lg:mt-8">
+            <span class="absolute top-5 right-5 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider" 
+                  [style.background]="selectedTheme.accent + '22'" 
+                  [style.color]="selectedTheme.accent">
+              -45%
+            </span>
+            <div class="flex-grow flex flex-col">
+              <h3 class="text-lg font-bold uppercase tracking-wide text-white mb-4">E-commerce</h3>
+              
+              <div class="mb-5">
+                <span class="line-through text-xs opacity-50 block mb-1">COP 439.000</span>
+                <div class="text-2xl font-headline font-bold text-white tracking-wide">
+                  COP 239.000<span class="text-xs font-normal opacity-60">/mes</span>
+                </div>
+              </div>
+
+              <!-- Button outlined -->
+              <button class="w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-300 border border-white/20 text-white hover:bg-white hover:text-black hover:border-white mb-4">
+                Adquirir el paquete
+              </button>
+
+              <p class="text-[10px] text-white/50 leading-relaxed mb-6">
+                Se renueva a COP 349.000/mes. Cancela cuando quieras.
+              </p>
+              
+              <div class="h-px w-full bg-white/10 mb-6"></div>
+              
+              <ul class="space-y-3.5">
+                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
+                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  Catálogo autogestionable
+                </li>
+                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
+                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  Integración de pagos online
+                </li>
+                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
+                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  Panel de administración
+                </li>
+                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
+                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  Soporte técnico continuo
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Paquete 3: IA Integrada (MÁS VENDIDO) -->
           <div (click)="routerToRotbot('Quiero una implementación de IA en mi negocio')" 
-               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative min-h-[610px] border-2"
+               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative h-full border-2"
                [style.borderColor]="selectedTheme.accent">
             <!-- Header Popular -->
             <div class="text-white text-[9px] font-bold uppercase tracking-[0.2em] py-2.5 text-center w-full"
@@ -105,14 +174,14 @@ interface ProductItem {
               MÁS VENDIDO
             </div>
 
-            <div class="pt-6 px-8 pb-8 flex-grow flex flex-col relative">
+            <div class="pt-6 px-6 pb-8 flex-grow flex flex-col relative">
               <span class="absolute top-5 right-5 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider" 
                     [style.background]="selectedTheme.accent + '22'" 
                     [style.color]="selectedTheme.accent">
                 -40%
               </span>
 
-              <h3 class="text-xl font-bold uppercase tracking-wide text-white mb-4">IA Integrada</h3>
+              <h3 class="text-lg font-bold uppercase tracking-wide text-white mb-4">IA Integrada</h3>
               
               <div class="mb-5">
                 <span class="line-through text-xs opacity-50 block mb-1">COP 599.000</span>
@@ -125,7 +194,7 @@ interface ProductItem {
               <button class="w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-300 mb-4"
                       [style.background]="selectedTheme.accent"
                       style="color: #000000;">
-                Adquirir el plan
+                Adquirir el paquete
               </button>
 
               <p class="text-[10px] text-white/50 leading-relaxed mb-6">
@@ -136,62 +205,86 @@ interface ProductItem {
               
               <ul class="space-y-3.5">
                 <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <span class="opacity-80">🤖</span> Asistente Virtual Rotbot IA
+                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  Asistente Rotbot IA 24/7
                 </li>
                 <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <span class="opacity-80">💬</span> Respuestas inteligentes
+                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  Flujos de chat inteligentes
                 </li>
                 <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <span class="opacity-80">📊</span> Integración en bases de datos
+                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  Integración de base de datos
                 </li>
                 <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <span class="opacity-80">🔑</span> Licencia API oficial
+                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  Licencia API oficial
                 </li>
               </ul>
             </div>
           </div>
 
-          <!-- Plan 3: Diseño Móvil Premium -->
-          <div (click)="routerToRotbot('Necesito un diseño móvil para mi sitio')" 
-               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative pt-8 px-8 pb-8 min-h-[580px]">
+          <!-- Paquete 4: Sistemas a Medida -->
+          <div (click)="routerToRotbot('Necesito un sistema para mi negocio')" 
+               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative pt-8 px-6 pb-8 h-full lg:mt-8">
             <span class="absolute top-5 right-5 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider" 
                   [style.background]="selectedTheme.accent + '22'" 
                   [style.color]="selectedTheme.accent">
               -30%
             </span>
             <div class="flex-grow flex flex-col">
-              <h3 class="text-xl font-bold uppercase tracking-wide text-white mb-4">Diseño Móvil</h3>
+              <h3 class="text-lg font-bold uppercase tracking-wide text-white mb-4">Sistemas a Medida</h3>
               
               <div class="mb-5">
-                <span class="line-through text-xs opacity-50 block mb-1">COP 299.000</span>
+                <span class="line-through text-xs opacity-50 block mb-1">COP 999.000</span>
                 <div class="text-2xl font-headline font-bold text-white tracking-wide">
-                  COP 199.000<span class="text-xs font-normal opacity-60">/mes</span>
+                  COP 699.000<span class="text-xs font-normal opacity-60">/mes</span>
                 </div>
               </div>
 
               <!-- Button outlined -->
               <button class="w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-300 border border-white/20 text-white hover:bg-white hover:text-black hover:border-white mb-4">
-                Adquirir el plan
+                Adquirir el paquete
               </button>
 
               <p class="text-[10px] text-white/50 leading-relaxed mb-6">
-                Se renueva a COP 249.000/mes. Cancela cuando quieras.
+                Se renueva a COP 799.000/mes. Cancela cuando quieras.
               </p>
               
               <div class="h-px w-full bg-white/10 mb-6"></div>
               
               <ul class="space-y-3.5">
                 <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <span class="opacity-80">📱</span> 100% Mobile First
+                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  Desarrollo de ERP/CRM
                 </li>
                 <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <span class="opacity-80">🚀</span> Soporte PWA (Instalable)
+                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  Arquitectura Cloud robusta
                 </li>
                 <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <span class="opacity-80">⚡</span> Carga instantánea
+                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  Funciones a medida ilimitadas
                 </li>
                 <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <span class="opacity-80">🌐</span> Dominio propio incluido
+                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  PWA (App instalable)
                 </li>
               </ul>
             </div>
@@ -200,10 +293,10 @@ interface ProductItem {
         </div>
 
         <!-- Sección de Servicios Incluidos -->
-        <div class="w-full max-w-6xl px-6 pb-24">
+        <div class="w-full max-w-7xl px-6 pb-24">
           <div class="border-t border-white/10 pt-16 mb-12">
             <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-[#00f5ff]" [style.color]="selectedTheme.accent">Estándar de Calidad</span>
-            <h2 class="text-3xl md:text-4xl font-headline uppercase tracking-tight text-white mt-2">Servicios Incluidos en todos los Planes</h2>
+            <h2 class="text-3xl md:text-4xl font-headline uppercase tracking-tight text-white mt-2">Servicios Incluidos en todos los Paquetes</h2>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
