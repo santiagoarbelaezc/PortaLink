@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, OnDestroy, effect, ViewChild, ElementRef } from '@angular/core';
+import { Component, inject, signal, OnInit, OnDestroy, effect, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { HeroComponent } from '../../components/hero/hero.component';
@@ -111,7 +111,8 @@ import { Subscription } from 'rxjs';
       <app-footer></app-footer>
     </main>
   `,
-    styleUrls: ['./proyectos.component.css']
+    styleUrls: ['./proyectos.component.css'],
+    encapsulation: ViewEncapsulation.None
 })
 export class ProyectosComponent implements OnInit, OnDestroy {
   private scrollColorService = inject(ScrollColorService);

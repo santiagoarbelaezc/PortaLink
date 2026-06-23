@@ -126,11 +126,11 @@
 }
 
 .lt-bg-blur {
-  filter: grayscale(100%) brightness(0.4) contrast(1.15) blur(8px);
+  filter: grayscale(100%) brightness(0.4) contrast(1.15) blur(3px);
   transform: scale(1.06);
 }
 .lt-portrait-wrapper:hover .lt-bg-blur {
-  filter: grayscale(100%) brightness(0.5) contrast(1.15) blur(6px);
+  filter: grayscale(100%) brightness(0.5) contrast(1.15) blur(1.5px);
   transform: scale(1.1);
 }
 
@@ -333,6 +333,9 @@
   .theme-light .lt-card-social div:first-child span {
     color: rgba(0, 0, 0, 0.4) !important;
   }
+  .theme-light .lt-card-social div.h-px {
+    background-color: rgba(0, 0, 0, 0.08) !important;
+  }
   
   .lt-card-main { padding: 20px; }
 
@@ -431,6 +434,19 @@
   color: rgba(0, 0, 0, 0.7) !important;
 }
 
+.theme-light .lt-card-social div.h-px {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+.theme-light .lt-card-social:hover div.h-px {
+  background-color: rgba(0, 0, 0, 0.12) !important;
+}
+.theme-light .lt-card-main div.h-px {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+.theme-light .lt-card-main:hover div.h-px {
+  background-color: var(--accent-color) !important;
+}
+
 .theme-light .lt-card-main:hover svg {
   color: var(--accent-color) !important;
 }
@@ -455,10 +471,10 @@
 }
 
 .theme-light .lt-bg-blur {
-  filter: grayscale(100%) brightness(0.85) contrast(1.05) blur(8px);
+  filter: grayscale(100%) brightness(0.85) contrast(1.05) blur(3px);
 }
 .theme-light .lt-portrait-wrapper:hover .lt-bg-blur {
-  filter: grayscale(100%) brightness(0.9) contrast(1.05) blur(6px);
+  filter: grayscale(100%) brightness(0.9) contrast(1.05) blur(1.5px);
 }
 
 .theme-light .lt-profile-logo {

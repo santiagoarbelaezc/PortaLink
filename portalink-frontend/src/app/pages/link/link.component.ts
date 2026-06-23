@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID, ViewEncapsulation } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
@@ -166,7 +166,8 @@ import { RouterModule } from '@angular/router';
       </div>
     </div>
   `,
-    styleUrls: ['./link.component.css']
+    styleUrls: ['./link.component.css'],
+    encapsulation: ViewEncapsulation.None
 })
 export class LinkComponent implements OnInit, OnDestroy {
   currentYear = new Date().getFullYear();
