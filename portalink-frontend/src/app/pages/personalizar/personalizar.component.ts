@@ -227,17 +227,16 @@ interface ProductItem {
               </ul>
             </div>
           </div>
-
         </div>
 
         <!-- Sección de Servicios Incluidos -->
-        <div class="w-full max-w-[96%] mx-auto px-4 pb-24">
+        <div class="w-full max-w-7xl px-6 pb-24">
           <div class="border-t border-white/10 pt-16 mb-12">
             <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-[#00f5ff]" [style.color]="selectedTheme.accent">Estándar de Calidad</span>
             <h2 class="text-3xl md:text-4xl font-headline uppercase tracking-tight text-white mt-2">Servicios Incluidos en todos los Paquetes</h2>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Servicio 1: Hosting & SSL -->
             <div class="service-card p-6 rounded-2xl transition-all border border-white/5 bg-white/[0.02] hover:bg-white/[0.04]">
               <div class="flex items-center gap-4 mb-4">
@@ -247,9 +246,9 @@ interface ProductItem {
                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                   </svg>
                 </div>
-                <h4 class="text-xs font-bold uppercase tracking-wide text-white">Hosting Veloz & SSL</h4>
+                <h4 class="text-sm md:text-[15px] font-bold uppercase tracking-wide text-white">Hosting Veloz & SSL</h4>
               </div>
-              <p class="text-[11px] text-white/55 leading-relaxed">
+              <p class="text-xs md:text-[13px] text-white/55 leading-relaxed">
                 Tu sitio alojado en servidores cloud de alta velocidad con certificado SSL HTTPS incluido de forma permanente.
               </p>
             </div>
@@ -263,9 +262,9 @@ interface ProductItem {
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                   </svg>
                 </div>
-                <h4 class="text-xs font-bold uppercase tracking-wide text-white">SEO & Google Ready</h4>
+                <h4 class="text-sm md:text-[15px] font-bold uppercase tracking-wide text-white">SEO & Google Ready</h4>
               </div>
-              <p class="text-[11px] text-white/55 leading-relaxed">
+              <p class="text-xs md:text-[13px] text-white/55 leading-relaxed">
                 Estructura y metadatos optimizados para motores de búsqueda para posicionar tu negocio de manera orgánica.
               </p>
             </div>
@@ -286,9 +285,9 @@ interface ProductItem {
                     <line x1="17" y1="16" x2="23" y2="16"></line>
                   </svg>
                 </div>
-                <h4 class="text-xs font-bold uppercase tracking-wide text-white">Autogestión Total</h4>
+                <h4 class="text-sm md:text-[15px] font-bold uppercase tracking-wide text-white">Autogestión Total</h4>
               </div>
-              <p class="text-[11px] text-white/55 leading-relaxed">
+              <p class="text-xs md:text-[13px] text-white/55 leading-relaxed">
                 Modifica y actualiza imágenes, productos, descripciones y secciones fácilmente sin depender de programadores.
               </p>
             </div>
@@ -301,9 +300,9 @@ interface ProductItem {
                     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
                   </svg>
                 </div>
-                <h4 class="text-xs font-bold uppercase tracking-wide text-white">Monitoreo 24/7</h4>
+                <h4 class="text-sm md:text-[15px] font-bold uppercase tracking-wide text-white">Monitoreo 24/7</h4>
               </div>
-              <p class="text-[11px] text-white/55 leading-relaxed">
+              <p class="text-xs md:text-[13px] text-white/55 leading-relaxed">
                 Supervisamos constantemente la disponibilidad y rendimiento del sistema para garantizar estabilidad total.
               </p>
             </div>
@@ -317,9 +316,9 @@ interface ProductItem {
                     <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                   </svg>
                 </div>
-                <h4 class="text-xs font-bold uppercase tracking-wide text-white">Reporte de Ventas</h4>
+                <h4 class="text-sm md:text-[15px] font-bold uppercase tracking-wide text-white">Reporte de Ventas</h4>
               </div>
-              <p class="text-[11px] text-white/55 leading-relaxed">
+              <p class="text-xs md:text-[13px] text-white/55 leading-relaxed">
                 Visualiza estadísticas comerciales, pedidos e ingresos acumulados para medir el crecimiento de tu tienda.
               </p>
             </div>
@@ -333,9 +332,9 @@ interface ProductItem {
                     <circle cx="12" cy="12" r="3"></circle>
                   </svg>
                 </div>
-                <h4 class="text-xs font-bold uppercase tracking-wide text-white">Análisis de Vistas</h4>
+                <h4 class="text-sm md:text-[15px] font-bold uppercase tracking-wide text-white">Análisis de Vistas</h4>
               </div>
-              <p class="text-[11px] text-white/55 leading-relaxed">
+              <p class="text-xs md:text-[13px] text-white/55 leading-relaxed">
                 Conoce las visitas recibidas, el origen geográfico de tus clientes y cuáles páginas despiertan mayor interés.
               </p>
             </div>
@@ -348,9 +347,9 @@ interface ProductItem {
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                   </svg>
                 </div>
-                <h4 class="text-xs font-bold uppercase tracking-wide text-white">Link a WhatsApp</h4>
+                <h4 class="text-sm md:text-[15px] font-bold uppercase tracking-wide text-white">Link a WhatsApp</h4>
               </div>
-              <p class="text-[11px] text-white/55 leading-relaxed">
+              <p class="text-xs md:text-[13px] text-white/55 leading-relaxed">
                 Botones y llamados a la acción directos para canalizar el contacto directo y rápido de los clientes hacia tu chat.
               </p>
             </div>
@@ -364,15 +363,29 @@ interface ProductItem {
                     <polyline points="12 6 12 12 16 14"></polyline>
                   </svg>
                 </div>
-                <h4 class="text-xs font-bold uppercase tracking-wide text-white">Soporte Continuo</h4>
+                <h4 class="text-sm md:text-[15px] font-bold uppercase tracking-wide text-white">Soporte Continuo</h4>
               </div>
-              <p class="text-[11px] text-white/55 leading-relaxed">
+              <p class="text-xs md:text-[13px] text-white/55 leading-relaxed">
                 Soporte técnico preferente y actualizaciones periódicas para asegurar el funcionamiento óptimo de tu plataforma.
+              </p>
+            </div>
+
+            <!-- Servicio 9: Código QR Dinámico -->
+            <div class="service-card p-6 rounded-2xl transition-all border border-white/5 bg-white/[0.02] hover:bg-white/[0.04]">
+              <div class="flex items-center gap-4 mb-4">
+                <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center" [style.color]="selectedTheme.accent">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M3 3h6v6H3zM15 3h6v6h-6zM3 15h6v6H3zM10 10h4v4h-4zM14 17h2v2h-2zM17 14h4v2h-4zM20 20h1v1h-1zM17 17h1v1h-1zM14 20h2v1h-2zM10 17h2v4h-2z" />
+                  </svg>
+                </div>
+                <h4 class="text-sm md:text-[15px] font-bold uppercase tracking-wide text-white">Código QR Dinámico</h4>
+              </div>
+              <p class="text-xs md:text-[13px] text-white/55 leading-relaxed">
+                Código QR único vinculado a tu negocio para compartir de forma física, digital y en tus tarjetas de presentación.
               </p>
             </div>
           </div>
         </div>
-
       </div>
       
       <!-- Main Dashboard Container -->
