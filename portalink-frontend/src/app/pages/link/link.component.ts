@@ -27,9 +27,8 @@ import { RouterModule } from '@angular/router';
           <!-- COLUMN 2: INFO & LINKS -->
           <section class="lt-col-info">
             <header class="lt-info-header">
-              <h1 class="text-5xl md:text-[80px] font-headline uppercase leading-[0.9] tracking-tighter">
-                <span style="color: var(--text-primary);">{{ getTranslation().soy }}</span><br class="md:hidden"/>
-                <span style="color: var(--accent-color, #00f5ff);">Santiago Arbelaez.</span>
+              <h1 class="text-5xl md:text-[80px] font-headline uppercase leading-[0.9] tracking-[0.1em]" style="color: var(--text-primary);">
+                Santiago<br/>Arbelaez
               </h1>
               <p class="text-[10px] md:text-xs uppercase tracking-[0.4em] mt-3 md:mt-4 opacity-60 font-headline" style="color: var(--text-secondary);">
                 {{ getTranslation().creador }} {{ getTranslation().digital }} {{ getTranslation().desarrollador }}
