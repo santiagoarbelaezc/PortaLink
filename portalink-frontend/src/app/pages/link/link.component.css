@@ -289,13 +289,50 @@
   
   .lt-card-social { 
     padding: 16px 20px; 
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
   }
   .lt-card-social:active {
-    background: rgba(255,255,255,0.08);
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--accent-color, #00f5ff) !important;
+    transform: scale(0.97);
   }
-  .lt-card-social h4 { color: white; opacity: 0.9; }
-  .lt-card-social span { opacity: 0.6; }
+  .lt-card-social svg {
+    color: rgba(255, 255, 255, 0.8) !important;
+  }
+  .lt-card-social h4 {
+    color: #ffffff !important;
+    opacity: 1 !important;
+  }
+  .lt-card-social span {
+    color: rgba(255, 255, 255, 0.4) !important;
+    opacity: 1 !important;
+  }
+  .lt-card-social div:first-child span {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+
+  .theme-light .lt-card-social {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+  .theme-light .lt-card-social:active {
+    background: rgba(0, 0, 0, 0.03) !important;
+    border-color: var(--accent-color) !important;
+  }
+  .theme-light .lt-card-social svg {
+    color: rgba(0, 0, 0, 0.6) !important;
+  }
+  .theme-light .lt-card-social h4 {
+    color: rgba(0, 0, 0, 0.85) !important;
+  }
+  .theme-light .lt-card-social span {
+    color: rgba(0, 0, 0, 0.45) !important;
+  }
+  .theme-light .lt-card-social div:first-child span {
+    color: rgba(0, 0, 0, 0.4) !important;
+  }
   
   .lt-card-main { padding: 20px; }
 
