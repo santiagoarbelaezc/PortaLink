@@ -496,7 +496,7 @@ export class NavbarComponent implements OnInit {
   updateNavItems() {
     const items = this.navItemsTranslations[this.currentLanguage] || this.navItemsTranslations['es'];
     this.desktopItems = [...items];
-    this.mobileItems = [...items];
+    this.mobileItems = items.filter((item: any) => item.link !== '/personalizar');
     setTimeout(() => this.updatePillPosition(), 100);
   }
 
