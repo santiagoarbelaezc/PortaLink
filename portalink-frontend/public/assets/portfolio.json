@@ -12,7 +12,7 @@
     "ctaText": "Ver Proyectos"
   },
   "about": {
-    "text": "Desarrollador apasionado con experiencia en Angular y diseño UI/UX.",
+    "text": "Transformo ideas abstractas en realidades interactivas que conectan con las personas. Ayudo a marcas y emprendedores a conceptualizar, diseñar y lanzar plataformas digitales atractivas y fáciles de usar, impulsando el crecimiento real de sus negocios.",
     "avatarImage": "about-portrait.png",
     "visible": true
   },
@@ -25,8 +25,8 @@
     {
       "id": "1",
       "title": "Portfolio Personal",
-      "description": "Diseño y desarrollo de portafolio premium con transiciones cinematográficas.",
-      "techStack": ["Angular 21", "TypeScript 5.9", "SCSS"],
+      "description": "Diseño y desarrollo de un espacio digital cinematográfico interactivo de presentación profesional. Incorpora un selector de paletas de color en tiempo real, efectos avanzados de desenfoque de fondo y un asistente inteligente conversacional para guiar a los visitantes, logrando una experiencia completamente inmersiva y fluida.",
+      "techStack": [],
       "images": ["project-1.png"],
       "liveUrl": "https://santiago-arbelaez.com",
       "githubUrl": "https://github.com/santiagoarbelaez",
@@ -36,8 +36,8 @@
     {
       "id": "2",
       "title": "PortaLink AI Vision",
-      "description": "Visualización avanzada con IA para análisis de estructuras arquitectónicas y optimización de espacios.",
-      "techStack": ["Next.js", "Python", "TensorFlow"],
+      "description": "Plataforma avanzada de procesamiento y análisis visual mediante modelos inteligentes de visión por computadora. Especializada en la detección automática de elementos, segmentación de objetos en tiempo real y el análisis detallado de planos y estructuras complejas con representación gráfica interactiva.",
+      "techStack": [],
       "images": ["project-3.png"],
       "liveUrl": "#",
       "githubUrl": "#",
@@ -47,8 +47,8 @@
     {
       "id": "3",
       "title": "E-Commerce Premium",
-      "description": "Plataforma de comercio electrónico completa con pasarela de pagos integrada y panel de administración.",
-      "techStack": ["Angular", "Node.js", "MongoDB"],
+      "description": "Solución integral de comercio electrónico de alto rendimiento diseñada para la venta en línea automatizada. Cuenta con catálogo autogestionable de productos, carrito de compras optimizado, procesamiento seguro de pagos digitales y un completo panel administrativo para control de stock y pedidos.",
+      "techStack": [],
       "images": ["project-2.png"],
       "liveUrl": "#",
       "githubUrl": "#",

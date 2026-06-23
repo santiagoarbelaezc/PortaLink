@@ -11,7 +11,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
     <section id="portfolio" class="py-20 md:py-32 overflow-hidden relative">
       <div class="container mx-auto px-6">
         <!-- Section Header -->
-        <div class="mb-16 md:mb-24">
+        <div class="mb-4 md:mb-6">
           <div class="flex items-center gap-4 mb-4">
             <div class="h-px w-12 bg-white/50"></div>
             <span class="text-white/50 text-xs uppercase tracking-[0.4em]">{{ getTranslation().subtitle }}</span>
@@ -47,9 +47,9 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
               <!-- Active Card Content (Only fully visible on active card) -->
               <div class="absolute inset-0 flex flex-col justify-end p-5 sm:p-12 lg:p-14 text-left transition-all duration-700 content-details">
                 
-                <!-- Tag / Category -->
+                 <!-- Tag / Category -->
                 <span class="text-[10px] sm:text-[11px] uppercase tracking-[0.4em] font-bold block mb-2 sm:mb-4 text-white/40">
-                  {{ getProjectCategory(project) }}
+                  {{ getTranslation().defaultTag }}
                 </span>
 
                 <!-- Massive Bold Headline (Apple TV+ Style) -->
@@ -67,9 +67,8 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
                   </a>
 
                   <!-- Meta/Tech stack & short description -->
-                  <p class="text-white/60 text-[10px] sm:text-xs font-medium leading-relaxed max-w-md sm:max-w-xl hidden sm:block">
-                    <span class="font-bold text-white uppercase tracking-wider mr-1.5">{{ project.techStack.slice(0, 3).join(' • ') }}</span> 
-                    • {{ getProjectDescription(project) }}
+                  <p class="text-white/70 text-xs md:text-sm font-medium leading-relaxed max-w-md sm:max-w-2xl hidden sm:block">
+                    {{ getProjectDescription(project) }}
                   </p>
                 </div>
 
@@ -153,7 +152,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
 
     /* Accent color dynamic mapping for title */
     .title-accent-color {
-      color: var(--accent-color, #adff2f);
+      color: #ffffff;
     }
 
     /* Apple-style massive title glow */
@@ -200,9 +199,9 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
         'E-Commerce Premium': 'E-Commerce Premium'
       },
       projectDescriptions: {
-        'Diseño y desarrollo de portafolio premium con transiciones cinematográficas.': 'Diseño y desarrollo de portafolio premium con transiciones cinematográficas.',
-        'Visualización avanzada con IA para análisis de estructuras arquitectónicas y optimización de espacios.': 'Visualización avanzada con IA para análisis de estructuras arquitectónicas y optimización de espacios.',
-        'Plataforma de comercio electrónico completa con pasarela de pagos integrada y panel de administración.': 'Plataforma de comercio electrónico completa con pasarela de pagos integrada y panel de administración.'
+        'Diseño y desarrollo de un espacio digital cinematográfico interactivo de presentación profesional. Incorpora un selector de paletas de color en tiempo real, efectos avanzados de desenfoque de fondo y un asistente inteligente conversacional para guiar a los visitantes, logrando una experiencia completamente inmersiva y fluida.': 'Diseño y desarrollo de un espacio digital cinematográfico interactivo de presentación profesional. Incorpora un selector de paletas de color en tiempo real, efectos avanzados de desenfoque de fondo y un asistente inteligente conversacional para guiar a los visitantes, logrando una experiencia completamente inmersiva y fluida.',
+        'Plataforma avanzada de procesamiento y análisis visual mediante modelos inteligentes de visión por computadora. Especializada en la detección automática de elementos, segmentación de objetos en tiempo real y el análisis detallado de planos y estructuras complejas con representación gráfica interactiva.': 'Plataforma avanzada de procesamiento y análisis visual mediante modelos inteligentes de visión por computadora. Especializada en la detección automática de elementos, segmentación de objetos en tiempo real y el análisis detallado de planos y estructuras complejas con representación gráfica interactiva.',
+        'Solución integral de comercio electrónico de alto rendimiento diseñada para la venta en línea automatizada. Cuenta con catálogo autogestionable de productos, carrito de compras optimizado, procesamiento seguro de pagos digitales y un completo panel administrativo para control de stock y pedidos.': 'Solución integral de comercio electrónico de alto rendimiento diseñada para la venta en línea automatizada. Cuenta con catálogo autogestionable de productos, carrito de compras optimizado, procesamiento seguro de pagos digitales y un completo panel administrativo para control de stock y pedidos.'
       }
     },
     en: {
@@ -216,9 +215,9 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
         'E-Commerce Premium': 'Premium E-Commerce'
       },
       projectDescriptions: {
-        'Diseño y desarrollo de portafolio premium con transiciones cinematográficas.': 'Design and development of premium portfolio with cinematic transitions.',
-        'Visualización avanzada con IA para análisis de estructuras arquitectónicas y optimización de espacios.': 'Advanced AI visualization for architectural structure analysis and space optimization.',
-        'Plataforma de comercio electrónico completa con pasarela de pagos integrada y panel de administración.': 'Complete e-commerce platform with integrated payment gateway and administration panel.'
+        'Diseño y desarrollo de un espacio digital cinematográfico interactivo de presentación profesional. Incorpora un selector de paletas de color en tiempo real, efectos avanzados de desenfoque de fondo y un asistente inteligente conversacional para guiar a los visitantes, logrando una experiencia completamente inmersiva y fluida.': 'Design and development of an interactive cinematic digital space for professional presentation. Features real-time color palette selector, backdrop blur effects, and an intelligent assistant to guide the visitor for a fully immersive and smooth experience.',
+        'Plataforma avanzada de procesamiento y análisis visual mediante modelos inteligentes de visión por computadora. Especializada en la detección automática de elementos, segmentación de objetos en tiempo real y el análisis detallado de planos y estructuras complejas con representación gráfica interactiva.': 'Advanced visual processing and analysis platform using intelligent computer vision models. Specialized in automatic element detection, real-time object segmentation, and detailed analysis of complex diagrams and structures with interactive graphical representation.',
+        'Solución integral de comercio electrónico de alto rendimiento diseñada para la venta en línea automatizada. Cuenta con catálogo autogestionable de productos, carrito de compras optimizado, procesamiento seguro de pagos digitales y un completo panel administrativo para control de stock y pedidos.': 'Comprehensive high-performance e-commerce solution designed for automated online sales. Features self-managed product catalog, optimized shopping cart, secure digital payment processing, and a full admin dashboard for stock and order control.'
       }
     }
   };

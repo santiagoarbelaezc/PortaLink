@@ -27,14 +27,16 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
           <div class="space-y-8">
             <div appReveal>
               <div class="flex items-center gap-4 mb-4">
-                <div class="h-px w-12 bg-white/50"></div>
-                <span class="text-white/50 text-xs uppercase tracking-[0.4em]">{{ getTranslation().philosophy }}</span>
+                <div class="h-px w-10" style="background-color: var(--text-primary); opacity: 0.4;"></div>
+                <span class="text-[10px] uppercase tracking-[0.4em] font-bold" style="color: var(--text-secondary);">
+                  {{ getTranslation().philosophy }}
+                </span>
               </div>
-              <h2 class="text-5xl md:text-7xl mb-8 text-white" [innerHTML]="getTranslation().headline"></h2>
+              <h2 class="text-5xl sm:text-6xl md:text-[72px] font-headline uppercase leading-[0.95] tracking-tighter mb-6 md:mb-8 hero-title" [innerHTML]="getTranslation().headline"></h2>
             </div>
 
-            <div class="space-y-6 leading-relaxed text-white/70" appReveal [delay]="400">
-              <p class="whitespace-pre-line text-xl leading-relaxed">
+            <div class="space-y-6 leading-relaxed" appReveal [delay]="400">
+              <p class="text-base md:text-lg max-w-xl mb-10" style="color: var(--text-secondary); line-height: 1.65;">
                 {{ getBioText() }}
               </p>
             </div>
@@ -63,22 +65,22 @@ export class AboutComponent implements OnInit, OnDestroy {
 
   translations: any = {
     es: {
-      philosophy: 'Filosofía',
-      headline: 'Diseñando el Futuro, <br/><span class="font-light italic text-white/80" style="letter-spacing: -0.02em;">un píxel a la vez.</span>',
-      defaultBio: 'As a multi-disciplinary creator based in the digital space, I blend clean frontend architecture with high-end aesthetic vision.',
+      philosophy: 'Perfil',
+      headline: '<span class="title-soy text-[#a3a3a3]">Creador digital, desarrollador, </span><br/><span class="title-name font-light italic" style="letter-spacing: -0.02em; color: #ffffff;">y creador de negocios digitales.</span>',
+      defaultBio: 'Transformo ideas abstractas en realidades interactivas que conectan con las personas, impulsando el crecimiento real de los negocios.',
       bioMap: {
-        'Desarrollador apasionado con experiencia en Angular y diseño UI/UX.': 'Desarrollador apasionado con experiencia en Angular y diseño UI/UX.'
+        'Transformo ideas abstractas en realidades interactivas que conectan con las personas. Ayudo a marcas y emprendedores a conceptualizar, diseñar y lanzar plataformas digitales atractivas y fáciles de usar, impulsando el crecimiento real de sus negocios.': 'Transformo ideas abstractas en realidades interactivas que conectan con las personas. Ayudo a marcas y emprendedores a conceptualizar, diseñar y lanzar plataformas digitales atractivas y fáciles de usar, impulsando el crecimiento real de sus negocios.'
       },
-      highlightSkills: ['Dirección Creativa', 'Frontend Senior', 'Diseño UI/UX', 'Narrativa Visual']
+      highlightSkills: ['Dirección Creativa', 'Diseño de Negocios', 'Desarrollo Visual', 'Narrativa Digital', 'Aplicaciones Móviles', 'Catálogo Digital', 'Integración con IA']
     },
     en: {
-      philosophy: 'Philosophy',
-      headline: 'Designing the Future, <br/><span class="font-light italic text-white/80" style="letter-spacing: -0.02em;">One Pixel at a Time.</span>',
-      defaultBio: 'As a multi-disciplinary creator based in the digital space, I blend clean frontend architecture with high-end aesthetic vision.',
+      philosophy: 'Profile',
+      headline: '<span class="title-soy text-[#a3a3a3]">Digital creator, developer, </span><br/><span class="title-name font-light italic" style="letter-spacing: -0.02em; color: #ffffff;">and digital business builder.</span>',
+      defaultBio: 'I transform abstract ideas into interactive realities that connect with people, driving real business growth.',
       bioMap: {
-        'Desarrollador apasionado con experiencia en Angular y diseño UI/UX.': 'Passionate developer with experience in Angular and UI/UX design.'
+        'Transformo ideas abstractas en realidades interactivas que conectan con las personas. Ayudo a marcas y emprendedores a conceptualizar, diseñar y lanzar plataformas digitales atractivas y fáciles de usar, impulsando el crecimiento real de sus negocios.': 'I transform abstract ideas into interactive realities that connect with people. I help brands and entrepreneurs conceptualize, design, and launch attractive, easy-to-use digital platforms, driving real growth for their businesses.'
       },
-      highlightSkills: ['Creative Direction', 'Senior Frontend', 'UI/UX Design', 'Visual Storytelling']
+      highlightSkills: ['Creative Direction', 'Business Design', 'Visual Development', 'Digital Storytelling', 'Mobile Applications', 'Digital Catalog', 'AI Integration']
     }
   };
 
