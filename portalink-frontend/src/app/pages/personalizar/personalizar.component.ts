@@ -231,71 +231,143 @@ interface ProductItem {
         </div>
 
         <!-- Sección de Servicios Incluidos -->
-        <div class="w-full max-w-7xl px-6 pb-24">
+        <div class="w-full max-w-[96%] mx-auto px-4 pb-24">
           <div class="border-t border-white/10 pt-16 mb-12">
             <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-[#00f5ff]" [style.color]="selectedTheme.accent">Estándar de Calidad</span>
             <h2 class="text-3xl md:text-4xl font-headline uppercase tracking-tight text-white mt-2">Servicios Incluidos en todos los Paquetes</h2>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Servicio 1 -->
-            <div class="service-card p-6 rounded-2xl transition-all">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Servicio 1: Hosting & SSL -->
+            <div class="service-card p-6 rounded-2xl transition-all border border-white/5 bg-white/[0.02] hover:bg-white/[0.04]">
               <div class="flex items-center gap-4 mb-4">
-                <div class="w-8 h-8 rounded-lg bg-[#00f5ff]/10 flex items-center justify-center text-[#00f5ff]">🔒</div>
-                <h4 class="text-sm font-bold uppercase tracking-wide text-white">Hosting de Alta Velocidad & SSL</h4>
+                <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center" [style.color]="selectedTheme.accent">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </div>
+                <h4 class="text-xs font-bold uppercase tracking-wide text-white">Hosting Veloz & SSL</h4>
               </div>
-              <p class="text-xs text-white/55 leading-relaxed">
-                Tu sitio alojado en servidores cloud de alto rendimiento con certificado SSL de seguridad HTTPS de forma totalmente gratuita.
+              <p class="text-[11px] text-white/55 leading-relaxed">
+                Tu sitio alojado en servidores cloud de alta velocidad con certificado SSL HTTPS incluido de forma permanente.
               </p>
             </div>
-            <!-- Servicio 2 -->
-            <div class="service-card p-6 rounded-2xl transition-all">
+
+            <!-- Servicio 2: SEO & Google -->
+            <div class="service-card p-6 rounded-2xl transition-all border border-white/5 bg-white/[0.02] hover:bg-white/[0.04]">
               <div class="flex items-center gap-4 mb-4">
-                <div class="w-8 h-8 rounded-lg bg-[#00f5ff]/10 flex items-center justify-center text-[#00f5ff]">🔍</div>
-                <h4 class="text-sm font-bold uppercase tracking-wide text-white">SEO & Optimización Google</h4>
+                <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center" [style.color]="selectedTheme.accent">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </div>
+                <h4 class="text-xs font-bold uppercase tracking-wide text-white">SEO & Google Ready</h4>
               </div>
-              <p class="text-xs text-white/55 leading-relaxed">
-                Estructura de metadatos optimizada para motores de búsqueda, permitiendo que tu negocio escale posiciones en resultados orgánicos.
+              <p class="text-[11px] text-white/55 leading-relaxed">
+                Estructura y metadatos optimizados para motores de búsqueda para posicionar tu negocio de manera orgánica.
               </p>
             </div>
-            <!-- Servicio 3 -->
-            <div class="service-card p-6 rounded-2xl transition-all">
+
+            <!-- Servicio 3: Autogestionable -->
+            <div class="service-card p-6 rounded-2xl transition-all border border-white/5 bg-white/[0.02] hover:bg-white/[0.04]">
               <div class="flex items-center gap-4 mb-4">
-                <div class="w-8 h-8 rounded-lg bg-[#00f5ff]/10 flex items-center justify-center text-[#00f5ff]">📱</div>
-                <h4 class="text-sm font-bold uppercase tracking-wide text-white">100% Autogestionable</h4>
+                <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center" [style.color]="selectedTheme.accent">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <line x1="4" y1="21" x2="4" y2="14"></line>
+                    <line x1="4" y1="10" x2="4" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12" y2="3"></line>
+                    <line x1="20" y1="21" x2="20" y2="16"></line>
+                    <line x1="20" y1="12" x2="20" y2="3"></line>
+                    <line x1="1" y1="14" x2="7" y2="14"></line>
+                    <line x1="9" y1="8" x2="15" y2="8"></line>
+                    <line x1="17" y1="16" x2="23" y2="16"></line>
+                  </svg>
+                </div>
+                <h4 class="text-xs font-bold uppercase tracking-wide text-white">Autogestión Total</h4>
               </div>
-              <p class="text-xs text-white/55 leading-relaxed">
-                Administra tus productos, imágenes y textos directamente desde el panel de control sin depender de conocimientos técnicos.
+              <p class="text-[11px] text-white/55 leading-relaxed">
+                Modifica y actualiza imágenes, productos, descripciones y secciones fácilmente sin depender de programadores.
               </p>
             </div>
-            <!-- Servicio 4 -->
-            <div class="service-card p-6 rounded-2xl transition-all">
+
+            <!-- Servicio 4: Monitoreo Constante -->
+            <div class="service-card p-6 rounded-2xl transition-all border border-white/5 bg-white/[0.02] hover:bg-white/[0.04]">
               <div class="flex items-center gap-4 mb-4">
-                <div class="w-8 h-8 rounded-lg bg-[#00f5ff]/10 flex items-center justify-center text-[#00f5ff]">⚡</div>
-                <h4 class="text-sm font-bold uppercase tracking-wide text-white">Soporte Continuo Premium</h4>
+                <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center" [style.color]="selectedTheme.accent">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                  </svg>
+                </div>
+                <h4 class="text-xs font-bold uppercase tracking-wide text-white">Monitoreo 24/7</h4>
               </div>
-              <p class="text-xs text-white/55 leading-relaxed">
-                Mantenimiento de infraestructura, soporte técnico y actualizaciones periódicas para asegurar el correcto funcionamiento 24/7.
+              <p class="text-[11px] text-white/55 leading-relaxed">
+                Supervisamos constantemente la disponibilidad y rendimiento del sistema para garantizar estabilidad total.
               </p>
             </div>
-            <!-- Servicio 5 -->
-            <div class="service-card p-6 rounded-2xl transition-all">
+
+            <!-- Servicio 5: Estadísticas de Ventas -->
+            <div class="service-card p-6 rounded-2xl transition-all border border-white/5 bg-white/[0.02] hover:bg-white/[0.04]">
               <div class="flex items-center gap-4 mb-4">
-                <div class="w-8 h-8 rounded-lg bg-[#00f5ff]/10 flex items-center justify-center text-[#00f5ff]">💬</div>
-                <h4 class="text-sm font-bold uppercase tracking-wide text-white">Integración con WhatsApp</h4>
+                <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center" [style.color]="selectedTheme.accent">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                  </svg>
+                </div>
+                <h4 class="text-xs font-bold uppercase tracking-wide text-white">Reporte de Ventas</h4>
               </div>
-              <p class="text-xs text-white/55 leading-relaxed">
-                Enlaces y botones rápidos inteligentes para redireccionar el flujo de tus clientes directamente a chats privados de atención rápida.
+              <p class="text-[11px] text-white/55 leading-relaxed">
+                Visualiza estadísticas comerciales, pedidos e ingresos acumulados para medir el crecimiento de tu tienda.
               </p>
             </div>
-            <!-- Servicio 6 -->
-            <div class="service-card p-6 rounded-2xl transition-all">
+
+            <!-- Servicio 6: Análisis de vistas -->
+            <div class="service-card p-6 rounded-2xl transition-all border border-white/5 bg-white/[0.02] hover:bg-white/[0.04]">
               <div class="flex items-center gap-4 mb-4">
-                <div class="w-8 h-8 rounded-lg bg-[#00f5ff]/10 flex items-center justify-center text-[#00f5ff]">📊</div>
-                <h4 class="text-sm font-bold uppercase tracking-wide text-white">Estadísticas & Métricas</h4>
+                <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center" [style.color]="selectedTheme.accent">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </div>
+                <h4 class="text-xs font-bold uppercase tracking-wide text-white">Análisis de Vistas</h4>
               </div>
-              <p class="text-xs text-white/55 leading-relaxed">
-                Acceso a informes sobre número de visitantes y clicks en tus enlaces más relevantes para potenciar tu estrategia digital.
+              <p class="text-[11px] text-white/55 leading-relaxed">
+                Conoce las visitas recibidas, el origen geográfico de tus clientes y cuáles páginas despiertan mayor interés.
+              </p>
+            </div>
+
+            <!-- Servicio 7: WhatsApp -->
+            <div class="service-card p-6 rounded-2xl transition-all border border-white/5 bg-white/[0.02] hover:bg-white/[0.04]">
+              <div class="flex items-center gap-4 mb-4">
+                <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center" [style.color]="selectedTheme.accent">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </div>
+                <h4 class="text-xs font-bold uppercase tracking-wide text-white">Link a WhatsApp</h4>
+              </div>
+              <p class="text-[11px] text-white/55 leading-relaxed">
+                Botones y llamados a la acción directos para canalizar el contacto directo y rápido de los clientes hacia tu chat.
+              </p>
+            </div>
+
+            <!-- Servicio 8: Soporte Premium -->
+            <div class="service-card p-6 rounded-2xl transition-all border border-white/5 bg-white/[0.02] hover:bg-white/[0.04]">
+              <div class="flex items-center gap-4 mb-4">
+                <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center" [style.color]="selectedTheme.accent">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                </div>
+                <h4 class="text-xs font-bold uppercase tracking-wide text-white">Soporte Continuo</h4>
+              </div>
+              <p class="text-[11px] text-white/55 leading-relaxed">
+                Soporte técnico preferente y actualizaciones periódicas para asegurar el funcionamiento óptimo de tu plataforma.
               </p>
             </div>
           </div>
