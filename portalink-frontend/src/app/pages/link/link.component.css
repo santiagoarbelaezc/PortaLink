@@ -344,6 +344,33 @@
     margin-top: 60px; 
     padding-bottom: 20px;
   }
+
+  /* Mobile gallery styles and reveal animation */
+  .lt-gallery-section {
+    padding: 0 4px;
+  }
+  
+  .lt-reveal-item {
+    opacity: 0;
+    transform: translateY(40px) scale(0.96);
+    clip-path: inset(100% 0 0 0);
+    transition: opacity 1.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                transform 1.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                clip-path 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  .lt-reveal-item.revealed {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    clip-path: inset(0 0 0 0);
+  }
+  
+  .lt-reveal-item:active img {
+    transform: scale(1.03);
+  }
+  .lt-reveal-item img {
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s ease;
+  }
 }
 
 @keyframes slide-up {
