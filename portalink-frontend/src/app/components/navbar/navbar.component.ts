@@ -14,8 +14,8 @@ import { RouterModule, Router, NavigationEnd } from '@angular/router';
          style="background: var(--nav-bg); border-bottom: 1px solid var(--card-border);">
       <div class="w-full flex items-center justify-between">
 
-        <!-- Left Side: Premium Theme Switcher -->
-        <div class="flex items-center flex-1">
+        <!-- Left Side: Premium Theme & Language Switchers -->
+        <div class="flex items-center flex-1 gap-3">
           <button (click)="toggleTheme()" 
                   class="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer border hover:scale-105 active:scale-95"
                   [style.background]="currentTheme === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)'"
@@ -37,6 +37,16 @@ import { RouterModule, Router, NavigationEnd } from '@angular/router';
               <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
               <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
             </svg>
+          </button>
+
+          <!-- Language Selector Button (ES/EN) -->
+          <button (click)="toggleLanguage()" 
+                  class="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer border hover:scale-105 active:scale-95 text-[10px] font-bold tracking-tight"
+                  [style.background]="currentTheme === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)'"
+                  [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.12)'"
+                  [style.color]="currentTheme === 'light' ? '#1f2937' : '#ffffff'"
+                  [title]="currentLanguage === 'es' ? 'Switch to English' : 'Cambiar a Español'">
+            {{ currentLanguage.toUpperCase() }}
           </button>
         </div>
 
@@ -86,14 +96,15 @@ import { RouterModule, Router, NavigationEnd } from '@angular/router';
           <button (click)="scrollTo('#contact', $event)" 
                   class="px-6 py-2.5 rounded-none font-bold text-xs uppercase tracking-widest transition-all duration-300 hover:opacity-80 cursor-pointer"
                   style="background: var(--text-primary); color: var(--bg-primary);">
-            Contacto
+            {{ getContactLabel() }}
           </button>
         </div>
       </div>
     </nav>
 
-    <!-- Mobile floating Theme Switcher (top right) -->
-    <div class="md:hidden fixed top-6 right-6 z-[9000]">
+    <!-- Mobile floating Switcher Group (top right) -->
+    <div class="md:hidden fixed top-6 right-6 z-[9000] flex gap-2">
+      <!-- Theme Switcher -->
       <button (click)="toggleTheme()" 
               class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer border shadow-lg backdrop-blur-md active:scale-95"
               [style.background]="currentTheme === 'light' ? 'rgba(255,255,255,0.9)' : 'rgba(15,15,15,0.85)'"
@@ -115,6 +126,16 @@ import { RouterModule, Router, NavigationEnd } from '@angular/router';
           <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
           <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
         </svg>
+      </button>
+
+      <!-- Language Switcher -->
+      <button (click)="toggleLanguage()" 
+              class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer border shadow-lg backdrop-blur-md active:scale-95 text-[11px] font-bold"
+              [style.background]="currentTheme === 'light' ? 'rgba(255,255,255,0.9)' : 'rgba(15,15,15,0.85)'"
+              [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.12)'"
+              [style.color]="currentTheme === 'light' ? '#1f2937' : '#ffffff'"
+              [title]="currentLanguage === 'es' ? 'Switch to English' : 'Cambiar a Español'">
+        {{ currentLanguage.toUpperCase() }}
       </button>
     </div>
 
@@ -219,24 +240,29 @@ export class NavbarComponent implements OnInit {
 
   @ViewChild('tabBar') tabBarElement!: ElementRef;
 
-  desktopItems = [
-    { name: 'Inicio',      link: '#hero',        icon: 'home'   },
-    { name: 'Links',       link: '/links',       icon: 'link'   },
-    { name: 'Proyectos',   link: '#portfolio',   icon: 'grid'   },
-    { name: 'Perfil',      link: '#about',       icon: 'user'   },
-    { name: 'Servicios',   link: '#skills',      icon: 'layers' },
-    { name: 'Crear Sitio', link: '/personalizar', icon: 'edit'   }
-  ];
+  desktopItems: any[] = [];
+  mobileItems: any[] = [];
 
-  mobileItems = [
-    { name: 'Inicio',      link: '#hero',        icon: 'home'   },
-    { name: 'Links',       link: '/links',       icon: 'link'   },
-    { name: 'Proyectos',   link: '#portfolio',   icon: 'grid'   },
-    { name: 'Perfil',      link: '#about',       icon: 'user'   },
-    { name: 'Servicios',   link: '#skills',      icon: 'layers' },
-    { name: 'Crear Sitio', link: '/personalizar', icon: 'edit'   }
-  ];
+  navItemsTranslations: any = {
+    es: [
+      { name: 'Inicio',      link: '#hero',        icon: 'home'   },
+      { name: 'Links',       link: '/links',       icon: 'link'   },
+      { name: 'Proyectos',   link: '#portfolio',   icon: 'grid'   },
+      { name: 'Perfil',      link: '#about',       icon: 'user'   },
+      { name: 'Servicios',   link: '#skills',      icon: 'layers' },
+      { name: 'Crear Sitio', link: '/personalizar', icon: 'edit'   }
+    ],
+    en: [
+      { name: 'Home',        link: '#hero',        icon: 'home'   },
+      { name: 'Links',       link: '/links',       icon: 'link'   },
+      { name: 'Projects',    link: '#portfolio',   icon: 'grid'   },
+      { name: 'Profile',     link: '#about',       icon: 'user'   },
+      { name: 'Services',    link: '#skills',      icon: 'layers' },
+      { name: 'Create Site', link: '/personalizar', icon: 'edit'   }
+    ]
+  };
 
+  currentLanguage = 'es';
   currentTheme = 'dark';
   activeSection = '#hero';
 
@@ -259,11 +285,13 @@ export class NavbarComponent implements OnInit {
         savedTheme = 'dark';
       }
       this.setTheme(savedTheme);
+      this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
     }
   }
 
   ngOnInit() {
     if (typeof window !== 'undefined') {
+      this.updateNavItems();
       this.onWindowScroll();
       
       // Call multiple times to ensure layout has settled
@@ -451,6 +479,29 @@ export class NavbarComponent implements OnInit {
 
   toggleTheme() {
     this.setTheme(this.currentTheme === 'light' ? 'dark' : 'light');
+  }
+
+  toggleLanguage() {
+    const nextLang = this.currentLanguage === 'es' ? 'en' : 'es';
+    this.setLanguage(nextLang);
+  }
+
+  setLanguage(lang: string) {
+    this.currentLanguage = lang;
+    localStorage.setItem('portfolio-language', lang);
+    this.updateNavItems();
+    window.dispatchEvent(new CustomEvent('portfolio-language-change', { detail: { language: lang } }));
+  }
+
+  updateNavItems() {
+    const items = this.navItemsTranslations[this.currentLanguage] || this.navItemsTranslations['es'];
+    this.desktopItems = [...items];
+    this.mobileItems = [...items];
+    setTimeout(() => this.updatePillPosition(), 100);
+  }
+
+  getContactLabel() {
+    return this.currentLanguage === 'es' ? 'Contacto' : 'Contact';
   }
 
   private scrollIntoView(id: string) {

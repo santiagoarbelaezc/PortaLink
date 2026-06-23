@@ -40,9 +40,9 @@ interface ProductItem {
         <aside class="w-[420px] h-full border-r border-white/10 flex flex-col overflow-hidden bg-[#07070a]/95 backdrop-blur-xl">
           <div class="p-6 border-b border-white/10">
             <span class="text-[9px] font-bold uppercase tracking-[0.25em] text-[#00f5ff]" style="color: var(--accent-color);">Editor Visual Premium</span>
-            <h1 class="text-2xl font-bold uppercase tracking-tight text-white mt-1">Personalizar Sitio</h1>
+            <h1 class="text-2xl font-bold uppercase tracking-tight text-white mt-1">{{ getTranslation('editorTitle') }}</h1>
             <p class="text-xs text-white/50 mt-1.5 leading-relaxed">
-              Modifica la estructura, los contenidos y el estilo visual de tu landing page.
+              {{ getTranslation('editorSubtitle') }}
             </p>
           </div>
 
@@ -54,7 +54,7 @@ interface ProductItem {
               <button (click)="toggleAccordion('style')" class="w-full flex items-center justify-between p-4 bg-white/[0.01] hover:bg-white/[0.03] transition-all">
                 <span class="text-xs font-bold uppercase tracking-widest text-white/80 flex items-center gap-2.5">
                   <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 0 1-4-4V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v12a4 4 0 0 1-4 4zm0 0h12a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 0 1 2.828 0l2.829 2.829a2 2 0 0 1 0 2.828l-8.486 8.485M7 17h.01"></path></svg>
-                  Estilo & Temas
+                  {{ getTranslation('tabStyle') }}
                 </span>
                 <svg class="w-3.5 h-3.5 text-white/40 transition-transform duration-300" [class.rotate-180]="activeAccordion === 'style'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
@@ -62,8 +62,21 @@ interface ProductItem {
               </button>
               
               <div class="accordion-content p-4 border-t flex flex-col gap-4" *ngIf="activeAccordion === 'style'">
+                <!-- Language Changer Toggle -->
                 <div class="flex flex-col gap-2">
-                  <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Paleta de Colores</label>
+                  <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('languageLabel') }}</label>
+                  <div class="grid grid-cols-2 gap-1 bg-white/5 p-1 rounded-xl border border-white/10">
+                    <button (click)="changeLanguage('es')" [class.active-btn-shape]="currentLanguage === 'es'" class="py-2 text-[10px] uppercase font-bold text-white/60 hover:text-white rounded-lg transition-all">
+                      ES (Español)
+                    </button>
+                    <button (click)="changeLanguage('en')" [class.active-btn-shape]="currentLanguage === 'en'" class="py-2 text-[10px] uppercase font-bold text-white/60 hover:text-white rounded-lg transition-all">
+                      EN (English)
+                    </button>
+                  </div>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                  <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('palettes') }}</label>
                   <div class="grid grid-cols-2 gap-2">
                     <button *ngFor="let theme of themes" (click)="selectTheme(theme)" 
                             [class.active-theme]="selectedTheme.id === theme.id"
@@ -79,7 +92,7 @@ interface ProductItem {
                 </div>
 
                 <div class="flex flex-col gap-2">
-                  <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Tipografía Global</label>
+                  <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('typography') }}</label>
                   <select [(ngModel)]="selectedFont" class="custom-select p-3 rounded-xl border text-xs text-white bg-transparent focus:outline-none">
                     <option value="font-sans">Inter (Sans-serif moderno)</option>
                     <option value="font-serif">Playfair (Serif elegante)</option>
@@ -89,7 +102,7 @@ interface ProductItem {
 
                 <!-- Button Roundness Selector -->
                 <div class="flex flex-col gap-2">
-                  <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Forma de Botones</label>
+                  <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('buttonShape') }}</label>
                   <div class="grid grid-cols-3 gap-1 bg-white/5 p-1 rounded-xl border border-white/10">
                     <button (click)="buttonStyle = 'rounded-none'" [class.active-btn-shape]="buttonStyle === 'rounded-none'" class="py-2 text-[10px] uppercase font-bold text-white/60 hover:text-white rounded-lg transition-all">
                       Square
@@ -105,7 +118,7 @@ interface ProductItem {
 
                 <!-- Card Border Glow Selector -->
                 <div class="flex flex-col gap-2">
-                  <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Bordes de Tarjeta</label>
+                  <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('cardBorders') }}</label>
                   <select [(ngModel)]="cardBorderStyle" class="custom-select p-3 rounded-xl border text-xs text-white bg-transparent focus:outline-none">
                     <option value="border-minimal">Fino Minimalista</option>
                     <option value="border-glow">Neon Glow (Brillo)</option>
@@ -115,13 +128,13 @@ interface ProductItem {
 
                 <!-- Title Font Size Slider -->
                 <div class="flex flex-col gap-2">
-                  <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Tamaño del Título ({{ titleFontSize }}px)</label>
+                  <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('titleSize') }} ({{ titleFontSize }}px)</label>
                   <input type="range" min="32" max="72" [(ngModel)]="titleFontSize" class="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#00f5ff]" />
                 </div>
 
                 <!-- Body Font Size Slider -->
                 <div class="flex flex-col gap-2">
-                  <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Tamaño del Cuerpo ({{ bodyFontSize }}px)</label>
+                  <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('bodySize') }} ({{ bodyFontSize }}px)</label>
                   <input type="range" min="11" max="18" [(ngModel)]="bodyFontSize" class="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#00f5ff]" />
                 </div>
               </div>
@@ -132,7 +145,7 @@ interface ProductItem {
               <button (click)="toggleAccordion('navbar')" class="w-full flex items-center justify-between p-4 bg-white/[0.01] hover:bg-white/[0.03] transition-all">
                 <span class="text-xs font-bold uppercase tracking-widest text-white/80 flex items-center gap-2.5">
                   <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="5" rx="1"></rect><rect x="3" y="11" width="18" height="10" rx="1"></rect></svg>
-                  Cabecera (Navbar)
+                  {{ getTranslation('tabNavbar') }}
                 </span>
                 <svg class="w-3.5 h-3.5 text-white/40 transition-transform duration-300" [class.rotate-180]="activeAccordion === 'navbar'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
@@ -141,19 +154,19 @@ interface ProductItem {
               
               <div class="accordion-content p-4 border-t flex flex-col gap-4" *ngIf="activeAccordion === 'navbar'">
                 <div class="flex items-center justify-between toggle-row p-3 rounded-xl border" (click)="includeNavbar = !includeNavbar">
-                  <span class="text-xs font-semibold text-white">Mostrar Barra Superior</span>
+                  <span class="text-xs font-semibold text-white">{{ getTranslation('showNavbar') }}</span>
                   <div class="custom-switch" [class.on]="includeNavbar"></div>
                 </div>
 
                 <div *ngIf="includeNavbar" class="flex flex-col gap-3">
                   <div class="flex flex-col gap-1.5">
-                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Título del Logo</label>
+                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('logoTitle') }}</label>
                     <input type="text" [(ngModel)]="siteTitle" class="custom-input py-2.5 px-3 rounded-xl border text-xs text-white bg-transparent focus:outline-none" />
                   </div>
 
                   <!-- Brand Icon Selection -->
                   <div class="flex flex-col gap-1.5">
-                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Icono de la Marca</label>
+                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('brandIconLabel') }}</label>
                     <div class="grid grid-cols-4 gap-2">
                       <button *ngFor="let iconOpt of brandIconOptions" (click)="brandIcon = iconOpt.id"
                               [class.border-cyan-500]="brandIcon === iconOpt.id"
@@ -166,7 +179,7 @@ interface ProductItem {
                   </div>
 
                   <div class="flex items-center justify-between toggle-row p-3 rounded-xl border" (click)="showLoginBtn = !showLoginBtn">
-                    <span class="text-xs font-semibold text-white">Botones Ingreso/Registro</span>
+                    <span class="text-xs font-semibold text-white">{{ getTranslation('showLogin') }}</span>
                     <div class="custom-switch" [class.on]="showLoginBtn"></div>
                   </div>
                 </div>
@@ -178,7 +191,7 @@ interface ProductItem {
               <button (click)="toggleAccordion('hero')" class="w-full flex items-center justify-between p-4 bg-white/[0.01] hover:bg-white/[0.03] transition-all">
                 <span class="text-xs font-bold uppercase tracking-widest text-white/80 flex items-center gap-2.5">
                   <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                  Portada (Hero)
+                  {{ getTranslation('tabHero') }}
                 </span>
                 <svg class="w-3.5 h-3.5 text-white/40 transition-transform duration-300" [class.rotate-180]="activeAccordion === 'hero'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
@@ -187,30 +200,30 @@ interface ProductItem {
               
               <div class="accordion-content p-4 border-t flex flex-col gap-4" *ngIf="activeAccordion === 'hero'">
                 <div class="flex items-center justify-between toggle-row p-3 rounded-xl border" (click)="includeHero = !includeHero">
-                  <span class="text-xs font-semibold text-white">Activar Sección Hero</span>
+                  <span class="text-xs font-semibold text-white">{{ getTranslation('activateHero') }}</span>
                   <div class="custom-switch" [class.on]="includeHero"></div>
                 </div>
 
                 <div *ngIf="includeHero" class="flex flex-col gap-3">
                   <div class="flex flex-col gap-1.5">
-                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Línea Superior (Especialidad)</label>
+                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('heroSubtitleLbl') }}</label>
                     <input type="text" [(ngModel)]="heroSubtitle" class="custom-input py-2.5 px-3 rounded-xl border text-xs text-white bg-transparent focus:outline-none" />
                   </div>
                   <div class="flex flex-col gap-1.5">
-                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Título Principal</label>
+                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('heroTitleLbl') }}</label>
                     <textarea rows="3" [(ngModel)]="heroTitle" class="custom-input py-2.5 px-3 rounded-xl border text-xs text-white bg-transparent focus:outline-none resize-none"></textarea>
                   </div>
                   <div class="flex flex-col gap-1.5">
-                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Descripción de Apoyo</label>
+                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('heroDescLbl') }}</label>
                     <textarea rows="3" [(ngModel)]="heroDescription" class="custom-input py-2.5 px-3 rounded-xl border text-xs text-white bg-transparent focus:outline-none resize-none"></textarea>
                   </div>
                   <div class="grid grid-cols-2 gap-2">
                     <div class="flex flex-col gap-1.5">
-                      <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Botón 1 (Principal)</label>
+                      <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('btn1Lbl') }}</label>
                       <input type="text" [(ngModel)]="heroCta1" class="custom-input py-2.5 px-3 rounded-xl border text-xs text-white bg-transparent focus:outline-none" />
                     </div>
                     <div class="flex flex-col gap-1.5">
-                      <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Botón 2 (Secundario)</label>
+                      <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('btn2Lbl') }}</label>
                       <input type="text" [(ngModel)]="heroCta2" class="custom-input py-2.5 px-3 rounded-xl border text-xs text-white bg-transparent focus:outline-none" />
                     </div>
                   </div>
@@ -223,7 +236,7 @@ interface ProductItem {
               <button (click)="toggleAccordion('about')" class="w-full flex items-center justify-between p-4 bg-white/[0.01] hover:bg-white/[0.03] transition-all">
                 <span class="text-xs font-bold uppercase tracking-widest text-white/80 flex items-center gap-2.5">
                   <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path></svg>
-                  Información (About)
+                  {{ getTranslation('tabAbout') }}
                 </span>
                 <svg class="w-3.5 h-3.5 text-white/40 transition-transform duration-300" [class.rotate-180]="activeAccordion === 'about'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
@@ -232,28 +245,28 @@ interface ProductItem {
               
               <div class="accordion-content p-4 border-t flex flex-col gap-4" *ngIf="activeAccordion === 'about'">
                 <div class="flex items-center justify-between toggle-row p-3 rounded-xl border" (click)="includeAbout = !includeAbout">
-                  <span class="text-xs font-semibold text-white">Activar Sección About</span>
+                  <span class="text-xs font-semibold text-white">{{ getTranslation('activateAbout') }}</span>
                   <div class="custom-switch" [class.on]="includeAbout"></div>
                 </div>
 
                 <div *ngIf="includeAbout" class="flex flex-col gap-3">
                   <div class="flex flex-col gap-1.5">
-                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Título de Sección</label>
+                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('sectionTitle') }}</label>
                     <input type="text" [(ngModel)]="aboutTitle" class="custom-input py-2.5 px-3 rounded-xl border text-xs text-white bg-transparent focus:outline-none" />
                   </div>
                   <div class="flex flex-col gap-1.5">
-                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Texto Descriptivo</label>
+                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('descText') }}</label>
                     <textarea rows="4" [(ngModel)]="aboutText" class="custom-input py-2.5 px-3 rounded-xl border text-xs text-white bg-transparent focus:outline-none resize-none"></textarea>
                   </div>
                   
                   <div class="grid grid-cols-2 gap-2 mt-2">
                     <div class="flex flex-col gap-1.5">
-                      <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Dato de Éxito 1</label>
+                      <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('successStat1') }}</label>
                       <input type="text" [(ngModel)]="aboutStat1Val" placeholder="Ej: 5+" class="custom-input py-2 px-2.5 rounded-xl border text-xs text-white bg-transparent focus:outline-none" />
                       <input type="text" [(ngModel)]="aboutStat1Lbl" placeholder="Años exp" class="custom-input py-2 px-2.5 rounded-xl border text-[10px] text-white bg-transparent focus:outline-none" />
                     </div>
                     <div class="flex flex-col gap-1.5">
-                      <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Dato de Éxito 2</label>
+                      <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('successStat2') }}</label>
                       <input type="text" [(ngModel)]="aboutStat2Val" placeholder="Ej: 50+" class="custom-input py-2 px-2.5 rounded-xl border text-xs text-white bg-transparent focus:outline-none" />
                       <input type="text" [(ngModel)]="aboutStat2Lbl" placeholder="Proyectos" class="custom-input py-2 px-2.5 rounded-xl border text-[10px] text-white bg-transparent focus:outline-none" />
                     </div>
@@ -267,7 +280,7 @@ interface ProductItem {
               <button (click)="toggleAccordion('services')" class="w-full flex items-center justify-between p-4 bg-white/[0.01] hover:bg-white/[0.03] transition-all">
                 <span class="text-xs font-bold uppercase tracking-widest text-white/80 flex items-center gap-2.5">
                   <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0 1 12 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2m4 6h.01M5 20h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2z"></path></svg>
-                  Servicios
+                  {{ getTranslation('tabServices') }}
                 </span>
                 <svg class="w-3.5 h-3.5 text-white/40 transition-transform duration-300" [class.rotate-180]="activeAccordion === 'services'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
@@ -276,31 +289,31 @@ interface ProductItem {
               
               <div class="accordion-content p-4 border-t flex flex-col gap-4" *ngIf="activeAccordion === 'services'">
                 <div class="flex items-center justify-between toggle-row p-3 rounded-xl border" (click)="includeServices = !includeServices">
-                  <span class="text-xs font-semibold text-white">Activar Sección Servicios</span>
+                  <span class="text-xs font-semibold text-white">{{ getTranslation('activateServices') }}</span>
                   <div class="custom-switch" [class.on]="includeServices"></div>
                 </div>
 
                 <div *ngIf="includeServices" class="flex flex-col gap-3">
                   <div class="flex flex-col gap-1.5">
-                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Título de Sección</label>
+                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('sectionTitle') }}</label>
                     <input type="text" [(ngModel)]="servicesTitle" class="custom-input py-2.5 px-3 rounded-xl border text-xs text-white bg-transparent focus:outline-none" />
                   </div>
 
                   <!-- Services Items Editor -->
                   <div class="flex flex-col gap-3 mt-2">
-                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Lista de Servicios</label>
+                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('servicesListLbl') }}</label>
                     
                     <div *ngFor="let srv of servicesList; let index = index" class="p-3 rounded-xl border border-white/5 bg-white/[0.01] flex flex-col gap-2">
                       <div class="flex items-center justify-between">
-                        <span class="text-[10px] font-bold text-white/50">Servicio #{{ index + 1 }}</span>
-                        <button (click)="removeService(srv.id)" class="text-red-500 hover:text-red-400 text-[10px] uppercase font-bold">Eliminar</button>
+                        <span class="text-[10px] font-bold text-white/50">{{ getTranslation('serviceLabel') }} #{{ index + 1 }}</span>
+                        <button (click)="removeService(srv.id)" class="text-red-500 hover:text-red-400 text-[10px] uppercase font-bold">{{ getTranslation('deleteBtn') }}</button>
                       </div>
                       <input type="text" [(ngModel)]="srv.title" class="custom-input py-1.5 px-2.5 rounded-lg border text-xs text-white focus:outline-none" />
                       <textarea rows="2" [(ngModel)]="srv.description" class="custom-input py-1.5 px-2.5 rounded-lg border text-[11px] text-white focus:outline-none resize-none"></textarea>
                     </div>
 
                     <button (click)="addService()" class="py-2.5 rounded-xl border border-dashed border-white/20 text-white/60 hover:text-white hover:border-white/40 transition-colors text-xs font-semibold mt-1">
-                      + Agregar Servicio
+                      {{ getTranslation('addServiceBtn') }}
                     </button>
                   </div>
                 </div>
@@ -312,7 +325,7 @@ interface ProductItem {
               <button (click)="toggleAccordion('carousel')" class="w-full flex items-center justify-between p-4 bg-white/[0.01] hover:bg-white/[0.03] transition-all">
                 <span class="text-xs font-bold uppercase tracking-widest text-white/80 flex items-center gap-2.5">
                   <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-8 2a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"></path></svg>
-                  Carrusel de Productos
+                  {{ getTranslation('tabCarousel') }}
                 </span>
                 <svg class="w-3.5 h-3.5 text-white/40 transition-transform duration-300" [class.rotate-180]="activeAccordion === 'carousel'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
@@ -321,24 +334,24 @@ interface ProductItem {
               
               <div class="accordion-content p-4 border-t flex flex-col gap-4" *ngIf="activeAccordion === 'carousel'">
                 <div class="flex items-center justify-between toggle-row p-3 rounded-xl border" (click)="includeCarousel = !includeCarousel">
-                  <span class="text-xs font-semibold text-white">Activar Carrusel</span>
+                  <span class="text-xs font-semibold text-white">{{ getTranslation('activateCarousel') }}</span>
                   <div class="custom-switch" [class.on]="includeCarousel"></div>
                 </div>
 
                 <div *ngIf="includeCarousel" class="flex flex-col gap-3">
                   <div class="flex flex-col gap-1.5">
-                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Título de Sección</label>
+                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('sectionTitle') }}</label>
                     <input type="text" [(ngModel)]="carouselTitle" class="custom-input py-2.5 px-3 rounded-xl border text-xs text-white bg-transparent focus:outline-none" />
                   </div>
 
                   <!-- Product Items Editor -->
                   <div class="flex flex-col gap-3 mt-2">
-                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Lista de Productos</label>
+                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('productsListLbl') }}</label>
                     
                     <div *ngFor="let prod of productsList; let index = index" class="p-3 rounded-xl border border-white/5 bg-white/[0.01] flex flex-col gap-2">
                       <div class="flex items-center justify-between">
-                        <span class="text-[10px] font-bold text-white/50">Producto #{{ index + 1 }}</span>
-                        <button (click)="removeProduct(prod.id)" class="text-red-500 hover:text-red-400 text-[10px] uppercase font-bold">Eliminar</button>
+                        <span class="text-[10px] font-bold text-white/50">{{ getTranslation('productLabel') }} #{{ index + 1 }}</span>
+                        <button (click)="removeProduct(prod.id)" class="text-red-500 hover:text-red-400 text-[10px] uppercase font-bold">{{ getTranslation('deleteBtn') }}</button>
                       </div>
                       <div class="grid grid-cols-3 gap-2">
                         <input type="text" [(ngModel)]="prod.title" class="col-span-2 custom-input py-1.5 px-2 rounded-lg border text-xs text-white focus:outline-none" />
@@ -347,7 +360,7 @@ interface ProductItem {
                     </div>
 
                     <button (click)="addProduct()" class="py-2.5 rounded-xl border border-dashed border-white/20 text-white/60 hover:text-white hover:border-white/40 transition-colors text-xs font-semibold mt-1">
-                      + Agregar Producto
+                      {{ getTranslation('addProductBtn') }}
                     </button>
                   </div>
                 </div>
@@ -359,7 +372,7 @@ interface ProductItem {
               <button (click)="toggleAccordion('banner')" class="w-full flex items-center justify-between p-4 bg-white/[0.01] hover:bg-white/[0.03] transition-all">
                 <span class="text-xs font-bold uppercase tracking-widest text-white/80 flex items-center gap-2.5">
                   <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 0 1-3.417.592l-2.147-6.15M18 13a3 3 0 1 0 0-6M5.436 13.683A4.001 4.001 0 0 1 7 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 0 1-1.564-.317z"></path></svg>
-                  Banner Publicitario
+                  {{ getTranslation('tabBanner') }}
                 </span>
                 <svg class="w-3.5 h-3.5 text-white/40 transition-transform duration-300" [class.rotate-180]="activeAccordion === 'banner'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
@@ -368,17 +381,17 @@ interface ProductItem {
               
               <div class="accordion-content p-4 border-t flex flex-col gap-4" *ngIf="activeAccordion === 'banner'">
                 <div class="flex items-center justify-between toggle-row p-3 rounded-xl border" (click)="includeBanner = !includeBanner">
-                  <span class="text-xs font-semibold text-white">Activar Banner</span>
+                  <span class="text-xs font-semibold text-white">{{ getTranslation('activateBanner') }}</span>
                   <div class="custom-switch" [class.on]="includeBanner"></div>
                 </div>
 
                 <div *ngIf="includeBanner" class="flex flex-col gap-3">
                   <div class="flex flex-col gap-1.5">
-                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Texto de Llamado</label>
+                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('bannerTextLbl') }}</label>
                     <input type="text" [(ngModel)]="bannerText" class="custom-input py-2.5 px-3 rounded-xl border text-xs text-white bg-transparent focus:outline-none" />
                   </div>
                   <div class="flex flex-col gap-1.5">
-                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Texto del Botón</label>
+                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('bannerCtaLbl') }}</label>
                     <input type="text" [(ngModel)]="bannerCta" class="custom-input py-2.5 px-3 rounded-xl border text-xs text-white bg-transparent focus:outline-none" />
                   </div>
                 </div>
@@ -390,7 +403,7 @@ interface ProductItem {
               <button (click)="toggleAccordion('contact')" class="w-full flex items-center justify-between p-4 bg-white/[0.01] hover:bg-white/[0.03] transition-all">
                 <span class="text-xs font-bold uppercase tracking-widest text-white/80 flex items-center gap-2.5">
                   <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 0 1 2-2h3.28a1 1 0 0 1 .94.725l.548 2.2a1 1 0 0 1-.321.988l-1.305.98a10.582 10.582 0 0 0 4.872 4.872l.98-1.305a1 1 0 0 1 .988-.321l2.2.548a1 1 0 0 1 .725.94V19a2 2 0 0 1-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                  Contacto
+                  {{ getTranslation('tabContact') }}
                 </span>
                 <svg class="w-3.5 h-3.5 text-white/40 transition-transform duration-300" [class.rotate-180]="activeAccordion === 'contact'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
@@ -399,21 +412,21 @@ interface ProductItem {
               
               <div class="accordion-content p-4 border-t flex flex-col gap-4" *ngIf="activeAccordion === 'contact'">
                 <div class="flex items-center justify-between toggle-row p-3 rounded-xl border" (click)="includeContact = !includeContact">
-                  <span class="text-xs font-semibold text-white">Activar Sección Contacto</span>
+                  <span class="text-xs font-semibold text-white">{{ getTranslation('activateContact') }}</span>
                   <div class="custom-switch" [class.on]="includeContact"></div>
                 </div>
 
                 <div *ngIf="includeContact" class="flex flex-col gap-3">
                   <div class="flex flex-col gap-1.5">
-                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Título de Sección</label>
+                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('sectionTitle') }}</label>
                     <input type="text" [(ngModel)]="contactTitle" class="custom-input py-2.5 px-3 rounded-xl border text-xs text-white bg-transparent focus:outline-none" />
                   </div>
                   <div class="flex flex-col gap-1.5">
-                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Correo Electrónico</label>
+                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('emailLbl') }}</label>
                     <input type="email" [(ngModel)]="contactEmail" class="custom-input py-2.5 px-3 rounded-xl border text-xs text-white bg-transparent focus:outline-none" />
                   </div>
                   <div class="flex flex-col gap-1.5">
-                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Número de Teléfono</label>
+                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('phoneLbl') }}</label>
                     <input type="text" [(ngModel)]="contactPhone" class="custom-input py-2.5 px-3 rounded-xl border text-xs text-white bg-transparent focus:outline-none" />
                   </div>
                 </div>
@@ -425,7 +438,7 @@ interface ProductItem {
               <button (click)="toggleAccordion('socials')" class="w-full flex items-center justify-between p-4 bg-white/[0.01] hover:bg-white/[0.03] transition-all">
                 <span class="text-xs font-bold uppercase tracking-widest text-white/80 flex items-center gap-2.5">
                   <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-.778.099-1.533.284-2.253"></path></svg>
-                  Redes Sociales
+                  {{ getTranslation('tabSocials') }}
                 </span>
                 <svg class="w-3.5 h-3.5 text-white/40 transition-transform duration-300" [class.rotate-180]="activeAccordion === 'socials'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
@@ -476,7 +489,7 @@ interface ProductItem {
               <button (click)="toggleAccordion('footer')" class="w-full flex items-center justify-between p-4 bg-white/[0.01] hover:bg-white/[0.03] transition-all">
                 <span class="text-xs font-bold uppercase tracking-widest text-white/80 flex items-center gap-2.5">
                   <svg class="w-4 h-4 text-white/60" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                  Footer (Pie de Página)
+                  {{ getTranslation('tabFooter') }}
                 </span>
                 <svg class="w-3.5 h-3.5 text-white/40 transition-transform duration-300" [class.rotate-180]="activeAccordion === 'footer'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
@@ -485,13 +498,13 @@ interface ProductItem {
               
               <div class="accordion-content p-4 border-t flex flex-col gap-4" *ngIf="activeAccordion === 'footer'">
                 <div class="flex items-center justify-between toggle-row p-3 rounded-xl border" (click)="includeFooter = !includeFooter">
-                  <span class="text-xs font-semibold text-white">Activar Footer</span>
+                  <span class="text-xs font-semibold text-white">{{ getTranslation('activateFooter') }}</span>
                   <div class="custom-switch" [class.on]="includeFooter"></div>
                 </div>
 
                 <div *ngIf="includeFooter" class="flex flex-col gap-3">
                   <div class="flex flex-col gap-1.5">
-                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">Texto del Copyright</label>
+                    <label class="text-[9px] uppercase tracking-widest font-bold text-white/40">{{ getTranslation('copyrightLbl') }}</label>
                     <input type="text" [(ngModel)]="footerCopy" class="custom-input py-2.5 px-3 rounded-xl border text-xs text-white bg-transparent focus:outline-none" />
                   </div>
                 </div>
@@ -503,7 +516,7 @@ interface ProductItem {
           <!-- Bottom Panel Action -->
           <div class="p-6 border-t border-white/10 bg-[#07070a]">
             <button (click)="submitDesign()" class="launch-btn w-full py-4 rounded-xl font-bold uppercase tracking-widest text-xs transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
-              Desplegar Sitio Demo
+              {{ getTranslation('deployBtn') }}
             </button>
           </div>
         </aside>
@@ -511,9 +524,9 @@ interface ProductItem {
         <!-- RIGHT PANEL: Giant Live Preview -->
         <main class="flex-grow h-full bg-[#0d0d0f] overflow-hidden p-10 flex flex-col items-center">
           <div class="w-full max-w-[1000px] flex items-center justify-between mb-4">
-            <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-white/30">Previsualización del Sitio en Vivo</h2>
+            <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-white/30">{{ getTranslation('livePreviewTitle') }}</h2>
             <div class="flex gap-2">
-              <span class="text-[10px] text-white/40 bg-white/5 border border-white/10 px-3 py-1 rounded-full uppercase tracking-wider font-semibold">100% Responsivo</span>
+              <span class="text-[10px] text-white/40 bg-white/5 border border-white/10 px-3 py-1 rounded-full uppercase tracking-wider font-semibold">{{ getTranslation('responsiveBadge') }}</span>
               <div class="flex gap-1.5 items-center">
                 <span class="w-2.5 h-2.5 rounded-full bg-red-500/75"></span>
                 <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/75"></span>
@@ -544,11 +557,11 @@ interface ProductItem {
               </div>
               
               <div class="flex gap-6 items-center">
-                <a href="#" (click)="scrollToMockupSection('prev-hero', $event)" *ngIf="includeHero" class="text-[10px] uppercase tracking-widest font-semibold opacity-70 hover:opacity-100 transition-opacity">Inicio</a>
-                <a href="#" (click)="scrollToMockupSection('prev-about', $event)" *ngIf="includeAbout" class="text-[10px] uppercase tracking-widest font-semibold opacity-70 hover:opacity-100 transition-opacity">Nosotros</a>
-                <a href="#" (click)="scrollToMockupSection('prev-services', $event)" *ngIf="includeServices" class="text-[10px] uppercase tracking-widest font-semibold opacity-70 hover:opacity-100 transition-opacity">Servicios</a>
-                <a href="#" (click)="scrollToMockupSection('prev-carousel', $event)" *ngIf="includeCarousel" class="text-[10px] uppercase tracking-widest font-semibold opacity-70 hover:opacity-100 transition-opacity">Productos</a>
-                <a href="#" (click)="scrollToMockupSection('prev-contact', $event)" *ngIf="includeContact" class="text-[10px] uppercase tracking-widest font-semibold opacity-70 hover:opacity-100 transition-opacity">Contacto</a>
+                <a href="#" (click)="scrollToMockupSection('prev-hero', $event)" *ngIf="includeHero" class="text-[10px] uppercase tracking-widest font-semibold opacity-70 hover:opacity-100 transition-opacity">{{ getTranslation('navHome') }}</a>
+                <a href="#" (click)="scrollToMockupSection('prev-about', $event)" *ngIf="includeAbout" class="text-[10px] uppercase tracking-widest font-semibold opacity-70 hover:opacity-100 transition-opacity">{{ getTranslation('navAbout') }}</a>
+                <a href="#" (click)="scrollToMockupSection('prev-services', $event)" *ngIf="includeServices" class="text-[10px] uppercase tracking-widest font-semibold opacity-70 hover:opacity-100 transition-opacity">{{ getTranslation('navServices') }}</a>
+                <a href="#" (click)="scrollToMockupSection('prev-carousel', $event)" *ngIf="includeCarousel" class="text-[10px] uppercase tracking-widest font-semibold opacity-70 hover:opacity-100 transition-opacity">{{ getTranslation('navProducts') }}</a>
+                <a href="#" (click)="scrollToMockupSection('prev-contact', $event)" *ngIf="includeContact" class="text-[10px] uppercase tracking-widest font-semibold opacity-70 hover:opacity-100 transition-opacity">{{ getTranslation('navContact') }}</a>
               </div>
               <div class="flex items-center gap-3">
                 <button *ngIf="showLoginBtn" (click)="openLoginModal()" 
@@ -556,14 +569,14 @@ interface ProductItem {
                         class="px-4 py-2 text-[10px] uppercase tracking-wider font-semibold border transition-all hover:bg-white/5"
                         [style.borderColor]="selectedTheme.primary + '22'"
                         [style.color]="selectedTheme.primary">
-                  Ingresar
+                  {{ getTranslation('loginBtn') }}
                 </button>
                 <button [class]="buttonStyle"
                         (click)="scrollToMockupSection('prev-contact', $event)"
                         class="px-4 py-2 text-[10px] uppercase tracking-wider font-bold transition-all hover:scale-105 active:scale-95"
                         [style.background]="selectedTheme.accent"
                         style="color: #000000;">
-                  Contacto
+                  {{ getTranslation('navContact') }}
                 </button>
               </div>
             </nav>
@@ -600,7 +613,7 @@ interface ProductItem {
                      [style.borderColor]="selectedTheme.primary + '11'"
                      [style.background]="selectedTheme.lightTheme ? 'rgba(0,0,0,0.01)' : 'rgba(255,255,255,0.01)'">
               <div class="md:col-span-7 flex flex-col gap-4">
-                <span class="text-[10px] font-bold uppercase tracking-widest opacity-40">Quiénes Somos</span>
+                <span class="text-[10px] font-bold uppercase tracking-widest opacity-40">{{ getTranslation('aboutUsTag') }}</span>
                 <h3 class="font-bold uppercase tracking-tight" [style.fontSize.px]="titleFontSize * 0.6">{{ aboutTitle || 'Trayectoria & Propósito' }}</h3>
                 <p class="font-light leading-relaxed opacity-75 whitespace-pre-line" [style.fontSize.px]="bodyFontSize">
                   {{ aboutText || 'Explicación detallada del valor que tu negocio ofrece y la experiencia que respalda tu trabajo.' }}
@@ -630,7 +643,7 @@ interface ProductItem {
             <!-- 4. SERVICES MOCKUP -->
             <section id="prev-services" *ngIf="includeServices" class="px-8 md:px-16 py-20 flex flex-col gap-10">
               <div class="text-center flex flex-col gap-2 max-w-xl mx-auto">
-                <span class="text-[10px] font-bold uppercase tracking-widest opacity-40">Portafolio de Soluciones</span>
+                <span class="text-[10px] font-bold uppercase tracking-widest opacity-40">{{ getTranslation('portfolioTag') }}</span>
                 <h3 class="font-bold uppercase tracking-tight" [style.fontSize.px]="titleFontSize * 0.6">{{ servicesTitle || 'Nuestros Servicios' }}</h3>
               </div>
 
@@ -655,7 +668,7 @@ interface ProductItem {
                      [style.background]="selectedTheme.lightTheme ? 'rgba(0,0,0,0.01)' : 'rgba(255,255,255,0.01)'">
               <div class="flex items-center justify-between">
                 <div class="flex flex-col gap-2">
-                  <span class="text-[10px] font-bold uppercase tracking-widest opacity-40">Catálogo de Venta</span>
+                  <span class="text-[10px] font-bold uppercase tracking-widest opacity-40">{{ getTranslation('catalogTag') }}</span>
                   <h3 class="font-bold uppercase tracking-tight" [style.fontSize.px]="titleFontSize * 0.6">{{ carouselTitle || 'Productos Destacados' }}</h3>
                 </div>
                 <div class="flex gap-2">
@@ -682,7 +695,7 @@ interface ProductItem {
                             class="w-full py-2 text-[10px] uppercase font-bold tracking-widest text-center transition-all"
                             [style.background]="selectedTheme.accent"
                             style="color: #000000;">
-                      Comprar Ahora
+                      {{ getTranslation('buyNow') }}
                     </button>
                   </div>
                 </div>
@@ -705,7 +718,7 @@ interface ProductItem {
             <!-- 7. CONTACT MOCKUP -->
             <section id="prev-contact" *ngIf="includeContact" class="px-8 md:px-16 py-20 grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
               <div class="flex flex-col gap-4">
-                <span class="text-[10px] font-bold uppercase tracking-widest opacity-40">Resolvamos tus Dudas</span>
+                <span class="text-[10px] font-bold uppercase tracking-widest opacity-40">{{ getTranslation('contactTag') }}</span>
                 <h3 class="font-bold uppercase tracking-tight" [style.fontSize.px]="titleFontSize * 0.6">{{ contactTitle || 'Contáctanos' }}</h3>
                 <p class="font-light leading-relaxed opacity-75" [style.fontSize.px]="bodyFontSize">
                   ¿Listo para comenzar? Rellena el formulario o comunícate por nuestras líneas directas.
@@ -735,7 +748,7 @@ interface ProductItem {
                         class="w-full py-3 text-xs font-bold uppercase tracking-widest transition-all"
                         [style.background]="selectedTheme.accent"
                         style="color: #000000;">
-                  Enviar Consulta
+                  {{ getTranslation('sendMsg') }}
                 </button>
               </div>
             </section>
@@ -773,8 +786,8 @@ interface ProductItem {
               </div>
 
               <div class="flex gap-6 opacity-60">
-                <span>Términos</span>
-                <span>Privacidad</span>
+                <span>{{ getTranslation('terms') }}</span>
+                <span>{{ getTranslation('privacy') }}</span>
               </div>
             </footer>
 
@@ -789,13 +802,13 @@ interface ProductItem {
             🚀
           </div>
           <div>
-            <h4 class="text-xl font-bold text-white">¡Estructura de Sitio Guardada!</h4>
+            <h4 class="text-xl font-bold text-white">{{ getTranslation('modalTitle') }}</h4>
             <p class="text-sm font-light text-white/60 leading-relaxed mt-2">
-              Rotbot tiene toda la información de diseño, secciones y colores elegidos. Conversemos en pantalla completa para afinar el demo en vivo.
+              {{ getTranslation('modalText') }}
             </p>
           </div>
           <button (click)="confirmLaunch()" class="w-full py-3.5 rounded-xl font-bold uppercase tracking-widest text-xs bg-white text-black hover:bg-white/95 transition-all">
-            Iniciar Chat de Despliegue
+            {{ getTranslation('modalBtn') }}
           </button>
         </div>
       </div>
@@ -805,14 +818,14 @@ interface ProductItem {
         <div class="bg-white text-neutral-900 p-8 max-w-sm w-full rounded-3xl shadow-2xl flex flex-col gap-4 relative animate-scale-up">
           <button (click)="closeLoginModal()" class="absolute top-4 right-4 text-neutral-400 hover:text-neutral-600 text-lg">✕</button>
           <div class="flex flex-col gap-1">
-            <span class="text-[9px] font-bold uppercase tracking-widest text-[#00f5ff]" [style.color]="selectedTheme.accent">Área Privada</span>
-            <h4 class="text-lg font-bold uppercase">Iniciar Sesión</h4>
+            <span class="text-[9px] font-bold uppercase tracking-widest text-[#00f5ff]" [style.color]="selectedTheme.accent">{{ getTranslation('loginModalTitle') }}</span>
+            <h4 class="text-lg font-bold uppercase">{{ getTranslation('loginBtn') }}</h4>
           </div>
           <div class="flex flex-col gap-3 mt-2">
             <input type="email" placeholder="Email" class="p-3 border rounded-xl text-xs focus:outline-none" />
             <input type="password" placeholder="Contraseña" class="p-3 border rounded-xl text-xs focus:outline-none" />
             <button class="w-full py-3 bg-neutral-900 text-white rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-neutral-800 transition-colors">
-              Ingresar
+              {{ getTranslation('loginBtn') }}
             </button>
           </div>
         </div>
@@ -967,6 +980,7 @@ export class PersonalizarComponent implements OnInit {
   instagramLink = 'https://instagram.com/portalink';
   showTiktok = true;
   tiktokLink = 'https://tiktok.com/@portalink';
+  showHighlight = true;
   showWhatsapp = true;
   whatsappLink = 'https://wa.me/573001234567';
   showLinkedin = false;
@@ -975,6 +989,258 @@ export class PersonalizarComponent implements OnInit {
   // Navbar section state
   includeNavbar = true;
   showLoginBtn = true;
+
+  // Language Variables
+  currentLanguage: 'es' | 'en' = 'es';
+
+  // Translation dictionary for editor UI labels
+  editorTranslations: any = {
+    es: {
+      editorTitle: 'Personalizar Sitio',
+      editorSubtitle: 'Modifica la estructura, los contenidos y el estilo visual de tu landing page.',
+      tabStyle: 'Estilo & Temas',
+      palettes: 'Paleta de Colores',
+      typography: 'Tipografía Global',
+      buttonShape: 'Forma de Botones',
+      cardBorders: 'Bordes de Tarjeta',
+      titleSize: 'Tamaño del Título',
+      bodySize: 'Tamaño del Cuerpo',
+      languageLabel: 'Idioma de Interfaz y Contenido',
+      
+      tabNavbar: 'Cabecera (Navbar)',
+      showNavbar: 'Mostrar Barra Superior',
+      logoTitle: 'Título del Logo',
+      brandIconLabel: 'Icono de la Marca',
+      showLogin: 'Botones Ingreso/Registro',
+      
+      tabHero: 'Portada (Hero)',
+      activateHero: 'Activar Sección Hero',
+      heroSubtitleLbl: 'Línea Superior (Especialidad)',
+      heroTitleLbl: 'Título Principal',
+      heroDescLbl: 'Descripción de Apoyo',
+      btn1Lbl: 'Botón 1 (Principal)',
+      btn2Lbl: 'Botón 2 (Secundario)',
+      
+      tabAbout: 'Información (About)',
+      activateAbout: 'Activar Sección About',
+      sectionTitle: 'Título de Sección',
+      descText: 'Texto Descriptivo',
+      successStat1: 'Dato de Éxito 1',
+      successStat2: 'Dato de Éxito 2',
+      
+      tabServices: 'Servicios',
+      activateServices: 'Activar Sección Servicios',
+      servicesListLbl: 'Lista de Servicios',
+      serviceLabel: 'Servicio',
+      deleteBtn: 'Eliminar',
+      addServiceBtn: '+ Agregar Servicio',
+      
+      tabCarousel: 'Carrusel de Productos',
+      activateCarousel: 'Activar Carrusel',
+      productsListLbl: 'Lista de Productos',
+      productLabel: 'Producto',
+      addProductBtn: '+ Agregar Producto',
+      
+      tabBanner: 'Banner Publicitario',
+      activateBanner: 'Activar Banner',
+      bannerTextLbl: 'Texto de Llamado',
+      bannerCtaLbl: 'Texto del Botón',
+      
+      tabContact: 'Contacto',
+      activateContact: 'Activar Sección Contacto',
+      emailLbl: 'Correo Electrónico',
+      phoneLbl: 'Número de Teléfono',
+      
+      tabSocials: 'Redes Sociales',
+      
+      tabFooter: 'Footer (Pie de Página)',
+      activateFooter: 'Activar Footer',
+      copyrightLbl: 'Texto del Copyright',
+      
+      deployBtn: 'Desplegar Sitio Demo',
+      modalTitle: '¡Estructura de Sitio Guardada!',
+      modalText: 'Rotbot tiene toda la información de diseño, secciones y colores elegidos. Conversemos en pantalla completa para afinar el demo en vivo.',
+      modalBtn: 'Iniciar Chat de Despliegue',
+      
+      loginModalTitle: 'Área Privada',
+      loginBtn: 'Ingresar',
+      loginClose: '✕',
+      
+      responsiveBadge: '100% Responsivo',
+      livePreviewTitle: 'Previsualización del Sitio en Vivo',
+      navHome: 'Inicio',
+      navAbout: 'Nosotros',
+      navServices: 'Servicios',
+      navProducts: 'Productos',
+      navContact: 'Contacto',
+      
+      aboutUsTag: 'Quiénes Somos',
+      portfolioTag: 'Portafolio de Soluciones',
+      catalogTag: 'Catálogo de Venta',
+      contactTag: 'Resolvamos tus Dudas',
+      terms: 'Términos',
+      privacy: 'Privacidad',
+      buyNow: 'Comprar Ahora',
+      sendMsg: 'Enviar Consulta'
+    },
+    en: {
+      editorTitle: 'Customize Site',
+      editorSubtitle: 'Modify the structure, content, and visual style of your landing page.',
+      tabStyle: 'Style & Themes',
+      palettes: 'Color Palette',
+      typography: 'Global Typography',
+      buttonShape: 'Button Shape',
+      cardBorders: 'Card Borders',
+      titleSize: 'Title Font Size',
+      bodySize: 'Body Font Size',
+      languageLabel: 'Interface & Content Language',
+      
+      tabNavbar: 'Header (Navbar)',
+      showNavbar: 'Show Top Bar',
+      logoTitle: 'Logo Title',
+      brandIconLabel: 'Brand Icon',
+      showLogin: 'Login/Register Buttons',
+      
+      tabHero: 'Cover (Hero)',
+      activateHero: 'Activate Hero Section',
+      heroSubtitleLbl: 'Top Line (Specialty)',
+      heroTitleLbl: 'Main Title',
+      heroDescLbl: 'Supporting Description',
+      btn1Lbl: 'Button 1 (Primary)',
+      btn2Lbl: 'Button 2 (Secondary)',
+      
+      tabAbout: 'About Us',
+      activateAbout: 'Activate About Section',
+      sectionTitle: 'Section Title',
+      descText: 'Descriptive Text',
+      successStat1: 'Success Stat 1',
+      successStat2: 'Success Stat 2',
+      
+      tabServices: 'Services',
+      activateServices: 'Activate Services Section',
+      servicesListLbl: 'Services List',
+      serviceLabel: 'Service',
+      deleteBtn: 'Delete',
+      addServiceBtn: '+ Add Service',
+      
+      tabCarousel: 'Product Carousel',
+      activateCarousel: 'Activate Carousel',
+      productsListLbl: 'Products List',
+      productLabel: 'Product',
+      addProductBtn: '+ Add Product',
+      
+      tabBanner: 'Promo Banner',
+      activateBanner: 'Activate Banner',
+      bannerTextLbl: 'Callout Text',
+      bannerCtaLbl: 'Button Text',
+      
+      tabContact: 'Contact',
+      activateContact: 'Activate Contact Section',
+      emailLbl: 'Email Address',
+      phoneLbl: 'Phone Number',
+      
+      tabSocials: 'Social Networks',
+      
+      tabFooter: 'Footer',
+      activateFooter: 'Activate Footer',
+      copyrightLbl: 'Copyright Text',
+      
+      deployBtn: 'Deploy Demo Site',
+      modalTitle: 'Site Structure Saved!',
+      modalText: 'Rotbot has all the chosen design, sections, and color information. Let\'s chat in full screen to fine-tune the live demo.',
+      modalBtn: 'Start Deployment Chat',
+      
+      loginModalTitle: 'Private Area',
+      loginBtn: 'Login',
+      loginClose: '✕',
+      
+      responsiveBadge: '100% Responsive',
+      livePreviewTitle: 'Live Site Preview',
+      navHome: 'Home',
+      navAbout: 'About Us',
+      navServices: 'Services',
+      navProducts: 'Products',
+      navContact: 'Contact',
+      
+      aboutUsTag: 'Who We Are',
+      portfolioTag: 'Solutions Portfolio',
+      catalogTag: 'Sales Catalog',
+      contactTag: 'Resolving Your Doubts',
+      terms: 'Terms',
+      privacy: 'Privacy',
+      buyNow: 'Buy Now',
+      sendMsg: 'Send Inquiry'
+    }
+  };
+
+  defaultMockupTexts: any = {
+    es: {
+      siteTitle: 'PORTALINK STUDIO',
+      heroSubtitle: 'DISEÑO WEB PREMIUM & SISTEMAS INTELIGENTES',
+      heroTitle: 'Creamos Plataformas\nQue Hacen Crecer\nTu Negocio.',
+      heroDescription: 'Desarrollo web a medida, integraciones de IA, y sistemas optimizados para conversiones rápidas y alto rendimiento.',
+      heroCta1: 'Ver Proyectos',
+      heroCta2: 'Contáctanos',
+      aboutTitle: 'Desarrollo con Propósito',
+      aboutText: 'Soy un desarrollador comprometido con el éxito de mis clientes. Ofrezco experiencia combinando estética moderna con arquitecturas web de alto nivel, permitiendo digitalizar y automatizar tus procesos comerciales.',
+      aboutStat1Val: '10+',
+      aboutStat1Lbl: 'Proyectos Demo',
+      aboutStat2Val: '100%',
+      aboutStat2Lbl: 'Soporte Premium',
+      servicesTitle: 'Servicios Disponibles',
+      servicesList: [
+        { id: 1, title: 'E-commerce a Medida', description: 'Plataformas de venta online rápidas, seguras y autogestionables para maximizar conversiones.' },
+        { id: 2, title: 'Sistemas de IA', description: 'Automatización de chat y flujos operativos mediante inteligencia artificial para tu negocio.' },
+        { id: 3, title: 'Aplicaciones Móviles', description: 'Desarrollo móvil nativo y PWAs instalables para una experiencia inmersiva.' }
+      ],
+      carouselTitle: 'Catálogo de Diseños',
+      productsList: [
+        { id: 1, title: 'Langing page Minimal', price: '$299', image: '📦' },
+        { id: 2, title: 'E-commerce Premium', price: '$599', image: '📦' },
+        { id: 3, title: 'Sistema Web ERP', price: '$999', image: '📦' },
+        { id: 4, title: 'Soporte DevOps', price: '$150', image: '📦' }
+      ],
+      bannerText: '¿Listo para llevar tu marca al siguiente nivel digital?',
+      bannerCta: '¡Solicitar Demo!',
+      contactTitle: 'Contáctanos',
+      contactEmail: 'santiago@portalink.co',
+      contactPhone: '+57 300 123 4567',
+      footerCopy: '© 2026 Portalink Studio. Todos los derechos reservados.'
+    },
+    en: {
+      siteTitle: 'PORTALINK STUDIO',
+      heroSubtitle: 'PREMIUM WEB DESIGN & INTELLIGENT SYSTEMS',
+      heroTitle: 'We Build Platforms\nThat Grow\nYour Business.',
+      heroDescription: 'Tailor-made web development, AI integrations, and high-performance systems optimized for fast conversions.',
+      heroCta1: 'View Projects',
+      heroCta2: 'Contact Us',
+      aboutTitle: 'Development with Purpose',
+      aboutText: 'I am a developer committed to my clients\' success. I offer experience combining modern aesthetics with high-level web architectures, allowing you to digitize and automate your business processes.',
+      aboutStat1Val: '10+',
+      aboutStat1Lbl: 'Demo Projects',
+      aboutStat2Val: '100%',
+      aboutStat2Lbl: 'Premium Support',
+      servicesTitle: 'Available Services',
+      servicesList: [
+        { id: 1, title: 'Custom E-commerce', description: 'Fast, secure, and self-managed online sales platforms to maximize conversions.' },
+        { id: 2, title: 'AI Systems', description: 'Chat automation and operational workflows using artificial intelligence for your business.' },
+        { id: 3, title: 'Mobile Applications', description: 'Native mobile development and installable PWAs for an immersive experience.' }
+      ],
+      carouselTitle: 'Design Catalog',
+      productsList: [
+        { id: 1, title: 'Minimal Landing Page', price: '$299', image: '📦' },
+        { id: 2, title: 'Premium E-commerce', price: '$599', image: '📦' },
+        { id: 3, title: 'ERP Web System', price: '$999', image: '📦' },
+        { id: 4, title: 'DevOps Support', price: '$150', image: '📦' }
+      ],
+      bannerText: 'Ready to take your brand to the next digital level?',
+      bannerCta: 'Request Demo!',
+      contactTitle: 'Contact Us',
+      contactEmail: 'santiago@portalink.co',
+      contactPhone: '+57 300 123 4567',
+      footerCopy: '© 2026 Portalink Studio. All rights reserved.'
+    }
+  };
 
   // Hero section state
   includeHero = true;
@@ -1056,6 +1322,116 @@ export class PersonalizarComponent implements OnInit {
 
   selectTheme(theme: ThemePreset) {
     this.selectedTheme = theme;
+  }
+
+  // Get localized editor text
+  getTranslation(key: string): string {
+    return this.editorTranslations[this.currentLanguage][key] || key;
+  }
+
+  // Change active language and translate untouched fields
+  changeLanguage(lang: 'es' | 'en') {
+    const prevLang = this.currentLanguage;
+    this.currentLanguage = lang;
+
+    const prevDefaults = this.defaultMockupTexts[prevLang];
+    const newDefaults = this.defaultMockupTexts[lang];
+
+    // Check and translate navbar logo title
+    if (this.siteTitle === prevDefaults.siteTitle) {
+      this.siteTitle = newDefaults.siteTitle;
+    }
+
+    // Check and translate Hero section
+    if (this.heroSubtitle === prevDefaults.heroSubtitle) {
+      this.heroSubtitle = newDefaults.heroSubtitle;
+    }
+    if (this.heroTitle === prevDefaults.heroTitle) {
+      this.heroTitle = newDefaults.heroTitle;
+    }
+    if (this.heroDescription === prevDefaults.heroDescription) {
+      this.heroDescription = newDefaults.heroDescription;
+    }
+    if (this.heroCta1 === prevDefaults.heroCta1) {
+      this.heroCta1 = newDefaults.heroCta1;
+    }
+    if (this.heroCta2 === prevDefaults.heroCta2) {
+      this.heroCta2 = newDefaults.heroCta2;
+    }
+
+    // Check and translate About section
+    if (this.aboutTitle === prevDefaults.aboutTitle) {
+      this.aboutTitle = newDefaults.aboutTitle;
+    }
+    if (this.aboutText === prevDefaults.aboutText) {
+      this.aboutText = newDefaults.aboutText;
+    }
+    if (this.aboutStat1Val === prevDefaults.aboutStat1Val) {
+      this.aboutStat1Val = newDefaults.aboutStat1Val;
+    }
+    if (this.aboutStat1Lbl === prevDefaults.aboutStat1Lbl) {
+      this.aboutStat1Lbl = newDefaults.aboutStat1Lbl;
+    }
+    if (this.aboutStat2Val === prevDefaults.aboutStat2Val) {
+      this.aboutStat2Val = newDefaults.aboutStat2Val;
+    }
+    if (this.aboutStat2Lbl === prevDefaults.aboutStat2Lbl) {
+      this.aboutStat2Lbl = newDefaults.aboutStat2Lbl;
+    }
+
+    // Check and translate Services section
+    if (this.servicesTitle === prevDefaults.servicesTitle) {
+      this.servicesTitle = newDefaults.servicesTitle;
+    }
+    this.servicesList.forEach(srv => {
+      const match = prevDefaults.servicesList.find((s: any) => s.id === srv.id);
+      if (match) {
+        if (srv.title === match.title) {
+          const newMatch = newDefaults.servicesList.find((s: any) => s.id === srv.id);
+          if (newMatch) srv.title = newMatch.title;
+        }
+        if (srv.description === match.description) {
+          const newMatch = newDefaults.servicesList.find((s: any) => s.id === srv.id);
+          if (newMatch) srv.description = newMatch.description;
+        }
+      }
+    });
+
+    // Check and translate Carousel section
+    if (this.carouselTitle === prevDefaults.carouselTitle) {
+      this.carouselTitle = newDefaults.carouselTitle;
+    }
+    this.productsList.forEach(prod => {
+      const match = prevDefaults.productsList.find((p: any) => p.id === prod.id);
+      if (match && prod.title === match.title) {
+        const newMatch = newDefaults.productsList.find((p: any) => p.id === prod.id);
+        if (newMatch) prod.title = newMatch.title;
+      }
+    });
+
+    // Check and translate Banner section
+    if (this.bannerText === prevDefaults.bannerText) {
+      this.bannerText = newDefaults.bannerText;
+    }
+    if (this.bannerCta === prevDefaults.bannerCta) {
+      this.bannerCta = newDefaults.bannerCta;
+    }
+
+    // Check and translate Contact section
+    if (this.contactTitle === prevDefaults.contactTitle) {
+      this.contactTitle = newDefaults.contactTitle;
+    }
+    if (this.contactEmail === prevDefaults.contactEmail) {
+      this.contactEmail = newDefaults.contactEmail;
+    }
+    if (this.contactPhone === prevDefaults.contactPhone) {
+      this.contactPhone = newDefaults.contactPhone;
+    }
+
+    // Check and translate Footer section
+    if (this.footerCopy === prevDefaults.footerCopy) {
+      this.footerCopy = newDefaults.footerCopy;
+    }
   }
 
   // Card dynamic styles based on setting
@@ -1171,6 +1547,7 @@ export class PersonalizarComponent implements OnInit {
 
     // Build the customization payload message for Rotbot
     let payload = `¡Hola! Quiero iniciar el desarrollo de mi landing page personalizada. Estos son mis requerimientos:\n\n`;
+    payload += `🌐 **Idioma Seleccionado:** ${this.currentLanguage.toUpperCase()}\n`;
     payload += `🎨 **Estilo & Tema:** ${this.selectedTheme.name} (${this.selectedTheme.id})\n`;
     payload += `🔤 **Tipografía:** ${this.selectedFont}\n`;
     payload += `🔘 **Estilo de Botones:** ${this.buttonStyle}\n`;
