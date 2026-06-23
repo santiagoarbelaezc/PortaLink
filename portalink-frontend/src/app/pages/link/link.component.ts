@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, Inject, PLATFORM_ID, ViewEncapsulation } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
@@ -186,7 +186,7 @@ import { RouterModule } from '@angular/router';
     styleUrls: ['./link.component.css'],
     encapsulation: ViewEncapsulation.None
 })
-export class LinkComponent implements OnInit, OnDestroy {
+export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   currentYear = new Date().getFullYear();
   deferredPrompt: any;
   showInstallModal = false;
@@ -263,15 +263,19 @@ export class LinkComponent implements OnInit, OnDestroy {
 
       this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
       window.addEventListener('portfolio-language-change', this.onLanguageChange);
+    }
+  }
 
+  ngAfterViewInit() {
+    if (isPlatformBrowser(this.platformId)) {
       // Scroll Reveal Intersection Observer
       setTimeout(() => {
         const revealItems = document.querySelectorAll('.lt-reveal-item');
         if (revealItems.length > 0) {
           const observerOptions = {
             root: null,
-            rootMargin: '0px',
-            threshold: 0.1
+            rootMargin: '0px 0px -50px 0px', // Trigger slightly before the item enters the view
+            threshold: 0.05
           };
           this.observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -285,7 +289,7 @@ export class LinkComponent implements OnInit, OnDestroy {
             this.observer?.observe(item);
           });
         }
-      }, 400);
+      }, 100);
     }
   }
 
