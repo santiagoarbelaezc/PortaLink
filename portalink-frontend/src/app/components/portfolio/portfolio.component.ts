@@ -21,7 +21,10 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
 
         <!-- Carousel Container -->
         <div #carouselContainer
-             class="relative w-full h-[320px] sm:h-[450px] lg:h-[600px] flex items-center justify-start select-none overflow-visible">
+             (touchstart)="onTouchStart($event)"
+             (touchmove)="onTouchMove($event)"
+             (touchend)="onTouchEnd()"
+             class="relative w-full h-[calc(var(--card-w)+40px)] sm:h-[450px] lg:h-[600px] flex items-center justify-start select-none overflow-visible">
           
           <!-- Cards Track -->
           <div class="flex items-center gap-[var(--card-gap)] transition-transform duration-700 ease-out"
@@ -31,7 +34,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
                  (click)="goTo(i)"
                  [class.active-card]="i === currentIndex"
                  [class.inactive-card]="i !== currentIndex"
-                 class="carousel-card relative flex-shrink-0 w-[var(--card-w)] aspect-[16/9] rounded-[24px] sm:rounded-[36px] overflow-hidden border border-white/10 transition-all duration-700 cursor-pointer">
+                 class="carousel-card relative flex-shrink-0 w-[var(--card-w)] aspect-square sm:aspect-[16/9] rounded-[24px] sm:rounded-[36px] overflow-hidden border border-white/10 transition-all duration-700 cursor-pointer">
               
               <!-- Background Image -->
               <img [src]="project.images && project.images.length > 0 ? project.images[0] : 'project-1.png'" 
@@ -42,7 +45,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
               <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/45 to-black/10 sm:bg-gradient-to-r sm:from-black/95 sm:via-black/55 sm:to-transparent transition-opacity duration-700 content-overlay"></div>
 
               <!-- Active Card Content (Only fully visible on active card) -->
-              <div class="absolute inset-0 flex flex-col justify-end p-6 sm:p-12 lg:p-14 text-left transition-all duration-700 content-details">
+              <div class="absolute inset-0 flex flex-col justify-end p-5 sm:p-12 lg:p-14 text-left transition-all duration-700 content-details">
                 
                 <!-- Tag / Category -->
                 <span class="text-[10px] sm:text-[11px] uppercase tracking-[0.4em] font-bold block mb-2 sm:mb-4 text-white/40">
@@ -180,6 +183,10 @@ export class PortfolioComponent implements AfterViewInit, OnDestroy {
 
   @ViewChild('carouselContainer', { static: false }) containerRef?: ElementRef;
 
+  // Touch Swiping variables
+  private touchStartX = 0;
+  private touchEndX = 0;
+
   ngAfterViewInit() {
     if (this.containerRef) {
       this.containerRef.nativeElement.addEventListener('wheel', this.wheelListener, { passive: false });
@@ -211,6 +218,29 @@ export class PortfolioComponent implements AfterViewInit, OnDestroy {
 
   goTo(index: number) {
     this.currentIndex = index;
+  }
+
+  // Touch handlers for mobile swipe navigation
+  onTouchStart(event: TouchEvent) {
+    this.touchStartX = event.touches[0].clientX;
+    this.touchEndX = event.touches[0].clientX;
+  }
+
+  onTouchMove(event: TouchEvent) {
+    this.touchEndX = event.touches[0].clientX;
+  }
+
+  onTouchEnd() {
+    const diffX = this.touchStartX - this.touchEndX;
+    if (Math.abs(diffX) > 50) { // 50px swipe threshold
+      if (diffX > 0) {
+        this.next();
+      } else {
+        this.prev();
+      }
+    }
+    this.touchStartX = 0;
+    this.touchEndX = 0;
   }
 
   // Returns the exact CSS transform string to center/align cards properly
