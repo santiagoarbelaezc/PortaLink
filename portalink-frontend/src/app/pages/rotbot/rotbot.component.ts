@@ -55,7 +55,7 @@ import { ChatStateService } from '../../services/chat-state.service';
       <div class="flex flex-row flex-grow w-full overflow-hidden">
         
         <!-- Sidebar Izquierdo (Accesos Rápidos) -->
-        <div class="chat-sidebar hidden md:flex flex-col w-80 border-r py-8 px-6 gap-4 overflow-y-auto" style="border-color: rgba(255, 255, 255, 0.08);">
+        <div class="chat-sidebar hidden md:flex flex-col w-80 border-r py-8 px-6 gap-4 overflow-y-auto" style="border-color: var(--card-border);">
           <h4 class="text-[11px] uppercase tracking-[0.2em] font-sans font-semibold opacity-40 mb-2" style="color: var(--text-secondary);">Accesos Rápidos</h4>
           
           <button (click)="sendShortcutMessage('Quiero E-commerce')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
@@ -181,10 +181,10 @@ import { ChatStateService } from '../../services/chat-state.service';
         </div>
 
         <!-- Sidebar Derecho (Info Rotbot) -->
-        <div class="chat-sidebar hidden md:flex flex-col w-80 border-l py-8 px-6 gap-6 overflow-y-auto" style="border-color: rgba(255, 255, 255, 0.08);">
+        <div class="chat-sidebar hidden md:flex flex-col w-80 border-l py-8 px-6 gap-6 overflow-y-auto" style="border-color: var(--card-border);">
           <h4 class="text-[11px] uppercase tracking-[0.2em] font-sans font-semibold opacity-40 mb-2" style="color: var(--text-secondary);">¿Quién es Rotbot?</h4>
           
-          <div class="flex flex-col items-center text-center gap-4 p-5 rounded-2xl border" style="background: rgba(255, 255, 255, 0.01); border-color: rgba(255, 255, 255, 0.06);">
+          <div class="flex flex-col items-center text-center gap-4 p-5 rounded-2xl border" style="background: var(--card-bg); border-color: var(--card-border);">
             <div class="w-24 h-24 rounded-2xl bg-white/5 flex items-center justify-center p-2 border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.05)]">
               <img src="assets/images/logo-rotbot.png" class="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(0,245,255,0.4)]" alt="Rotbot Logo">
             </div>
@@ -201,12 +201,11 @@ import { ChatStateService } from '../../services/chat-state.service';
           <button (click)="sendShortcutMessage('Quiero una implementación de IA en mi negocio')" class="shortcut-btn flex flex-col gap-2 p-5 rounded-xl text-left border transition-all duration-300">
             <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--accent-color);">Oportunidad</span>
             <span class="text-[13px] font-semibold leading-snug" style="color: var(--text-primary);">Quiero mi IA para mi negocio</span>
-            <p class="text-[11px] font-light opacity-70 leading-normal" style="color: var(--text-secondary);">
+            <span class="text-[11px] font-light opacity-70 leading-normal block" style="color: var(--text-secondary);">
               Empieza hoy la transformación digital y automatiza tu negocio con Inteligencia Artificial.
-            </p>
+            </span>
           </button>
         </div>
-
       </div>
     </div>
   `,
@@ -222,14 +221,14 @@ import { ChatStateService } from '../../services/chat-state.service';
       background: rgb(8, 8, 8);
       z-index: 9999;
     }
-    .theme-light .page-container {
+    :host-context(.theme-light) .page-container {
       background: rgb(255, 255, 255);
     }
     .chat-header {
       border-color: rgba(255, 255, 255, 0.08);
       background: rgb(8, 8, 8);
     }
-    .theme-light .chat-header {
+    :host-context(.theme-light) .chat-header {
       border-color: rgba(0, 0, 0, 0.06);
       background: rgb(255, 255, 255);
     }
@@ -245,14 +244,14 @@ import { ChatStateService } from '../../services/chat-state.service';
     .welcome-border {
       border-color: rgba(255, 255, 255, 0.08);
     }
-    .theme-light .welcome-border {
+    :host-context(.theme-light) .welcome-border {
       border-color: rgba(0, 0, 0, 0.06);
     }
     .avatar-bg {
       background: rgba(255, 255, 255, 0.04);
       border-color: rgba(255, 255, 255, 0.08);
     }
-    .theme-light .avatar-bg {
+    :host-context(.theme-light) .avatar-bg {
       background: rgba(0, 0, 0, 0.02);
       border-color: rgba(0, 0, 0, 0.05);
     }
@@ -273,7 +272,7 @@ import { ChatStateService } from '../../services/chat-state.service';
       border-color: rgba(255, 255, 255, 0.08);
       background: rgb(8, 8, 8);
     }
-    .theme-light .chat-input-area {
+    :host-context(.theme-light) .chat-input-area {
       border-color: rgba(0, 0, 0, 0.06);
       background: rgb(255, 255, 255);
     }
@@ -282,7 +281,7 @@ import { ChatStateService } from '../../services/chat-state.service';
       border-color: rgba(255, 255, 255, 0.08);
       color: var(--text-primary, #ffffff);
     }
-    .theme-light .chat-input {
+    :host-context(.theme-light) .chat-input {
       background: rgba(0, 0, 0, 0.01);
       border-color: rgba(0, 0, 0, 0.06);
     }
@@ -304,7 +303,7 @@ import { ChatStateService } from '../../services/chat-state.service';
       background: rgba(255, 255, 255, 0.05);
       border-radius: 4px;
     }
-    .theme-light .custom-scrollbar::-webkit-scrollbar-thumb {
+    :host-context(.theme-light) .custom-scrollbar::-webkit-scrollbar-thumb {
       background: rgba(0, 0, 0, 0.08);
     }
     .messages-area {
@@ -320,7 +319,7 @@ import { ChatStateService } from '../../services/chat-state.service';
     .chat-sidebar {
       background: rgba(0, 0, 0, 0.15);
     }
-    .theme-light .chat-sidebar {
+    :host-context(.theme-light) .chat-sidebar {
       background: rgba(0, 0, 0, 0.02);
       border-color: rgba(0, 0, 0, 0.06) !important;
     }
@@ -328,7 +327,7 @@ import { ChatStateService } from '../../services/chat-state.service';
       background: rgba(255, 255, 255, 0.02);
       border-color: rgba(255, 255, 255, 0.06);
     }
-    .theme-light .shortcut-btn {
+    :host-context(.theme-light) .shortcut-btn {
       background: rgba(0, 0, 0, 0.01);
       border-color: rgba(0, 0, 0, 0.04);
     }
@@ -337,7 +336,7 @@ import { ChatStateService } from '../../services/chat-state.service';
       background: rgba(255, 255, 255, 0.05);
       transform: translateY(-1px);
     }
-    .theme-light .shortcut-btn:hover {
+    :host-context(.theme-light) .shortcut-btn:hover {
       background: rgba(0, 0, 0, 0.02);
     }
   `]

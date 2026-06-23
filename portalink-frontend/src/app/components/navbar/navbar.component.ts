@@ -250,7 +250,7 @@ export class NavbarComponent implements OnInit {
       { name: 'Proyectos',   link: '#portfolio',   icon: 'grid'   },
       { name: 'Perfil',      link: '#about',       icon: 'user'   },
       { name: 'Servicios',   link: '#skills',      icon: 'layers' },
-      { name: 'Crear Sitio', link: '/personalizar', icon: 'edit'   }
+      { name: 'Planes',      link: '/personalizar', icon: 'edit'   }
     ],
     en: [
       { name: 'Home',        link: '#hero',        icon: 'home'   },
@@ -258,7 +258,7 @@ export class NavbarComponent implements OnInit {
       { name: 'Projects',    link: '#portfolio',   icon: 'grid'   },
       { name: 'Profile',     link: '#about',       icon: 'user'   },
       { name: 'Services',    link: '#skills',      icon: 'layers' },
-      { name: 'Create Site', link: '/personalizar', icon: 'edit'   }
+      { name: 'Plans',       link: '/personalizar', icon: 'edit'   }
     ]
   };
 

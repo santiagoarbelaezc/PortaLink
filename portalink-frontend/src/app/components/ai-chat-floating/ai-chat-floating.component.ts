@@ -168,7 +168,7 @@ import { ChatStateService } from '../../services/chat-state.service';
       box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), inset 0 0 1px rgba(255, 255, 255, 0.1);
       overscroll-behavior: contain;
     }
-    .theme-light .chat-panel {
+    :host-context(.theme-light) .chat-panel {
       background: rgb(255, 255, 255);
       border-color: rgba(0, 0, 0, 0.06);
       box-shadow: 0 25px 60px rgba(0, 0, 0, 0.08), inset 0 0 1px rgba(0, 0, 0, 0.05);
@@ -177,7 +177,7 @@ import { ChatStateService } from '../../services/chat-state.service';
     .chat-header {
       border-color: rgba(255, 255, 255, 0.08);
     }
-    .theme-light .chat-header {
+    :host-context(.theme-light) .chat-header {
       border-color: rgba(0, 0, 0, 0.06);
     }
     .scanner-line {
@@ -192,14 +192,14 @@ import { ChatStateService } from '../../services/chat-state.service';
     .welcome-border {
       border-color: rgba(255, 255, 255, 0.08);
     }
-    .theme-light .welcome-border {
+    :host-context(.theme-light) .welcome-border {
       border-color: rgba(0, 0, 0, 0.06);
     }
     .avatar-bg {
       background: rgba(255, 255, 255, 0.04);
       border-color: rgba(255, 255, 255, 0.08);
     }
-    .theme-light .avatar-bg {
+    :host-context(.theme-light) .avatar-bg {
       background: rgba(0, 0, 0, 0.02);
       border-color: rgba(0, 0, 0, 0.05);
     }
@@ -227,7 +227,7 @@ import { ChatStateService } from '../../services/chat-state.service';
     .chat-input-area {
       border-color: rgba(255, 255, 255, 0.08);
     }
-    .theme-light .chat-input-area {
+    :host-context(.theme-light) .chat-input-area {
       border-color: rgba(0, 0, 0, 0.06);
     }
     .chat-input {
@@ -235,7 +235,7 @@ import { ChatStateService } from '../../services/chat-state.service';
       border-color: rgba(255, 255, 255, 0.08);
       color: var(--text-primary, #ffffff);
     }
-    .theme-light .chat-input {
+    :host-context(.theme-light) .chat-input {
       background: rgba(0, 0, 0, 0.01);
       border-color: rgba(0, 0, 0, 0.06);
     }
@@ -257,7 +257,7 @@ import { ChatStateService } from '../../services/chat-state.service';
       background: rgba(255, 255, 255, 0.05);
       border-radius: 4px;
     }
-    .theme-light .custom-scrollbar::-webkit-scrollbar-thumb {
+    :host-context(.theme-light) .custom-scrollbar::-webkit-scrollbar-thumb {
       background: rgba(0, 0, 0, 0.08);
     }
   `],

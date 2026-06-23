@@ -33,12 +33,256 @@ interface ProductItem {
   template: `
     <div class="h-screen w-full flex flex-col overflow-hidden font-sans page-wrapper">
       
+      <!-- Vista de Planes & Servicios -->
+      <div *ngIf="!showEditor" class="flex-grow w-full pt-20 overflow-y-auto custom-scrollbar flex flex-col items-center">
+        
+        <!-- Hero/Banner Planes -->
+        <div class="w-full max-w-6xl px-6 py-12 md:py-16 text-center">
+          <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-[#00f5ff]" [style.color]="selectedTheme.accent">Especialidades Portalink</span>
+          <h1 class="text-4xl md:text-6xl font-headline uppercase tracking-tight text-white mt-3">Planes de Desarrollo & Sistemas</h1>
+          <p class="text-sm md:text-base text-white/60 mt-4 max-w-2xl mx-auto leading-relaxed">
+            Elige la solución que mejor se adapte a tu negocio. Configura tu landing page premium en tiempo real o implementa integraciones inteligentes a medida.
+          </p>
+        </div>
+
+        <!-- Grid de Planes -->
+        <div class="w-full max-w-6xl px-6 grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 items-start">
+          
+          <!-- Plan 1: E-commerce Personalizable -->
+          <div (click)="showEditor = true" 
+               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative pt-8 px-8 pb-8 min-h-[580px]">
+            <span class="absolute top-5 right-5 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider" 
+                  [style.background]="selectedTheme.accent + '22'" 
+                  [style.color]="selectedTheme.accent">
+              -50%
+            </span>
+            <div class="flex-grow flex flex-col">
+              <h3 class="text-xl font-bold uppercase tracking-wide text-white mb-4">E-commerce</h3>
+              
+              <div class="mb-5">
+                <span class="line-through text-xs opacity-50 block mb-1">COP 399.000</span>
+                <div class="text-2xl font-headline font-bold text-white tracking-wide">
+                  COP 199.000<span class="text-xs font-normal opacity-60">/mes</span>
+                </div>
+              </div>
+
+              <!-- Button outlined -->
+              <button class="w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-300 border border-white/20 text-white hover:bg-white hover:text-black hover:border-white mb-4">
+                Adquirir el plan
+              </button>
+
+              <p class="text-[10px] text-white/50 leading-relaxed mb-6">
+                Se renueva a COP 299.000/mes. Cancela cuando quieras.
+              </p>
+              
+              <div class="h-px w-full bg-white/10 mb-6"></div>
+              
+              <ul class="space-y-3.5">
+                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
+                  <span class="opacity-80">⚙</span> Editor Visual Interactivo
+                </li>
+                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
+                  <span class="opacity-80">🎨</span> Múltiples secciones premium
+                </li>
+                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
+                  <span class="opacity-80">📦</span> Configuración de Catálogo
+                </li>
+                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
+                  <span class="opacity-80">⚡</span> Soporte técnico premium
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Plan 2: Inteligencia Artificial Integrada (MÁS VENDIDO) -->
+          <div (click)="routerToRotbot('Quiero una implementación de IA en mi negocio')" 
+               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative min-h-[610px] border-2"
+               [style.borderColor]="selectedTheme.accent">
+            <!-- Header Popular -->
+            <div class="text-white text-[9px] font-bold uppercase tracking-[0.2em] py-2.5 text-center w-full"
+                 [style.background]="selectedTheme.accent"
+                 style="color: #000000;">
+              MÁS VENDIDO
+            </div>
+
+            <div class="pt-6 px-8 pb-8 flex-grow flex flex-col relative">
+              <span class="absolute top-5 right-5 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider" 
+                    [style.background]="selectedTheme.accent + '22'" 
+                    [style.color]="selectedTheme.accent">
+                -40%
+              </span>
+
+              <h3 class="text-xl font-bold uppercase tracking-wide text-white mb-4">IA Integrada</h3>
+              
+              <div class="mb-5">
+                <span class="line-through text-xs opacity-50 block mb-1">COP 599.000</span>
+                <div class="text-2xl font-headline font-bold text-white tracking-wide">
+                  COP 359.000<span class="text-xs font-normal opacity-60">/mes</span>
+                </div>
+              </div>
+
+              <!-- Button Filled -->
+              <button class="w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-300 mb-4"
+                      [style.background]="selectedTheme.accent"
+                      style="color: #000000;">
+                Adquirir el plan
+              </button>
+
+              <p class="text-[10px] text-white/50 leading-relaxed mb-6">
+                Se renueva a COP 499.000/mes. Cancela cuando quieras.
+              </p>
+              
+              <div class="h-px w-full bg-white/10 mb-6"></div>
+              
+              <ul class="space-y-3.5">
+                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
+                  <span class="opacity-80">🤖</span> Asistente Virtual Rotbot IA
+                </li>
+                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
+                  <span class="opacity-80">💬</span> Respuestas inteligentes
+                </li>
+                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
+                  <span class="opacity-80">📊</span> Integración en bases de datos
+                </li>
+                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
+                  <span class="opacity-80">🔑</span> Licencia API oficial
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Plan 3: Diseño Móvil Premium -->
+          <div (click)="routerToRotbot('Necesito un diseño móvil para mi sitio')" 
+               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative pt-8 px-8 pb-8 min-h-[580px]">
+            <span class="absolute top-5 right-5 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider" 
+                  [style.background]="selectedTheme.accent + '22'" 
+                  [style.color]="selectedTheme.accent">
+              -30%
+            </span>
+            <div class="flex-grow flex flex-col">
+              <h3 class="text-xl font-bold uppercase tracking-wide text-white mb-4">Diseño Móvil</h3>
+              
+              <div class="mb-5">
+                <span class="line-through text-xs opacity-50 block mb-1">COP 299.000</span>
+                <div class="text-2xl font-headline font-bold text-white tracking-wide">
+                  COP 199.000<span class="text-xs font-normal opacity-60">/mes</span>
+                </div>
+              </div>
+
+              <!-- Button outlined -->
+              <button class="w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-300 border border-white/20 text-white hover:bg-white hover:text-black hover:border-white mb-4">
+                Adquirir el plan
+              </button>
+
+              <p class="text-[10px] text-white/50 leading-relaxed mb-6">
+                Se renueva a COP 249.000/mes. Cancela cuando quieras.
+              </p>
+              
+              <div class="h-px w-full bg-white/10 mb-6"></div>
+              
+              <ul class="space-y-3.5">
+                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
+                  <span class="opacity-80">📱</span> 100% Mobile First
+                </li>
+                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
+                  <span class="opacity-80">🚀</span> Soporte PWA (Instalable)
+                </li>
+                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
+                  <span class="opacity-80">⚡</span> Carga instantánea
+                </li>
+                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
+                  <span class="opacity-80">🌐</span> Dominio propio incluido
+                </li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Sección de Servicios Incluidos -->
+        <div class="w-full max-w-6xl px-6 pb-24">
+          <div class="border-t border-white/10 pt-16 mb-12">
+            <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-[#00f5ff]" [style.color]="selectedTheme.accent">Estándar de Calidad</span>
+            <h2 class="text-3xl md:text-4xl font-headline uppercase tracking-tight text-white mt-2">Servicios Incluidos en todos los Planes</h2>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Servicio 1 -->
+            <div class="service-card p-6 rounded-2xl transition-all">
+              <div class="flex items-center gap-4 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-[#00f5ff]/10 flex items-center justify-center text-[#00f5ff]">🔒</div>
+                <h4 class="text-sm font-bold uppercase tracking-wide text-white">Hosting de Alta Velocidad & SSL</h4>
+              </div>
+              <p class="text-xs text-white/55 leading-relaxed">
+                Tu sitio alojado en servidores cloud de alto rendimiento con certificado SSL de seguridad HTTPS de forma totalmente gratuita.
+              </p>
+            </div>
+            <!-- Servicio 2 -->
+            <div class="service-card p-6 rounded-2xl transition-all">
+              <div class="flex items-center gap-4 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-[#00f5ff]/10 flex items-center justify-center text-[#00f5ff]">🔍</div>
+                <h4 class="text-sm font-bold uppercase tracking-wide text-white">SEO & Optimización Google</h4>
+              </div>
+              <p class="text-xs text-white/55 leading-relaxed">
+                Estructura de metadatos optimizada para motores de búsqueda, permitiendo que tu negocio escale posiciones en resultados orgánicos.
+              </p>
+            </div>
+            <!-- Servicio 3 -->
+            <div class="service-card p-6 rounded-2xl transition-all">
+              <div class="flex items-center gap-4 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-[#00f5ff]/10 flex items-center justify-center text-[#00f5ff]">📱</div>
+                <h4 class="text-sm font-bold uppercase tracking-wide text-white">100% Autogestionable</h4>
+              </div>
+              <p class="text-xs text-white/55 leading-relaxed">
+                Administra tus productos, imágenes y textos directamente desde el panel de control sin depender de conocimientos técnicos.
+              </p>
+            </div>
+            <!-- Servicio 4 -->
+            <div class="service-card p-6 rounded-2xl transition-all">
+              <div class="flex items-center gap-4 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-[#00f5ff]/10 flex items-center justify-center text-[#00f5ff]">⚡</div>
+                <h4 class="text-sm font-bold uppercase tracking-wide text-white">Soporte Continuo Premium</h4>
+              </div>
+              <p class="text-xs text-white/55 leading-relaxed">
+                Mantenimiento de infraestructura, soporte técnico y actualizaciones periódicas para asegurar el correcto funcionamiento 24/7.
+              </p>
+            </div>
+            <!-- Servicio 5 -->
+            <div class="service-card p-6 rounded-2xl transition-all">
+              <div class="flex items-center gap-4 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-[#00f5ff]/10 flex items-center justify-center text-[#00f5ff]">💬</div>
+                <h4 class="text-sm font-bold uppercase tracking-wide text-white">Integración con WhatsApp</h4>
+              </div>
+              <p class="text-xs text-white/55 leading-relaxed">
+                Enlaces y botones rápidos inteligentes para redireccionar el flujo de tus clientes directamente a chats privados de atención rápida.
+              </p>
+            </div>
+            <!-- Servicio 6 -->
+            <div class="service-card p-6 rounded-2xl transition-all">
+              <div class="flex items-center gap-4 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-[#00f5ff]/10 flex items-center justify-center text-[#00f5ff]">📊</div>
+                <h4 class="text-sm font-bold uppercase tracking-wide text-white">Estadísticas & Métricas</h4>
+              </div>
+              <p class="text-xs text-white/55 leading-relaxed">
+                Acceso a informes sobre número de visitantes y clicks en tus enlaces más relevantes para potenciar tu estrategia digital.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      
       <!-- Main Dashboard Container -->
-      <div class="flex flex-row flex-grow w-full h-full pt-20 overflow-hidden">
+      <div *ngIf="showEditor" class="flex flex-row flex-grow w-full h-full pt-20 overflow-hidden">
         
         <!-- LEFT PANEL: Editor Controls -->
         <aside class="w-[420px] h-full border-r border-white/10 flex flex-col overflow-hidden bg-[#07070a]/95 backdrop-blur-xl">
           <div class="p-6 border-b border-white/10">
+            <!-- Volver a Vista de Planes -->
+            <button (click)="showEditor = false" class="text-[10px] text-white/40 hover:text-white/80 transition-colors uppercase tracking-wider font-bold mb-4 flex items-center gap-2 focus:outline-none">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"></path></svg>
+              Volver a Planes
+            </button>
             <span class="text-[9px] font-bold uppercase tracking-[0.25em] text-[#00f5ff]" style="color: var(--accent-color);">Editor Visual Premium</span>
             <h1 class="text-2xl font-bold uppercase tracking-tight text-white mt-1">{{ getTranslation('editorTitle') }}</h1>
             <p class="text-xs text-white/50 mt-1.5 leading-relaxed">
@@ -841,7 +1085,8 @@ interface ProductItem {
       color: inherit;
     }
     .page-wrapper {
-      background-color: #07070a;
+      background-color: var(--bg-primary, #07070a);
+      transition: background-color 0.8s ease;
     }
     .custom-scrollbar::-webkit-scrollbar {
       width: 4px;
@@ -949,6 +1194,45 @@ interface ProductItem {
     }
     .animate-scale-up {
       animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .plan-card {
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .plan-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--accent-color) !important;
+      box-shadow: 0 20px 40px rgba(0, 245, 255, 0.05);
+    }
+    .service-card {
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      transition: all 0.3s ease;
+    }
+    .service-card:hover {
+      border-color: var(--accent-color) !important;
+      background: var(--card-border) !important;
+      transform: translateY(-4px);
+    }
+    .btn-primary-theme {
+      background: var(--text-primary);
+      color: var(--bg-primary);
+      border: 1px solid var(--text-primary);
+    }
+    .btn-primary-theme:hover {
+      background: var(--accent-color);
+      color: #000000;
+      border-color: var(--accent-color);
+    }
+    .btn-secondary-theme {
+      border: 1px solid var(--card-border);
+      color: var(--text-primary);
+    }
+    .btn-secondary-theme:hover {
+      background: var(--text-primary);
+      color: var(--bg-primary);
+      border-color: var(--text-primary);
     }
   `]
 })
