@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 
@@ -19,7 +19,7 @@ import { CommonModule } from '@angular/common';
             </div>
             <div class="flex flex-col">
               <span class="font-headline text-3xl uppercase tracking-tighter" style="color: var(--text-primary);">{{ tech.name }}</span>
-              <span class="text-[10px] tracking-widest" style="color: var(--text-secondary);">{{ tech.percentage }}% Mastery</span>
+              <span class="text-[10px] tracking-widest" style="color: var(--text-secondary);">{{ tech.percentage }}% {{ getTranslation().mastery }}</span>
             </div>
           </div>
         </div>
@@ -28,7 +28,7 @@ import { CommonModule } from '@angular/common';
       <!-- Secondary Marquee (Reverse) -->
       <div class="relative flex overflow-hidden mt-4">
         <div class="flex animate-marquee-reverse whitespace-nowrap gap-12 py-10">
-          <div *ngFor="let skill of softSkills.concat(softSkills)" 
+          <div *ngFor="let skill of getTranslation().softSkills.concat(getTranslation().softSkills)" 
                class="flex items-center gap-4 px-8 py-4 border rounded-none group cursor-default transition-colors hover:bg-black/5 dark:hover:bg-white/5"
                style="border-color: var(--card-border);">
             <span class="text-xs uppercase tracking-[0.4em] transition-colors" style="color: var(--text-secondary);">{{ skill }}</span>
@@ -45,17 +45,52 @@ import { CommonModule } from '@angular/common';
     .glass-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 0; }
   `]
 })
-export class SkillsComponent {
+export class SkillsComponent implements OnInit, OnDestroy {
   @Input() skills: any[] = [];
   
+  currentLanguage = 'es';
+
+  translations: any = {
+    es: {
+      mastery: 'Dominio',
+      softSkills: [
+        'Dirección Creativa', 'Estrategia de Marca', 'Diseño de Producto', 'Experiencia de Usuario', 
+        'Liderazgo Ágil', 'Arquitectura de Sistemas', 'Diseño Visual', 'Animación Gráfica'
+      ]
+    },
+    en: {
+      mastery: 'Mastery',
+      softSkills: [
+        'Creative Direction', 'Brand Strategy', 'Product Design', 'User Experience', 
+        'Agile Leadership', 'System Architecture', 'Visual Design', 'Motion Graphics'
+      ]
+    }
+  };
+
   defaultSkills = [
     { name: 'Angular', icon: 'fab fa-angular', percentage: 95 },
     { name: 'TypeScript', icon: 'fab fa-js', percentage: 90 },
     { name: 'SCSS', icon: 'fab fa-sass', percentage: 85 }
   ];
 
-  softSkills = [
-    'Creative Direction', 'Brand Strategy', 'Product Design', 'User Experience', 
-    'Agile Leadership', 'System Architecture', 'Visual Design', 'Motion Graphics'
-  ];
+  ngOnInit() {
+    if (typeof window !== 'undefined') {
+      this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
+      window.addEventListener('portfolio-language-change', this.onLanguageChange);
+    }
+  }
+
+  ngOnDestroy() {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('portfolio-language-change', this.onLanguageChange);
+    }
+  }
+
+  onLanguageChange = (event: any) => {
+    this.currentLanguage = event.detail.language;
+  };
+
+  getTranslation() {
+    return this.translations[this.currentLanguage] || this.translations['es'];
+  }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
@@ -25,8 +25,8 @@ import { RouterModule } from '@angular/router';
           <section class="lt-col-info">
             <header class="lt-info-header">
               <h1 class="text-3xl md:text-7xl font-headline uppercase leading-[0.9] tracking-tighter">
-                <span class="lt-title-main">Creador<br/>Digital</span><br/>
-                <span class="lt-title-accent">& Desarrollador</span>
+                <span class="lt-title-main">{{ getTranslation().creador }}<br/>{{ getTranslation().digital }}</span><br/>
+                <span class="lt-title-accent">{{ getTranslation().desarrollador }}</span>
               </h1>
             </header>
 
@@ -42,8 +42,8 @@ import { RouterModule } from '@angular/router';
                     </svg>
                   </div>
                   <div class="lt-card-body">
-                    <h3 class="text-2xl md:text-3xl font-headline uppercase text-white">Descubre más</h3>
-                    <p class="text-[8px] uppercase tracking-[0.3em] text-white/50 mt-1">Ingeniería & Desarrollo</p>
+                    <h3 class="text-2xl md:text-3xl font-headline uppercase text-white">{{ getTranslation().descubre }}</h3>
+                    <p class="text-[8px] uppercase tracking-[0.3em] text-white/50 mt-1">{{ getTranslation().ingenieria }}</p>
                   </div>
                 </div>
                 <div class="lt-action-line hidden md:flex">
@@ -55,21 +55,22 @@ import { RouterModule } from '@angular/router';
 
               <!-- TikTok -->
               <a href="https://www.tiktok.com/@santiagoarbelaezc" target="_blank" class="lt-card-social group lt-item-tiktok">
-                <div class="flex justify-between w-full mb-4">
+                <div class="flex justify-between w-full mb-2">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
                     <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
                   </svg>
                   <span class="text-white/20 group-hover:text-white transition-colors">↗</span>
                 </div>
+                <div class="w-full h-px bg-white/10 group-hover:bg-white/20 transition-colors my-3"></div>
                 <div>
                   <h4 class="text-base md:text-xl font-headline uppercase text-white/50 group-hover:text-white transition-colors">TikTok</h4>
-                  <span class="text-[8px] uppercase tracking-[0.2em] text-white/30 group-hover:text-white transition-colors mt-1 block">Videos</span>
+                  <span class="text-[8px] uppercase tracking-[0.2em] text-white/30 group-hover:text-white transition-colors mt-1 block">{{ getTranslation().videos }}</span>
                 </div>
               </a>
 
               <!-- Instagram -->
               <a href="https://www.instagram.com/santiagoarbelaezc/" target="_blank" class="lt-card-social group lt-item-insta">
-                <div class="flex justify-between w-full mb-4">
+                <div class="flex justify-between w-full mb-2">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
@@ -77,29 +78,31 @@ import { RouterModule } from '@angular/router';
                   </svg>
                   <span class="text-white/20 group-hover:text-white transition-colors">↗</span>
                 </div>
+                <div class="w-full h-px bg-white/10 group-hover:bg-white/20 transition-colors my-3"></div>
                 <div>
                   <h4 class="text-base md:text-xl font-headline uppercase text-white/50 group-hover:text-white transition-colors">Instagram</h4>
-                  <span class="text-[8px] uppercase tracking-[0.2em] text-white/30 group-hover:text-white transition-colors mt-1 block">Photos</span>
+                  <span class="text-[8px] uppercase tracking-[0.2em] text-white/30 group-hover:text-white transition-colors mt-1 block">{{ getTranslation().fotos }}</span>
                 </div>
               </a>
 
               <!-- WhatsApp -->
               <a href="https://wa.me/573000000000" target="_blank" class="lt-card-social group lt-item-wa">
-                <div class="flex justify-between w-full mb-4">
+                <div class="flex justify-between w-full mb-2">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
                     <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
                   </svg>
                   <span class="text-white/20 group-hover:text-white transition-colors">↗</span>
                 </div>
+                <div class="w-full h-px bg-white/10 group-hover:bg-white/20 transition-colors my-3"></div>
                 <div>
                   <h4 class="text-base md:text-xl font-headline uppercase text-white/50 group-hover:text-white transition-colors">WhatsApp</h4>
-                  <span class="text-[8px] uppercase tracking-[0.2em] text-white/30 group-hover:text-white transition-colors mt-1 block">Chat</span>
+                  <span class="text-[8px] uppercase tracking-[0.2em] text-white/30 group-hover:text-white transition-colors mt-1 block">{{ getTranslation().chat }}</span>
                 </div>
               </a>
 
               <!-- LinkedIn -->
               <a href="https://www.linkedin.com/in/santiago-arbelaez-contreras-9830b5290/" target="_blank" class="lt-card-social group lt-item-linkedin">
-                <div class="flex justify-between w-full mb-4">
+                <div class="flex justify-between w-full mb-2">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
                     <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
                     <rect x="2" y="9" width="4" height="12"></rect>
@@ -107,9 +110,10 @@ import { RouterModule } from '@angular/router';
                   </svg>
                   <span class="text-white/20 group-hover:text-white transition-colors">↗</span>
                 </div>
+                <div class="w-full h-px bg-white/10 group-hover:bg-white/20 transition-colors my-3"></div>
                 <div>
                   <h4 class="text-base md:text-xl font-headline uppercase text-white/50 group-hover:text-white transition-colors">LinkedIn</h4>
-                  <span class="text-[8px] uppercase tracking-[0.2em] text-white/30 group-hover:text-white transition-colors mt-1 block">Work</span>
+                  <span class="text-[8px] uppercase tracking-[0.2em] text-white/30 group-hover:text-white transition-colors mt-1 block">{{ getTranslation().empleo }}</span>
                 </div>
               </a>
 
@@ -129,42 +133,84 @@ import { RouterModule } from '@angular/router';
           </div>
         </div>
         
-        <h2 class="text-2xl font-headline uppercase text-white text-center mb-2">Instalar PortaLink</h2>
+        <h2 class="text-2xl font-headline uppercase text-white text-center mb-2">{{ getTranslation().instalarTitulo }}</h2>
         <p class="text-white/60 text-center text-sm mb-8 leading-relaxed">
-          {{ isIOS ? 'Añade esta aplicación a tu pantalla de inicio para acceder rápidamente a mi portafolio y redes.' : 'Instala la aplicación para una experiencia más rápida y sin distracciones.' }}
+          {{ isIOS ? getTranslation().instalarDescIOS : getTranslation().instalarDescOther }}
         </p>
 
         <!-- Android Button -->
         <button *ngIf="!isIOS" (click)="installPWA()" class="w-full bg-white text-black py-4 font-bold uppercase tracking-widest text-xs hover:bg-gray-200 transition-colors mb-4 border border-white">
-          Instalar Ahora
+          {{ getTranslation().instalarBtn }}
         </button>
 
         <!-- iOS Instructions -->
         <div *ngIf="isIOS" class="space-y-4">
           <div class="flex items-center gap-4 bg-white/5 p-4 border border-white/20">
             <div class="w-8 h-8 bg-white/10 flex items-center justify-center text-white text-[10px] font-bold">1</div>
-            <p class="text-white/80 text-[11px]">Pulsa el botón <b>Compartir</b> en Safari.</p>
+            <p class="text-white/80 text-[11px]" [innerHTML]="getTranslation().instalarIos1"></p>
           </div>
           <div class="flex items-center gap-4 bg-white/5 p-4 border border-white/20">
             <div class="w-8 h-8 bg-white/10 flex items-center justify-center text-white text-[10px] font-bold">2</div>
-            <p class="text-white/80 text-[11px]">Selecciona <b>"Añadir a la pantalla de inicio"</b>.</p>
+            <p class="text-white/80 text-[11px]" [innerHTML]="getTranslation().instalarIos2"></p>
           </div>
         </div>
 
         <button (click)="closeModal()" class="w-full text-white/40 py-2 text-[10px] uppercase tracking-widest hover:text-white transition-colors mt-4">
-          {{ isIOS ? 'Entendido' : 'Ahora no' }}
+          {{ isIOS ? getTranslation().entendido : getTranslation().ahoraNo }}
         </button>
       </div>
     </div>
   `,
     styleUrls: ['./link.component.css']
 })
-export class LinkComponent implements OnInit {
+export class LinkComponent implements OnInit, OnDestroy {
   currentYear = new Date().getFullYear();
   deferredPrompt: any;
   showInstallModal = false;
   isIOS = false;
   isStandalone = false;
+  currentLanguage = 'es';
+
+  translations: any = {
+    es: {
+      creador: 'Creador',
+      digital: 'Digital',
+      desarrollador: '& Desarrollador',
+      descubre: 'Descubre más',
+      ingenieria: 'Ingeniería & Desarrollo',
+      videos: 'Videos',
+      fotos: 'Fotos',
+      chat: 'Chat',
+      empleo: 'Profesional',
+      instalarTitulo: 'Instalar PortaLink',
+      instalarDescIOS: 'Añade esta aplicación a tu pantalla de inicio para acceder rápidamente a mi portafolio y redes.',
+      instalarDescOther: 'Instala la aplicación para una experiencia más rápida y sin distracciones.',
+      instalarBtn: 'Instalar Ahora',
+      instalarIos1: 'Pulsa el botón <b>Compartir</b> en Safari.',
+      instalarIos2: 'Selecciona <b>"Añadir a la pantalla de inicio"</b>.',
+      entendido: 'Entendido',
+      ahoraNo: 'Ahora no'
+    },
+    en: {
+      creador: 'Digital',
+      digital: 'Creator',
+      desarrollador: '& Developer',
+      descubre: 'Discover more',
+      ingenieria: 'Engineering & Development',
+      videos: 'Videos',
+      fotos: 'Photos',
+      chat: 'Chat',
+      empleo: 'Work',
+      instalarTitulo: 'Install PortaLink',
+      instalarDescIOS: 'Add this application to your home screen to quickly access my portfolio and networks.',
+      instalarDescOther: 'Install the application for a faster experience without distractions.',
+      instalarBtn: 'Install Now',
+      instalarIos1: 'Press the <b>Share</b> button in Safari.',
+      instalarIos2: 'Select <b>"Add to Home Screen"</b>.',
+      entendido: 'Got it',
+      ahoraNo: 'Not now'
+    }
+  };
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
@@ -181,7 +227,23 @@ export class LinkComponent implements OnInit {
         }
       });
 
+      this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
+      window.addEventListener('portfolio-language-change', this.onLanguageChange);
     }
+  }
+
+  ngOnDestroy() {
+    if (isPlatformBrowser(this.platformId)) {
+      window.removeEventListener('portfolio-language-change', this.onLanguageChange);
+    }
+  }
+
+  onLanguageChange = (event: any) => {
+    this.currentLanguage = event.detail.language;
+  };
+
+  getTranslation() {
+    return this.translations[this.currentLanguage] || this.translations['es'];
   }
 
   checkPWAStatus() {

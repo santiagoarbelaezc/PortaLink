@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, ElementRef, AfterViewInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, AfterViewInit, OnDestroy, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
@@ -14,9 +14,9 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
         <div class="mb-16 md:mb-24">
           <div class="flex items-center gap-4 mb-4">
             <div class="h-px w-12 bg-white/50"></div>
-            <span class="text-white/50 text-xs uppercase tracking-[0.4em]">Portafolio</span>
+            <span class="text-white/50 text-xs uppercase tracking-[0.4em]">{{ getTranslation().subtitle }}</span>
           </div>
-          <h2 class="text-4xl md:text-5xl font-headline uppercase leading-none tracking-tighter">Proyectos Destacados</h2>
+          <h2 class="text-4xl md:text-5xl font-headline uppercase leading-none tracking-tighter">{{ getTranslation().title }}</h2>
         </div>
 
         <!-- Carousel Container -->
@@ -38,7 +38,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
               
               <!-- Background Image -->
               <img [src]="project.images && project.images.length > 0 ? project.images[0] : 'project-1.png'" 
-                   [alt]="project.title" 
+                   [alt]="getProjectTitle(project)" 
                    class="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 card-bg-img" />
               
               <!-- Cinematic Gradient Vignette -->
@@ -49,12 +49,12 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
                 
                 <!-- Tag / Category -->
                 <span class="text-[10px] sm:text-[11px] uppercase tracking-[0.4em] font-bold block mb-2 sm:mb-4 text-white/40">
-                  {{ project.techStack && project.techStack.length > 0 ? project.techStack[0] : 'Diseño Web' }}
+                  {{ getProjectCategory(project) }}
                 </span>
 
                 <!-- Massive Bold Headline (Apple TV+ Style) -->
                 <h3 class="font-headline uppercase leading-[0.9] tracking-tighter text-2xl sm:text-4xl lg:text-[54px] max-w-3xl mb-3 sm:mb-6 title-accent-color title-glow">
-                  {{ project.title }}
+                  {{ getProjectTitle(project) }}
                 </h3>
 
                 <!-- Description & CTAs -->
@@ -63,13 +63,13 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
                   <a *ngIf="project.liveUrl" [href]="project.liveUrl" target="_blank"
                      (click)="$event.stopPropagation()"
                      class="inline-flex items-center justify-center px-6 py-3 sm:px-9 sm:py-4 rounded-full bg-white text-black font-bold text-[10px] sm:text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all w-fit">
-                    Ver ahora
+                    {{ getTranslation().viewNow }}
                   </a>
 
                   <!-- Meta/Tech stack & short description -->
                   <p class="text-white/60 text-[10px] sm:text-xs font-medium leading-relaxed max-w-md sm:max-w-xl hidden sm:block">
                     <span class="font-bold text-white uppercase tracking-wider mr-1.5">{{ project.techStack.slice(0, 3).join(' • ') }}</span> 
-                    • {{ project.description }}
+                    • {{ getProjectDescription(project) }}
                   </p>
                 </div>
 
@@ -175,9 +175,10 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
     }
   `]
 })
-export class PortfolioComponent implements AfterViewInit, OnDestroy {
+export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() projects: any[] = [];
   currentIndex = 0;
+  currentLanguage = 'es';
   private lastWheelTime = 0;
   private wheelListener = (e: WheelEvent) => this.onWheel(e);
 
@@ -186,6 +187,73 @@ export class PortfolioComponent implements AfterViewInit, OnDestroy {
   // Touch Swiping variables
   private touchStartX = 0;
   private touchEndX = 0;
+
+  translations: any = {
+    es: {
+      subtitle: 'Portafolio',
+      title: 'Proyectos Destacados',
+      viewNow: 'Ver ahora',
+      defaultTag: 'Diseño Web',
+      projectTitles: {
+        'Portfolio Personal': 'Portfolio Personal',
+        'PortaLink AI Vision': 'PortaLink AI Vision',
+        'E-Commerce Premium': 'E-Commerce Premium'
+      },
+      projectDescriptions: {
+        'Diseño y desarrollo de portafolio premium con transiciones cinematográficas.': 'Diseño y desarrollo de portafolio premium con transiciones cinematográficas.',
+        'Visualización avanzada con IA para análisis de estructuras arquitectónicas y optimización de espacios.': 'Visualización avanzada con IA para análisis de estructuras arquitectónicas y optimización de espacios.',
+        'Plataforma de comercio electrónico completa con pasarela de pagos integrada y panel de administración.': 'Plataforma de comercio electrónico completa con pasarela de pagos integrada y panel de administración.'
+      }
+    },
+    en: {
+      subtitle: 'Portfolio',
+      title: 'Featured Projects',
+      viewNow: 'View now',
+      defaultTag: 'Web Design',
+      projectTitles: {
+        'Portfolio Personal': 'Personal Portfolio',
+        'PortaLink AI Vision': 'PortaLink AI Vision',
+        'E-Commerce Premium': 'Premium E-Commerce'
+      },
+      projectDescriptions: {
+        'Diseño y desarrollo de portafolio premium con transiciones cinematográficas.': 'Design and development of premium portfolio with cinematic transitions.',
+        'Visualización avanzada con IA para análisis de estructuras arquitectónicas y optimización de espacios.': 'Advanced AI visualization for architectural structure analysis and space optimization.',
+        'Plataforma de comercio electrónico completa con pasarela de pagos integrada y panel de administración.': 'Complete e-commerce platform with integrated payment gateway and administration panel.'
+      }
+    }
+  };
+
+  ngOnInit() {
+    if (typeof window !== 'undefined') {
+      this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
+      window.addEventListener('portfolio-language-change', this.onLanguageChange);
+    }
+  }
+
+  onLanguageChange = (event: any) => {
+    this.currentLanguage = event.detail.language;
+  };
+
+  getTranslation() {
+    return this.translations[this.currentLanguage] || this.translations['es'];
+  }
+
+  getProjectTitle(project: any) {
+    const t = this.getTranslation();
+    return t.projectTitles[project.title] || project.title;
+  }
+
+  getProjectDescription(project: any) {
+    const t = this.getTranslation();
+    return t.projectDescriptions[project.description] || project.description;
+  }
+
+  getProjectCategory(project: any) {
+    if (project.techStack && project.techStack.length > 0) {
+      return project.techStack[0];
+    }
+    return this.getTranslation().defaultTag;
+  }
 
   ngAfterViewInit() {
     if (this.containerRef) {
@@ -196,6 +264,9 @@ export class PortfolioComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy() {
     if (this.containerRef) {
       this.containerRef.nativeElement.removeEventListener('wheel', this.wheelListener);
+    }
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('portfolio-language-change', this.onLanguageChange);
     }
   }
 

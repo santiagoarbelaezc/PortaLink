@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 
@@ -28,20 +28,20 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
             <div appReveal>
               <div class="flex items-center gap-4 mb-4">
                 <div class="h-px w-12 bg-white/50"></div>
-                <span class="text-white/50 text-xs uppercase tracking-[0.4em]">Philosophy</span>
+                <span class="text-white/50 text-xs uppercase tracking-[0.4em]">{{ getTranslation().philosophy }}</span>
               </div>
-              <h2 class="text-5xl md:text-7xl mb-8 text-white">Designing the Future, <br/><span class="font-light italic text-white/80" style="letter-spacing: -0.02em;">One Pixel at a Time.</span></h2>
+              <h2 class="text-5xl md:text-7xl mb-8 text-white" [innerHTML]="getTranslation().headline"></h2>
             </div>
 
             <div class="space-y-6 leading-relaxed text-white/70" appReveal [delay]="400">
               <p class="whitespace-pre-line text-xl leading-relaxed">
-                {{ data?.text || 'As a multi-disciplinary creator based in the digital space, I blend clean frontend architecture with high-end aesthetic vision.' }}
+                {{ getBioText() }}
               </p>
             </div>
 
             <!-- Skills pills -->
             <div class="flex flex-wrap gap-3 pt-8" appReveal [delay]="600">
-              <div *ngFor="let skill of highlightSkills"
+              <div *ngFor="let skill of getTranslation().highlightSkills"
                    class="px-5 py-2 rounded-none cursor-default transition-colors border border-white/20 bg-white/5 hover:bg-white group">
                 <span class="text-xs uppercase tracking-widest text-white/70 group-hover:text-black">{{ skill }}</span>
               </div>
@@ -56,7 +56,59 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   `]
 })
-export class AboutComponent {
+export class AboutComponent implements OnInit, OnDestroy {
   @Input() data: any;
-  highlightSkills = ['Creative Direction', 'Senior Frontend', 'UI/UX Design', 'Visual Storytelling'];
+
+  currentLanguage = 'es';
+
+  translations: any = {
+    es: {
+      philosophy: 'Filosofía',
+      headline: 'Diseñando el Futuro, <br/><span class="font-light italic text-white/80" style="letter-spacing: -0.02em;">un píxel a la vez.</span>',
+      defaultBio: 'As a multi-disciplinary creator based in the digital space, I blend clean frontend architecture with high-end aesthetic vision.',
+      bioMap: {
+        'Desarrollador apasionado con experiencia en Angular y diseño UI/UX.': 'Desarrollador apasionado con experiencia en Angular y diseño UI/UX.'
+      },
+      highlightSkills: ['Dirección Creativa', 'Frontend Senior', 'Diseño UI/UX', 'Narrativa Visual']
+    },
+    en: {
+      philosophy: 'Philosophy',
+      headline: 'Designing the Future, <br/><span class="font-light italic text-white/80" style="letter-spacing: -0.02em;">One Pixel at a Time.</span>',
+      defaultBio: 'As a multi-disciplinary creator based in the digital space, I blend clean frontend architecture with high-end aesthetic vision.',
+      bioMap: {
+        'Desarrollador apasionado con experiencia en Angular y diseño UI/UX.': 'Passionate developer with experience in Angular and UI/UX design.'
+      },
+      highlightSkills: ['Creative Direction', 'Senior Frontend', 'UI/UX Design', 'Visual Storytelling']
+    }
+  };
+
+  ngOnInit() {
+    if (typeof window !== 'undefined') {
+      this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
+      window.addEventListener('portfolio-language-change', this.onLanguageChange);
+    }
+  }
+
+  ngOnDestroy() {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('portfolio-language-change', this.onLanguageChange);
+    }
+  }
+
+  onLanguageChange = (event: any) => {
+    this.currentLanguage = event.detail.language;
+  };
+
+  getTranslation() {
+    return this.translations[this.currentLanguage] || this.translations['es'];
+  }
+
+  getBioText() {
+    if (!this.data || !this.data.text) {
+      return this.getTranslation().defaultBio;
+    }
+    const val = this.data.text;
+    const t = this.getTranslation();
+    return t.bioMap[val] || val;
+  }
 }
