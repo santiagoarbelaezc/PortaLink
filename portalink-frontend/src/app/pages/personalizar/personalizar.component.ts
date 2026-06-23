@@ -43,60 +43,44 @@ interface ProductItem {
           <p class="text-sm md:text-base text-white/60 mt-4 max-w-2xl mx-auto leading-relaxed">
             Elige la solución que mejor se adapte a tu negocio. Configura tu landing page premium en tiempo real o implementa integraciones inteligentes a medida.
           </p>
-        </div>
-        <!-- Grid de Paquetes -->
-        <div class="w-full max-w-7xl px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 items-stretch">
+        </div>        <!-- Grid de Paquetes -->
+        <div class="w-full max-w-[96%] mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 items-stretch">
           
           <!-- Paquete 1: Landing Page -->
-          <div (click)="showEditor = true" 
-               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative pt-8 px-6 pb-8 h-full lg:mt-8">
-            <span class="absolute top-5 right-5 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider" 
-                  [style.background]="selectedTheme.accent + '22'" 
-                  [style.color]="selectedTheme.accent">
-              -50%
-            </span>
+          <div (click)="routerToRotbot('Quiero adquirir el paquete Landing Page con diseño móvil al gusto')" 
+               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative pt-10 px-8 pb-10 h-full transition-all duration-300">
             <div class="flex-grow flex flex-col">
-              <h3 class="text-lg font-bold uppercase tracking-wide text-white mb-4">Landing Page</h3>
+              <h3 class="text-2xl font-bold uppercase tracking-wide text-white mb-3">Landing Page</h3>
+              <p class="text-xs text-white/55 mb-6 leading-relaxed">Sitio web de una sola página con todas las secciones que requieras, diseñado para captar clientes y presentar tu negocio de forma directa.</p>
               
-              <div class="mb-5">
-                <span class="line-through text-xs opacity-50 block mb-1">COP 199.000</span>
-                <div class="text-2xl font-headline font-bold text-white tracking-wide">
-                  COP 99.000<span class="text-xs font-normal opacity-60">/mes</span>
-                </div>
-              </div>
-
               <!-- Button outlined -->
-              <button class="w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-300 border border-white/20 text-white hover:bg-white hover:text-black hover:border-white mb-4">
+              <button class="w-full py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all duration-300 border border-white/20 text-white hover:bg-white hover:text-black hover:border-white mb-6">
                 Adquirir el paquete
               </button>
 
-              <p class="text-[10px] text-white/50 leading-relaxed mb-6">
-                Se renueva a COP 149.000/mes. Cancela cuando quieras.
-              </p>
-              
               <div class="h-px w-full bg-white/10 mb-6"></div>
               
-              <ul class="space-y-3.5">
-                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+              <ul class="space-y-4">
+                <li class="text-[13px] text-white/70 flex items-center gap-3">
+                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
                   Sitio de una sola página
                 </li>
-                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                <li class="text-[13px] text-white/70 flex items-center gap-3">
+                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
-                  Diseño responsive premium
+                  Diseño móvil al gusto
                 </li>
-                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                <li class="text-[13px] text-white/70 flex items-center gap-3">
+                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
                   Formulario de contacto
                 </li>
-                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                <li class="text-[13px] text-white/70 flex items-center gap-3">
+                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
                   Hosting y SSL incluidos
@@ -106,55 +90,40 @@ interface ProductItem {
           </div>
 
           <!-- Paquete 2: E-commerce -->
-          <div (click)="showEditor = true" 
-               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative pt-8 px-6 pb-8 h-full lg:mt-8">
-            <span class="absolute top-5 right-5 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider" 
-                  [style.background]="selectedTheme.accent + '22'" 
-                  [style.color]="selectedTheme.accent">
-              -45%
-            </span>
+          <div (click)="routerToRotbot('Quiero adquirir el paquete E-commerce con diseño móvil al gusto')" 
+               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative pt-10 px-8 pb-10 h-full transition-all duration-300">
             <div class="flex-grow flex flex-col">
-              <h3 class="text-lg font-bold uppercase tracking-wide text-white mb-4">E-commerce</h3>
+              <h3 class="text-2xl font-bold uppercase tracking-wide text-white mb-3">E-commerce</h3>
+              <p class="text-xs text-white/55 mb-6 leading-relaxed">Tienda online completa con catálogo de productos, carrito de compras y pasarela de pagos para vender en línea las 24 horas.</p>
               
-              <div class="mb-5">
-                <span class="line-through text-xs opacity-50 block mb-1">COP 439.000</span>
-                <div class="text-2xl font-headline font-bold text-white tracking-wide">
-                  COP 239.000<span class="text-xs font-normal opacity-60">/mes</span>
-                </div>
-              </div>
-
               <!-- Button outlined -->
-              <button class="w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-300 border border-white/20 text-white hover:bg-white hover:text-black hover:border-white mb-4">
+              <button class="w-full py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all duration-300 border border-white/20 text-white hover:bg-white hover:text-black hover:border-white mb-6">
                 Adquirir el paquete
               </button>
 
-              <p class="text-[10px] text-white/50 leading-relaxed mb-6">
-                Se renueva a COP 349.000/mes. Cancela cuando quieras.
-              </p>
-              
               <div class="h-px w-full bg-white/10 mb-6"></div>
               
-              <ul class="space-y-3.5">
-                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+              <ul class="space-y-4">
+                <li class="text-[13px] text-white/70 flex items-center gap-3">
+                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
                   Catálogo autogestionable
                 </li>
-                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                <li class="text-[13px] text-white/70 flex items-center gap-3">
+                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  Diseño móvil al gusto
+                </li>
+                <li class="text-[13px] text-white/70 flex items-center gap-3">
+                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
                   Integración de pagos online
                 </li>
-                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
-                  Panel de administración
-                </li>
-                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                <li class="text-[13px] text-white/70 flex items-center gap-3">
+                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
                   Soporte técnico continuo
@@ -163,128 +132,97 @@ interface ProductItem {
             </div>
           </div>
 
-          <!-- Paquete 3: IA Integrada (MÁS VENDIDO) -->
-          <div (click)="routerToRotbot('Quiero una implementación de IA en mi negocio')" 
-               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative h-full border-2"
-               [style.borderColor]="selectedTheme.accent">
-            <!-- Header Popular -->
-            <div class="text-white text-[9px] font-bold uppercase tracking-[0.2em] py-2.5 text-center w-full"
-                 [style.background]="selectedTheme.accent"
-                 style="color: #000000;">
-              MÁS VENDIDO
-            </div>
-
-            <div class="pt-6 px-6 pb-8 flex-grow flex flex-col relative">
-              <span class="absolute top-5 right-5 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider" 
-                    [style.background]="selectedTheme.accent + '22'" 
-                    [style.color]="selectedTheme.accent">
-                -40%
-              </span>
-
-              <h3 class="text-lg font-bold uppercase tracking-wide text-white mb-4">IA Integrada</h3>
+          <!-- Paquete 3: E-commerce Autopersonalizable -->
+          <div (click)="showEditor = true" 
+               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative pt-10 px-8 pb-10 h-full transition-all duration-300">
+            <div class="flex-grow flex flex-col">
+              <h3 class="text-xl font-bold uppercase tracking-wide text-white mb-3">E-commerce Autopersonalizable</h3>
+              <p class="text-xs text-white/55 mb-6 leading-relaxed">Tu tienda online con la libertad de cambiar el diseño, colores, fuentes y secciones en tiempo real con nuestro editor interactivo.</p>
               
-              <div class="mb-5">
-                <span class="line-through text-xs opacity-50 block mb-1">COP 599.000</span>
-                <div class="text-2xl font-headline font-bold text-white tracking-wide">
-                  COP 359.000<span class="text-xs font-normal opacity-60">/mes</span>
-                </div>
-              </div>
-
-              <!-- Button Filled -->
-              <button class="w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-300 mb-4"
-                      [style.background]="selectedTheme.accent"
-                      style="color: #000000;">
+              <!-- Button outlined -->
+              <button class="w-full py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all duration-300 border border-white/20 text-white hover:bg-white hover:text-black hover:border-white mb-6">
                 Adquirir el paquete
               </button>
 
-              <p class="text-[10px] text-white/50 leading-relaxed mb-6">
-                Se renueva a COP 499.000/mes. Cancela cuando quieras.
-              </p>
-              
               <div class="h-px w-full bg-white/10 mb-6"></div>
               
-              <ul class="space-y-3.5">
-                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+              <ul class="space-y-4">
+                <li class="text-[13px] text-white/70 flex items-center gap-3">
+                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
-                  Asistente Rotbot IA 24/7
+                  Editor Visual Interactivo
                 </li>
-                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                <li class="text-[13px] text-white/70 flex items-center gap-3">
+                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
-                  Flujos de chat inteligentes
+                  Diseño móvil al gusto
                 </li>
-                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                <li class="text-[13px] text-white/70 flex items-center gap-3">
+                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
-                  Integración de base de datos
+                  Secciones premium en vivo
                 </li>
-                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                <li class="text-[13px] text-white/70 flex items-center gap-3">
+                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
-                  Licencia API oficial
+                  Autogestión de catálogo
                 </li>
               </ul>
             </div>
           </div>
 
-          <!-- Paquete 4: Sistemas a Medida -->
-          <div (click)="routerToRotbot('Necesito un sistema para mi negocio')" 
-               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative pt-8 px-6 pb-8 h-full lg:mt-8">
-            <span class="absolute top-5 right-5 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider" 
-                  [style.background]="selectedTheme.accent + '22'" 
-                  [style.color]="selectedTheme.accent">
-              -30%
-            </span>
-            <div class="flex-grow flex flex-col">
-              <h3 class="text-lg font-bold uppercase tracking-wide text-white mb-4">Sistemas a Medida</h3>
-              
-              <div class="mb-5">
-                <span class="line-through text-xs opacity-50 block mb-1">COP 999.000</span>
-                <div class="text-2xl font-headline font-bold text-white tracking-wide">
-                  COP 699.000<span class="text-xs font-normal opacity-60">/mes</span>
-                </div>
-              </div>
+          <!-- Paquete 4: E-commerce + IA + Autopersonalizable (MÁS VENDIDO) -->
+          <div (click)="showEditor = true" 
+               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative h-full border-2 transition-all duration-300"
+               [style.borderColor]="selectedTheme.accent">
+            <!-- Header Popular -->
+            <div class="text-white text-[10px] font-bold uppercase tracking-[0.25em] py-3 text-center w-full"
+                 [style.background]="selectedTheme.accent"
+                 style="color: #000000;">
+              MÁS VENDIDO
+            </div>
 
-              <!-- Button outlined -->
-              <button class="w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-300 border border-white/20 text-white hover:bg-white hover:text-black hover:border-white mb-4">
+            <div class="pt-8 px-8 pb-10 flex-grow flex flex-col relative">
+              <h3 class="text-xl font-bold uppercase tracking-wide text-white mb-3">E-commerce + IA + Autopersonalizable</h3>
+              <p class="text-xs text-white/55 mb-6 leading-relaxed">La máxima potencia para tu negocio: tienda online personalizable integrada con inteligencia artificial (Rotbot IA) para potenciar tus ventas.</p>
+              
+              <!-- Button Filled -->
+              <button class="w-full py-3.5 rounded-xl font-bold text-sm uppercase tracking-widest transition-all duration-300 mb-6"
+                      [style.background]="selectedTheme.accent"
+                      style="color: #000000;">
                 Adquirir el paquete
               </button>
-
-              <p class="text-[10px] text-white/50 leading-relaxed mb-6">
-                Se renueva a COP 799.000/mes. Cancela cuando quieras.
-              </p>
               
-              <div class="h-px w-full bg-white/10 mb-6"></div>
+              <div class="h-px w-full bg-white/10 mb-8"></div>
               
-              <ul class="space-y-3.5">
-                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+              <ul class="space-y-4">
+                <li class="text-[13px] text-white/70 flex items-center gap-3">
+                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
-                  Desarrollo de ERP/CRM
+                  Copiloto Rotbot IA 24/7
                 </li>
-                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                <li class="text-[13px] text-white/70 flex items-center gap-3">
+                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
-                  Arquitectura Cloud robusta
+                  Editor Visual Interactivo
                 </li>
-                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                <li class="text-[13px] text-white/70 flex items-center gap-3">
+                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
-                  Funciones a medida ilimitadas
+                  Diseño móvil al gusto
                 </li>
-                <li class="text-[11px] text-white/70 flex items-center gap-2.5">
-                  <svg class="w-3.5 h-3.5 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                <li class="text-[13px] text-white/70 flex items-center gap-3">
+                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
-                  PWA (App instalable)
+                  Chatbots inteligentes
                 </li>
               </ul>
             </div>
