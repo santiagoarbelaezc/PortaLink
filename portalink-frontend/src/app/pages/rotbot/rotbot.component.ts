@@ -20,12 +20,12 @@ import { ChatStateService } from '../../services/chat-state.service';
             <img src="assets/images/logo-rotbot.png" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(0,245,255,0.3)]" alt="Rotbot">
           </div>
           <div>
-            <h3 class="font-sans text-sm font-bold tracking-wide leading-none" style="color: var(--text-primary);">
+            <h3 class="font-sans text-[15px] font-bold tracking-wide leading-none" style="color: var(--text-primary);">
               RotBot IA
             </h3>
             <div class="flex items-center gap-1.5 mt-1.5">
                <span class="w-1.5 h-1.5 rounded-full animate-pulse shadow-[0_0_5px_var(--accent-color)]" style="background-color: var(--accent-color);"></span>
-               <p class="text-[8px] uppercase tracking-widest font-sans font-medium" style="color: var(--text-secondary); opacity: 0.7;">System Active</p>
+               <p class="text-[9px] uppercase tracking-widest font-sans font-medium" style="color: var(--text-secondary); opacity: 0.7;">System Active</p>
             </div>
           </div>
         </div>
@@ -40,7 +40,7 @@ import { ChatStateService } from '../../services/chat-state.service';
             </svg>
             <span class="hidden sm:inline">Volver al Inicio</span>
           </a>
-
+ 
           <!-- Back / Close Button -->
           <button (click)="goBack()" class="p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition-all" title="Cerrar y Volver">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -50,57 +50,57 @@ import { ChatStateService } from '../../services/chat-state.service';
           </button>
         </div>
       </div>
-
+ 
       <!-- Main Chat Body Split (3 Columns) -->
       <div class="flex flex-row flex-grow w-full overflow-hidden">
         
         <!-- Sidebar Izquierdo (Accesos Rápidos) -->
         <div class="chat-sidebar hidden md:flex flex-col w-80 border-r py-8 px-6 gap-4 overflow-y-auto" style="border-color: var(--card-border);">
-          <h4 class="text-[11px] uppercase tracking-[0.2em] font-sans font-semibold opacity-40 mb-2" style="color: var(--text-secondary);">Accesos Rápidos</h4>
+          <h4 class="text-[12px] uppercase tracking-[0.2em] font-sans font-semibold opacity-40 mb-2" style="color: var(--text-secondary);">Accesos Rápidos</h4>
           
           <button (click)="sendShortcutMessage('Quiero E-commerce')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[13px] font-medium leading-snug" style="color: var(--text-primary);">Quiero un E-commerce</span>
+            <span class="text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Quiero un E-commerce</span>
           </button>
           
           <button (click)="sendShortcutMessage('Muéstrame diseños móviles')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[13px] font-medium leading-snug" style="color: var(--text-primary);">Ver diseños móviles</span>
+            <span class="text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Ver diseños móviles</span>
           </button>
           
           <button (click)="sendShortcutMessage('Necesito un sistema para mi negocio')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[13px] font-medium leading-snug" style="color: var(--text-primary);">Sistema para mi negocio</span>
+            <span class="text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Sistema para mi negocio</span>
           </button>
           
           <button (click)="sendShortcutMessage('Quiero una implementación de IA en mi negocio')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[13px] font-medium leading-snug" style="color: var(--text-primary);">Implementación de IA</span>
+            <span class="text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Implementación de IA</span>
           </button>
-
-          <h4 class="text-[11px] uppercase tracking-[0.2em] font-sans font-semibold opacity-40 mt-4 mb-2" style="color: var(--text-secondary);">Recomendaciones</h4>
-
+ 
+          <h4 class="text-[12px] uppercase tracking-[0.2em] font-sans font-semibold opacity-40 mt-4 mb-2" style="color: var(--text-secondary);">Recomendaciones</h4>
+ 
           <button (click)="sendShortcutMessage('Diseño de portafolio web premium')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[13px] font-medium leading-snug" style="color: var(--text-primary);">Portafolio web premium</span>
+            <span class="text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Portafolio web premium</span>
           </button>
-
+ 
           <button (click)="sendShortcutMessage('Optimización SEO y rendimiento')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[13px] font-medium leading-snug" style="color: var(--text-primary);">Optimización SEO</span>
+            <span class="text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Optimización SEO</span>
           </button>
-
+ 
           <button (click)="sendShortcutMessage('Diseño UI/UX a medida')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[13px] font-medium leading-snug" style="color: var(--text-primary);">Diseño UI/UX a medida</span>
+            <span class="text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Diseño UI/UX a medida</span>
           </button>
-
+ 
           <button (click)="sendShortcutMessage('Infraestructura Cloud y bases de datos')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[13px] font-medium leading-snug" style="color: var(--text-primary);">Infraestructura Cloud</span>
+            <span class="text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Infraestructura Cloud</span>
           </button>
         </div>
-
+ 
         <!-- Messages + Input Container (Centro) -->
         <div class="flex flex-col flex-grow h-full overflow-hidden">
           <!-- Messages Area -->
@@ -111,16 +111,16 @@ import { ChatStateService } from '../../services/chat-state.service';
               <div class="w-80 h-80 mb-2 relative flex items-center justify-center overflow-visible">
                 <img src="assets/images/rotbot4.png" class="w-72 h-72 object-contain relative z-10" alt="Rotbot Full">
               </div>
-              <h2 class="text-lg font-headline uppercase tracking-wider mb-2" style="color: var(--text-primary);">
+              <h2 class="text-xl font-headline uppercase tracking-wider mb-2" style="color: var(--text-primary);">
                 Sistemas con Rotbot IA
               </h2>
-              <div class="text-[12px] font-light leading-relaxed px-4 max-w-[95%]" style="color: var(--text-secondary);">
+              <div class="text-[13.5px] font-light leading-relaxed px-4 max-w-[95%]" style="color: var(--text-secondary);">
                 <p class="mb-2">
                   ¡Hola! Soy RotBot, tu copiloto tecnológico. Estoy listo para guiarte en el diseño y desarrollo de sistemas a medida, e-commerce e integración de Inteligencia Artificial para potenciar tu negocio.
                 </p>
               </div>
             </div>
-
+ 
             <!-- Messages List -->
             <div *ngFor="let msg of chatService.messages" class="flex w-full px-6 md:px-16 animate-fade-in" [ngClass]="{'justify-end': msg.role === 'user', 'justify-start': msg.role === 'assistant'}">
               
@@ -128,18 +128,18 @@ import { ChatStateService } from '../../services/chat-state.service';
               <div *ngIf="msg.role === 'assistant'" class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center mr-2.5 p-1 border avatar-bg">
                 <img src="assets/images/logo-rotbot.png" class="w-full h-full object-contain" alt="Rotbot">
               </div>
-
+ 
               <!-- Message Bubble -->
               <div 
                 [ngClass]="{
-                  'assistant-bubble py-2 text-[13.5px] leading-relaxed max-w-[72%]': msg.role === 'assistant',
-                  'user-bubble px-4 py-3 rounded-2xl rounded-tr-sm text-[13.5px] leading-relaxed max-w-[85%] border shadow-sm': msg.role === 'user'
+                  'assistant-bubble py-2 text-[15px] leading-relaxed max-w-[72%]': msg.role === 'assistant',
+                  'user-bubble px-4 py-3 rounded-2xl rounded-tr-sm text-[15px] leading-relaxed max-w-[85%] border shadow-sm': msg.role === 'user'
                 }"
               >
                 {{ msg.content }}
               </div>
             </div>
-
+ 
             <!-- Typing Indicator -->
             <div *ngIf="chatService.isTyping" class="flex items-center gap-3 w-full px-6 md:px-16">
               <div class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center p-1 border avatar-bg">
@@ -152,7 +152,7 @@ import { ChatStateService } from '../../services/chat-state.service';
               </div>
             </div>
           </div>
-
+ 
           <!-- Input Area -->
           <div class="chat-input-area p-6 border-t">
             <form (submit)="sendMessage()" class="relative max-w-4xl mx-auto">
@@ -161,7 +161,7 @@ import { ChatStateService } from '../../services/chat-state.service';
                 [(ngModel)]="chatService.userInput"
                 name="userInput"
                 placeholder="Pregúntale a Rotbot..."
-                class="chat-input w-full rounded-xl border py-4 pl-5 pr-14 text-[14px] font-light tracking-wide transition-all focus:ring-0 focus:outline-none"
+                class="chat-input w-full rounded-xl border py-4 pl-5 pr-14 text-[15px] font-light tracking-wide transition-all focus:ring-0 focus:outline-none"
               />
               <button 
                 type="submit"
@@ -175,14 +175,14 @@ import { ChatStateService } from '../../services/chat-state.service';
               </button>
             </form>
             <div class="flex justify-center mt-3">
-               <span class="text-[8px] uppercase tracking-widest font-sans font-medium opacity-30" style="color: var(--text-secondary);">Powered by Portalink IA</span>
+               <span class="text-[9px] uppercase tracking-widest font-sans font-medium opacity-30" style="color: var(--text-secondary);">Powered by Portalink IA</span>
             </div>
           </div>
         </div>
-
+ 
         <!-- Sidebar Derecho (Info Rotbot) -->
         <div class="chat-sidebar hidden md:flex flex-col w-80 border-l py-8 px-6 gap-6 overflow-y-auto" style="border-color: var(--card-border);">
-          <h4 class="text-[11px] uppercase tracking-[0.2em] font-sans font-semibold opacity-40 mb-2" style="color: var(--text-secondary);">¿Quién es Rotbot?</h4>
+          <h4 class="text-[12px] uppercase tracking-[0.2em] font-sans font-semibold opacity-40 mb-2" style="color: var(--text-secondary);">¿Quién es Rotbot?</h4>
           
           <div class="flex flex-col items-center text-center gap-4 p-5 rounded-2xl border" style="background: var(--card-bg); border-color: var(--card-border);">
             <div class="w-24 h-24 rounded-2xl bg-white/5 flex items-center justify-center p-2 border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.05)]">
@@ -190,18 +190,18 @@ import { ChatStateService } from '../../services/chat-state.service';
             </div>
             <div>
               <h5 class="text-sm font-bold tracking-wide" style="color: var(--text-primary);">Copiloto Tecnológico</h5>
-              <p class="text-xs font-light mt-2 leading-relaxed" style="color: var(--text-secondary);">
+              <p class="text-[13px] font-light mt-2 leading-relaxed" style="color: var(--text-secondary);">
                 Rotbot es una inteligencia artificial diseñada para asesorar y guiar en el desarrollo de soluciones digitales avanzadas, desarrollo a medida y automatizaciones de procesos comerciales.
               </p>
             </div>
           </div>
-
-          <h4 class="text-[11px] uppercase tracking-[0.2em] font-sans font-semibold opacity-40 mt-2 mb-2" style="color: var(--text-secondary);">¿Tienes un Proyecto?</h4>
-
+ 
+          <h4 class="text-[12px] uppercase tracking-[0.2em] font-sans font-semibold opacity-40 mt-2 mb-2" style="color: var(--text-secondary);">¿Tienes un Proyecto?</h4>
+ 
           <button (click)="sendShortcutMessage('Quiero una implementación de IA en mi negocio')" class="shortcut-btn flex flex-col gap-2 p-5 rounded-xl text-left border transition-all duration-300">
             <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--accent-color);">Oportunidad</span>
-            <span class="text-[13px] font-semibold leading-snug" style="color: var(--text-primary);">Quiero mi IA para mi negocio</span>
-            <span class="text-[11px] font-light opacity-70 leading-normal block" style="color: var(--text-secondary);">
+            <span class="text-[14.5px] font-semibold leading-snug" style="color: var(--text-primary);">Quiero mi IA para mi negocio</span>
+            <span class="text-[12px] font-light opacity-70 leading-normal block" style="color: var(--text-secondary);">
               Empieza hoy la transformación digital y automatiza tu negocio con Inteligencia Artificial.
             </span>
           </button>
