@@ -49,18 +49,14 @@ interface ProductItem {
           <!-- Paquete 1: Landing Page -->
           <div (click)="routerToRotbot('Quiero adquirir el paquete Landing Page con diseño móvil al gusto')" 
                class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative pt-10 px-8 pb-10 h-full transition-all duration-300">
-            <div class="flex-grow flex flex-col">
-              <h3 class="text-2xl font-bold uppercase tracking-wide text-white mb-3">Landing Page</h3>
-              <p class="text-xs text-white/55 mb-6 leading-relaxed">Sitio web de una sola página con todas las secciones que requieras, diseñado para captar clientes y presentar tu negocio de forma directa.</p>
+            <!-- Top Content -->
+            <div class="flex flex-col">
+              <h3 class="text-2xl font-bold uppercase tracking-wide text-white mb-3 min-h-[56px] flex items-center">Landing Page</h3>
+              <p class="text-xs text-white/55 mb-6 leading-relaxed min-h-[54px]">Sitio web de una sola página con todas las secciones que requieras, diseñado para captar clientes y presentar tu negocio de forma directa.</p>
               
-              <!-- Button outlined -->
-              <button class="w-full py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all duration-300 border border-white/20 text-white hover:bg-white hover:text-black hover:border-white mb-6">
-                Adquirir el paquete
-              </button>
-
               <div class="h-px w-full bg-white/10 mb-6"></div>
               
-              <ul class="space-y-4">
+              <ul class="space-y-4 mb-8">
                 <li class="text-[13px] text-white/70 flex items-center gap-3">
                   <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
@@ -87,23 +83,26 @@ interface ProductItem {
                 </li>
               </ul>
             </div>
+            
+            <!-- Bottom Button -->
+            <div class="mt-auto">
+              <button class="w-full py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all duration-300 border border-white/20 text-white hover:bg-white hover:text-black hover:border-white">
+                Adquirir el paquete
+              </button>
+            </div>
           </div>
 
           <!-- Paquete 3: E-commerce Autopersonalizable -->
           <div (click)="showEditor = true" 
                class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative pt-10 px-8 pb-10 h-full transition-all duration-300">
-            <div class="flex-grow flex flex-col">
-              <h3 class="text-xl font-bold uppercase tracking-wide text-white mb-3">E-commerce Autopersonalizable</h3>
-              <p class="text-xs text-white/55 mb-6 leading-relaxed">Tu tienda online con la libertad de cambiar el diseño, colores, fuentes y secciones en tiempo real con nuestro editor interactivo.</p>
+            <!-- Top Content -->
+            <div class="flex flex-col">
+              <h3 class="text-xl font-bold uppercase tracking-wide text-white mb-3 min-h-[56px] flex items-center">E-commerce Autopersonalizable</h3>
+              <p class="text-xs text-white/55 mb-6 leading-relaxed min-h-[54px]">Tu tienda online con la libertad de cambiar el diseño, colores, fuentes y secciones en tiempo real con nuestro editor interactivo.</p>
               
-              <!-- Button outlined -->
-              <button class="w-full py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all duration-300 border border-white/20 text-white hover:bg-white hover:text-black hover:border-white mb-6">
-                Adquirir el paquete
-              </button>
-
               <div class="h-px w-full bg-white/10 mb-6"></div>
               
-              <ul class="space-y-4">
+              <ul class="space-y-4 mb-8">
                 <li class="text-[13px] text-white/70 flex items-center gap-3">
                   <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
@@ -130,6 +129,13 @@ interface ProductItem {
                 </li>
               </ul>
             </div>
+            
+            <!-- Bottom Button -->
+            <div class="mt-auto">
+              <button class="w-full py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all duration-300 border border-white/20 text-white hover:bg-white hover:text-black hover:border-white">
+                Adquirir el paquete
+              </button>
+            </div>
           </div>
 
           <!-- Paquete 4: E-commerce + IA + Autopersonalizable (MÁS VENDIDO) -->
@@ -143,63 +149,64 @@ interface ProductItem {
               MÁS VENDIDO
             </div>
 
-            <div class="pt-8 px-8 pb-10 flex-grow flex flex-col relative">
-              <h3 class="text-xl font-bold uppercase tracking-wide text-white mb-3">E-commerce + IA + Autopersonalizable</h3>
-              <p class="text-xs text-white/55 mb-6 leading-relaxed">La máxima potencia para tu negocio: tienda online personalizable integrada con inteligencia artificial (Rotbot IA) para potenciar tus ventas.</p>
+            <div class="pt-8 px-8 pb-10 flex-grow flex flex-col justify-between">
+              <!-- Top Content -->
+              <div class="flex flex-col">
+                <h3 class="text-xl font-bold uppercase tracking-wide text-white mb-3 min-h-[56px] flex items-center">E-commerce + IA + Autopersonalizable</h3>
+                <p class="text-xs text-white/55 mb-6 leading-relaxed min-h-[54px]">La máxima potencia para tu negocio: tienda online personalizable integrada con inteligencia artificial (Rotbot IA) para potenciar tus ventas.</p>
+                
+                <div class="h-px w-full bg-white/10 mb-8"></div>
+                
+                <ul class="space-y-4 mb-8">
+                  <li class="text-[13px] text-white/70 flex items-center gap-3">
+                    <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                    Copiloto Rotbot IA 24/7
+                  </li>
+                  <li class="text-[13px] text-white/70 flex items-center gap-3">
+                    <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                    Editor Visual Interactivo
+                  </li>
+                  <li class="text-[13px] text-white/70 flex items-center gap-3">
+                    <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                    Diseño móvil al gusto
+                  </li>
+                  <li class="text-[13px] text-white/70 flex items-center gap-3">
+                    <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                    Chatbots inteligentes
+                  </li>
+                </ul>
+              </div>
               
-              <!-- Button Filled -->
-              <button class="w-full py-3.5 rounded-xl font-bold text-sm uppercase tracking-widest transition-all duration-300 mb-6"
-                      [style.background]="selectedTheme.accent"
-                      style="color: #000000;">
-                Adquirir el paquete
-              </button>
-              
-              <div class="h-px w-full bg-white/10 mb-8"></div>
-              
-              <ul class="space-y-4">
-                <li class="text-[13px] text-white/70 flex items-center gap-3">
-                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
-                  Copiloto Rotbot IA 24/7
-                </li>
-                <li class="text-[13px] text-white/70 flex items-center gap-3">
-                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
-                  Editor Visual Interactivo
-                </li>
-                <li class="text-[13px] text-white/70 flex items-center gap-3">
-                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
-                  Diseño móvil al gusto
-                </li>
-                <li class="text-[13px] text-white/70 flex items-center gap-3">
-                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
-                  Chatbots inteligentes
-                </li>
-              </ul>
+              <!-- Bottom Button -->
+              <div class="mt-auto">
+                <button class="w-full py-3.5 rounded-xl font-bold text-sm uppercase tracking-widest transition-all duration-300"
+                        [style.background]="selectedTheme.accent"
+                        style="color: #000000;">
+                  Adquirir el paquete
+                </button>
+              </div>
             </div>
           </div>
 
           <!-- Paquete 5: Opciones Personalizadas -->
           <div (click)="routerToRotbot('Hola, me gustaría diseñar una solución web personalizada a medida para mi negocio. Conversemos.')" 
                class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative pt-10 px-8 pb-10 h-full transition-all duration-300">
-            <div class="flex-grow flex flex-col">
-              <h3 class="text-2xl font-bold uppercase tracking-wide text-white mb-3">Opción Personalizada</h3>
-              <p class="text-xs text-white/55 mb-6 leading-relaxed">¿Requieres algo único? Otras opciones personalizadas, habla con nuestro asistente, para ajustar cuál es la solución que requieres.</p>
+            <!-- Top Content -->
+            <div class="flex flex-col">
+              <h3 class="text-2xl font-bold uppercase tracking-wide text-white mb-3 min-h-[56px] flex items-center">Opción Personalizada</h3>
+              <p class="text-xs text-white/55 mb-6 leading-relaxed min-h-[54px]">¿Requieres algo único? Otras opciones personalizadas, habla con nuestro asistente, para ajustar cuál es la solución que requieres.</p>
               
-              <!-- Button outlined -->
-              <button class="w-full py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all duration-300 border border-white/20 text-white hover:bg-white hover:text-black hover:border-white mb-6">
-                Hablar con Asistente
-              </button>
-
               <div class="h-px w-full bg-white/10 mb-6"></div>
               
-              <ul class="space-y-4">
+              <ul class="space-y-4 mb-8">
                 <li class="text-[13px] text-white/70 flex items-center gap-3">
                   <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
@@ -225,6 +232,13 @@ interface ProductItem {
                   Escalabilidad garantizada
                 </li>
               </ul>
+            </div>
+            
+            <!-- Bottom Button -->
+            <div class="mt-auto">
+              <button class="w-full py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all duration-300 border border-white/20 text-white hover:bg-white hover:text-black hover:border-white">
+                Hablar con Asistente
+              </button>
             </div>
           </div>
 
