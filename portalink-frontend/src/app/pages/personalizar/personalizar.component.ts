@@ -86,7 +86,7 @@ interface ProductItem {
             
             <!-- Bottom Button -->
             <div class="mt-auto">
-              <button class="w-full py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all duration-300 border border-white/20 text-white hover:bg-white hover:text-black hover:border-white">
+              <button class="plan-btn-outlined w-full py-4 rounded-xl font-bold text-sm uppercase tracking-widest">
                 Adquirir el paquete
               </button>
             </div>
@@ -132,7 +132,7 @@ interface ProductItem {
             
             <!-- Bottom Button -->
             <div class="mt-auto">
-              <button class="w-full py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all duration-300 border border-white/20 text-white hover:bg-white hover:text-black hover:border-white">
+              <button class="plan-btn-outlined w-full py-4 rounded-xl font-bold text-sm uppercase tracking-widest">
                 Adquirir el paquete
               </button>
             </div>
@@ -187,7 +187,7 @@ interface ProductItem {
               
               <!-- Bottom Button -->
               <div class="mt-auto">
-                <button class="w-full py-3.5 rounded-xl font-bold text-sm uppercase tracking-widest transition-all duration-300"
+                <button class="plan-btn-filled w-full py-3.5 rounded-xl font-bold text-sm uppercase tracking-widest"
                         [style.background]="selectedTheme.accent"
                         style="color: #000000;">
                   Adquirir el paquete
@@ -236,7 +236,7 @@ interface ProductItem {
             
             <!-- Bottom Button -->
             <div class="mt-auto">
-              <button class="w-full py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all duration-300 border border-white/20 text-white hover:bg-white hover:text-black hover:border-white">
+              <button class="plan-btn-outlined w-full py-4 rounded-xl font-bold text-sm uppercase tracking-widest">
                 Hablar con Asistente
               </button>
             </div>
@@ -1335,6 +1335,24 @@ interface ProductItem {
       transform: translateY(-8px);
       border-color: var(--accent-color) !important;
       box-shadow: 0 20px 40px rgba(0, 245, 255, 0.05);
+    }
+    .plan-btn-outlined {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      background: transparent;
+      transition: all 0.3s ease;
+    }
+    .plan-btn-outlined:hover {
+      background: #ffffff !important;
+      color: #000000 !important;
+      border-color: #ffffff !important;
+    }
+    .plan-btn-filled {
+      transition: all 0.3s ease;
+    }
+    .plan-btn-filled:hover {
+      background: #ffffff !important;
+      color: #000000 !important;
     }
     .service-card {
       border: 1px solid var(--card-border);
