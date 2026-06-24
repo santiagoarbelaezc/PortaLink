@@ -20,10 +20,10 @@ import { AiChatFloatingComponent } from './components/ai-chat-floating/ai-chat-f
       <div class="pulse-ring"></div>
     </div>
 
-    <!-- Persistent Header & Chatbot (completely unaffected by route transitions) -->
-    <app-navbar></app-navbar>
-    <app-ai-chat-floating></app-ai-chat-floating>
-
+    <!-- Persistent Header & Chatbot (hidden on admin page) -->
+    <app-navbar *ngIf="!isAdminRoute()"></app-navbar>
+    <app-ai-chat-floating *ngIf="!isAdminRoute()"></app-ai-chat-floating>
+ 
     <!-- Main Content Area -->
     <div class="content-container">
       <router-outlet></router-outlet>
@@ -156,6 +156,10 @@ export class AppComponent implements OnInit {
 
   isLoading = false;
   isFinished = false;
+
+  isAdminRoute(): boolean {
+    return this.router.url.includes('/admin');
+  }
 
   ngOnInit() {
     this.router.events.subscribe(event => {

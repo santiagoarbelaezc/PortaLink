@@ -56,6 +56,18 @@
       "order": 3
     }
   ],
+  "links": {
+    "profileName": "Santiago Arbeláez",
+    "profileTitle": "Digital Creator & Developer",
+    "avatarImage": "about-portrait.png",
+    "profileLogo": "assets/icons/mi-logo.png",
+    "items": [
+      { "id": "1", "title": "TikTok", "subtitle": "Videos", "url": "https://www.tiktok.com/@santiagoarbelaezc", "icon": "tiktok" },
+      { "id": "2", "title": "Instagram", "subtitle": "Fotos", "url": "https://www.instagram.com/santiagoarbelaezc/", "icon": "instagram" },
+      { "id": "3", "title": "WhatsApp", "subtitle": "Chat", "url": "https://wa.me/573054078225", "icon": "whatsapp" },
+      { "id": "4", "title": "LinkedIn", "subtitle": "Profesional", "url": "https://www.linkedin.com/in/santiago-arbelaez-contreras-9830b5290/", "icon": "linkedin" }
+    ]
+  },
   "contact": {
     "email": "arbelaezz.c11@gmail.com",
     "social": [

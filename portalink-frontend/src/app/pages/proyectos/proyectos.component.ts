@@ -11,6 +11,7 @@ import { ScrollColorService } from '../../services/scroll-color.service';
 import { PortfolioConfigService } from '../../services/portfolio-config.service';
 import { AiChatFloatingComponent } from '../../components/ai-chat-floating/ai-chat-floating.component';
 import { Subscription } from 'rxjs';
+import { AnalyticsService } from '../../services/analytics.service';
 
 @Component({
     selector: 'app-proyectos',
@@ -117,6 +118,7 @@ import { Subscription } from 'rxjs';
 export class ProyectosComponent implements OnInit, OnDestroy {
   private scrollColorService = inject(ScrollColorService);
   private configService = inject(PortfolioConfigService);
+  private analyticsService = inject(AnalyticsService);
   
   currentBackground = '#000000';
   portfolioData = signal<any>(null);
@@ -193,6 +195,23 @@ export class ProyectosComponent implements OnInit, OnDestroy {
     if (typeof window !== 'undefined') {
       this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
       window.addEventListener('portfolio-language-change', this.onLanguageChange);
+      
+      // Track page views and load times
+      this.analyticsService.incrementMetric('homeViews');
+      
+      if (window.performance) {
+        setTimeout(() => {
+          const t = window.performance.timing;
+          if (t) {
+            const loadTime = t.loadEventEnd - t.navigationStart;
+            if (loadTime > 0) {
+              this.analyticsService.recordLoadTime(loadTime);
+            } else {
+              this.analyticsService.recordLoadTime(Math.round(performance.now()));
+            }
+          }
+        }, 200);
+      }
     }
   }
 

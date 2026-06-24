@@ -29,7 +29,12 @@ export class PortfolioConfigService {
       next: (originalData) => {
         this._originalConfig.set(originalData);
         if (savedDraft) {
-          this._config.set(JSON.parse(savedDraft));
+          try {
+            const parsed = JSON.parse(savedDraft);
+            this._config.set({ ...originalData, ...parsed });
+          } catch {
+            this._config.set(JSON.parse(JSON.stringify(originalData)));
+          }
         } else {
           this._config.set(JSON.parse(JSON.stringify(originalData)));
         }

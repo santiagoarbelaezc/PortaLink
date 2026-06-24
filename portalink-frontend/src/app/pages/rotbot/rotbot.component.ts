@@ -3,6 +3,7 @@ import { CommonModule, Location } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ChatStateService } from '../../services/chat-state.service';
+import { AnalyticsService } from '../../services/analytics.service';
 
 @Component({
   selector: 'app-rotbot-page',
@@ -364,10 +365,12 @@ export class RotbotComponent implements OnInit, AfterViewChecked {
   constructor(
     public chatService: ChatStateService,
     private router: Router,
-    private location: Location
+    private location: Location,
+    private analyticsService: AnalyticsService
   ) {}
 
   ngOnInit() {
+    this.analyticsService.incrementMetric('rotbotOpens');
     this.scrollToBottom();
     if (this.chatService.userInput.trim()) {
       setTimeout(() => {
@@ -392,6 +395,7 @@ export class RotbotComponent implements OnInit, AfterViewChecked {
   sendMessage() {
     if (!this.chatService.userInput.trim()) return;
 
+    this.analyticsService.incrementMetric('rotbotMessagesSent');
     const userText = this.chatService.userInput.trim();
     this.chatService.addMessage('user', userText);
     this.chatService.userInput = '';

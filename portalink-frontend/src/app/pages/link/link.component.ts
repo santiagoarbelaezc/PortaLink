@@ -1,6 +1,8 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, Inject, PLATFORM_ID, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, Inject, PLATFORM_ID, ViewEncapsulation, inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { PortfolioConfigService } from '../../services/portfolio-config.service';
+import { AnalyticsService } from '../../services/analytics.service';
 import * as AOS from 'aos';
 
 @Component({
@@ -17,11 +19,11 @@ import * as AOS from 'aos';
           <aside class="lt-col-photo">
             <div class="lt-portrait-wrapper">
               <div class="lt-image-container">
-                <img src="about-portrait.png" alt="Santiago Arbelaez" class="lt-main-img lt-bg-blur" />
+                <img [src]="getProfileAvatar()" alt="Profile Avatar" class="lt-main-img lt-bg-blur" />
                 <div class="lt-corner-tr"></div>
                 <div class="lt-corner-bl"></div>
                 <div class="lt-profile-overlay">
-                  <img src="assets/icons/mi-logo.png" alt="Santiago Arbelaez" class="lt-profile-logo" />
+                  <img [src]="getProfileLogo()" alt="Profile Logo" class="lt-profile-logo" />
                 </div>
               </div>
             </div>
@@ -30,18 +32,17 @@ import * as AOS from 'aos';
           <!-- COLUMN 2: INFO & LINKS -->
           <section class="lt-col-info">
             <header class="lt-info-header">
-              <h1 class="text-5xl md:text-[80px] font-headline uppercase leading-[0.9] tracking-[0.1em]" style="color: var(--text-primary);">
-                Santiago<br/>Arbelaez
+              <h1 class="text-5xl md:text-[80px] font-headline uppercase leading-[0.9] tracking-[0.1em]" style="color: var(--text-primary);" [innerHTML]="getFormattedProfileName()">
               </h1>
               <p class="text-[10px] md:text-xs uppercase tracking-[0.4em] mt-3 md:mt-4 opacity-60 font-headline" style="color: var(--text-secondary);">
-                {{ getTranslation().creador }} {{ getTranslation().digital }} {{ getTranslation().desarrollador }}
+                {{ getProfileTitle() }}
               </p>
             </header>
 
             <div class="lt-links-container">
 
               <!-- Portafolio Main CTA -->
-              <a routerLink="/proyectos" class="lt-card-main group lt-item-portfolio">
+              <a routerLink="/proyectos" (click)="trackLinkClick('proyectos')" class="lt-card-main group lt-item-portfolio">
                 <div class="flex items-center gap-6">
                   <div class="lt-icon-wrapper">
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/80 group-hover:text-white transition-colors">
@@ -61,67 +62,36 @@ import * as AOS from 'aos';
                 <span class="md:hidden text-white/30 group-hover:text-white transition-colors">↗</span>
               </a>
 
-              <!-- TikTok -->
-              <a href="https://www.tiktok.com/@santiagoarbelaezc" target="_blank" class="lt-card-social group lt-item-tiktok">
+              <!-- Dynamic Links from Config Service -->
+              <a *ngFor="let link of getLinks()" [href]="link.url" target="_blank" (click)="trackLinkClick(link.id)"
+                 class="lt-card-social group" [ngClass]="'lt-item-' + link.icon">
                 <div class="flex justify-between w-full mb-2">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
+                  <svg *ngIf="link.icon === 'tiktok'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
                     <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
                   </svg>
-                  <span class="text-white/20 group-hover:text-white transition-colors">↗</span>
-                </div>
-                <div class="w-full h-px bg-white/10 group-hover:bg-white/20 transition-colors my-3"></div>
-                <div>
-                  <h4 class="text-base md:text-xl font-headline uppercase text-white/50 group-hover:text-white transition-colors">TikTok</h4>
-                  <span class="text-[8px] uppercase tracking-[0.2em] text-white/30 group-hover:text-white transition-colors mt-1 block">{{ getTranslation().videos }}</span>
-                </div>
-              </a>
-
-              <!-- Instagram -->
-              <a href="https://www.instagram.com/santiagoarbelaezc/" target="_blank" class="lt-card-social group lt-item-insta">
-                <div class="flex justify-between w-full mb-2">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
+                  <svg *ngIf="link.icon === 'instagram'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
                     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
                   </svg>
-                  <span class="text-white/20 group-hover:text-white transition-colors">↗</span>
-                </div>
-                <div class="w-full h-px bg-white/10 group-hover:bg-white/20 transition-colors my-3"></div>
-                <div>
-                  <h4 class="text-base md:text-xl font-headline uppercase text-white/50 group-hover:text-white transition-colors">Instagram</h4>
-                  <span class="text-[8px] uppercase tracking-[0.2em] text-white/30 group-hover:text-white transition-colors mt-1 block">{{ getTranslation().fotos }}</span>
-                </div>
-              </a>
-
-              <!-- WhatsApp -->
-              <a href="https://wa.me/573000000000" target="_blank" class="lt-card-social group lt-item-wa">
-                <div class="flex justify-between w-full mb-2">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
+                  <svg *ngIf="link.icon === 'whatsapp'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
                     <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
                   </svg>
-                  <span class="text-white/20 group-hover:text-white transition-colors">↗</span>
-                </div>
-                <div class="w-full h-px bg-white/10 group-hover:bg-white/20 transition-colors my-3"></div>
-                <div>
-                  <h4 class="text-base md:text-xl font-headline uppercase text-white/50 group-hover:text-white transition-colors">WhatsApp</h4>
-                  <span class="text-[8px] uppercase tracking-[0.2em] text-white/30 group-hover:text-white transition-colors mt-1 block">{{ getTranslation().chat }}</span>
-                </div>
-              </a>
-
-              <!-- LinkedIn -->
-              <a href="https://www.linkedin.com/in/santiago-arbelaez-contreras-9830b5290/" target="_blank" class="lt-card-social group lt-item-linkedin">
-                <div class="flex justify-between w-full mb-2">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
+                  <svg *ngIf="link.icon === 'linkedin'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
                     <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
                     <rect x="2" y="9" width="4" height="12"></rect>
                     <circle cx="4" cy="4" r="2"></circle>
                   </svg>
+                  <svg *ngIf="link.icon !== 'tiktok' && link.icon !== 'instagram' && link.icon !== 'whatsapp' && link.icon !== 'linkedin'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                  </svg>
                   <span class="text-white/20 group-hover:text-white transition-colors">↗</span>
                 </div>
                 <div class="w-full h-px bg-white/10 group-hover:bg-white/20 transition-colors my-3"></div>
                 <div>
-                  <h4 class="text-base md:text-xl font-headline uppercase text-white/50 group-hover:text-white transition-colors">LinkedIn</h4>
-                  <span class="text-[8px] uppercase tracking-[0.2em] text-white/30 group-hover:text-white transition-colors mt-1 block">{{ getTranslation().empleo }}</span>
+                  <h4 class="text-base md:text-xl font-headline uppercase text-white/50 group-hover:text-white transition-colors">{{ link.title }}</h4>
+                  <span class="text-[8px] uppercase tracking-[0.2em] text-white/30 group-hover:text-white transition-colors mt-1 block">{{ link.subtitle }}</span>
                 </div>
               </a>
 
@@ -285,6 +255,9 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   };
 
+  private configService = inject(PortfolioConfigService);
+  private analyticsService = inject(AnalyticsService);
+
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   ngOnInit() {
@@ -302,7 +275,39 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
 
       this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
       window.addEventListener('portfolio-language-change', this.onLanguageChange);
+
+      // Track Linktree view
+      this.analyticsService.incrementMetric('linktreeViews');
     }
+  }
+
+  getLinks() {
+    return this.configService.data()?.links?.items || [];
+  }
+
+  getProfileAvatar() {
+    return this.configService.data()?.links?.avatarImage || 'about-portrait.png';
+  }
+
+  getProfileLogo() {
+    return this.configService.data()?.links?.profileLogo || 'assets/icons/mi-logo.png';
+  }
+
+  getProfileTitle() {
+    return this.configService.data()?.links?.profileTitle || 'Digital Creator & Developer';
+  }
+
+  getFormattedProfileName() {
+    const name = this.configService.data()?.links?.profileName || 'Santiago Arbeláez';
+    const parts = name.split(' ');
+    if (parts.length >= 2) {
+      return `${parts[0]}<br/>${parts.slice(1).join(' ')}`;
+    }
+    return name;
+  }
+
+  trackLinkClick(id: string) {
+    this.analyticsService.incrementLinkClick(id);
   }
 
   ngAfterViewInit() {

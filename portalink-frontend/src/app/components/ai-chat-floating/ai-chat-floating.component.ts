@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { FormsModule } from '@angular/forms';
 import { ChatStateService } from '../../services/chat-state.service';
+import { AnalyticsService } from '../../services/analytics.service';
 
 @Component({
   selector: 'app-ai-chat-floating',
@@ -306,7 +307,8 @@ export class AiChatFloatingComponent implements OnInit {
 
   constructor(
     public chatService: ChatStateService,
-    private router: Router
+    private router: Router,
+    private analyticsService: AnalyticsService
   ) {}
 
   ngOnInit() {}
@@ -314,6 +316,7 @@ export class AiChatFloatingComponent implements OnInit {
   @HostListener('window:open-ai-chat', ['$event'])
   onOpenAiChat(event: any) {
     this.isOpen = true;
+    this.analyticsService.incrementMetric('rotbotOpens');
     if (event.detail && event.detail.message) {
       this.chatService.userInput = event.detail.message;
       this.sendMessage();
@@ -332,6 +335,7 @@ export class AiChatFloatingComponent implements OnInit {
     }
     this.isOpen = !this.isOpen;
     if (this.isOpen) {
+      this.analyticsService.incrementMetric('rotbotOpens');
       setTimeout(() => {
         try {
           this.scrollContainer.nativeElement.scrollTop = 0;
