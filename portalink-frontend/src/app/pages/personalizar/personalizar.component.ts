@@ -89,49 +89,6 @@ interface ProductItem {
             </div>
           </div>
 
-          <!-- Paquete 2: E-commerce -->
-          <div (click)="routerToRotbot('Quiero adquirir el paquete E-commerce con diseño móvil al gusto')" 
-               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative pt-10 px-8 pb-10 h-full transition-all duration-300">
-            <div class="flex-grow flex flex-col">
-              <h3 class="text-2xl font-bold uppercase tracking-wide text-white mb-3">E-commerce</h3>
-              <p class="text-xs text-white/55 mb-6 leading-relaxed">Tienda online completa con catálogo de productos, carrito de compras y pasarela de pagos para vender en línea las 24 horas.</p>
-              
-              <!-- Button outlined -->
-              <button class="w-full py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all duration-300 border border-white/20 text-white hover:bg-white hover:text-black hover:border-white mb-6">
-                Adquirir el paquete
-              </button>
-
-              <div class="h-px w-full bg-white/10 mb-6"></div>
-              
-              <ul class="space-y-4">
-                <li class="text-[13px] text-white/70 flex items-center gap-3">
-                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
-                  Catálogo autogestionable
-                </li>
-                <li class="text-[13px] text-white/70 flex items-center gap-3">
-                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
-                  Diseño móvil al gusto
-                </li>
-                <li class="text-[13px] text-white/70 flex items-center gap-3">
-                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
-                  Integración de pagos online
-                </li>
-                <li class="text-[13px] text-white/70 flex items-center gap-3">
-                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
-                  Soporte técnico continuo
-                </li>
-              </ul>
-            </div>
-          </div>
-
           <!-- Paquete 3: E-commerce Autopersonalizable -->
           <div (click)="showEditor = true" 
                class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative pt-10 px-8 pb-10 h-full transition-all duration-300">
@@ -227,6 +184,50 @@ interface ProductItem {
               </ul>
             </div>
           </div>
+
+          <!-- Paquete 5: Opciones Personalizadas -->
+          <div (click)="routerToRotbot('Hola, me gustaría diseñar una solución web personalizada a medida para mi negocio. Conversemos.')" 
+               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative pt-10 px-8 pb-10 h-full transition-all duration-300">
+            <div class="flex-grow flex flex-col">
+              <h3 class="text-2xl font-bold uppercase tracking-wide text-white mb-3">Opción Personalizada</h3>
+              <p class="text-xs text-white/55 mb-6 leading-relaxed">¿Requieres algo único? Otras opciones personalizadas, habla con nuestro asistente, para ajustar cuál es la solución que requieres.</p>
+              
+              <!-- Button outlined -->
+              <button class="w-full py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all duration-300 border border-white/20 text-white hover:bg-white hover:text-black hover:border-white mb-6">
+                Hablar con Asistente
+              </button>
+
+              <div class="h-px w-full bg-white/10 mb-6"></div>
+              
+              <ul class="space-y-4">
+                <li class="text-[13px] text-white/70 flex items-center gap-3">
+                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  Requerimientos a medida
+                </li>
+                <li class="text-[13px] text-white/70 flex items-center gap-3">
+                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  Integraciones especiales (APIs)
+                </li>
+                <li class="text-[13px] text-white/70 flex items-center gap-3">
+                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  Asesoría directa en sistemas
+                </li>
+                <li class="text-[13px] text-white/70 flex items-center gap-3">
+                  <svg class="w-4 h-4 flex-shrink-0" [style.color]="selectedTheme.accent" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                  Escalabilidad garantizada
+                </li>
+              </ul>
+            </div>
+          </div>
+
         </div>
 
         <!-- Sección de Servicios Incluidos -->

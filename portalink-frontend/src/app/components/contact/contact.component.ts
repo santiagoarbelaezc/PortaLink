@@ -4,11 +4,11 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { MagneticDirective } from '../../shared/directives/magnetic.directive';
 
 @Component({
-    selector: 'app-contact',
-    standalone: true,
-    imports: [CommonModule, RevealDirective, MagneticDirective],
-    encapsulation: ViewEncapsulation.None,
-    template: `
+  selector: 'app-contact',
+  standalone: true,
+  imports: [CommonModule, RevealDirective, MagneticDirective],
+  encapsulation: ViewEncapsulation.None,
+  template: `
     <section id="contact" class="py-20 md:py-32 px-6 pb-32 md:pb-20">
       <div class="container mx-auto">
         <div class="max-w-[1400px] mx-auto glass-card p-12 md:p-20 relative overflow-hidden border" style="border-color: var(--card-border);" appReveal>
@@ -79,7 +79,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
       </div>
     </section>
   `,
-    styles: [`
+  styles: [`
     .glass-card { background: var(--card-bg); backdrop-filter: blur(10px); }
     
     .contact-input {
@@ -166,7 +166,7 @@ export class ContactComponent implements OnInit, OnDestroy {
   translations: any = {
     es: {
       subtitle: 'Conectar',
-      title: '<span class="title-soy font-light">Construyamos</span> <br/><span class="title-name font-bold italic">tu negocio digital +</span>',
+      title: '<span class="title-soy font-light">Construyamos</span> <br/><span class="title-name font-bold italic">tu negocio digital</span>',
       emailMe: 'Escríbeme',
       labelName: 'Nombre',
       labelEmail: 'Email',
@@ -176,7 +176,7 @@ export class ContactComponent implements OnInit, OnDestroy {
     },
     en: {
       subtitle: 'Connect',
-      title: '<span class="title-soy font-light">Let\'s build</span> <br/><span class="title-name font-bold italic">your digital business +</span>',
+      title: '<span class="title-soy font-light">Let\'s build</span> <br/><span class="title-name font-bold italic">your digital business</span>',
       emailMe: 'Email me',
       labelName: 'Name',
       labelEmail: 'Email',
