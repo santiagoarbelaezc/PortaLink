@@ -12,18 +12,17 @@ import { CommonModule } from '@angular/common';
       <div class="relative flex overflow-hidden">
         <div class="flex animate-marquee whitespace-nowrap gap-12 py-6">
           <ng-container *ngFor="let item of repeatItems; let idx = index">
-            <!-- Logo Only Card -->
-            <div *ngIf="idx % 2 === 0" 
-                 class="flex items-center justify-center px-10 py-4 glass-card group cursor-default hover:border-white/50 transition-all duration-300">
-              <img src="assets/icons/mi-logo2.png" alt="Logo" class="w-12 h-12 object-contain opacity-70 group-hover:opacity-100 transition-all duration-350" />
-            </div>
-            
-            <!-- Name Only Card -->
-            <div *ngIf="idx % 2 !== 0" 
-                 class="flex items-center px-10 py-5 glass-card group cursor-default hover:border-white/50 transition-all duration-300">
+            <!-- Integrated Brand Card -->
+            <div class="flex items-center gap-5 px-8 py-4 glass-card group cursor-default hover:border-white/40 transition-all duration-300">
+              <!-- Logo Container -->
+              <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-white/5 border border-white/10 group-hover:border-white/20 transition-all duration-300">
+                <img src="assets/icons/mi-logo2.png" alt="Logo" class="w-7 h-7 object-contain opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300" />
+              </div>
+              
+              <!-- Name & Tagline -->
               <div class="flex flex-col justify-center">
-                <span class="font-headline text-xs md:text-sm uppercase tracking-wider mb-1 leading-none" style="color: var(--text-primary);">Santiago Arbeláez</span>
-                <span class="text-[6px] md:text-[7px] tracking-[0.3em] uppercase opacity-75 leading-none" style="color: var(--text-secondary);">{{ getTranslation().tagline }}</span>
+                <span class="font-headline text-xs md:text-sm uppercase tracking-wider mb-1 leading-none transition-colors group-hover:text-white" style="color: var(--text-primary);">Santiago Arbeláez</span>
+                <span class="text-[6px] md:text-[7px] tracking-[0.3em] uppercase opacity-75 leading-none transition-colors group-hover:text-white/90" style="color: var(--text-secondary);">{{ getTranslation().tagline }}</span>
               </div>
             </div>
           </ng-container>

@@ -20,7 +20,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
                 <div class="h-px w-12" style="background-color: var(--text-primary); opacity: 0.4;"></div>
                 <span class="text-xs uppercase tracking-[0.4em]" style="color: var(--text-secondary);">{{ getTranslation().subtitle }}</span>
               </div>
-              <h2 class="text-6xl md:text-[85px] lg:text-[100px] font-headline uppercase leading-[0.95] tracking-tighter mb-12 hero-title relative z-10 lg:w-[180%] pointer-events-none" [innerHTML]="getTranslation().title"></h2>
+              <h2 class="text-4xl sm:text-5xl md:text-[75px] lg:text-[54px] xl:text-[72px] 2xl:text-[80px] font-headline uppercase leading-[0.95] tracking-tighter mb-12 hero-title relative z-10 pointer-events-none" [innerHTML]="getTranslation().title"></h2>
               
               <div class="space-y-8 relative z-20">
                 <div>
