@@ -76,7 +76,7 @@ import { PortfolioConfigService } from '../../services/portfolio-config.service'
       </aside>
 
       <!-- MAIN CONTENT AREA -->
-      <main class="flex-grow overflow-y-auto p-8 relative md:p-12 h-full"
+      <main class="flex-grow overflow-y-auto overflow-x-hidden p-8 relative md:p-12 h-full"
             [style.background]="currentTheme === 'light' ? '#ffffff' : '#020204'">
         
         <!-- GLOW ACCENTS (Dark theme only) -->
@@ -751,6 +751,7 @@ import { PortfolioConfigService } from '../../services/portfolio-config.service'
       --bg-primary: #020204;
       --text-primary: #ffffff;
       background-color: #020204;
+      overflow-x: hidden;
     }
     .light-admin {
       --bg-primary: #ffffff;
