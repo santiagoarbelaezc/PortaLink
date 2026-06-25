@@ -143,6 +143,7 @@ interface Message {
       </div>
     </div>
   `,
+  styles: [`
     .tab-enter { animation: tabEnter 0.25s ease-out forwards; }
     @keyframes tabEnter {
       from { opacity: 0; transform: translateY(8px); }
