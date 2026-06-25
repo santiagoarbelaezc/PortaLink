@@ -25,7 +25,7 @@ import { AnalyticsService, SystemMetrics } from '../../../services/analytics.ser
              [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Panel de Control</p>
           <h2 class="text-3xl font-bold leading-tight"
               [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-            Bienvenido, Santiago 👋
+            Bienvenido, Santiago
           </h2>
           <p class="text-sm mt-1 mb-5"
              [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ currentDateTime }}</p>
@@ -48,7 +48,7 @@ import { AnalyticsService, SystemMetrics } from '../../../services/analytics.ser
               {{ pendingLeads }} Solicitudes
             </span>
             <span class="text-xs font-semibold px-3 py-1.5 rounded-full border flex items-center gap-1.5"
-                  [ngClass]="isDark ? 'border-green-500/30 text-green-400 bg-green-500/10' : 'border-green-200 text-green-700 bg-green-50'">
+                  [ngClass]="isDark ? 'border-blue-500/30 text-blue-400 bg-blue-500/10' : 'border-blue-200 text-blue-700 bg-blue-50'">
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
               Servidor Online
             </span>
@@ -58,9 +58,9 @@ import { AnalyticsService, SystemMetrics } from '../../../services/analytics.ser
 
       <!-- ═══════════════════════ AI COMMAND CENTER ═══════════════════════ -->
       <div class="rounded-2xl border p-6 transition-all duration-300 relative overflow-hidden"
-           [ngClass]="isDark ? 'bg-neutral-900/40 border-green-500/20' : 'bg-white border-green-200/60 shadow-sm'">
+           [ngClass]="isDark ? 'bg-neutral-900/40 border-blue-500/20' : 'bg-white border-blue-200/60 shadow-sm'">
         <!-- Background subtle glow -->
-        <div class="absolute -top-24 -right-24 w-64 h-64 bg-green-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
         
         <div class="relative z-10 flex flex-col md:flex-row gap-6">
           <div class="flex-1 space-y-4">
@@ -76,11 +76,11 @@ import { AnalyticsService, SystemMetrics } from '../../../services/analytics.ser
               Pregúntale a nuestro motor inteligente para analizar o navegar el dashboard
             </p>
             
-            <div class="relative flex flex-col gap-3 pt-1 w-full max-w-2xl">
+            <div class="relative flex flex-col gap-3 pt-1 w-full">
               <div class="flex flex-col sm:flex-row gap-3 w-full">
                 <div class="relative flex-1 group ai-search-container">
                   <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-300"
-                        [ngClass]="isDark ? 'text-neutral-500 group-focus-within:text-green-400' : 'text-neutral-400 group-focus-within:text-green-600'">
+                        [ngClass]="isDark ? 'text-neutral-500 group-focus-within:text-blue-400' : 'text-neutral-400 group-focus-within:text-blue-600'">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
@@ -92,7 +92,7 @@ import { AnalyticsService, SystemMetrics } from '../../../services/analytics.ser
                          (blur)="onBlur()"
                          [placeholder]="displayPlaceholder"
                          class="w-full py-3.5 pl-12 pr-10 rounded-xl border text-sm focus:outline-none transition-all duration-300 font-medium"
-                         [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800 text-white placeholder-neutral-600 focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 hover:border-neutral-700' : 'bg-neutral-50/80 border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-[#8ab798] focus:ring-1 focus:ring-[#8ab798] hover:border-neutral-300'">
+                         [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800 text-white placeholder-neutral-600 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 hover:border-neutral-700' : 'bg-neutral-50/80 border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-neutral-300'">
                   
                   <!-- Clear button -->
                   <button *ngIf="aiQuery" (click)="clearSearch()"
@@ -138,17 +138,17 @@ import { AnalyticsService, SystemMetrics } from '../../../services/analytics.ser
                 </span>
                 <button (click)="aiQuery = 'mensajes'; onSearch()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
                         [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-600 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
-                  <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-green-500' : 'text-[#8ab798]'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                  <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-blue-500' : 'text-blue-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                   Mensajes nuevos
                 </button>
                 <button (click)="aiQuery = 'solicitudes'; onSearch()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
                         [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-600 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
-                  <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-green-500' : 'text-[#8ab798]'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                  <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-blue-500' : 'text-blue-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                   Solicitudes pendientes
                 </button>
                 <button (click)="aiQuery = 'usuarios'; onSearch()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
                         [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-600 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
-                  <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-green-500' : 'text-[#8ab798]'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                  <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-blue-500' : 'text-blue-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                   Usuarios registrados
                 </button>
               </div>
@@ -290,7 +290,7 @@ import { AnalyticsService, SystemMetrics } from '../../../services/analytics.ser
               <p class="text-[10px] uppercase tracking-widest font-bold mb-1.5"
                  [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ stat.label }}</p>
               <div class="flex items-center gap-2">
-                <span *ngIf="stat.dot" class="w-2 h-2 rounded-full bg-green-500 animate-pulse flex-shrink-0"></span>
+                <span *ngIf="stat.dot" class="w-2 h-2 rounded-full bg-blue-500 animate-pulse flex-shrink-0"></span>
                 <p class="text-sm font-bold"
                    [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-700'">{{ stat.value }}</p>
               </div>
