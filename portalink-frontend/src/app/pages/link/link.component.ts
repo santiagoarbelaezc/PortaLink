@@ -28,25 +28,126 @@ import { DynLinktreeComponent } from '../../components/components-dynamics/dyn-l
     <div class="lt-wrapper">
       <div class="lt-container">
         
-        <main class="lt-main-grid min-h-screen items-center py-20 w-full flex flex-col">
+        <main class="lt-main-grid">
           
-          <ng-container *ngIf="portfolioData()?.pages?.links?.sections">
-            <ng-container *ngFor="let sec of portfolioData().pages.links.sections">
-              <ng-container *ngIf="sec.active" [ngSwitch]="sec.type">
-                <app-dyn-hero *ngSwitchCase="'hero'" [config]="sec.config" class="w-full"></app-dyn-hero>
-                <app-dyn-about *ngSwitchCase="'about'" [config]="sec.config" class="w-full"></app-dyn-about>
-                <app-dyn-portfolio *ngSwitchCase="'portfolio'" [config]="sec.config" class="w-full"></app-dyn-portfolio>
-                <app-dyn-text *ngSwitchCase="'text'" [config]="sec.config" class="w-full"></app-dyn-text>
-                <app-dyn-linktree *ngSwitchCase="'linktree'" [config]="sec.config" class="w-full"></app-dyn-linktree>
-              </ng-container>
-            </ng-container>
-          </ng-container>
+          <!-- COLUMN 1: PORTRAIT -->
+          <aside class="lt-col-photo">
+            <div class="lt-portrait-wrapper">
+              <div class="lt-image-container">
+                <img [src]="getProfileAvatar()" alt="Profile Avatar" class="lt-main-img lt-bg-blur" />
+                <div class="lt-corner-tr"></div>
+                <div class="lt-corner-bl"></div>
+                <div class="lt-profile-overlay">
+                  <img [src]="getProfileLogo()" alt="Profile Logo" class="lt-profile-logo" />
+                </div>
+              </div>
+            </div>
+          </aside>
 
-          <div *ngIf="!portfolioData()?.pages?.links?.sections?.length" class="text-white text-center text-xl">
-            No hay secciones configuradas en esta página.
-          </div>
+          <!-- COLUMN 2: INFO & LINKS -->
+          <section class="lt-col-info">
+            <header class="lt-info-header">
+              <h1 class="text-5xl md:text-[80px] font-headline uppercase leading-[0.9] tracking-[0.1em]" style="color: var(--text-primary);" [innerHTML]="getFormattedProfileName()">
+              </h1>
+              <p class="text-[10px] md:text-xs uppercase tracking-[0.4em] mt-3 md:mt-4 opacity-60 font-headline" style="color: var(--text-secondary);">
+                {{ getProfileTitle() }}
+              </p>
+            </header>
+
+            <div class="lt-links-container">
+
+              <!-- Portafolio Main CTA -->
+              <a routerLink="/proyectos" (click)="trackLinkClick('proyectos')" class="lt-card-main group lt-item-portfolio">
+                <div class="flex items-center gap-6">
+                  <div class="lt-icon-wrapper">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/80 group-hover:text-white transition-colors">
+                      <rect x="2" y="7" width="20" height="14" rx="0" ry="0"></rect>
+                      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                    </svg>
+                  </div>
+                  <div class="lt-card-body">
+                    <h3 class="text-2xl md:text-3xl font-headline uppercase text-white">{{ getTranslation().descubre }}</h3>
+                    <p class="text-[8px] uppercase tracking-[0.3em] text-white/50 mt-1">{{ getTranslation().ingenieria }}</p>
+                  </div>
+                </div>
+                <div class="lt-action-line hidden md:flex">
+                  <div class="w-10 h-px bg-white/30 group-hover:w-20 group-hover:bg-white transition-all duration-700"></div>
+                  <span class="text-white/30 group-hover:text-white transition-colors text-xl">↗</span>
+                </div>
+                <span class="md:hidden text-white/30 group-hover:text-white transition-colors">↗</span>
+              </a>
+
+              <!-- Dynamic Links from Config Service -->
+              <a *ngFor="let link of getLinks()" [href]="link.url" target="_blank" (click)="trackLinkClick(link.id)"
+                 class="lt-card-social group" [ngClass]="'lt-item-' + link.icon">
+                <div class="flex justify-between w-full mb-2">
+                  <svg *ngIf="link.icon === 'tiktok'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
+                    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
+                  </svg>
+                  <svg *ngIf="link.icon === 'instagram'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                  </svg>
+                  <svg *ngIf="link.icon === 'whatsapp'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
+                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                  </svg>
+                  <svg *ngIf="link.icon === 'linkedin'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
+                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                    <rect x="2" y="9" width="4" height="12"></rect>
+                    <circle cx="4" cy="4" r="2"></circle>
+                  </svg>
+                  <svg *ngIf="link.icon !== 'tiktok' && link.icon !== 'instagram' && link.icon !== 'whatsapp' && link.icon !== 'linkedin'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                  </svg>
+                  <span class="text-white/20 group-hover:text-white transition-colors">↗</span>
+                </div>
+                <div class="w-full h-px bg-white/10 group-hover:bg-white/20 transition-colors my-3"></div>
+                <div>
+                  <h4 class="text-base md:text-xl font-headline uppercase text-white/50 group-hover:text-white transition-colors">{{ link.title }}</h4>
+                  <span class="text-[8px] uppercase tracking-[0.2em] text-white/30 group-hover:text-white transition-colors mt-1 block">{{ link.subtitle }}</span>
+                </div>
+              </a>
+
+            </div>
+
+            <!-- Mobile Modeling Book Gallery -->
+            <div class="block md:hidden mt-14 lt-gallery-section">
+              <div class="flex items-center justify-between mb-6 px-1">
+                <h3 class="text-sm font-headline uppercase tracking-[0.25em]" style="color: var(--text-primary);">{{ getTranslation().retratos }}</h3>
+                <span class="text-[9px] uppercase tracking-[0.1em]" style="color: var(--text-secondary);">{{ modelingImages.length }} Photos</span>
+              </div>
+              <div class="space-y-6">
+                <div *ngFor="let img of modelingImages; let i = index" 
+                     data-aos="fade-up"
+                     [attr.data-aos-delay]="i * 150"
+                     class="lt-reveal-item overflow-hidden relative border aspect-[3/4]" 
+                     style="border-color: var(--card-border);">
+                  <img [src]="img.src" [alt]="img.alt" class="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-700" />
+                  <div class="absolute inset-0 bg-gradient-to-t from-[#000000]/70 via-transparent to-transparent flex items-end p-4">
+                    <span class="text-[9px] font-headline uppercase tracking-[0.3em] text-white/50">{{ img.alt }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </section>
 
         </main>
+        
+        <!-- Dynamic Additions (Custom Sections) -->
+        <ng-container *ngIf="portfolioData()?.pages?.links?.sections">
+          <ng-container *ngFor="let sec of portfolioData().pages.links.sections">
+            <ng-container *ngIf="sec.active" [ngSwitch]="sec.type">
+              <app-dyn-hero *ngSwitchCase="'hero'" [config]="sec.config" class="w-full"></app-dyn-hero>
+              <app-dyn-about *ngSwitchCase="'about'" [config]="sec.config" class="w-full"></app-dyn-about>
+              <app-dyn-portfolio *ngSwitchCase="'portfolio'" [config]="sec.config" class="w-full"></app-dyn-portfolio>
+              <app-dyn-text *ngSwitchCase="'text'" [config]="sec.config" class="w-full"></app-dyn-text>
+              <app-dyn-linktree *ngSwitchCase="'linktree'" [config]="sec.config" class="w-full"></app-dyn-linktree>
+            </ng-container>
+          </ng-container>
+        </ng-container>
 
         <!-- Premium Footer -->
         <footer class="lt-footer">

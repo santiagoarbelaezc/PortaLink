@@ -2,6 +2,9 @@ import { Component, inject, signal, OnInit, OnDestroy, effect, ViewChild, Elemen
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 
+import { HeroComponent } from '../../components/hero/hero.component';
+import { PortfolioComponent } from '../../components/portfolio/portfolio.component';
+import { AboutComponent } from '../../components/about/about.component';
 import { SkillsComponent } from '../../components/skills/skills.component';
 import { ContactComponent } from '../../components/contact/contact.component';
 import { FooterComponent } from '../../components/footer/footer.component';
@@ -24,6 +27,9 @@ import { AnalyticsService } from '../../services/analytics.service';
     standalone: true,
     imports: [
         CommonModule,
+        HeroComponent,
+        PortfolioComponent,
+        AboutComponent,
         SkillsComponent,
         ContactComponent,
         FooterComponent,
@@ -36,21 +42,8 @@ import { AnalyticsService } from '../../services/analytics.service';
     template: `
     <div class="dynamic-bg"></div>
     <main class="relative text-white" *ngIf="portfolioData()">
+      <app-hero [data]="portfolioData().hero"></app-hero>
       
-      <!-- Dynamic Sections Builder -->
-      <ng-container *ngIf="portfolioData().pages?.home?.sections">
-        <ng-container *ngFor="let sec of portfolioData().pages.home.sections">
-          <ng-container *ngIf="sec.active" [ngSwitch]="sec.type">
-            <app-dyn-hero *ngSwitchCase="'hero'" [config]="sec.config"></app-dyn-hero>
-            <app-dyn-about *ngSwitchCase="'about'" [config]="sec.config"></app-dyn-about>
-            <app-dyn-portfolio *ngSwitchCase="'portfolio'" [config]="sec.config"></app-dyn-portfolio>
-            <app-dyn-text *ngSwitchCase="'text'" [config]="sec.config"></app-dyn-text>
-            <app-dyn-linktree *ngSwitchCase="'linktree'" [config]="sec.config"></app-dyn-linktree>
-          </ng-container>
-        </ng-container>
-      </ng-container>
-      
-      <!-- Static fallback / unmigrated components below -->
       <section class="rotbot-banner relative">
         <video #robotVideo autoplay [muted]="true" onvolumechange="this.muted=true; this.volume=0;" volume="0" loop playsinline class="video-bg">
           <source src="assets/videos/video-robot.mp4" type="video/mp4">
@@ -126,8 +119,24 @@ import { AnalyticsService } from '../../services/analytics.service';
         </div>
       </section>
 
+      <app-portfolio [projects]="portfolioData().portfolio"></app-portfolio>
+      <app-about [data]="portfolioData().about"></app-about>
       <app-skills [skills]="portfolioData().skills"></app-skills>
       <app-contact [data]="portfolioData().contact"></app-contact>
+      
+      <!-- Dynamic Additions (Custom Sections) -->
+      <ng-container *ngIf="portfolioData().pages?.home?.sections">
+        <ng-container *ngFor="let sec of portfolioData().pages.home.sections">
+          <ng-container *ngIf="sec.active" [ngSwitch]="sec.type">
+            <app-dyn-hero *ngSwitchCase="'hero'" [config]="sec.config"></app-dyn-hero>
+            <app-dyn-about *ngSwitchCase="'about'" [config]="sec.config"></app-dyn-about>
+            <app-dyn-portfolio *ngSwitchCase="'portfolio'" [config]="sec.config"></app-dyn-portfolio>
+            <app-dyn-text *ngSwitchCase="'text'" [config]="sec.config"></app-dyn-text>
+            <app-dyn-linktree *ngSwitchCase="'linktree'" [config]="sec.config"></app-dyn-linktree>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+
       <app-footer></app-footer>
     </main>
   `,
