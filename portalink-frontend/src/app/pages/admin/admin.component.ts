@@ -215,6 +215,12 @@ interface Tab {
     /* Hide sidebar scrollbar */
     .sidebar-nav { scrollbar-width: none; }
     .sidebar-nav::-webkit-scrollbar { display: none; }
+
+    /* Force strict colors in the admin panel to avoid global styles.css overrides */
+    ::ng-deep .admin-shell .text-white { color: #ffffff !important; }
+    ::ng-deep .admin-shell .text-black { color: #000000 !important; }
+    ::ng-deep .admin-shell .bg-white { background-color: #ffffff !important; }
+    ::ng-deep .admin-shell .bg-black { background-color: #000000 !important; }
   `]
 })
 export class AdminComponent implements OnInit {

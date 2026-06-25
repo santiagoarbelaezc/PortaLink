@@ -109,13 +109,26 @@ const TAB_LABELS: Record<string, string> = {
       <div class="flex items-center gap-2">
         <!-- Theme Toggle -->
         <button (click)="themeChange.emit()"
-                class="w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-200 cursor-pointer"
+                class="w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-200 cursor-pointer hover:scale-105 active:scale-95"
                 [ngClass]="theme === 'dark'
-                  ? 'border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700'
-                  : 'border-neutral-200 text-neutral-500 hover:text-neutral-900 hover:border-neutral-300'">
-          <span class="text-base" [ngClass]="theme === 'dark' ? '' : 'filter'">
-            {{ theme === 'dark' ? '☀️' : '🌙' }}
-          </span>
+                  ? 'bg-white/5 border-white/10 hover:border-white/20'
+                  : 'bg-black/5 border-black/10 hover:border-black/20'">
+          <!-- Moon Icon (Light Mode - click to go Dark) -->
+          <svg *ngIf="theme === 'light'" class="w-4 h-4 text-neutral-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <!-- Sun Icon (Dark Mode - click to go Light) -->
+          <svg *ngIf="theme === 'dark'" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
         </button>
 
         <!-- Admin avatar badge -->
