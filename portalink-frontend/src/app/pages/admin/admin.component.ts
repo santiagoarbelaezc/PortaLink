@@ -248,12 +248,12 @@ import { PortfolioConfigService } from '../../services/portfolio-config.service'
                     <line x1="0" y1="120" x2="600" y2="120" stroke="rgba(255,255,255,0.03)" stroke-width="1"></line>
                     
                     <!-- Line Path -->
-                    <path d="M 0,110 Q 75,40 150,90 T 300,30 T 450,110 T 600,40" 
+                    <path d="M 0,100 C 50,70 100,50 150,90 C 200,130 250,30 300,30 C 350,30 400,110 450,110 C 500,110 550,40 600,60" 
                           fill="none" stroke="url(#cyanGlow)" stroke-width="3" 
                           stroke-linecap="round"></path>
                     
                     <!-- Area under path -->
-                    <path d="M 0,110 Q 75,40 150,90 T 300,30 T 450,110 T 600,40 L 600,150 L 0,150 Z" 
+                    <path d="M 0,100 C 50,70 100,50 150,90 C 200,130 250,30 300,30 C 350,30 400,110 450,110 C 500,110 550,40 600,60 L 600,150 L 0,150 Z" 
                           fill="url(#cyanArea)" opacity="0.15"></path>
                     
                     <!-- Definitions -->
