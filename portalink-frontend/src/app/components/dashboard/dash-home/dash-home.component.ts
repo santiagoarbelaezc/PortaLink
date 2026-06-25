@@ -15,8 +15,8 @@ import { AnalyticsService, SystemMetrics } from '../../../services/analytics.ser
 
         <!-- Rotbot flotando -->
         <div class="absolute right-0 bottom-0 top-0 flex items-end overflow-hidden pointer-events-none select-none"
-             style="width: 200px;">
-          <img src="assets/images/rotbot4.png" class="h-full object-contain object-bottom opacity-20 translate-x-8" alt="">
+             style="width: 250px;">
+          <img src="assets/images/rotbot4.png" class="h-full w-full object-contain object-bottom opacity-95 translate-x-4 drop-shadow-2xl" alt="Rotbot">
         </div>
 
         <div class="relative z-10 max-w-[75%]">
@@ -30,23 +30,91 @@ import { AnalyticsService, SystemMetrics } from '../../../services/analytics.ser
              [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ currentDateTime }}</p>
 
           <!-- Quick chips -->
-          <div class="flex flex-wrap gap-2">
-            <span class="text-xs font-semibold px-3 py-1.5 rounded-full border"
-                  [ngClass]="isDark ? 'border-neutral-700 text-neutral-300' : 'border-neutral-300 text-neutral-600'">
-              👁 {{ metrics.homeViews }} Vistas
+          <div class="flex flex-wrap gap-2 relative z-10">
+            <span class="text-xs font-semibold px-3 py-1.5 rounded-full border flex items-center gap-1.5"
+                  [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-300 text-neutral-600 bg-white/80'">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+              {{ metrics.homeViews }} Vistas
             </span>
-            <span class="text-xs font-semibold px-3 py-1.5 rounded-full border"
-                  [ngClass]="isDark ? 'border-neutral-700 text-neutral-300' : 'border-neutral-300 text-neutral-600'">
-              ✉ {{ unreadMessages }} Mensajes nuevos
+            <span class="text-xs font-semibold px-3 py-1.5 rounded-full border flex items-center gap-1.5"
+                  [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-300 text-neutral-600 bg-white/80'">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+              {{ unreadMessages }} Mensajes nuevos
             </span>
-            <span class="text-xs font-semibold px-3 py-1.5 rounded-full border"
-                  [ngClass]="isDark ? 'border-neutral-700 text-neutral-300' : 'border-neutral-300 text-neutral-600'">
-              📋 {{ pendingLeads }} Solicitudes
+            <span class="text-xs font-semibold px-3 py-1.5 rounded-full border flex items-center gap-1.5"
+                  [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-300 text-neutral-600 bg-white/80'">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+              {{ pendingLeads }} Solicitudes
             </span>
-            <span class="text-xs font-semibold px-3 py-1.5 rounded-full border text-green-500 border-green-500/20"
-                  [ngClass]="isDark ? 'bg-green-500/5' : 'bg-green-50'">
-              💚 Servidor Online
+            <span class="text-xs font-semibold px-3 py-1.5 rounded-full border flex items-center gap-1.5"
+                  [ngClass]="isDark ? 'border-green-500/30 text-green-400 bg-green-500/10' : 'border-green-200 text-green-700 bg-green-50'">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+              Servidor Online
             </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════ AI COMMAND CENTER ═══════════════════════ -->
+      <div class="rounded-2xl border p-6 transition-all duration-300 relative overflow-hidden"
+           [ngClass]="isDark ? 'bg-neutral-900/40 border-green-500/20' : 'bg-white border-green-200/60 shadow-sm'">
+        <!-- Background subtle glow -->
+        <div class="absolute -top-24 -right-24 w-64 h-64 bg-green-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div class="relative z-10 flex flex-col md:flex-row gap-6">
+          <div class="flex-1 space-y-4">
+            
+            <div class="flex items-center gap-3">
+              <img src="assets/icons/logo-link.png" alt="AI Icon" class="w-7 h-7 object-contain">
+              <h3 class="text-xl font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                Centro de Comando IA
+              </h3>
+            </div>
+            
+            <p class="text-sm font-medium" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+              Pregúntale a nuestro motor inteligente para analizar o navegar el dashboard
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-3 pt-1">
+              <div class="relative flex-1 group">
+                <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-300"
+                      [ngClass]="isDark ? 'text-neutral-500 group-focus-within:text-green-400' : 'text-neutral-400 group-focus-within:text-green-600'">
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </span>
+                <input type="text" placeholder="Ej: productos con menos stock, usuarios registrados..."
+                       class="w-full py-3.5 pl-12 pr-4 rounded-xl border text-sm focus:outline-none transition-all duration-300 font-medium"
+                       [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800 text-white placeholder-neutral-600 focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 hover:border-neutral-700' : 'bg-neutral-50/80 border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-[#8ab798] focus:ring-1 focus:ring-[#8ab798] hover:border-neutral-300'">
+              </div>
+              
+              <button class="px-6 py-3.5 rounded-xl font-bold text-sm transition-all duration-300 hover:opacity-90 whitespace-nowrap shadow-md hover:shadow-lg active:scale-95"
+                      [ngClass]="isDark ? 'bg-green-600 hover:bg-green-500 text-white' : 'bg-[#8ab798] hover:bg-[#7a9d84] text-black'">
+                Consultar IA
+              </button>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-2.5 pt-2">
+              <span class="text-[11px] uppercase tracking-widest font-bold" [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-500'">
+                Sugerencias rápidas:
+              </span>
+              <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
+                      [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-600 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
+                <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-green-500' : 'text-[#8ab798]'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                Mensajes nuevos
+              </button>
+              <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
+                      [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-600 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
+                <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-green-500' : 'text-[#8ab798]'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                Solicitudes pendientes
+              </button>
+              <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
+                      [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-600 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
+                <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-green-500' : 'text-[#8ab798]'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                Usuarios registrados
+              </button>
+            </div>
+            
           </div>
         </div>
       </div>
