@@ -26,7 +26,7 @@ import { Router } from '@angular/router';
         <!-- Logo -->
         <div class="flex flex-col items-center mb-10">
           <div class="relative mb-5">
-            <img src="assets/icons/mi-logo2.png" class="w-14 h-14 object-contain" alt="PortaLink">
+            <img src="assets/icons/mi-logo-dark.png" class="w-14 h-14 object-contain" alt="PortaLink">
           </div>
           <h1 class="text-2xl font-bold uppercase tracking-[0.2em] text-white">PortaLink</h1>
           <p class="text-[11px] text-neutral-500 mt-1.5 uppercase tracking-[0.3em] font-semibold">Panel Administrativo</p>

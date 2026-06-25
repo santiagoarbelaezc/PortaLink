@@ -49,7 +49,7 @@ interface Tab {
         <!-- Logo Header -->
         <div class="px-5 py-5 border-b flex items-center gap-3 shrink-0"
              [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-          <img src="assets/icons/mi-logo2.png" class="w-10 h-10 object-contain flex-shrink-0" alt="PortaLink">
+          <img [src]="isDark ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png'" class="w-10 h-10 object-contain flex-shrink-0" alt="PortaLink">
           <div class="min-w-0">
             <h1 class="text-sm font-bold tracking-widest uppercase truncate"
                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">PortaLink</h1>

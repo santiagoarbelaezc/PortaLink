@@ -253,7 +253,7 @@ import { AnalyticsService } from '../../services/analytics.service';
           
           <!-- Logo & Header -->
           <div class="flex flex-col items-center text-center mb-8">
-            <img src="assets/icons/mi-logo2.png" class="w-16 h-16 object-contain mb-4" alt="Logo">
+            <img [src]="currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png'" class="w-16 h-16 object-contain mb-4" alt="Logo">
             <h4 class="text-xl font-bold uppercase tracking-wide" [style.color]="currentTheme === 'light' ? '#111827' : '#ffffff'">
               {{ activeTab === 'signin' ? getLoginTranslation('title') : getLoginTranslation('signUpTab') }}
             </h4>
