@@ -27,8 +27,11 @@ import { AnalyticsService, SystemMetrics } from '../../../services/analytics.ser
               [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
             Bienvenido, Santiago
           </h2>
-          <p class="text-base md:text-lg font-medium mt-2 mb-6"
-             [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ currentDateTime }}</p>
+          <p class="text-sm mt-1 mb-5 flex items-baseline gap-2"
+             [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">
+             <span>{{ currentDate }}</span>
+             <span class="text-base md:text-lg font-medium" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-600'">{{ currentTime }}</span>
+          </p>
 
           <!-- Quick chips -->
           <div class="flex flex-wrap gap-2 relative z-10">
@@ -333,7 +336,8 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   private analyticsService = inject(AnalyticsService);
 
   metrics!: SystemMetrics;
-  currentDateTime = '';
+  currentDate = '';
+  currentTime = '';
   unreadMessages = 0;
   pendingLeads = 0;
   private clockInterval: any;
@@ -389,8 +393,11 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   }
 
   private updateClock() {
-    this.currentDateTime = new Date().toLocaleString('es-CO', {
-      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+    const now = new Date();
+    this.currentDate = now.toLocaleDateString('es-CO', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+    this.currentTime = now.toLocaleTimeString('es-CO', {
       hour: '2-digit', minute: '2-digit', second: '2-digit'
     });
   }
