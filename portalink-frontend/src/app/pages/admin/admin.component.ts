@@ -1,1040 +1,284 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router';
-import { AnalyticsService, SystemMetrics } from '../../services/analytics.service';
-import { PortfolioConfigService } from '../../services/portfolio-config.service';
+import { Router, RouterModule } from '@angular/router';
+
+// Dashboard Components
+import { DashAiSearchComponent } from '../../components/dashboard/dash-ai-search/dash-ai-search.component';
+import { DashHomeComponent } from '../../components/dashboard/dash-home/dash-home.component';
+import { DashAnalyticsComponent } from '../../components/dashboard/dash-analytics/dash-analytics.component';
+import { DashStatsComponent } from '../../components/dashboard/dash-stats/dash-stats.component';
+import { DashMessagesComponent } from '../../components/dashboard/dash-messages/dash-messages.component';
+import { DashLeadsComponent } from '../../components/dashboard/dash-leads/dash-leads.component';
+import { DashUsersComponent } from '../../components/dashboard/dash-users/dash-users.component';
+import { DashCustomizeComponent } from '../../components/dashboard/dash-customize/dash-customize.component';
+import { DashConfigComponent } from '../../components/dashboard/dash-config/dash-config.component';
+import { DashReportsComponent } from '../../components/dashboard/dash-reports/dash-reports.component';
+
+interface Tab {
+  id: string;
+  name: string;
+}
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    DashAiSearchComponent,
+    DashHomeComponent,
+    DashAnalyticsComponent,
+    DashStatsComponent,
+    DashMessagesComponent,
+    DashLeadsComponent,
+    DashUsersComponent,
+    DashCustomizeComponent,
+    DashConfigComponent,
+    DashReportsComponent,
+  ],
   template: `
-    <div class="admin-wrapper h-screen overflow-hidden font-sans flex text-neutral-100" [class.light-admin]="currentTheme === 'light'">
-      
-      <!-- LEFT SIDEBAR -->
-      <aside class="w-64 border-r flex flex-col shrink-0 relative z-10 h-full overflow-y-auto"
-             [style.background]="currentTheme === 'light' ? '#f9fafb' : '#07070a'"
-             [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-        
-        <!-- Header -->
-        <div class="p-6 border-b flex items-center gap-3"
-             [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-          <img src="assets/icons/mi-logo2.png" class="w-9 h-9 object-contain" alt="PortaLink">
-          <div>
-            <h1 class="text-base font-bold tracking-wider uppercase">PortaLink</h1>
-            <span class="text-[11px] uppercase tracking-widest text-neutral-400 font-bold">Admin Panel</span>
+    <div class="admin-shell h-screen overflow-hidden flex font-sans"
+         [ngClass]="isDark ? 'bg-neutral-950 text-neutral-100' : 'bg-white text-neutral-900'">
+
+      <!-- ══════════════════════════════════════
+           LEFT SIDEBAR
+      ══════════════════════════════════════ -->
+      <aside class="w-56 shrink-0 flex flex-col h-full border-r overflow-hidden z-10"
+             [ngClass]="isDark ? 'bg-[#07070a] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+
+        <!-- Logo Header -->
+        <div class="px-5 py-5 border-b flex items-center gap-3 shrink-0"
+             [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+          <img src="assets/icons/mi-logo2.png" class="w-10 h-10 object-contain flex-shrink-0" alt="PortaLink">
+          <div class="min-w-0">
+            <h1 class="text-sm font-bold tracking-widest uppercase truncate"
+                [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">PortaLink</h1>
+            <span class="text-[9px] uppercase tracking-[0.25em] font-bold"
+                  [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-400'">Admin Panel</span>
           </div>
         </div>
 
-        <!-- Navigation Links -->
-        <nav class="flex-grow p-4 space-y-1.5 mt-4">
-          <button *ngFor="let tab of tabs" 
-                  (click)="activeTab = tab.id"
-                  class="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm uppercase font-bold tracking-widest transition-all duration-300 cursor-pointer"
-                  [class.active-nav]="activeTab === tab.id"
-                  [style.color]="activeTab === tab.id ? (currentTheme === 'light' ? '#ffffff' : '#000000') : (currentTheme === 'light' ? '#4b5563' : '#9ca3af')">
-            <span class="w-5 h-5 flex items-center justify-center">
-              <svg *ngIf="tab.id === 'dashboard'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="7" height="9" rx="1"></rect>
-                <rect x="14" y="3" width="7" height="5" rx="1"></rect>
-                <rect x="14" y="12" width="7" height="9" rx="1"></rect>
-                <rect x="3" y="16" width="7" height="5" rx="1"></rect>
-              </svg>
-              <svg *ngIf="tab.id === 'messages'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              <svg *ngIf="tab.id === 'leads'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 14l2-2 4 4m0-7l-3-3-3 3M3 12h18M3 12a9 9 0 1118 0 9 9 0 01-18 0z" />
-              </svg>
-              <svg *ngIf="tab.id === 'users'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-              <svg *ngIf="tab.id === 'home'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-              <svg *ngIf="tab.id === 'linktree'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-              </svg>
-              <svg *ngIf="tab.id === 'config'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        <!-- Navigation -->
+        <nav class="flex-grow p-3 space-y-0.5 overflow-y-auto sidebar-nav">
+          <button *ngFor="let tab of tabs"
+                  (click)="setTab(tab.id)"
+                  class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold tracking-wide transition-all duration-200 cursor-pointer group relative"
+                  [ngClass]="getNavClass(tab.id)">
+
+            <!-- Icon -->
+            <span class="w-[18px] h-[18px] flex-shrink-0 flex items-center justify-center">
+              <svg class="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                <!-- Home / Dashboard -->
+                <ng-container *ngIf="tab.id === 'dashboard'">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                </ng-container>
+                <!-- Analytics -->
+                <ng-container *ngIf="tab.id === 'analytics'">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+                </ng-container>
+                <!-- Stats -->
+                <ng-container *ngIf="tab.id === 'stats'">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                </ng-container>
+                <!-- Messages -->
+                <ng-container *ngIf="tab.id === 'messages'">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                </ng-container>
+                <!-- Leads -->
+                <ng-container *ngIf="tab.id === 'leads'">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0" />
+                </ng-container>
+                <!-- Users -->
+                <ng-container *ngIf="tab.id === 'users'">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                </ng-container>
+                <!-- Customize -->
+                <ng-container *ngIf="tab.id === 'home'">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
+                </ng-container>
+                <!-- Config -->
+                <ng-container *ngIf="tab.id === 'config'">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </ng-container>
+                <!-- Reports -->
+                <ng-container *ngIf="tab.id === 'reports'">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                </ng-container>
               </svg>
             </span>
-            <span>{{ tab.name }}</span>
+
+            <!-- Label -->
+            <span class="flex-grow text-left text-[13px]">{{ tab.name }}</span>
+
+            <!-- Badges -->
+            <span *ngIf="tab.id === 'messages' && unreadMessages > 0"
+                  class="text-[9px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center"
+                  [ngClass]="activeTab === tab.id ? (isDark ? 'bg-black/20 text-white' : 'bg-white/20 text-black') : (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white')">
+              {{ unreadMessages }}
+            </span>
+            <span *ngIf="tab.id === 'leads' && pendingLeads > 0"
+                  class="text-[9px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center"
+                  [ngClass]="activeTab === tab.id ? (isDark ? 'bg-black/20 text-white' : 'bg-white/20 text-black') : (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white')">
+              {{ pendingLeads }}
+            </span>
           </button>
         </nav>
 
-        <!-- Footer / Return Home -->
-        <div class="p-6 border-t"
-             [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-          <a routerLink="/" 
-             class="w-full py-3 rounded-xl border text-center text-sm uppercase font-bold tracking-wider hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 block">
-            Volver al Sitio
-          </a>
+        <!-- Bottom: Logout -->
+        <div class="p-3 border-t shrink-0" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+          <button (click)="logout()"
+                  class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200 cursor-pointer"
+                  [ngClass]="isDark ? 'text-neutral-600 hover:text-red-400 hover:bg-red-500/5' : 'text-neutral-400 hover:text-red-500 hover:bg-red-50'">
+            <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+            </svg>
+            <span>Cerrar Sesión</span>
+          </button>
         </div>
       </aside>
 
-      <!-- MAIN CONTENT AREA -->
-      <main class="flex-grow overflow-y-auto overflow-x-hidden p-8 relative md:p-12 h-full"
-            [style.background]="currentTheme === 'light' ? '#ffffff' : '#020204'">
-        
-        <!-- GLOW ACCENTS (Dark theme only) -->
-        <div *ngIf="currentTheme !== 'light'" class="absolute -top-[200px] -right-[200px] w-[500px] h-[500px] rounded-full blur-[150px] opacity-10 pointer-events-none" style="background: #00f5ff;"></div>
-        
-        <!-- HEADER TOP BAR -->
-        <header class="flex justify-between items-center mb-10 relative z-10">
-          <div>
-            <span class="text-[12px] font-bold uppercase tracking-[0.25em] text-neutral-400">Consola</span>
-            <h2 class="text-4xl font-bold uppercase tracking-tight mt-1">{{ getTabTitle() }}</h2>
-          </div>
-          
-          <!-- Theme Switcher -->
-          <button (click)="toggleTheme()" 
-                  class="w-10 h-10 rounded-full flex items-center justify-center border transition-all duration-300 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 active:scale-95"
-                  [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.12)'">
-            <span *ngIf="currentTheme === 'light'">🌙</span>
-            <span *ngIf="currentTheme === 'dark'">☀️</span>
-          </button>
-        </header>
+      <!-- ══════════════════════════════════════
+           MAIN AREA
+      ══════════════════════════════════════ -->
+      <div class="flex-grow flex flex-col h-full overflow-hidden">
 
-        <!-- ROUTED CONTENT -->
-        <div class="relative z-10">
-          
-          <!-- ═══════════════════════════════════════════ -->
-          <!-- 1. DASHBOARD & METRICS                      -->
-          <!-- ═══════════════════════════════════════════ -->
-          <div *ngIf="activeTab === 'dashboard'" class="space-y-8 animate-fade-in">
-            
-            <!-- Cards Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              
-              <div class="stat-card p-6 rounded-2xl border transition-all duration-300 relative overflow-hidden"
-                   [style.background]="currentTheme === 'light' ? '#f9fafb' : '#0d0d11'"
-                   [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-                <div class="flex justify-between items-start">
-                  <div class="flex flex-col">
-                    <span class="text-[11px] uppercase tracking-widest opacity-60">Vistas del Home</span>
-                    <h3 class="text-4xl font-bold mt-2 font-headline">{{ metrics.homeViews }}</h3>
-                  </div>
-                  <span class="p-2.5 rounded-xl border flex items-center justify-center"
-                        [style.background]="currentTheme === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)'"
-                        [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.1)'"
-                        [style.color]="currentTheme === 'light' ? '#111827' : '#ffffff'">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                  </span>
-                </div>
-                <div class="text-[11px] font-bold mt-3.5 uppercase tracking-wider" [style.color]="currentTheme === 'light' ? '#4b5563' : '#a3a3a3'">Página Principal</div>
-              </div>
+        <!-- Top Bar (AI Search) -->
+        <app-dash-ai-search
+          [theme]="currentTheme"
+          [activeTab]="activeTab"
+          (tabChange)="setTab($event)"
+          (themeChange)="toggleTheme()">
+        </app-dash-ai-search>
 
-              <div class="stat-card p-6 rounded-2xl border transition-all duration-300 relative overflow-hidden"
-                   [style.background]="currentTheme === 'light' ? '#f9fafb' : '#0d0d11'"
-                   [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-                <div class="flex justify-between items-start">
-                  <div class="flex flex-col">
-                    <span class="text-[11px] uppercase tracking-widest opacity-60">Vistas Linktree</span>
-                    <h3 class="text-4xl font-bold mt-2 font-headline">{{ metrics.linktreeViews }}</h3>
-                  </div>
-                  <span class="p-2.5 rounded-xl border flex items-center justify-center"
-                        [style.background]="currentTheme === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)'"
-                        [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.1)'"
-                        [style.color]="currentTheme === 'light' ? '#111827' : '#ffffff'">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                    </svg>
-                  </span>
-                </div>
-                <div class="text-[11px] font-bold mt-3.5 uppercase tracking-wider" [style.color]="currentTheme === 'light' ? '#4b5563' : '#a3a3a3'">Enlaces (/links)</div>
-              </div>
+        <!-- Content -->
+        <main class="flex-grow overflow-y-auto overflow-x-hidden"
+              [ngClass]="isDark ? 'bg-[#020204]' : 'bg-white'">
+          <div class="p-6 md:p-8 max-w-screen-2xl">
 
-              <div class="stat-card p-6 rounded-2xl border transition-all duration-300 relative overflow-hidden"
-                   [style.background]="currentTheme === 'light' ? '#f9fafb' : '#0d0d11'"
-                   [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-                <div class="flex justify-between items-start">
-                  <div class="flex flex-col">
-                    <span class="text-[11px] uppercase tracking-widest opacity-60">Consultas a Rotbot</span>
-                    <h3 class="text-4xl font-bold mt-2 font-headline">{{ metrics.rotbotOpens }}</h3>
-                  </div>
-                  <span class="p-2.5 rounded-xl border flex items-center justify-center"
-                        [style.background]="currentTheme === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)'"
-                        [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.1)'"
-                        [style.color]="currentTheme === 'light' ? '#111827' : '#ffffff'">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                    </svg>
-                  </span>
-                </div>
-                <div class="text-[11px] font-bold mt-3.5 uppercase tracking-wider" [style.color]="currentTheme === 'light' ? '#4b5563' : '#a3a3a3'">{{ metrics.rotbotMessagesSent }} Mensajes</div>
-              </div>
+            <app-dash-home
+              *ngIf="activeTab === 'dashboard'"
+              [theme]="currentTheme">
+            </app-dash-home>
 
-              <div class="stat-card p-6 rounded-2xl border transition-all duration-300 relative overflow-hidden"
-                   [style.background]="currentTheme === 'light' ? '#f9fafb' : '#0d0d11'"
-                   [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-                <div class="flex justify-between items-start">
-                  <div class="flex flex-col">
-                    <span class="text-[11px] uppercase tracking-widest opacity-60">Velocidad Promedio</span>
-                    <h3 class="text-4xl font-bold mt-2 font-headline">{{ getAverageLoadTime() }} ms</h3>
-                  </div>
-                  <span class="p-2.5 rounded-xl border flex items-center justify-center"
-                        [style.background]="currentTheme === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)'"
-                        [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.1)'"
-                        [style.color]="currentTheme === 'light' ? '#111827' : '#ffffff'">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                  </span>
-                </div>
-                <div class="text-[11px] font-bold mt-3.5 uppercase tracking-wider" [style.color]="currentTheme === 'light' ? '#4b5563' : '#a3a3a3'">Carga de Recursos</div>
-              </div>
+            <app-dash-analytics
+              *ngIf="activeTab === 'analytics'"
+              [theme]="currentTheme">
+            </app-dash-analytics>
 
-            </div>
+            <app-dash-stats
+              *ngIf="activeTab === 'stats'"
+              [theme]="currentTheme">
+            </app-dash-stats>
 
-            <!-- Charts Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              
-              <!-- Section Views Bar Chart (SVG) -->
-              <div class="p-6 rounded-2xl border"
-                   [style.background]="currentTheme === 'light' ? '#ffffff' : '#07070a'"
-                   [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-                <h4 class="text-sm uppercase font-bold tracking-wider mb-6">Tráfico por Sección (Home)</h4>
-                
-                <div class="space-y-4">
-                  <div *ngFor="let sec of getSectionViewsArray()" class="space-y-1.5">
-                    <div class="flex justify-between text-[11.5px] uppercase font-bold tracking-wider">
-                      <span class="opacity-70">{{ sec.name }}</span>
-                      <span>{{ sec.views }} Visitas</span>
-                    </div>
-                    <div class="w-full h-2 rounded-full overflow-hidden bg-neutral-800/40 border border-white/5">
-                      <div class="h-full rounded-full transition-all duration-1000 ease-out" 
-                           [style.width.%]="getSectionPercentage(sec.views)"
-                           [style.background]="currentTheme === 'light' ? 'linear-gradient(90deg, #737373, #171717)' : 'linear-gradient(90deg, #ffffff, #404040)'"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <app-dash-messages
+              *ngIf="activeTab === 'messages'"
+              [theme]="currentTheme"
+              (dataChange)="refreshBadges()">
+            </app-dash-messages>
 
-              <!-- Linktree Clicks distribution -->
-              <div class="p-6 rounded-2xl border"
-                   [style.background]="currentTheme === 'light' ? '#ffffff' : '#07070a'"
-                   [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-                <h4 class="text-sm uppercase font-bold tracking-wider mb-6">Clics en Enlaces (Linktree)</h4>
-                
-                <div class="space-y-4">
-                  <div *ngFor="let click of getLinkClicksArray()" class="space-y-1.5">
-                    <div class="flex justify-between text-[11.5px] uppercase font-bold tracking-wider">
-                      <span class="opacity-70">{{ click.name }}</span>
-                      <span>{{ click.count }} clics</span>
-                    </div>
-                    <div class="w-full h-2 rounded-full overflow-hidden bg-neutral-800/40 border border-white/5">
-                      <div class="h-full rounded-full transition-all duration-1000 ease-out" 
-                           [style.width.%]="getLinkClickPercentage(click.count)"
-                           [style.background]="currentTheme === 'light' ? 'linear-gradient(90deg, #a3a3a3, #262626)' : 'linear-gradient(90deg, #e5e5e5, #525252)'"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <app-dash-leads
+              *ngIf="activeTab === 'leads'"
+              [theme]="currentTheme"
+              (dataChange)="refreshBadges()">
+            </app-dash-leads>
 
-            </div>
+            <app-dash-users
+              *ngIf="activeTab === 'users'"
+              [theme]="currentTheme">
+            </app-dash-users>
 
-            <!-- Weekly Traffic Trend (SVG Sparkline) & Server Status Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-              
-              <!-- Weekly Traffic Trend -->
-              <div class="p-6 rounded-2xl border"
-                   [style.background]="currentTheme === 'light' ? '#ffffff' : '#07070a'"
-                   [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-                <div class="flex justify-between items-center mb-6">
-                  <h4 class="text-xs uppercase font-bold tracking-wider">Tendencia de Tráfico Semanal</h4>
-                  <span class="text-[9px] uppercase tracking-widest bg-cyan-500/10 text-[#00f5ff] px-2.5 py-1 rounded-full font-bold">En Tiempo Real</span>
-                </div>
-                
-                <!-- SVG Sparkline Area -->
-                <div class="w-full h-40 relative flex items-end">
-                  <svg class="w-full h-full" viewBox="0 0 600 150" preserveAspectRatio="none">
-                    <!-- Grid Lines -->
-                    <line x1="0" y1="30" x2="600" y2="30" stroke="rgba(255,255,255,0.03)" stroke-width="1"></line>
-                    <line x1="0" y1="75" x2="600" y2="75" stroke="rgba(255,255,255,0.03)" stroke-width="1"></line>
-                    <line x1="0" y1="120" x2="600" y2="120" stroke="rgba(255,255,255,0.03)" stroke-width="1"></line>
-                    
-                    <!-- Line Path -->
-                    <path d="M 0,100 C 50,70 100,50 150,90 C 200,130 250,30 300,30 C 350,30 400,110 450,110 C 500,110 550,40 600,60" 
-                          fill="none" stroke="url(#monoGlow)" stroke-width="3" 
-                          stroke-linecap="round"></path>
-                    
-                    <!-- Area under path -->
-                    <path d="M 0,100 C 50,70 100,50 150,90 C 200,130 250,30 300,30 C 350,30 400,110 450,110 C 500,110 550,40 600,60 L 600,150 L 0,150 Z" 
-                          fill="url(#monoArea)" opacity="0.15"></path>
-                    
-                    <!-- Definitions -->
-                    <defs>
-                      <linearGradient id="monoGlow" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" [attr.stop-color]="currentTheme === 'light' ? '#171717' : '#ffffff'"></stop>
-                        <stop offset="100%" [attr.stop-color]="currentTheme === 'light' ? '#737373' : '#a3a3a3'"></stop>
-                      </linearGradient>
-                      <linearGradient id="monoArea" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" [attr.stop-color]="currentTheme === 'light' ? '#171717' : '#ffffff'"></stop>
-                        <stop offset="100%" stop-color="#000000" stop-opacity="0"></stop>
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                </div>
-                
-                <!-- Axis Labels -->
-                <div class="flex justify-between text-[8px] uppercase tracking-widest opacity-50 mt-4 px-2">
-                  <span>Lun</span>
-                  <span>Mar</span>
-                  <span>Mié</span>
-                  <span>Jue</span>
-                  <span>Vie</span>
-                  <span>Sáb</span>
-                  <span>Dom</span>
-                </div>
-              </div>
+            <app-dash-customize
+              *ngIf="activeTab === 'home'"
+              [theme]="currentTheme">
+            </app-dash-customize>
 
-              <!-- Server Health & Live Sessions -->
-              <div class="p-6 rounded-2xl border flex flex-col justify-between gap-6"
-                   [style.background]="currentTheme === 'light' ? '#ffffff' : '#07070a'"
-                   [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-                <h4 class="text-xs uppercase font-bold tracking-wider">Estado del Servidor</h4>
-                
-                <div class="grid grid-cols-2 gap-6 flex-grow">
-                  <div class="flex flex-col justify-center border-r border-white/5 pr-4">
-                    <span class="text-[9px] uppercase tracking-widest opacity-50">Estado de API</span>
-                    <div class="flex items-center gap-2 mt-2">
-                      <span class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
-                      <span class="text-xs font-bold">99.98% ONLINE</span>
-                    </div>
-                  </div>
+            <app-dash-config
+              *ngIf="activeTab === 'config'"
+              [theme]="currentTheme">
+            </app-dash-config>
 
-                  <div class="flex flex-col justify-center pl-4">
-                    <span class="text-[9px] uppercase tracking-widest opacity-50">Uso de Memoria</span>
-                    <span class="text-xs font-bold mt-2">242 MB / 512 MB</span>
-                  </div>
-
-                  <div class="flex flex-col justify-center border-r border-white/5 pr-4 border-t pt-4">
-                    <span class="text-[9px] uppercase tracking-widest opacity-50">Ping de Red</span>
-                    <span class="text-xs font-bold mt-2">42 ms</span>
-                  </div>
-
-                  <div class="flex flex-col justify-center pl-4 border-t pt-4">
-                    <span class="text-[9px] uppercase tracking-widest opacity-50">Sesiones Activas</span>
-                    <span class="text-xs font-bold mt-2">4 Concurrentes</span>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-            <!-- Actions Bar -->
-            <div class="flex justify-end gap-4 border-t pt-6 mt-8"
-                 [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-              <button (click)="resetMetrics()" 
-                      class="px-5 py-2.5 rounded-xl border text-xs uppercase font-bold tracking-widest hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20 transition-all duration-300 cursor-pointer">
-                Reiniciar Métricas
-              </button>
-            </div>
+            <app-dash-reports
+              *ngIf="activeTab === 'reports'"
+              [theme]="currentTheme">
+            </app-dash-reports>
 
           </div>
+        </main>
 
-          <!-- ═══════════════════════════════════════════ -->
-          <!-- 2. HOME CUSTOMIZATION                       -->
-          <!-- ═══════════════════════════════════════════ -->
-          <div *ngIf="activeTab === 'home'" class="space-y-8 animate-fade-in">
-            <div class="p-8 rounded-2xl border space-y-6"
-                 [style.background]="currentTheme === 'light' ? '#ffffff' : '#07070a'"
-                 [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-              
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Author Name -->
-                <div class="flex flex-col gap-2">
-                  <label class="text-[10px] uppercase tracking-widest font-bold opacity-60">Nombre del Autor</label>
-                  <input type="text" [(ngModel)]="configDraft.general.authorName" 
-                         class="admin-input p-3.5 rounded-xl border text-xs focus:outline-none"
-                         [style.background]="currentTheme === 'light' ? '#f9fafb' : '#0d0d11'"
-                         [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'" />
-                </div>
-                
-                <!-- Primary Color -->
-                <div class="flex flex-col gap-2">
-                  <label class="text-[10px] uppercase tracking-widest font-bold opacity-60">Color de Acento Base</label>
-                  <div class="flex gap-3">
-                    <input type="color" [(ngModel)]="configDraft.general.primaryColor" 
-                           class="w-12 h-12 rounded-xl border overflow-hidden p-0 cursor-pointer"
-                           [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'" />
-                    <input type="text" [(ngModel)]="configDraft.general.primaryColor" 
-                           class="admin-input flex-grow p-3.5 rounded-xl border text-xs focus:outline-none"
-                           [style.background]="currentTheme === 'light' ? '#f9fafb' : '#0d0d11'"
-                           [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'" />
-                  </div>
-                </div>
-
-                <!-- Hero Title -->
-                <div class="flex flex-col gap-2">
-                  <label class="text-[10px] uppercase tracking-widest font-bold opacity-60">Título Hero (Desktop)</label>
-                  <input type="text" [(ngModel)]="configDraft.hero.title" 
-                         class="admin-input p-3.5 rounded-xl border text-xs focus:outline-none"
-                         [style.background]="currentTheme === 'light' ? '#f9fafb' : '#0d0d11'"
-                         [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'" />
-                </div>
-
-                <!-- Hero Subtitle -->
-                <div class="flex flex-col gap-2">
-                  <label class="text-[10px] uppercase tracking-widest font-bold opacity-60">Subtítulo Hero</label>
-                  <input type="text" [(ngModel)]="configDraft.hero.subtitle" 
-                         class="admin-input p-3.5 rounded-xl border text-xs focus:outline-none"
-                         [style.background]="currentTheme === 'light' ? '#f9fafb' : '#0d0d11'"
-                         [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'" />
-                </div>
-              </div>
-
-              <!-- Hero Description -->
-              <div class="flex flex-col gap-2">
-                <label class="text-[10px] uppercase tracking-widest font-bold opacity-60">Descripción Hero</label>
-                <textarea rows="3" [(ngModel)]="configDraft.hero.description" 
-                          class="admin-input p-3.5 rounded-xl border text-xs focus:outline-none"
-                          [style.background]="currentTheme === 'light' ? '#f9fafb' : '#0d0d11'"
-                          [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'"></textarea>
-              </div>
-
-              <!-- About Text -->
-              <div class="flex flex-col gap-2">
-                <label class="text-[10px] uppercase tracking-widest font-bold opacity-60">Sobre Mí (Descripción)</label>
-                <textarea rows="4" [(ngModel)]="configDraft.about.text" 
-                          class="admin-input p-3.5 rounded-xl border text-xs focus:outline-none"
-                          [style.background]="currentTheme === 'light' ? '#f9fafb' : '#0d0d11'"
-                          [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'"></textarea>
-              </div>
-
-              <!-- Contact Info -->
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="flex flex-col gap-2">
-                  <label class="text-[10px] uppercase tracking-widest font-bold opacity-60">Email de Contacto</label>
-                  <input type="email" [(ngModel)]="configDraft.contact.email" 
-                         class="admin-input p-3.5 rounded-xl border text-xs focus:outline-none"
-                         [style.background]="currentTheme === 'light' ? '#f9fafb' : '#0d0d11'"
-                         [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'" />
-                </div>
-                
-                <div class="flex flex-col gap-2">
-                  <label class="text-[10px] uppercase tracking-widest font-bold opacity-60">Texto del Botón CTA (Hero)</label>
-                  <input type="text" [(ngModel)]="configDraft.hero.ctaText" 
-                         class="admin-input p-3.5 rounded-xl border text-xs focus:outline-none"
-                         [style.background]="currentTheme === 'light' ? '#f9fafb' : '#0d0d11'"
-                         [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'" />
-                </div>
-              </div>
-
-            </div>
-
-            <!-- Actions Bar -->
-            <div class="flex justify-end gap-4">
-              <button (click)="resetDraft()" 
-                      class="px-5 py-2.5 rounded-xl border text-xs uppercase font-bold tracking-widest hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 cursor-pointer">
-                Descartar Borrador
-              </button>
-              <button (click)="saveDraft()" 
-                      class="px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-300 hover:opacity-85 cursor-pointer"
-                      style="background: var(--text-primary); color: var(--bg-primary);">
-                Guardar y Publicar
-              </button>
-            </div>
-          </div>
-
-          <!-- ═══════════════════════════════════════════ -->
-          <!-- 3. LINKTREE CUSTOMIZATION                   -->
-          <!-- ═══════════════════════════════════════════ -->
-          <div *ngIf="activeTab === 'linktree'" class="space-y-8 animate-fade-in">
-            <div class="p-8 rounded-2xl border space-y-6"
-                 [style.background]="currentTheme === 'light' ? '#ffffff' : '#07070a'"
-                 [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-              
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Profile Name -->
-                <div class="flex flex-col gap-2">
-                  <label class="text-[10px] uppercase tracking-widest font-bold opacity-60">Nombre del Perfil</label>
-                  <input type="text" [(ngModel)]="configDraft.links.profileName" 
-                         class="admin-input p-3.5 rounded-xl border text-xs focus:outline-none"
-                         [style.background]="currentTheme === 'light' ? '#f9fafb' : '#0d0d11'"
-                         [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'" />
-                </div>
-                
-                <!-- Profile Title -->
-                <div class="flex flex-col gap-2">
-                  <label class="text-[10px] uppercase tracking-widest font-bold opacity-60">Título / Subtítulo</label>
-                  <input type="text" [(ngModel)]="configDraft.links.profileTitle" 
-                         class="admin-input p-3.5 rounded-xl border text-xs focus:outline-none"
-                         [style.background]="currentTheme === 'light' ? '#f9fafb' : '#0d0d11'"
-                         [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'" />
-                </div>
-              </div>
-
-              <!-- List of Custom Links -->
-              <div class="space-y-4">
-                <div class="flex justify-between items-center mb-2">
-                  <h4 class="text-xs uppercase font-bold tracking-wider">Enlaces Registrados</h4>
-                  <button (click)="addLinkItem()" 
-                          class="px-3.5 py-1.5 border rounded-lg text-[10px] uppercase font-bold tracking-wider hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer">
-                    + Agregar Enlace
-                  </button>
-                </div>
-
-                <div class="space-y-4">
-                  <div *ngFor="let item of configDraft.links.items; let i = index" 
-                       class="p-5 rounded-xl border flex flex-col gap-4 relative"
-                       [style.background]="currentTheme === 'light' ? '#f9fafb' : '#0c0c0e'"
-                       [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-                    
-                    <!-- Remove Link button -->
-                    <button (click)="removeLinkItem(i)" 
-                            class="absolute top-4 right-4 w-7 h-7 rounded-full flex items-center justify-center hover:bg-red-500/10 text-red-400 border border-red-500/10 hover:border-red-500/20 text-xs cursor-pointer">
-                      ✕
-                    </button>
-
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                      <!-- Link Title -->
-                      <div class="flex flex-col gap-1.5">
-                        <label class="text-[9px] uppercase tracking-widest font-bold opacity-60">Título</label>
-                        <input type="text" [(ngModel)]="item.title" 
-                               class="admin-input p-2.5 rounded-lg border text-xs focus:outline-none"
-                               [style.background]="currentTheme === 'light' ? '#ffffff' : '#141418'"
-                               [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'" />
-                      </div>
-                      
-                      <!-- Link Subtitle -->
-                      <div class="flex flex-col gap-1.5">
-                        <label class="text-[9px] uppercase tracking-widest font-bold opacity-60">Subtítulo</label>
-                        <input type="text" [(ngModel)]="item.subtitle" 
-                               class="admin-input p-2.5 rounded-lg border text-xs focus:outline-none"
-                               [style.background]="currentTheme === 'light' ? '#ffffff' : '#141418'"
-                               [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'" />
-                      </div>
-
-                      <!-- Link URL -->
-                      <div class="flex flex-col gap-1.5 md:col-span-2">
-                        <label class="text-[9px] uppercase tracking-widest font-bold opacity-60">Dirección (URL)</label>
-                        <input type="text" [(ngModel)]="item.url" 
-                               class="admin-input p-2.5 rounded-lg border text-xs focus:outline-none"
-                               [style.background]="currentTheme === 'light' ? '#ffffff' : '#141418'"
-                               [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'" />
-                      </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-                      <!-- Icon selector -->
-                      <div class="flex flex-col gap-1.5">
-                        <label class="text-[9px] uppercase tracking-widest font-bold opacity-60">Ícono</label>
-                        <select [(ngModel)]="item.icon" 
-                                class="admin-input p-2.5 rounded-lg border text-xs focus:outline-none"
-                                [style.background]="currentTheme === 'light' ? '#ffffff' : '#141418'"
-                                [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'">
-                          <option value="tiktok">TikTok</option>
-                          <option value="instagram">Instagram</option>
-                          <option value="whatsapp">WhatsApp</option>
-                          <option value="linkedin">LinkedIn</option>
-                          <option value="portfolio">Portafolio</option>
-                          <option value="link">Otro Enlace</option>
-                        </select>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-            <!-- Actions Bar -->
-            <div class="flex justify-end gap-4">
-              <button (click)="resetDraft()" 
-                      class="px-5 py-2.5 rounded-xl border text-xs uppercase font-bold tracking-widest hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 cursor-pointer">
-                Descartar Borrador
-              </button>
-              <button (click)="saveDraft()" 
-                      class="px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-300 hover:opacity-85 cursor-pointer"
-                      style="background: var(--text-primary); color: var(--bg-primary);">
-                Guardar y Publicar
-              </button>
-            </div>
-          </div>
-
-          <!-- ═══════════════════════════════════════════ -->
-          <!-- 4. SYSTEM CONFIGURATION                     -->
-          <!-- ═══════════════════════════════════════════ -->
-          <div *ngIf="activeTab === 'config'" class="space-y-8 animate-fade-in">
-            <div class="p-8 rounded-2xl border space-y-6"
-                 [style.background]="currentTheme === 'light' ? '#ffffff' : '#07070a'"
-                 [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-              
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Chatbot Name -->
-                <div class="flex flex-col gap-2">
-                  <label class="text-[10px] uppercase tracking-widest font-bold opacity-60">Nombre del Asistente (IA)</label>
-                  <input type="text" [(ngModel)]="chatbotName" 
-                         class="admin-input p-3.5 rounded-xl border text-xs focus:outline-none"
-                         [style.background]="currentTheme === 'light' ? '#f9fafb' : '#0d0d11'"
-                         [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'" />
-                </div>
-                
-                <!-- System Maintenance Mode -->
-                <div class="flex flex-col gap-2">
-                  <label class="text-[10px] uppercase tracking-widest font-bold opacity-60">Modo de Mantenimiento</label>
-                  <div class="flex items-center gap-3 mt-2">
-                    <button (click)="maintenanceMode = !maintenanceMode"
-                            class="px-4 py-2 border rounded-xl text-xs uppercase font-bold transition-all cursor-pointer"
-                            [class.bg-red-500]="maintenanceMode"
-                            [class.text-white]="maintenanceMode"
-                            [style.borderColor]="maintenanceMode ? 'red' : 'rgba(255,255,255,0.1)'">
-                      {{ maintenanceMode ? 'Activado' : 'Desactivado' }}
-                    </button>
-                    <span class="text-[10px] opacity-60">Simula cierre temporal de servicios</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- JSON Export Section -->
-              <div class="border-t pt-6"
-                   [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-                <h4 class="text-xs uppercase font-bold tracking-wider mb-2">Exportar Configuración Completa</h4>
-                <p class="text-xs opacity-60 mb-4">Exporta el archivo de datos actual <code>portfolio.json</code> para aplicarlo de forma permanente en la carpeta de activos del frontend.</p>
-                <button (click)="exportConfig()" 
-                        class="px-5 py-2.5 rounded-xl text-xs uppercase font-bold tracking-widest transition-all duration-300 cursor-pointer"
-                        style="background: var(--text-primary); color: var(--bg-primary);">
-                  Descargar portfolio.json
-                </button>
-              </div>
-
-            </div>
-          </div>
-
-          <!-- ═══════════════════════════════════════════ -->
-          <!-- 5. MENSAJES RECIBIDOS                       -->
-          <!-- ═══════════════════════════════════════════ -->
-          <div *ngIf="activeTab === 'messages'" class="space-y-6 animate-fade-in">
-            <div class="p-6 rounded-2xl border space-y-4"
-                 [style.background]="currentTheme === 'light' ? '#ffffff' : '#07070a'"
-                 [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-              
-              <div *ngIf="messagesList.length === 0" class="p-12 text-center text-sm opacity-55">
-                No hay mensajes recibidos en este momento.
-              </div>
-
-              <div *ngIf="messagesList.length > 0" class="space-y-4">
-                <div *ngFor="let msg of messagesList" 
-                     class="p-5 rounded-xl border flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all duration-300"
-                     [style.background]="currentTheme === 'light' ? '#f9fafb' : '#0c0c0e'"
-                     [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-                  
-                  <div class="space-y-1.5 max-w-2xl">
-                    <div class="flex items-center gap-3">
-                      <span class="text-xs font-bold" [style.color]="currentTheme === 'light' ? '#111827' : '#ffffff'">{{ msg.name }}</span>
-                      <span class="text-[10px] opacity-50">{{ msg.email }}</span>
-                      <span class="text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full" 
-                            [class.bg-cyan-500\/10]="!msg.read" [class.text-[#00f5ff]]="!msg.read"
-                            [class.bg-neutral-500\/10]="msg.read" [class.text-neutral-400]="msg.read">
-                        {{ msg.read ? 'Leído' : 'Nuevo' }}
-                      </span>
-                    </div>
-                    <p class="text-xs opacity-75 leading-relaxed">{{ msg.message }}</p>
-                    <span class="text-[9px] opacity-45 block">{{ msg.date }}</span>
-                  </div>
-
-                  <div class="flex items-center gap-3 self-end md:self-center">
-                    <button (click)="toggleMessageRead(msg.id)" 
-                            class="px-4 py-2 border rounded-xl text-[10px] uppercase font-bold tracking-wider hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer">
-                      {{ msg.read ? 'Marcar No Leído' : 'Marcar Leído' }}
-                    </button>
-                    <button (click)="deleteMessage(msg.id)" 
-                            class="px-4 py-2 border border-red-500/20 text-red-400 rounded-xl text-[10px] uppercase font-bold tracking-wider hover:bg-red-500/10 transition-all cursor-pointer">
-                      Eliminar
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          <!-- ═══════════════════════════════════════════ -->
-          <!-- 6. SOLICITUDES DE PLANES (LEADS)            -->
-          <!-- ═══════════════════════════════════════════ -->
-          <div *ngIf="activeTab === 'leads'" class="space-y-6 animate-fade-in">
-            <div class="p-6 rounded-2xl border space-y-4"
-                 [style.background]="currentTheme === 'light' ? '#ffffff' : '#07070a'"
-                 [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-              
-              <div *ngIf="leadsList.length === 0" class="p-12 text-center text-sm opacity-55">
-                No hay solicitudes de planes registradas.
-              </div>
-
-              <div *ngIf="leadsList.length > 0" class="space-y-4">
-                <div *ngFor="let lead of leadsList" 
-                     class="p-5 rounded-xl border flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all duration-300"
-                     [style.background]="currentTheme === 'light' ? '#f9fafb' : '#0c0c0e'"
-                     [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-                  
-                  <div class="space-y-1.5">
-                    <div class="flex items-center gap-3">
-                      <span class="text-xs font-bold" [style.color]="currentTheme === 'light' ? '#111827' : '#ffffff'">{{ lead.name }}</span>
-                      <span class="text-[10px] opacity-50">{{ lead.email }}</span>
-                    </div>
-                    <div class="flex items-center gap-2.5 text-xs">
-                      <span class="text-[10px] uppercase tracking-wider font-bold text-amber-400">{{ lead.plan }}</span>
-                      <span class="opacity-40">•</span>
-                      <span class="opacity-70 font-semibold">{{ lead.price }}</span>
-                      <span class="opacity-40">•</span>
-                      <span class="text-[9px] opacity-45">{{ lead.date }}</span>
-                    </div>
-                  </div>
-
-                  <div class="flex items-center gap-3 self-end md:self-center">
-                    <select [ngModel]="lead.status" (ngModelChange)="changeLeadStatus(lead.id, $event)" 
-                            class="admin-input p-2.5 rounded-xl border text-[10px] uppercase font-bold tracking-wider focus:outline-none"
-                            [style.background]="currentTheme === 'light' ? '#ffffff' : '#141418'"
-                            [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)'">
-                      <option value="Pendiente">Pendiente</option>
-                      <option value="Contactado">Contactado</option>
-                      <option value="Completado">Completado</option>
-                    </select>
-                    
-                    <button (click)="deleteLead(lead.id)" 
-                            class="px-4 py-2 border border-red-500/20 text-red-400 rounded-xl text-[10px] uppercase font-bold tracking-wider hover:bg-red-500/10 transition-all cursor-pointer">
-                      Eliminar
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          <!-- ═══════════════════════════════════════════ -->
-          <!-- 7. USUARIOS REGISTRADOS                     -->
-          <!-- ═══════════════════════════════════════════ -->
-          <div *ngIf="activeTab === 'users'" class="space-y-6 animate-fade-in">
-            <div class="p-6 rounded-2xl border space-y-4"
-                 [style.background]="currentTheme === 'light' ? '#ffffff' : '#07070a'"
-                 [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-              
-              <div class="space-y-4">
-                <div *ngFor="let user of usersList" 
-                     class="p-5 rounded-xl border flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all duration-300"
-                     [style.background]="currentTheme === 'light' ? '#f9fafb' : '#0c0c0e'"
-                     [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-                  
-                  <div class="flex items-center gap-4">
-                    <img [src]="user.avatar" class="w-10 h-10 rounded-full object-cover border" style="border-color: rgba(255,255,255,0.1)" alt="Avatar" />
-                    <div class="space-y-1">
-                      <h4 class="text-xs font-bold" [style.color]="currentTheme === 'light' ? '#111827' : '#ffffff'">{{ user.name }}</h4>
-                      <p class="text-[10px] opacity-60">{{ user.email }}</p>
-                      <div class="flex items-center gap-2">
-                        <span class="text-[9px] uppercase tracking-wider font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-full">{{ user.role }}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="flex items-center gap-4 self-end md:self-center">
-                    <span class="text-[9px] uppercase tracking-wider font-bold px-2.5 py-1 rounded-full"
-                          [class.bg-green-500\/10]="user.status === 'Activo'" [class.text-green-400]="user.status === 'Activo'"
-                          [class.bg-red-500\/10]="user.status === 'Inactivo'" [class.text-red-400]="user.status === 'Inactivo'">
-                      {{ user.status }}
-                    </span>
-                    
-                    <button (click)="toggleUserStatus(user.id)" 
-                            class="px-4 py-2 border rounded-xl text-[10px] uppercase font-bold tracking-wider hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer">
-                      {{ user.status === 'Activo' ? 'Desactivar' : 'Activar' }}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-        </div>
-
-      </main>
+      </div>
     </div>
   `,
   styles: [`
-    .admin-wrapper {
-      --bg-primary: #020204;
-      --text-primary: #ffffff;
-      background-color: #020204;
-      overflow-x: hidden;
-    }
-    .light-admin {
-      --bg-primary: #ffffff;
-      --text-primary: #1f2937;
-      background-color: #ffffff;
-      color: #111827;
-    }
-    
-    .active-nav {
-      background: #ffffff !important;
-      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.08);
-    }
-    .light-admin .active-nav {
-      background: #111827 !important;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    }
-    
-    .admin-input {
-      outline: none;
-      transition: all 0.3s ease;
-    }
-    .admin-input:focus {
-      border-color: #00f5ff !important;
-      box-shadow: 0 0 0 2px rgba(0, 245, 255, 0.05);
-    }
-    
-    .animate-fade-in {
-      animation: fadeIn 0.3s ease-out forwards;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .admin-shell { font-family: 'Inter Tight', sans-serif; }
+
+    /* Hide sidebar scrollbar */
+    .sidebar-nav { scrollbar-width: none; }
+    .sidebar-nav::-webkit-scrollbar { display: none; }
   `]
 })
 export class AdminComponent implements OnInit {
-  private analyticsService = inject(AnalyticsService);
-  private configService = inject(PortfolioConfigService);
   private router = inject(Router);
 
-  currentTheme = 'dark';
-  currentLanguage = 'es';
   activeTab = 'dashboard';
-  
-  metrics!: SystemMetrics;
-  configDraft: any = null;
-  
-  chatbotName = 'Rotbot';
-  maintenanceMode = false;
+  currentTheme = 'dark';
+  unreadMessages = 0;
+  pendingLeads = 0;
 
-  // Mock lists
-  messagesList = [
-    { id: 1, name: 'Juan Pérez', email: 'juan.perez@example.com', message: 'Hola Santiago, me interesa un portafolio web para mi agencia de marketing. ¿Cuánto costaría?', date: 'Hace 2 horas', read: false },
-    { id: 2, name: 'María Gómez', email: 'maria.gomez@company.com', message: 'Excelente trabajo con PortaLink AI Vision, ¿es posible integrarlo con Shopify?', date: 'Ayer', read: true },
-    { id: 3, name: 'Robert C.', email: 'robert@designstudio.us', message: 'Would love to discuss a potential co-op development project.', date: 'Hace 3 días', read: true }
+  tabs: Tab[] = [
+    { id: 'dashboard', name: 'Inicio' },
+    { id: 'analytics', name: 'Analíticas' },
+    { id: 'stats',     name: 'Estadísticas' },
+    { id: 'messages',  name: 'Mensajes' },
+    { id: 'leads',     name: 'Solicitudes' },
+    { id: 'users',     name: 'Usuarios' },
+    { id: 'home',      name: 'Personalizar' },
+    { id: 'config',    name: 'Configuración' },
+    { id: 'reports',   name: 'Reportes' },
   ];
 
-  leadsList = [
-    { id: 1, name: 'Carlos Mendoza', email: 'carlos@mendoza.co', plan: 'Plan Premium', price: '$299 USD', date: 'Hace 4 horas', status: 'Pendiente' },
-    { id: 2, name: 'Ana Sofía Silva', email: 'ana.silva@techcorp.io', plan: 'Plan Custom (IA)', price: 'Cotización', date: 'Hace 1 día', status: 'Contactado' },
-    { id: 3, name: 'Diego Torres', email: 'diego@torres.es', plan: 'Plan Starter', price: '$99 USD', date: 'Hace 5 días', status: 'Completado' }
-  ];
-
-  usersList = [
-    { id: 1, name: 'Santiago Arbeláez', email: 'santiago@portalink.com', role: 'Administrador', status: 'Activo', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80' },
-    { id: 2, name: 'Lucía Fernández', email: 'lucia.f@portalink.com', role: 'Editor', status: 'Activo', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&q=80' },
-    { id: 3, name: 'Mateo R.', email: 'mateo@user.com', role: 'Usuario', status: 'Inactivo', avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=80&q=80' }
-  ];
-
-  tabs = [
-    { id: 'dashboard', name: 'Dashboard' },
-    { id: 'messages', name: 'Mensajes Recibidos' },
-    { id: 'leads', name: 'Solicitudes de Planes' },
-    { id: 'users', name: 'Usuarios Registrados' },
-    { id: 'home', name: 'Personalizar Home' },
-    { id: 'linktree', name: 'Configurar Links' },
-    { id: 'config', name: 'Sistema' }
-  ];
+  get isDark() { return this.currentTheme === 'dark'; }
 
   ngOnInit() {
-    this.metrics = this.analyticsService.getMetrics();
-    
-    if (typeof window !== 'undefined') {
-      this.currentTheme = localStorage.getItem('portfolio-theme') || 'dark';
-      this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
-      
-      const savedBot = localStorage.getItem('portalink_chatbot_name');
-      if (savedBot) {
-        this.chatbotName = savedBot;
-      }
-
-      // Load interactive lists
-      const savedMessages = localStorage.getItem('portalink_admin_messages');
-      if (savedMessages) {
-        this.messagesList = JSON.parse(savedMessages);
-      } else {
-        localStorage.setItem('portalink_admin_messages', JSON.stringify(this.messagesList));
-      }
-
-      const savedLeads = localStorage.getItem('portalink_admin_leads');
-      if (savedLeads) {
-        this.leadsList = JSON.parse(savedLeads);
-      } else {
-        localStorage.setItem('portalink_admin_leads', JSON.stringify(this.leadsList));
-      }
-
-      const savedUsers = localStorage.getItem('portalink_admin_users');
-      if (savedUsers) {
-        this.usersList = JSON.parse(savedUsers);
-      } else {
-        localStorage.setItem('portalink_admin_users', JSON.stringify(this.usersList));
-      }
-    }
-    
-    // Subscribe to config updates
-    const currentData = this.configService.data();
-    if (currentData) {
-      this.configDraft = JSON.parse(JSON.stringify(currentData));
-    }
+    const saved = localStorage.getItem('portalink_admin_theme');
+    if (saved) this.currentTheme = saved;
+    this.refreshBadges();
   }
 
-  getTabTitle() {
-    switch (this.activeTab) {
-      case 'dashboard': return 'Métricas del Sistema';
-      case 'messages': return 'Mensajes Recibidos';
-      case 'leads': return 'Solicitudes de Planes';
-      case 'users': return 'Usuarios Registrados';
-      case 'home': return 'Personalización del Home';
-      case 'linktree': return 'Personalización de Linktree';
-      case 'config': return 'Ajustes del Sistema';
-      default: return '';
-    }
+  setTab(id: string) {
+    this.activeTab = id;
+    this.refreshBadges();
   }
 
   toggleTheme() {
-    this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
-    localStorage.setItem('portfolio-theme', this.currentTheme);
-    const root = document.documentElement;
-    root.classList.remove('theme-dark', 'theme-light');
-    root.classList.add(`theme-${this.currentTheme}`);
-    this.analyticsService.recordThemeSelection(this.currentTheme);
+    this.currentTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('portalink_admin_theme', this.currentTheme);
   }
 
-  // Analytics getters
-  getAverageLoadTime() {
-    if (!this.metrics.loadTimes || this.metrics.loadTimes.length === 0) {
-      return 150; // fallback standard response
+  refreshBadges() {
+    try {
+      const msgs = JSON.parse(localStorage.getItem('portalink_admin_messages') || '[]');
+      const leads = JSON.parse(localStorage.getItem('portalink_admin_leads') || '[]');
+      this.unreadMessages = msgs.filter((m: any) => !m.read).length;
+      this.pendingLeads = leads.filter((l: any) => l.status === 'Pendiente').length;
+    } catch { }
+  }
+
+  logout() {
+    localStorage.removeItem('portalink_admin_auth');
+    this.router.navigate(['/login']);
+  }
+
+  getNavClass(tabId: string): string {
+    const isActive = this.activeTab === tabId;
+    if (this.isDark) {
+      return isActive
+        ? 'bg-white text-black'
+        : 'text-neutral-500 hover:text-neutral-200 hover:bg-neutral-800/60';
+    } else {
+      return isActive
+        ? 'bg-neutral-900 text-white'
+        : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100';
     }
-    const sum = this.metrics.loadTimes.reduce((a, b) => a + b, 0);
-    return Math.round(sum / this.metrics.loadTimes.length);
-  }
-
-  getSectionViewsArray() {
-    const list = [];
-    for (const key of Object.keys(this.metrics.sectionViews)) {
-      list.push({ name: key, views: this.metrics.sectionViews[key] });
-    }
-    return list;
-  }
-
-  getSectionPercentage(views: number) {
-    const total = Object.values(this.metrics.sectionViews).reduce((a, b) => a + b, 0);
-    if (total === 0) return 0;
-    return (views / total) * 100;
-  }
-
-  getLinkClicksArray() {
-    const list = [];
-    for (const key of Object.keys(this.metrics.linktreeClicks)) {
-      list.push({ name: key, count: this.metrics.linktreeClicks[key] });
-    }
-    return list;
-  }
-
-  getLinkClickPercentage(count: number) {
-    const total = Object.values(this.metrics.linktreeClicks).reduce((a, b) => a + b, 0);
-    if (total === 0) return 0;
-    return (count / total) * 100;
-  }
-
-  resetMetrics() {
-    if (confirm('¿Estás seguro de que deseas restablecer todas las métricas de rendimiento y visibilidad?')) {
-      this.analyticsService.resetMetrics();
-      this.metrics = this.analyticsService.getMetrics();
-    }
-  }
-
-  // Linktree Operations
-  addLinkItem() {
-    if (!this.configDraft.links.items) {
-      this.configDraft.links.items = [];
-    }
-    const newId = (this.configDraft.links.items.length + 1).toString();
-    this.configDraft.links.items.push({
-      id: newId,
-      title: 'Nuevo Enlace',
-      subtitle: 'Descripción corta',
-      url: 'https://',
-      icon: 'link'
-    });
-  }
-
-  removeLinkItem(index: number) {
-    this.configDraft.links.items.splice(index, 1);
-  }
-
-  // Draft operations
-  saveDraft() {
-    this.configService.updateSection('general', this.configDraft.general);
-    this.configService.updateSection('hero', this.configDraft.hero);
-    this.configService.updateSection('about', this.configDraft.about);
-    this.configService.updateSection('contact', this.configDraft.contact);
-    this.configService.updateSection('links', this.configDraft.links);
-    
-    // chatbot configuration
-    localStorage.setItem('portalink_chatbot_name', this.chatbotName);
-    
-    this.configService.save();
-    alert('Configuración guardada y publicada exitosamente en el borrador local.');
-  }
-
-  resetDraft() {
-    if (confirm('¿Estás seguro de que deseas descartar todos los cambios no guardados?')) {
-      this.configService.reset();
-      const currentData = this.configService.data();
-      if (currentData) {
-        this.configDraft = JSON.parse(JSON.stringify(currentData));
-      }
-    }
-  }
-
-  // List interactions
-  toggleMessageRead(id: number) {
-    const msg = this.messagesList.find(m => m.id === id);
-    if (msg) {
-      msg.read = !msg.read;
-      localStorage.setItem('portalink_admin_messages', JSON.stringify(this.messagesList));
-    }
-  }
-
-  deleteMessage(id: number) {
-    if (confirm('¿Estás seguro de que deseas eliminar este mensaje?')) {
-      this.messagesList = this.messagesList.filter(m => m.id !== id);
-      localStorage.setItem('portalink_admin_messages', JSON.stringify(this.messagesList));
-    }
-  }
-
-  changeLeadStatus(id: number, nextStatus: string) {
-    const lead = this.leadsList.find(l => l.id === id);
-    if (lead) {
-      lead.status = nextStatus;
-      localStorage.setItem('portalink_admin_leads', JSON.stringify(this.leadsList));
-    }
-  }
-
-  deleteLead(id: number) {
-    if (confirm('¿Estás seguro de que deseas eliminar esta solicitud?')) {
-      this.leadsList = this.leadsList.filter(l => l.id !== id);
-      localStorage.setItem('portalink_admin_leads', JSON.stringify(this.leadsList));
-    }
-  }
-
-  toggleUserStatus(id: number) {
-    const user = this.usersList.find(u => u.id === id);
-    if (user) {
-      user.status = user.status === 'Activo' ? 'Inactivo' : 'Activo';
-      localStorage.setItem('portalink_admin_users', JSON.stringify(this.usersList));
-    }
-  }
-
-  exportConfig() {
-    this.configService.exportJSON();
   }
 }
