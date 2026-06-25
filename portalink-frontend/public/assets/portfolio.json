@@ -75,5 +75,61 @@
       { "platform": "GitHub", "url": "https://github.com/santiago" }
     ],
     "formActive": true
+  },
+  "pages": {
+    "home": {
+      "sections": [
+        {
+          "id": "home-hero",
+          "type": "hero",
+          "active": true,
+          "config": {
+            "title": "Creative Developer",
+            "subtitle": "Santiago Arbeláez",
+            "description": "Building digital experiences with passion and precision.",
+            "backgroundImage": "hero-portrait.png",
+            "ctaText": "Ver Proyectos"
+          }
+        },
+        {
+          "id": "home-about",
+          "type": "about",
+          "active": true,
+          "config": {
+            "text": "Transformo ideas abstractas en realidades interactivas que conectan con las personas. Ayudo a marcas y emprendedores a conceptualizar, diseñar y lanzar plataformas digitales atractivas y fáciles de usar, impulsando el crecimiento real de sus negocios.",
+            "avatarImage": "about-portrait.png"
+          }
+        },
+        {
+          "id": "home-portfolio",
+          "type": "portfolio",
+          "active": true,
+          "config": {}
+        }
+      ]
+    },
+    "links": {
+      "sections": [
+        {
+          "id": "links-main",
+          "type": "linktree",
+          "active": true,
+          "config": {
+            "profileName": "Santiago Arbeláez",
+            "profileTitle": "Digital Creator & Developer",
+            "avatarImage": "about-portrait.png",
+            "items": [
+              { "id": "1", "title": "TikTok", "subtitle": "Videos", "url": "https://www.tiktok.com/@santiagoarbelaezc", "icon": "tiktok" },
+              { "id": "2", "title": "Instagram", "subtitle": "Fotos", "url": "https://www.instagram.com/santiagoarbelaezc/", "icon": "instagram" },
+              { "id": "3", "title": "WhatsApp", "subtitle": "Chat", "url": "https://wa.me/573054078225", "icon": "whatsapp" },
+              { "id": "4", "title": "LinkedIn", "subtitle": "Profesional", "url": "https://www.linkedin.com/in/santiago-arbelaez-contreras-9830b5290/", "icon": "linkedin" }
+            ]
+          }
+        }
+      ]
+    },
+    "planes": {
+      "sections": []
+    }
   }
 }

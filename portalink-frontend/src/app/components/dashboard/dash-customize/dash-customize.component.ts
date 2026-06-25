@@ -28,139 +28,100 @@ import { PortfolioConfigService } from '../../../services/portfolio-config.servi
         </a>
       </div>
 
-      <!-- Sub-tabs -->
+      <!-- Page Tabs -->
       <div class="flex gap-1 p-1 rounded-xl border"
            [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
-        <button *ngFor="let t of subTabs"
-                (click)="activeSubTab = t.id"
+        <button *ngFor="let t of pageTabs"
+                (click)="activePageTab = t.id"
                 class="flex-1 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all duration-200 cursor-pointer"
-                [ngClass]="activeSubTab === t.id
+                [ngClass]="activePageTab === t.id
                   ? (isDark ? 'bg-white text-black' : 'bg-white text-neutral-900 shadow-sm')
                   : (isDark ? 'text-neutral-500 hover:text-neutral-300' : 'text-neutral-400 hover:text-neutral-700')">
           {{ t.label }}
         </button>
       </div>
 
-      <!-- Content area -->
-      <div *ngIf="configDraft" class="rounded-2xl border p-6 md:p-8 space-y-6"
-           [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
-
-        <!-- HERO Tab -->
-        <div *ngIf="activeSubTab === 'hero'" class="space-y-5">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div class="flex flex-col gap-1.5">
-              <label class="text-[10px] font-bold uppercase tracking-widest"
-                     [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Nombre del Autor</label>
-              <input type="text" [(ngModel)]="configDraft.general.authorName"
-                     class="input-field px-4 py-3 rounded-xl border text-sm focus:outline-none"
-                     [ngClass]="isDark ? 'bg-neutral-800/60 border-neutral-700 text-white placeholder-neutral-600' : 'bg-neutral-50 border-neutral-200 text-neutral-900'">
-            </div>
-            <div class="flex flex-col gap-1.5">
-              <label class="text-[10px] font-bold uppercase tracking-widest"
-                     [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Título Hero</label>
-              <input type="text" [(ngModel)]="configDraft.hero.title"
-                     class="input-field px-4 py-3 rounded-xl border text-sm focus:outline-none"
-                     [ngClass]="isDark ? 'bg-neutral-800/60 border-neutral-700 text-white placeholder-neutral-600' : 'bg-neutral-50 border-neutral-200 text-neutral-900'">
-            </div>
-            <div class="flex flex-col gap-1.5">
-              <label class="text-[10px] font-bold uppercase tracking-widest"
-                     [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Subtítulo Hero</label>
-              <input type="text" [(ngModel)]="configDraft.hero.subtitle"
-                     class="input-field px-4 py-3 rounded-xl border text-sm focus:outline-none"
-                     [ngClass]="isDark ? 'bg-neutral-800/60 border-neutral-700 text-white placeholder-neutral-600' : 'bg-neutral-50 border-neutral-200 text-neutral-900'">
-            </div>
-            <div class="flex flex-col gap-1.5">
-              <label class="text-[10px] font-bold uppercase tracking-widest"
-                     [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Texto CTA</label>
-              <input type="text" [(ngModel)]="configDraft.hero.ctaText"
-                     class="input-field px-4 py-3 rounded-xl border text-sm focus:outline-none"
-                     [ngClass]="isDark ? 'bg-neutral-800/60 border-neutral-700 text-white placeholder-neutral-600' : 'bg-neutral-50 border-neutral-200 text-neutral-900'">
-            </div>
-          </div>
-          <div class="flex flex-col gap-1.5">
-            <label class="text-[10px] font-bold uppercase tracking-widest"
-                   [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Descripción Hero</label>
-            <textarea rows="3" [(ngModel)]="configDraft.hero.description"
-                      class="input-field px-4 py-3 rounded-xl border text-sm focus:outline-none resize-none"
-                      [ngClass]="isDark ? 'bg-neutral-800/60 border-neutral-700 text-white placeholder-neutral-600' : 'bg-neutral-50 border-neutral-200 text-neutral-900'"></textarea>
+      <div *ngIf="configDraft?.pages" class="space-y-8">
+        
+        <!-- Add New Section Palette -->
+        <div>
+          <h3 class="text-xs font-bold uppercase tracking-widest mb-3" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">+ Añadir nueva sección</h3>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <button *ngFor="let block of availableBlocks" (click)="addSection(block.type)"
+                    class="p-4 rounded-xl border text-left transition-all duration-200 hover:translate-y-[-2px] cursor-pointer group"
+                    [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200 hover:border-neutral-300 hover:shadow-sm'">
+              <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-3"
+                   [ngClass]="isDark ? 'bg-neutral-800 text-blue-400' : 'bg-blue-50 text-blue-600'">
+                <!-- Generic Block Icon -->
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7" />
+                </svg>
+              </div>
+              <p class="text-sm font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ block.name }}</p>
+              <p class="text-[10px] mt-1" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Haga clic para añadir</p>
+            </button>
           </div>
         </div>
 
-        <!-- ABOUT Tab -->
-        <div *ngIf="activeSubTab === 'about'" class="space-y-5">
-          <div class="flex flex-col gap-1.5">
-            <label class="text-[10px] font-bold uppercase tracking-widest"
-                   [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Descripción Sobre Mí</label>
-            <textarea rows="6" [(ngModel)]="configDraft.about.text"
-                      class="input-field px-4 py-3 rounded-xl border text-sm focus:outline-none resize-none"
-                      [ngClass]="isDark ? 'bg-neutral-800/60 border-neutral-700 text-white placeholder-neutral-600' : 'bg-neutral-50 border-neutral-200 text-neutral-900'"></textarea>
-          </div>
-        </div>
-
-        <!-- CONTACT Tab -->
-        <div *ngIf="activeSubTab === 'contact'" class="space-y-5">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div class="flex flex-col gap-1.5">
-              <label class="text-[10px] font-bold uppercase tracking-widest"
-                     [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Email de Contacto</label>
-              <input type="email" [(ngModel)]="configDraft.contact.email"
-                     class="input-field px-4 py-3 rounded-xl border text-sm focus:outline-none"
-                     [ngClass]="isDark ? 'bg-neutral-800/60 border-neutral-700 text-white placeholder-neutral-600' : 'bg-neutral-50 border-neutral-200 text-neutral-900'">
-            </div>
-          </div>
-        </div>
-
-        <!-- LINKTREE Tab -->
-        <div *ngIf="activeSubTab === 'links'" class="space-y-5">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div class="flex flex-col gap-1.5">
-              <label class="text-[10px] font-bold uppercase tracking-widest"
-                     [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Nombre del Perfil</label>
-              <input type="text" [(ngModel)]="configDraft.links.profileName"
-                     class="input-field px-4 py-3 rounded-xl border text-sm focus:outline-none"
-                     [ngClass]="isDark ? 'bg-neutral-800/60 border-neutral-700 text-white placeholder-neutral-600' : 'bg-neutral-50 border-neutral-200 text-neutral-900'">
-            </div>
-            <div class="flex flex-col gap-1.5">
-              <label class="text-[10px] font-bold uppercase tracking-widest"
-                     [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Título del Perfil</label>
-              <input type="text" [(ngModel)]="configDraft.links.profileTitle"
-                     class="input-field px-4 py-3 rounded-xl border text-sm focus:outline-none"
-                     [ngClass]="isDark ? 'bg-neutral-800/60 border-neutral-700 text-white placeholder-neutral-600' : 'bg-neutral-50 border-neutral-200 text-neutral-900'">
-            </div>
-          </div>
-
-          <!-- Link items -->
+        <!-- Active Sections List -->
+        <div>
+          <h3 class="text-xs font-bold uppercase tracking-widest mb-3" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Secciones Activas — Orden de Visualización</h3>
+          
           <div class="space-y-3">
-            <div class="flex justify-between items-center">
-              <h4 class="text-xs font-bold uppercase tracking-widest"
-                  [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Links registrados</h4>
-              <button (click)="addLink()"
-                      class="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all cursor-pointer"
-                      [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:text-white' : 'border-neutral-300 text-neutral-500 hover:text-neutral-900'">
-                + Agregar
-              </button>
+            <div *ngIf="getActiveSections().length === 0" class="p-8 text-center border rounded-xl" [ngClass]="isDark ? 'border-neutral-800 text-neutral-600' : 'border-neutral-200 text-neutral-400'">
+              No hay secciones en esta página.
             </div>
-            <div *ngFor="let item of configDraft.links.items; let i = index"
-                 class="grid grid-cols-1 md:grid-cols-3 gap-3 p-4 rounded-xl border"
-                 [ngClass]="isDark ? 'border-neutral-800 bg-neutral-800/30' : 'border-neutral-200 bg-neutral-50'">
-              <input type="text" [(ngModel)]="item.title" placeholder="Título"
-                     class="input-field px-3 py-2 rounded-lg border text-sm focus:outline-none"
-                     [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-600' : 'bg-white border-neutral-200 text-neutral-900'">
-              <input type="text" [(ngModel)]="item.url" placeholder="https://"
-                     class="input-field px-3 py-2 rounded-lg border text-sm focus:outline-none"
-                     [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-600' : 'bg-white border-neutral-200 text-neutral-900'">
-              <div class="flex gap-2">
-                <select [(ngModel)]="item.icon"
-                        class="flex-grow input-field px-3 py-2 rounded-lg border text-sm focus:outline-none"
-                        [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
-                  <option value="tiktok">TikTok</option>
-                  <option value="instagram">Instagram</option>
-                  <option value="whatsapp">WhatsApp</option>
-                  <option value="linkedin">LinkedIn</option>
-                  <option value="link">Otro</option>
-                </select>
-                <button (click)="removeLink(i)"
-                        class="px-3 py-2 rounded-lg border border-red-500/20 text-red-400 hover:bg-red-500/10 text-xs cursor-pointer transition-all">×</button>
+
+            <div *ngFor="let sec of getActiveSections(); let i = index"
+                 class="flex items-center gap-3 p-3 rounded-xl border transition-all duration-200"
+                 [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
+              
+              <!-- Order Controls -->
+              <div class="flex flex-col gap-1">
+                <button (click)="moveSection(i, -1)" [disabled]="i === 0"
+                        class="p-1 rounded bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
+                </button>
+                <button (click)="moveSection(i, 1)" [disabled]="i === getActiveSections().length - 1"
+                        class="p-1 rounded bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+              </div>
+
+              <!-- Content Info -->
+              <div class="flex-grow flex items-center gap-4 min-w-0">
+                <div class="w-12 h-12 rounded-lg border flex items-center justify-center flex-shrink-0"
+                     [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-neutral-400' : 'bg-neutral-50 border-neutral-200 text-neutral-500'">
+                  <span class="text-[9px] font-bold uppercase tracking-wider">{{ sec.type }}</span>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-bold truncate" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                    Bloque: {{ getBlockName(sec.type) }}
+                  </p>
+                  <p class="text-[10px] uppercase tracking-wider" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">
+                    ID: {{ sec.id }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <button (click)="sec.active = !sec.active"
+                        class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide border transition-all cursor-pointer flex items-center gap-1.5"
+                        [ngClass]="sec.active 
+                          ? (isDark ? 'border-green-500/30 text-green-400 bg-green-500/10' : 'border-green-200 text-green-600 bg-green-50')
+                          : (isDark ? 'border-neutral-700 text-neutral-500' : 'border-neutral-200 text-neutral-400')">
+                  <span class="w-2 h-2 rounded-full" [ngClass]="sec.active ? 'bg-current' : 'bg-transparent border border-current'"></span>
+                  {{ sec.active ? 'Activo' : 'Inactivo' }}
+                </button>
+                <button class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide border transition-all cursor-pointer flex items-center gap-1.5"
+                        [ngClass]="isDark ? 'border-blue-500/30 text-blue-400 hover:bg-blue-500/10' : 'border-blue-200 text-blue-600 hover:bg-blue-50'">
+                  Editar
+                </button>
+                <button (click)="deleteSection(i)"
+                        class="p-2 rounded-lg border transition-all cursor-pointer border-red-500/20 text-red-400 hover:bg-red-500/10">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
               </div>
             </div>
           </div>
@@ -169,13 +130,13 @@ import { PortfolioConfigService } from '../../../services/portfolio-config.servi
       </div>
 
       <!-- No config -->
-      <div *ngIf="!configDraft" class="py-12 text-center text-sm"
+      <div *ngIf="!configDraft?.pages" class="py-12 text-center text-sm"
            [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-400'">
-        Cargando configuración...
+        Cargando estructura de páginas...
       </div>
 
       <!-- Actions -->
-      <div *ngIf="configDraft" class="flex justify-end gap-3">
+      <div *ngIf="configDraft?.pages" class="flex justify-end gap-3 mt-8">
         <button (click)="resetDraft()"
                 class="px-5 py-2.5 rounded-xl text-sm font-bold uppercase tracking-widest border transition-all duration-200 cursor-pointer"
                 [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:text-white' : 'border-neutral-200 text-neutral-500 hover:text-neutral-900'">
@@ -184,7 +145,7 @@ import { PortfolioConfigService } from '../../../services/portfolio-config.servi
         <button (click)="saveDraft()"
                 class="px-6 py-2.5 rounded-xl text-sm font-bold uppercase tracking-widest transition-all duration-200 cursor-pointer"
                 [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-100' : 'bg-neutral-900 text-white hover:bg-neutral-800'">
-          Guardar y Publicar
+          Guardar Cambios
         </button>
       </div>
     </div>
@@ -204,45 +165,77 @@ export class DashCustomizeComponent implements OnInit {
   private configService = inject(PortfolioConfigService);
 
   configDraft: any = null;
-  activeSubTab = 'hero';
+  activePageTab = 'home';
+  pageTabs = [
+    { id: 'home', label: 'Inicio' },
+    { id: 'links', label: 'Links' },
+    { id: 'planes', label: 'Planes' },
+  ];
 
-  subTabs = [
-    { id: 'hero', label: 'Hero' },
-    { id: 'about', label: 'Sobre Mí' },
-    { id: 'contact', label: 'Contacto' },
-    { id: 'links', label: 'Linktree' },
+  availableBlocks = [
+    { type: 'hero', name: 'Hero (Cabecera)' },
+    { type: 'about', name: 'Bloque Sobre Mí' },
+    { type: 'portfolio', name: 'Carrusel de Proyectos' },
+    { type: 'text', name: 'Bloque de Texto Libre' },
+    { type: 'linktree', name: 'Árbol de Enlaces' }
   ];
 
   get isDark() { return this.theme === 'dark'; }
 
   ngOnInit() {
+    this.loadData();
+  }
+
+  loadData() {
     const data = this.configService.data();
     if (data) {
       this.configDraft = JSON.parse(JSON.stringify(data));
+      // Ensure pages structure exists
+      if (!this.configDraft.pages) {
+        this.configDraft.pages = { home: { sections: [] }, links: { sections: [] }, planes: { sections: [] } };
+      }
     } else {
-      // Wait a tick for async config load
-      setTimeout(() => {
-        const d = this.configService.data();
-        if (d) this.configDraft = JSON.parse(JSON.stringify(d));
-      }, 800);
+      setTimeout(() => this.loadData(), 500);
     }
   }
 
-  addLink() {
-    if (!this.configDraft?.links?.items) return;
-    this.configDraft.links.items.push({ id: Date.now().toString(), title: 'Nuevo Enlace', subtitle: '', url: 'https://', icon: 'link' });
+  getActiveSections(): any[] {
+    if (!this.configDraft?.pages || !this.configDraft.pages[this.activePageTab]) return [];
+    return this.configDraft.pages[this.activePageTab].sections || [];
   }
 
-  removeLink(i: number) {
-    this.configDraft.links.items.splice(i, 1);
+  getBlockName(type: string): string {
+    return this.availableBlocks.find(b => b.type === type)?.name || type;
+  }
+
+  addSection(type: string) {
+    const sections = this.getActiveSections();
+    sections.push({
+      id: type + '-' + Date.now(),
+      type: type,
+      active: true,
+      config: {}
+    });
+  }
+
+  deleteSection(index: number) {
+    if (confirm('¿Eliminar esta sección?')) {
+      const sections = this.getActiveSections();
+      sections.splice(index, 1);
+    }
+  }
+
+  moveSection(index: number, direction: number) {
+    const sections = this.getActiveSections();
+    if (index + direction < 0 || index + direction >= sections.length) return;
+    const temp = sections[index];
+    sections[index] = sections[index + direction];
+    sections[index + direction] = temp;
   }
 
   saveDraft() {
-    this.configService.updateSection('general', this.configDraft.general);
-    this.configService.updateSection('hero', this.configDraft.hero);
-    this.configService.updateSection('about', this.configDraft.about);
-    this.configService.updateSection('contact', this.configDraft.contact);
-    this.configService.updateSection('links', this.configDraft.links);
+    // Save pages structure back to config
+    this.configService.updateSection('pages', this.configDraft.pages);
     this.configService.save();
   }
 
