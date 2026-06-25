@@ -50,7 +50,7 @@ const TAB_LABELS: Record<string, string> = {
              ]">
           <!-- Logo-link icon -->
           <div class="pl-3 flex-shrink-0 flex items-center">
-            <img src="assets/icons/logo-link.png" class="w-5 h-5 object-contain opacity-60" alt="AI">
+            <img [src]="theme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-5 h-5 object-contain opacity-60" alt="AI">
           </div>
 
           <!-- Input -->
