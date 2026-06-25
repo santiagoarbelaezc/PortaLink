@@ -1,11 +1,12 @@
-import { Component, Input, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, Output, EventEmitter, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AnalyticsService, SystemMetrics } from '../../../services/analytics.service';
 
 @Component({
   selector: 'app-dash-home',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="space-y-6 tab-enter">
 
@@ -75,44 +76,82 @@ import { AnalyticsService, SystemMetrics } from '../../../services/analytics.ser
               Pregúntale a nuestro motor inteligente para analizar o navegar el dashboard
             </p>
             
-            <div class="flex flex-col sm:flex-row gap-3 pt-1">
-              <div class="relative flex-1 group">
-                <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-300"
-                      [ngClass]="isDark ? 'text-neutral-500 group-focus-within:text-green-400' : 'text-neutral-400 group-focus-within:text-green-600'">
-                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </span>
-                <input type="text" placeholder="Ej: productos con menos stock, usuarios registrados..."
-                       class="w-full py-3.5 pl-12 pr-4 rounded-xl border text-sm focus:outline-none transition-all duration-300 font-medium"
-                       [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800 text-white placeholder-neutral-600 focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 hover:border-neutral-700' : 'bg-neutral-50/80 border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-[#8ab798] focus:ring-1 focus:ring-[#8ab798] hover:border-neutral-300'">
+            <div class="relative flex flex-col gap-3 pt-1 w-full max-w-2xl">
+              <div class="flex flex-col sm:flex-row gap-3 w-full">
+                <div class="relative flex-1 group ai-search-container">
+                  <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-300"
+                        [ngClass]="isDark ? 'text-neutral-500 group-focus-within:text-green-400' : 'text-neutral-400 group-focus-within:text-green-600'">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </span>
+                  <input type="text"
+                         [(ngModel)]="aiQuery"
+                         (input)="onSearch()"
+                         (focus)="searchFocused = true"
+                         (blur)="onBlur()"
+                         [placeholder]="displayPlaceholder"
+                         class="w-full py-3.5 pl-12 pr-10 rounded-xl border text-sm focus:outline-none transition-all duration-300 font-medium"
+                         [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800 text-white placeholder-neutral-600 focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 hover:border-neutral-700' : 'bg-neutral-50/80 border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-[#8ab798] focus:ring-1 focus:ring-[#8ab798] hover:border-neutral-300'">
+                  
+                  <!-- Clear button -->
+                  <button *ngIf="aiQuery" (click)="clearSearch()"
+                          class="absolute inset-y-0 right-0 pr-4 flex items-center transition-opacity cursor-pointer"
+                          [ngClass]="isDark ? 'text-neutral-500 hover:text-neutral-300' : 'text-neutral-400 hover:text-neutral-600'">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+
+                  <!-- Results Dropdown -->
+                  <div *ngIf="aiOpen && aiResults.length > 0"
+                       class="absolute top-full left-0 right-0 mt-2 rounded-xl border shadow-2xl z-50 overflow-hidden animate-dropdown"
+                       [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700' : 'bg-white border-neutral-200'">
+                    <div class="p-2">
+                      <p class="text-[10px] font-bold uppercase tracking-widest px-2 py-1.5"
+                         [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-400'">Resultados del sistema</p>
+                      <button *ngFor="let result of aiResults"
+                              (click)="selectResult(result)"
+                              class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-150 cursor-pointer group"
+                              [ngClass]="isDark ? 'hover:bg-neutral-800' : 'hover:bg-neutral-50'">
+                        <span class="text-base flex-shrink-0">{{ result.emoji }}</span>
+                        <div class="flex-grow min-w-0">
+                          <p class="text-sm font-semibold truncate"
+                             [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ result.title }}</p>
+                          <p class="text-xs truncate"
+                             [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-500'">{{ result.value }}</p>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <button class="px-6 py-3.5 rounded-xl font-bold text-sm transition-all duration-300 hover:opacity-90 whitespace-nowrap shadow-md hover:shadow-lg active:scale-95"
+                        [ngClass]="isDark ? 'bg-white hover:bg-neutral-200 text-black' : 'bg-neutral-900 hover:bg-black text-white'">
+                  Consultar IA
+                </button>
               </div>
               
-              <button class="px-6 py-3.5 rounded-xl font-bold text-sm transition-all duration-300 hover:opacity-90 whitespace-nowrap shadow-md hover:shadow-lg active:scale-95"
-                      [ngClass]="isDark ? 'bg-green-600 hover:bg-green-500 text-white' : 'bg-[#8ab798] hover:bg-[#7a9d84] text-black'">
-                Consultar IA
-              </button>
-            </div>
-            
-            <div class="flex flex-wrap items-center gap-2.5 pt-2">
-              <span class="text-[11px] uppercase tracking-widest font-bold" [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-500'">
-                Sugerencias rápidas:
-              </span>
-              <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
-                      [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-600 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
-                <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-green-500' : 'text-[#8ab798]'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                Mensajes nuevos
-              </button>
-              <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
-                      [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-600 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
-                <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-green-500' : 'text-[#8ab798]'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                Solicitudes pendientes
-              </button>
-              <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
-                      [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-600 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
-                <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-green-500' : 'text-[#8ab798]'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                Usuarios registrados
-              </button>
+              <div class="flex flex-wrap items-center gap-2.5 pt-2">
+                <span class="text-[11px] uppercase tracking-widest font-bold" [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-500'">
+                  Sugerencias rápidas:
+                </span>
+                <button (click)="aiQuery = 'mensajes'; onSearch()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
+                        [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-600 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
+                  <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-green-500' : 'text-[#8ab798]'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                  Mensajes nuevos
+                </button>
+                <button (click)="aiQuery = 'solicitudes'; onSearch()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
+                        [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-600 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
+                  <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-green-500' : 'text-[#8ab798]'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                  Solicitudes pendientes
+                </button>
+                <button (click)="aiQuery = 'usuarios'; onSearch()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
+                        [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-600 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
+                  <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-green-500' : 'text-[#8ab798]'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                  Usuarios registrados
+                </button>
+              </div>
             </div>
             
           </div>
@@ -278,10 +317,18 @@ import { AnalyticsService, SystemMetrics } from '../../../services/analytics.ser
       from { opacity: 0; transform: translateY(8px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+    .animate-dropdown {
+      animation: dropdownIn 0.15s ease-out forwards;
+    }
+    @keyframes dropdownIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
   `]
 })
 export class DashHomeComponent implements OnInit, OnDestroy {
   @Input() theme = 'dark';
+  @Output() tabChange = new EventEmitter<string>();
 
   private analyticsService = inject(AnalyticsService);
 
@@ -292,6 +339,25 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   private clockInterval: any;
 
   get isDark() { return this.theme === 'dark'; }
+
+  // AI Search & Typewriter State
+  aiQuery = '';
+  aiResults: any[] = [];
+  aiOpen = false;
+  searchFocused = false;
+  displayPlaceholder = '';
+  
+  private placeholders = [
+    'Buscar vistas del sistema...',
+    'Buscar mensajes pendientes...',
+    'Consultar estado del servidor...',
+    'Buscar usuarios registrados...',
+    'Consultar métricas de tráfico...',
+  ];
+  private placeholderIdx = 0;
+  private charIdx = 0;
+  private typeInterval: any;
+  private pauseTimeout: any;
 
   metricCards: any[] = [];
   sectionViewsArray: { name: string; views: number }[] = [];
@@ -311,10 +377,15 @@ export class DashHomeComponent implements OnInit, OnDestroy {
     this.loadBadges();
     this.updateClock();
     this.clockInterval = setInterval(() => this.updateClock(), 1000);
+    
+    // Start typewriter
+    this.startTypewriter();
   }
 
   ngOnDestroy() {
     clearInterval(this.clockInterval);
+    clearInterval(this.typeInterval);
+    clearTimeout(this.pauseTimeout);
   }
 
   private updateClock() {
@@ -375,6 +446,114 @@ export class DashHomeComponent implements OnInit, OnDestroy {
       this.metrics = this.analyticsService.getMetrics();
       this.buildCards();
       this.buildArrays();
+    }
+  }
+
+  // --- AI Search Logic ---
+  private startTypewriter() {
+    this.typeInterval = setInterval(() => {
+      if (this.aiQuery || this.searchFocused) return;
+      const target = this.placeholders[this.placeholderIdx];
+      if (this.charIdx < target.length) {
+        this.displayPlaceholder = target.substring(0, this.charIdx + 1);
+        this.charIdx++;
+      } else {
+        clearInterval(this.typeInterval);
+        this.pauseTimeout = setTimeout(() => {
+          const eraseInterval = setInterval(() => {
+            if (this.charIdx > 0) {
+              this.charIdx--;
+              this.displayPlaceholder = target.substring(0, this.charIdx);
+            } else {
+              clearInterval(eraseInterval);
+              this.placeholderIdx = (this.placeholderIdx + 1) % this.placeholders.length;
+              this.startTypewriter();
+            }
+          }, 25);
+        }, 1800);
+      }
+    }, 65);
+  }
+
+  onSearch() {
+    const q = this.aiQuery.toLowerCase().trim();
+    if (!q) {
+      this.aiResults = [];
+      this.aiOpen = false;
+      return;
+    }
+
+    const messages = JSON.parse(localStorage.getItem('portalink_admin_messages') || '[]');
+    const leads = JSON.parse(localStorage.getItem('portalink_admin_leads') || '[]');
+    const users = JSON.parse(localStorage.getItem('portalink_admin_users') || '[]');
+
+    const unread = messages.filter((m: any) => !m.read).length;
+    const pending = leads.filter((l: any) => l.status === 'Pendiente').length;
+
+    const results: any[] = [];
+
+    if (/vista|home|inicio|portafolio|principal/.test(q))
+      results.push({ emoji: '👁', title: 'Vistas del Home', value: `${this.metrics.homeViews} visitas totales`, tab: 'dashboard' });
+
+    if (/linktree|enlace|link/.test(q))
+      results.push({ emoji: '🔗', title: 'Vistas Linktree', value: `${this.metrics.linktreeViews} visitas`, tab: 'dashboard' });
+
+    if (/mensaje|correo|bandeja|mail/.test(q))
+      results.push({ emoji: '✉️', title: 'Mensajes recibidos', value: `${unread} sin leer de ${messages.length} totales`, tab: 'messages' });
+
+    if (/solicitud|plan|lead|cliente/.test(q))
+      results.push({ emoji: '📋', title: 'Solicitudes de planes', value: `${pending} pendientes de respuesta`, tab: 'leads' });
+
+    if (/usuario|user|registro/.test(q))
+      results.push({ emoji: '👥', title: 'Usuarios registrados', value: `${users.length} usuarios en el sistema`, tab: 'users' });
+
+    if (/server|servidor|salud|estado|online/.test(q))
+      results.push({ emoji: '💚', title: 'Estado del Servidor', value: 'ONLINE · 99.98% uptime · Ping 42ms', tab: 'dashboard' });
+
+    if (/rotbot|chat|ia|asistente|consulta/.test(q))
+      results.push({ emoji: '🤖', title: 'Rotbot IA', value: `${this.metrics.rotbotOpens} sesiones · ${this.metrics.rotbotMessagesSent} mensajes`, tab: 'dashboard' });
+
+    if (/analiti|tendencia|trafico|tráfico/.test(q))
+      results.push({ emoji: '📈', title: 'Analíticas avanzadas', value: 'Distribución de tráfico y tendencias', tab: 'analytics' });
+
+    if (/estadistic|sección|seccion|drill/.test(q))
+      results.push({ emoji: '📊', title: 'Estadísticas por sección', value: 'Vista detallada con drill-down', tab: 'stats' });
+
+    if (/reporte|export|resumen/.test(q))
+      results.push({ emoji: '📄', title: 'Reportes', value: 'Exportar métricas y configuración', tab: 'reports' });
+
+    if (results.length === 0 && q.length >= 2)
+      results.push({ emoji: '🔍', title: 'Sin coincidencias', value: 'Prueba: vistas, mensajes, usuarios, servidor...' });
+
+    this.aiResults = results;
+    this.aiOpen = true;
+  }
+
+  onBlur() {
+    setTimeout(() => {
+      this.searchFocused = false;
+      this.aiOpen = false;
+    }, 200);
+  }
+
+  clearSearch() {
+    this.aiQuery = '';
+    this.aiResults = [];
+    this.aiOpen = false;
+  }
+
+  selectResult(result: any) {
+    if (result.tab) {
+      this.tabChange.emit(result.tab);
+    }
+    this.clearSearch();
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(e: Event) {
+    const t = e.target as HTMLElement;
+    if (!t.closest('.ai-search-container')) {
+      this.aiOpen = false;
     }
   }
 }

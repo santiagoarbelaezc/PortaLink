@@ -158,7 +158,8 @@ interface Tab {
 
             <app-dash-home
               *ngIf="activeTab === 'dashboard'"
-              [theme]="currentTheme">
+              [theme]="currentTheme"
+              (tabChange)="setTab($event)">
             </app-dash-home>
 
             <app-dash-analytics
