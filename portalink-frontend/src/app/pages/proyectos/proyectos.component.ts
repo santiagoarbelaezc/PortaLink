@@ -1,12 +1,18 @@
 import { Component, inject, signal, OnInit, OnDestroy, effect, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
-import { HeroComponent } from '../../components/hero/hero.component';
-import { PortfolioComponent } from '../../components/portfolio/portfolio.component';
-import { AboutComponent } from '../../components/about/about.component';
+import { CommonModule } from '@angular/common';
 import { SkillsComponent } from '../../components/skills/skills.component';
 import { ContactComponent } from '../../components/contact/contact.component';
 import { FooterComponent } from '../../components/footer/footer.component';
+
+// Dynamic Components
+import { DynHeroComponent } from '../../components/components-dynamics/dyn-hero.component';
+import { DynAboutComponent } from '../../components/components-dynamics/dyn-about.component';
+import { DynPortfolioComponent } from '../../components/components-dynamics/dyn-portfolio.component';
+import { DynTextComponent } from '../../components/components-dynamics/dyn-text.component';
+import { DynLinktreeComponent } from '../../components/components-dynamics/dyn-linktree.component';
+
 import { ScrollColorService } from '../../services/scroll-color.service';
 import { PortfolioConfigService } from '../../services/portfolio-config.service';
 import { AiChatFloatingComponent } from '../../components/ai-chat-floating/ai-chat-floating.component';
@@ -16,20 +22,33 @@ import { AnalyticsService } from '../../services/analytics.service';
 @Component({
     selector: 'app-proyectos',
     standalone: true,
-    imports: [
-        CommonModule,
-        HeroComponent,
-        PortfolioComponent,
-        AboutComponent,
         SkillsComponent,
         ContactComponent,
         FooterComponent,
+        DynHeroComponent,
+        DynAboutComponent,
+        DynPortfolioComponent,
+        DynTextComponent,
+        DynLinktreeComponent
     ],
     template: `
     <div class="dynamic-bg"></div>
     <main class="relative text-white" *ngIf="portfolioData()">
-      <app-hero [data]="portfolioData().hero"></app-hero>
       
+      <!-- Dynamic Sections Builder -->
+      <ng-container *ngIf="portfolioData().pages?.home?.sections">
+        <ng-container *ngFor="let sec of portfolioData().pages.home.sections">
+          <ng-container *ngIf="sec.active" [ngSwitch]="sec.type">
+            <app-dyn-hero *ngSwitchCase="'hero'" [config]="sec.config"></app-dyn-hero>
+            <app-dyn-about *ngSwitchCase="'about'" [config]="sec.config"></app-dyn-about>
+            <app-dyn-portfolio *ngSwitchCase="'portfolio'" [config]="sec.config"></app-dyn-portfolio>
+            <app-dyn-text *ngSwitchCase="'text'" [config]="sec.config"></app-dyn-text>
+            <app-dyn-linktree *ngSwitchCase="'linktree'" [config]="sec.config"></app-dyn-linktree>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+      
+      <!-- Static fallback / unmigrated components below -->
       <section class="rotbot-banner relative">
         <video #robotVideo autoplay [muted]="true" onvolumechange="this.muted=true; this.volume=0;" volume="0" loop playsinline class="video-bg">
           <source src="assets/videos/video-robot.mp4" type="video/mp4">
@@ -105,8 +124,6 @@ import { AnalyticsService } from '../../services/analytics.service';
         </div>
       </section>
 
-      <app-portfolio [projects]="portfolioData().portfolio"></app-portfolio>
-      <app-about [data]="portfolioData().about"></app-about>
       <app-skills [skills]="portfolioData().skills"></app-skills>
       <app-contact [data]="portfolioData().contact"></app-contact>
       <app-footer></app-footer>
