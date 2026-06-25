@@ -9,6 +9,7 @@ interface Message {
   message: string;
   date: string;
   read: boolean;
+  replied?: boolean;
 }
 
 @Component({
@@ -56,7 +57,8 @@ interface Message {
              class="rounded-2xl border p-5 transition-all duration-200"
              [ngClass]="[
                isDark ? 'bg-neutral-900/60 border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200 hover:border-neutral-300',
-               !msg.read ? (isDark ? 'border-l-2 border-l-white/30' : 'border-l-2 border-l-neutral-400') : ''
+               !msg.read && !msg.replied ? (isDark ? 'border-l-2 border-l-blue-500' : 'border-l-2 border-l-blue-500') : '',
+               msg.replied ? (isDark ? 'border-l-2 border-l-green-500/50' : 'border-l-2 border-l-green-500/50') : ''
              ]">
 
           <div class="flex items-start justify-between gap-4">
@@ -74,8 +76,13 @@ interface Message {
                     <span class="text-xs" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ msg.email }}</span>
                     <span *ngIf="!msg.read"
                           class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
-                          [ngClass]="isDark ? 'bg-white/10 text-white' : 'bg-neutral-900/10 text-neutral-700'">
+                          [ngClass]="isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'">
                       Nuevo
+                    </span>
+                    <span *ngIf="msg.replied"
+                          class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
+                          [ngClass]="isDark ? 'bg-green-500/20 text-green-400' : 'bg-green-100 text-green-700'">
+                      Respondido
                     </span>
                   </div>
                 </div>
@@ -85,15 +92,50 @@ interface Message {
             </div>
 
             <!-- Actions -->
-            <div class="flex items-center gap-2 flex-shrink-0">
+            <div class="flex flex-col sm:flex-row items-end sm:items-center gap-2 flex-shrink-0 mt-3 sm:mt-0">
+              <button *ngIf="!msg.replied" (click)="openReply(msg.id)"
+                      class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide border transition-all duration-200 cursor-pointer flex items-center gap-1.5"
+                      [ngClass]="isDark ? 'border-blue-500/30 text-blue-400 hover:bg-blue-500/10' : 'border-blue-200 text-blue-600 hover:bg-blue-50'">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+                Responder
+              </button>
+              <button *ngIf="msg.replied" disabled
+                      class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide border border-transparent opacity-60 flex items-center gap-1.5 cursor-default"
+                      [ngClass]="isDark ? 'text-green-400' : 'text-green-600'">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Respondido
+              </button>
               <button (click)="toggleRead(msg.id)"
                       class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide border transition-all duration-200 cursor-pointer"
                       [ngClass]="isDark ? 'border-neutral-700 text-neutral-500 hover:text-white hover:border-neutral-500' : 'border-neutral-200 text-neutral-400 hover:text-neutral-900 hover:border-neutral-400'">
                 {{ msg.read ? 'Sin leer' : 'Leído' }}
               </button>
               <button (click)="deleteMessage(msg.id)"
-                      class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide border transition-all duration-200 cursor-pointer border-red-500/20 text-red-400 hover:bg-red-500/10">
+                      class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide border transition-all duration-200 cursor-pointer border-red-500/20 text-red-400 hover:bg-red-500/10"
+                      title="Eliminar mensaje">
                 ×
+              </button>
+            </div>
+          </div>
+
+          <!-- Inline Reply Box -->
+          <div *ngIf="replyingTo === msg.id" class="mt-4 pt-4 border-t animate-fade-in" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+            <textarea [(ngModel)]="replyText"
+                      rows="3"
+                      class="w-full bg-transparent border rounded-xl p-3 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all resize-none"
+                      [ngClass]="isDark ? 'border-neutral-700 text-white placeholder-neutral-600 focus:border-blue-500' : 'border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-blue-500'"
+                      placeholder="Escribe tu respuesta a {{ msg.name }}..."></textarea>
+            <div class="flex justify-end gap-2 mt-3">
+              <button (click)="cancelReply()"
+                      class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all"
+                      [ngClass]="isDark ? 'text-neutral-500 hover:text-white' : 'text-neutral-500 hover:text-neutral-900'">
+                Cancelar
+              </button>
+              <button (click)="sendReply(msg)"
+                      [disabled]="!replyText.trim()"
+                      class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide bg-blue-600 text-white hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                Enviar
               </button>
             </div>
           </div>
@@ -101,10 +143,14 @@ interface Message {
       </div>
     </div>
   `,
-  styles: [`
     .tab-enter { animation: tabEnter 0.25s ease-out forwards; }
     @keyframes tabEnter {
       from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in { animation: fadeIn 0.2s ease-out forwards; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
       to   { opacity: 1; transform: translateY(0); }
     }
   `]
@@ -118,6 +164,7 @@ export class DashMessagesComponent implements OnInit {
     { id: 'all', label: 'Todos' },
     { id: 'unread', label: 'Nuevos' },
     { id: 'read', label: 'Leídos' },
+    { id: 'replied', label: 'Respondidos' },
   ];
 
   messagesList: Message[] = [
@@ -126,18 +173,23 @@ export class DashMessagesComponent implements OnInit {
     { id: 3, name: 'Robert C.', email: 'robert@designstudio.us', message: 'Would love to discuss a potential co-op development project for our startup.', date: 'Hace 3 días', read: true },
   ];
 
+  replyingTo: number | null = null;
+  replyText = '';
+
   get isDark() { return this.theme === 'dark'; }
 
   get filtered(): Message[] {
-    if (this.activeFilter === 'unread') return this.messagesList.filter(m => !m.read);
-    if (this.activeFilter === 'read') return this.messagesList.filter(m => m.read);
+    if (this.activeFilter === 'unread') return this.messagesList.filter(m => !m.read && !m.replied);
+    if (this.activeFilter === 'read') return this.messagesList.filter(m => m.read && !m.replied);
+    if (this.activeFilter === 'replied') return this.messagesList.filter(m => m.replied);
     return this.messagesList;
   }
 
   getCount(filterId: string): number {
     if (filterId === 'all') return this.messagesList.length;
-    if (filterId === 'unread') return this.messagesList.filter(m => !m.read).length;
-    return this.messagesList.filter(m => m.read).length;
+    if (filterId === 'unread') return this.messagesList.filter(m => !m.read && !m.replied).length;
+    if (filterId === 'replied') return this.messagesList.filter(m => m.replied).length;
+    return this.messagesList.filter(m => m.read && !m.replied).length;
   }
 
   ngOnInit() {
@@ -162,6 +214,29 @@ export class DashMessagesComponent implements OnInit {
       this.messagesList = this.messagesList.filter(m => m.id !== id);
       this.save();
     }
+  }
+
+  openReply(id: number) {
+    this.replyingTo = id;
+    this.replyText = '';
+  }
+
+  cancelReply() {
+    this.replyingTo = null;
+    this.replyText = '';
+  }
+
+  sendReply(msg: Message) {
+    if (!this.replyText.trim()) return;
+    
+    // Simulate sending email
+    msg.replied = true;
+    msg.read = true; // Auto-mark as read if replying
+    this.save();
+    this.cancelReply();
+    
+    // In a real app, this would call a service to send the email
+    console.log(`Respuesta enviada a ${msg.email}: ${this.replyText}`);
   }
 
   private save() {
