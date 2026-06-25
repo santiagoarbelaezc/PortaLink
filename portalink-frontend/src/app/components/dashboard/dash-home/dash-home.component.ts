@@ -65,7 +65,7 @@ import { AnalyticsService, SystemMetrics } from '../../../services/analytics.ser
           <div class="flex-1 space-y-4">
             
             <div class="flex items-center gap-3">
-              <img src="assets/icons/logo-link.png" alt="AI Icon" class="w-7 h-7 object-contain">
+              <img [src]="isDark ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" alt="AI Icon" class="w-7 h-7 object-contain">
               <h3 class="text-xl font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
                 Centro de Comando IA
               </h3>
