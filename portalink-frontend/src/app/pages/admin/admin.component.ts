@@ -20,10 +20,10 @@ import { PortfolioConfigService } from '../../services/portfolio-config.service'
         <!-- Header -->
         <div class="p-6 border-b flex items-center gap-3"
              [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-          <img src="assets/icons/mi-logo2.png" class="w-8 h-8 object-contain" alt="PortaLink">
+          <img src="assets/icons/mi-logo2.png" class="w-9 h-9 object-contain" alt="PortaLink">
           <div>
-            <h1 class="text-sm font-bold tracking-wider uppercase">PortaLink</h1>
-            <span class="text-[9px] uppercase tracking-widest text-[#00f5ff] font-bold">Admin Panel</span>
+            <h1 class="text-base font-bold tracking-wider uppercase">PortaLink</h1>
+            <span class="text-[11px] uppercase tracking-widest text-neutral-400 font-bold">Admin Panel</span>
           </div>
         </div>
 
@@ -31,9 +31,9 @@ import { PortfolioConfigService } from '../../services/portfolio-config.service'
         <nav class="flex-grow p-4 space-y-1.5 mt-4">
           <button *ngFor="let tab of tabs" 
                   (click)="activeTab = tab.id"
-                  class="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-xs uppercase font-bold tracking-widest transition-all duration-300 cursor-pointer"
+                  class="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm uppercase font-bold tracking-widest transition-all duration-300 cursor-pointer"
                   [class.active-nav]="activeTab === tab.id"
-                  [style.color]="activeTab === tab.id ? '#000000' : (currentTheme === 'light' ? '#4b5563' : '#9ca3af')">
+                  [style.color]="activeTab === tab.id ? (currentTheme === 'light' ? '#ffffff' : '#000000') : (currentTheme === 'light' ? '#4b5563' : '#9ca3af')">
             <span class="w-5 h-5 flex items-center justify-center">
               <svg *ngIf="tab.id === 'dashboard'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="3" width="7" height="9" rx="1"></rect>
@@ -69,7 +69,7 @@ import { PortfolioConfigService } from '../../services/portfolio-config.service'
         <div class="p-6 border-t"
              [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
           <a routerLink="/" 
-             class="w-full py-3 rounded-xl border text-center text-xs uppercase font-bold tracking-wider hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 block">
+             class="w-full py-3 rounded-xl border text-center text-sm uppercase font-bold tracking-wider hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 block">
             Volver al Sitio
           </a>
         </div>
@@ -85,8 +85,8 @@ import { PortfolioConfigService } from '../../services/portfolio-config.service'
         <!-- HEADER TOP BAR -->
         <header class="flex justify-between items-center mb-10 relative z-10">
           <div>
-            <span class="text-[10px] font-bold uppercase tracking-[0.25em] text-[#00f5ff]">Consola</span>
-            <h2 class="text-3xl font-bold uppercase tracking-tight mt-1">{{ getTabTitle() }}</h2>
+            <span class="text-[12px] font-bold uppercase tracking-[0.25em] text-neutral-400">Consola</span>
+            <h2 class="text-4xl font-bold uppercase tracking-tight mt-1">{{ getTabTitle() }}</h2>
           </div>
           
           <!-- Theme Switcher -->
@@ -114,17 +114,20 @@ import { PortfolioConfigService } from '../../services/portfolio-config.service'
                    [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
                 <div class="flex justify-between items-start">
                   <div class="flex flex-col">
-                    <span class="text-[9px] uppercase tracking-widest opacity-60">Vistas del Home</span>
-                    <h3 class="text-3xl font-bold mt-2 font-headline">{{ metrics.homeViews }}</h3>
+                    <span class="text-[11px] uppercase tracking-widest opacity-60">Vistas del Home</span>
+                    <h3 class="text-4xl font-bold mt-2 font-headline">{{ metrics.homeViews }}</h3>
                   </div>
-                  <span class="p-2.5 rounded-xl bg-cyan-500/10 text-[#00f5ff] flex items-center justify-center">
+                  <span class="p-2.5 rounded-xl border flex items-center justify-center"
+                        [style.background]="currentTheme === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)'"
+                        [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.1)'"
+                        [style.color]="currentTheme === 'light' ? '#111827' : '#ffffff'">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
                   </span>
                 </div>
-                <div class="text-[9px] text-[#00f5ff] font-bold mt-3.5 uppercase tracking-wider">Página Principal</div>
+                <div class="text-[11px] font-bold mt-3.5 uppercase tracking-wider" [style.color]="currentTheme === 'light' ? '#4b5563' : '#a3a3a3'">Página Principal</div>
               </div>
 
               <div class="stat-card p-6 rounded-2xl border transition-all duration-300 relative overflow-hidden"
@@ -132,16 +135,19 @@ import { PortfolioConfigService } from '../../services/portfolio-config.service'
                    [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
                 <div class="flex justify-between items-start">
                   <div class="flex flex-col">
-                    <span class="text-[9px] uppercase tracking-widest opacity-60">Vistas Linktree</span>
-                    <h3 class="text-3xl font-bold mt-2 font-headline">{{ metrics.linktreeViews }}</h3>
+                    <span class="text-[11px] uppercase tracking-widest opacity-60">Vistas Linktree</span>
+                    <h3 class="text-4xl font-bold mt-2 font-headline">{{ metrics.linktreeViews }}</h3>
                   </div>
-                  <span class="p-2.5 rounded-xl bg-green-500/10 text-green-400 flex items-center justify-center">
+                  <span class="p-2.5 rounded-xl border flex items-center justify-center"
+                        [style.background]="currentTheme === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)'"
+                        [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.1)'"
+                        [style.color]="currentTheme === 'light' ? '#111827' : '#ffffff'">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                     </svg>
                   </span>
                 </div>
-                <div class="text-[9px] text-green-400 font-bold mt-3.5 uppercase tracking-wider">Enlaces (/links)</div>
+                <div class="text-[11px] font-bold mt-3.5 uppercase tracking-wider" [style.color]="currentTheme === 'light' ? '#4b5563' : '#a3a3a3'">Enlaces (/links)</div>
               </div>
 
               <div class="stat-card p-6 rounded-2xl border transition-all duration-300 relative overflow-hidden"
@@ -149,16 +155,19 @@ import { PortfolioConfigService } from '../../services/portfolio-config.service'
                    [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
                 <div class="flex justify-between items-start">
                   <div class="flex flex-col">
-                    <span class="text-[9px] uppercase tracking-widest opacity-60">Consultas a Rotbot</span>
-                    <h3 class="text-3xl font-bold mt-2 font-headline">{{ metrics.rotbotOpens }}</h3>
+                    <span class="text-[11px] uppercase tracking-widest opacity-60">Consultas a Rotbot</span>
+                    <h3 class="text-4xl font-bold mt-2 font-headline">{{ metrics.rotbotOpens }}</h3>
                   </div>
-                  <span class="p-2.5 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center">
+                  <span class="p-2.5 rounded-xl border flex items-center justify-center"
+                        [style.background]="currentTheme === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)'"
+                        [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.1)'"
+                        [style.color]="currentTheme === 'light' ? '#111827' : '#ffffff'">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                     </svg>
                   </span>
                 </div>
-                <div class="text-[9px] text-purple-400 font-bold mt-3.5 uppercase tracking-wider">{{ metrics.rotbotMessagesSent }} Mensajes</div>
+                <div class="text-[11px] font-bold mt-3.5 uppercase tracking-wider" [style.color]="currentTheme === 'light' ? '#4b5563' : '#a3a3a3'">{{ metrics.rotbotMessagesSent }} Mensajes</div>
               </div>
 
               <div class="stat-card p-6 rounded-2xl border transition-all duration-300 relative overflow-hidden"
@@ -166,16 +175,19 @@ import { PortfolioConfigService } from '../../services/portfolio-config.service'
                    [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
                 <div class="flex justify-between items-start">
                   <div class="flex flex-col">
-                    <span class="text-[9px] uppercase tracking-widest opacity-60">Velocidad Promedio</span>
-                    <h3 class="text-3xl font-bold mt-2 font-headline">{{ getAverageLoadTime() }} ms</h3>
+                    <span class="text-[11px] uppercase tracking-widest opacity-60">Velocidad Promedio</span>
+                    <h3 class="text-4xl font-bold mt-2 font-headline">{{ getAverageLoadTime() }} ms</h3>
                   </div>
-                  <span class="p-2.5 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
+                  <span class="p-2.5 rounded-xl border flex items-center justify-center"
+                        [style.background]="currentTheme === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)'"
+                        [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.1)'"
+                        [style.color]="currentTheme === 'light' ? '#111827' : '#ffffff'">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
                   </span>
                 </div>
-                <div class="text-[9px] text-amber-400 font-bold mt-3.5 uppercase tracking-wider">Carga de Recursos</div>
+                <div class="text-[11px] font-bold mt-3.5 uppercase tracking-wider" [style.color]="currentTheme === 'light' ? '#4b5563' : '#a3a3a3'">Carga de Recursos</div>
               </div>
 
             </div>
@@ -187,18 +199,18 @@ import { PortfolioConfigService } from '../../services/portfolio-config.service'
               <div class="p-6 rounded-2xl border"
                    [style.background]="currentTheme === 'light' ? '#ffffff' : '#07070a'"
                    [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-                <h4 class="text-xs uppercase font-bold tracking-wider mb-6">Tráfico por Sección (Home)</h4>
+                <h4 class="text-sm uppercase font-bold tracking-wider mb-6">Tráfico por Sección (Home)</h4>
                 
                 <div class="space-y-4">
                   <div *ngFor="let sec of getSectionViewsArray()" class="space-y-1.5">
-                    <div class="flex justify-between text-[10px] uppercase font-bold tracking-wider">
+                    <div class="flex justify-between text-[11.5px] uppercase font-bold tracking-wider">
                       <span class="opacity-70">{{ sec.name }}</span>
                       <span>{{ sec.views }} Visitas</span>
                     </div>
                     <div class="w-full h-2 rounded-full overflow-hidden bg-neutral-800/40 border border-white/5">
                       <div class="h-full rounded-full transition-all duration-1000 ease-out" 
                            [style.width.%]="getSectionPercentage(sec.views)"
-                           style="background: linear-gradient(90deg, #00f5ff, #0099ff);"></div>
+                           [style.background]="currentTheme === 'light' ? 'linear-gradient(90deg, #737373, #171717)' : 'linear-gradient(90deg, #ffffff, #404040)'"></div>
                     </div>
                   </div>
                 </div>
@@ -208,18 +220,18 @@ import { PortfolioConfigService } from '../../services/portfolio-config.service'
               <div class="p-6 rounded-2xl border"
                    [style.background]="currentTheme === 'light' ? '#ffffff' : '#07070a'"
                    [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)'">
-                <h4 class="text-xs uppercase font-bold tracking-wider mb-6">Clics en Enlaces (Linktree)</h4>
+                <h4 class="text-sm uppercase font-bold tracking-wider mb-6">Clics en Enlaces (Linktree)</h4>
                 
                 <div class="space-y-4">
                   <div *ngFor="let click of getLinkClicksArray()" class="space-y-1.5">
-                    <div class="flex justify-between text-[10px] uppercase font-bold tracking-wider">
+                    <div class="flex justify-between text-[11.5px] uppercase font-bold tracking-wider">
                       <span class="opacity-70">{{ click.name }}</span>
                       <span>{{ click.count }} clics</span>
                     </div>
                     <div class="w-full h-2 rounded-full overflow-hidden bg-neutral-800/40 border border-white/5">
                       <div class="h-full rounded-full transition-all duration-1000 ease-out" 
                            [style.width.%]="getLinkClickPercentage(click.count)"
-                           style="background: linear-gradient(90deg, #10b981, #34d399);"></div>
+                           [style.background]="currentTheme === 'light' ? 'linear-gradient(90deg, #a3a3a3, #262626)' : 'linear-gradient(90deg, #e5e5e5, #525252)'"></div>
                     </div>
                   </div>
                 </div>
@@ -249,21 +261,21 @@ import { PortfolioConfigService } from '../../services/portfolio-config.service'
                     
                     <!-- Line Path -->
                     <path d="M 0,100 C 50,70 100,50 150,90 C 200,130 250,30 300,30 C 350,30 400,110 450,110 C 500,110 550,40 600,60" 
-                          fill="none" stroke="url(#cyanGlow)" stroke-width="3" 
+                          fill="none" stroke="url(#monoGlow)" stroke-width="3" 
                           stroke-linecap="round"></path>
                     
                     <!-- Area under path -->
                     <path d="M 0,100 C 50,70 100,50 150,90 C 200,130 250,30 300,30 C 350,30 400,110 450,110 C 500,110 550,40 600,60 L 600,150 L 0,150 Z" 
-                          fill="url(#cyanArea)" opacity="0.15"></path>
+                          fill="url(#monoArea)" opacity="0.15"></path>
                     
                     <!-- Definitions -->
                     <defs>
-                      <linearGradient id="cyanGlow" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#00f5ff"></stop>
-                        <stop offset="100%" stop-color="#0099ff"></stop>
+                      <linearGradient id="monoGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" [attr.stop-color]="currentTheme === 'light' ? '#171717' : '#ffffff'"></stop>
+                        <stop offset="100%" [attr.stop-color]="currentTheme === 'light' ? '#737373' : '#a3a3a3'"></stop>
                       </linearGradient>
-                      <linearGradient id="cyanArea" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#00f5ff"></stop>
+                      <linearGradient id="monoArea" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" [attr.stop-color]="currentTheme === 'light' ? '#171717' : '#ffffff'"></stop>
                         <stop offset="100%" stop-color="#000000" stop-opacity="0"></stop>
                       </linearGradient>
                     </defs>
@@ -761,8 +773,12 @@ import { PortfolioConfigService } from '../../services/portfolio-config.service'
     }
     
     .active-nav {
-      background: #00f5ff !important;
-      box-shadow: 0 4px 20px rgba(0, 245, 255, 0.25);
+      background: #ffffff !important;
+      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.08);
+    }
+    .light-admin .active-nav {
+      background: #111827 !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     }
     
     .admin-input {
