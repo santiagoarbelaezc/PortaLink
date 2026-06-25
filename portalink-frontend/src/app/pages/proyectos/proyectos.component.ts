@@ -1,7 +1,7 @@
 import { Component, inject, signal, OnInit, OnDestroy, effect, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
-import { CommonModule } from '@angular/common';
+
 import { SkillsComponent } from '../../components/skills/skills.component';
 import { ContactComponent } from '../../components/contact/contact.component';
 import { FooterComponent } from '../../components/footer/footer.component';
@@ -22,6 +22,8 @@ import { AnalyticsService } from '../../services/analytics.service';
 @Component({
     selector: 'app-proyectos',
     standalone: true,
+    imports: [
+        CommonModule,
         SkillsComponent,
         ContactComponent,
         FooterComponent,

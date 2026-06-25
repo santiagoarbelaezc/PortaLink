@@ -185,6 +185,8 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private configService = inject(PortfolioConfigService);
   private analyticsService = inject(AnalyticsService);
+  
+  portfolioData = this.configService.data;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
