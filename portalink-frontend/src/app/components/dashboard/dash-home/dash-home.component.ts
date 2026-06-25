@@ -27,8 +27,8 @@ import { AnalyticsService, SystemMetrics } from '../../../services/analytics.ser
               [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
             Bienvenido, Santiago
           </h2>
-          <p class="text-sm mt-1 mb-5"
-             [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ currentDateTime }}</p>
+          <p class="text-base md:text-lg font-medium mt-2 mb-6"
+             [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ currentDateTime }}</p>
 
           <!-- Quick chips -->
           <div class="flex flex-wrap gap-2 relative z-10">
