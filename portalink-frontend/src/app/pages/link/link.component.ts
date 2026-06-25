@@ -124,7 +124,7 @@ import * as AOS from 'aos';
         <!-- Premium Footer -->
         <footer class="lt-footer">
           <div class="lt-footer-logo-wrapper">
-            <img src="assets/icons/mi-logo.png" alt="Santiago Arbelaez Logo" class="lt-footer-logo" />
+            <img [src]="getProfileLogo()" alt="Santiago Arbelaez Logo" class="lt-footer-logo" />
           </div>
           
           <div class="lt-footer-contact">
@@ -203,6 +203,7 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   isIOS = false;
   isStandalone = false;
   currentLanguage = 'es';
+  currentTheme = 'dark';
 
   modelingImages = [
     { src: 'assets/images/model_1.png', alt: 'Editorial Portrait I' },
@@ -276,6 +277,9 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
       this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
       window.addEventListener('portfolio-language-change', this.onLanguageChange);
 
+      this.currentTheme = localStorage.getItem('portfolio-theme') || 'dark';
+      window.addEventListener('portfolio-theme-change', this.onThemeChange);
+
       // Track Linktree view
       this.analyticsService.incrementMetric('linktreeViews');
     }
@@ -290,7 +294,9 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   getProfileLogo() {
-    return this.configService.data()?.links?.profileLogo || 'assets/icons/mi-logo.png';
+    const configLogo = this.configService.data()?.links?.profileLogo;
+    if (configLogo) return configLogo;
+    return this.currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png';
   }
 
   getProfileTitle() {
@@ -332,6 +338,10 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onLanguageChange = (event: any) => {
     this.currentLanguage = event.detail.language;
+  };
+
+  onThemeChange = (event: any) => {
+    this.currentTheme = event.detail.theme;
   };
 
   getTranslation() {
