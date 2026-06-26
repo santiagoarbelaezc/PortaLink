@@ -187,18 +187,18 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                    [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                     <div>
-                      <p class="text-[9px] font-bold uppercase tracking-widest mb-1.5" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Datos del Cliente</p>
-                      <p class="text-xs font-semibold uppercase tracking-wide" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-800'">{{ getClient(inv.clientId)?.name }}</p>
-                      <p class="text-[10px] uppercase tracking-widest mt-0.5" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-500'">{{ getClient(inv.clientId)?.company || 'Independiente' }}</p>
-                      <p class="text-[10px] mt-1" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">{{ getClient(inv.clientId)?.email }} &nbsp;•&nbsp; {{ getClient(inv.clientId)?.phone || 'Sin teléfono' }}</p>
+                      <p class="text-[10px] font-bold uppercase tracking-widest mb-1.5" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Datos del Cliente</p>
+                      <p class="text-sm font-semibold uppercase tracking-wide" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ getClient(inv.clientId)?.name }}</p>
+                      <p class="text-xs uppercase tracking-widest mt-0.5" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ getClient(inv.clientId)?.company || 'Independiente' }}</p>
+                      <p class="text-xs mt-1" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">{{ getClient(inv.clientId)?.email }} &nbsp;•&nbsp; {{ getClient(inv.clientId)?.phone || 'Sin teléfono' }}</p>
                     </div>
                     <div class="flex md:justify-end">
-                      <button (click)="downloadInvoicePdf(inv)" [disabled]="pdfLoading" class="px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest border transition-colors cursor-pointer flex items-center gap-2"
+                      <button (click)="downloadInvoicePdf(inv)" [disabled]="pdfLoading" class="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest border transition-colors cursor-pointer flex items-center gap-2"
                               [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:text-white hover:bg-neutral-800 disabled:opacity-50' : 'border-neutral-300 text-neutral-600 hover:text-black hover:bg-neutral-100 disabled:opacity-50'">
-                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                         </svg>
-                        {{ pdfLoading ? 'Generando...' : 'Descargar PDF' }}
+                        {{ pdfLoading ? 'Generando...' : 'Descargar Cuenta de Cobro' }}
                       </button>
                     </div>
                  </div>
