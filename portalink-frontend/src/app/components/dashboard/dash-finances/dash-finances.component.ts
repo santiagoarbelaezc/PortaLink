@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FinanceService, Client, Service, Invoice, InvoiceItem } from '../../../services/finance.service';
 import { PdfReportService } from '../../../services/pdf-report.service';
 
@@ -509,13 +510,38 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
             </div>
           </div>
 
-          <div class="flex gap-3 justify-end flex-wrap">
+          <div class="flex gap-3 justify-end flex-wrap mt-4">
+            <button (click)="generatePreview()" [disabled]="pdfLoading" class="px-5 py-2 rounded-xl text-sm font-bold uppercase tracking-widest border transition-colors cursor-pointer flex items-center gap-2 mr-auto"
+                    [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:text-white hover:bg-neutral-800' : 'border-neutral-300 text-neutral-600 hover:text-black hover:bg-neutral-100'">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              {{ pdfLoading ? 'Cargando...' : 'Vista Previa' }}
+            </button>
             <button (click)="showInvoiceForm = false" class="px-4 py-2 rounded-xl text-sm font-bold uppercase tracking-widest border cursor-pointer"
                     [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:text-white' : 'border-neutral-300 text-neutral-500 hover:text-neutral-900'">Cancelar</button>
             <button (click)="saveInvoice('Borrador')" class="px-5 py-2 rounded-xl text-sm font-bold uppercase tracking-widest border cursor-pointer"
                     [ngClass]="isDark ? 'border-neutral-600 text-neutral-300 hover:bg-neutral-800' : 'border-neutral-300 text-neutral-600 hover:bg-neutral-100'">Guardar Borrador</button>
             <button (click)="saveInvoice('Enviada')" class="px-5 py-2 rounded-xl text-sm font-bold uppercase tracking-widest cursor-pointer"
                     [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-neutral-700'">Guardar y Marcar como Enviada</button>
+          </div>
+        </div>
+
+        <!-- PDF Preview Modal -->
+        <div *ngIf="showPdfPreview" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div class="w-full max-w-4xl h-[90vh] rounded-2xl flex flex-col overflow-hidden shadow-2xl border"
+               [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700' : 'bg-white border-neutral-300'">
+            <div class="px-4 py-3 border-b flex justify-between items-center" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+              <h3 class="text-sm font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Vista Previa de Cuenta de Cobro</h3>
+              <button (click)="closePreview()" class="p-1 rounded-lg transition-colors cursor-pointer"
+                      [ngClass]="isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-500 hover:text-black hover:bg-neutral-100'">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <div class="flex-grow bg-neutral-800/20 relative">
+              <iframe *ngIf="previewPdfUrl" [src]="previewPdfUrl" class="w-full h-full border-0"></iframe>
+            </div>
           </div>
         </div>
 
@@ -704,10 +730,13 @@ export class DashFinancesComponent implements OnInit {
 
   private financeService = inject(FinanceService);
   private pdfService = inject(PdfReportService);
+  private sanitizer = inject(DomSanitizer);
 
   get isDark() { return this.theme === 'dark'; }
 
   subTab: SubTab = 'resumen';
+  showPdfPreview = false;
+  previewPdfUrl: SafeResourceUrl | null = null;
   subTabs = [
     { id: 'resumen' as SubTab, label: 'Resumen' },
     { id: 'clientes' as SubTab, label: 'Clientes' },
@@ -997,6 +1026,25 @@ export class DashFinancesComponent implements OnInit {
   async downloadInvoicePdf(inv: Invoice) {
     this.pdfLoading = true;
     try { await this.pdfService.downloadInvoicePdf(inv); } finally { this.pdfLoading = false; }
+  }
+
+  async generatePreview() {
+    if (!this.editingInvoice) return;
+    this.pdfLoading = true;
+    try {
+      const url = await this.pdfService.downloadInvoicePdf(this.editingInvoice as Invoice, 'bloburl');
+      this.previewPdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url as string);
+      this.showPdfPreview = true;
+    } catch (err) {
+      console.error(err);
+    } finally {
+      this.pdfLoading = false;
+    }
+  }
+
+  closePreview() {
+    this.showPdfPreview = false;
+    this.previewPdfUrl = null;
   }
 
   // ─── HELPERS ───────────────────────────────
