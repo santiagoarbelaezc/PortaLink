@@ -785,6 +785,7 @@ export class NavbarComponent implements OnInit {
         root.classList.add(`theme-${theme}`);
       }
       localStorage.setItem('portfolio-theme', theme);
+      window.dispatchEvent(new CustomEvent('portfolio-theme-change', { detail: { theme: theme } }));
     }
   }
 
