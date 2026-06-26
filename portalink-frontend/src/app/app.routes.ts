@@ -4,7 +4,6 @@ import { ProyectosComponent } from './pages/proyectos/proyectos.component';
 import { RotbotComponent } from './pages/rotbot/rotbot.component';
 import { PersonalizarComponent } from './pages/personalizar/personalizar.component';
 import { AdminComponent } from './pages/admin/admin.component';
-import { LoginComponent } from './pages/login/login.component';
 
 export const routes: Routes = [
   { 
@@ -41,11 +40,6 @@ export const routes: Routes = [
     path: 'admin',
     component: AdminComponent,
     data: { animation: 'AdminPage' }
-  },
-  {
-    path: 'login',
-    component: LoginComponent,
-    data: { animation: 'LoginPage' }
   },
   { path: '**', redirectTo: '' }
 ];

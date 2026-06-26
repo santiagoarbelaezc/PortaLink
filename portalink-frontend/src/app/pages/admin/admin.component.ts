@@ -306,7 +306,7 @@ export class AdminComponent implements OnInit {
 
   logout() {
     localStorage.removeItem('portalink_admin_auth');
-    this.router.navigate(['/login']);
+    this.router.navigate(['/']);
   }
 
   getNavClass(tabId: string): string {
