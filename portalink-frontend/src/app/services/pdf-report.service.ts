@@ -124,7 +124,7 @@ export class PdfReportService {
   // ─────────────────────────────────────────────────────────────────────────
   // REPORT 1: ANALYTICS
   // ─────────────────────────────────────────────────────────────────────────
-  async downloadAnalyticsReport(metrics: SystemMetrics): Promise<void> {
+  async downloadAnalyticsReport(metrics: SystemMetrics, action: 'save' | 'bloburl' = 'save'): Promise<string | void> {
     const { jsPDF, autoTable } = await this.getJsPDF();
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
@@ -228,13 +228,17 @@ export class PdfReportService {
     });
 
     this.addFooter(doc);
-    doc.save(`portalink_analiticas_${this.getDateSlug()}.pdf`);
+    if (action === 'bloburl') {
+      return doc.output('bloburl').toString();
+    } else {
+      doc.save(`portalink_analiticas_${this.getDateSlug()}.pdf`);
+    }
   }
 
   // ─────────────────────────────────────────────────────────────────────────
   // REPORT 2: USERS
   // ─────────────────────────────────────────────────────────────────────────
-  async downloadUsersReport(users: User[]): Promise<void> {
+  async downloadUsersReport(users: User[], action: 'save' | 'bloburl' = 'save'): Promise<string | void> {
     const { jsPDF, autoTable } = await this.getJsPDF();
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
@@ -286,13 +290,17 @@ export class PdfReportService {
     });
 
     this.addFooter(doc);
-    doc.save(`portalink_usuarios_${this.getDateSlug()}.pdf`);
+    if (action === 'bloburl') {
+      return doc.output('bloburl').toString();
+    } else {
+      doc.save(`portalink_usuarios_${this.getDateSlug()}.pdf`);
+    }
   }
 
   // ─────────────────────────────────────────────────────────────────────────
   // REPORT 3: SYSTEM HEALTH
   // ─────────────────────────────────────────────────────────────────────────
-  async downloadSystemHealthReport(metrics: SystemMetrics, activityLog: { icon: string; label: string; date: string }[]): Promise<void> {
+  async downloadSystemHealthReport(metrics: SystemMetrics, activityLog: { icon: string; label: string; date: string }[], action: 'save' | 'bloburl' = 'save'): Promise<string | void> {
     const { jsPDF, autoTable } = await this.getJsPDF();
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
@@ -396,7 +404,11 @@ export class PdfReportService {
     });
 
     this.addFooter(doc);
-    doc.save(`portalink_salud_sistema_${this.getDateSlug()}.pdf`);
+    if (action === 'bloburl') {
+      return doc.output('bloburl').toString();
+    } else {
+      doc.save(`portalink_salud_sistema_${this.getDateSlug()}.pdf`);
+    }
   }
 
   private getDateSlug(): string {
@@ -407,7 +419,7 @@ export class PdfReportService {
   // ─────────────────────────────────────────────────────────────────────────
   // REPORT 4: INVOICE (CUENTA DE COBRO)
   // ─────────────────────────────────────────────────────────────────────────
-  async downloadInvoicePdf(invoice: Invoice): Promise<void> {
+  async downloadInvoicePdf(invoice: Invoice, action: 'save' | 'bloburl' = 'save'): Promise<string | void> {
     const { jsPDF, autoTable } = await this.getJsPDF();
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
@@ -569,6 +581,10 @@ export class PdfReportService {
     doc.text('Gracias por confiar en nuestros servicios.', 105, y, { align: 'center' });
 
     this.addFooter(doc);
-    doc.save(`cuenta_cobro_${invoice.id}_${this.getDateSlug()}.pdf`);
+    if (action === 'bloburl') {
+      return doc.output('bloburl').toString();
+    } else {
+      doc.save(`cuenta_cobro_${invoice.id}_${this.getDateSlug()}.pdf`);
+    }
   }
 }
