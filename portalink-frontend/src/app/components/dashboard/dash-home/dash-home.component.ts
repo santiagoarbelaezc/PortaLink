@@ -11,16 +11,19 @@ import { AnalyticsService, SystemMetrics } from '../../../services/analytics.ser
     <div class="space-y-6 tab-enter">
 
       <!-- ═══════════════════════ WELCOME BANNER ═══════════════════════ -->
-      <div class="relative overflow-hidden rounded-2xl border p-6 md:p-8"
-           [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+      <div class="relative overflow-hidden rounded-2xl border p-6 md:p-10 min-h-[280px] flex flex-col justify-center"
+           [ngClass]="isDark ? 'bg-[#020202] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
 
         <!-- Rotbot flotando -->
-        <div class="absolute right-0 bottom-0 top-0 flex items-end overflow-hidden pointer-events-none select-none"
-             style="width: 250px;">
-          <img src="assets/images/rotbot4.png" class="h-full w-full object-contain object-bottom opacity-95 translate-x-4 drop-shadow-2xl" alt="Rotbot">
+        <div class="absolute right-0 md:right-8 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none select-none p-4"
+             style="width: 380px; height: 380px;">
+          <video autoplay loop muted playsinline [src]="isDark ? 'assets/videos/rotbot-dark.mp4' : 'assets/videos/rotbot-light.mp4'" 
+                 class="w-full h-full object-contain drop-shadow-2xl"
+                 [ngClass]="isDark ? 'mix-blend-screen opacity-90 contrast-125 brightness-90' : 'mix-blend-multiply opacity-100'"
+                 alt="Rotbot"></video>
         </div>
 
-        <div class="relative z-10 max-w-[75%]">
+        <div class="relative z-10 max-w-[75%] md:max-w-[60%]">
           <p class="text-xs font-bold uppercase tracking-[0.3em] mb-1"
              [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Panel de Control</p>
           <h2 class="text-3xl font-bold leading-tight"
