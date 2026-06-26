@@ -303,9 +303,7 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   getProfileLogo() {
-    const configLogo = this.configService.data()?.links?.profileLogo;
-    if (configLogo) return configLogo;
-    return this.currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png';
+    return 'assets/icons/mi-logo-dark.png';
   }
 
   getProfileTitle() {
