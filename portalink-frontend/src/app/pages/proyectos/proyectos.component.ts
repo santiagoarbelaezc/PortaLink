@@ -9,12 +9,7 @@ import { SkillsComponent } from '../../components/skills/skills.component';
 import { ContactComponent } from '../../components/contact/contact.component';
 import { FooterComponent } from '../../components/footer/footer.component';
 
-// Dynamic Components
-import { DynHeroComponent } from '../../components/components-dynamics/dyn-hero.component';
-import { DynAboutComponent } from '../../components/components-dynamics/dyn-about.component';
-import { DynPortfolioComponent } from '../../components/components-dynamics/dyn-portfolio.component';
-import { DynTextComponent } from '../../components/components-dynamics/dyn-text.component';
-import { DynLinktreeComponent } from '../../components/components-dynamics/dyn-linktree.component';
+
 
 import { ScrollColorService } from '../../services/scroll-color.service';
 import { PortfolioConfigService } from '../../services/portfolio-config.service';
@@ -32,12 +27,7 @@ import { AnalyticsService } from '../../services/analytics.service';
         AboutComponent,
         SkillsComponent,
         ContactComponent,
-        FooterComponent,
-        DynHeroComponent,
-        DynAboutComponent,
-        DynPortfolioComponent,
-        DynTextComponent,
-        DynLinktreeComponent
+        FooterComponent
     ],
     template: `
     <div class="dynamic-bg"></div>
@@ -124,18 +114,7 @@ import { AnalyticsService } from '../../services/analytics.service';
       <app-skills [skills]="portfolioData().skills"></app-skills>
       <app-contact [data]="portfolioData().contact"></app-contact>
       
-      <!-- Dynamic Additions (Custom Sections) -->
-      <ng-container *ngIf="portfolioData().pages?.home?.sections">
-        <ng-container *ngFor="let sec of portfolioData().pages.home.sections">
-          <ng-container *ngIf="sec.active" [ngSwitch]="sec.type">
-            <app-dyn-hero *ngSwitchCase="'hero'" [config]="sec.config"></app-dyn-hero>
-            <app-dyn-about *ngSwitchCase="'about'" [config]="sec.config"></app-dyn-about>
-            <app-dyn-portfolio *ngSwitchCase="'portfolio'" [config]="sec.config"></app-dyn-portfolio>
-            <app-dyn-text *ngSwitchCase="'text'" [config]="sec.config"></app-dyn-text>
-            <app-dyn-linktree *ngSwitchCase="'linktree'" [config]="sec.config"></app-dyn-linktree>
-          </ng-container>
-        </ng-container>
-      </ng-container>
+
 
       <app-footer></app-footer>
     </main>
