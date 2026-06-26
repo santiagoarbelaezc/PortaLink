@@ -148,7 +148,8 @@
   height: 140px;
   flex-shrink: 0;
   border-radius: 50%;
-  object-fit: cover;
+  object-fit: contain;
+  padding: 22px;
   border: 2px solid var(--card-border);
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 255, 255, 0.05);
   background: #000;
@@ -271,7 +272,6 @@
 }
 
 .lt-footer-logo:hover {
-  transform: rotate(360deg) scale(1.08);
   border-color: var(--accent-color);
 }
 
@@ -353,7 +353,7 @@
     border-left: none;
     border-right: none;
   }
-  .lt-profile-logo { width: 95px; height: 95px; flex-shrink: 0; } 
+  .lt-profile-logo { width: 95px; height: 95px; flex-shrink: 0; padding: 15px; } 
   
   .lt-info-header { text-align: center; }
   .lt-info-header .flex { justify-content: center; }
