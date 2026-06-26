@@ -39,7 +39,7 @@ import { AnalyticsService } from '../../services/analytics.service';
           
           <div class="flex items-center gap-3 relative z-10">
             <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center p-1.5 border border-white/10 shadow-[inset_0_0_10px_rgba(255,255,255,0.05)]">
-              <img [src]="currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png'" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(0,245,255,0.3)]" alt="Rotbot">
+              <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(0,245,255,0.3)]" alt="Rotbot">
             </div>
             <div>
               <h3 class="font-sans text-sm font-bold tracking-wide leading-none" style="color: var(--text-primary);">
@@ -97,7 +97,7 @@ import { AnalyticsService } from '../../services/analytics.service';
               
               <!-- Assistant Avatar -->
               <div *ngIf="msg.role === 'assistant'" class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center mr-2.5 p-1 border avatar-bg">
-                <img [src]="currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png'" class="w-full h-full object-contain" alt="Rotbot">
+                <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain" alt="Rotbot">
               </div>
 
               <!-- Message Bubble -->
@@ -114,7 +114,7 @@ import { AnalyticsService } from '../../services/analytics.service';
             <!-- Typing Indicator -->
             <div *ngIf="chatService.isTyping" class="flex items-center gap-3 w-full">
               <div class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center p-1 border avatar-bg">
-                <img [src]="currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png'" class="w-full h-full object-contain" alt="Rotbot">
+                <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain" alt="Rotbot">
               </div>
               <div class="assistant-bubble py-2 flex items-center gap-1.5">
                 <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce"></div>
