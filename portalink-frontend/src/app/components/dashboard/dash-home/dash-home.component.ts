@@ -12,15 +12,12 @@ import { AnalyticsService, SystemMetrics } from '../../../services/analytics.ser
 
       <!-- ═══════════════════════ WELCOME BANNER ═══════════════════════ -->
       <div class="relative overflow-hidden rounded-2xl border p-6 md:p-10 min-h-[280px] flex flex-col justify-center"
-           [ngClass]="isDark ? 'bg-[#020202] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+           [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
 
         <!-- Rotbot flotando -->
-        <div class="absolute right-0 md:right-8 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none select-none p-4"
-             style="width: 380px; height: 380px;">
-          <video autoplay loop muted playsinline [src]="isDark ? 'assets/videos/rotbot-dark.mp4' : 'assets/videos/rotbot-light.mp4'" 
-                 class="w-full h-full object-contain drop-shadow-2xl"
-                 [ngClass]="isDark ? 'mix-blend-screen opacity-90 contrast-125 brightness-90' : 'mix-blend-multiply opacity-100'"
-                 alt="Rotbot"></video>
+        <div class="absolute right-0 md:right-8 top-0 bottom-0 flex items-center justify-center pointer-events-none select-none py-6"
+             style="width: 350px;">
+          <img src="assets/images/rotbot4.png" class="h-full w-full object-contain opacity-95" alt="Rotbot">
         </div>
 
         <div class="relative z-10 max-w-[75%] md:max-w-[60%]">
@@ -353,7 +350,7 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   aiOpen = false;
   searchFocused = false;
   displayPlaceholder = '';
-  
+
   private placeholders = [
     'Buscar vistas del sistema...',
     'Buscar mensajes pendientes...',
@@ -384,7 +381,7 @@ export class DashHomeComponent implements OnInit, OnDestroy {
     this.loadBadges();
     this.updateClock();
     this.clockInterval = setInterval(() => this.updateClock(), 1000);
-    
+
     // Start typewriter
     this.startTypewriter();
   }
