@@ -18,7 +18,7 @@ import { AnalyticsService } from '../../services/analytics.service';
         
         <div class="flex items-center gap-3 relative z-10">
           <div class="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center p-1.5 border border-white/10 shadow-[inset_0_0_10px_rgba(255,255,255,0.05)]">
-            <img [src]="currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png'" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(0,245,255,0.3)]" alt="Rotbot">
+            <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(0,245,255,0.3)]" alt="Rotbot">
           </div>
           <div>
             <h3 class="font-sans text-[15px] font-bold tracking-wide leading-none" style="color: var(--text-primary);">
@@ -56,7 +56,7 @@ import { AnalyticsService } from '../../services/analytics.service';
       <div class="flex flex-row flex-grow w-full overflow-hidden">
         
         <!-- Sidebar Izquierdo (Accesos Rápidos) -->
-        <div class="chat-sidebar hidden md:flex flex-col w-80 border-r py-8 px-6 gap-4 overflow-y-auto" style="border-color: var(--card-border);">
+        <div class="chat-sidebar no-scrollbar hidden md:flex flex-col w-80 border-r py-8 px-6 gap-4 overflow-y-auto" style="border-color: var(--card-border);">
           <h4 class="text-[12px] uppercase tracking-[0.2em] font-sans font-semibold opacity-40 mb-2" style="color: var(--text-secondary);">Accesos Rápidos</h4>
           
           <button (click)="sendShortcutMessage('Quiero E-commerce')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
@@ -127,7 +127,7 @@ import { AnalyticsService } from '../../services/analytics.service';
               
               <!-- Assistant Avatar -->
               <div *ngIf="msg.role === 'assistant'" class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center mr-2.5 p-1 border avatar-bg">
-                <img [src]="currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png'" class="w-full h-full object-contain" alt="Rotbot">
+                <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain" alt="Rotbot">
               </div>
  
               <!-- Message Bubble -->
@@ -144,7 +144,7 @@ import { AnalyticsService } from '../../services/analytics.service';
             <!-- Typing Indicator -->
             <div *ngIf="chatService.isTyping" class="flex items-center gap-3 w-full px-6 md:px-16">
               <div class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center p-1 border avatar-bg">
-                <img [src]="currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png'" class="w-full h-full object-contain" alt="Rotbot">
+                <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain" alt="Rotbot">
               </div>
               <div class="assistant-bubble py-2 flex items-center gap-1.5">
                 <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce"></div>
@@ -182,12 +182,12 @@ import { AnalyticsService } from '../../services/analytics.service';
         </div>
  
         <!-- Sidebar Derecho (Info Rotbot) -->
-        <div class="chat-sidebar hidden md:flex flex-col w-80 border-l py-8 px-6 gap-6 overflow-y-auto" style="border-color: var(--card-border);">
+        <div class="chat-sidebar no-scrollbar hidden md:flex flex-col w-80 border-l py-8 px-6 gap-6 overflow-y-auto" style="border-color: var(--card-border);">
           <h4 class="text-[12px] uppercase tracking-[0.2em] font-sans font-semibold opacity-40 mb-2" style="color: var(--text-secondary);">¿Quién es Rotbot?</h4>
           
           <div class="flex flex-col items-center text-center gap-4 p-5 rounded-2xl border" style="background: var(--card-bg); border-color: var(--card-border);">
             <div class="w-24 h-24 rounded-2xl bg-white/5 flex items-center justify-center p-2 border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.05)]">
-              <img [src]="currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png'" class="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(0,245,255,0.4)]" alt="Rotbot Logo">
+              <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(0,245,255,0.4)]" alt="Rotbot Logo">
             </div>
             <div>
               <h5 class="text-sm font-bold tracking-wide" style="color: var(--text-primary);">Copiloto Tecnológico</h5>
@@ -323,6 +323,13 @@ import { AnalyticsService } from '../../services/analytics.service';
     :host-context(.theme-light) .chat-sidebar {
       background: rgba(0, 0, 0, 0.02);
       border-color: rgba(0, 0, 0, 0.06) !important;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
     .shortcut-btn {
       background: rgba(255, 255, 255, 0.02);
