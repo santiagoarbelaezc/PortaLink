@@ -6,15 +6,13 @@ exports.login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        // En un caso real, buscaríamos en la base de datos
-        // Por ahora, usaremos un usuario de prueba hasta tener tus credenciales
-        const [rows] = await db.query('SELECT * FROM usuarios WHERE email = ?', [email]);
+        const result = await db.query('SELECT * FROM usuarios WHERE email = $1', [email]);
         
-        if (rows.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(401).json({ message: 'Credenciales inválidas' });
         }
 
-        const usuario = rows[0];
+        const usuario = result.rows[0];
         const passValido = await bcrypt.compare(password, usuario.password);
 
         if (!passValido) {
