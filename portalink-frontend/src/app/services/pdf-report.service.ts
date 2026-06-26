@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SystemMetrics } from './analytics.service';
+import { Invoice } from './finance.service';
 
 // jsPDF type declarations
 declare var require: any;
@@ -401,5 +402,173 @@ export class PdfReportService {
   private getDateSlug(): string {
     const d = new Date();
     return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}_${String(d.getHours()).padStart(2, '0')}${String(d.getMinutes()).padStart(2, '0')}`;
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // REPORT 4: INVOICE (CUENTA DE COBRO)
+  // ─────────────────────────────────────────────────────────────────────────
+  async downloadInvoicePdf(invoice: Invoice): Promise<void> {
+    const { jsPDF, autoTable } = await this.getJsPDF();
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+    const fmtCOP = (v: number) =>
+      new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v);
+
+    // ── Header band ──
+    doc.setFillColor(0, 0, 0);
+    doc.rect(0, 0, 210, 32, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text('PORTALINK', 14, 14);
+
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.setCharSpace(2);
+    doc.text('CUENTA DE COBRO', 14, 21);
+    doc.setCharSpace(0);
+
+    // Invoice number on right
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text(invoice.id, 196, 14, { align: 'right' });
+
+    // Status badge
+    const statusColor: Record<string, [number,number,number]> = {
+      Borrador: [100, 100, 100],
+      Enviada: [59, 130, 246],
+      Pagada: [34, 197, 94],
+      Vencida: [239, 68, 68],
+    };
+    const sc = statusColor[invoice.status] || [100, 100, 100];
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(sc[0], sc[1], sc[2]);
+    doc.text(invoice.status.toUpperCase(), 196, 22, { align: 'right' });
+
+    doc.setTextColor(160, 160, 160);
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Emitida: ${invoice.issuedAt}   Vence: ${invoice.dueAt}`, 196, 29, { align: 'right' });
+
+    // ── Billing section ──
+    let y = 42;
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(120, 120, 120);
+    doc.text('EMITIDA POR', 14, y);
+    doc.text('FACTURADO A', 110, y);
+
+    y += 5;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(20, 20, 20);
+    doc.text('Santiago Arbelaez', 14, y);
+    doc.text(invoice.clientName, 110, y);
+
+    y += 5;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(80, 80, 80);
+    doc.text('Desarrollador Web & Consultor Digital', 14, y);
+    if (invoice.clientCompany) doc.text(invoice.clientCompany, 110, y);
+
+    y += 5;
+    doc.text('santiago@portalink.com', 14, y);
+    doc.text(invoice.clientEmail || '', 110, y);
+
+    y += 8;
+    doc.setDrawColor(220, 220, 220);
+    doc.setLineWidth(0.3);
+    doc.line(14, y, 196, y);
+    y += 8;
+
+    // ── Items table ──
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(40, 40, 40);
+    doc.text('Detalle de Servicios', 14, y);
+    y += 5;
+
+    const itemRows = invoice.items.map(item => [
+      item.serviceName,
+      item.description || '',
+      item.quantity.toString(),
+      fmtCOP(item.unitPrice),
+      fmtCOP(item.subtotal),
+    ]);
+
+    autoTable(doc, {
+      startY: y,
+      head: [['Servicio', 'Descripción', 'Cant.', 'P. Unitario', 'Subtotal']],
+      body: itemRows,
+      headStyles: { fillColor: [20, 20, 20], textColor: 255, fontStyle: 'bold', fontSize: 8 },
+      bodyStyles: { fontSize: 8, textColor: [50, 50, 50] },
+      alternateRowStyles: { fillColor: [248, 248, 248] },
+      columnStyles: {
+        0: { cellWidth: 50 },
+        2: { halign: 'center', cellWidth: 14 },
+        3: { halign: 'right', cellWidth: 35 },
+        4: { halign: 'right', fontStyle: 'bold', cellWidth: 35 },
+      },
+      margin: { left: 14, right: 14 },
+      tableLineColor: [220, 220, 220],
+      tableLineWidth: 0.1,
+    });
+
+    y = (doc as any).lastAutoTable.finalY + 8;
+
+    // ── Totals block (right aligned) ──
+    const blockX = 120;
+    const blockW = 76;
+
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(80, 80, 80);
+    doc.text('Subtotal:', blockX, y);
+    doc.text(fmtCOP(invoice.subtotal), blockX + blockW, y, { align: 'right' });
+
+    if (invoice.taxRate > 0) {
+      y += 6;
+      doc.text(`IVA (${invoice.taxRate}%):`, blockX, y);
+      doc.text(fmtCOP(invoice.taxAmount), blockX + blockW, y, { align: 'right' });
+    }
+
+    y += 4;
+    doc.setDrawColor(40, 40, 40);
+    doc.setLineWidth(0.5);
+    doc.line(blockX, y, blockX + blockW, y);
+    y += 7;
+
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(10, 10, 10);
+    doc.text('TOTAL:', blockX, y);
+    doc.text(fmtCOP(invoice.total), blockX + blockW, y, { align: 'right' });
+
+    // ── Notes ──
+    if (invoice.notes) {
+      y += 12;
+      doc.setFontSize(7);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(120, 120, 120);
+      doc.text('NOTAS / TÉRMINOS DE PAGO', 14, y);
+      y += 5;
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(80, 80, 80);
+      const lines = doc.splitTextToSize(invoice.notes, 180) as string[];
+      doc.text(lines, 14, y);
+    }
+
+    // ── Thank you note ──
+    y += 18;
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'italic');
+    doc.setTextColor(150, 150, 150);
+    doc.text('Gracias por confiar en nuestros servicios.', 105, y, { align: 'center' });
+
+    this.addFooter(doc);
+    doc.save(`cuenta_cobro_${invoice.id}_${this.getDateSlug()}.pdf`);
   }
 }
