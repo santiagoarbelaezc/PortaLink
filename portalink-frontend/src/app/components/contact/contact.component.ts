@@ -66,7 +66,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
                 <label class="contact-label">{{ getTranslation().labelMessage }}</label>
               </div>
 
-              <button type="button" class="btn-primary-custom w-full group" appMagnetic [appMagnetic]="0.1">
+              <button type="button" class="btn-primary-custom w-full group">
                 <span class="uppercase tracking-[0.3em] font-bold text-xs">{{ getTranslation().btnSend }}</span>
               </button>
             </form>
@@ -114,15 +114,16 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
       letter-spacing: 0.15em;
       pointer-events: none;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      color: var(--text-secondary);
-      opacity: 0.7;
+      color: var(--text-primary);
+      opacity: 0.55;
+      font-weight: 600;
     }
     
     .contact-input:focus ~ .contact-label,
     .contact-input:not(:placeholder-shown) ~ .contact-label {
       top: 0.4rem;
       font-size: 8px;
-      opacity: 1;
+      opacity: 0.9;
       color: var(--text-primary);
     }
     
@@ -131,14 +132,12 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
       color: var(--bg-primary);
       border-radius: 12px;
       padding: 1.25rem;
-      transition: all 0.3s ease;
+      transition: opacity 0.3s ease;
       border: 1px solid var(--text-primary);
     }
     
     .btn-primary-custom:hover {
-      background: transparent;
-      color: var(--text-primary);
-      transform: scale(1.01);
+      opacity: 0.85;
     }
     
     .contact-social-btn {
