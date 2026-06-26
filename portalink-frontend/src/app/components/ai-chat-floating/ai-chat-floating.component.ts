@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, OnInit, HostListener } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
@@ -39,7 +39,7 @@ import { AnalyticsService } from '../../services/analytics.service';
           
           <div class="flex items-center gap-3 relative z-10">
             <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center p-1.5 border border-white/10 shadow-[inset_0_0_10px_rgba(255,255,255,0.05)]">
-              <img src="assets/images/logo-rotbot.png" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(0,245,255,0.3)]" alt="Rotbot">
+              <img [src]="currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png'" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(0,245,255,0.3)]" alt="Rotbot">
             </div>
             <div>
               <h3 class="font-sans text-sm font-bold tracking-wide leading-none" style="color: var(--text-primary);">
@@ -97,7 +97,7 @@ import { AnalyticsService } from '../../services/analytics.service';
               
               <!-- Assistant Avatar -->
               <div *ngIf="msg.role === 'assistant'" class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center mr-2.5 p-1 border avatar-bg">
-                <img src="assets/images/logo-rotbot.png" class="w-full h-full object-contain" alt="Rotbot">
+                <img [src]="currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png'" class="w-full h-full object-contain" alt="Rotbot">
               </div>
 
               <!-- Message Bubble -->
@@ -114,7 +114,7 @@ import { AnalyticsService } from '../../services/analytics.service';
             <!-- Typing Indicator -->
             <div *ngIf="chatService.isTyping" class="flex items-center gap-3 w-full">
               <div class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center p-1 border avatar-bg">
-                <img src="assets/images/logo-rotbot.png" class="w-full h-full object-contain" alt="Rotbot">
+                <img [src]="currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png'" class="w-full h-full object-contain" alt="Rotbot">
               </div>
               <div class="assistant-bubble py-2 flex items-center gap-1.5">
                 <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce"></div>
@@ -283,7 +283,7 @@ import { AnalyticsService } from '../../services/analytics.service';
     ])
   ]
 })
-export class AiChatFloatingComponent implements OnInit {
+export class AiChatFloatingComponent implements OnInit, OnDestroy {
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
 
   isOpen = false;
@@ -305,13 +305,30 @@ export class AiChatFloatingComponent implements OnInit {
     'orgánico': 'organic'
   };
 
+  currentTheme = 'dark';
+
   constructor(
     public chatService: ChatStateService,
     private router: Router,
     private analyticsService: AnalyticsService
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    if (typeof window !== 'undefined') {
+      this.currentTheme = localStorage.getItem('portfolio-theme') || 'dark';
+      window.addEventListener('portfolio-theme-change', this.onThemeChange);
+    }
+  }
+
+  ngOnDestroy() {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('portfolio-theme-change', this.onThemeChange);
+    }
+  }
+
+  onThemeChange = (event: any) => {
+    this.currentTheme = event.detail.theme;
+  };
 
   @HostListener('window:open-ai-chat', ['$event'])
   onOpenAiChat(event: any) {
