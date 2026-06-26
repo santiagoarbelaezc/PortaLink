@@ -104,6 +104,19 @@
   bottom: 10px; left: 10px;
   border-right: none; border-top: none;
 }
+@keyframes corner-loading {
+  0% { width: 15px; height: 15px; border-color: var(--text-primary); }
+  50% { width: 35px; height: 35px; border-color: var(--accent-main); opacity: 0.5; }
+  100% { width: 15px; height: 15px; border-color: var(--text-primary); }
+}
+
+.lt-portrait-wrapper:hover .lt-image-container::before,
+.lt-portrait-wrapper:hover .lt-image-container::after,
+.lt-portrait-wrapper:hover .lt-corner-tr,
+.lt-portrait-wrapper:hover .lt-corner-bl {
+  animation: corner-loading 1.2s ease-in-out infinite;
+}
+
 .lt-portrait-wrapper:hover .lt-image-container::before {
   top: 5px; left: 5px;
 }
@@ -271,9 +284,7 @@
   transition: transform 0.4s ease, border-color 0.4s ease;
 }
 
-.lt-footer-logo:hover {
-  border-color: var(--accent-color);
-}
+
 
 .lt-footer-contact {
   display: flex;
