@@ -26,7 +26,14 @@ const TAB_LABELS: Record<string, string> = {
             [ngClass]="theme === 'dark' ? 'bg-[#07070a] border-neutral-800' : 'bg-white border-neutral-200'">
 
       <!-- Breadcrumb -->
-      <div class="flex items-center gap-2 min-w-0">
+      <div class="flex items-center gap-3 min-w-0">
+        <!-- Sidebar Toggle -->
+        <button (click)="toggleSidebar.emit()" class="p-2 -ml-2 rounded-xl transition-colors"
+                [ngClass]="theme === 'dark' ? 'hover:bg-white/10 text-neutral-400 hover:text-white' : 'hover:bg-black/5 text-neutral-500 hover:text-black'">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
         <span class="text-xs font-semibold uppercase tracking-widest"
               [ngClass]="theme === 'dark' ? 'text-neutral-500' : 'text-neutral-400'">Consola</span>
         <svg class="w-3 h-3 flex-shrink-0" [ngClass]="theme === 'dark' ? 'text-neutral-700' : 'text-neutral-300'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -71,6 +78,7 @@ export class DashAiSearchComponent {
   @Input() activeTab = 'dashboard';
   @Output() tabChange = new EventEmitter<string>();
   @Output() themeChange = new EventEmitter<void>();
+  @Output() toggleSidebar = new EventEmitter<void>();
 
   get currentLabel() {
     return TAB_LABELS[this.activeTab] || 'Panel';

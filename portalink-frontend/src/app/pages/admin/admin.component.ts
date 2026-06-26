@@ -45,14 +45,14 @@ interface Tab {
       <!-- ══════════════════════════════════════
            LEFT SIDEBAR
       ══════════════════════════════════════ -->
-      <aside class="w-56 shrink-0 flex flex-col h-full border-r overflow-hidden z-10"
-             [ngClass]="isDark ? 'bg-[#07070a] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+      <aside class="shrink-0 flex flex-col h-full border-r overflow-hidden z-10 transition-all duration-300"
+             [ngClass]="[isDark ? 'bg-[#07070a] border-neutral-800' : 'bg-neutral-50 border-neutral-200', isSidebarCollapsed ? 'w-20' : 'w-56']">
 
         <!-- Logo Header -->
-        <div class="px-5 py-5 border-b flex items-center gap-3 shrink-0"
-             [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+        <div class="py-5 border-b flex items-center shrink-0 transition-all duration-300"
+             [ngClass]="[isDark ? 'border-neutral-800' : 'border-neutral-200', isSidebarCollapsed ? 'px-0 justify-center' : 'px-5 gap-3']">
           <img [src]="isDark ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png'" class="w-10 h-10 object-contain flex-shrink-0" alt="PortaLink">
-          <div class="min-w-0">
+          <div class="min-w-0" *ngIf="!isSidebarCollapsed">
             <h1 class="text-sm font-bold tracking-widest uppercase truncate"
                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">PortaLink</h1>
             <span class="text-[9px] uppercase tracking-[0.25em] font-bold"
@@ -61,11 +61,11 @@ interface Tab {
         </div>
 
         <!-- Navigation -->
-        <nav class="flex-grow p-3 space-y-0.5 overflow-y-auto sidebar-nav">
+        <nav class="flex-grow p-3 space-y-0.5 overflow-y-auto sidebar-nav overflow-x-hidden">
           <button *ngFor="let tab of tabs"
                   (click)="setTab(tab.id)"
-                  class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold tracking-wide transition-all duration-200 cursor-pointer group relative"
-                  [ngClass]="getNavClass(tab.id)">
+                  class="flex items-center rounded-xl text-sm font-semibold tracking-wide transition-all duration-200 cursor-pointer group relative"
+                  [ngClass]="[getNavClass(tab.id), isSidebarCollapsed ? 'px-0 py-2.5 justify-center w-14 mx-auto' : 'w-full px-3 py-2.5 gap-3']">
 
             <!-- Icon -->
             <span class="w-[18px] h-[18px] flex-shrink-0 flex items-center justify-center">
@@ -115,31 +115,33 @@ interface Tab {
             </span>
 
             <!-- Label -->
-            <span class="flex-grow text-left text-[13px]">{{ tab.name }}</span>
+            <span *ngIf="!isSidebarCollapsed" class="flex-grow text-left text-[13px]">{{ tab.name }}</span>
 
             <!-- Badges -->
-            <span *ngIf="tab.id === 'messages' && unreadMessages > 0"
-                  class="text-[9px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center"
-                  [ngClass]="activeTab === tab.id ? (isDark ? 'bg-black/20 text-white' : 'bg-white/20 text-black') : (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white')">
-              {{ unreadMessages }}
-            </span>
-            <span *ngIf="tab.id === 'leads' && pendingLeads > 0"
-                  class="text-[9px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center"
-                  [ngClass]="activeTab === tab.id ? (isDark ? 'bg-black/20 text-white' : 'bg-white/20 text-black') : (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white')">
-              {{ pendingLeads }}
-            </span>
+            <ng-container *ngIf="!isSidebarCollapsed">
+              <span *ngIf="tab.id === 'messages' && unreadMessages > 0"
+                    class="text-[9px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center"
+                    [ngClass]="activeTab === tab.id ? (isDark ? 'bg-black/20 text-white' : 'bg-white/20 text-black') : (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white')">
+                {{ unreadMessages }}
+              </span>
+              <span *ngIf="tab.id === 'leads' && pendingLeads > 0"
+                    class="text-[9px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center"
+                    [ngClass]="activeTab === tab.id ? (isDark ? 'bg-black/20 text-white' : 'bg-white/20 text-black') : (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white')">
+                {{ pendingLeads }}
+              </span>
+            </ng-container>
           </button>
         </nav>
 
         <!-- Bottom: Logout -->
         <div class="p-3 border-t shrink-0" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
           <button (click)="logout()"
-                  class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200 cursor-pointer"
-                  [ngClass]="isDark ? 'text-neutral-600 hover:text-red-400 hover:bg-red-500/5' : 'text-neutral-400 hover:text-red-500 hover:bg-red-50'">
+                  class="flex items-center rounded-xl text-[13px] font-semibold transition-all duration-200 cursor-pointer"
+                  [ngClass]="[isDark ? 'text-neutral-600 hover:text-red-400 hover:bg-red-500/5' : 'text-neutral-400 hover:text-red-500 hover:bg-red-50', isSidebarCollapsed ? 'px-0 py-2.5 justify-center w-14 mx-auto' : 'w-full px-3 py-2.5 gap-3']">
             <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
             </svg>
-            <span>Cerrar Sesión</span>
+            <span *ngIf="!isSidebarCollapsed">Cerrar Sesión</span>
           </button>
         </div>
       </aside>
@@ -154,7 +156,8 @@ interface Tab {
           [theme]="currentTheme"
           [activeTab]="activeTab"
           (tabChange)="setTab($event)"
-          (themeChange)="toggleTheme()">
+          (themeChange)="toggleTheme()"
+          (toggleSidebar)="isSidebarCollapsed = !isSidebarCollapsed">
         </app-dash-ai-search>
 
         <!-- Content -->
@@ -222,7 +225,15 @@ interface Tab {
     </div>
   `,
   styles: [`
-    .admin-shell { font-family: 'Inter Tight', sans-serif; }
+    @keyframes adminFadeIn {
+      0% { opacity: 0; transform: scale(0.97) translateY(10px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .admin-shell { 
+      font-family: 'Inter Tight', sans-serif; 
+      animation: adminFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
 
     /* Hide sidebar scrollbar */
     .sidebar-nav { scrollbar-width: none; }
@@ -240,6 +251,7 @@ export class AdminComponent implements OnInit {
 
   activeTab = 'dashboard';
   currentTheme = 'dark';
+  isSidebarCollapsed = false;
   unreadMessages = 0;
   pendingLeads = 0;
 
