@@ -75,7 +75,7 @@ import { AnalyticsService } from '../../services/analytics.service';
         
         <!-- Sidebar Izquierdo (Accesos Rápidos) -->
         <div class="chat-sidebar no-scrollbar hidden md:flex flex-col w-80 border-r py-8 px-6 gap-4 overflow-y-auto" style="border-color: var(--card-border);">
-          <h4 class="text-[12px] uppercase tracking-[0.2em] font-sans font-semibold opacity-40 mb-2" style="color: var(--text-secondary);">Accesos Rápidos</h4>
+          <h4 class="sidebar-title mb-2">Accesos Rápidos</h4>
           
           <button (click)="sendShortcutMessage('Quiero E-commerce')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
@@ -97,7 +97,7 @@ import { AnalyticsService } from '../../services/analytics.service';
             <span class="text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Implementación de IA</span>
           </button>
  
-          <h4 class="text-[12px] uppercase tracking-[0.2em] font-sans font-semibold opacity-40 mt-4 mb-2" style="color: var(--text-secondary);">Recomendaciones</h4>
+          <h4 class="sidebar-title mt-4 mb-2">Recomendaciones</h4>
  
           <button (click)="sendShortcutMessage('Diseño de portafolio web premium')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
@@ -201,7 +201,7 @@ import { AnalyticsService } from '../../services/analytics.service';
  
         <!-- Sidebar Derecho (Info Rotbot) -->
         <div class="chat-sidebar no-scrollbar hidden md:flex flex-col w-80 border-l py-8 px-6 gap-6 overflow-y-auto" style="border-color: var(--card-border);">
-          <h4 class="text-[12px] uppercase tracking-[0.2em] font-sans font-semibold opacity-60 mb-2" style="color: var(--text-secondary);">¿Quién es Rotbot?</h4>
+          <h4 class="sidebar-title mb-2">¿Quién es Rotbot?</h4>
           
           <div class="flex flex-col items-center text-center gap-4 p-5 rounded-2xl border right-sidebar-card" style="border-color: var(--card-border);">
             <div class="w-24 h-24 rounded-2xl flex items-center justify-center p-2 border right-sidebar-icon shadow-inner">
@@ -215,7 +215,7 @@ import { AnalyticsService } from '../../services/analytics.service';
             </div>
           </div>
  
-          <h4 class="text-[12px] uppercase tracking-[0.2em] font-sans font-semibold opacity-60 mt-2 mb-2" style="color: var(--text-secondary);">¿Tienes un Proyecto?</h4>
+          <h4 class="sidebar-title mt-2 mb-2">¿Tienes un Proyecto?</h4>
  
           <button (click)="sendShortcutMessage('Quiero una implementación de IA en mi negocio')" class="shortcut-btn flex flex-col gap-2 p-5 rounded-xl text-left border transition-all duration-300 shadow-sm hover:shadow-md">
             <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--accent-color);">Oportunidad</span>
@@ -389,6 +389,20 @@ import { AnalyticsService } from '../../services/analytics.service';
       background: rgba(0, 0, 0, 0.03);
       border-color: rgba(0, 0, 0, 0.05);
       box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.02);
+    }
+    .sidebar-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-family: var(--font-sans, sans-serif);
+      font-weight: 600;
+      color: var(--text-secondary);
+      opacity: 0.5;
+    }
+    :host-context(.theme-light) .sidebar-title {
+      color: var(--text-primary);
+      opacity: 0.65;
+      font-weight: 700;
     }
   `]
 })
