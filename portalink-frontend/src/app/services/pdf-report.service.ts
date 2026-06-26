@@ -535,23 +535,27 @@ export class PdfReportService {
     const blockX = 120;
     const blockW = 76;
 
+    // Background for totals
+    doc.setFillColor(249, 250, 251);
+    doc.roundedRect(blockX - 5, y - 4, blockW + 10, invoice.taxRate > 0 ? 30 : 22, 3, 3, 'F');
+
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(80, 80, 80);
-    doc.text('Subtotal:', blockX, y);
-    doc.text(fmtCOP(invoice.subtotal), blockX + blockW, y, { align: 'right' });
+    doc.text('Subtotal:', blockX, y + 2);
+    doc.text(fmtCOP(invoice.subtotal), blockX + blockW, y + 2, { align: 'right' });
 
     if (invoice.taxRate > 0) {
-      y += 6;
-      doc.text(`IVA (${invoice.taxRate}%):`, blockX, y);
-      doc.text(fmtCOP(invoice.taxAmount), blockX + blockW, y, { align: 'right' });
+      y += 7;
+      doc.text(`IVA (${invoice.taxRate}%):`, blockX, y + 2);
+      doc.text(fmtCOP(invoice.taxAmount), blockX + blockW, y + 2, { align: 'right' });
     }
 
-    y += 4;
-    doc.setDrawColor(40, 40, 40);
-    doc.setLineWidth(0.5);
+    y += 8;
+    doc.setDrawColor(200, 200, 200);
+    doc.setLineWidth(0.3);
     doc.line(blockX, y, blockX + blockW, y);
-    y += 7;
+    y += 6;
 
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
@@ -559,9 +563,11 @@ export class PdfReportService {
     doc.text('TOTAL:', blockX, y);
     doc.text(fmtCOP(invoice.total), blockX + blockW, y, { align: 'right' });
 
+    y += 10;
+
     // ── Notes ──
     if (invoice.notes) {
-      y += 12;
+      y += 5;
       doc.setFontSize(7);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(120, 120, 120);
@@ -571,14 +577,43 @@ export class PdfReportService {
       doc.setTextColor(80, 80, 80);
       const lines = doc.splitTextToSize(invoice.notes, 180) as string[];
       doc.text(lines, 14, y);
+      y += lines.length * 4 + 5;
     }
+
+    // ── Legal Text & Signatures ──
+    y += 8;
+    if (y > 240) { doc.addPage(); y = 20; }
+
+    doc.setFontSize(6.5);
+    doc.setFont('helvetica', 'italic');
+    doc.setTextColor(140, 140, 140);
+    const legalText = "La presente cuenta de cobro se asimila en todos sus efectos a una letra de cambio de acuerdo al Art. 774 del Código de Comercio. El deudor declara haber recibido a satisfacción los servicios aquí detallados. Documento emitido por persona natural no responsable de IVA.";
+    const legalLines = doc.splitTextToSize(legalText, 180);
+    doc.text(legalLines, 14, y);
+    
+    y += legalLines.length * 4 + 25;
+
+    // Signatures
+    doc.setDrawColor(180, 180, 180);
+    doc.setLineWidth(0.3);
+    
+    // Left signature
+    doc.line(20, y, 80, y);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(80, 80, 80);
+    doc.text('Firma del Emisor', 50, y + 5, { align: 'center' });
+
+    // Right signature
+    doc.line(130, y, 190, y);
+    doc.text('Firma de Aceptación', 160, y + 5, { align: 'center' });
 
     // ── Thank you note ──
     y += 18;
-    doc.setFontSize(8);
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'italic');
-    doc.setTextColor(150, 150, 150);
-    doc.text('Gracias por confiar en nuestros servicios.', 105, y, { align: 'center' });
+    doc.setTextColor(120, 120, 120);
+    doc.text('¡Gracias por tu confianza y hacer negocios con nosotros!', 105, y, { align: 'center' });
 
     this.addFooter(doc);
     if (action === 'bloburl') {
