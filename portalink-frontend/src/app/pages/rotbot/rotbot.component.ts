@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, OnInit, AfterViewChecked } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, AfterViewChecked, OnDestroy } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -18,7 +18,7 @@ import { AnalyticsService } from '../../services/analytics.service';
         
         <div class="flex items-center gap-3 relative z-10">
           <div class="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center p-1.5 border border-white/10 shadow-[inset_0_0_10px_rgba(255,255,255,0.05)]">
-            <img src="assets/images/logo-rotbot.png" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(0,245,255,0.3)]" alt="Rotbot">
+            <img [src]="currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png'" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(0,245,255,0.3)]" alt="Rotbot">
           </div>
           <div>
             <h3 class="font-sans text-[15px] font-bold tracking-wide leading-none" style="color: var(--text-primary);">
@@ -127,7 +127,7 @@ import { AnalyticsService } from '../../services/analytics.service';
               
               <!-- Assistant Avatar -->
               <div *ngIf="msg.role === 'assistant'" class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center mr-2.5 p-1 border avatar-bg">
-                <img src="assets/images/logo-rotbot.png" class="w-full h-full object-contain" alt="Rotbot">
+                <img [src]="currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png'" class="w-full h-full object-contain" alt="Rotbot">
               </div>
  
               <!-- Message Bubble -->
@@ -144,7 +144,7 @@ import { AnalyticsService } from '../../services/analytics.service';
             <!-- Typing Indicator -->
             <div *ngIf="chatService.isTyping" class="flex items-center gap-3 w-full px-6 md:px-16">
               <div class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center p-1 border avatar-bg">
-                <img src="assets/images/logo-rotbot.png" class="w-full h-full object-contain" alt="Rotbot">
+                <img [src]="currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png'" class="w-full h-full object-contain" alt="Rotbot">
               </div>
               <div class="assistant-bubble py-2 flex items-center gap-1.5">
                 <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce"></div>
@@ -187,7 +187,7 @@ import { AnalyticsService } from '../../services/analytics.service';
           
           <div class="flex flex-col items-center text-center gap-4 p-5 rounded-2xl border" style="background: var(--card-bg); border-color: var(--card-border);">
             <div class="w-24 h-24 rounded-2xl bg-white/5 flex items-center justify-center p-2 border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.05)]">
-              <img src="assets/images/logo-rotbot.png" class="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(0,245,255,0.4)]" alt="Rotbot Logo">
+              <img [src]="currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png'" class="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(0,245,255,0.4)]" alt="Rotbot Logo">
             </div>
             <div>
               <h5 class="text-sm font-bold tracking-wide" style="color: var(--text-primary);">Copiloto Tecnológico</h5>
@@ -342,7 +342,7 @@ import { AnalyticsService } from '../../services/analytics.service';
     }
   `]
 })
-export class RotbotComponent implements OnInit, AfterViewChecked {
+export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
 
   private styleKeywords: { [key: string]: string } = {
@@ -362,6 +362,8 @@ export class RotbotComponent implements OnInit, AfterViewChecked {
     'orgánico': 'organic'
   };
 
+  currentTheme = 'dark';
+
   constructor(
     public chatService: ChatStateService,
     private router: Router,
@@ -377,7 +379,22 @@ export class RotbotComponent implements OnInit, AfterViewChecked {
         this.sendMessage();
       }, 300);
     }
+
+    if (typeof window !== 'undefined') {
+      this.currentTheme = localStorage.getItem('portfolio-theme') || 'dark';
+      window.addEventListener('portfolio-theme-change', this.onThemeChange);
+    }
   }
+
+  ngOnDestroy() {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('portfolio-theme-change', this.onThemeChange);
+    }
+  }
+
+  onThemeChange = (event: any) => {
+    this.currentTheme = event.detail.theme;
+  };
 
   ngAfterViewChecked() {
     this.scrollToBottom();
