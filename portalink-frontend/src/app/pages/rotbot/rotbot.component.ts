@@ -41,9 +41,27 @@ import { AnalyticsService } from '../../services/analytics.service';
             </svg>
             <span class="hidden sm:inline">Volver al Inicio</span>
           </a>
+
+          <!-- Theme Toggle -->
+          <button (click)="toggleTheme()" class="p-2 rounded-lg transition-all icon-btn mr-1" title="Cambiar Tema">
+            <svg *ngIf="currentTheme === 'dark'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg *ngIf="currentTheme !== 'dark'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
  
           <!-- Back / Close Button -->
-          <button (click)="goBack()" class="p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition-all" title="Cerrar y Volver">
+          <button (click)="goBack()" class="p-2 rounded-lg transition-all icon-btn" title="Cerrar y Volver">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -183,26 +201,26 @@ import { AnalyticsService } from '../../services/analytics.service';
  
         <!-- Sidebar Derecho (Info Rotbot) -->
         <div class="chat-sidebar no-scrollbar hidden md:flex flex-col w-80 border-l py-8 px-6 gap-6 overflow-y-auto" style="border-color: var(--card-border);">
-          <h4 class="text-[12px] uppercase tracking-[0.2em] font-sans font-semibold opacity-40 mb-2" style="color: var(--text-secondary);">¿Quién es Rotbot?</h4>
+          <h4 class="text-[12px] uppercase tracking-[0.2em] font-sans font-semibold opacity-60 mb-2" style="color: var(--text-secondary);">¿Quién es Rotbot?</h4>
           
-          <div class="flex flex-col items-center text-center gap-4 p-5 rounded-2xl border" style="background: var(--card-bg); border-color: var(--card-border);">
-            <div class="w-24 h-24 rounded-2xl bg-white/5 flex items-center justify-center p-2 border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.05)]">
+          <div class="flex flex-col items-center text-center gap-4 p-5 rounded-2xl border right-sidebar-card" style="border-color: var(--card-border);">
+            <div class="w-24 h-24 rounded-2xl flex items-center justify-center p-2 border right-sidebar-icon shadow-inner">
               <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(0,245,255,0.4)]" alt="Rotbot Logo">
             </div>
             <div>
               <h5 class="text-sm font-bold tracking-wide" style="color: var(--text-primary);">Copiloto Tecnológico</h5>
-              <p class="text-[13px] font-light mt-2 leading-relaxed" style="color: var(--text-secondary);">
+              <p class="text-[13px] font-light mt-2 leading-relaxed opacity-80" style="color: var(--text-secondary);">
                 Rotbot es una inteligencia artificial diseñada para asesorar y guiar en el desarrollo de soluciones digitales avanzadas, desarrollo a medida y automatizaciones de procesos comerciales.
               </p>
             </div>
           </div>
  
-          <h4 class="text-[12px] uppercase tracking-[0.2em] font-sans font-semibold opacity-40 mt-2 mb-2" style="color: var(--text-secondary);">¿Tienes un Proyecto?</h4>
+          <h4 class="text-[12px] uppercase tracking-[0.2em] font-sans font-semibold opacity-60 mt-2 mb-2" style="color: var(--text-secondary);">¿Tienes un Proyecto?</h4>
  
-          <button (click)="sendShortcutMessage('Quiero una implementación de IA en mi negocio')" class="shortcut-btn flex flex-col gap-2 p-5 rounded-xl text-left border transition-all duration-300">
+          <button (click)="sendShortcutMessage('Quiero una implementación de IA en mi negocio')" class="shortcut-btn flex flex-col gap-2 p-5 rounded-xl text-left border transition-all duration-300 shadow-sm hover:shadow-md">
             <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--accent-color);">Oportunidad</span>
             <span class="text-[14.5px] font-semibold leading-snug" style="color: var(--text-primary);">Quiero mi IA para mi negocio</span>
-            <span class="text-[12px] font-light opacity-70 leading-normal block" style="color: var(--text-secondary);">
+            <span class="text-[12px] font-light opacity-80 leading-normal block" style="color: var(--text-secondary);">
               Empieza hoy la transformación digital y automatiza tu negocio con Inteligencia Artificial.
             </span>
           </button>
@@ -232,6 +250,16 @@ import { AnalyticsService } from '../../services/analytics.service';
     :host-context(.theme-light) .chat-header {
       border-color: rgba(0, 0, 0, 0.06);
       background: rgb(255, 255, 255);
+    }
+    .icon-btn {
+      color: var(--text-secondary);
+    }
+    .icon-btn:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    :host-context(.theme-light) .icon-btn:hover {
+      background: rgba(0, 0, 0, 0.05);
     }
     .scanner-line {
       background: linear-gradient(90deg, transparent, var(--accent-color, #00f5ff), transparent);
@@ -347,6 +375,21 @@ import { AnalyticsService } from '../../services/analytics.service';
     :host-context(.theme-light) .shortcut-btn:hover {
       background: rgba(0, 0, 0, 0.02);
     }
+    .right-sidebar-card {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    :host-context(.theme-light) .right-sidebar-card {
+      background: rgba(0, 0, 0, 0.015);
+    }
+    .right-sidebar-icon {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+    :host-context(.theme-light) .right-sidebar-icon {
+      background: rgba(0, 0, 0, 0.03);
+      border-color: rgba(0, 0, 0, 0.05);
+      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.02);
+    }
   `]
 })
 export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
@@ -402,6 +445,20 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
   onThemeChange = (event: any) => {
     this.currentTheme = event.detail.theme;
   };
+
+  toggleTheme() {
+    const nextTheme = this.currentTheme === 'light' ? 'dark' : 'light';
+    this.currentTheme = nextTheme;
+    if (typeof document !== 'undefined') {
+      const root = document.documentElement;
+      root.classList.remove('theme-dark', 'theme-light', 'theme-red');
+      if (nextTheme !== 'dark') {
+        root.classList.add(`theme-${nextTheme}`);
+      }
+      localStorage.setItem('portfolio-theme', nextTheme);
+      window.dispatchEvent(new CustomEvent('portfolio-theme-change', { detail: { theme: nextTheme } }));
+    }
+  }
 
   ngAfterViewChecked() {
     this.scrollToBottom();
