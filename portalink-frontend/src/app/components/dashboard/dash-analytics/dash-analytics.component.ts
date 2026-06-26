@@ -4,6 +4,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { AnalyticsService, SystemMetrics } from '../../../services/analytics.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { PdfReportService } from '../../../services/pdf-report.service';
 
 @Component({
   selector: 'app-dash-analytics',
@@ -13,11 +14,22 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
     <div class="space-y-6 tab-enter">
 
       <!-- Header -->
-      <div>
-        <p class="text-xs font-bold uppercase tracking-[0.3em]"
-           [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Métricas Avanzadas</p>
-        <h2 class="text-4xl font-bold uppercase tracking-tight mt-0.5"
-            [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Analíticas</h2>
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-[0.3em]"
+             [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Métricas Avanzadas</p>
+          <h2 class="text-4xl font-bold uppercase tracking-tight mt-0.5"
+              [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Analíticas</h2>
+        </div>
+        <button (click)="downloadPdf()"
+                [disabled]="pdfLoading"
+                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest border transition-all duration-200 cursor-pointer mt-1"
+                [ngClass]="isDark ? 'border-red-900/60 text-red-400 hover:bg-red-950/40 hover:border-red-700' : 'border-red-200 text-red-600 hover:bg-red-50'">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          {{ pdfLoading ? 'Generando...' : 'Exportar PDF' }}
+        </button>
       </div>
 
       <!-- Row 1: Tendencia Semanal -->
@@ -294,9 +306,11 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 export class DashAnalyticsComponent implements OnInit {
   @Input() theme = 'dark';
   private analyticsService = inject(AnalyticsService);
+  private pdfService = inject(PdfReportService);
 
   metrics!: SystemMetrics;
   get isDark() { return this.theme === 'dark'; }
+  pdfLoading = false;
 
   themeTotal = 0;
 
@@ -449,6 +463,11 @@ export class DashAnalyticsComponent implements OnInit {
     this.metrics = this.analyticsService.getMetrics();
     this.buildRotbotStats();
     this.themeTotal = this.metrics.themeSelections.dark + this.metrics.themeSelections.light;
+  }
+
+  async downloadPdf() {
+    this.pdfLoading = true;
+    try { await this.pdfService.downloadAnalyticsReport(this.metrics); } finally { this.pdfLoading = false; }
   }
 
   private buildRotbotStats() {

@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { PdfReportService } from '../../../services/pdf-report.service';
 
 interface User {
   id: number;
@@ -26,20 +27,28 @@ interface User {
           <h2 class="text-4xl font-bold uppercase tracking-tight mt-0.5"
               [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Usuarios</h2>
         </div>
-        <!-- Stats -->
-        <div class="flex gap-3">
-          <div class="text-center px-4 py-2 rounded-xl border"
-               [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900/60' : 'border-neutral-200 bg-white'">
-            <p class="text-2xl font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ activeUsers }}</p>
-            <p class="text-[10px] uppercase tracking-wide font-bold text-green-500">Activos</p>
+          <div class="flex gap-3 items-center">
+            <button (click)="downloadPdf()"
+                    [disabled]="pdfLoading"
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest border transition-all duration-200 cursor-pointer"
+                    [ngClass]="isDark ? 'border-red-900/60 text-red-400 hover:bg-red-950/40 hover:border-red-700' : 'border-red-200 text-red-600 hover:bg-red-50'">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              {{ pdfLoading ? 'Generando...' : 'PDF' }}
+            </button>
+            <div class="text-center px-4 py-2 rounded-xl border"
+                 [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900/60' : 'border-neutral-200 bg-white'">
+              <p class="text-2xl font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ activeUsers }}</p>
+              <p class="text-[10px] uppercase tracking-wide font-bold text-green-500">Activos</p>
+            </div>
+            <div class="text-center px-4 py-2 rounded-xl border"
+                 [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900/60' : 'border-neutral-200 bg-white'">
+              <p class="text-2xl font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ usersList.length }}</p>
+              <p class="text-[10px] uppercase tracking-wide font-bold"
+                 [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Total</p>
+            </div>
           </div>
-          <div class="text-center px-4 py-2 rounded-xl border"
-               [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900/60' : 'border-neutral-200 bg-white'">
-            <p class="text-2xl font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ usersList.length }}</p>
-            <p class="text-[10px] uppercase tracking-wide font-bold"
-               [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Total</p>
-          </div>
-        </div>
       </div>
 
       <!-- Users table -->
@@ -122,6 +131,8 @@ interface User {
 })
 export class DashUsersComponent implements OnInit {
   @Input() theme = 'dark';
+  private pdfService = inject(PdfReportService);
+  pdfLoading = false;
 
   usersList: User[] = [
     { id: 1, name: 'Santiago Arbeláez', email: 'santiago@portalink.com', role: 'Admin', status: 'Activo', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80', joined: 'Jun 2024' },
@@ -164,5 +175,10 @@ export class DashUsersComponent implements OnInit {
   onImgError(event: Event, name: string) {
     const el = event.target as HTMLImageElement;
     el.style.display = 'none';
+  }
+
+  async downloadPdf() {
+    this.pdfLoading = true;
+    try { await this.pdfService.downloadUsersReport(this.usersList); } finally { this.pdfLoading = false; }
   }
 }
