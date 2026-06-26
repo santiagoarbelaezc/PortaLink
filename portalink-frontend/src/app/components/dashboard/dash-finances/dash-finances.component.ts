@@ -59,50 +59,154 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
         </button>
       </div>
 
-      <!-- ══════════════════ RESUMEN ══════════════════ -->
+      <!-- ══════════════════ RESUMEN (Stock Market Theme) ══════════════════ -->
       <ng-container *ngIf="subTab === 'resumen'">
-        <!-- KPI cards -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div *ngFor="let kpi of kpis" class="rounded-2xl border p-5"
-               [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
-            <p class="text-[10px] font-bold uppercase tracking-widest mb-1"
-               [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ kpi.label }}</p>
-            <p class="text-xl font-bold leading-tight" [ngClass]="kpi.color || (isDark ? 'text-white' : 'text-neutral-900')">{{ kpi.value }}</p>
+        
+        <!-- Ticker (Simplified & Centered) -->
+        <div class="w-full flex items-center h-12 px-4 mb-6 border-b"
+             [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+          <div class="flex whitespace-nowrap overflow-x-auto gap-16 text-xs tracking-wide w-full items-center justify-center" style="-ms-overflow-style: none; scrollbar-width: none;">
+             <span *ngFor="let srv of serviceIncome" class="flex gap-2.5 items-center flex-shrink-0 cursor-default">
+               <span class="font-bold uppercase tracking-widest text-[10px]" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ srv.name }}</span> 
+               <span class="font-bold text-[13px]" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ formatCOP(srv.amount) }}</span> 
+               <span class="text-[9px] text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded-sm">▲</span>
+             </span>
+          </div>
+          <div *ngIf="serviceIncome.length === 0" class="flex items-center justify-center w-full text-[10px] font-bold tracking-widest text-neutral-500 uppercase">
+             Sin movimientos recientes...
           </div>
         </div>
 
-        <!-- Recent invoices -->
-        <div class="rounded-2xl border overflow-hidden"
+        <!-- KPI Header & Quick Filters -->
+        <div class="flex justify-between items-end mt-4 mb-2">
+           <h3 class="text-xs font-bold uppercase tracking-widest flex items-center gap-2" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">
+             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+             Indicadores
+           </h3>
+           <div class="flex gap-1 p-1 rounded-lg border" [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-neutral-100 border-neutral-200'">
+             <button (click)="setKpiPeriod('all')" class="text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded transition-colors cursor-pointer" [ngClass]="kpiPeriod === 'all' ? (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white') : (isDark ? 'text-neutral-500 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">Todo</button>
+             <button (click)="setKpiPeriod('this_month')" class="text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded transition-colors cursor-pointer" [ngClass]="kpiPeriod === 'this_month' ? (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white') : (isDark ? 'text-neutral-500 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">Este Mes</button>
+             <button (click)="setKpiPeriod('last_month')" class="text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded transition-colors cursor-pointer" [ngClass]="kpiPeriod === 'last_month' ? (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white') : (isDark ? 'text-neutral-500 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">Mes Ant.</button>
+           </div>
+        </div>
+
+        <!-- Comprehensive Filters -->
+        <div class="rounded-2xl border p-4 mb-4 flex flex-wrap gap-4 items-end"
              [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
+           <div class="flex flex-col gap-1.5 flex-grow min-w-[200px]">
+             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Buscar Empresa o Cliente</label>
+             <input type="text" [(ngModel)]="invFilterCompany" (ngModelChange)="buildKpis()" placeholder="Ej: TechCorp"
+                    class="w-full px-3 py-2 rounded-xl text-sm border outline-none bg-transparent"
+                    [ngClass]="isDark ? 'border-neutral-700 text-white placeholder-neutral-600 focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
+           </div>
+           <div class="flex flex-col gap-1.5 w-28">
+             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Precio Min</label>
+             <input type="number" [(ngModel)]="invFilterMinPrice" (ngModelChange)="buildKpis()" placeholder="0"
+                    class="w-full px-3 py-2 rounded-xl text-sm border outline-none bg-transparent"
+                    [ngClass]="isDark ? 'border-neutral-700 text-white placeholder-neutral-600 focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
+           </div>
+           <div class="flex flex-col gap-1.5 w-28">
+             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Precio Max</label>
+             <input type="number" [(ngModel)]="invFilterMaxPrice" (ngModelChange)="buildKpis()" placeholder="Múltiplo"
+                    class="w-full px-3 py-2 rounded-xl text-sm border outline-none bg-transparent"
+                    [ngClass]="isDark ? 'border-neutral-700 text-white placeholder-neutral-600 focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
+           </div>
+           <div class="flex flex-col gap-1.5 w-32">
+             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Desde (Fecha)</label>
+             <input type="date" [(ngModel)]="invFilterStartDate" (ngModelChange)="buildKpis()"
+                    class="w-full px-3 py-2 rounded-xl text-sm border outline-none bg-transparent cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-700 text-white focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 focus:border-neutral-500'">
+           </div>
+           <div class="flex flex-col gap-1.5 w-32">
+             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Hasta (Fecha)</label>
+             <input type="date" [(ngModel)]="invFilterEndDate" (ngModelChange)="buildKpis()"
+                    class="w-full px-3 py-2 rounded-xl text-sm border outline-none bg-transparent cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-700 text-white focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 focus:border-neutral-500'">
+           </div>
+           <div class="flex-shrink-0">
+             <button (click)="kpiPeriod='all'; invFilterCompany=''; invFilterMinPrice=null; invFilterMaxPrice=null; invFilterStartDate=''; invFilterEndDate=''; buildKpis()"
+                     class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest border transition-colors cursor-pointer"
+                     [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-300 text-neutral-500 hover:text-black hover:bg-neutral-100'">
+               Limpiar
+             </button>
+           </div>
+        </div>
+
+        <!-- KPI cards (Trading panel style) -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div *ngFor="let kpi of kpis" class="relative rounded-xl border p-5 overflow-hidden group"
+               [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800' : 'bg-white border-neutral-200'">
+            <p class="text-[10px] font-bold uppercase tracking-widest mb-2"
+               [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ kpi.label }}</p>
+            <p class="text-2xl lg:text-3xl font-bold leading-tight" [ngClass]="kpi.color || (isDark ? 'text-white' : 'text-neutral-900')">{{ kpi.value }}</p>
+          </div>
+        </div>
+
+        <!-- Recent invoices (Ledger style) -->
+        <div class="rounded-2xl border overflow-hidden mt-6"
+             [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800' : 'bg-white border-neutral-200'">
           <div class="px-5 py-4 border-b flex items-center justify-between"
-               [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-            <h3 class="text-sm font-bold uppercase tracking-wide"
-                [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">Últimas Cuentas de Cobro</h3>
-            <button (click)="subTab = 'facturas'" class="text-xs font-bold uppercase tracking-widest cursor-pointer"
-                    [ngClass]="isDark ? 'text-neutral-500 hover:text-white' : 'text-neutral-400 hover:text-neutral-900'">
-              Ver todas →
+               [ngClass]="isDark ? 'bg-neutral-950/50 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+            <h3 class="text-xs font-bold uppercase tracking-widest flex items-center gap-2"
+                [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
+              <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+              Últimos Movimientos
+            </h3>
+            <button (click)="subTab = 'facturas'" class="text-[10px] font-bold uppercase tracking-widest cursor-pointer border px-3 py-1 rounded-md transition-colors"
+                    [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-300 text-neutral-500 hover:text-black hover:bg-neutral-100'">
+              Ver Ledger →
             </button>
           </div>
-          <div class="divide-y" [ngClass]="isDark ? 'divide-neutral-800' : 'divide-neutral-100'">
-            <div *ngFor="let inv of recentInvoices"
-                 class="grid grid-cols-12 px-5 py-3.5 items-center"
-                 [ngClass]="isDark ? 'hover:bg-neutral-800/30' : 'hover:bg-neutral-50'">
-              <div class="col-span-2">
-                <span class="text-xs font-bold font-mono" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ inv.id }}</span>
+          <div class="divide-y" [ngClass]="isDark ? 'divide-neutral-800/50' : 'divide-neutral-100'">
+            <ng-container *ngFor="let inv of recentInvoices">
+              <div (click)="toggleInvoice(inv.id)" class="grid grid-cols-12 px-5 py-3 items-center group cursor-pointer transition-colors"
+                   [ngClass]="isDark ? 'hover:bg-neutral-800/40' : 'hover:bg-neutral-50'">
+                <div class="col-span-3 flex items-center gap-2">
+                  <span class="text-xs font-bold" [ngClass]="isDark ? 'text-neutral-500 group-hover:text-neutral-300' : 'text-neutral-400 group-hover:text-neutral-600'">{{ inv.id }}</span>
+                </div>
+                <div class="col-span-3">
+                  <p class="text-xs font-bold uppercase tracking-widest truncate" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">{{ inv.clientName }}</p>
+                </div>
+                <div class="col-span-3 text-right">
+                  <span class="text-sm font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(inv.total) }}</span>
+                </div>
+                <div class="col-span-3 flex justify-end items-center gap-2">
+                  <span class="text-xs" [ngClass]="inv.status === 'Pagada' ? 'text-emerald-500' : (inv.status === 'Enviada' ? 'text-blue-500' : 'text-amber-500')">
+                    {{ inv.status === 'Pagada' ? '▲' : (inv.status === 'Enviada' ? '►' : '▼') }}
+                  </span>
+                  <span class="text-[9px] font-bold uppercase px-2 py-0.5 rounded-sm border" 
+                        [ngClass]="inv.status === 'Pagada' ? (isDark ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-600') : (inv.status === 'Vencida' ? (isDark ? 'bg-rose-500/10 border-rose-500/30 text-rose-400' : 'bg-rose-50 border-rose-200 text-rose-600') : (isDark ? 'bg-neutral-800 border-neutral-700 text-neutral-400' : 'bg-neutral-100 border-neutral-200 text-neutral-600'))">
+                    {{ inv.status }}
+                  </span>
+                  <svg class="w-3 h-3 ml-2 transition-transform duration-200" [ngClass]="expandedInvoiceId === inv.id ? 'rotate-180 text-white' : (isDark ? 'text-neutral-500 group-hover:text-white' : 'text-neutral-400 group-hover:text-black')" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </div>
               </div>
-              <div class="col-span-4">
-                <p class="text-sm font-semibold" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ inv.clientName }}</p>
+              
+              <!-- Expanded View -->
+              <div *ngIf="expandedInvoiceId === inv.id" class="px-5 py-4 border-t-0 border-b overflow-hidden"
+                   [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                    <div>
+                      <p class="text-[9px] font-bold uppercase tracking-widest mb-1.5" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Datos del Cliente</p>
+                      <p class="text-xs font-semibold uppercase tracking-wide" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-800'">{{ getClient(inv.clientId)?.name }}</p>
+                      <p class="text-[10px] uppercase tracking-widest mt-0.5" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-500'">{{ getClient(inv.clientId)?.company || 'Independiente' }}</p>
+                      <p class="text-[10px] mt-1" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">{{ getClient(inv.clientId)?.email }} &nbsp;•&nbsp; {{ getClient(inv.clientId)?.phone || 'Sin teléfono' }}</p>
+                    </div>
+                    <div class="flex md:justify-end">
+                      <button (click)="downloadInvoicePdf(inv)" [disabled]="pdfLoading" class="px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest border transition-colors cursor-pointer flex items-center gap-2"
+                              [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:text-white hover:bg-neutral-800 disabled:opacity-50' : 'border-neutral-300 text-neutral-600 hover:text-black hover:bg-neutral-100 disabled:opacity-50'">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        {{ pdfLoading ? 'Generando...' : 'Descargar PDF' }}
+                      </button>
+                    </div>
+                 </div>
               </div>
-              <div class="col-span-3 text-right">
-                <span class="text-sm font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(inv.total) }}</span>
-              </div>
-              <div class="col-span-3 flex justify-end">
-                <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full" [ngClass]="getStatusClass(inv.status)">{{ inv.status }}</span>
-              </div>
-            </div>
-            <div *ngIf="recentInvoices.length === 0" class="px-5 py-8 text-center text-sm"
+            </ng-container>
+            <div *ngIf="recentInvoices.length === 0" class="px-5 py-8 text-center text-xs"
                  [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-400'">
-              No hay cuentas de cobro aún. <button (click)="openNewInvoice(); subTab='facturas'" class="underline cursor-pointer ml-1">Crear la primera</button>
+              No hay movimientos registrados.
             </div>
           </div>
         </div>
@@ -407,6 +511,48 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
           </div>
         </div>
 
+        <!-- Invoice Filters -->
+        <div class="rounded-2xl border p-4 mb-4 flex flex-wrap gap-4 items-end"
+             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
+           <div class="flex flex-col gap-1.5 flex-grow min-w-[200px]">
+             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Buscar Empresa o Cliente</label>
+             <input type="text" [(ngModel)]="invFilterCompany" placeholder="Ej: TechCorp"
+                    class="w-full px-3 py-2 rounded-xl text-sm border outline-none bg-transparent"
+                    [ngClass]="isDark ? 'border-neutral-700 text-white placeholder-neutral-600 focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
+           </div>
+           <div class="flex flex-col gap-1.5 w-28">
+             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Precio Min</label>
+             <input type="number" [(ngModel)]="invFilterMinPrice" placeholder="0"
+                    class="w-full px-3 py-2 rounded-xl text-sm border outline-none bg-transparent"
+                    [ngClass]="isDark ? 'border-neutral-700 text-white placeholder-neutral-600 focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
+           </div>
+           <div class="flex flex-col gap-1.5 w-28">
+             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Precio Max</label>
+             <input type="number" [(ngModel)]="invFilterMaxPrice" placeholder="Múltiplo"
+                    class="w-full px-3 py-2 rounded-xl text-sm border outline-none bg-transparent"
+                    [ngClass]="isDark ? 'border-neutral-700 text-white placeholder-neutral-600 focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
+           </div>
+           <div class="flex flex-col gap-1.5 w-32">
+             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Desde (Fecha)</label>
+             <input type="date" [(ngModel)]="invFilterStartDate"
+                    class="w-full px-3 py-2 rounded-xl text-sm border outline-none bg-transparent cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-700 text-white focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 focus:border-neutral-500'">
+           </div>
+           <div class="flex flex-col gap-1.5 w-32">
+             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Hasta (Fecha)</label>
+             <input type="date" [(ngModel)]="invFilterEndDate"
+                    class="w-full px-3 py-2 rounded-xl text-sm border outline-none bg-transparent cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-700 text-white focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 focus:border-neutral-500'">
+           </div>
+           <div class="flex-shrink-0">
+             <button (click)="invFilterCompany=''; invFilterMinPrice=null; invFilterMaxPrice=null; invFilterStartDate=''; invFilterEndDate=''"
+                     class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest border transition-colors cursor-pointer"
+                     [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-300 text-neutral-500 hover:text-black hover:bg-neutral-100'">
+               Limpiar
+             </button>
+           </div>
+        </div>
+
         <!-- Invoice list -->
         <div class="rounded-2xl border overflow-hidden"
              [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
@@ -420,7 +566,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
             <span class="col-span-1"></span>
           </div>
           <div class="divide-y" [ngClass]="isDark ? 'divide-neutral-800' : 'divide-neutral-100'">
-            <div *ngFor="let inv of invoices" class="grid grid-cols-12 px-5 py-4 items-center"
+            <div *ngFor="let inv of displayedInvoices" class="grid grid-cols-12 px-5 py-4 items-center"
                  [ngClass]="isDark ? 'hover:bg-neutral-800/30' : 'hover:bg-neutral-50'">
               <div class="col-span-2">
                 <span class="text-xs font-bold font-mono" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ inv.id }}</span>
@@ -541,6 +687,8 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
   styles: [`
     .tab-enter { animation: tabEnter 0.25s ease-out forwards; }
     @keyframes tabEnter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+    .animate-ticker { animation: ticker 25s linear infinite; }
   `]
 })
 export class DashFinancesComponent implements OnInit {
@@ -566,6 +714,32 @@ export class DashFinancesComponent implements OnInit {
   kpis: { label: string; value: string; color?: string }[] = [];
   recentInvoices: Invoice[] = [];
   pdfLoading = false;
+  expandedInvoiceId: string | null = null;
+  kpiPeriod: 'all' | 'this_month' | 'last_month' = 'all';
+
+  // Invoice filters
+  invFilterCompany = '';
+  invFilterMinPrice: number | null = null;
+  invFilterMaxPrice: number | null = null;
+  invFilterStartDate = '';
+  invFilterEndDate = '';
+
+  get displayedInvoices() {
+    return this.invoices.filter(i => {
+      let match = true;
+      if (this.invFilterCompany) {
+         const term = this.invFilterCompany.toLowerCase();
+         if (!i.clientCompany?.toLowerCase().includes(term) && !i.clientName.toLowerCase().includes(term)) {
+           match = false;
+         }
+      }
+      if (this.invFilterMinPrice !== null && i.total < this.invFilterMinPrice) match = false;
+      if (this.invFilterMaxPrice !== null && i.total > this.invFilterMaxPrice) match = false;
+      if (this.invFilterStartDate && i.issuedAt < this.invFilterStartDate) match = false;
+      if (this.invFilterEndDate && i.issuedAt > this.invFilterEndDate) match = false;
+      return match;
+    });
+  }
 
   monthlyIncome: { month: string; amount: number; height: number }[] = [];
   serviceIncome: { name: string; amount: number; percent: number }[] = [];
@@ -612,17 +786,52 @@ export class DashFinancesComponent implements OnInit {
     this.invoices = this.financeService.getInvoices();
     this.buildKpis();
     this.buildReports();
-    this.recentInvoices = this.invoices.slice(0, 5);
+  }
+
+  toggleInvoice(id: string) {
+    this.expandedInvoiceId = this.expandedInvoiceId === id ? null : id;
+  }
+
+  getClient(id: string) {
+    return this.clients.find(c => c.id === id);
+  }
+  setKpiPeriod(period: 'all' | 'this_month' | 'last_month') {
+    this.kpiPeriod = period;
+    const now = new Date();
+    if (period === 'all') {
+      this.invFilterStartDate = '';
+      this.invFilterEndDate = '';
+    } else if (period === 'this_month') {
+      const start = new Date(now.getFullYear(), now.getMonth(), 1);
+      const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      this.invFilterStartDate = `${start.getFullYear()}-${String(start.getMonth()+1).padStart(2, '0')}-01`;
+      this.invFilterEndDate = `${end.getFullYear()}-${String(end.getMonth()+1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`;
+    } else if (period === 'last_month') {
+      let y = now.getFullYear();
+      let m = now.getMonth() - 1;
+      if (m < 0) { m = 11; y--; }
+      const start = new Date(y, m, 1);
+      const end = new Date(y, m + 1, 0);
+      this.invFilterStartDate = `${start.getFullYear()}-${String(start.getMonth()+1).padStart(2, '0')}-01`;
+      this.invFilterEndDate = `${end.getFullYear()}-${String(end.getMonth()+1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`;
+    }
+    this.buildKpis();
   }
 
   buildKpis() {
-    const s = this.financeService.getStats();
+    const filtered = this.displayedInvoices;
+    const total = filtered.reduce((a, b) => a + (b.total || 0), 0);
+    const paid = filtered.filter(i => i.status === 'Pagada').reduce((a, b) => a + (b.total || 0), 0);
+    const pending = total - paid;
+    const clientCount = new Set(filtered.map(i => i.clientId)).size;
+
     this.kpis = [
-      { label: 'Total Facturado', value: this.formatCOP(s.total) },
-      { label: 'Pagado', value: this.formatCOP(s.paid), color: 'text-green-500' },
-      { label: 'Por Cobrar', value: this.formatCOP(s.pending), color: 'text-yellow-500' },
-      { label: 'Clientes', value: String(s.clientCount) },
+      { label: 'Total Facturado', value: this.formatCOP(total) },
+      { label: 'Pagado', value: this.formatCOP(paid), color: 'text-emerald-500' },
+      { label: 'Por Cobrar', value: this.formatCOP(pending), color: 'text-amber-500' },
+      { label: 'Clientes Facturados', value: String(clientCount) },
     ];
+    this.recentInvoices = filtered.slice(0, 5);
   }
 
   buildReports() {

@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { AnalyticsService, SystemMetrics } from '../../../services/analytics.service';
 import { PortfolioConfigService } from '../../../services/portfolio-config.service';
 import { PdfReportService } from '../../../services/pdf-report.service';
@@ -23,6 +24,105 @@ interface ActivityLog {
            [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Resumen y Exportación</p>
         <h2 class="text-4xl font-bold uppercase tracking-tight mt-0.5"
             [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Reportes</h2>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           PDF EXPORT SECTION (MOVED TO TOP)
+      ══════════════════════════════════════ -->
+      <div class="rounded-2xl border p-6"
+           [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
+        <div class="mb-5 flex justify-between items-end">
+          <div>
+            <h3 class="text-sm font-bold uppercase tracking-wide"
+                [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">Generación de Reportes PDF</h3>
+            <p class="text-xs mt-1" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">
+              Previsualiza y descarga los informes oficiales de la plataforma
+            </p>
+          </div>
+          <p *ngIf="pdfLoading" class="text-xs font-bold animate-pulse"
+             [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">⏳ Generando PDF...</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- PDF: Analytics -->
+          <button (click)="previewPdf('analytics')"
+                  [disabled]="pdfLoading"
+                  class="w-full flex items-center gap-3 px-5 py-3.5 rounded-xl text-sm font-bold uppercase tracking-widest border transition-all duration-200 cursor-pointer group"
+                  [ngClass]="currentPdfType === 'analytics' ? (isDark ? 'border-red-500 bg-red-500/10 text-red-400' : 'border-red-500 bg-red-50 text-red-600') : (isDark ? 'border-neutral-800 text-neutral-400 hover:border-neutral-600 hover:text-neutral-200' : 'border-neutral-200 text-neutral-600 hover:border-neutral-400 hover:text-neutral-900')">
+            <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                 [ngClass]="currentPdfType === 'analytics' ? (isDark ? 'bg-red-500/20' : 'bg-red-200') : (isDark ? 'bg-neutral-800 group-hover:bg-neutral-700' : 'bg-neutral-100 group-hover:bg-neutral-200')">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+              </svg>
+            </div>
+            <span class="flex-grow text-left">Analíticas</span>
+          </button>
+
+          <!-- PDF: Users -->
+          <button (click)="previewPdf('users')"
+                  [disabled]="pdfLoading"
+                  class="w-full flex items-center gap-3 px-5 py-3.5 rounded-xl text-sm font-bold uppercase tracking-widest border transition-all duration-200 cursor-pointer group"
+                  [ngClass]="currentPdfType === 'users' ? (isDark ? 'border-red-500 bg-red-500/10 text-red-400' : 'border-red-500 bg-red-50 text-red-600') : (isDark ? 'border-neutral-800 text-neutral-400 hover:border-neutral-600 hover:text-neutral-200' : 'border-neutral-200 text-neutral-600 hover:border-neutral-400 hover:text-neutral-900')">
+            <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                 [ngClass]="currentPdfType === 'users' ? (isDark ? 'bg-red-500/20' : 'bg-red-200') : (isDark ? 'bg-neutral-800 group-hover:bg-neutral-700' : 'bg-neutral-100 group-hover:bg-neutral-200')">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+              </svg>
+            </div>
+            <span class="flex-grow text-left">Usuarios</span>
+          </button>
+
+          <!-- PDF: System Health -->
+          <button (click)="previewPdf('health')"
+                  [disabled]="pdfLoading"
+                  class="w-full flex items-center gap-3 px-5 py-3.5 rounded-xl text-sm font-bold uppercase tracking-widest border transition-all duration-200 cursor-pointer group"
+                  [ngClass]="currentPdfType === 'health' ? (isDark ? 'border-red-500 bg-red-500/10 text-red-400' : 'border-red-500 bg-red-50 text-red-600') : (isDark ? 'border-neutral-800 text-neutral-400 hover:border-neutral-600 hover:text-neutral-200' : 'border-neutral-200 text-neutral-600 hover:border-neutral-400 hover:text-neutral-900')">
+            <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                 [ngClass]="currentPdfType === 'health' ? (isDark ? 'bg-red-500/20' : 'bg-red-200') : (isDark ? 'bg-neutral-800 group-hover:bg-neutral-700' : 'bg-neutral-100 group-hover:bg-neutral-200')">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+              </svg>
+            </div>
+            <span class="flex-grow text-left">Salud del Sist.</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           PDF VIEWER IFRAME
+      ══════════════════════════════════════ -->
+      <div *ngIf="pdfUrl" class="rounded-2xl border overflow-hidden flex flex-col transition-all duration-500"
+           [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+        
+        <div class="px-5 py-4 border-b flex justify-between items-center"
+             [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+          <div class="flex items-center gap-3">
+            <svg class="w-5 h-5" [ngClass]="isDark ? 'text-red-400' : 'text-red-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            <h3 class="text-sm font-bold uppercase tracking-wide"
+                [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">Visor de Reporte: {{ currentPdfName }}</h3>
+          </div>
+          
+          <div class="flex items-center gap-3">
+            <button (click)="closeViewer()" 
+                    class="text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg transition-colors"
+                    [ngClass]="isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-500 hover:text-black hover:bg-neutral-200'">
+              Cerrar
+            </button>
+            <button (click)="downloadCurrentPdf()"
+                    class="flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest transition-all duration-200 cursor-pointer"
+                    [ngClass]="isDark ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-red-600 hover:bg-red-700 text-white'">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Descargar
+            </button>
+          </div>
+        </div>
+
+        <iframe [src]="pdfUrl" class="w-full h-[600px] border-none bg-neutral-200/20"></iframe>
       </div>
 
       <!-- Executive Summary -->
@@ -109,75 +209,7 @@ interface ActivityLog {
             </div>
           </div>
         </div>
-
-        <!-- PDF Export Section -->
-        <div class="rounded-2xl border p-6 space-y-4"
-             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
-          <div>
-            <h3 class="text-sm font-bold uppercase tracking-wide"
-                [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">Exportar PDF</h3>
-            <p class="text-xs mt-1" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">
-              Reportes completos en formato PDF listo para imprimir
-            </p>
-          </div>
-
-          <!-- PDF: Analytics -->
-          <!-- PDF: Analytics -->
-          <button (click)="downloadAnalyticsPdf()"
-                  [disabled]="pdfLoading"
-                  class="w-full flex items-center gap-3 px-5 py-3.5 rounded-xl text-sm font-bold uppercase tracking-widest border transition-all duration-200 cursor-pointer group"
-                  [ngClass]="isDark ? 'border-red-900/60 text-red-400 hover:bg-red-950/40 hover:border-red-700' : 'border-red-200 text-red-600 hover:bg-red-50'">
-            <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
-                 [ngClass]="isDark ? 'bg-red-950/50 text-red-400 group-hover:bg-red-900/60 group-hover:text-red-300' : 'bg-red-100 text-red-600 group-hover:bg-red-200'">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
-              </svg>
-            </div>
-            <span class="flex-grow text-left">Reporte de Analíticas</span>
-            <span class="text-[10px] px-2 py-0.5 rounded uppercase tracking-widest font-bold"
-                  [ngClass]="isDark ? 'bg-red-900/40 text-red-400' : 'bg-red-100 text-red-600'">PDF</span>
-          </button>
-
-          <!-- PDF: Users -->
-          <button (click)="downloadUsersPdf()"
-                  [disabled]="pdfLoading"
-                  class="w-full flex items-center gap-3 px-5 py-3.5 rounded-xl text-sm font-bold uppercase tracking-widest border transition-all duration-200 cursor-pointer group"
-                  [ngClass]="isDark ? 'border-red-900/60 text-red-400 hover:bg-red-950/40 hover:border-red-700' : 'border-red-200 text-red-600 hover:bg-red-50'">
-            <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
-                 [ngClass]="isDark ? 'bg-red-950/50 text-red-400 group-hover:bg-red-900/60 group-hover:text-red-300' : 'bg-red-100 text-red-600 group-hover:bg-red-200'">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
-              </svg>
-            </div>
-            <span class="flex-grow text-left">Listado de Usuarios</span>
-            <span class="text-[10px] px-2 py-0.5 rounded uppercase tracking-widest font-bold"
-                  [ngClass]="isDark ? 'bg-red-900/40 text-red-400' : 'bg-red-100 text-red-600'">PDF</span>
-          </button>
-
-          <!-- PDF: System Health -->
-          <button (click)="downloadHealthPdf()"
-                  [disabled]="pdfLoading"
-                  class="w-full flex items-center gap-3 px-5 py-3.5 rounded-xl text-sm font-bold uppercase tracking-widest border transition-all duration-200 cursor-pointer group"
-                  [ngClass]="isDark ? 'border-red-900/60 text-red-400 hover:bg-red-950/40 hover:border-red-700' : 'border-red-200 text-red-600 hover:bg-red-50'">
-            <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
-                 [ngClass]="isDark ? 'bg-red-950/50 text-red-400 group-hover:bg-red-900/60 group-hover:text-red-300' : 'bg-red-100 text-red-600 group-hover:bg-red-200'">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
-              </svg>
-            </div>
-            <span class="flex-grow text-left">Salud del Sistema</span>
-            <span class="text-[10px] px-2 py-0.5 rounded uppercase tracking-widest font-bold"
-                  [ngClass]="isDark ? 'bg-red-900/40 text-red-400' : 'bg-red-100 text-red-600'">PDF</span>
-          </button>
-
-          <p *ngIf="pdfLoading" class="text-xs text-center"
-             [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">
-            ⏳ Generando PDF...
-          </p>
-        </div>
-
       </div>
-
       <!-- Load Times Table -->
       <div *ngIf="loadTimes.length > 0"
            class="rounded-2xl border overflow-hidden"
@@ -222,11 +254,17 @@ export class DashReportsComponent implements OnInit {
   private configService = inject(PortfolioConfigService);
   private pdfService = inject(PdfReportService);
 
+  private sanitizer = inject(DomSanitizer);
+
   metrics!: SystemMetrics;
   executiveSummary: { label: string; value: any }[] = [];
   loadTimes: number[] = [];
   loadMin = 0; loadMax = 0; loadAvg = 0;
   pdfLoading = false;
+
+  pdfUrl: SafeResourceUrl | null = null;
+  currentPdfType: 'analytics' | 'users' | 'health' | null = null;
+  currentPdfName: string = '';
 
   activityLog: ActivityLog[] = [
     { iconType: 'config', label: 'Configuración del sistema actualizada', date: 'Hoy — 11:03 am' },
@@ -276,28 +314,69 @@ export class DashReportsComponent implements OnInit {
     this.configService.exportJSON();
   }
 
-  async downloadAnalyticsPdf() {
-    this.pdfLoading = true;
-    try { await this.pdfService.downloadAnalyticsReport(this.metrics); } finally { this.pdfLoading = false; }
+  closeViewer() {
+    this.pdfUrl = null;
+    this.currentPdfType = null;
   }
 
-  async downloadUsersPdf() {
+  async previewPdf(type: 'analytics' | 'users' | 'health') {
     this.pdfLoading = true;
-    const saved = localStorage.getItem('portalink_admin_users');
-    const users = saved ? JSON.parse(saved) : [];
-    try { await this.pdfService.downloadUsersReport(users); } finally { this.pdfLoading = false; }
+    this.currentPdfType = type;
+    
+    let rawUrl: string | void = undefined;
+    try {
+      if (type === 'analytics') {
+        this.currentPdfName = 'Analíticas del Sistema';
+        rawUrl = await this.pdfService.downloadAnalyticsReport(this.metrics, 'bloburl');
+      } else if (type === 'users') {
+        this.currentPdfName = 'Listado de Usuarios';
+        const saved = localStorage.getItem('portalink_admin_users');
+        const users = saved ? JSON.parse(saved) : [];
+        rawUrl = await this.pdfService.downloadUsersReport(users, 'bloburl');
+      } else if (type === 'health') {
+        this.currentPdfName = 'Salud del Sistema';
+        const legacyActivityLog = this.activityLog.map(log => {
+          let icon = '⚙️';
+          if (log.iconType === 'message') icon = '✉️';
+          else if (log.iconType === 'lead') icon = '📋';
+          else if (log.iconType === 'update') icon = '🔄';
+          else if (log.iconType === 'export') icon = '📤';
+          return { icon, label: log.label, date: log.date };
+        });
+        rawUrl = await this.pdfService.downloadSystemHealthReport(this.metrics, legacyActivityLog, 'bloburl');
+      }
+
+      if (rawUrl) {
+        this.pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(rawUrl);
+      }
+    } finally {
+      this.pdfLoading = false;
+    }
   }
 
-  async downloadHealthPdf() {
+  async downloadCurrentPdf() {
+    if (!this.currentPdfType) return;
     this.pdfLoading = true;
-    const legacyActivityLog = this.activityLog.map(log => {
-      let icon = '⚙️';
-      if (log.iconType === 'message') icon = '✉️';
-      else if (log.iconType === 'lead') icon = '📋';
-      else if (log.iconType === 'update') icon = '🔄';
-      else if (log.iconType === 'export') icon = '📤';
-      return { icon, label: log.label, date: log.date };
-    });
-    try { await this.pdfService.downloadSystemHealthReport(this.metrics, legacyActivityLog); } finally { this.pdfLoading = false; }
+    try {
+      if (this.currentPdfType === 'analytics') {
+        await this.pdfService.downloadAnalyticsReport(this.metrics, 'save');
+      } else if (this.currentPdfType === 'users') {
+        const saved = localStorage.getItem('portalink_admin_users');
+        const users = saved ? JSON.parse(saved) : [];
+        await this.pdfService.downloadUsersReport(users, 'save');
+      } else if (this.currentPdfType === 'health') {
+        const legacyActivityLog = this.activityLog.map(log => {
+          let icon = '⚙️';
+          if (log.iconType === 'message') icon = '✉️';
+          else if (log.iconType === 'lead') icon = '📋';
+          else if (log.iconType === 'update') icon = '🔄';
+          else if (log.iconType === 'export') icon = '📤';
+          return { icon, label: log.label, date: log.date };
+        });
+        await this.pdfService.downloadSystemHealthReport(this.metrics, legacyActivityLog, 'save');
+      }
+    } finally {
+      this.pdfLoading = false;
+    }
   }
 }
