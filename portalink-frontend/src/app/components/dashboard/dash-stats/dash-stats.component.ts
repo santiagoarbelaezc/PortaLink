@@ -63,7 +63,7 @@ interface SectionRow {
               <!-- Name -->
               <div class="col-span-4 flex items-center gap-3">
                 <span class="text-sm font-bold capitalize"
-                      [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ row.name }}</span>
+                      [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ translateName(row.name) }}</span>
               </div>
 
               <!-- Views -->
@@ -114,7 +114,7 @@ interface SectionRow {
                 <!-- Stats -->
                 <div class="space-y-3">
                   <h5 class="text-xs font-bold uppercase tracking-widest"
-                      [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Detalles de "{{ row.name }}"</h5>
+                      [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Detalles de "{{ translateName(row.name) }}"</h5>
                   <div class="space-y-2">
                     <div class="flex justify-between text-sm">
                       <span [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-500'">Visitas totales</span>
@@ -216,7 +216,7 @@ export class DashStatsComponent implements OnInit {
 
   private buildSummary() {
     const totalViews = Object.values(this.metrics.sectionViews).reduce((a, b) => a + b, 0);
-    const topSection = this.sectionRows[0]?.name || '—';
+    const topSection = this.sectionRows[0] ? this.translateName(this.sectionRows[0].name) : '—';
     const avgPerSection = this.sectionRows.length > 0
       ? Math.round(totalViews / this.sectionRows.length) : 0;
     this.summaryCards = [
@@ -238,5 +238,18 @@ export class DashStatsComponent implements OnInit {
     const max = Math.max(...shifted);
     const coords = shifted.map((v, i) => `${(i / (shifted.length - 1)) * 300},${60 - (v / max) * 50}`);
     return `M ${coords.join(' L ')}`;
+  }
+
+  translateName(name: string): string {
+    const map: Record<string, string> = {
+      hero: 'Inicio (Cabecera)',
+      skills: 'Habilidades',
+      portfolio: 'Portafolio',
+      about: 'Sobre Mí',
+      contact: 'Contacto',
+      text: 'Texto Libre',
+      linktree: 'Árbol de Enlaces'
+    };
+    return map[name.toLowerCase()] || name;
   }
 }
