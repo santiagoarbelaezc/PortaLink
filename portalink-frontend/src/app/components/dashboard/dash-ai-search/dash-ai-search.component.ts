@@ -61,12 +61,6 @@ const TAB_LABELS: Record<string, string> = {
             <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
           </svg>
         </button>
-
-        <!-- Admin avatar badge -->
-        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold uppercase cursor-default"
-             [ngClass]="theme === 'dark' ? 'bg-white text-black' : 'bg-neutral-900 text-white'">
-          A
-        </div>
       </div>
     </header>
   `,
