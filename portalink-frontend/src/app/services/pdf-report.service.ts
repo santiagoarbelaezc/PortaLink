@@ -437,8 +437,8 @@ export class PdfReportService {
 
     doc.setFontSize(7);
     doc.setFont('helvetica', 'normal');
-    doc.setCharSpace(2);
-    doc.text('CUENTA DE COBRO', 14, 21);
+    doc.setCharSpace(1);
+    doc.text('CUENTA DE COBRO / ACUERDO DE PAGO', 14, 21);
     doc.setCharSpace(0);
 
     // Invoice number on right
@@ -476,19 +476,22 @@ export class PdfReportService {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9);
     doc.setTextColor(20, 20, 20);
-    doc.text('Santiago Arbelaez', 14, y);
+    doc.text('Santiago Arbelaez Contreras', 14, y);
     doc.text(invoice.clientName, 110, y);
 
     y += 5;
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
     doc.setTextColor(80, 80, 80);
-    doc.text('Desarrollador Web & Consultor Digital', 14, y);
+    doc.text('cc (NIT): 1001361185', 14, y);
     if (invoice.clientCompany) doc.text(invoice.clientCompany, 110, y);
 
     y += 5;
-    doc.text('santiago@portalink.com', 14, y);
+    doc.text('Desarrollador Web & Diseñador Digital', 14, y);
     doc.text(invoice.clientEmail || '', 110, y);
+
+    y += 5;
+    doc.text('arbelaezz.c11@gmail.com', 14, y);
 
     y += 8;
     doc.setDrawColor(220, 220, 220);

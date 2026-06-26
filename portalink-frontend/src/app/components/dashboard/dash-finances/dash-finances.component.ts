@@ -651,14 +651,39 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
         </div>
       </ng-container>
 
-      <!-- ══════════════════ LEGAL Y REPORTES ══════════════════ -->
+      <!-- ══════════════════ REPORTES Y MÉTRICAS ══════════════════ -->
       <ng-container *ngIf="subTab === 'legal'">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <!-- Ingresos Mensuales -->
-          <div class="rounded-2xl border p-6 flex flex-col h-full"
+        
+        <!-- Key Metrics Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
+          <div class="rounded-2xl border p-4 flex flex-col justify-center"
                [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
-            <h3 class="text-sm font-bold uppercase tracking-wide mb-4" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Ingresos Mensuales</h3>
-            <div class="flex-grow flex items-end gap-2 h-48 border-b pb-2 relative"
+            <p class="text-[10px] font-bold uppercase tracking-widest mb-1" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Tasa de Recaudo</p>
+            <p class="text-2xl font-black" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ keyMetrics.collectionRate }}%</p>
+          </div>
+          <div class="rounded-2xl border p-4 flex flex-col justify-center"
+               [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
+            <p class="text-[10px] font-bold uppercase tracking-widest mb-1" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Facturas Vencidas</p>
+            <p class="text-2xl font-black" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ keyMetrics.overdueCount }}</p>
+          </div>
+          <div class="rounded-2xl border p-4 flex flex-col justify-center"
+               [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
+            <p class="text-[10px] font-bold uppercase tracking-widest mb-1" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Monto Vencido</p>
+            <p class="text-xl font-black text-red-500">{{ formatCOP(keyMetrics.overdueAmount) }}</p>
+          </div>
+          <div class="rounded-2xl border p-4 flex flex-col justify-center"
+               [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
+            <p class="text-[10px] font-bold uppercase tracking-widest mb-1" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Ticket Promedio</p>
+            <p class="text-xl font-black" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(keyMetrics.avgInvoiceValue) }}</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+          <!-- Ingresos Mensuales -->
+          <div class="rounded-2xl border p-6 flex flex-col h-[300px]"
+               [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
+            <h3 class="text-sm font-bold uppercase tracking-wide mb-6" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Ingresos Mensuales</h3>
+            <div class="flex-grow flex items-end gap-2 border-b pb-2 relative"
                  [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
               <!-- Simple CSS Bar Chart -->
               <div *ngFor="let m of monthlyIncome" class="flex-1 flex flex-col items-center justify-end gap-2 group relative">
@@ -679,10 +704,10 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
           </div>
 
           <!-- Ingresos por Servicio -->
-          <div class="rounded-2xl border p-6 flex flex-col h-full"
+          <div class="rounded-2xl border p-6 flex flex-col h-[300px] overflow-hidden"
                [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
-            <h3 class="text-sm font-bold uppercase tracking-wide mb-4" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Ingresos por Servicio</h3>
-            <div class="space-y-4">
+            <h3 class="text-sm font-bold uppercase tracking-wide mb-6" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Ingresos por Servicio</h3>
+            <div class="space-y-4 overflow-y-auto pr-2 custom-scrollbar flex-grow">
               <div *ngFor="let s of serviceIncome" class="space-y-1">
                 <div class="flex justify-between text-xs">
                   <span class="font-bold truncate" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">{{ s.name }}</span>
@@ -697,23 +722,28 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
               </div>
             </div>
           </div>
-
-          <!-- Apartado Legal (Boilerplate) -->
-          <div class="lg:col-span-2 rounded-2xl border overflow-hidden"
-               [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800' : 'bg-neutral-50 border-neutral-300'">
-            <div class="px-6 py-4 border-b flex items-center justify-between"
-                 [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-              <h3 class="text-sm font-bold uppercase tracking-wide" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Textos Legales para Facturas / Cuentas de Cobro</h3>
-              <button (click)="copyLegalText()" class="text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg border transition-colors cursor-pointer"
-                      [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:bg-neutral-800' : 'border-neutral-300 text-neutral-600 hover:bg-neutral-100'">
-                Copiar Texto
-              </button>
-            </div>
-            <div class="p-6">
-              <p class="text-sm leading-relaxed whitespace-pre-line font-mono" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">{{ getLegalText() }}</p>
+        </div>
+        
+        <!-- Facturas por Estado -->
+        <div class="rounded-2xl border p-6"
+             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
+          <h3 class="text-sm font-bold uppercase tracking-wide mb-6" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Distribución de Facturas</h3>
+          <div class="space-y-5">
+            <div *ngFor="let s of statusIncome" class="space-y-2">
+              <div class="flex justify-between items-center text-sm">
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-full" [ngClass]="s.colorClass"></span>
+                  <span class="font-bold uppercase tracking-widest text-[10px]" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ s.status }} ({{ s.count }})</span>
+                </div>
+                <span class="font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(s.amount) }}</span>
+              </div>
+              <div class="w-full h-2 rounded-full overflow-hidden" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'">
+                <div class="h-full rounded-full transition-all duration-500" [ngClass]="s.colorClass" [ngStyle]="{'width': s.width + '%'}"></div>
+              </div>
             </div>
           </div>
         </div>
+
       </ng-container>
 
     </div>
@@ -793,6 +823,13 @@ export class DashFinancesComponent implements OnInit {
 
   monthlyIncome: { month: string; amount: number; height: number }[] = [];
   serviceIncome: { name: string; amount: number; percent: number }[] = [];
+  statusIncome: { status: string; count: number; amount: number; colorClass: string; width: number }[] = [];
+  keyMetrics = {
+    collectionRate: 0,
+    overdueCount: 0,
+    overdueAmount: 0,
+    avgInvoiceValue: 0,
+  };
 
   // Client form
   showClientForm = false;
@@ -927,6 +964,48 @@ export class DashFinancesComponent implements OnInit {
       .map(k => ({ name: k, amount: srvMap[k], percent: totalPaid ? (srvMap[k] / totalPaid) * 100 : 0 }))
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 5); // Top 5
+
+    // Status Income
+    let totalAll = 0;
+    const statusMap: Record<string, { count: number; amount: number }> = {
+      'Pagada': { count: 0, amount: 0 },
+      'Enviada': { count: 0, amount: 0 },
+      'Vencida': { count: 0, amount: 0 },
+      'Borrador': { count: 0, amount: 0 },
+    };
+    
+    this.invoices.forEach(inv => {
+      if (statusMap[inv.status]) {
+        statusMap[inv.status].count++;
+        statusMap[inv.status].amount += inv.total;
+        totalAll += inv.total;
+      }
+    });
+
+    const colors: Record<string, string> = {
+      'Pagada': 'bg-green-500',
+      'Enviada': 'bg-blue-500',
+      'Vencida': 'bg-red-500',
+      'Borrador': 'bg-neutral-500'
+    };
+
+    this.statusIncome = Object.keys(statusMap).map(k => ({
+      status: k,
+      count: statusMap[k].count,
+      amount: statusMap[k].amount,
+      colorClass: colors[k],
+      width: totalAll ? (statusMap[k].amount / totalAll) * 100 : 0
+    })).filter(s => s.count > 0);
+
+    // Key Metrics
+    const paidAmount = statusMap['Pagada'].amount;
+    const expectedTotal = statusMap['Pagada'].amount + statusMap['Enviada'].amount + statusMap['Vencida'].amount;
+    this.keyMetrics = {
+      collectionRate: expectedTotal ? Math.round((paidAmount / expectedTotal) * 100) : 0,
+      overdueCount: statusMap['Vencida'].count,
+      overdueAmount: statusMap['Vencida'].amount,
+      avgInvoiceValue: this.invoices.length ? Math.round(totalAll / this.invoices.length) : 0
+    };
   }
 
   // ─── CLIENTS ───────────────────────────────
@@ -1069,25 +1148,6 @@ export class DashFinancesComponent implements OnInit {
       otro: 'bg-neutral-500/20 text-neutral-400',
     };
     return map[cat] || 'bg-neutral-500/20 text-neutral-400';
-  }
-
-  getLegalText(): string {
-    return `DECLARACIÓN LEGAL PARA CUENTAS DE COBRO
-(Puedes copiar este texto y pegarlo en las notas de tus facturas)
-
-El presente documento constituye una cuenta de cobro válida por la prestación de servicios profesionales independientes.
-
-Términos de pago:
-1. El pago debe realizarse dentro de los plazos establecidos (ej. 15 días calendario) tras la emisión de esta cuenta.
-2. Todo trabajo de desarrollo/diseño incluye un máximo de 2 revisiones por hito, salvo acuerdo por escrito.
-3. El código fuente o archivos finales serán entregados únicamente tras el pago del 100% del saldo acordado.
-
-Esta cuenta de cobro se asimila a una letra de cambio en los términos del artículo 774 del Código de Comercio (o normativa equivalente). En caso de mora, se causarán intereses a la tasa máxima legal permitida.`;
-  }
-
-  copyLegalText() {
-    navigator.clipboard.writeText(this.getLegalText());
-    alert('Texto legal copiado al portapapeles');
   }
 }
 
