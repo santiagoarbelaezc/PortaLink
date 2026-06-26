@@ -113,16 +113,6 @@ import { AnalyticsService } from '../../services/analytics.service';
 
     <!-- Mobile floating Switcher Group (top right) -->
     <div class="md:hidden fixed top-6 right-6 z-[9000] flex gap-2">
-      <!-- Mobile Login Button -->
-      <button (click)="openLoginModal()" 
-              class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer border shadow-lg backdrop-blur-md active:scale-95"
-              [style.background]="currentTheme === 'light' ? 'rgba(255,255,255,0.9)' : 'rgba(15,15,15,0.85)'"
-              [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.12)'"
-              [style.color]="currentTheme === 'light' ? '#1f2937' : '#ffffff'">
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
-        </svg>
-      </button>
 
       <!-- Theme Switcher -->
       <button (click)="toggleTheme()" 
