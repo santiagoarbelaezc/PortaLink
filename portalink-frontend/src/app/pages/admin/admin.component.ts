@@ -251,9 +251,9 @@ export class AdminComponent implements OnInit {
     { id: 'leads',     name: 'Solicitudes' },
     { id: 'users',     name: 'Usuarios' },
     { id: 'home',      name: 'Personalizar' },
-    { id: 'config',    name: 'Configuración' },
     { id: 'reports',   name: 'Reportes' },
     { id: 'finances',  name: 'Finanzas' },
+    { id: 'config',    name: 'Configuración' },
   ];
 
   get isDark() { return this.currentTheme === 'dark'; }
