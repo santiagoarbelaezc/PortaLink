@@ -261,12 +261,21 @@ export class AdminComponent implements OnInit {
   ngOnInit() {
     const saved = localStorage.getItem('portalink_admin_theme');
     if (saved) this.currentTheme = saved;
+    const savedTab = localStorage.getItem('portalink_admin_tab');
+    if (savedTab) this.activeTab = savedTab;
     this.refreshBadges();
   }
 
   setTab(id: string) {
     this.activeTab = id;
+    localStorage.setItem('portalink_admin_tab', id);
     this.refreshBadges();
+    setTimeout(() => {
+      const mainEl = document.querySelector('main');
+      if (mainEl) {
+        mainEl.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 0);
   }
 
   toggleTheme() {

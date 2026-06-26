@@ -5,7 +5,7 @@ import { PortfolioConfigService } from '../../../services/portfolio-config.servi
 import { PdfReportService } from '../../../services/pdf-report.service';
 
 interface ActivityLog {
-  icon: string;
+  iconType: 'config' | 'message' | 'lead' | 'update' | 'export';
   label: string;
   date: string;
 }
@@ -52,19 +52,19 @@ interface ActivityLog {
               [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">Exportar Datos</h3>
 
           <button (click)="exportAnalytics()"
-                  class="w-full flex items-center gap-3 px-5 py-3.5 rounded-xl text-sm font-bold uppercase tracking-widest transition-all duration-200 cursor-pointer"
+                  class="w-full flex items-center gap-3 px-5 py-3.5 rounded-xl text-sm font-bold uppercase tracking-widest transition-all duration-200 cursor-pointer group"
                   [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-100' : 'bg-neutral-900 text-white hover:bg-neutral-800'">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            <svg class="w-6 h-6 opacity-75 group-hover:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
             </svg>
             Descargar Métricas JSON
           </button>
 
           <button (click)="exportConfig()"
-                  class="w-full flex items-center gap-3 px-5 py-3.5 rounded-xl text-sm font-bold uppercase tracking-widest border transition-all duration-200 cursor-pointer"
-                  [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:text-white hover:border-neutral-500' : 'border-neutral-200 text-neutral-500 hover:text-neutral-900 hover:border-neutral-400'">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                  class="w-full flex items-center gap-3 px-5 py-3.5 rounded-xl text-sm font-bold uppercase tracking-widest border transition-all duration-200 cursor-pointer group"
+                  [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:text-white hover:border-neutral-500 hover:bg-neutral-800/50' : 'border-neutral-200 text-neutral-500 hover:text-neutral-900 hover:border-neutral-400 hover:bg-neutral-50'">
+            <svg class="w-6 h-6 opacity-75 group-hover:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 13.5l3 3m0 0l3-3m-3 3v-6m1.06-4.19l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
             </svg>
             Descargar portfolio.json
           </button>
@@ -77,11 +77,34 @@ interface ActivityLog {
               [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">Log de Actividad</h3>
           <div class="space-y-3">
             <div *ngFor="let log of activityLog"
-                 class="flex items-start gap-3">
-              <span class="text-base flex-shrink-0">{{ log.icon }}</span>
-              <div class="min-w-0 flex-grow">
-                <p class="text-sm font-semibold truncate" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">{{ log.label }}</p>
-                <p class="text-xs" [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-400'">{{ log.date }}</p>
+                 class="flex items-start gap-4">
+              <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center border"
+                   [ngClass]="isDark ? 'bg-neutral-800/80 border-neutral-700 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-600'">
+                <!-- Config -->
+                <svg *ngIf="log.iconType === 'config'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <!-- Message -->
+                <svg *ngIf="log.iconType === 'message'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                </svg>
+                <!-- Lead -->
+                <svg *ngIf="log.iconType === 'lead'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75" />
+                </svg>
+                <!-- Update -->
+                <svg *ngIf="log.iconType === 'update'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                </svg>
+                <!-- Export -->
+                <svg *ngIf="log.iconType === 'export'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                </svg>
+              </div>
+              <div class="min-w-0 flex-grow pt-0.5">
+                <p class="text-sm font-bold truncate" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ log.label }}</p>
+                <p class="text-xs tracking-wide mt-0.5" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ log.date }}</p>
               </div>
             </div>
           </div>
@@ -99,13 +122,17 @@ interface ActivityLog {
           </div>
 
           <!-- PDF: Analytics -->
+          <!-- PDF: Analytics -->
           <button (click)="downloadAnalyticsPdf()"
                   [disabled]="pdfLoading"
                   class="w-full flex items-center gap-3 px-5 py-3.5 rounded-xl text-sm font-bold uppercase tracking-widest border transition-all duration-200 cursor-pointer group"
                   [ngClass]="isDark ? 'border-red-900/60 text-red-400 hover:bg-red-950/40 hover:border-red-700' : 'border-red-200 text-red-600 hover:bg-red-50'">
-            <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
+            <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                 [ngClass]="isDark ? 'bg-red-950/50 text-red-400 group-hover:bg-red-900/60 group-hover:text-red-300' : 'bg-red-100 text-red-600 group-hover:bg-red-200'">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+              </svg>
+            </div>
             <span class="flex-grow text-left">Reporte de Analíticas</span>
             <span class="text-[10px] px-2 py-0.5 rounded uppercase tracking-widest font-bold"
                   [ngClass]="isDark ? 'bg-red-900/40 text-red-400' : 'bg-red-100 text-red-600'">PDF</span>
@@ -116,9 +143,12 @@ interface ActivityLog {
                   [disabled]="pdfLoading"
                   class="w-full flex items-center gap-3 px-5 py-3.5 rounded-xl text-sm font-bold uppercase tracking-widest border transition-all duration-200 cursor-pointer group"
                   [ngClass]="isDark ? 'border-red-900/60 text-red-400 hover:bg-red-950/40 hover:border-red-700' : 'border-red-200 text-red-600 hover:bg-red-50'">
-            <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
+            <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                 [ngClass]="isDark ? 'bg-red-950/50 text-red-400 group-hover:bg-red-900/60 group-hover:text-red-300' : 'bg-red-100 text-red-600 group-hover:bg-red-200'">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+              </svg>
+            </div>
             <span class="flex-grow text-left">Listado de Usuarios</span>
             <span class="text-[10px] px-2 py-0.5 rounded uppercase tracking-widest font-bold"
                   [ngClass]="isDark ? 'bg-red-900/40 text-red-400' : 'bg-red-100 text-red-600'">PDF</span>
@@ -129,9 +159,12 @@ interface ActivityLog {
                   [disabled]="pdfLoading"
                   class="w-full flex items-center gap-3 px-5 py-3.5 rounded-xl text-sm font-bold uppercase tracking-widest border transition-all duration-200 cursor-pointer group"
                   [ngClass]="isDark ? 'border-red-900/60 text-red-400 hover:bg-red-950/40 hover:border-red-700' : 'border-red-200 text-red-600 hover:bg-red-50'">
-            <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" />
-            </svg>
+            <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                 [ngClass]="isDark ? 'bg-red-950/50 text-red-400 group-hover:bg-red-900/60 group-hover:text-red-300' : 'bg-red-100 text-red-600 group-hover:bg-red-200'">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+              </svg>
+            </div>
             <span class="flex-grow text-left">Salud del Sistema</span>
             <span class="text-[10px] px-2 py-0.5 rounded uppercase tracking-widest font-bold"
                   [ngClass]="isDark ? 'bg-red-900/40 text-red-400' : 'bg-red-100 text-red-600'">PDF</span>
@@ -196,11 +229,11 @@ export class DashReportsComponent implements OnInit {
   pdfLoading = false;
 
   activityLog: ActivityLog[] = [
-    { icon: '⚙️', label: 'Configuración del sistema actualizada', date: 'Hoy — 11:03 am' },
-    { icon: '✉️', label: '3 mensajes nuevos recibidos', date: 'Hoy — 09:45 am' },
-    { icon: '📋', label: 'Nueva solicitud de Plan Premium', date: 'Ayer — 4:22 pm' },
-    { icon: '🔄', label: 'Métricas actualizadas automáticamente', date: 'Hace 3 días' },
-    { icon: '📤', label: 'portfolio.json exportado', date: 'Hace 5 días' },
+    { iconType: 'config', label: 'Configuración del sistema actualizada', date: 'Hoy — 11:03 am' },
+    { iconType: 'message', label: '3 mensajes nuevos recibidos', date: 'Hoy — 09:45 am' },
+    { iconType: 'lead', label: 'Nueva solicitud de Plan Premium', date: 'Ayer — 4:22 pm' },
+    { iconType: 'update', label: 'Métricas actualizadas automáticamente', date: 'Hace 3 días' },
+    { iconType: 'export', label: 'portfolio.json exportado', date: 'Hace 5 días' },
   ];
 
   get isDark() { return this.theme === 'dark'; }
@@ -257,6 +290,14 @@ export class DashReportsComponent implements OnInit {
 
   async downloadHealthPdf() {
     this.pdfLoading = true;
-    try { await this.pdfService.downloadSystemHealthReport(this.metrics, this.activityLog); } finally { this.pdfLoading = false; }
+    const legacyActivityLog = this.activityLog.map(log => {
+      let icon = '⚙️';
+      if (log.iconType === 'message') icon = '✉️';
+      else if (log.iconType === 'lead') icon = '📋';
+      else if (log.iconType === 'update') icon = '🔄';
+      else if (log.iconType === 'export') icon = '📤';
+      return { icon, label: log.label, date: log.date };
+    });
+    try { await this.pdfService.downloadSystemHealthReport(this.metrics, legacyActivityLog); } finally { this.pdfLoading = false; }
   }
 }
