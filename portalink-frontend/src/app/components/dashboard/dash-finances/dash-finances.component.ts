@@ -62,21 +62,6 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
       <!-- ══════════════════ RESUMEN (Stock Market Theme) ══════════════════ -->
       <ng-container *ngIf="subTab === 'resumen'">
         
-        <!-- Ticker (Simplified & Centered) -->
-        <div class="w-full flex items-center h-12 px-4 mb-6 border-b"
-             [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-          <div class="flex whitespace-nowrap overflow-x-auto gap-16 text-xs tracking-wide w-full items-center justify-center" style="-ms-overflow-style: none; scrollbar-width: none;">
-             <span *ngFor="let srv of serviceIncome" class="flex gap-2.5 items-center flex-shrink-0 cursor-default">
-               <span class="font-bold uppercase tracking-widest text-[10px]" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ srv.name }}</span> 
-               <span class="font-bold text-[13px]" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ formatCOP(srv.amount) }}</span> 
-               <span class="text-[9px] text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded-sm">▲</span>
-             </span>
-          </div>
-          <div *ngIf="serviceIncome.length === 0" class="flex items-center justify-center w-full text-[10px] font-bold tracking-widest text-neutral-500 uppercase">
-             Sin movimientos recientes...
-          </div>
-        </div>
-
         <!-- KPI Header & Quick Filters -->
         <div class="flex justify-between items-end mt-4 mb-2">
            <h3 class="text-xs font-bold uppercase tracking-widest flex items-center gap-2" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">
@@ -244,6 +229,29 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
           </div>
         </div>
 
+        <!-- Client Filters -->
+        <div *ngIf="!showClientForm" class="rounded-2xl border p-4 mb-4 flex flex-wrap gap-4 items-end"
+             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
+           <div class="flex flex-col gap-1.5 flex-grow min-w-[200px]">
+             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Buscar Cliente (Nombre, Empresa, Email)</label>
+             <div class="relative">
+               <input type="text" [(ngModel)]="clientFilterText" placeholder="Buscar..."
+                      class="w-full pl-10 pr-3 py-2.5 rounded-xl text-sm border outline-none bg-transparent"
+                      [ngClass]="isDark ? 'border-neutral-700 text-white placeholder-neutral-600 focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
+               <svg class="w-4 h-4 absolute left-3.5 top-3" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+               </svg>
+             </div>
+           </div>
+           <div class="flex-shrink-0">
+             <button (click)="clientFilterText=''"
+                     class="px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest border transition-colors cursor-pointer"
+                     [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-300 text-neutral-500 hover:text-black hover:bg-neutral-100'">
+               Limpiar
+             </button>
+           </div>
+        </div>
+
         <!-- Client table -->
         <div class="rounded-2xl border overflow-hidden"
              [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
@@ -256,7 +264,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
             <span class="col-span-1"></span>
           </div>
           <div class="divide-y" [ngClass]="isDark ? 'divide-neutral-800' : 'divide-neutral-100'">
-            <div *ngFor="let c of clients" class="grid grid-cols-12 px-5 py-4 items-center"
+            <div *ngFor="let c of displayedClients" class="grid grid-cols-12 px-5 py-4 items-center"
                  [ngClass]="isDark ? 'hover:bg-neutral-800/30' : 'hover:bg-neutral-50'">
               <div class="col-span-3">
                 <p class="text-sm font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ c.name }}</p>
@@ -286,9 +294,9 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                 </button>
               </div>
             </div>
-            <div *ngIf="clients.length === 0" class="px-5 py-10 text-center text-sm"
+            <div *ngIf="displayedClients.length === 0" class="px-5 py-10 text-center text-sm"
                  [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-400'">
-              No hay clientes registrados aún.
+              No se encontraron clientes.
             </div>
           </div>
         </div>
@@ -716,6 +724,19 @@ export class DashFinancesComponent implements OnInit {
   pdfLoading = false;
   expandedInvoiceId: string | null = null;
   kpiPeriod: 'all' | 'this_month' | 'last_month' = 'all';
+
+  // Client filters
+  clientFilterText = '';
+
+  get displayedClients() {
+    if (!this.clientFilterText) return this.clients;
+    const term = this.clientFilterText.toLowerCase();
+    return this.clients.filter(c => 
+      c.name.toLowerCase().includes(term) ||
+      (c.company && c.company.toLowerCase().includes(term)) ||
+      c.email.toLowerCase().includes(term)
+    );
+  }
 
   // Invoice filters
   invFilterCompany = '';
