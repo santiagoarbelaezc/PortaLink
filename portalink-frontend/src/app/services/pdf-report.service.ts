@@ -585,16 +585,23 @@ export class PdfReportService {
 
     // ── Legal Text & Signatures ──
     y += 8;
-    if (y > 240) { doc.addPage(); y = 20; }
+    if (y > 215) { doc.addPage(); y = 20; }
 
-    doc.setFontSize(6.5);
-    doc.setFont('helvetica', 'italic');
-    doc.setTextColor(140, 140, 140);
-    const legalText = "La presente cuenta de cobro se asimila en todos sus efectos a una letra de cambio de acuerdo al Art. 774 del Código de Comercio. El deudor declara haber recibido a satisfacción los servicios aquí detallados. Documento emitido por persona natural no responsable de IVA.";
-    const legalLines = doc.splitTextToSize(legalText, 180);
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(100, 100, 100);
+    doc.text('DECLARACIÓN Y ACUERDO LEGAL (TÉRMINOS Y CONDICIONES)', 14, y);
+    y += 5;
+
+    doc.setFontSize(6);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(130, 130, 130);
+    const legalText = "1. ASIMILACIÓN A TÍTULO VALOR: La presente cuenta de cobro se asimila en todos sus efectos legales a una letra de cambio, prestando mérito ejecutivo de conformidad con el Art. 774 del Código de Comercio.\n2. INTERESES DE MORA: En caso de incumplimiento en el pago luego de la fecha de vencimiento, se causarán intereses moratorios a la tasa máxima legal permitida vigente fijada por la Superfinanciera.\n3. PROPIEDAD INTELECTUAL: Todo código fuente, archivo editable, diseño o entregable es propiedad intelectual exclusiva de Santiago Arbelaez Contreras. La cesión de los derechos de uso al cliente solo se hará efectiva una vez confirmado el pago del 100% del valor total de este documento (Ley 23 de 1982). Cualquier uso sin autorización o pago será reportado por infracción de derechos de autor.\n4. ACEPTACIÓN: El cliente declara con la recepción y/o firma de este documento, haber recibido a entera satisfacción los servicios o productos descritos.\n5. TRIBUTARIO: Documento equivalente emitido por persona natural NO responsable del impuesto sobre las ventas (IVA) según el Estatuto Tributario.";
+    
+    const legalLines = doc.splitTextToSize(legalText, 182);
     doc.text(legalLines, 14, y);
     
-    y += legalLines.length * 4 + 25;
+    y += (legalLines.length * 3) + 25;
 
     // Signatures
     doc.setDrawColor(180, 180, 180);
