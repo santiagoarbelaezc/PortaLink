@@ -431,14 +431,10 @@ export class PdfReportService {
     doc.rect(0, 0, 210, 32, 'F');
 
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(20);
+    doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.text('PORTALINK', 14, 14);
-
-    doc.setFontSize(7);
-    doc.setFont('helvetica', 'normal');
-    doc.setCharSpace(1);
-    doc.text('CUENTA DE COBRO / ACUERDO DE PAGO', 14, 21);
+    doc.setCharSpace(1.5);
+    doc.text('CUENTA DE COBRO / ACUERDO DE PAGO', 14, 18);
     doc.setCharSpace(0);
 
     // Invoice number on right
