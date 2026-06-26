@@ -585,7 +585,7 @@ export class PdfReportService {
 
     // ── Legal Text & Signatures ──
     y += 8;
-    if (y > 215) { doc.addPage(); y = 20; }
+    if (y > 205) { doc.addPage(); y = 20; }
 
     doc.setFontSize(7);
     doc.setFont('helvetica', 'bold');
@@ -596,7 +596,7 @@ export class PdfReportService {
     doc.setFontSize(6);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(130, 130, 130);
-    const legalText = "1. ASIMILACIÓN A TÍTULO VALOR: La presente cuenta de cobro se asimila en todos sus efectos legales a una letra de cambio, prestando mérito ejecutivo de conformidad con el Art. 774 del Código de Comercio.\n2. INTERESES DE MORA: En caso de incumplimiento en el pago luego de la fecha de vencimiento, se causarán intereses moratorios a la tasa máxima legal permitida vigente fijada por la Superfinanciera.\n3. PROPIEDAD INTELECTUAL: Todo código fuente, archivo editable, diseño o entregable es propiedad intelectual exclusiva de Santiago Arbelaez Contreras. La cesión de los derechos de uso al cliente solo se hará efectiva una vez confirmado el pago del 100% del valor total de este documento (Ley 23 de 1982). Cualquier uso sin autorización o pago será reportado por infracción de derechos de autor.\n4. ACEPTACIÓN: El cliente declara con la recepción y/o firma de este documento, haber recibido a entera satisfacción los servicios o productos descritos.\n5. TRIBUTARIO: Documento equivalente emitido por persona natural NO responsable del impuesto sobre las ventas (IVA) según el Estatuto Tributario.";
+    const legalText = "1. ASIMILACIÓN A TÍTULO VALOR: La presente cuenta de cobro se asimila en todos sus efectos legales a una letra de cambio, prestando mérito ejecutivo de conformidad con el Art. 774 del Código de Comercio.\n2. INTERESES DE MORA: En caso de incumplimiento en el pago luego de la fecha de vencimiento, se causarán intereses moratorios a la tasa máxima legal permitida vigente fijada por la Superfinanciera.\n3. PROPIEDAD INTELECTUAL: Todo código fuente, archivo editable, diseño o entregable es propiedad intelectual exclusiva de Santiago Arbelaez Contreras. La cesión de los derechos de uso al cliente solo se hará efectiva una vez confirmado el pago del 100% del valor total de este documento (Ley 23 de 1982). Cualquier uso sin autorización o pago será reportado por infracción de derechos de autor.\n4. ACEPTACIÓN: El cliente declara con la recepción y/o firma de este documento, haber recibido a entera satisfacción los servicios o productos descritos.\n5. TRIBUTARIO: Documento equivalente emitido por persona natural NO responsable del impuesto sobre las ventas (IVA) según el Estatuto Tributario.\n6. GARANTÍA Y RESPONSABILIDAD: El producto/servicio se entrega 'tal cual' (as is). El emisor no asume responsabilidad civil, penal ni económica por fallas en servidores de terceros, ataques cibernéticos, lucro cesante, daños indirectos, pérdida de datos, o alteraciones hechas por el cliente u otros desarrolladores posteriores a la entrega.";
     
     const legalLines = doc.splitTextToSize(legalText, 182);
     doc.text(legalLines, 14, y);
