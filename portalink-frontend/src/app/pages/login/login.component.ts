@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -43,11 +44,12 @@ import { Router } from '@angular/router';
 
             <!-- Email -->
             <div class="flex flex-col gap-1.5">
-              <label class="text-[10px] font-bold uppercase tracking-widest text-neutral-500">Usuario</label>
-              <input type="text"
-                     [(ngModel)]="username" name="username"
-                     placeholder="admin"
-                     class="w-full bg-neutral-800/70 border border-neutral-700 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-500 transition-all duration-200">
+              <label class="text-[10px] font-bold uppercase tracking-widest text-neutral-500">Correo Electrónico</label>
+              <input type="email"
+                     [(ngModel)]="email" name="email"
+                     placeholder="admin@portalink.com"
+                     [disabled]="isLoading()"
+                     class="w-full bg-neutral-800/70 border border-neutral-700 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-500 transition-all duration-200 disabled:opacity-50">
             </div>
 
             <!-- Password -->
@@ -56,7 +58,8 @@ import { Router } from '@angular/router';
               <input type="password"
                      [(ngModel)]="password" name="password"
                      placeholder="••••••••••"
-                     class="w-full bg-neutral-800/70 border border-neutral-700 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-500 transition-all duration-200">
+                     [disabled]="isLoading()"
+                     class="w-full bg-neutral-800/70 border border-neutral-700 rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-500 transition-all duration-200 disabled:opacity-50">
             </div>
 
             <!-- Error -->
@@ -70,8 +73,13 @@ import { Router } from '@angular/router';
 
             <!-- Submit -->
             <button type="submit"
-                    class="w-full py-3 mt-2 rounded-xl bg-white text-black text-sm font-bold uppercase tracking-widest hover:bg-neutral-100 active:scale-[0.98] transition-all duration-200 cursor-pointer">
-              Acceder al Panel
+                    [disabled]="isLoading()"
+                    class="w-full py-3 mt-2 rounded-xl bg-white text-black text-sm font-bold uppercase tracking-widest hover:bg-neutral-100 active:scale-[0.98] transition-all duration-200 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2">
+              <svg *ngIf="isLoading()" class="animate-spin h-4 w-4 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              {{ isLoading() ? 'Autenticando...' : 'Acceder al Panel' }}
             </button>
 
           </form>
@@ -95,19 +103,39 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent {
   private router = inject(Router);
+  private authService = inject(AuthService);
 
-  username = '';
+  email = '';
   password = '';
   error = '';
+  isLoading = signal<boolean>(false);
 
   login(event: Event) {
     event.preventDefault();
-    if (this.username.trim() === 'admin' && this.password === 'portalink2025') {
-      localStorage.setItem('portalink_admin_auth', 'true');
-      this.router.navigate(['/admin']);
-    } else {
-      this.error = 'Credenciales incorrectas. Intenta de nuevo.';
-      setTimeout(() => (this.error = ''), 3500);
+    
+    if (!this.email || !this.password) {
+      this.showError('Por favor ingresa correo y contraseña.');
+      return;
     }
+
+    this.isLoading.set(true);
+    this.error = '';
+
+    this.authService.login(this.email, this.password).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.router.navigate(['/admin']);
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        const message = err.error?.message || 'Error al conectar con el servidor. Intenta de nuevo.';
+        this.showError(message);
+      }
+    });
+  }
+
+  private showError(msg: string) {
+    this.error = msg;
+    setTimeout(() => (this.error = ''), 4000);
   }
 }

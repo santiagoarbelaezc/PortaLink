@@ -4,6 +4,8 @@ import { ProyectosComponent } from './pages/proyectos/proyectos.component';
 import { RotbotComponent } from './pages/rotbot/rotbot.component';
 import { PersonalizarComponent } from './pages/personalizar/personalizar.component';
 import { AdminComponent } from './pages/admin/admin.component';
+import { LoginComponent } from './pages/login/login.component';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   { 
@@ -37,8 +39,14 @@ export const routes: Routes = [
     data: { animation: 'PersonalizarPage' }
   },
   {
+    path: 'login',
+    component: LoginComponent,
+    data: { animation: 'LoginPage' }
+  },
+  {
     path: 'admin',
     component: AdminComponent,
+    canActivate: [authGuard],
     data: { animation: 'AdminPage' }
   },
   { path: '**', redirectTo: '' }
