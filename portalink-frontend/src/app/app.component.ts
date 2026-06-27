@@ -22,7 +22,7 @@ import { AiChatFloatingComponent } from './components/ai-chat-floating/ai-chat-f
 
     <!-- Persistent Header & Chatbot (hidden on admin page) -->
     <app-navbar *ngIf="!isAdminRoute()"></app-navbar>
-    <app-ai-chat-floating *ngIf="!isAdminRoute()"></app-ai-chat-floating>
+    <app-ai-chat-floating *ngIf="!isAdminRoute() && !isLoginRoute()"></app-ai-chat-floating>
  
     <!-- Main Content Area -->
     <div class="content-container">
@@ -159,6 +159,10 @@ export class AppComponent implements OnInit {
 
   isAdminRoute(): boolean {
     return this.router.url.includes('/admin');
+  }
+
+  isLoginRoute(): boolean {
+    return this.router.url.includes('/login');
   }
 
   ngOnInit() {

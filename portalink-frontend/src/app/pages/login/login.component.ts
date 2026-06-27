@@ -9,48 +9,112 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="min-h-screen bg-neutral-950 font-sans grid grid-cols-1 lg:grid-cols-12">
+    <div class="h-screen overflow-hidden bg-neutral-950 font-sans grid grid-cols-1 lg:grid-cols-12">
 
-      <!-- Left Side (Branding & Robot) -->
-      <div class="relative hidden lg:flex flex-col justify-between overflow-hidden bg-gradient-to-br from-neutral-900 to-black border-r border-neutral-800/50 pt-[88px] lg:col-span-5">
-        <!-- Glow background only (Grid removed) -->
-        <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.08)_0%,transparent_60%)] pointer-events-none"></div>
+      <!-- Left Side (Banner Style) -->
+      <div class="relative hidden lg:flex flex-col justify-center overflow-hidden bg-[#050505] border-r border-neutral-800/50 pt-[88px] lg:col-span-8 h-full">
         
-        <!-- Logo (Top Left) -->
-        <div class="relative z-10 px-12 pt-6">
-          <div class="flex items-center gap-3 mb-2">
-            <img src="assets/icons/logo-link-dark.png" class="w-10 h-10 object-contain" alt="PortaLink">
-            <h1 class="text-2xl font-bold uppercase tracking-[0.2em] text-white">PortaLink</h1>
+        <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-[radial-gradient(ellipse_at_center,rgba(0,180,216,0.15)_0%,transparent_60%)] pointer-events-none translate-x-1/4 -translate-y-1/4"></div>
+
+        <div class="relative z-10 w-full flex items-center justify-between h-full">
+          
+          <!-- Texts and Actions (Left) -->
+          <div class="w-full max-w-[350px] md:max-w-[500px] lg:max-w-[650px] xl:max-w-[850px] 2xl:max-w-[1000px] pl-12 xl:pl-20 pr-4 flex flex-col justify-center pb-24 mt-8">
+            <!-- Header small -->
+            <div class="flex items-center gap-2 mb-4">
+              <span class="text-[11px] md:text-sm font-bold text-neutral-300 uppercase tracking-[0.3em]">¿No tienes cuenta</span>
+              <span class="text-[11px] md:text-sm font-bold text-[#00b4d8] uppercase tracking-[0.3em]">?</span>
+            </div>
+
+            <!-- Huge Titles -->
+            <h2 class="text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black uppercase leading-[1] tracking-tight mb-0 text-white drop-shadow-xl break-words" style="font-family: var(--font-headline, sans-serif);">
+              Regístrate
+            </h2>
+            <h2 class="text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black uppercase leading-[1] tracking-tight mb-8 text-[#00b4d8] drop-shadow-[0_0_20px_rgba(0,180,216,0.4)] break-words" style="font-family: var(--font-headline, sans-serif);">
+              Y comienza a personalizar
+            </h2>
+
+            <!-- Left Bordered Subtitle -->
+            <div class="border-l-2 border-[#00b4d8] pl-5 mb-10">
+              <p class="text-xs xl:text-sm text-neutral-300 uppercase tracking-[0.15em] font-medium leading-relaxed max-w-lg">
+                Para empezar a personalizar tu sitio<br>y obtener <span class="text-[#00b4d8] font-bold">descuentos especiales</span>
+              </p>
+            </div>
+
+            <!-- Glowing Button -->
+            <button type="button" (click)="switchTab('register')" class="group relative flex items-center gap-6 bg-black/80 border border-[#00b4d8]/50 rounded-2xl px-6 py-4 w-max overflow-hidden hover:border-[#00b4d8] transition-all duration-500 hover:shadow-[0_0_25px_rgba(0,180,216,0.3)] shadow-[0_0_15px_rgba(0,180,216,0.1)] backdrop-blur-sm cursor-pointer">
+              <!-- Glow inner -->
+              <div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#00b4d8]/10 to-transparent group-hover:translate-x-full transition-transform duration-1000 ease-in-out -translate-x-full"></div>
+              
+              <div class="relative z-10 flex items-center gap-4 border-r border-neutral-700/80 pr-5">
+                <svg class="w-6 h-6 text-[#00b4d8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+              </div>
+              <span class="relative z-10 text-white text-[13px] font-bold uppercase tracking-[0.15em] pt-0.5">Crea tu cuenta ahora</span>
+              <div class="relative z-10 pl-2">
+                <svg class="w-5 h-5 text-[#00b4d8] group-hover:translate-x-1.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+              </div>
+            </button>
+
           </div>
-          <p class="text-[11px] text-neutral-400 uppercase tracking-[0.3em] font-semibold">Panel Administrativo Avanzado</p>
+
+          <!-- Robot Image (Right Absolute) -->
+          <div class="absolute bottom-[-10px] right-[-20px] lg:right-[-30px] xl:right-[-50px] 2xl:right-[-70px] w-[350px] lg:w-[450px] xl:w-[550px] 2xl:w-[650px] pointer-events-none z-10">
+            <img src="assets/images/rotbot4.png" class="w-full h-auto object-contain object-bottom drop-shadow-[0_10px_30px_rgba(0,180,216,0.2)] scale-x-[-1]" alt="Rotbot">
+          </div>
+
         </div>
 
-        <!-- Robot Image (Center/Bottom) -->
-        <div class="relative z-10 flex-1 flex items-end justify-center px-12 pb-12">
-          <div class="relative w-full max-w-[400px]">
-            <div class="absolute inset-0 bg-white/5 blur-[100px] rounded-full pointer-events-none"></div>
-            <img src="assets/images/rotbot4.png" class="w-full object-contain drop-shadow-2xl animate-float relative z-10" alt="Rotbot">
+        <!-- Bottom Features Bar -->
+        <div class="absolute bottom-10 left-12 xl:left-20 z-20 flex items-center gap-8 lg:gap-12 xl:gap-16">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-xl bg-black border border-[#00b4d8]/40 shadow-[0_0_15px_rgba(0,180,216,0.15)]">
+              <svg class="w-6 h-6 text-[#00b4d8]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+            </div>
+            <div>
+              <h4 class="text-white text-[11px] font-bold uppercase tracking-widest leading-tight">Rápido</h4>
+              <p class="text-[9px] text-neutral-500 uppercase tracking-widest mt-0.5 leading-tight">Registro en<br>segundos</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-xl bg-black border border-[#00b4d8]/40 shadow-[0_0_15px_rgba(0,180,216,0.15)]">
+              <svg class="w-6 h-6 text-[#00b4d8]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            </div>
+            <div>
+              <h4 class="text-white text-[11px] font-bold uppercase tracking-widest leading-tight">Seguro</h4>
+              <p class="text-[9px] text-neutral-500 uppercase tracking-widest mt-0.5 leading-tight">Tus datos<br>protegidos</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-xl bg-black border border-[#00b4d8]/40 shadow-[0_0_15px_rgba(0,180,216,0.15)]">
+              <svg class="w-6 h-6 text-[#00b4d8]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+            </div>
+            <div>
+              <h4 class="text-white text-[11px] font-bold uppercase tracking-widest leading-tight">Exclusivo</h4>
+              <p class="text-[9px] text-neutral-500 uppercase tracking-widest mt-0.5 leading-tight">Accede a descuentos<br>especiales</p>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Right Side (Forms) -->
-      <div class="flex flex-col justify-center px-8 sm:px-16 lg:px-24 xl:px-32 relative bg-neutral-950 pt-[100px] lg:pt-[40px] lg:col-span-7">
+      <div class="flex flex-col justify-center px-6 sm:px-12 lg:px-12 xl:px-20 relative bg-neutral-950 pt-[80px] lg:pt-0 lg:col-span-4 h-full overflow-y-auto">
         <!-- Mobile Logo -->
-        <div class="lg:hidden flex flex-col items-center mb-10">
-          <img src="assets/icons/logo-link-dark.png" class="w-14 h-14 object-contain mb-4" alt="PortaLink">
+        <div class="lg:hidden flex flex-col items-center mb-6">
+          <img src="assets/icons/logo-link-dark.png" class="w-14 h-14 object-contain mb-3" alt="PortaLink">
           <h1 class="text-xl font-bold uppercase tracking-[0.2em] text-white">PortaLink</h1>
         </div>
 
-        <div class="w-full max-w-[500px] mx-auto">
-          <div class="mb-10 text-left">
-            <h2 class="text-2xl md:text-3xl font-bold text-white uppercase leading-[1.2] tracking-[0.05em] mb-4" style="font-family: var(--font-headline, sans-serif);">
-              Ingresa con nosotros o regístrate para tener descuentos especiales
-            </h2>
-            <p class="text-[10px] md:text-xs text-neutral-400 uppercase tracking-[0.3em] font-semibold">
-              Empieza a personalizar tu sitio con nosotros
-            </p>
-          </div>
+        <!-- Mobile Texts -->
+        <div class="lg:hidden mb-10 text-center">
+          <h2 class="text-2xl font-bold text-white uppercase leading-[1.2] tracking-[0.05em] mb-4" style="font-family: var(--font-headline, sans-serif);">
+            Ingresa con nosotros o regístrate para tener descuentos especiales
+          </h2>
+          <p class="text-[10px] text-neutral-400 uppercase tracking-[0.3em] font-semibold">
+            Empieza a personalizar tu sitio con nosotros
+          </p>
+        </div>
+
+        <div class="w-full max-w-[450px] mx-auto mt-4 lg:mt-0">
 
           <!-- Switch Tabs -->
           <div class="grid grid-cols-2 gap-1 p-1 rounded-2xl border mb-8 relative border-neutral-800 bg-neutral-900/40">
