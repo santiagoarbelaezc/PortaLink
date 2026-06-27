@@ -75,6 +75,7 @@
   overflow: hidden;
   aspect-ratio: 4/5.5;
   border: 1px solid var(--card-border);
+  border-radius: 16px;
   background: #050505;
   position: relative;
 }
@@ -219,6 +220,8 @@
   padding: 25px 40px;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
+  border-radius: 12px;
+  overflow: hidden;
   text-decoration: none;
   transition: var(--transition);
   position: relative;
@@ -250,6 +253,8 @@
   padding: 20px 24px;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
+  border-radius: 12px;
+  overflow: hidden;
   text-decoration: none;
   transition: var(--transition);
   position: relative;
@@ -478,6 +483,7 @@
     opacity: 0;
     transform: translateY(40px) scale(0.96);
     clip-path: inset(100% 0 0 0);
+    border-radius: 16px;
     transition: opacity 1.4s cubic-bezier(0.16, 1, 0.3, 1), 
                 transform 1.4s cubic-bezier(0.16, 1, 0.3, 1), 
                 clip-path 1.4s cubic-bezier(0.16, 1, 0.3, 1);
