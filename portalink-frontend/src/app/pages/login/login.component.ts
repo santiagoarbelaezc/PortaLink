@@ -117,8 +117,13 @@ import { AuthService } from '../../services/auth.service';
 
         <div class="w-full max-w-[450px] mx-auto lg:ml-auto lg:mr-0 mt-4 lg:mt-0">
 
+          <!-- Section Title -->
+          <h3 class="text-xl md:text-2xl font-bold uppercase tracking-wider mb-5 text-[var(--text-primary)]" style="font-family: var(--font-headline, sans-serif);">
+            {{ activeTab === 'login' ? 'Ingresa con tu cuenta' : 'Regístrate' }}
+          </h3>
+
           <!-- Switch Tabs -->
-          <div class="grid grid-cols-2 gap-1 p-1 rounded-2xl border mb-6 relative border-[var(--card-border)] bg-[var(--bg-secondary)]/50">
+          <div class="grid grid-cols-2 gap-1 p-1 rounded-2xl border mb-5 relative border-[var(--card-border)] bg-[var(--bg-secondary)]/50">
             <!-- Sliding background indicator -->
             <div class="absolute top-1 bottom-1 rounded-xl transition-all duration-300 ease-out bg-[var(--bg-primary)] shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
                  [style.width]="'calc(50% - 4px)'"
@@ -155,7 +160,8 @@ import { AuthService } from '../../services/auth.service';
 
 
           <!-- Slider Container -->
-          <div class="relative overflow-hidden w-full">
+          <div class="relative overflow-hidden w-full transition-[height] duration-300 ease-out"
+               [style.height]="activeTab === 'login' ? '232px' : '305px'">
             <div class="flex w-[200%] transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"
                  [style.transform]="activeTab === 'login' ? 'translateX(0)' : 'translateX(-50%)'">
                          <!-- Login Form Container (1/2 width of 200% = 100% of parent) -->
