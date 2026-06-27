@@ -97,7 +97,7 @@ import { AuthService } from '../../services/auth.service';
       </div>
 
       <!-- Right Side (Forms) -->
-      <div class="flex flex-col justify-center px-6 sm:px-12 relative bg-neutral-950 pt-[100px] lg:col-span-4 h-full overflow-y-auto pb-10">
+      <div class="flex flex-col justify-center px-6 sm:px-12 relative bg-neutral-950 pt-[140px] lg:pt-[160px] lg:col-span-4 h-full overflow-y-auto pb-10">
         <!-- Mobile Logo -->
         <div class="lg:hidden flex flex-col items-center mb-6">
           <img src="assets/icons/logo-link-dark.png" class="w-14 h-14 object-contain mb-3" alt="PortaLink">
