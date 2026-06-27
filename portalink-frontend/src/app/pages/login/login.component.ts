@@ -9,18 +9,17 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="min-h-screen bg-neutral-950 font-sans grid grid-cols-1 lg:grid-cols-2">
+    <div class="min-h-screen bg-neutral-950 font-sans grid grid-cols-1 lg:grid-cols-12">
 
       <!-- Left Side (Branding & Robot) -->
-      <div class="relative hidden lg:flex flex-col justify-between overflow-hidden bg-gradient-to-br from-neutral-900 to-black border-r border-neutral-800/50 pt-[88px]">
-        <!-- Grid/Glow background -->
-        <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
+      <div class="relative hidden lg:flex flex-col justify-between overflow-hidden bg-gradient-to-br from-neutral-900 to-black border-r border-neutral-800/50 pt-[88px] lg:col-span-5">
+        <!-- Glow background only (Grid removed) -->
         <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.08)_0%,transparent_60%)] pointer-events-none"></div>
         
         <!-- Logo (Top Left) -->
         <div class="relative z-10 px-12 pt-6">
           <div class="flex items-center gap-3 mb-2">
-            <img src="assets/icons/mi-logo-dark.png" class="w-10 h-10 object-contain" alt="PortaLink">
+            <img src="assets/icons/logo-link-dark.png" class="w-10 h-10 object-contain" alt="PortaLink">
             <h1 class="text-2xl font-bold uppercase tracking-[0.2em] text-white">PortaLink</h1>
           </div>
           <p class="text-[11px] text-neutral-400 uppercase tracking-[0.3em] font-semibold">Panel Administrativo Avanzado</p>
@@ -28,7 +27,7 @@ import { AuthService } from '../../services/auth.service';
 
         <!-- Robot Image (Center/Bottom) -->
         <div class="relative z-10 flex-1 flex items-end justify-center px-12 pb-12">
-          <div class="relative w-full max-w-[500px]">
+          <div class="relative w-full max-w-[400px]">
             <div class="absolute inset-0 bg-white/5 blur-[100px] rounded-full pointer-events-none"></div>
             <img src="assets/images/rotbot4.png" class="w-full object-contain drop-shadow-2xl animate-float relative z-10" alt="Rotbot">
           </div>
@@ -36,17 +35,21 @@ import { AuthService } from '../../services/auth.service';
       </div>
 
       <!-- Right Side (Forms) -->
-      <div class="flex flex-col justify-center px-8 sm:px-16 lg:px-24 xl:px-32 relative bg-neutral-950 pt-[100px] lg:pt-[40px]">
+      <div class="flex flex-col justify-center px-8 sm:px-16 lg:px-24 xl:px-32 relative bg-neutral-950 pt-[100px] lg:pt-[40px] lg:col-span-7">
         <!-- Mobile Logo -->
         <div class="lg:hidden flex flex-col items-center mb-10">
-          <img src="assets/icons/mi-logo-dark.png" class="w-14 h-14 object-contain mb-4" alt="PortaLink">
+          <img src="assets/icons/logo-link-dark.png" class="w-14 h-14 object-contain mb-4" alt="PortaLink">
           <h1 class="text-xl font-bold uppercase tracking-[0.2em] text-white">PortaLink</h1>
         </div>
 
-        <div class="w-full max-w-md mx-auto">
-          <div class="mb-8">
-            <h2 class="text-3xl lg:text-4xl font-bold text-white tracking-tight mb-3">Bienvenido</h2>
-            <p class="text-sm text-neutral-400">Ingresa tus credenciales o crea una nueva cuenta.</p>
+        <div class="w-full max-w-[500px] mx-auto">
+          <div class="mb-10 text-left">
+            <h2 class="text-2xl md:text-3xl font-bold text-white uppercase leading-[1.2] tracking-[0.05em] mb-4" style="font-family: var(--font-headline, sans-serif);">
+              Ingresa con nosotros o regístrate para tener descuentos especiales
+            </h2>
+            <p class="text-[10px] md:text-xs text-neutral-400 uppercase tracking-[0.3em] font-semibold">
+              Empieza a personalizar tu sitio con nosotros
+            </p>
           </div>
 
           <!-- Switch Tabs -->
@@ -128,7 +131,7 @@ import { AuthService } from '../../services/auth.service';
                   <!-- Submit Login -->
                   <button type="submit"
                           [disabled]="isLoading()"
-                          class="w-full py-3.5 mt-2 rounded-xl bg-white hover:bg-neutral-200 text-black text-[12px] font-bold uppercase tracking-widest active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_25px_rgba(255,255,255,0.15)]">
+                          class="w-full py-3.5 mt-4 rounded-xl bg-white hover:bg-neutral-200 text-black text-[12px] font-bold uppercase tracking-widest active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_25px_rgba(255,255,255,0.15)]">
                     <svg *ngIf="isLoading()" class="animate-spin h-4 w-4 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
