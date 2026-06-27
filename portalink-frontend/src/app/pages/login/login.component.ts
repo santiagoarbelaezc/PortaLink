@@ -12,7 +12,8 @@ import { AuthService } from '../../services/auth.service';
     <div class="h-screen overflow-hidden bg-neutral-950 font-sans grid grid-cols-1 lg:grid-cols-12">
 
       <!-- Left Side (Banner Style) -->
-      <div class="relative hidden lg:flex flex-col justify-center overflow-hidden bg-[#050505] border-r border-neutral-800/50 pt-[88px] lg:col-span-8 h-full">
+      <div class="relative hidden lg:flex flex-col justify-center overflow-hidden bg-[#050505] border-r border-neutral-800/50 pt-[88px] lg:col-span-8 h-full"
+           style="--bg-primary: #050505; --bg-secondary: #0a0a0a; --text-primary: #ffffff; --text-secondary: rgba(255, 255, 255, 0.6); --card-border: rgba(255, 255, 255, 0.1);">
         
         <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-[radial-gradient(ellipse_at_center,rgba(0,180,216,0.15)_0%,transparent_60%)] pointer-events-none translate-x-1/4 -translate-y-1/4"></div>
 
@@ -97,7 +98,7 @@ import { AuthService } from '../../services/auth.service';
       </div>
 
       <!-- Right Side (Forms) -->
-      <div class="flex flex-col justify-center px-6 sm:px-12 relative bg-neutral-950 pt-[140px] lg:pt-[160px] lg:col-span-4 h-full overflow-y-auto pb-10">
+      <div class="flex flex-col justify-center px-6 sm:px-12 relative bg-[var(--bg-primary)] pt-[110px] lg:col-span-4 h-full overflow-hidden pb-8 transition-colors duration-500">
         <!-- Mobile Logo -->
         <div class="lg:hidden flex flex-col items-center mb-6">
           <img src="assets/icons/logo-link-dark.png" class="w-14 h-14 object-contain mb-3" alt="PortaLink">
@@ -117,21 +118,21 @@ import { AuthService } from '../../services/auth.service';
         <div class="w-full max-w-[450px] mx-auto lg:ml-auto lg:mr-0 mt-4 lg:mt-0">
 
           <!-- Switch Tabs -->
-          <div class="grid grid-cols-2 gap-1 p-1 rounded-2xl border mb-8 relative border-neutral-800 bg-neutral-900/40">
+          <div class="grid grid-cols-2 gap-1 p-1 rounded-2xl border mb-6 relative border-[var(--card-border)] bg-[var(--bg-secondary)]/50">
             <!-- Sliding background indicator -->
-            <div class="absolute top-1 bottom-1 rounded-xl transition-all duration-300 ease-out bg-neutral-800 shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
+            <div class="absolute top-1 bottom-1 rounded-xl transition-all duration-300 ease-out bg-[var(--bg-primary)] shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
                  [style.width]="'calc(50% - 4px)'"
                  [style.left]="activeTab === 'login' ? '4px' : 'calc(50% + 0px)'">
             </div>
 
             <button type="button" (click)="switchTab('login')" 
                     class="py-3 text-[11px] uppercase font-bold tracking-wider rounded-xl transition-all duration-300 cursor-pointer relative z-10"
-                    [ngClass]="activeTab === 'login' ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'">
+                    [ngClass]="activeTab === 'login' ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'">
               Ingresar
             </button>
             <button type="button" (click)="switchTab('register')" 
                     class="py-3 text-[11px] uppercase font-bold tracking-wider rounded-xl transition-all duration-300 cursor-pointer relative z-10"
-                    [ngClass]="activeTab === 'register' ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'">
+                    [ngClass]="activeTab === 'register' ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'">
               Registrarse
             </button>
           </div>
@@ -153,18 +154,18 @@ import { AuthService } from '../../services/auth.service';
 
           <!-- Social Login -->
           <div class="flex flex-col gap-3 mb-6">
-            <button type="button" class="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl border border-neutral-800 bg-neutral-900/50 hover:bg-neutral-800/80 transition-colors text-[11px] font-bold uppercase tracking-widest text-white shadow-sm hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+            <button type="button" class="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl border border-[var(--card-border)] bg-[var(--bg-secondary)]/50 hover:bg-[var(--card-border)]/50 transition-colors text-[11px] font-bold uppercase tracking-widest text-[var(--text-primary)] shadow-sm hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]">
               <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#EA4335" d="M5.266 9.765A7.077 7.077 0 0112 4.909c1.69 0 3.218.6 4.409 1.582L19.91 3C17.782 1.145 15.055 0 12 0 7.27 0 3.198 2.698 1.24 6.65l4.026 3.115z"/><path fill="#34A853" d="M16.04 18.013c-1.09.703-2.474 1.078-4.04 1.078a7.077 7.077 0 01-6.723-4.849L1.24 17.35C3.198 21.302 7.269 24 12 24c3.24 0 5.95-.98 7.91-2.736l-3.87-3.251z"/><path fill="#4A90E2" d="M19.91 21.264C22.28 19.33 24 15.93 24 12c0-.84-.11-1.63-.26-2.39H12v4.71h6.69c-.31 1.76-1.39 3.09-2.78 3.94l3.87 3.25z"/><path fill="#FBBC05" d="M5.266 14.236A7.12 7.12 0 015.01 12c0-.77.16-1.51.41-2.235L1.24 6.65A11.93 11.93 0 000 12c0 1.92.445 3.73 1.237 5.35l4.029-3.114z"/></svg>
               Continuar con Google
             </button>
             
             <div class="grid grid-cols-2 gap-3">
-              <button type="button" class="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl border border-neutral-800 bg-neutral-900/50 hover:bg-neutral-800/80 transition-colors text-[11px] font-bold uppercase tracking-widest text-white shadow-sm hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]">
-                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path></svg>
+              <button type="button" class="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl border border-[var(--card-border)] bg-[var(--bg-secondary)]/50 hover:bg-[var(--card-border)]/50 transition-colors text-[11px] font-bold uppercase tracking-widest text-[var(--text-primary)] shadow-sm hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+                <svg class="w-4 h-4 text-[var(--text-primary)]" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path></svg>
                 GitHub
               </button>
-              <button type="button" class="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl border border-neutral-800 bg-neutral-900/50 hover:bg-neutral-800/80 transition-colors text-[11px] font-bold uppercase tracking-widest text-white shadow-sm hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]">
-                <svg class="w-4 h-4 text-[#0A66C2]" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              <button type="button" class="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl border border-[var(--card-border)] bg-[var(--bg-secondary)]/50 hover:bg-[var(--card-border)]/50 transition-colors text-[11px] font-bold uppercase tracking-widest text-[var(--text-primary)] shadow-sm hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+                <svg class="w-4 h-4 text-[#0A66C2]" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0h.003z"/></svg>
                 LinkedIn
               </button>
             </div>
@@ -172,57 +173,56 @@ import { AuthService } from '../../services/auth.service';
 
           <!-- Divider -->
           <div class="relative flex items-center mb-6">
-            <div class="flex-grow border-t border-neutral-800"></div>
+            <div class="flex-grow border-t border-[var(--card-border)]"></div>
             <span class="flex-shrink-0 mx-4 text-neutral-500 text-[9px] uppercase font-bold tracking-[0.2em]">O con tu correo</span>
-            <div class="flex-grow border-t border-neutral-800"></div>
+            <div class="flex-grow border-t border-[var(--card-border)]"></div>
           </div>
 
           <!-- Slider Container -->
           <div class="relative overflow-hidden w-full">
             <div class="flex w-[200%] transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"
                  [style.transform]="activeTab === 'login' ? 'translateX(0)' : 'translateX(-50%)'">
-              
-              <!-- Login Form Container (1/2 width of 200% = 100% of parent) -->
+                         <!-- Login Form Container (1/2 width of 200% = 100% of parent) -->
               <div class="w-1/2 px-1">
-                <form (submit)="login($event)" class="space-y-5">
+                <form (submit)="login($event)" class="space-y-4">
                   <!-- Email -->
-                  <div class="space-y-2.5">
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Correo Electrónico</label>
+                  <div class="space-y-2">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)]">Correo Electrónico</label>
                     <div class="relative group">
-                      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-500 group-focus-within:text-blue-400 transition-colors">
+                      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-500 group-focus-within:text-[var(--accent-color)] transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path></svg>
                       </div>
                       <input type="email"
                              [(ngModel)]="email" name="email"
                              placeholder="admin@portalink.com"
                              [disabled]="isLoading()"
-                             class="w-full bg-neutral-950/60 border border-neutral-800 rounded-xl pl-11 pr-4 py-3.5 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all duration-300 disabled:opacity-50">
+                             class="w-full bg-[var(--bg-secondary)]/60 border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-3 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
                     </div>
                   </div>
 
                   <!-- Password -->
-                  <div class="space-y-2.5">
+                  <div class="space-y-2">
                     <div class="flex justify-between items-center">
-                      <label class="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Contraseña</label>
-                      <a href="#" class="text-[10px] text-neutral-500 hover:text-white transition-colors">¿Olvidaste tu contraseña?</a>
+                      <label class="text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)]">Contraseña</label>
+                      <a href="#" class="text-[10px] text-neutral-500 hover:text-[var(--text-primary)] transition-colors">¿Olvidaste tu contraseña?</a>
                     </div>
                     <div class="relative group">
-                      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-500 group-focus-within:text-blue-400 transition-colors">
+                      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-500 group-focus-within:text-[var(--accent-color)] transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                       </div>
                       <input type="password"
                              [(ngModel)]="password" name="password"
                              placeholder="••••••••••"
                              [disabled]="isLoading()"
-                             class="w-full bg-neutral-950/60 border border-neutral-800 rounded-xl pl-11 pr-4 py-3.5 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all duration-300 disabled:opacity-50">
+                             class="w-full bg-[var(--bg-secondary)]/60 border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-3 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
                     </div>
                   </div>
 
                   <!-- Submit Login -->
                   <button type="submit"
                           [disabled]="isLoading()"
-                          class="w-full py-3.5 mt-4 rounded-xl bg-white hover:bg-neutral-200 text-black text-[12px] font-bold uppercase tracking-widest active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_25px_rgba(255,255,255,0.15)]">
-                    <svg *ngIf="isLoading()" class="animate-spin h-4 w-4 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          class="w-full py-3.5 mt-2 rounded-xl bg-[var(--text-primary)] hover:opacity-90 text-[var(--bg-primary)] text-[12px] font-bold uppercase tracking-widest active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[var(--text-primary)]/50 transition-all duration-300 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2 shadow-md">
+                    <svg *ngIf="isLoading()" class="animate-spin h-4 w-4 text-[var(--bg-primary)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
@@ -233,63 +233,63 @@ import { AuthService } from '../../services/auth.service';
 
               <!-- Register Form Container (1/2 width) -->
               <div class="w-1/2 px-1">
-                <form (submit)="register($event)" class="space-y-4">
+                <form (submit)="register($event)" class="space-y-3">
                   <!-- Name -->
-                  <div class="space-y-2">
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Nombre Completo</label>
+                  <div class="space-y-1.5">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)]">Nombre Completo</label>
                     <div class="relative group">
-                      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-500 group-focus-within:text-blue-400 transition-colors">
+                      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-500 group-focus-within:text-[var(--accent-color)] transition-colors">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                       </div>
                       <input type="text"
                              [(ngModel)]="registerName" name="registerName"
                              placeholder="Tu nombre"
                              [disabled]="isLoading()"
-                             class="w-full bg-neutral-950/60 border border-neutral-800 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all duration-300 disabled:opacity-50">
+                             class="w-full bg-[var(--bg-secondary)]/60 border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
                     </div>
                   </div>
 
                   <!-- Email -->
-                  <div class="space-y-2">
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Correo Electrónico</label>
+                  <div class="space-y-1.5">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)]">Correo Electrónico</label>
                     <div class="relative group">
-                      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-500 group-focus-within:text-blue-400 transition-colors">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-500 group-focus-within:text-[var(--accent-color)] transition-colors">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                       </div>
                       <input type="email"
                              [(ngModel)]="registerEmail" name="registerEmail"
                              placeholder="correo@ejemplo.com"
                              [disabled]="isLoading()"
-                             class="w-full bg-neutral-950/60 border border-neutral-800 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all duration-300 disabled:opacity-50">
+                             class="w-full bg-[var(--bg-secondary)]/60 border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
                     </div>
                   </div>
 
                   <!-- Passwords Grid -->
-                  <div class="grid grid-cols-2 gap-4">
-                    <div class="space-y-2">
-                      <label class="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Contraseña</label>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div class="space-y-1.5">
+                      <label class="text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)]">Contraseña</label>
                       <div class="relative group">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-500 group-focus-within:text-blue-400 transition-colors">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-500 group-focus-within:text-[var(--accent-color)] transition-colors">
                           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                         </div>
                         <input type="password"
                                [(ngModel)]="registerPassword" name="registerPassword"
                                placeholder="••••••••"
                                [disabled]="isLoading()"
-                               class="w-full bg-neutral-950/60 border border-neutral-800 rounded-xl pl-9 pr-3 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all duration-300 disabled:opacity-50">
+                               class="w-full bg-[var(--bg-secondary)]/60 border border-[var(--card-border)] rounded-xl pl-9 pr-3 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
                       </div>
                     </div>
-                    <div class="space-y-2">
-                      <label class="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Confirmar</label>
+                    <div class="space-y-1.5">
+                      <label class="text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)]">Confirmar</label>
                       <div class="relative group">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-500 group-focus-within:text-blue-400 transition-colors">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-500 group-focus-within:text-[var(--accent-color)] transition-colors">
                           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                         </div>
                         <input type="password"
                                [(ngModel)]="registerConfirmPassword" name="registerConfirmPassword"
                                placeholder="••••••••"
                                [disabled]="isLoading()"
-                               class="w-full bg-neutral-950/60 border border-neutral-800 rounded-xl pl-9 pr-3 py-3 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all duration-300 disabled:opacity-50">
+                               class="w-full bg-[var(--bg-secondary)]/60 border border-[var(--card-border)] rounded-xl pl-9 pr-3 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
                       </div>
                     </div>
                   </div>
@@ -297,8 +297,8 @@ import { AuthService } from '../../services/auth.service';
                   <!-- Submit Register -->
                   <button type="submit"
                           [disabled]="isLoading()"
-                          class="w-full py-3.5 mt-2 rounded-xl bg-white hover:bg-neutral-200 text-black text-[12px] font-bold uppercase tracking-widest active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_25px_rgba(255,255,255,0.15)]">
-                    <svg *ngIf="isLoading()" class="animate-spin h-4 w-4 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          class="w-full py-3.5 mt-2 rounded-xl bg-[var(--text-primary)] hover:opacity-90 text-[var(--bg-primary)] text-[12px] font-bold uppercase tracking-widest active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[var(--text-primary)]/50 transition-all duration-300 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2 shadow-md">
+                    <svg *ngIf="isLoading()" class="animate-spin h-4 w-4 text-[var(--bg-primary)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
@@ -310,7 +310,7 @@ import { AuthService } from '../../services/auth.service';
             </div>
           </div>
           
-          <p class="text-center text-[10px] text-neutral-600 mt-14 uppercase tracking-widest font-semibold">
+          <p class="text-center text-[10px] text-[var(--text-secondary)] mt-6 uppercase tracking-widest font-semibold">
             &copy; 2026 PortaLink. Todos los derechos reservados.
           </p>
         </div>
