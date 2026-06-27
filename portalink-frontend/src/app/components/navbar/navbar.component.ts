@@ -544,8 +544,7 @@ export class NavbarComponent implements OnInit {
   };
 
   openLoginModal() {
-    this.showLoginModal = true;
-    this.activeTab = 'signin';
+    this.router.navigate(['/login']);
   }
 
   closeLoginModal() {
