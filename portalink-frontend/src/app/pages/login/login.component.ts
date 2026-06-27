@@ -98,7 +98,7 @@ import { AuthService } from '../../services/auth.service';
       </div>
 
       <!-- Right Side (Forms) -->
-      <div class="flex flex-col justify-center px-6 sm:px-12 relative bg-[var(--bg-primary)] pt-[110px] lg:col-span-4 h-full overflow-hidden pb-8 transition-colors duration-500">
+      <div class="flex flex-col justify-center px-6 sm:px-12 relative bg-[var(--bg-primary)] pt-[90px] lg:col-span-4 h-full overflow-hidden pb-8 transition-colors duration-500">
         <!-- Mobile Logo -->
         <div class="lg:hidden flex flex-col items-center mb-6">
           <img src="assets/icons/logo-link-dark.png" class="w-14 h-14 object-contain mb-3" alt="PortaLink">
@@ -117,10 +117,18 @@ import { AuthService } from '../../services/auth.service';
 
         <div class="w-full max-w-[450px] mx-auto lg:ml-auto lg:mr-0 mt-4 lg:mt-0">
 
-          <!-- Section Title -->
-          <h3 class="text-3xl md:text-4xl font-black uppercase leading-none tracking-tight mb-5 text-[var(--text-primary)]" style="font-family: var(--font-headline, sans-serif);">
-            {{ activeTab === 'login' ? 'Ingresa con tu cuenta' : 'Regístrate' }}
-          </h3>
+          <!-- Section Title Group (Centered & Premium) -->
+          <div class="text-center mb-5 flex flex-col items-center">
+            <span class="text-[11px] md:text-[12px] font-bold text-[#00b4d8] uppercase tracking-[0.25em] mb-1.5">
+              {{ activeTab === 'login' ? 'Bienvenido de nuevo' : 'Comienza hoy' }}
+            </span>
+            <h3 class="text-2xl md:text-[26px] font-black uppercase leading-tight tracking-[-0.04em] text-[var(--text-primary)]" style="font-family: var(--font-headline, sans-serif);">
+              {{ activeTab === 'login' ? 'Conéctate a tu cuenta' : 'Crea tu cuenta' }}
+            </h3>
+            <p class="text-[12px] md:text-[13px] text-[var(--text-secondary)] mt-1.5 font-medium max-w-[340px] leading-relaxed">
+              {{ activeTab === 'login' ? 'Ingresa tus credenciales para gestionar y personalizar tu sitio' : 'Regístrate en segundos para empezar a diseñar tu portafolio único' }}
+            </p>
+          </div>
 
           <!-- Switch Tabs -->
           <div class="grid grid-cols-2 gap-1 p-1 rounded-2xl border mb-5 relative border-[var(--card-border)] bg-[var(--bg-secondary)]/50">
@@ -236,7 +244,7 @@ import { AuthService } from '../../services/auth.service';
                     <label class="text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)]">Correo Electrónico</label>
                     <div class="relative group">
                       <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-500 group-focus-within:text-[var(--accent-color)] transition-colors">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path></svg>
                       </div>
                       <input type="email"
                              [(ngModel)]="registerEmail" name="registerEmail"
@@ -339,9 +347,22 @@ import { AuthService } from '../../services/auth.service';
       from { opacity: 0; transform: translateY(-8px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .animate-shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+     .animate-shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
     .animate-float { animation: float 6s ease-in-out infinite; }
     .animate-slide-down { animation: slideDown 0.3s cubic-bezier(0.16,1,0.3,1) forwards; }
+    
+    /* Autofill and Caret Overrides */
+    input {
+      caret-color: var(--text-primary) !important;
+    }
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus {
+      -webkit-text-fill-color: var(--text-primary) !important;
+      -webkit-box-shadow: 0 0 0px 1000px var(--bg-secondary) inset !important;
+      transition: background-color 5000s ease-in-out 0s;
+      caret-color: var(--text-primary) !important;
+    }
   `]
 })
 export class LoginComponent {
