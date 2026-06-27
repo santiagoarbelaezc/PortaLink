@@ -353,7 +353,7 @@ import { AuthService } from '../../services/auth.service';
     
     /* Autofill and Caret Overrides */
     input {
-      caret-color: var(--text-primary) !important;
+      caret-color: #000000 !important;
     }
     input:-webkit-autofill,
     input:-webkit-autofill:hover, 
@@ -361,7 +361,7 @@ import { AuthService } from '../../services/auth.service';
       -webkit-text-fill-color: var(--text-primary) !important;
       -webkit-box-shadow: 0 0 0px 1000px var(--bg-secondary) inset !important;
       transition: background-color 5000s ease-in-out 0s;
-      caret-color: var(--text-primary) !important;
+      caret-color: #000000 !important;
     }
   `]
 })
