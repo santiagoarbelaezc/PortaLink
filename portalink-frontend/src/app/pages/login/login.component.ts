@@ -118,7 +118,7 @@ import { AuthService } from '../../services/auth.service';
         <div class="w-full max-w-[450px] mx-auto lg:ml-auto lg:mr-0 mt-4 lg:mt-0">
 
           <!-- Section Title -->
-          <h3 class="text-xl md:text-2xl font-bold uppercase tracking-wider mb-5 text-[var(--text-primary)]" style="font-family: var(--font-headline, sans-serif);">
+          <h3 class="text-3xl md:text-4xl font-black uppercase leading-none tracking-tight mb-5 text-[var(--text-primary)]" style="font-family: var(--font-headline, sans-serif);">
             {{ activeTab === 'login' ? 'Ingresa con tu cuenta' : 'Regístrate' }}
           </h3>
 
@@ -176,7 +176,7 @@ import { AuthService } from '../../services/auth.service';
                       </div>
                       <input type="email"
                              [(ngModel)]="email" name="email"
-                             placeholder="admin@portalink.com"
+                             placeholder="usuario@example.com"
                              [disabled]="isLoading()"
                              class="w-full bg-[var(--bg-secondary)]/60 border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-3 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
                     </div>
@@ -240,7 +240,7 @@ import { AuthService } from '../../services/auth.service';
                       </div>
                       <input type="email"
                              [(ngModel)]="registerEmail" name="registerEmail"
-                             placeholder="correo@ejemplo.com"
+                             placeholder="usuario@example.com"
                              [disabled]="isLoading()"
                              class="w-full bg-[var(--bg-secondary)]/60 border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
                     </div>
