@@ -100,8 +100,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
       <!-- Right Side (Forms) -->
       <div class="flex flex-col justify-center px-6 sm:px-12 relative bg-[var(--bg-primary)] lg:col-span-4 h-full overflow-y-auto transition-all duration-500"
-           [style.paddingTop]="activeTab === 'login' ? '90px' : '310px'"
-           [style.paddingBottom]="activeTab === 'login' ? '32px' : '80px'">
+           [style.paddingTop]="'310px'"
+           [style.paddingBottom]="'80px'">
         <!-- Mobile Logo -->
         <div class="lg:hidden flex flex-col items-center mb-6">
           <img src="assets/icons/logo-link-dark.png" class="w-14 h-14 object-contain mb-3" alt="PortaLink">

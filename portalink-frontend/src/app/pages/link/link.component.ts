@@ -4,9 +4,7 @@ import { RouterModule } from '@angular/router';
 import { PortfolioConfigService } from '../../services/portfolio-config.service';
 import { AnalyticsService } from '../../services/analytics.service';
 import * as AOS from 'aos';
-
-
-
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 @Component({
     selector: 'app-link',
     standalone: true,
@@ -162,41 +160,74 @@ import * as AOS from 'aos';
         </footer>
       </div>
     </div>
-
     <!-- PWA Install Modal -->
-    <div *ngIf="showInstallModal" class="fixed inset-0 z-[200] flex items-end md:items-center justify-center p-6 bg-black/90 backdrop-blur-md" (click)="closeModal()">
-      <div class="bg-[#050505] border border-white/20 rounded-none w-full max-w-md p-8 shadow-2xl animate-slide-up" (click)="$event.stopPropagation()">
-        <div class="flex justify-center mb-6">
-          <div class="w-16 h-16 bg-white flex items-center justify-center shadow-none">
-             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          </div>
-        </div>
+    <div *ngIf="showInstallModal" class="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/85 backdrop-blur-md animate-fade-in" (click)="closeModal()">
+      <div class="bg-neutral-950/90 border border-white/10 rounded-3xl w-full max-w-sm p-8 shadow-[0_0_50px_rgba(0,180,216,0.15)] animate-slide-up relative overflow-hidden backdrop-blur-xl" (click)="$event.stopPropagation()">
         
-        <h2 class="text-2xl font-headline uppercase text-white text-center mb-2">{{ getTranslation().instalarTitulo }}</h2>
-        <p class="text-white/60 text-center text-sm mb-8 leading-relaxed">
-          {{ isIOS ? getTranslation().instalarDescIOS : getTranslation().instalarDescOther }}
-        </p>
+        <!-- Ambient radial glow -->
+        <div class="absolute -top-12 -left-12 w-48 h-48 bg-[#00b4d8]/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        <!-- Android Button -->
-        <button *ngIf="!isIOS" (click)="installPWA()" class="w-full bg-white text-black py-4 font-bold uppercase tracking-widest text-xs hover:bg-gray-200 transition-colors mb-4 border border-white">
-          {{ getTranslation().instalarBtn }}
-        </button>
-
-        <!-- iOS Instructions -->
-        <div *ngIf="isIOS" class="space-y-4">
-          <div class="flex items-center gap-4 bg-white/5 p-4 border border-white/20">
-            <div class="w-8 h-8 bg-white/10 flex items-center justify-center text-white text-[10px] font-bold">1</div>
-            <p class="text-white/80 text-[11px]" [innerHTML]="getTranslation().instalarIos1"></p>
-          </div>
-          <div class="flex items-center gap-4 bg-white/5 p-4 border border-white/20">
-            <div class="w-8 h-8 bg-white/10 flex items-center justify-center text-white text-[10px] font-bold">2</div>
-            <p class="text-white/80 text-[11px]" [innerHTML]="getTranslation().instalarIos2"></p>
-          </div>
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-4 relative z-10">
+          <span class="text-[10px] font-bold text-[#00b4d8] uppercase tracking-[0.2em]">{{ getTranslation().instalarTitulo }}</span>
+          <button (click)="closeModal()" class="text-white/40 hover:text-white transition-colors cursor-pointer p-1">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
-        <button (click)="closeModal()" class="w-full text-white/40 py-2 text-[10px] uppercase tracking-widest hover:text-white transition-colors mt-4">
-          {{ isIOS ? getTranslation().entendido : getTranslation().ahoraNo }}
-        </button>
+        <!-- Carousel Step Content -->
+        <div class="min-h-[190px] flex flex-col items-center text-center justify-center py-2 relative z-10">
+          <!-- Step Icon container -->
+          <div class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-5 shadow-inner" 
+               [innerHTML]="installSteps[currentInstallStep]?.icon">
+          </div>
+          
+          <h3 class="text-base font-headline uppercase text-white tracking-wide mb-2">
+            {{ installSteps[currentInstallStep]?.title }}
+          </h3>
+          <p class="text-white/60 text-[11px] leading-relaxed px-2" 
+             [innerHTML]="installSteps[currentInstallStep]?.desc">
+          </p>
+        </div>
+
+        <!-- Dots Indicator -->
+        <div class="flex justify-center gap-2 mt-4 relative z-10">
+          <span *ngFor="let step of installSteps; let idx = index" 
+                (click)="currentInstallStep = idx"
+                class="h-1 rounded-full cursor-pointer transition-all duration-300"
+                [ngClass]="currentInstallStep === idx ? 'bg-[#00b4d8] w-5' : 'bg-white/20 hover:bg-white/40 w-1.5'">
+          </span>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="flex items-center justify-between mt-6 border-t border-white/5 pt-4 relative z-10">
+          <button (click)="prevStep()" 
+                  [disabled]="currentInstallStep === 0"
+                  class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-white/40 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer transition-all">
+            {{ currentLanguage === 'es' ? 'Atrás' : 'Back' }}
+          </button>
+          
+          <button *ngIf="currentInstallStep < installSteps.length - 1"
+                  (click)="nextStep()" 
+                  class="px-5 py-2.5 rounded-xl bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-neutral-200 cursor-pointer transition-all shadow-md">
+            {{ currentLanguage === 'es' ? 'Siguiente' : 'Next' }}
+          </button>
+          
+          <button *ngIf="currentInstallStep === installSteps.length - 1 && !isIOS"
+                  (click)="installPWA()" 
+                  class="px-5 py-2.5 rounded-xl bg-[#00b4d8] text-black text-xs font-bold uppercase tracking-widest hover:bg-[#0077b6] cursor-pointer transition-all shadow-md">
+            {{ getTranslation().instalarBtn }}
+          </button>
+          
+          <button *ngIf="currentInstallStep === installSteps.length - 1 && isIOS"
+                  (click)="closeModal()" 
+                  class="px-5 py-2.5 rounded-xl bg-[#00b4d8] text-black text-xs font-bold uppercase tracking-widest hover:bg-[#0077b6] cursor-pointer transition-all shadow-md">
+            {{ getTranslation().entendido }}
+          </button>
+        </div>
+
       </div>
     </div>
   `,
@@ -211,6 +242,63 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   isStandalone = false;
   currentLanguage = 'es';
   currentTheme = 'dark';
+
+  currentInstallStep = 0;
+  private sanitizer = inject(DomSanitizer);
+  installSteps: any[] = [];
+
+  initInstallSteps() {
+    const isEs = this.currentLanguage === 'es';
+    if (this.isIOS) {
+      this.installSteps = [
+        {
+          title: isEs ? 'Paso 1: Abrir Compartir' : 'Step 1: Open Share',
+          desc: isEs ? 'Pulsa el botón <b>Compartir</b> (el ícono con una flecha hacia arriba) en la barra inferior de tu navegador Safari.' : 'Press the <b>Share</b> button (arrow pointing up) in the bottom bar of your Safari browser.',
+          icon: this.sanitizer.bypassSecurityTrustHtml(`<svg class="w-8 h-8 text-[#00b4d8]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>`)
+        },
+        {
+          title: isEs ? 'Paso 2: Añadir a Inicio' : 'Step 2: Add to Home',
+          desc: isEs ? 'Desplázate hacia abajo en el menú de opciones de Safari y selecciona <b>Añadir a la pantalla de inicio</b>.' : 'Scroll down the options menu and select <b>Add to Home Screen</b>.',
+          icon: this.sanitizer.bypassSecurityTrustHtml(`<svg class="w-8 h-8 text-[#00b4d8]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4" /><line x1="12" y1="8" x2="12" y2="16" /><line x1="8" y1="12" x2="16" y2="12" /></svg>`)
+        },
+        {
+          title: isEs ? 'Paso 3: Confirmar' : 'Step 3: Confirm',
+          desc: isEs ? 'Haz clic en <b>Añadir</b> en la esquina superior derecha para completar la instalación en tu dispositivo.' : 'Click <b>Add</b> in the top right corner to complete the installation on your device.',
+          icon: this.sanitizer.bypassSecurityTrustHtml(`<svg class="w-8 h-8 text-[#00b4d8]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`)
+        }
+      ];
+    } else {
+      this.installSteps = [
+        {
+          title: isEs ? 'Paso 1: Abrir Menú' : 'Step 1: Open Menu',
+          desc: isEs ? 'Haz clic en el botón de instalar al final de este carrusel, o abre las opciones de tu navegador (los tres puntos verticales).' : 'Click the install button at the end of this carousel, or open your browser options menu (three vertical dots).',
+          icon: this.sanitizer.bypassSecurityTrustHtml(`<svg class="w-8 h-8 text-[#00b4d8]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" /></svg>`)
+        },
+        {
+          title: isEs ? 'Paso 2: Seleccionar Instalar' : 'Step 2: Select Install',
+          desc: isEs ? 'Presiona en <b>Instalar aplicación</b> o <b>Añadir a la pantalla de inicio</b> dentro del menú desplegado.' : 'Press <b>Install app</b> or <b>Add to Home Screen</b> in the dropdown menu.',
+          icon: this.sanitizer.bypassSecurityTrustHtml(`<svg class="w-8 h-8 text-[#00b4d8]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4" /><line x1="12" y1="8" x2="12" y2="16" /><line x1="8" y1="12" x2="16" y2="12" /></svg>`)
+        },
+        {
+          title: isEs ? 'Paso 3: Disfrutar' : 'Step 3: Enjoy',
+          desc: isEs ? 'Confirma la instalación y disfruta de PortaLink en pantalla completa, acceso directo en tu escritorio y soporte offline.' : 'Confirm the installation and enjoy PortaLink in full screen, desktop shortcut, and offline support.',
+          icon: this.sanitizer.bypassSecurityTrustHtml(`<svg class="w-8 h-8 text-[#00b4d8]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L11 3z" /></svg>`)
+        }
+      ];
+    }
+  }
+
+  prevStep() {
+    if (this.currentInstallStep > 0) {
+      this.currentInstallStep--;
+    }
+  }
+
+  nextStep() {
+    if (this.currentInstallStep < this.installSteps.length - 1) {
+      this.currentInstallStep++;
+    }
+  }
 
   modelingImages = [
     { src: 'assets/images/model_1.png', alt: 'Editorial Portrait I' },
@@ -271,8 +359,10 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   ngOnInit() {
+    this.initInstallSteps();
     if (isPlatformBrowser(this.platformId)) {
       this.checkPWAStatus();
+      this.initInstallSteps();
       
       // Solo capturar el evento si NO estamos ya en modo instalada
       window.addEventListener('beforeinstallprompt', (e) => {
@@ -345,6 +435,7 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onLanguageChange = (event: any) => {
     this.currentLanguage = event.detail.language;
+    this.initInstallSteps();
   };
 
   onThemeChange = (event: any) => {
