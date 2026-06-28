@@ -161,7 +161,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
       </div>
     </div>
     <!-- PWA Install Modal -->
-    <div *ngIf="showInstallModal" class="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/85 backdrop-blur-md animate-fade-in" (click)="closeModal()">
+    <div *ngIf="showInstallModal" class="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/85 backdrop-blur-md animate-fade-in" (click)="closeModal(); $event.stopPropagation()">
       <div class="bg-neutral-950/90 border border-white/10 rounded-3xl w-full max-w-sm p-8 shadow-[0_0_50px_rgba(0,180,216,0.15)] animate-slide-up relative overflow-hidden backdrop-blur-xl" (click)="$event.stopPropagation()">
         
         <!-- Ambient radial glow -->
@@ -170,7 +170,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
         <!-- Header -->
         <div class="flex items-center justify-between mb-4 relative z-10">
           <span class="text-[10px] font-bold text-[#00b4d8] uppercase tracking-[0.2em]">{{ getTranslation().instalarTitulo }}</span>
-          <button (click)="closeModal()" class="text-white/40 hover:text-white transition-colors cursor-pointer p-1">
+          <button type="button" (click)="closeModal(); $event.stopPropagation()" class="text-white/40 hover:text-white transition-colors cursor-pointer p-1">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -195,7 +195,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
         <!-- Dots Indicator -->
         <div class="flex justify-center gap-2 mt-4 relative z-10">
           <span *ngFor="let step of installSteps; let idx = index" 
-                (click)="currentInstallStep = idx"
+                (click)="currentInstallStep = idx; $event.stopPropagation()"
                 class="h-1 rounded-full cursor-pointer transition-all duration-300"
                 [ngClass]="currentInstallStep === idx ? 'bg-[#00b4d8] w-5' : 'bg-white/20 hover:bg-white/40 w-1.5'">
           </span>
@@ -203,26 +203,25 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
         <!-- Footer Actions -->
         <div class="flex items-center justify-between mt-6 border-t border-white/5 pt-4 relative z-10">
-          <button (click)="prevStep()" 
-                  [disabled]="currentInstallStep === 0"
-                  class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-white/40 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer transition-all">
-            {{ currentLanguage === 'es' ? 'Atrás' : 'Back' }}
+          <button type="button" (click)="currentInstallStep === 0 ? closeModal() : prevStep(); $event.stopPropagation()" 
+                  class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-white/40 hover:text-white cursor-pointer transition-all">
+            {{ currentInstallStep === 0 ? (currentLanguage === 'es' ? 'Cerrar' : 'Close') : (currentLanguage === 'es' ? 'Atrás' : 'Back') }}
           </button>
           
-          <button *ngIf="currentInstallStep < installSteps.length - 1"
-                  (click)="nextStep()" 
+          <button type="button" *ngIf="currentInstallStep < installSteps.length - 1"
+                  (click)="nextStep(); $event.stopPropagation()" 
                   class="px-5 py-2.5 rounded-xl bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-neutral-200 cursor-pointer transition-all shadow-md">
             {{ currentLanguage === 'es' ? 'Siguiente' : 'Next' }}
           </button>
           
-          <button *ngIf="currentInstallStep === installSteps.length - 1 && !isIOS"
-                  (click)="installPWA()" 
+          <button type="button" *ngIf="currentInstallStep === installSteps.length - 1 && !isIOS"
+                  (click)="installPWA(); $event.stopPropagation()" 
                   class="px-5 py-2.5 rounded-xl bg-[#00b4d8] text-black text-xs font-bold uppercase tracking-widest hover:bg-[#0077b6] cursor-pointer transition-all shadow-md">
             {{ getTranslation().instalarBtn }}
           </button>
           
-          <button *ngIf="currentInstallStep === installSteps.length - 1 && isIOS"
-                  (click)="closeModal()" 
+          <button type="button" *ngIf="currentInstallStep === installSteps.length - 1 && isIOS"
+                  (click)="closeModal(); $event.stopPropagation()" 
                   class="px-5 py-2.5 rounded-xl bg-[#00b4d8] text-black text-xs font-bold uppercase tracking-widest hover:bg-[#0077b6] cursor-pointer transition-all shadow-md">
             {{ getTranslation().entendido }}
           </button>
