@@ -19,11 +19,31 @@ export class PortfolioConfigService {
   });
 
   constructor() {
-    this.loadInitialConfig();
+    this.loadUserConfig();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('auth-change', () => this.loadUserConfig());
+    }
   }
 
-  private loadInitialConfig() {
-    const savedDraft = localStorage.getItem('portfolio_config_draft');
+  private getConfigKey(): string {
+    if (typeof localStorage !== 'undefined') {
+      const userStr = localStorage.getItem('portalink_user');
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          if (user && user.nombre) {
+            // Reemplazar espacios para evitar problemas en claves
+            return `portfolio_config_draft_${user.nombre.replace(/\s+/g, '_')}`;
+          }
+        } catch {}
+      }
+    }
+    return 'portfolio_config_draft';
+  }
+
+  loadUserConfig() {
+    const key = this.getConfigKey();
+    const savedDraft = localStorage.getItem(key);
     
     this.http.get('/assets/portfolio.json').subscribe({
       next: (originalData) => {
@@ -46,14 +66,14 @@ export class PortfolioConfigService {
   updateSection(section: string, value: any) {
     this._config.update(current => {
       const updated = { ...current, [section]: value };
-      localStorage.setItem('portfolio_config_draft', JSON.stringify(updated));
+      localStorage.setItem(this.getConfigKey(), JSON.stringify(updated));
       return updated;
     });
   }
 
   save() {
     const current = this._config();
-    localStorage.setItem('portfolio_config_draft', JSON.stringify(current));
+    localStorage.setItem(this.getConfigKey(), JSON.stringify(current));
     // Simulate publishing by updating original reference
     this._originalConfig.set(JSON.parse(JSON.stringify(current)));
     alert('Borrador guardado localmente. Recuerda exportar el JSON para aplicar cambios permanentes.');
@@ -62,7 +82,7 @@ export class PortfolioConfigService {
   reset() {
     const original = JSON.parse(JSON.stringify(this._originalConfig()));
     this._config.set(original);
-    localStorage.removeItem('portfolio_config_draft');
+    localStorage.removeItem(this.getConfigKey());
   }
 
   exportJSON() {

@@ -52,6 +52,7 @@ export class AuthService {
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem(this.TOKEN_KEY);
       localStorage.removeItem(this.USER_KEY);
+      window.dispatchEvent(new CustomEvent('auth-change'));
     }
     this.isAuthenticated.set(false);
     this.currentUser.set(null);
@@ -62,6 +63,7 @@ export class AuthService {
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem(this.TOKEN_KEY, token);
       localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+      window.dispatchEvent(new CustomEvent('auth-change'));
     }
     this.isAuthenticated.set(true);
     this.currentUser.set(user);

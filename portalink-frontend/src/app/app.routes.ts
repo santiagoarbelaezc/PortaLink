@@ -36,6 +36,7 @@ export const routes: Routes = [
   {
     path: 'personalizar',
     component: PersonalizarComponent,
+    canActivate: [authGuard],
     data: { animation: 'PersonalizarPage' }
   },
   {
