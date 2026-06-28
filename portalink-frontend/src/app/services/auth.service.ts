@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, of } from 'rxjs';
 import { Router } from '@angular/router';
 
 export interface LoginResponse {
@@ -29,19 +29,27 @@ export class AuthService {
   constructor() {}
 
   login(payload: any): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${environment.apiUrl}/auth/login`, payload).pipe(
-      tap(response => {
-        this.setSession(response.token, response.usuario);
-      })
-    );
+    const mockResponse: LoginResponse = {
+      token: 'mock-jwt-token-xyz',
+      usuario: {
+        nombre: payload.email ? payload.email.split('@')[0] : 'Usuario',
+        rol: (payload.email && payload.email.includes('admin')) ? 'admin' : 'user'
+      }
+    };
+    this.setSession(mockResponse.token, mockResponse.usuario);
+    return of(mockResponse);
   }
 
   register(payload: any): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${environment.apiUrl}/auth/register`, payload).pipe(
-      tap(response => {
-        this.setSession(response.token, response.usuario);
-      })
-    );
+    const mockResponse: LoginResponse = {
+      token: 'mock-jwt-token-xyz',
+      usuario: {
+        nombre: payload.nombre || 'Nuevo Usuario',
+        rol: (payload.email && payload.email.includes('admin')) ? 'admin' : 'user'
+      }
+    };
+    this.setSession(mockResponse.token, mockResponse.usuario);
+    return of(mockResponse);
   }
 
   getCaptcha(): Observable<{ id: string; svg: string }> {
