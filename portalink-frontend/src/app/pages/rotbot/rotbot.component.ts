@@ -173,7 +173,7 @@ import { AnalyticsService } from '../../services/analytics.service';
           </div>
  
           <!-- Input Area -->
-          <div class="chat-input-area p-6 border-t">
+          <div class="chat-input-area p-3 sm:p-6 border-t">
             <form (submit)="sendMessage()" class="relative max-w-4xl mx-auto">
               <input 
                 type="text" 

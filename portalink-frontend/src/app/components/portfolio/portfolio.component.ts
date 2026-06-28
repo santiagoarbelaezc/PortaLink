@@ -89,7 +89,8 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
           <button *ngFor="let dot of projects; let i = index"
                   (click)="goTo(i)"
                   [class.active-dot]="i === currentIndex"
-                  class="w-2 h-2 rounded-full bg-white/20 hover:bg-white/40 transition-all duration-300"></button>
+                  class="w-2 h-2 rounded-full transition-all duration-300 cursor-pointer"
+                  style="background-color: var(--text-primary, #ffffff); opacity: 0.25;"></button>
         </div>
       </div>
     </section>
@@ -162,7 +163,8 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
 
     /* Indicator dots */
     .active-dot {
-      background-color: #ffffff !important;
+      background-color: var(--text-primary, #ffffff) !important;
+      opacity: 1 !important;
       width: 24px;
     }
 
