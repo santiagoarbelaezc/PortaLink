@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PdfReportService } from '../../../services/pdf-report.service';
+import { AuthService } from '../../../services/auth.service';
 
 interface User {
   id: number;
@@ -132,24 +133,40 @@ interface User {
 export class DashUsersComponent implements OnInit {
   @Input() theme = 'dark';
   private pdfService = inject(PdfReportService);
+  private authService = inject(AuthService);
   pdfLoading = false;
 
-  usersList: User[] = [
-    { id: 1, name: 'Santiago Arbeláez', email: 'santiago@portalink.com', role: 'Admin', status: 'Activo', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80', joined: 'Jun 2024' },
-    { id: 2, name: 'Lucía Fernández', email: 'lucia.f@portalink.com', role: 'Editor', status: 'Activo', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&q=80', joined: 'Ene 2025' },
-    { id: 3, name: 'Mateo R.', email: 'mateo@user.com', role: 'Usuario', status: 'Inactivo', avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=80&q=80', joined: 'Mar 2025' },
-  ];
+  usersList: User[] = [];
 
   get isDark() { return this.theme === 'dark'; }
   get activeUsers() { return this.usersList.filter(u => u.status === 'Activo').length; }
 
   ngOnInit() {
-    const saved = localStorage.getItem('portalink_admin_users');
-    if (saved) {
-      try { this.usersList = JSON.parse(saved); } catch { }
-    } else {
-      localStorage.setItem('portalink_admin_users', JSON.stringify(this.usersList));
-    }
+    this.loadUsers();
+  }
+
+  loadUsers() {
+    this.authService.getUsers().subscribe({
+      next: (data) => {
+        this.usersList = data.map((u: any) => ({
+          id: u.id,
+          name: u.nombre,
+          email: u.email,
+          role: u.rol === 'admin' ? 'Admin' : 'Usuario',
+          status: 'Activo',
+          avatar: `https://images.unsplash.com/photo-${u.rol === 'admin' ? '1535713875002-d1d0cf377fde' : '1570295999919-56ceb5ecca61'}?auto=format&fit=crop&w=80&q=80`,
+          joined: u.created_at ? new Date(u.created_at).toLocaleDateString('es-ES', { month: 'short', year: 'numeric' }) : 'N/A'
+        }));
+      },
+      error: (err) => {
+        console.error('Error al cargar usuarios de la base de datos:', err);
+        // Fallback local en caso de error
+        const saved = localStorage.getItem('portalink_admin_users');
+        if (saved) {
+          try { this.usersList = JSON.parse(saved); } catch { }
+        }
+      }
+    });
   }
 
   toggleStatus(id: number) {

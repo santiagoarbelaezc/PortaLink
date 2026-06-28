@@ -28,8 +28,8 @@ export class AuthService {
 
   constructor() {}
 
-  login(email: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${environment.apiUrl}/auth/login`, { email, password }).pipe(
+  login(payload: any): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${environment.apiUrl}/auth/login`, payload).pipe(
       tap(response => {
         this.setSession(response.token, response.usuario);
       })
@@ -92,5 +92,9 @@ export class AuthService {
       }
     }
     return null;
+  }
+
+  getUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/auth/users`);
   }
 }
