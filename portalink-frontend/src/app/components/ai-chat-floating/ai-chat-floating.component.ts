@@ -368,8 +368,21 @@ export class AiChatFloatingComponent implements OnInit, OnDestroy {
 
   sendMessage() {
     if (!this.chatService.userInput.trim()) return;
-    this.isOpen = false;
-    this.router.navigate(['/rotbot']);
+    if (this.chatService.isTyping) return;
+
+    // En móvil: navegar al chat completo con el mensaje precargado
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      // userInput ya está cargado en el servicio; el componente rotbot lo tomará
+      this.router.navigate(['/rotbot']);
+      return;
+    }
+
+    // En desktop: enviar directamente desde el panel flotante
+    this.analyticsService.incrementMetric('rotbotMessagesSent');
+    const userText = this.chatService.userInput.trim();
+    this.chatService.userInput = '';
+    this.chatService.sendMessage(userText);
+    setTimeout(() => this.scrollToBottom(), 80);
   }
 
   private detectStyle(text: string): string | null {

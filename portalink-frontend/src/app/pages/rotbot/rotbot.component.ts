@@ -4,12 +4,14 @@ import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ChatStateService } from '../../services/chat-state.service';
 import { AnalyticsService } from '../../services/analytics.service';
+import { ChatLimitModalComponent } from '../../components/chat-limit-modal/chat-limit-modal.component';
 
 @Component({
   selector: 'app-rotbot-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, ChatLimitModalComponent],
   template: `
+    <app-chat-limit-modal></app-chat-limit-modal>
     <div class="fixed inset-0 w-full h-full flex flex-col overflow-hidden font-sans page-container">
       <!-- Header -->
       <div class="chat-header flex items-center justify-between border-b px-6 py-5 relative overflow-hidden">
@@ -438,15 +440,19 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
   ngOnInit() {
     this.analyticsService.incrementMetric('rotbotOpens');
     this.scrollToBottom();
-    if (this.chatService.userInput.trim()) {
-      setTimeout(() => {
-        this.sendMessage();
-      }, 300);
-    }
 
     if (typeof window !== 'undefined') {
       this.currentTheme = localStorage.getItem('portfolio-theme') || 'dark';
       window.addEventListener('portfolio-theme-change', this.onThemeChange);
+    }
+
+    // Cargar historial persistido (si está logueado) y el uso de mensajes del día
+    this.chatService.loadHistory().subscribe(() => this.scrollToBottom());
+    this.chatService.loadUsage();
+
+    // Si venía con un mensaje pre-cargado (desde el home), enviarlo
+    if (this.chatService.userInput.trim()) {
+      setTimeout(() => this.sendMessage(), 400);
     }
   }
 
@@ -489,41 +495,14 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   sendMessage() {
     if (!this.chatService.userInput.trim()) return;
+    if (this.chatService.isTyping) return;
 
     this.analyticsService.incrementMetric('rotbotMessagesSent');
     const userText = this.chatService.userInput.trim();
-    this.chatService.addMessage('user', userText);
     this.chatService.userInput = '';
-    this.chatService.isTyping = true;
-    
-    setTimeout(() => this.scrollToBottom(), 50);
 
-    // Simulate thinking
-    setTimeout(() => {
-      this.chatService.isTyping = false;
-      const detectedStyle = this.detectStyle(userText);
-      
-      this.chatService.addMessage('assistant', 
-        `¡Entendido! Preparando la interfaz ${detectedStyle ? detectedStyle.toUpperCase() : 'PERSONALIZADA'}. Accediendo al sistema...`
-      );
-      
-      setTimeout(() => this.scrollToBottom(), 50);
-
-      // Redirect after a small delay
-      setTimeout(() => {
-        this.router.navigate(['/design-showcase'], { 
-          queryParams: { style: detectedStyle || 'luxury' } 
-        });
-      }, 1200);
-    }, 1500);
-  }
-
-  private detectStyle(text: string): string | null {
-    const lowerText = text.toLowerCase();
-    for (const [key, value] of Object.entries(this.styleKeywords)) {
-      if (lowerText.includes(key)) return value;
-    }
-    return null;
+    this.chatService.sendMessage(userText);
+    setTimeout(() => this.scrollToBottom(), 80);
   }
 
   private scrollToBottom(): void {
