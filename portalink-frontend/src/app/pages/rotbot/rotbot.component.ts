@@ -35,6 +35,14 @@ import { ChatLimitModalComponent } from '../../components/chat-limit-modal/chat-
         
         <!-- Actions Container -->
         <div class="flex items-center gap-4 relative z-10">
+          <!-- Nuevo Chat -->
+          <button (click)="chatService.clearHistory()" class="text-xs font-semibold uppercase tracking-wider flex items-center gap-2 hover:opacity-100 opacity-60 transition-all mr-2" style="color: var(--text-primary);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-3.08 2.82"/>
+            </svg>
+            <span class="hidden sm:inline">Nuevo Chat</span>
+          </button>
+
           <!-- Volver al Inicio -->
           <a routerLink="/" class="text-xs font-semibold uppercase tracking-wider flex items-center gap-2 hover:opacity-100 opacity-60 transition-all mr-2" style="color: var(--text-primary);">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -76,7 +84,7 @@ import { ChatLimitModalComponent } from '../../components/chat-limit-modal/chat-
       <div class="flex flex-row flex-grow w-full overflow-hidden">
         
         <!-- Sidebar Izquierdo (Accesos Rápidos) -->
-        <div class="chat-sidebar no-scrollbar hidden md:flex flex-col w-80 border-r py-8 px-6 gap-4 overflow-y-auto" style="border-color: var(--card-border);">
+        <div class="chat-sidebar no-scrollbar hidden md:flex flex-col w-80 flex-shrink-0 border-r py-8 px-6 gap-4 overflow-y-auto" style="border-color: var(--card-border);">
           <h4 class="sidebar-title mb-2">Accesos Rápidos</h4>
           
           <button (click)="sendShortcutMessage('Quiero E-commerce')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
@@ -128,14 +136,14 @@ import { ChatLimitModalComponent } from '../../components/chat-limit-modal/chat-
           <div #scrollContainer class="flex-grow overflow-y-auto scroll-smooth custom-scrollbar messages-area space-y-6" style="overscroll-behavior: contain;">
             
             <!-- Welcome Intro Section -->
-            <div class="flex flex-col items-center justify-center text-center pb-6 border-b mt-2 mb-2 welcome-border">
-              <div class="w-80 h-80 mb-2 relative flex items-center justify-center overflow-visible">
-                <img src="assets/images/rotbot4.png" class="w-72 h-72 object-contain relative z-10" alt="Rotbot Full">
+            <div *ngIf="chatService.messages.length <= 1" class="flex flex-col items-center justify-center text-center pb-4 border-b mt-0 mb-2 welcome-border">
+              <div class="w-48 h-48 sm:w-60 sm:h-60 mb-2 relative flex items-center justify-center overflow-visible">
+                <img src="assets/images/rotbot4.png" class="w-full h-full object-contain relative z-10" alt="Rotbot Full">
               </div>
-              <h2 class="text-xl font-headline uppercase tracking-wider mb-2" style="color: var(--text-primary);">
+              <h2 class="text-lg sm:text-xl font-headline uppercase tracking-wider mb-2" style="color: var(--text-primary);">
                 Sistemas con Rotbot IA
               </h2>
-              <div class="text-[13.5px] font-light leading-relaxed px-4 max-w-[95%]" style="color: var(--text-secondary);">
+              <div class="text-[13px] sm:text-[13.5px] font-light leading-relaxed px-4 max-w-[95%]" style="color: var(--text-secondary);">
                 <p class="mb-2">
                   ¡Hola! Soy RotBot, tu copiloto tecnológico. Estoy listo para guiarte en el diseño y desarrollo de sistemas a medida, e-commerce e integración de Inteligencia Artificial para potenciar tu negocio.
                 </p>
@@ -202,7 +210,7 @@ import { ChatLimitModalComponent } from '../../components/chat-limit-modal/chat-
         </div>
  
         <!-- Sidebar Derecho (Info Rotbot) -->
-        <div class="chat-sidebar no-scrollbar hidden md:flex flex-col w-80 border-l py-8 px-6 gap-6 overflow-y-auto" style="border-color: var(--card-border);">
+        <div class="chat-sidebar no-scrollbar hidden md:flex flex-col w-80 flex-shrink-0 border-l py-8 px-6 gap-6 overflow-y-auto" style="border-color: var(--card-border);">
           <h4 class="sidebar-title mb-2">¿Quién es Rotbot?</h4>
           
           <div class="flex flex-col items-center text-center gap-4 p-5 rounded-2xl border right-sidebar-card" style="border-color: var(--card-border);">

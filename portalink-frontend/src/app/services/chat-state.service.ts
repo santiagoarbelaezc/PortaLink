@@ -147,11 +147,20 @@ export class ChatStateService {
   }
 
   /**
-   * Limpiar historial (solo usuarios logueados).
+   * Limpiar historial y empezar nueva conversación.
    */
   clearHistory(): void {
-    if (!this.authService.hasToken()) return;
+    if (!this.authService.hasToken()) {
+      // Para anónimos: solo limpiamos la UI y generamos un nuevo token
+      this.clear();
+      this._sessionToken = this.generateToken();
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.setItem(SESSION_TOKEN_KEY, this._sessionToken);
+      }
+      return;
+    }
 
+    // Para logueados: llamar al backend para crear nueva sesión
     this.http.delete(`${environment.apiUrl}/chat/clear`, {
       headers: this.buildHeaders()
     }).subscribe({

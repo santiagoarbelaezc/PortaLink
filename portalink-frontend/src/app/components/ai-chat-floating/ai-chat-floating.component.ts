@@ -54,6 +54,13 @@ import { AnalyticsService } from '../../services/analytics.service';
           
           <!-- Actions Container -->
           <div class="flex items-center gap-1.5 relative z-10">
+            <!-- New Chat Button -->
+            <button (click)="chatService.clearHistory()" class="p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition-all" title="Nuevo Chat">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-3.08 2.82"/>
+              </svg>
+            </button>
+            
             <!-- Fullscreen Toggle Button -->
             <button (click)="toggleFullScreen()" class="p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition-all" title="Pantalla Completa">
               <!-- Maximize Icon -->
