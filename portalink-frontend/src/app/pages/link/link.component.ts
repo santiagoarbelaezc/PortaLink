@@ -161,7 +161,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
       </div>
     </div>
     <!-- PWA Install Modal -->
-    <div *ngIf="showInstallModal" class="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/85 backdrop-blur-md animate-fade-in" (click)="closeModal(); $event.stopPropagation()">
+    <div *ngIf="showInstallModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-6 bg-black/85 backdrop-blur-md animate-fade-in" (click)="closeModal(); $event.stopPropagation()">
       <div class="bg-neutral-950/90 border border-white/10 rounded-3xl w-full max-w-sm p-8 shadow-[0_0_50px_rgba(0,180,216,0.15)] animate-slide-up relative overflow-hidden backdrop-blur-xl" (click)="$event.stopPropagation()">
         
         <!-- Ambient radial glow -->
