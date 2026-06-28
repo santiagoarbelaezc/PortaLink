@@ -99,7 +99,9 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
       </div>
 
       <!-- Right Side (Forms) -->
-      <div class="flex flex-col justify-center px-6 sm:px-12 relative bg-[var(--bg-primary)] pt-[90px] lg:col-span-4 h-full overflow-hidden pb-8 transition-colors duration-500">
+      <div class="flex flex-col justify-center px-6 sm:px-12 relative bg-[var(--bg-primary)] lg:col-span-4 h-full overflow-y-auto transition-all duration-500"
+           [style.paddingTop]="activeTab === 'login' ? '140px' : '310px'"
+           [style.paddingBottom]="activeTab === 'login' ? '32px' : '80px'">
         <!-- Mobile Logo -->
         <div class="lg:hidden flex flex-col items-center mb-6">
           <img src="assets/icons/logo-link-dark.png" class="w-14 h-14 object-contain mb-3" alt="PortaLink">
@@ -170,7 +172,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
           <!-- Slider Container -->
           <div class="relative overflow-hidden w-full transition-[height] duration-300 ease-out"
-               [style.height]="activeTab === 'login' ? '232px' : '365px'">
+               [style.height]="activeTab === 'login' ? '232px' : '410px'">
             <div class="flex w-[200%] transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"
                  [style.transform]="activeTab === 'login' ? 'translateX(0)' : 'translateX(-50%)'">
                          <!-- Login Form Container (1/2 width of 200% = 100% of parent) -->
@@ -309,7 +311,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                   <!-- Submit Register -->
                   <button type="submit"
                           [disabled]="isLoading()"
-                          class="w-full py-3.5 mt-2 rounded-xl bg-[var(--text-primary)] hover:opacity-90 text-[var(--bg-primary)] text-[12px] font-bold uppercase tracking-widest active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[var(--text-primary)]/50 transition-all duration-300 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2 shadow-md">
+                          class="w-full py-3.5 rounded-xl bg-[var(--text-primary)] hover:opacity-90 text-[var(--bg-primary)] text-[12px] font-bold uppercase tracking-widest active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[var(--text-primary)]/50 transition-all duration-300 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2 shadow-md">
                     <svg *ngIf="isLoading()" class="animate-spin h-4 w-4 text-[var(--bg-primary)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
