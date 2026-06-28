@@ -172,7 +172,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
           <!-- Slider Container -->
           <div class="relative overflow-hidden w-full transition-[height] duration-300 ease-out"
-               [style.height]="activeTab === 'login' ? '292px' : '410px'">
+               [style.height]="activeTab === 'login' ? '350px' : '410px'">
             <div class="flex w-[200%] transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"
                  [style.transform]="activeTab === 'login' ? 'translateX(0)' : 'translateX(-50%)'">
                          <!-- Login Form Container (1/2 width of 200% = 100% of parent) -->
