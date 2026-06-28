@@ -94,7 +94,7 @@ import { AnalyticsService } from '../../services/analytics.service';
         <!-- Right Side: Minimal CTA and Login -->
         <div class="flex items-center justify-end flex-1 gap-4">
           <!-- Elegant Login Button -->
-          <button (click)="openLoginModal()" 
+          <button *ngIf="!router.url.includes('/login')" (click)="openLoginModal()" 
                   class="px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-300 border hover:bg-white/5 cursor-pointer text-white"
                   [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.12)'"
                   [style.color]="currentTheme === 'light' ? '#1f2937' : '#ffffff'">
@@ -613,6 +613,12 @@ export class NavbarComponent implements OnInit {
   @HostListener('window:scroll', [])
   onWindowScroll() {
     if (typeof window === 'undefined' || this.isManualScroll) return;
+
+    if (this.router.url.includes('/login')) {
+      this.activeSection = '';
+      this.updatePillPosition();
+      return;
+    }
 
     if (this.router.url.includes('/links')) {
       this.activeSection = '/links';
