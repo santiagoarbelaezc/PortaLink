@@ -100,7 +100,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
       <!-- Right Side (Forms) -->
       <div class="flex flex-col justify-center px-6 sm:px-12 relative bg-[var(--bg-primary)] lg:col-span-4 h-full overflow-y-auto transition-all duration-500"
-           [style.paddingTop]="activeTab === 'login' ? '140px' : '310px'"
+           [style.paddingTop]="activeTab === 'login' ? '90px' : '310px'"
            [style.paddingBottom]="activeTab === 'login' ? '32px' : '80px'">
         <!-- Mobile Logo -->
         <div class="lg:hidden flex flex-col items-center mb-6">
