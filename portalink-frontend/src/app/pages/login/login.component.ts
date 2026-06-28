@@ -1,8 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-login',
@@ -169,7 +170,7 @@ import { AuthService } from '../../services/auth.service';
 
           <!-- Slider Container -->
           <div class="relative overflow-hidden w-full transition-[height] duration-300 ease-out"
-               [style.height]="activeTab === 'login' ? '232px' : '305px'">
+               [style.height]="activeTab === 'login' ? '232px' : '365px'">
             <div class="flex w-[200%] transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"
                  [style.transform]="activeTab === 'login' ? 'translateX(0)' : 'translateX(-50%)'">
                          <!-- Login Form Container (1/2 width of 200% = 100% of parent) -->
@@ -284,6 +285,27 @@ import { AuthService } from '../../services/auth.service';
                     </div>
                   </div>
 
+                  <!-- Captcha de Seguridad -->
+                  <div class="space-y-1.5 mt-2">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)]">Código de Seguridad</label>
+                    <div class="flex items-center gap-2">
+                      <div class="h-10 border border-[var(--card-border)] bg-[#050505] rounded-xl overflow-hidden flex items-center justify-center select-none" 
+                           [innerHTML]="captchaSvg" style="width: 125px;">
+                      </div>
+                      <button type="button" (click)="loadCaptcha()" class="p-2.5 rounded-xl border border-[var(--card-border)] bg-[var(--bg-secondary)]/50 hover:bg-[var(--card-border)]/50 transition-colors text-[var(--text-primary)] hover:border-[var(--text-primary)]/30 cursor-pointer flex items-center justify-center h-10" title="Regenerar Captcha">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                        </svg>
+                      </button>
+                      <input type="text"
+                             [(ngModel)]="captchaCode" name="captchaCode"
+                             placeholder="Código"
+                             [disabled]="isLoading()"
+                             maxlength="5"
+                             class="flex-grow h-10 bg-[var(--bg-secondary)]/60 border border-[var(--card-border)] rounded-xl px-2 py-2 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50 text-center uppercase tracking-widest font-bold">
+                    </div>
+                  </div>
+
                   <!-- Submit Register -->
                   <button type="submit"
                           [disabled]="isLoading()"
@@ -365,9 +387,10 @@ import { AuthService } from '../../services/auth.service';
     }
   `]
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   private router = inject(Router);
   private authService = inject(AuthService);
+  private sanitizer = inject(DomSanitizer);
 
   activeTab: 'login' | 'register' = 'login';
 
@@ -381,14 +404,39 @@ export class LoginComponent {
   registerPassword = '';
   registerConfirmPassword = '';
 
+  // Captcha
+  captchaId = '';
+  captchaSvg: SafeHtml = '';
+  captchaCode = '';
+
   error = '';
   successMsg = '';
   isLoading = signal<boolean>(false);
+
+  ngOnInit() {
+    this.loadCaptcha();
+  }
+
+  loadCaptcha() {
+    this.authService.getCaptcha().subscribe({
+      next: (res) => {
+        this.captchaId = res.id;
+        this.captchaSvg = this.sanitizer.bypassSecurityTrustHtml(res.svg);
+      },
+      error: () => {
+        this.showError('Error al cargar la verificación de seguridad.');
+      }
+    });
+  }
 
   switchTab(tab: 'login' | 'register') {
     this.activeTab = tab;
     this.error = '';
     this.successMsg = '';
+    if (tab === 'register') {
+      this.captchaCode = '';
+      this.loadCaptcha();
+    }
   }
 
   login(event: Event) {
@@ -418,7 +466,7 @@ export class LoginComponent {
   register(event: Event) {
     event.preventDefault();
     
-    if (!this.registerName || !this.registerEmail || !this.registerPassword || !this.registerConfirmPassword) {
+    if (!this.registerName || !this.registerEmail || !this.registerPassword || !this.registerConfirmPassword || !this.captchaCode) {
       this.showError('Por favor completa todos los campos.');
       return;
     }
@@ -432,21 +480,30 @@ export class LoginComponent {
     this.error = '';
     this.successMsg = '';
 
-    // Simular registro exitoso ya que no hay endpoint explícito documentado
-    setTimeout(() => {
-      this.isLoading.set(false);
-      this.successMsg = '¡Cuenta creada exitosamente! Por favor inicia sesión.';
-      
-      setTimeout(() => {
-        this.email = this.registerEmail; // Prellenar correo
-        this.registerName = '';
-        this.registerEmail = '';
-        this.registerPassword = '';
-        this.registerConfirmPassword = '';
-        this.switchTab('login');
-      }, 1500);
-      
-    }, 1200);
+    const payload = {
+      nombre: this.registerName,
+      email: this.registerEmail,
+      password: this.registerPassword,
+      captchaId: this.captchaId,
+      captchaCode: this.captchaCode
+    };
+
+    this.authService.register(payload).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.successMsg = '¡Cuenta creada exitosamente! Redirigiendo...';
+        setTimeout(() => {
+          this.router.navigate(['/admin']);
+        }, 1500);
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        const message = err.error?.message || 'Error al registrarse. Intenta de nuevo.';
+        this.showError(message);
+        this.loadCaptcha();
+        this.captchaCode = '';
+      }
+    });
   }
 
   private showError(msg: string) {

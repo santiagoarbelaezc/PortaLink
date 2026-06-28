@@ -36,6 +36,18 @@ export class AuthService {
     );
   }
 
+  register(payload: any): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${environment.apiUrl}/auth/register`, payload).pipe(
+      tap(response => {
+        this.setSession(response.token, response.usuario);
+      })
+    );
+  }
+
+  getCaptcha(): Observable<{ id: string; svg: string }> {
+    return this.http.get<{ id: string; svg: string }>(`${environment.apiUrl}/auth/captcha`);
+  }
+
   logout(): void {
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem(this.TOKEN_KEY);
