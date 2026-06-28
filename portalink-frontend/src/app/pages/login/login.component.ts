@@ -99,25 +99,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
       </div>
 
       <!-- Right Side (Forms) -->
-      <div class="flex flex-col justify-center px-6 sm:px-12 relative bg-[var(--bg-primary)] lg:col-span-4 h-full overflow-y-auto transition-all duration-500"
-           [style.paddingTop]="'310px'"
-           [style.paddingBottom]="'80px'">
-        <!-- Mobile Logo -->
-        <div class="lg:hidden flex flex-col items-center mb-6">
-          <img src="assets/icons/logo-link-dark.png" class="w-14 h-14 object-contain mb-3" alt="PortaLink">
-          <h1 class="text-xl font-bold uppercase tracking-[0.2em] text-white">PortaLink</h1>
-        </div>
-
-        <!-- Mobile Texts -->
-        <div class="lg:hidden mb-10 text-center">
-          <h2 class="text-2xl font-bold text-white uppercase leading-[1.2] tracking-[0.05em] mb-4" style="font-family: var(--font-headline, sans-serif);">
-            Ingresa con nosotros o regístrate para tener descuentos especiales
-          </h2>
-          <p class="text-[10px] text-neutral-400 uppercase tracking-[0.3em] font-semibold">
-            Empieza a personalizar tu sitio con nosotros
-          </p>
-        </div>
-
+      <div class="flex flex-col justify-center px-6 sm:px-12 relative bg-[var(--bg-primary)] lg:col-span-4 h-full overflow-y-auto transition-all duration-500 py-12">
         <div class="w-full max-w-[450px] mx-auto lg:ml-auto lg:mr-0 mt-4 lg:mt-0">
 
           <!-- Section Title Group (Centered & Premium) -->
