@@ -10,7 +10,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="h-screen overflow-hidden bg-neutral-950 font-sans grid grid-cols-1 lg:grid-cols-12">
+    <div class="min-h-screen lg:h-screen overflow-y-auto lg:overflow-hidden bg-neutral-950 font-sans grid grid-cols-1 lg:grid-cols-12">
 
       <!-- Left Side (Banner Style) -->
       <div class="relative hidden lg:flex flex-col justify-center overflow-hidden bg-[#050505] border-r border-neutral-800/50 pt-[88px] lg:col-span-8 h-full"
@@ -99,7 +99,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
       </div>
 
       <!-- Right Side (Forms) -->
-      <div class="flex flex-col justify-center px-6 sm:px-12 relative bg-[var(--bg-primary)] lg:col-span-4 h-full overflow-y-auto transition-all duration-500 py-12">
+      <div class="flex flex-col justify-center px-6 sm:px-12 relative bg-[var(--bg-primary)] lg:col-span-4 h-full overflow-y-auto transition-all duration-500 pt-12 pb-32 lg:py-12">
         <div class="w-full max-w-[450px] mx-auto lg:ml-auto lg:mr-0 mt-4 lg:mt-0">
 
           <!-- Section Title Group (Centered & Premium) -->
