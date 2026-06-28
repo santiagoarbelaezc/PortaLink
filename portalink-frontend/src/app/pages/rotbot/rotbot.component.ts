@@ -5,13 +5,15 @@ import { FormsModule } from '@angular/forms';
 import { ChatStateService } from '../../services/chat-state.service';
 import { AnalyticsService } from '../../services/analytics.service';
 import { ChatLimitModalComponent } from '../../components/chat-limit-modal/chat-limit-modal.component';
+import { AiInfoModalComponent } from '../../components/ai-info-modal/ai-info-modal.component';
 
 @Component({
   selector: 'app-rotbot-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ChatLimitModalComponent],
+  imports: [CommonModule, FormsModule, RouterModule, ChatLimitModalComponent, AiInfoModalComponent],
   template: `
     <app-chat-limit-modal></app-chat-limit-modal>
+    <app-ai-info-modal [isOpen]="isInfoModalOpen" (closeEvent)="isInfoModalOpen = false"></app-ai-info-modal>
     <div class="fixed inset-0 w-full h-full flex flex-col overflow-hidden font-sans page-container">
       <!-- Header -->
       <div class="chat-header flex items-center justify-between border-b px-6 py-5 relative overflow-hidden">
@@ -219,9 +221,17 @@ import { ChatLimitModalComponent } from '../../components/chat-limit-modal/chat-
             </div>
             <div>
               <h5 class="text-sm font-bold tracking-wide" style="color: var(--text-primary);">Copiloto Tecnológico</h5>
-              <p class="text-[13px] font-light mt-2 leading-relaxed opacity-80" style="color: var(--text-secondary);">
+              <p class="text-[11.5px] font-normal mt-2 leading-relaxed opacity-95" style="color: var(--text-secondary);">
                 Rotbot es una inteligencia artificial diseñada para asesorar y guiar en el desarrollo de soluciones digitales avanzadas, desarrollo a medida y automatizaciones de procesos comerciales.
               </p>
+              <button (click)="isInfoModalOpen = true" class="mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] transition-all group">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-cyan-400 group-hover:scale-110 transition-transform">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <span class="text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-primary);">Info de la IA</span>
+              </button>
             </div>
           </div>
  
@@ -230,7 +240,7 @@ import { ChatLimitModalComponent } from '../../components/chat-limit-modal/chat-
           <button (click)="sendShortcutMessage('Quiero una implementación de IA en mi negocio')" class="shortcut-btn flex flex-col gap-2 p-5 rounded-xl text-left border transition-all duration-300 shadow-sm hover:shadow-md">
             <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--accent-color);">Oportunidad</span>
             <span class="text-[14.5px] font-semibold leading-snug" style="color: var(--text-primary);">Quiero mi IA para mi negocio</span>
-            <span class="text-[12px] font-light opacity-80 leading-normal block" style="color: var(--text-secondary);">
+            <span class="text-[11px] font-normal opacity-95 leading-normal block" style="color: var(--text-secondary);">
               Empieza hoy la transformación digital y automatiza tu negocio con Inteligencia Artificial.
             </span>
           </button>
@@ -437,6 +447,7 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
   };
 
   currentTheme = 'dark';
+  isInfoModalOpen = false;
 
   constructor(
     public chatService: ChatStateService,
