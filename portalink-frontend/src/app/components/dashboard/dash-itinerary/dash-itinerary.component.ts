@@ -399,25 +399,69 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
                      [ngClass]="[isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-100 placeholder-neutral-600 focus:border-neutral-500' : 'bg-neutral-50 border-neutral-200 text-neutral-800 placeholder-neutral-400 focus:border-neutral-400', titleError ? 'border-red-500 shake' : '']">
               <p *ngIf="titleError" class="text-[10px] text-red-400 mt-1.5 font-medium">El título es obligatorio.</p>
             </div>
-
-            <!-- Date -->
             <div>
               <label class="block text-[10px] font-bold uppercase tracking-widest mb-2"
                      [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Fecha *</label>
               <!-- Quick Dates Pills -->
               <div class="flex gap-2 mb-3 flex-wrap">
-                <button *ngFor="let qd of quickDates" type="button" (click)="form.date = qd.dateKey"
-                        class="px-3 py-1.5 rounded-lg border text-[10px] font-bold uppercase tracking-widest transition-all"
+                <button *ngFor="let qd of quickDates" type="button" (click)="selectModalDate(qd.dateKey)"
+                        class="px-3 py-1.5 rounded-lg border text-[10px] font-bold uppercase tracking-widest transition-all animate-fade-in"
                         [ngClass]="form.date === qd.dateKey
                           ? (isDark ? 'bg-white text-black border-white' : 'bg-neutral-900 text-white border-neutral-900')
-                          : (isDark ? 'border-neutral-800 text-neutral-450 bg-neutral-900 hover:border-neutral-600' : 'border-neutral-200 text-neutral-550 bg-neutral-50 hover:border-neutral-300')">
+                          : (isDark ? 'border-neutral-800 text-neutral-450 bg-[#0a0a0d] hover:border-neutral-600' : 'border-neutral-200 text-neutral-550 bg-neutral-50 hover:border-neutral-300')">
                   {{ qd.label }} <span class="opacity-60">({{ qd.display }})</span>
                 </button>
               </div>
-              <input type="date" [(ngModel)]="form.date"
-                     [min]="minDate" [max]="maxDate"
-                     class="w-full rounded-xl border px-4 py-3 text-sm font-medium focus:outline-none transition-all"
-                     [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-100 focus:border-neutral-500 [color-scheme:dark]' : 'bg-neutral-50 border-neutral-200 text-neutral-800 focus:border-neutral-400'">
+
+              <!-- Custom Date Dropdown -->
+              <div class="relative">
+                <button type="button" (click)="toggleDatePicker($event)"
+                        class="w-full rounded-xl border px-4 py-3 text-sm font-medium flex items-center justify-between transition-all text-left"
+                        [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-100 hover:border-neutral-500' : 'bg-neutral-50 border-neutral-200 text-neutral-800 hover:border-neutral-400'">
+                  <span>{{ formatDisplayDate(form.date) }}</span>
+                  <svg class="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </button>
+
+                <!-- Custom Date Picker Dropdown -->
+                <div *ngIf="showDatePicker" (click)="$event.stopPropagation()"
+                     class="absolute left-0 right-0 top-13 z-[150] w-full rounded-2xl border shadow-2xl overflow-hidden"
+                     [ngClass]="isDark ? 'bg-[#15151a] border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
+                  
+                  <!-- Month Navigation -->
+                  <div class="flex items-center justify-between px-4 py-3 border-b"
+                       [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+                    <button type="button" (click)="prevModalMonth()" class="p-1.5 rounded-lg hover:bg-neutral-800 transition-colors">
+                      <svg class="w-4 h-4 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                    <span class="text-xs font-bold uppercase tracking-wider">{{ modalMonthName }} {{ modalYear }}</span>
+                    <button type="button" (click)="nextModalMonth()" class="p-1.5 rounded-lg hover:bg-neutral-800 transition-colors">
+                      <svg class="w-4 h-4 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                  </div>
+
+                  <!-- Day Labels -->
+                  <div class="grid grid-cols-7 px-2 pt-2 text-[9px] font-bold uppercase tracking-widest text-center text-neutral-500">
+                    <div *ngFor="let day of ['L','M','X','J','V','S','D']">{{ day }}</div>
+                  </div>
+
+                  <!-- Day Grid -->
+                  <div class="grid grid-cols-7 gap-0.5 px-2 pb-3">
+                    <button *ngFor="let day of modalCalendarDays" type="button"
+                            [disabled]="!day.dateKey || isDateDisabled(day.dateKey)"
+                            (click)="selectModalDate(day.dateKey)"
+                            class="relative aspect-square flex items-center justify-center rounded-lg text-xs font-semibold transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+                            [ngClass]="[
+                              !day.dateKey ? 'opacity-0 cursor-default' : 'cursor-pointer',
+                              form.date === day.dateKey ? (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white') : '',
+                              form.date !== day.dateKey && day.dateKey ? (isDark ? 'text-neutral-300 hover:bg-neutral-800' : 'text-neutral-600 hover:bg-neutral-100') : ''
+                            ]">
+                      {{ day.date }}
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- Time -->
@@ -425,24 +469,78 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
               <div class="flex justify-between items-center mb-2">
                 <label class="text-[10px] font-bold uppercase tracking-widest"
                        [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Hora (opcional)</label>
-                <button *ngIf="form.time" type="button" (click)="form.time = ''"
-                        class="text-[9px] font-bold uppercase tracking-widest text-red-400 hover:underline">
+                <button *ngIf="form.time" type="button" (click)="clearTime()"
+                        class="text-[9px] font-bold uppercase tracking-widest text-red-450 hover:underline">
                   Quitar hora
                 </button>
               </div>
               <!-- Quick Hours Pills -->
               <div class="flex gap-1.5 mb-3 overflow-x-auto pb-1.5 scrollbar-thin">
-                <button *ngFor="let qh of quickHours" type="button" (click)="form.time = qh"
+                <button *ngFor="let qh of quickHours" type="button" (click)="selectQuickHour(qh)"
                         class="px-2.5 py-1 rounded-lg border text-[10px] font-bold tracking-wide transition-all shrink-0"
                         [ngClass]="form.time === qh
                           ? (isDark ? 'bg-white text-black border-white' : 'bg-neutral-900 text-white border-neutral-900')
-                          : (isDark ? 'border-neutral-800 text-neutral-455 bg-neutral-900 hover:border-neutral-600' : 'border-neutral-200 text-neutral-555 bg-neutral-50 hover:border-neutral-300')">
+                          : (isDark ? 'border-neutral-800 text-neutral-455 bg-[#0a0a0d] hover:border-neutral-600' : 'border-neutral-200 text-neutral-555 bg-neutral-50 hover:border-neutral-300')">
                   {{ qh }}
                 </button>
               </div>
-              <input type="time" [(ngModel)]="form.time"
-                     class="w-full rounded-xl border px-4 py-3 text-sm font-medium focus:outline-none transition-all"
-                     [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-100 focus:border-neutral-500 [color-scheme:dark]' : 'bg-neutral-50 border-neutral-200 text-neutral-800 focus:border-neutral-400'">
+
+              <!-- Custom Time Dropdown -->
+              <div class="relative">
+                <button type="button" (click)="toggleTimePicker($event)"
+                        class="w-full rounded-xl border px-4 py-3 text-sm font-medium flex items-center justify-between transition-all text-left"
+                        [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-100 hover:border-neutral-500' : 'bg-neutral-50 border-neutral-200 text-neutral-800 hover:border-neutral-400'">
+                  <span>{{ form.time ? form.time : 'Sin hora asignada' }}</span>
+                  <svg class="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </button>
+
+                <!-- Custom Time Picker Dropdown -->
+                <div *ngIf="showTimePicker" (click)="$event.stopPropagation()"
+                     class="absolute left-0 right-0 top-13 z-[150] rounded-2xl border shadow-2xl p-4 flex flex-col gap-3"
+                     [ngClass]="isDark ? 'bg-[#15151a] border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
+                  
+                  <div class="grid grid-cols-2 gap-4">
+                    <!-- Hours Column -->
+                    <div>
+                      <p class="text-[9px] font-bold uppercase tracking-widest text-neutral-500 mb-1.5 text-center">Hora</p>
+                      <div class="h-40 overflow-y-auto pr-1 scrollbar-thin flex flex-col gap-1">
+                        <button *ngFor="let h of hoursList" type="button" (click)="selectHour(h)"
+                                class="w-full py-1.5 text-center text-xs font-semibold rounded-lg transition-colors"
+                                [ngClass]="selectedHour === h
+                                  ? (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white')
+                                  : (isDark ? 'hover:bg-neutral-800 text-neutral-400' : 'hover:bg-neutral-100 text-neutral-600')">
+                          {{ h }}
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <!-- Minutes Column -->
+                    <div>
+                      <p class="text-[9px] font-bold uppercase tracking-widest text-neutral-500 mb-1.5 text-center">Minuto</p>
+                      <div class="h-40 overflow-y-auto pr-1 scrollbar-thin flex flex-col gap-1">
+                        <button *ngFor="let m of minutesList" type="button" (click)="selectMinute(m)"
+                                class="w-full py-1.5 text-center text-xs font-semibold rounded-lg transition-colors"
+                                [ngClass]="selectedMinute === m
+                                  ? (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white')
+                                  : (isDark ? 'hover:bg-neutral-800 text-neutral-400' : 'hover:bg-neutral-100 text-neutral-600')">
+                          {{ m }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="flex gap-2 border-t pt-3" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+                    <button type="button" (click)="confirmCustomTime()"
+                            class="flex-1 py-2 text-center text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all"
+                            [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-black'">
+                      Aceptar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-100 focus:border-neutral-500 [color-scheme:dark]' : 'bg-neutral-50 border-neutral-200 text-neutral-800 focus:border-neutral-400'">
             </div>
 
             <!-- Category Cards -->
@@ -504,6 +602,9 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
     .kanban-scroll::-webkit-scrollbar { height: 6px; }
     .kanban-scroll::-webkit-scrollbar-track { background: transparent; }
     .kanban-scroll::-webkit-scrollbar-thumb { background-color: #2a2a2a; border-radius: 20px; }
+    .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+    .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.15); border-radius: 10px; }
     .today-col { border-top: 2px solid rgba(255,255,255,0.12) !important; }
     .modal-backdrop { background: rgba(0,0,0,0.65); backdrop-filter: blur(8px); }
     .modal-card, .calendar-dropdown { animation: popIn 0.2s cubic-bezier(0.16,1,0.3,1) forwards; }
@@ -613,6 +714,152 @@ export class DashItineraryComponent implements OnInit, OnDestroy {
   }
 
   quickHours = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
+
+  // Custom Time Selection Helpers
+  showTimePicker = false;
+  hoursList = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
+  minutesList = Array.from({ length: 12 }, (_, i) => (i * 5).toString().padStart(2, '0'));
+  selectedHour = '09';
+  selectedMinute = '00';
+
+  // Custom Date Selection Helpers
+  showDatePicker = false;
+  modalMonth = new Date().getMonth();
+  modalYear = new Date().getFullYear();
+
+  get modalMonthName(): string {
+    return ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'][this.modalMonth];
+  }
+
+  get modalCalendarDays(): CalendarDay[] {
+    const todayKey = this.todayKey;
+    const firstDay = new Date(this.modalYear, this.modalMonth, 1);
+    const lastDay = new Date(this.modalYear, this.modalMonth + 1, 0);
+    
+    let startDow = firstDay.getDay();
+    startDow = startDow === 0 ? 6 : startDow - 1; // Mon is 0, Sun is 6
+    
+    const days: CalendarDay[] = [];
+    // empty paddings
+    for (let i = 0; i < startDow; i++) {
+      days.push({ date: null, dateKey: '', isCurrentMonth: false, isToday: false, hasTask: false, inWeekView: false });
+    }
+    
+    for (let d = 1; d <= lastDay.getDate(); d++) {
+      const date = new Date(this.modalYear, this.modalMonth, d);
+      const dateKey = this.toDateKey(date);
+      days.push({
+        date: d,
+        dateKey,
+        isCurrentMonth: true,
+        isToday: dateKey === todayKey,
+        hasTask: false,
+        inWeekView: false
+      });
+    }
+    return days;
+  }
+
+  parseFormTime() {
+    if (this.form.time) {
+      const [h, m] = this.form.time.split(':');
+      this.selectedHour = h;
+      this.selectedMinute = m;
+    } else {
+      const now = new Date();
+      this.selectedHour = now.getHours().toString().padStart(2, '0');
+      this.selectedMinute = '00';
+    }
+  }
+
+  parseFormDate() {
+    const targetDate = this.form.date ? new Date(this.form.date + 'T00:00:00') : new Date();
+    this.modalMonth = targetDate.getMonth();
+    this.modalYear = targetDate.getFullYear();
+  }
+
+  formatDisplayDate(dateKey: string): string {
+    if (!dateKey) return 'Seleccionar fecha';
+    const [y, m, d] = dateKey.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+    const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    return `${days[date.getDay()]}, ${date.getDate()} de ${months[date.getMonth()]}`;
+  }
+
+  isDateDisabled(dateKey: string): boolean {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const max = new Date(today); max.setDate(today.getDate() + 65);
+    const d = new Date(dateKey + 'T00:00:00');
+    return d < today || d > max;
+  }
+
+  toggleTimePicker(e: Event) {
+    e.stopPropagation();
+    this.showDatePicker = false;
+    this.showTimePicker = !this.showTimePicker;
+  }
+
+  toggleDatePicker(e: Event) {
+    e.stopPropagation();
+    this.showTimePicker = false;
+    this.showDatePicker = !this.showDatePicker;
+  }
+
+  selectHour(h: string) {
+    this.selectedHour = h;
+    this.updateFormTime();
+  }
+
+  selectMinute(m: string) {
+    this.selectedMinute = m;
+    this.updateFormTime();
+  }
+
+  updateFormTime() {
+    this.form.time = `${this.selectedHour}:${this.selectedMinute}`;
+  }
+
+  confirmCustomTime() {
+    this.showTimePicker = false;
+  }
+
+  selectQuickHour(qh: string) {
+    this.form.time = qh;
+    const [h, m] = qh.split(':');
+    this.selectedHour = h;
+    this.selectedMinute = m;
+  }
+
+  clearTime() {
+    this.form.time = '';
+    this.selectedHour = '09';
+    this.selectedMinute = '00';
+  }
+
+  prevModalMonth() {
+    if (this.modalMonth === 0) {
+      this.modalMonth = 11;
+      this.modalYear--;
+    } else {
+      this.modalMonth--;
+    }
+  }
+
+  nextModalMonth() {
+    if (this.modalMonth === 11) {
+      this.modalMonth = 0;
+      this.modalYear++;
+    } else {
+      this.modalMonth++;
+    }
+  }
+
+  selectModalDate(dateKey: string) {
+    this.form.date = dateKey;
+    this.showDatePicker = false;
+    this.parseFormDate();
+  }
 
   get todayKey(): string { return this.toDateKey(new Date()); }
   get minDate(): string { return this.todayKey; }
@@ -785,7 +1032,11 @@ export class DashItineraryComponent implements OnInit, OnDestroy {
   openModal(dateKey?: string) {
     this.editingTaskId = null;
     this.titleError = false;
+    this.showTimePicker = false;
+    this.showDatePicker = false;
     this.form = { title: '', description: '', type: 'work', time: '', date: dateKey || this.todayKey };
+    this.parseFormTime();
+    this.parseFormDate();
     this.showModal = true;
   }
 
@@ -793,11 +1044,20 @@ export class DashItineraryComponent implements OnInit, OnDestroy {
     this.contextMenuTaskId = null;
     this.editingTaskId = task.id;
     this.titleError = false;
+    this.showTimePicker = false;
+    this.showDatePicker = false;
     this.form = { title: task.title, description: task.description || '', type: task.type, time: task.time || '', date: task.date };
+    this.parseFormTime();
+    this.parseFormDate();
     this.showModal = true;
   }
 
-  closeModal() { this.showModal = false; this.editingTaskId = null; }
+  closeModal() {
+    this.showModal = false;
+    this.editingTaskId = null;
+    this.showTimePicker = false;
+    this.showDatePicker = false;
+  }
 
   saveTask() {
     if (!this.form.title.trim()) {
@@ -886,10 +1146,21 @@ export class DashItineraryComponent implements OnInit, OnDestroy {
   }
   toggleContextMenu(id: number, e: Event) { e.stopPropagation(); this.contextMenuTaskId = this.contextMenuTaskId === id ? null : id; }
 
-  onRootClick(_e: Event) { this.contextMenuTaskId = null; this.showCalendar = false; }
+  onRootClick(_e: Event) {
+    this.contextMenuTaskId = null;
+    this.showCalendar = false;
+    this.showTimePicker = false;
+    this.showDatePicker = false;
+  }
 
   @HostListener('document:keydown.escape')
-  onEscape() { this.closeModal(); this.contextMenuTaskId = null; this.showCalendar = false; }
+  onEscape() {
+    this.closeModal();
+    this.contextMenuTaskId = null;
+    this.showCalendar = false;
+    this.showTimePicker = false;
+    this.showDatePicker = false;
+  }
 
   // ── API Loading ──
   private loadWeekTasks() {
