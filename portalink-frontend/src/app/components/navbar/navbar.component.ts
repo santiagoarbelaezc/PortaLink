@@ -455,6 +455,17 @@ import { AnalyticsService } from '../../services/analytics.service';
       from { opacity: 0; transform: translateY(-8px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* Autofill Overrides para que el navegador no ponga los inputs blancos */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus, 
+    input:-webkit-autofill:active{
+      -webkit-box-shadow: 0 0 0 30px var(--bg-secondary) inset !important;
+      -webkit-text-fill-color: var(--text-primary) !important;
+      transition: background-color 5000s ease-in-out 0s;
+      caret-color: var(--text-primary) !important;
+    }
   `]
 })
 export class NavbarComponent implements OnInit {

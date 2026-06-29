@@ -379,16 +379,14 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
     .animate-slide-down { animation: slideDown 0.3s cubic-bezier(0.16,1,0.3,1) forwards; }
     
     /* Autofill and Caret Overrides */
-    input {
-      caret-color: #000000 !important;
-    }
     input:-webkit-autofill,
     input:-webkit-autofill:hover, 
-    input:-webkit-autofill:focus {
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
       -webkit-text-fill-color: var(--text-primary) !important;
       -webkit-box-shadow: 0 0 0px 1000px var(--bg-secondary) inset !important;
       transition: background-color 5000s ease-in-out 0s;
-      caret-color: #000000 !important;
+      caret-color: var(--text-primary) !important;
     }
   `]
 })
