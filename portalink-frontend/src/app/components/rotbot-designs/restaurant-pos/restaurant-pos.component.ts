@@ -34,7 +34,7 @@ interface ClosedTicket {
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="w-full h-full bg-[#f8f9fa] text-neutral-900 font-sans flex flex-col relative overflow-hidden" style="font-family: 'Inter', sans-serif;">
+    <div class="w-full h-full bg-[#f8f9fa] text-neutral-900 font-sans flex flex-col relative overflow-hidden" style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
       
       <!-- ============================================== -->
       <!-- VISTA 0: LOGIN (PIN)                           -->

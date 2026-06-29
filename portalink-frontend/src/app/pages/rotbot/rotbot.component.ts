@@ -250,10 +250,10 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
         </div>
 
         <!-- Componente Interactivo Dinámico (Diseños en Formato Móvil) -->
-        <div *ngIf="activeDesign" class="hidden lg:flex flex-col flex-grow h-full overflow-hidden relative animate-fade-in z-10 items-center justify-center bg-[var(--bg-primary)]/50 p-6">
+        <div *ngIf="activeDesign || isDesigning" class="hidden lg:flex flex-col flex-grow h-full overflow-hidden relative animate-fade-in z-10 items-center justify-center bg-[var(--bg-primary)]/50 p-6">
           
           <!-- Botón Cerrar Diseño -->
-          <button (click)="activeDesign = null" class="absolute top-6 right-6 w-10 h-10 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 border border-white/10 transition-colors z-20 text-neutral-400 hover:text-white">
+          <button (click)="activeDesign = null; isDesigning = false" class="absolute top-6 right-6 w-10 h-10 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 border border-white/10 transition-colors z-20 text-neutral-400 hover:text-white">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
 
@@ -262,7 +262,18 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
             <!-- Dynamic Island / Notch Mock -->
             <div class="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-5 bg-[#1a1a1a] rounded-b-2xl z-50"></div>
             
-            <app-restaurant-pos *ngIf="activeDesign === 'restaurant-pos'" class="w-full h-full"></app-restaurant-pos>
+            <!-- Loading State -->
+            <div *ngIf="isDesigning" class="absolute inset-0 z-40 bg-[#f8f9fa] flex flex-col items-center justify-center animate-fade-in p-6 text-center">
+              <div class="relative w-16 h-16 mb-6">
+                <div class="absolute inset-0 border-4 border-neutral-200 rounded-full"></div>
+                <div class="absolute inset-0 border-4 border-black rounded-full border-t-transparent animate-spin"></div>
+              </div>
+              <h3 class="font-bold text-black mb-1">RotBot está diseñando...</h3>
+              <p class="text-[11px] text-neutral-500">Renderizando componentes nativos y ajustando la interfaz ultra-premium.</p>
+            </div>
+
+            <!-- App Render -->
+            <app-restaurant-pos *ngIf="activeDesign === 'restaurant-pos'" class="w-full h-full animate-fade-in"></app-restaurant-pos>
           </div>
         </div>
       </div>
@@ -469,6 +480,7 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
   currentTheme = 'dark';
   isInfoModalOpen = false;
   activeDesign: string | null = null;
+  isDesigning: boolean = false;
 
   constructor(
     public chatService: ChatStateService,
@@ -543,9 +555,12 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     const textLower = userText.toLowerCase();
     if (textLower.includes('restaurante') || textLower.includes('caja')) {
+      this.isDesigning = true;
+      this.activeDesign = null;
       setTimeout(() => {
+        this.isDesigning = false;
         this.activeDesign = 'restaurant-pos';
-      }, 1000);
+      }, 3000);
     }
 
     this.chatService.sendMessage(userText);
