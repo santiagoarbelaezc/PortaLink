@@ -215,7 +215,7 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
         </div>
  
         <!-- Sidebar Derecho (Info Rotbot) -->
-        <div *ngIf="!activeDesign" class="chat-sidebar no-scrollbar hidden md:flex flex-col w-80 flex-shrink-0 border-l py-8 px-6 gap-6 overflow-y-auto animate-fade-in" style="border-color: var(--card-border);">
+        <div *ngIf="!activeDesign && !isDesigning" class="chat-sidebar no-scrollbar hidden md:flex flex-col w-80 flex-shrink-0 border-l py-8 px-6 gap-6 overflow-y-auto animate-fade-in" style="border-color: var(--card-border);">
           <h4 class="sidebar-title mb-2">¿Quién es Rotbot?</h4>
           
           <div class="flex flex-col items-center text-center gap-4 p-5 rounded-2xl border right-sidebar-card" style="border-color: var(--card-border);">
@@ -263,13 +263,21 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
             <div class="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-5 bg-[#1a1a1a] rounded-b-2xl z-50"></div>
             
             <!-- Loading State -->
-            <div *ngIf="isDesigning" class="absolute inset-0 z-40 bg-[#f8f9fa] flex flex-col items-center justify-center animate-fade-in p-6 text-center">
-              <div class="relative w-16 h-16 mb-6">
-                <div class="absolute inset-0 border-4 border-neutral-200 rounded-full"></div>
-                <div class="absolute inset-0 border-4 border-black rounded-full border-t-transparent animate-spin"></div>
+            <div *ngIf="isDesigning" class="absolute inset-0 z-40 bg-white flex flex-col items-center justify-center animate-fade-in p-8 text-center">
+              <div class="relative w-20 h-20 mb-8">
+                <!-- Pulse rings -->
+                <div class="absolute inset-0 border-[3px] border-black/10 rounded-full animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]"></div>
+                <div class="absolute inset-0 border-[3px] border-black/20 rounded-full"></div>
+                <!-- Spin ring -->
+                <div class="absolute inset-0 border-[3px] border-black rounded-full border-t-transparent animate-spin"></div>
+                <!-- Center dot -->
+                <div class="absolute inset-0 m-auto w-4 h-4 bg-black rounded-full animate-pulse"></div>
               </div>
-              <h3 class="font-bold text-black mb-1">RotBot está diseñando...</h3>
-              <p class="text-[11px] text-neutral-500">Renderizando componentes nativos y ajustando la interfaz ultra-premium.</p>
+              <h3 class="font-black text-lg text-black mb-2 tracking-tight">RotBot IA</h3>
+              <p class="text-xs text-neutral-500 font-medium leading-relaxed">
+                Diseñando interfaces...<br>
+                Compilando vistas premium...
+              </p>
             </div>
 
             <!-- App Render -->
@@ -560,7 +568,7 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
       setTimeout(() => {
         this.isDesigning = false;
         this.activeDesign = 'restaurant-pos';
-      }, 3000);
+      }, 5000);
     }
 
     this.chatService.sendMessage(userText);
