@@ -6,11 +6,12 @@ import { ChatStateService } from '../../services/chat-state.service';
 import { AnalyticsService } from '../../services/analytics.service';
 import { ChatLimitModalComponent } from '../../components/chat-limit-modal/chat-limit-modal.component';
 import { AiInfoModalComponent } from '../../components/ai-info-modal/ai-info-modal.component';
+import { RestaurantPosComponent } from '../../components/rotbot-designs/restaurant-pos/restaurant-pos.component';
 
 @Component({
   selector: 'app-rotbot-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ChatLimitModalComponent, AiInfoModalComponent],
+  imports: [CommonModule, FormsModule, RouterModule, ChatLimitModalComponent, AiInfoModalComponent, RestaurantPosComponent],
   template: `
     <app-chat-limit-modal></app-chat-limit-modal>
     <app-ai-info-modal [isOpen]="isInfoModalOpen" (closeEvent)="isInfoModalOpen = false"></app-ai-info-modal>
@@ -86,7 +87,7 @@ import { AiInfoModalComponent } from '../../components/ai-info-modal/ai-info-mod
       <div class="flex flex-row flex-grow w-full overflow-hidden">
         
         <!-- Sidebar Izquierdo (Accesos Rápidos) -->
-        <div class="chat-sidebar no-scrollbar hidden md:flex flex-col w-80 flex-shrink-0 border-r py-8 px-6 gap-4 overflow-y-auto" style="border-color: var(--card-border);">
+        <div *ngIf="!activeDesign" class="chat-sidebar no-scrollbar hidden md:flex flex-col w-80 flex-shrink-0 border-r py-8 px-6 gap-4 overflow-y-auto animate-fade-in" style="border-color: var(--card-border);">
           <h4 class="sidebar-title mb-2">Accesos Rápidos</h4>
           
           <button (click)="sendShortcutMessage('Quiero E-commerce')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
@@ -132,8 +133,9 @@ import { AiInfoModalComponent } from '../../components/ai-info-modal/ai-info-mod
           </button>
         </div>
  
-        <!-- Messages + Input Container (Centro) -->
-        <div class="flex flex-col flex-grow h-full overflow-hidden">
+        <!-- Messages + Input Container (Centro o Izquierda en modo diseño) -->
+        <div class="flex flex-col h-full overflow-hidden transition-all duration-500 relative"
+             [ngClass]="activeDesign ? 'w-full lg:w-1/2 flex-shrink-0 border-r border-white/5' : 'flex-grow'">
           <!-- Messages Area -->
           <div #scrollContainer class="flex-grow overflow-y-auto scroll-smooth custom-scrollbar messages-area space-y-6" style="overscroll-behavior: contain;">
             
@@ -212,7 +214,7 @@ import { AiInfoModalComponent } from '../../components/ai-info-modal/ai-info-mod
         </div>
  
         <!-- Sidebar Derecho (Info Rotbot) -->
-        <div class="chat-sidebar no-scrollbar hidden md:flex flex-col w-80 flex-shrink-0 border-l py-8 px-6 gap-6 overflow-y-auto" style="border-color: var(--card-border);">
+        <div *ngIf="!activeDesign" class="chat-sidebar no-scrollbar hidden md:flex flex-col w-80 flex-shrink-0 border-l py-8 px-6 gap-6 overflow-y-auto animate-fade-in" style="border-color: var(--card-border);">
           <h4 class="sidebar-title mb-2">¿Quién es Rotbot?</h4>
           
           <div class="flex flex-col items-center text-center gap-4 p-5 rounded-2xl border right-sidebar-card" style="border-color: var(--card-border);">
@@ -244,6 +246,11 @@ import { AiInfoModalComponent } from '../../components/ai-info-modal/ai-info-mod
               Empieza hoy la transformación digital y automatiza tu negocio con Inteligencia Artificial.
             </span>
           </button>
+        </div>
+
+        <!-- Componente Interactivo Dinámico (Diseños) -->
+        <div *ngIf="activeDesign" class="hidden lg:flex flex-col lg:w-1/2 flex-grow h-full overflow-hidden relative animate-fade-in z-10">
+          <app-restaurant-pos *ngIf="activeDesign === 'restaurant-pos'"></app-restaurant-pos>
         </div>
       </div>
     </div>
@@ -448,6 +455,7 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   currentTheme = 'dark';
   isInfoModalOpen = false;
+  activeDesign: string | null = null;
 
   constructor(
     public chatService: ChatStateService,
@@ -519,6 +527,13 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.analyticsService.incrementMetric('rotbotMessagesSent');
     const userText = this.chatService.userInput.trim();
     this.chatService.userInput = '';
+
+    const textLower = userText.toLowerCase();
+    if (textLower.includes('restaurante') || textLower.includes('caja')) {
+      setTimeout(() => {
+        this.activeDesign = 'restaurant-pos';
+      }, 1000);
+    }
 
     this.chatService.sendMessage(userText);
     setTimeout(() => this.scrollToBottom(), 80);

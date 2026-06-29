@@ -99,8 +99,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
       </div>
 
       <!-- Right Side (Forms) -->
-      <div class="flex flex-col justify-center px-6 sm:px-12 relative bg-[var(--bg-primary)] lg:col-span-4 h-full overflow-y-auto transition-all duration-500 pt-24 pb-32 lg:pt-[100px] lg:pb-12">
-        <div class="w-full max-w-[450px] mx-auto lg:ml-auto lg:mr-0 mt-4 lg:mt-0">
+      <div class="flex flex-col justify-start px-6 sm:px-12 relative bg-[var(--bg-primary)] lg:col-span-4 h-full overflow-y-auto transition-all duration-500 pb-32 lg:pb-12">
+        <div class="w-full max-w-[450px] mx-auto lg:ml-auto lg:mr-0 mt-[100px] lg:mt-[120px]">
 
           <!-- Section Title Group (Centered & Premium) -->
           <div class="text-center mb-5 flex flex-col items-center">
@@ -171,7 +171,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                              [(ngModel)]="email" name="email"
                              placeholder="usuario@example.com"
                              [disabled]="isLoading()"
-                             class="w-full bg-[var(--bg-secondary)] border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-3 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
+                             class="w-full bg-transparent border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-3 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
                     </div>
                   </div>
 
@@ -189,7 +189,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                              [(ngModel)]="password" name="password"
                              placeholder="••••••••••"
                              [disabled]="isLoading()"
-                             class="w-full bg-[var(--bg-secondary)] border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-3 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
+                             class="w-full bg-transparent border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-3 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
                     </div>
                   </div>
 
@@ -200,7 +200,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                       <div class="h-10 border border-[var(--card-border)] bg-[#050505] rounded-xl overflow-hidden flex items-center justify-center select-none" 
                            [innerHTML]="captchaSvg" style="width: 125px;">
                       </div>
-                      <button type="button" (click)="loadCaptcha()" class="p-2.5 rounded-xl border border-[var(--card-border)] bg-[var(--bg-secondary)]/50 hover:bg-[var(--card-border)]/50 transition-colors text-[var(--text-primary)] hover:border-[var(--text-primary)]/30 cursor-pointer flex items-center justify-center h-10" title="Regenerar Captcha">
+                      <button type="button" (click)="loadCaptcha()" class="p-2.5 rounded-xl border border-[var(--card-border)] bg-transparent/50 hover:bg-[var(--card-border)]/50 transition-colors text-[var(--text-primary)] hover:border-[var(--text-primary)]/30 cursor-pointer flex items-center justify-center h-10" title="Regenerar Captcha">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
                         </svg>
@@ -210,7 +210,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                              placeholder="Código"
                              [disabled]="isLoading()"
                              maxlength="5"
-                             class="flex-grow h-10 bg-[var(--bg-secondary)] border border-[var(--card-border)] rounded-xl px-2 py-2 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50 text-center uppercase tracking-widest font-bold">
+                             class="flex-grow h-10 bg-transparent border border-[var(--card-border)] rounded-xl px-2 py-2 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50 text-center uppercase tracking-widest font-bold">
                     </div>
                   </div>
 
@@ -241,7 +241,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                              [(ngModel)]="registerName" name="registerName"
                              placeholder="Tu nombre"
                              [disabled]="isLoading()"
-                             class="w-full bg-[var(--bg-secondary)] border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
+                             class="w-full bg-transparent border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
                     </div>
                   </div>
 
@@ -256,7 +256,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                              [(ngModel)]="registerEmail" name="registerEmail"
                              placeholder="usuario@example.com"
                              [disabled]="isLoading()"
-                             class="w-full bg-[var(--bg-secondary)] border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
+                             class="w-full bg-transparent border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
                     </div>
                   </div>
 
@@ -272,7 +272,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                                [(ngModel)]="registerPassword" name="registerPassword"
                                placeholder="••••••••"
                                [disabled]="isLoading()"
-                               class="w-full bg-[var(--bg-secondary)] border border-[var(--card-border)] rounded-xl pl-9 pr-3 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
+                               class="w-full bg-transparent border border-[var(--card-border)] rounded-xl pl-9 pr-3 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
                       </div>
                     </div>
                     <div class="space-y-1.5">
@@ -285,7 +285,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                                [(ngModel)]="registerConfirmPassword" name="registerConfirmPassword"
                                placeholder="••••••••"
                                [disabled]="isLoading()"
-                               class="w-full bg-[var(--bg-secondary)] border border-[var(--card-border)] rounded-xl pl-9 pr-3 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
+                               class="w-full bg-transparent border border-[var(--card-border)] rounded-xl pl-9 pr-3 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
                       </div>
                     </div>
                   </div>
@@ -297,7 +297,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                       <div class="h-10 border border-[var(--card-border)] bg-[#050505] rounded-xl overflow-hidden flex items-center justify-center select-none" 
                            [innerHTML]="captchaSvg" style="width: 125px;">
                       </div>
-                      <button type="button" (click)="loadCaptcha()" class="p-2.5 rounded-xl border border-[var(--card-border)] bg-[var(--bg-secondary)]/50 hover:bg-[var(--card-border)]/50 transition-colors text-[var(--text-primary)] hover:border-[var(--text-primary)]/30 cursor-pointer flex items-center justify-center h-10" title="Regenerar Captcha">
+                      <button type="button" (click)="loadCaptcha()" class="p-2.5 rounded-xl border border-[var(--card-border)] bg-transparent/50 hover:bg-[var(--card-border)]/50 transition-colors text-[var(--text-primary)] hover:border-[var(--text-primary)]/30 cursor-pointer flex items-center justify-center h-10" title="Regenerar Captcha">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
                         </svg>
