@@ -362,7 +362,7 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
       <div *ngIf="showModal"
            class="modal-backdrop fixed inset-0 z-[100] flex items-center justify-center p-4"
            (click)="closeModal()">
-        <div class="modal-card w-full max-w-md rounded-2xl border shadow-2xl overflow-hidden"
+        <div class="modal-card w-full max-w-3xl rounded-2xl border shadow-2xl overflow-hidden"
              [ngClass]="isDark ? 'bg-[#111116] border-neutral-800' : 'bg-white border-neutral-200'"
              (click)="$event.stopPropagation()">
 
@@ -388,200 +388,210 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
             </button>
           </div>
 
-          <!-- Body -->
-          <div class="p-6 space-y-5">
-            <!-- Title -->
-            <div>
-              <label class="block text-[10px] font-bold uppercase tracking-widest mb-2"
-                     [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Título *</label>
-              <input type="text" [(ngModel)]="form.title" placeholder="Ej: Despliegue de Landing Page..."
-                     class="w-full rounded-xl border px-4 py-3 text-sm font-medium focus:outline-none transition-all"
-                     [ngClass]="[isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-100 placeholder-neutral-600 focus:border-neutral-500' : 'bg-neutral-50 border-neutral-200 text-neutral-800 placeholder-neutral-400 focus:border-neutral-400', titleError ? 'border-red-500 shake' : '']">
-              <p *ngIf="titleError" class="text-[10px] text-red-400 mt-1.5 font-medium">El título es obligatorio.</p>
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold uppercase tracking-widest mb-2"
-                     [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Fecha *</label>
-              <!-- Quick Dates Pills -->
-              <div class="flex gap-2 mb-3 flex-wrap">
-                <button *ngFor="let qd of quickDates" type="button" (click)="selectModalDate(qd.dateKey)"
-                        class="px-3 py-1.5 rounded-lg border text-[10px] font-bold uppercase tracking-widest transition-all animate-fade-in"
-                        [ngClass]="form.date === qd.dateKey
-                          ? (isDark ? 'bg-white text-black border-white' : 'bg-neutral-900 text-white border-neutral-900')
-                          : (isDark ? 'border-neutral-800 text-neutral-450 bg-[#0a0a0d] hover:border-neutral-600' : 'border-neutral-200 text-neutral-550 bg-neutral-50 hover:border-neutral-300')">
-                  {{ qd.label }} <span class="opacity-60">({{ qd.display }})</span>
-                </button>
+          <!-- Body split in 2 columns -->
+          <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6" (click)="closeDropdowns()">
+            
+            <!-- Column 1: Info (Title, Category, Note) -->
+            <div class="space-y-5" (click)="$event.stopPropagation()">
+              <!-- Title -->
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-widest mb-2"
+                       [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Título *</label>
+                <input type="text" [(ngModel)]="form.title" placeholder="Ej: Despliegue de Landing Page..."
+                       class="w-full rounded-xl border px-4 py-3 text-sm font-medium focus:outline-none transition-all"
+                       [ngClass]="[isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-100 placeholder-neutral-600 focus:border-neutral-500' : 'bg-neutral-50 border-neutral-200 text-neutral-800 placeholder-neutral-400 focus:border-neutral-400', titleError ? 'border-red-500 shake' : '']">
+                <p *ngIf="titleError" class="text-[10px] text-red-400 mt-1.5 font-medium">El título es obligatorio.</p>
               </div>
 
-              <!-- Custom Date Dropdown -->
-              <div class="relative">
-                <button type="button" (click)="toggleDatePicker($event)"
-                        class="w-full rounded-xl border px-4 py-3 text-sm font-medium flex items-center justify-between transition-all text-left"
-                        [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-100 hover:border-neutral-500' : 'bg-neutral-50 border-neutral-200 text-neutral-800 hover:border-neutral-400'">
-                  <span>{{ formatDisplayDate(form.date) }}</span>
-                  <svg class="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </button>
+              <!-- Category Cards -->
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-widest mb-2"
+                       [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Categoría</label>
+                <div class="grid grid-cols-3 gap-2">
+                  <button *ngFor="let cat of categories" type="button" (click)="form.type = cat.key"
+                          class="flex flex-col items-center gap-2 py-4 rounded-xl border transition-all"
+                          [ngClass]="form.type === cat.key
+                            ? (isDark ? 'border-white bg-white/10' : 'border-neutral-900 bg-neutral-900/5')
+                            : (isDark ? 'border-neutral-800 hover:border-neutral-600 bg-neutral-900' : 'border-neutral-200 hover:border-neutral-300 bg-neutral-50')">
+                    <svg class="w-5 h-5 transition-colors"
+                         [ngClass]="form.type === cat.key ? (isDark ? 'text-white' : 'text-neutral-900') : (isDark ? 'text-neutral-500' : 'text-neutral-400')"
+                         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                      <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="cat.icon"/>
+                    </svg>
+                    <span class="text-[9px] font-bold uppercase tracking-widest transition-colors"
+                          [ngClass]="form.type === cat.key ? (isDark ? 'text-white' : 'text-neutral-900') : (isDark ? 'text-neutral-500' : 'text-neutral-400')">
+                      {{ cat.label }}
+                    </span>
+                  </button>
+                </div>
+              </div>
 
-                <!-- Custom Date Picker Dropdown -->
-                <div *ngIf="showDatePicker" (click)="$event.stopPropagation()"
-                     class="absolute left-0 right-0 top-13 z-[150] w-full rounded-2xl border shadow-2xl overflow-hidden"
-                     [ngClass]="isDark ? 'bg-[#15151a] border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
-                  
-                  <!-- Month Navigation -->
-                  <div class="flex items-center justify-between px-4 py-3 border-b"
-                       [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
-                    <button type="button" (click)="prevModalMonth()" class="p-1.5 rounded-lg hover:bg-neutral-800 transition-colors">
-                      <svg class="w-4 h-4 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-                    </button>
-                    <span class="text-xs font-bold uppercase tracking-wider">{{ modalMonthName }} {{ modalYear }}</span>
-                    <button type="button" (click)="nextModalMonth()" class="p-1.5 rounded-lg hover:bg-neutral-800 transition-colors">
-                      <svg class="w-4 h-4 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-                    </button>
-                  </div>
+              <!-- Description -->
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-widest mb-2"
+                       [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Nota (opcional)</label>
+                <textarea [(ngModel)]="form.description" rows="3" maxlength="120"
+                          placeholder="Ej: Coordinar con el equipo antes..."
+                          class="w-full rounded-xl border px-4 py-3 text-sm font-medium focus:outline-none transition-all resize-none"
+                          [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-100 placeholder-neutral-600 focus:border-neutral-500' : 'bg-neutral-50 border-neutral-200 text-neutral-800 placeholder-neutral-400 focus:border-neutral-400'">
+                </textarea>
+                <p class="text-[10px] mt-1 text-right" [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-400'">
+                  {{ form.description.length || 0 }}/120
+                </p>
+              </div>
+            </div>
 
-                  <!-- Day Labels -->
-                  <div class="grid grid-cols-7 px-2 pt-2 text-[9px] font-bold uppercase tracking-widest text-center text-neutral-500">
-                    <div *ngFor="let day of ['L','M','X','J','V','S','D']">{{ day }}</div>
-                  </div>
+            <!-- Column 2: Date & Time Scheduler -->
+            <div class="space-y-5" (click)="$event.stopPropagation()">
+              <!-- Date -->
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-widest mb-2"
+                       [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Fecha *</label>
+                <!-- Quick Dates Pills -->
+                <div class="flex gap-2 mb-3 flex-wrap">
+                  <button *ngFor="let qd of quickDates" type="button" (click)="selectModalDate(qd.dateKey)"
+                          class="px-3 py-1.5 rounded-lg border text-[10px] font-bold uppercase tracking-widest transition-all animate-fade-in"
+                          [ngClass]="form.date === qd.dateKey
+                            ? (isDark ? 'bg-white text-black border-white' : 'bg-neutral-900 text-white border-neutral-900')
+                            : (isDark ? 'border-neutral-800 text-neutral-450 bg-[#0a0a0d] hover:border-neutral-600' : 'border-neutral-200 text-neutral-555 bg-neutral-50 hover:border-neutral-300')">
+                    {{ qd.label }} <span class="opacity-60">({{ qd.display }})</span>
+                  </button>
+                </div>
 
-                  <!-- Day Grid -->
-                  <div class="grid grid-cols-7 gap-0.5 px-2 pb-3">
-                    <button *ngFor="let day of modalCalendarDays" type="button"
-                            [disabled]="!day.dateKey || isDateDisabled(day.dateKey)"
-                            (click)="selectModalDate(day.dateKey)"
-                            class="relative aspect-square flex items-center justify-center rounded-lg text-xs font-semibold transition-all disabled:opacity-20 disabled:cursor-not-allowed"
-                            [ngClass]="[
-                              !day.dateKey ? 'opacity-0 cursor-default' : 'cursor-pointer',
-                              form.date === day.dateKey ? (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white') : '',
-                              form.date !== day.dateKey && day.dateKey ? (isDark ? 'text-neutral-300 hover:bg-neutral-800' : 'text-neutral-600 hover:bg-neutral-100') : ''
-                            ]">
-                      {{ day.date }}
-                    </button>
+                <!-- Custom Date Dropdown -->
+                <div class="relative">
+                  <button type="button" (click)="toggleDatePicker($event)"
+                          class="w-full rounded-xl border px-4 py-3 text-sm font-medium flex items-center justify-between transition-all text-left"
+                          [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-100 hover:border-neutral-500' : 'bg-neutral-50 border-neutral-200 text-neutral-800 hover:border-neutral-400'">
+                    <span>{{ formatDisplayDate(form.date) }}</span>
+                    <svg class="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </button>
+
+                  <!-- Custom Date Picker Dropdown -->
+                  <div *ngIf="showDatePicker" (click)="$event.stopPropagation()"
+                       class="absolute left-0 right-0 top-13 z-[150] w-full rounded-2xl border shadow-2xl overflow-hidden"
+                       [ngClass]="isDark ? 'bg-[#15151a] border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
+                    
+                    <!-- Month Navigation -->
+                    <div class="flex items-center justify-between px-4 py-3 border-b"
+                         [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+                      <button type="button" (click)="prevModalMonth()" class="p-1.5 rounded-lg hover:bg-neutral-800 transition-colors">
+                        <svg class="w-4 h-4 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                      </button>
+                      <span class="text-xs font-bold uppercase tracking-wider">{{ modalMonthName }} {{ modalYear }}</span>
+                      <button type="button" (click)="nextModalMonth()" class="p-1.5 rounded-lg hover:bg-neutral-800 transition-colors">
+                        <svg class="w-4 h-4 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                      </button>
+                    </div>
+
+                    <!-- Day Labels -->
+                    <div class="grid grid-cols-7 px-2 pt-2 text-[9px] font-bold uppercase tracking-widest text-center text-neutral-500">
+                      <div *ngFor="let day of ['L','M','X','J','V','S','D']">{{ day }}</div>
+                    </div>
+
+                    <!-- Day Grid -->
+                    <div class="grid grid-cols-7 gap-0.5 px-2 pb-3">
+                      <button *ngFor="let day of modalCalendarDays" type="button"
+                              [disabled]="!day.dateKey || isDateDisabled(day.dateKey)"
+                              (click)="selectModalDate(day.dateKey)"
+                              class="relative aspect-square flex items-center justify-center rounded-lg text-xs font-semibold transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+                              [ngClass]="[
+                                !day.dateKey ? 'opacity-0 cursor-default' : 'cursor-pointer',
+                                form.date === day.dateKey ? (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white') : '',
+                                form.date !== day.dateKey && day.dateKey ? (isDark ? 'text-neutral-300 hover:bg-neutral-800' : 'text-neutral-600 hover:bg-neutral-100') : ''
+                              ]">
+                        {{ day.date }}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <!-- Time -->
-            <div>
-              <div class="flex justify-between items-center mb-2">
-                <label class="text-[10px] font-bold uppercase tracking-widest"
-                       [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Hora (opcional)</label>
-                <button *ngIf="form.time" type="button" (click)="clearTime()"
-                        class="text-[9px] font-bold uppercase tracking-widest text-red-450 hover:underline">
-                  Quitar hora
-                </button>
-              </div>
-              <!-- Quick Hours Pills -->
-              <div class="flex gap-1.5 mb-3 overflow-x-auto pb-1.5 scrollbar-thin">
-                <button *ngFor="let qh of quickHours" type="button" (click)="selectQuickHour(qh)"
-                        class="px-2.5 py-1 rounded-lg border text-[10px] font-bold tracking-wide transition-all shrink-0"
-                        [ngClass]="form.time === qh
-                          ? (isDark ? 'bg-white text-black border-white' : 'bg-neutral-900 text-white border-neutral-900')
-                          : (isDark ? 'border-neutral-800 text-neutral-455 bg-[#0a0a0d] hover:border-neutral-600' : 'border-neutral-200 text-neutral-555 bg-neutral-50 hover:border-neutral-300')">
-                  {{ qh }}
-                </button>
-              </div>
+              <!-- Time -->
+              <div>
+                <div class="flex justify-between items-center mb-2">
+                  <label class="text-[10px] font-bold uppercase tracking-widest"
+                         [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Hora (opcional)</label>
+                  <button *ngIf="form.time" type="button" (click)="clearTime()"
+                          class="text-[9px] font-bold uppercase tracking-widest text-red-455 hover:underline">
+                    Quitar hora
+                  </button>
+                </div>
+                <!-- Quick Hours Pills -->
+                <div class="flex gap-1.5 mb-3 overflow-x-auto pb-1.5 scrollbar-thin">
+                  <button *ngFor="let qh of quickHours" type="button" (click)="selectQuickHour(qh)"
+                          class="px-2.5 py-1 rounded-lg border text-[10px] font-bold tracking-wide transition-all shrink-0"
+                          [ngClass]="form.time === qh
+                            ? (isDark ? 'bg-white text-black border-white' : 'bg-neutral-900 text-white border-neutral-900')
+                            : (isDark ? 'border-neutral-800 text-neutral-455 bg-[#0a0a0d] hover:border-neutral-600' : 'border-neutral-200 text-neutral-555 bg-neutral-50 hover:border-neutral-300')">
+                    {{ qh }}
+                  </button>
+                </div>
 
-              <!-- Custom Time Dropdown -->
-              <div class="relative">
-                <button type="button" (click)="toggleTimePicker($event)"
-                        class="w-full rounded-xl border px-4 py-3 text-sm font-medium flex items-center justify-between transition-all text-left"
-                        [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-100 hover:border-neutral-500' : 'bg-neutral-50 border-neutral-200 text-neutral-800 hover:border-neutral-400'">
-                  <span>{{ form.time ? form.time : 'Sin hora asignada' }}</span>
-                  <svg class="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </button>
+                <!-- Custom Time Dropdown -->
+                <div class="relative">
+                  <button type="button" (click)="toggleTimePicker($event)"
+                          class="w-full rounded-xl border px-4 py-3 text-sm font-medium flex items-center justify-between transition-all text-left"
+                          [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-100 hover:border-neutral-500' : 'bg-neutral-50 border-neutral-200 text-neutral-800 hover:border-neutral-400'">
+                    <span>{{ form.time ? form.time : 'Sin hora asignada' }}</span>
+                    <svg class="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </button>
 
-                <!-- Custom Time Picker Dropdown -->
-                <div *ngIf="showTimePicker" (click)="$event.stopPropagation()"
-                     class="absolute left-0 right-0 top-13 z-[150] rounded-2xl border shadow-2xl p-4 flex flex-col gap-3"
-                     [ngClass]="isDark ? 'bg-[#15151a] border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
-                  
-                  <div class="grid grid-cols-2 gap-4">
-                    <!-- Hours Column -->
-                    <div>
-                      <p class="text-[9px] font-bold uppercase tracking-widest text-neutral-500 mb-1.5 text-center">Hora</p>
-                      <div class="h-40 overflow-y-auto pr-1 scrollbar-thin flex flex-col gap-1">
-                        <button *ngFor="let h of hoursList" type="button" (click)="selectHour(h)"
-                                class="w-full py-1.5 text-center text-xs font-semibold rounded-lg transition-colors"
-                                [ngClass]="selectedHour === h
-                                  ? (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white')
-                                  : (isDark ? 'hover:bg-neutral-800 text-neutral-400' : 'hover:bg-neutral-100 text-neutral-600')">
-                          {{ h }}
-                        </button>
+                  <!-- Custom Time Picker Dropdown -->
+                  <div *ngIf="showTimePicker" (click)="$event.stopPropagation()"
+                       class="absolute left-0 right-0 top-13 z-[150] rounded-2xl border shadow-2xl p-4 flex flex-col gap-3"
+                       [ngClass]="isDark ? 'bg-[#15151a] border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                      <!-- Hours Column -->
+                      <div>
+                        <p class="text-[9px] font-bold uppercase tracking-widest text-neutral-500 mb-1.5 text-center">Hora</p>
+                        <div class="h-40 overflow-y-auto pr-1 scrollbar-thin flex flex-col gap-1">
+                          <button *ngFor="let h of hoursList" type="button" (click)="selectHour(h)"
+                                  class="w-full py-1.5 text-center text-xs font-semibold rounded-lg transition-colors"
+                                  [ngClass]="selectedHour === h
+                                    ? (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white')
+                                    : (isDark ? 'hover:bg-neutral-800 text-neutral-400' : 'hover:bg-neutral-100 text-neutral-600')">
+                            {{ h }}
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <!-- Minutes Column -->
+                      <div>
+                        <p class="text-[9px] font-bold uppercase tracking-widest text-neutral-500 mb-1.5 text-center">Minuto</p>
+                        <div class="h-40 overflow-y-auto pr-1 scrollbar-thin flex flex-col gap-1">
+                          <button *ngFor="let m of minutesList" type="button" (click)="selectMinute(m)"
+                                  class="w-full py-1.5 text-center text-xs font-semibold rounded-lg transition-colors"
+                                  [ngClass]="selectedMinute === m
+                                    ? (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white')
+                                    : (isDark ? 'hover:bg-neutral-800 text-neutral-400' : 'hover:bg-neutral-100 text-neutral-600')">
+                            {{ m }}
+                          </button>
+                        </div>
                       </div>
                     </div>
                     
-                    <!-- Minutes Column -->
-                    <div>
-                      <p class="text-[9px] font-bold uppercase tracking-widest text-neutral-500 mb-1.5 text-center">Minuto</p>
-                      <div class="h-40 overflow-y-auto pr-1 scrollbar-thin flex flex-col gap-1">
-                        <button *ngFor="let m of minutesList" type="button" (click)="selectMinute(m)"
-                                class="w-full py-1.5 text-center text-xs font-semibold rounded-lg transition-colors"
-                                [ngClass]="selectedMinute === m
-                                  ? (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white')
-                                  : (isDark ? 'hover:bg-neutral-800 text-neutral-400' : 'hover:bg-neutral-100 text-neutral-600')">
-                          {{ m }}
-                        </button>
-                      </div>
+                    <div class="flex gap-2 border-t pt-3" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+                      <button type="button" (click)="confirmCustomTime()"
+                              class="flex-1 py-2 text-center text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all"
+                              [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-black'">
+                        Aceptar
+                      </button>
                     </div>
-                  </div>
-                  
-                  <div class="flex gap-2 border-t pt-3" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
-                    <button type="button" (click)="confirmCustomTime()"
-                            class="flex-1 py-2 text-center text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all"
-                            [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-black'">
-                      Aceptar
-                    </button>
                   </div>
                 </div>
               </div>
-            </div>
-
-            <!-- Category Cards -->
-            <div>
-              <label class="block text-[10px] font-bold uppercase tracking-widest mb-2"
-                     [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Categoría</label>
-              <div class="grid grid-cols-3 gap-2">
-                <button *ngFor="let cat of categories" type="button" (click)="form.type = cat.key"
-                        class="flex flex-col items-center gap-2 py-4 rounded-xl border transition-all"
-                        [ngClass]="form.type === cat.key
-                          ? (isDark ? 'border-white bg-white/10' : 'border-neutral-900 bg-neutral-900/5')
-                          : (isDark ? 'border-neutral-800 hover:border-neutral-600 bg-neutral-900' : 'border-neutral-200 hover:border-neutral-300 bg-neutral-50')">
-                  <svg class="w-5 h-5 transition-colors"
-                       [ngClass]="form.type === cat.key ? (isDark ? 'text-white' : 'text-neutral-900') : (isDark ? 'text-neutral-500' : 'text-neutral-400')"
-                       fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
-                    <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="cat.icon"/>
-                  </svg>
-                  <span class="text-[9px] font-bold uppercase tracking-widest transition-colors"
-                        [ngClass]="form.type === cat.key ? (isDark ? 'text-white' : 'text-neutral-900') : (isDark ? 'text-neutral-500' : 'text-neutral-400')">
-                    {{ cat.label }}
-                  </span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Description -->
-            <div>
-              <label class="block text-[10px] font-bold uppercase tracking-widest mb-2"
-                     [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Nota (opcional)</label>
-              <textarea [(ngModel)]="form.description" rows="2" maxlength="120"
-                        placeholder="Ej: Coordinar con el equipo antes..."
-                        class="w-full rounded-xl border px-4 py-3 text-sm font-medium focus:outline-none transition-all resize-none"
-                        [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-100 placeholder-neutral-600 focus:border-neutral-500' : 'bg-neutral-50 border-neutral-200 text-neutral-800 placeholder-neutral-400 focus:border-neutral-400'">
-              </textarea>
-              <p class="text-[10px] mt-1 text-right" [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-400'">
-                {{ form.description.length || 0 }}/120
-              </p>
             </div>
           </div>
 
           <!-- Footer -->
-          <div class="flex gap-3 px-6 pb-6">
+          <div class="flex gap-3 px-6 pb-6 border-t pt-4"
+               [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
             <button (click)="closeModal()" class="flex-1 py-3 rounded-xl text-sm font-bold uppercase tracking-widest border transition-all"
                     [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200' : 'border-neutral-200 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700'">
               Cancelar
@@ -1148,6 +1158,11 @@ export class DashItineraryComponent implements OnInit, OnDestroy {
   onRootClick(_e: Event) {
     this.contextMenuTaskId = null;
     this.showCalendar = false;
+    this.showTimePicker = false;
+    this.showDatePicker = false;
+  }
+
+  closeDropdowns() {
     this.showTimePicker = false;
     this.showDatePicker = false;
   }
