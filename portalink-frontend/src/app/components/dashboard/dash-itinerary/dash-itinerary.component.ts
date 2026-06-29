@@ -540,7 +540,6 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
                   </div>
                 </div>
               </div>
-            </div>isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-100 focus:border-neutral-500 [color-scheme:dark]' : 'bg-neutral-50 border-neutral-200 text-neutral-800 focus:border-neutral-400'">
             </div>
 
             <!-- Category Cards -->
