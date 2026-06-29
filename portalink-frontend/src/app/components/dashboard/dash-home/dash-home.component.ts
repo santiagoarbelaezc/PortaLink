@@ -2,6 +2,7 @@ import { Component, Input, OnInit, OnDestroy, Output, EventEmitter, HostListener
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AnalyticsService, SystemMetrics } from '../../../services/analytics.service';
+import { ItineraryService } from '../../../services/itinerary.service';
 
 @Component({
   selector: 'app-dash-home',
@@ -199,6 +200,77 @@ import { AnalyticsService, SystemMetrics } from '../../../services/analytics.ser
 
       </div>
 
+      </div>
+
+      <!-- ═══════════════════════ NOTIFICACIONES ITINERARIO ═══════════════════════ -->
+      <div *ngIf="itineraryNotifs.current.length || itineraryNotifs.upcoming.length || itineraryNotifs.overdue.length || itineraryNotifs.no_time.length"
+           class="rounded-2xl border p-6 transition-all duration-300"
+           [ngClass]="isDark ? 'bg-[#111116] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+          <div class="flex items-center gap-3">
+            <div class="w-2.5 h-2.5 rounded-full animate-pulse" [ngClass]="itineraryNotifs.unseen > 0 ? 'bg-red-500' : 'bg-blue-500'"></div>
+            <h3 class="text-lg font-bold tracking-tight uppercase" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Tareas de Hoy</h3>
+            <span *ngIf="itineraryNotifs.unseen > 0" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/10 text-red-500 border border-red-500/20">
+              {{ itineraryNotifs.unseen }} SIN VER
+            </span>
+          </div>
+          <button (click)="goToItinerary()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all hover:scale-105 active:scale-95"
+                  [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800 text-neutral-300 hover:border-neutral-600 hover:bg-neutral-700' : 'border-neutral-300 bg-white text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50'">
+            Ver Itinerario Completo
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Current Tasks -->
+          <div *ngFor="let task of itineraryNotifs.current"
+               class="rounded-xl border p-4 relative overflow-hidden transition-all duration-200 hover:shadow-lg"
+               [ngClass]="isDark ? 'bg-neutral-900/80 border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.1)]' : 'bg-white border-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.15)]'">
+            <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-[9px] font-bold uppercase tracking-widest text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-full">En Progreso</span>
+              <span class="text-[10px] font-bold text-blue-500 border border-blue-500/30 px-1.5 rounded">{{ task.task_time?.substring(0,5) }}</span>
+            </div>
+            <h4 class="font-bold text-sm leading-tight mb-1" [ngClass]="isDark ? 'text-neutral-100' : 'text-neutral-900'">{{ task.title }}</h4>
+            <p *ngIf="task.description" class="text-xs truncate" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ task.description }}</p>
+          </div>
+
+          <!-- Overdue Tasks -->
+          <div *ngFor="let task of itineraryNotifs.overdue"
+               class="rounded-xl border p-4 relative overflow-hidden transition-all duration-200 hover:-translate-y-0.5"
+               [ngClass]="isDark ? 'bg-neutral-900 border-red-500/30' : 'bg-red-50/50 border-red-200'">
+            <div class="absolute top-0 left-0 w-1 h-full bg-red-500"></div>
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-[9px] font-bold uppercase tracking-widest text-red-500 bg-red-500/10 px-2 py-0.5 rounded-full">Atrasada</span>
+              <span class="text-[10px] font-bold text-red-500 border border-red-500/30 px-1.5 rounded">{{ task.task_time?.substring(0,5) }}</span>
+            </div>
+            <h4 class="font-bold text-sm leading-tight mb-1" [ngClass]="isDark ? 'text-neutral-100' : 'text-neutral-900'">{{ task.title }}</h4>
+          </div>
+
+          <!-- Upcoming Tasks -->
+          <div *ngFor="let task of itineraryNotifs.upcoming"
+               class="rounded-xl border p-4 relative overflow-hidden transition-all duration-200 hover:-translate-y-0.5"
+               [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-700' : 'bg-white border-neutral-200'">
+            <div class="absolute top-0 left-0 w-1 h-full" [ngClass]="isDark ? 'bg-neutral-600' : 'bg-neutral-300'"></div>
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-[9px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Próxima</span>
+              <span class="text-[10px] font-bold border px-1.5 rounded" [ngClass]="isDark ? 'text-neutral-400 border-neutral-700' : 'text-neutral-500 border-neutral-300'">{{ task.task_time?.substring(0,5) }}</span>
+            </div>
+            <h4 class="font-bold text-sm leading-tight mb-1" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ task.title }}</h4>
+          </div>
+
+          <!-- No Time Tasks -->
+          <div *ngFor="let task of itineraryNotifs.no_time"
+               class="rounded-xl border p-4 relative overflow-hidden transition-all duration-200 hover:-translate-y-0.5 border-dashed"
+               [ngClass]="isDark ? 'bg-transparent border-neutral-700' : 'bg-transparent border-neutral-300'">
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-[9px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Durante el día</span>
+            </div>
+            <h4 class="font-bold text-sm leading-tight" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">{{ task.title }}</h4>
+          </div>
+        </div>
+      </div>
+
       <!-- ═══════════════════════ CHARTS ROW 1 ═══════════════════════ -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
@@ -334,6 +406,7 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   @Output() tabChange = new EventEmitter<string>();
 
   private analyticsService = inject(AnalyticsService);
+  private itineraryService = inject(ItineraryService);
 
   metrics!: SystemMetrics;
   currentDate = '';
@@ -341,6 +414,8 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   unreadMessages = 0;
   pendingLeads = 0;
   private clockInterval: any;
+
+  itineraryNotifs: any = { unseen: 0, current: [], upcoming: [], overdue: [], no_time: [] };
 
   get isDark() { return this.theme === 'dark'; }
 
@@ -379,6 +454,7 @@ export class DashHomeComponent implements OnInit, OnDestroy {
     this.buildCards();
     this.buildArrays();
     this.loadBadges();
+    this.loadItineraryToday();
     this.updateClock();
     this.clockInterval = setInterval(() => this.updateClock(), 1000);
 
@@ -562,5 +638,25 @@ export class DashHomeComponent implements OnInit, OnDestroy {
     if (!t.closest('.ai-search-container')) {
       this.aiOpen = false;
     }
+  }
+
+  loadItineraryToday() {
+    this.itineraryService.getToday().subscribe({
+      next: (res) => {
+        if (res.ok) {
+          this.itineraryNotifs = res;
+          // Si hay notificaciones unseen, podríamos marcarlas todas como vistas
+          // ya que el usuario abrió el dashboard. O dejarlas hasta que vaya al tab.
+          if (res.unseen > 0) {
+            // Optional: Auto-clear logic can go here.
+          }
+        }
+      },
+      error: (err) => console.error('Error loading itinerary notifs', err)
+    });
+  }
+
+  goToItinerary() {
+    this.tabChange.emit('itinerary');
   }
 }

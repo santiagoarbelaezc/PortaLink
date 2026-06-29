@@ -1,14 +1,15 @@
-import { Component, Input, HostListener, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, HostListener, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ItineraryService, Task as ApiTask } from '../../../services/itinerary.service';
 
-interface Task {
+export interface Task {
   id: number;
   title: string;
   description?: string;
   type: 'work' | 'personal' | 'urgent';
-  time?: string;   // HH:MM
-  date: string;    // YYYY-MM-DD
+  time?: string;   // HH:MM (mapped from task_time)
+  date: string;    // YYYY-MM-DD (mapped from task_date)
   completed: boolean;
 }
 
@@ -539,14 +540,15 @@ export class DashItineraryComponent implements OnInit, OnDestroy {
   contextMenuTaskId: number | null = null;
 
   // ── Tasks Storage ──
-  private nextId = 100;
   allTasks: Task[] = [];
+  isLoading = true;
+  private itineraryService = inject(ItineraryService);
 
   // ── Lifecycle ──
   ngOnInit() {
     this.tick();
     this.clockInterval = setInterval(() => this.tick(), 1000);
-    this.allTasks = this.buildSampleTasks();
+    this.loadWeekTasks();
   }
 
   ngOnDestroy() { if (this.clockInterval) clearInterval(this.clockInterval); }
@@ -719,13 +721,19 @@ export class DashItineraryComponent implements OnInit, OnDestroy {
     const diffMs = targetMonday.getTime() - thisMonday.getTime();
     this.weekOffset = Math.round(diffMs / (7 * 24 * 60 * 60 * 1000));
     this.showCalendar = false;
+    this.loadWeekTasks();
   }
 
-  goToToday() { this.weekOffset = 0; this.showCalendar = false; }
+  goToToday() { this.weekOffset = 0; this.showCalendar = false; this.loadWeekTasks(); }
   changeWeek(dir: number) {
     const next = this.weekOffset + dir;
-    if (next >= 0 && next <= this.maxWeekOffset) this.weekOffset = next;
-    else if (next < 0) this.weekOffset = 0;
+    if (next >= 0 && next <= this.maxWeekOffset) {
+      this.weekOffset = next;
+      this.loadWeekTasks();
+    } else if (next < 0 && this.weekOffset !== 0) {
+      this.weekOffset = 0;
+      this.loadWeekTasks();
+    }
   }
 
   // ── Modal ──
@@ -750,19 +758,87 @@ export class DashItineraryComponent implements OnInit, OnDestroy {
     if (!this.form.title.trim()) {
       this.titleError = true; setTimeout(() => this.titleError = false, 1500); return;
     }
+
+    const payload = {
+      title: this.form.title.trim(),
+      description: this.form.description || undefined,
+      type: this.form.type,
+      task_date: this.form.date,
+      task_time: this.form.time || undefined
+    };
+
     if (this.editingTaskId !== null) {
-      const idx = this.allTasks.findIndex(t => t.id === this.editingTaskId);
-      if (idx >= 0) {
-        this.allTasks[idx] = { ...this.allTasks[idx], title: this.form.title.trim(), description: this.form.description || undefined, type: this.form.type, time: this.form.time || undefined, date: this.form.date };
-      }
+      this.itineraryService.updateTask(this.editingTaskId, payload).subscribe({
+        next: (res) => {
+          if (res.ok) {
+            const apiTask = res.task;
+            const idx = this.allTasks.findIndex(t => t.id === this.editingTaskId);
+            if (idx >= 0) {
+              this.allTasks[idx] = {
+                id: apiTask.id,
+                title: apiTask.title,
+                description: apiTask.description,
+                type: apiTask.type,
+                date: apiTask.task_date,
+                time: apiTask.task_time ? apiTask.task_time.substring(0,5) : undefined,
+                completed: apiTask.completed
+              };
+            }
+          }
+        },
+        error: (err) => console.error('Error updating task', err)
+      });
     } else {
-      this.allTasks.push({ id: this.nextId++, title: this.form.title.trim(), description: this.form.description || undefined, type: this.form.type, time: this.form.time || undefined, date: this.form.date, completed: false });
+      this.itineraryService.createTask(payload).subscribe({
+        next: (res) => {
+          if (res.ok) {
+            const apiTask = res.task;
+            this.allTasks.push({
+              id: apiTask.id,
+              title: apiTask.title,
+              description: apiTask.description,
+              type: apiTask.type,
+              date: apiTask.task_date,
+              time: apiTask.task_time ? apiTask.task_time.substring(0,5) : undefined,
+              completed: apiTask.completed
+            });
+          }
+        },
+        error: (err) => console.error('Error creating task', err)
+      });
     }
     this.closeModal();
   }
 
-  deleteTask(id: number) { this.allTasks = this.allTasks.filter(t => t.id !== id); this.contextMenuTaskId = null; }
-  toggleCompleted(task: Task) { task.completed = !task.completed; }
+  deleteTask(id: number) {
+    this.itineraryService.deleteTask(id).subscribe({
+      next: (res) => {
+        if (res.ok) {
+          this.allTasks = this.allTasks.filter(t => t.id !== id);
+          this.contextMenuTaskId = null;
+        }
+      },
+      error: (err) => console.error('Error deleting task', err)
+    });
+  }
+
+  toggleCompleted(task: Task) {
+    const originalState = task.completed;
+    task.completed = !task.completed; // Optimistic update
+    this.itineraryService.toggleTask(task.id).subscribe({
+      next: (res) => {
+        if (res.ok) {
+          task.completed = res.task.completed;
+        } else {
+          task.completed = originalState; // Revert on failure
+        }
+      },
+      error: (err) => {
+        console.error('Error toggling task', err);
+        task.completed = originalState;
+      }
+    });
+  }
   toggleContextMenu(id: number, e: Event) { e.stopPropagation(); this.contextMenuTaskId = this.contextMenuTaskId === id ? null : id; }
 
   onRootClick(_e: Event) { this.contextMenuTaskId = null; this.showCalendar = false; }
@@ -770,27 +846,32 @@ export class DashItineraryComponent implements OnInit, OnDestroy {
   @HostListener('document:keydown.escape')
   onEscape() { this.closeModal(); this.contextMenuTaskId = null; this.showCalendar = false; }
 
-  // ── Sample Data ──
-  private buildSampleTasks(): Task[] {
-    const offset = (n: number) => {
-      const d = new Date(); d.setDate(d.getDate() + n); return this.toDateKey(d);
-    };
-    const dow = new Date().getDay();
-    const toMon = dow === 0 ? -6 : 1 - dow;
-    return [
-      { id: 1, title: 'Despliegue de Landing Page "TechNova"', type: 'urgent', time: '09:00', date: offset(toMon),     completed: false },
-      { id: 2, title: 'Reunión de planificación sprint',       type: 'work',    time: '11:30', date: offset(toMon),     completed: false },
-      { id: 3, title: 'Gym — Pecho y Tríceps',                type: 'personal', time: '18:00', date: offset(toMon),     completed: false },
-      { id: 4, title: 'Desarrollo empresa "Soluciones XYZ"',  type: 'work',    time: '08:30', date: offset(toMon + 1), completed: false },
-      { id: 5, title: 'Revisión de diseño UI/UX',             type: 'work',    time: '14:00', date: offset(toMon + 1), completed: false },
-      { id: 6, title: 'Gym — Espalda y Bíceps',               type: 'personal', time: '18:00', date: offset(toMon + 2), completed: true  },
-      { id: 7, title: 'Llamada con cliente (Propuesta)',       type: 'urgent',  time: '09:30', date: offset(toMon + 3), completed: false },
-      { id: 8, title: 'Desarrollo de API Backend',            type: 'work',    time: '13:00', date: offset(toMon + 3), completed: false },
-      { id: 9, title: 'Testeo y fixes de bugs',               type: 'work',    time: '09:00', date: offset(toMon + 4), completed: false },
-      { id: 10, title: 'Gym — Pierna',                        type: 'personal', time: '17:00', date: offset(toMon + 4), completed: false },
-      { id: 11, title: 'Planificar la próxima semana',        type: 'work',    time: '19:00', date: offset(toMon + 6), completed: false },
-      { id: 12, title: 'Despliegue App "Cliente Nuevo"',      type: 'urgent',  time: '10:00', date: offset(toMon + 7), completed: false },
-      { id: 13, title: 'Gym — Cardio',                        type: 'personal', time: '07:00', date: offset(toMon + 8), completed: false },
-    ];
+  // ── API Loading ──
+  private loadWeekTasks() {
+    this.isLoading = true;
+    const weekStart = this.toDateKey(this.getWeekStart());
+    
+    this.itineraryService.getWeek(weekStart).subscribe({
+      next: (res) => {
+        if (res.ok) {
+          this.allTasks = res.tasks.map((apiTask: ApiTask) => ({
+            id: apiTask.id,
+            title: apiTask.title,
+            description: apiTask.description,
+            type: apiTask.type,
+            date: apiTask.task_date,
+            time: apiTask.task_time ? apiTask.task_time.substring(0,5) : undefined, // Convert HH:MM:SS to HH:MM
+            completed: apiTask.completed
+          }));
+        }
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading week tasks', err);
+        this.isLoading = false;
+        // Fallback to empty state on error so it doesn't break the UI
+        this.allTasks = [];
+      }
+    });
   }
 }
