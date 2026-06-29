@@ -48,7 +48,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
               <div class="absolute inset-0 flex flex-col justify-end p-5 sm:p-12 lg:p-14 text-left transition-all duration-700 content-details">
                 
                  <!-- Tag / Category -->
-                <span class="text-[10px] sm:text-[11px] uppercase tracking-[0.4em] font-bold block mb-2 sm:mb-4 text-white/40">
+                <span class="text-[10px] sm:text-[11px] uppercase tracking-[0.4em] font-bold block mb-2 sm:mb-4" style="color: rgba(255, 255, 255, 0.6);">
                   {{ getTranslation().defaultTag }}
                 </span>
 
@@ -67,7 +67,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
                   </a>
 
                   <!-- Meta/Tech stack & short description -->
-                  <p class="text-white/70 text-xs md:text-sm font-medium leading-relaxed max-w-md sm:max-w-2xl hidden sm:block">
+                  <p class="text-xs md:text-sm font-medium leading-relaxed max-w-md sm:max-w-2xl hidden sm:block" style="color: rgba(255, 255, 255, 0.85);">
                     {{ getProjectDescription(project) }}
                   </p>
                 </div>
