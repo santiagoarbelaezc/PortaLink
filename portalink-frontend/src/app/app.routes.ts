@@ -5,9 +5,15 @@ import { RotbotComponent } from './pages/rotbot/rotbot.component';
 import { PersonalizarComponent } from './pages/personalizar/personalizar.component';
 import { AdminComponent } from './pages/admin/admin.component';
 import { LoginComponent } from './pages/login/login.component';
+import { ProposalComponent } from './pages/proposal/proposal.component';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
+  {
+    path: 'proposal',
+    component: ProposalComponent,
+    data: { animation: 'ProposalPage' }
+  },
   { 
     path: '', 
     component: ProyectosComponent, 
