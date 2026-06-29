@@ -7,11 +7,12 @@ import { AnalyticsService } from '../../services/analytics.service';
 import { ChatLimitModalComponent } from '../../components/chat-limit-modal/chat-limit-modal.component';
 import { AiInfoModalComponent } from '../../components/ai-info-modal/ai-info-modal.component';
 import { RestaurantPosComponent } from '../../components/rotbot-designs/restaurant-pos/restaurant-pos.component';
+import { MarkdownPipe } from '../../pipes/markdown-pipe';
 
 @Component({
   selector: 'app-rotbot-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ChatLimitModalComponent, AiInfoModalComponent, RestaurantPosComponent],
+  imports: [CommonModule, FormsModule, RouterModule, ChatLimitModalComponent, AiInfoModalComponent, RestaurantPosComponent, MarkdownPipe],
   template: `
     <app-chat-limit-modal></app-chat-limit-modal>
     <app-ai-info-modal [isOpen]="isInfoModalOpen" (closeEvent)="isInfoModalOpen = false"></app-ai-info-modal>
@@ -135,7 +136,7 @@ import { RestaurantPosComponent } from '../../components/rotbot-designs/restaura
  
         <!-- Messages + Input Container (Centro o Izquierda en modo diseño) -->
         <div class="flex flex-col h-full overflow-hidden transition-all duration-500 relative"
-             [ngClass]="activeDesign ? 'w-full lg:w-1/2 flex-shrink-0 border-r border-white/5' : 'flex-grow'">
+             [ngClass]="activeDesign ? 'w-full lg:w-[65%] flex-shrink-0 border-r border-white/5' : 'flex-grow'">
           <!-- Messages Area -->
           <div #scrollContainer class="flex-grow overflow-y-auto scroll-smooth custom-scrollbar messages-area space-y-6" style="overscroll-behavior: contain;">
             
@@ -169,7 +170,7 @@ import { RestaurantPosComponent } from '../../components/rotbot-designs/restaura
                   'user-bubble px-4 py-3 rounded-2xl rounded-tr-sm text-[15px] leading-relaxed max-w-[85%] border shadow-sm': msg.role === 'user'
                 }"
               >
-                {{ msg.content }}
+                <span [innerHTML]="msg.content | markdown"></span>
               </div>
             </div>
  
@@ -248,9 +249,21 @@ import { RestaurantPosComponent } from '../../components/rotbot-designs/restaura
           </button>
         </div>
 
-        <!-- Componente Interactivo Dinámico (Diseños) -->
-        <div *ngIf="activeDesign" class="hidden lg:flex flex-col lg:w-1/2 flex-grow h-full overflow-hidden relative animate-fade-in z-10">
-          <app-restaurant-pos *ngIf="activeDesign === 'restaurant-pos'"></app-restaurant-pos>
+        <!-- Componente Interactivo Dinámico (Diseños en Formato Móvil) -->
+        <div *ngIf="activeDesign" class="hidden lg:flex flex-col flex-grow h-full overflow-hidden relative animate-fade-in z-10 items-center justify-center bg-[var(--bg-primary)]/50 p-6">
+          
+          <!-- Botón Cerrar Diseño -->
+          <button (click)="activeDesign = null" class="absolute top-6 right-6 w-10 h-10 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 border border-white/10 transition-colors z-20 text-neutral-400 hover:text-white">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+
+          <!-- Mobile Phone Frame -->
+          <div class="w-[330px] h-[715px] bg-white rounded-[2.5rem] border-[12px] border-[#1a1a1a] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.8)] relative overflow-hidden flex flex-col transform origin-center transition-transform hover:scale-[1.02] duration-500 ring-1 ring-white/10">
+            <!-- Dynamic Island / Notch Mock -->
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-5 bg-[#1a1a1a] rounded-b-2xl z-50"></div>
+            
+            <app-restaurant-pos *ngIf="activeDesign === 'restaurant-pos'" class="w-full h-full"></app-restaurant-pos>
+          </div>
         </div>
       </div>
     </div>
