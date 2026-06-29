@@ -181,6 +181,7 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
   currentIndex = 0;
   currentLanguage = 'es';
   private lastWheelTime = 0;
+  private accumulatedDeltaX = 0;
   private wheelListener = (e: WheelEvent) => this.onWheel(e);
 
   @ViewChild('carouselContainer', { static: false }) containerRef?: ElementRef;
@@ -359,18 +360,28 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
     const absX = Math.abs(deltaX);
     const absY = Math.abs(event.deltaY);
     
-    // Only react to horizontal scrolling gestures (vertical scroll is ignored completely)
-    if (absX > 5 && absX > absY) {
+    // Reaccionar solo a gestos puramente horizontales
+    if (absX > absY && absX > 2) {
       event.preventDefault();
       
       const now = Date.now();
-      if (now - this.lastWheelTime > 500) { // Cooldown to slide cleanly
-        this.lastWheelTime = now;
-        if (deltaX > 0) {
+      // Si ha pasado mucho tiempo desde el último scroll, reiniciar el acumulador
+      if (now - this.lastWheelTime > 400) { 
+        this.accumulatedDeltaX = 0;
+      }
+      this.lastWheelTime = now;
+      
+      this.accumulatedDeltaX += deltaX;
+      
+      // Umbral para avanzar de tarjeta (ajustado para trackpads y ratones)
+      if (Math.abs(this.accumulatedDeltaX) > 80) {
+        if (this.accumulatedDeltaX > 0) {
           this.next();
         } else {
           this.prev();
         }
+        // Reseteamos el acumulador después de mover
+        this.accumulatedDeltaX = 0;
       }
     }
   }
