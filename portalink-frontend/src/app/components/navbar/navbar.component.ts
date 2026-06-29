@@ -457,14 +457,21 @@ import { AnalyticsService } from '../../services/analytics.service';
     }
 
     /* Autofill Overrides para que el navegador no ponga los inputs blancos */
-    input:-webkit-autofill,
-    input:-webkit-autofill:hover, 
-    input:-webkit-autofill:focus, 
-    input:-webkit-autofill:active{
-      -webkit-box-shadow: 0 0 0 30px var(--bg-secondary) inset !important;
+    :host ::ng-deep input:-webkit-autofill,
+    :host ::ng-deep input:-webkit-autofill:hover, 
+    :host ::ng-deep input:-webkit-autofill:focus, 
+    :host ::ng-deep input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 30px #0a0a0a inset !important;
       -webkit-text-fill-color: var(--text-primary) !important;
+      background-color: #0a0a0a !important;
       transition: background-color 5000s ease-in-out 0s;
       caret-color: var(--text-primary) !important;
+    }
+    
+    :host ::ng-deep input[type="email"],
+    :host ::ng-deep input[type="password"],
+    :host ::ng-deep input[type="text"] {
+      color: var(--text-primary) !important;
     }
   `]
 })

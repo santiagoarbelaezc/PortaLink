@@ -99,7 +99,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
       </div>
 
       <!-- Right Side (Forms) -->
-      <div class="flex flex-col justify-center px-6 sm:px-12 relative bg-[var(--bg-primary)] lg:col-span-4 h-full overflow-y-auto transition-all duration-500 pt-12 pb-32 lg:py-12">
+      <div class="flex flex-col justify-center px-6 sm:px-12 relative bg-[var(--bg-primary)] lg:col-span-4 h-full overflow-y-auto transition-all duration-500 pt-24 pb-32 lg:pt-[100px] lg:pb-12">
         <div class="w-full max-w-[450px] mx-auto lg:ml-auto lg:mr-0 mt-4 lg:mt-0">
 
           <!-- Section Title Group (Centered & Premium) -->
@@ -379,14 +379,22 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
     .animate-slide-down { animation: slideDown 0.3s cubic-bezier(0.16,1,0.3,1) forwards; }
     
     /* Autofill and Caret Overrides */
-    input:-webkit-autofill,
-    input:-webkit-autofill:hover, 
-    input:-webkit-autofill:focus,
-    input:-webkit-autofill:active {
+    :host ::ng-deep input:-webkit-autofill,
+    :host ::ng-deep input:-webkit-autofill:hover, 
+    :host ::ng-deep input:-webkit-autofill:focus,
+    :host ::ng-deep input:-webkit-autofill:active {
       -webkit-text-fill-color: var(--text-primary) !important;
-      -webkit-box-shadow: 0 0 0px 1000px var(--bg-secondary) inset !important;
+      -webkit-box-shadow: 0 0 0px 1000px #0a0a0a inset !important;
+      background-color: #0a0a0a !important;
       transition: background-color 5000s ease-in-out 0s;
       caret-color: var(--text-primary) !important;
+    }
+    
+    /* Anti-extension overrides */
+    :host ::ng-deep input[type="email"],
+    :host ::ng-deep input[type="password"],
+    :host ::ng-deep input[type="text"] {
+      color: var(--text-primary) !important;
     }
   `]
 })
