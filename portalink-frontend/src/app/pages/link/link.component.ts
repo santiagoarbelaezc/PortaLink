@@ -22,7 +22,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
           <aside class="lt-col-photo">
             <div class="lt-portrait-wrapper">
               <div class="lt-image-container">
-                <img [src]="getProfileAvatar()" alt="Profile Avatar" class="lt-main-img lt-bg-blur" />
+                <img [src]="getProfileAvatar()" alt="Profile Avatar" class="lt-main-img" />
                 <div class="lt-corner-tr"></div>
                 <div class="lt-corner-bl"></div>
                 <div class="lt-profile-overlay">
@@ -392,7 +392,7 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   getProfileLogo() {
-    return 'assets/icons/mi-logo-dark.png';
+    return this.currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png';
   }
 
   getProfileTitle() {
