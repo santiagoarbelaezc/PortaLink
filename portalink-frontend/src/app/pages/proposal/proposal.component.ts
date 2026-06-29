@@ -55,7 +55,8 @@ import { PortfolioConfigService } from '../../services/portfolio-config.service'
       </div>
 
       <!-- Right Side (Links) -->
-      <div class="flex flex-col justify-start px-6 sm:px-12 relative bg-[#111] lg:col-span-4 h-full overflow-y-auto transition-all duration-500 pb-32 lg:pb-12 border-l border-neutral-800">
+      <div class="flex flex-col justify-start px-6 sm:px-12 relative bg-[#0a0a0a] lg:col-span-4 h-full overflow-y-auto transition-all duration-500 pb-32 lg:pb-12 border-l border-neutral-900/50"
+           style="--text-primary: #ffffff; --text-secondary: rgba(255, 255, 255, 0.6); --card-border: rgba(255, 255, 255, 0.1);">
         <div class="w-full max-w-[450px] mx-auto lg:ml-auto lg:mr-0 mt-[100px] lg:mt-[120px] animate-fade-in">
 
           <!-- Section Title Group -->
@@ -63,54 +64,85 @@ import { PortfolioConfigService } from '../../services/portfolio-config.service'
             <span class="text-[11px] md:text-[12px] font-bold text-[#00b4d8] uppercase tracking-[0.25em] mb-1.5">
               Conecta Conmigo
             </span>
-            <h3 class="text-2xl md:text-[26px] font-black uppercase leading-tight tracking-[-0.04em] text-white" style="font-family: 'Bebas Neue', var(--font-headline, sans-serif);">
+            <h3 class="text-2xl md:text-[26px] font-black uppercase leading-tight tracking-[-0.04em] text-[var(--text-primary)]" style="font-family: var(--font-headline, sans-serif);">
               Mis Enlaces
             </h3>
-            <p class="text-[12px] md:text-[13px] text-neutral-400 mt-1.5 font-medium max-w-[340px] leading-relaxed">
+            <p class="text-[12px] md:text-[13px] text-[var(--text-secondary)] mt-1.5 font-medium max-w-[340px] leading-relaxed">
               Elige tu canal preferido para empezar tu proyecto.
             </p>
           </div>
 
-          <!-- Links Grid (Adoptado de LinkComponent) -->
+          <!-- Links Grid (Fijos) -->
           <div class="flex flex-col gap-4">
-            <a *ngFor="let link of getLinks()" [href]="link.url" target="_blank"
-               class="group bg-[#1a1a1a] hover:bg-[#222] border border-neutral-800 hover:border-[#00b4d8]/50 rounded-2xl p-4 transition-all duration-300 flex items-center justify-between">
-              
+            
+            <!-- WhatsApp -->
+            <a href="https://wa.me/tunumber" target="_blank"
+               class="group bg-black/40 hover:bg-[#111] border border-[var(--card-border)] hover:border-[#25D366]/50 rounded-2xl p-4 transition-all duration-300 flex items-center justify-between shadow-sm">
               <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-black border border-neutral-800 flex items-center justify-center text-neutral-400 group-hover:text-[#00b4d8] group-hover:border-[#00b4d8]/30 transition-all">
-                  <!-- SVG Icons by Type -->
-                  <svg *ngIf="link.icon === 'tiktok'" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
-                  </svg>
-                  <svg *ngIf="link.icon === 'instagram'" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                  </svg>
-                  <svg *ngIf="link.icon === 'whatsapp'" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-                  </svg>
-                  <svg *ngIf="link.icon === 'linkedin'" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-                    <rect x="2" y="9" width="4" height="12"></rect>
-                    <circle cx="4" cy="4" r="2"></circle>
-                  </svg>
-                  <svg *ngIf="link.icon !== 'tiktok' && link.icon !== 'instagram' && link.icon !== 'whatsapp' && link.icon !== 'linkedin'" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                  </svg>
+                <div class="w-12 h-12 rounded-xl bg-black border border-[var(--card-border)] flex items-center justify-center text-neutral-500 group-hover:text-[#25D366] group-hover:border-[#25D366]/30 transition-all shadow-inner">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
                 </div>
                 <div>
-                  <h4 class="text-sm font-bold uppercase tracking-wider text-white group-hover:text-[#00b4d8] transition-colors" style="font-family: 'Bebas Neue', var(--font-headline, sans-serif);">{{ link.title }}</h4>
-                  <p class="text-[9px] uppercase tracking-widest text-neutral-500 mt-0.5">{{ link.subtitle }}</p>
+                  <h4 class="text-[11px] font-bold uppercase tracking-widest text-[var(--text-primary)] group-hover:text-[#25D366] transition-colors">WhatsApp</h4>
+                  <p class="text-[10px] text-[var(--text-secondary)] mt-1 font-medium">Atención Inmediata</p>
                 </div>
               </div>
-              
-              <div class="text-neutral-700 group-hover:text-[#00b4d8] group-hover:translate-x-1 transition-all">
+              <div class="text-neutral-600 group-hover:text-[#25D366] group-hover:translate-x-1.5 transition-all">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
               </div>
-
             </a>
+
+            <!-- Gmail -->
+            <a href="mailto:correo@gmail.com" target="_blank"
+               class="group bg-black/40 hover:bg-[#111] border border-[var(--card-border)] hover:border-[#EA4335]/50 rounded-2xl p-4 transition-all duration-300 flex items-center justify-between shadow-sm">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-black border border-[var(--card-border)] flex items-center justify-center text-neutral-500 group-hover:text-[#EA4335] group-hover:border-[#EA4335]/30 transition-all shadow-inner">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                </div>
+                <div>
+                  <h4 class="text-[11px] font-bold uppercase tracking-widest text-[var(--text-primary)] group-hover:text-[#EA4335] transition-colors">Gmail</h4>
+                  <p class="text-[10px] text-[var(--text-secondary)] mt-1 font-medium">Escríbeme por correo</p>
+                </div>
+              </div>
+              <div class="text-neutral-600 group-hover:text-[#EA4335] group-hover:translate-x-1.5 transition-all">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+              </div>
+            </a>
+
+            <!-- LinkedIn -->
+            <a href="https://linkedin.com/in/tuperfil" target="_blank"
+               class="group bg-black/40 hover:bg-[#111] border border-[var(--card-border)] hover:border-[#0A66C2]/50 rounded-2xl p-4 transition-all duration-300 flex items-center justify-between shadow-sm">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-black border border-[var(--card-border)] flex items-center justify-center text-neutral-500 group-hover:text-[#0A66C2] group-hover:border-[#0A66C2]/30 transition-all shadow-inner">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                </div>
+                <div>
+                  <h4 class="text-[11px] font-bold uppercase tracking-widest text-[var(--text-primary)] group-hover:text-[#0A66C2] transition-colors">LinkedIn</h4>
+                  <p class="text-[10px] text-[var(--text-secondary)] mt-1 font-medium">Conectemos profesionalmente</p>
+                </div>
+              </div>
+              <div class="text-neutral-600 group-hover:text-[#0A66C2] group-hover:translate-x-1.5 transition-all">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+              </div>
+            </a>
+
+            <!-- Instagram -->
+            <a href="https://instagram.com/tuperfil" target="_blank"
+               class="group bg-black/40 hover:bg-[#111] border border-[var(--card-border)] hover:border-[#E1306C]/50 rounded-2xl p-4 transition-all duration-300 flex items-center justify-between shadow-sm">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-black border border-[var(--card-border)] flex items-center justify-center text-neutral-500 group-hover:text-[#E1306C] group-hover:border-[#E1306C]/30 transition-all shadow-inner">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                </div>
+                <div>
+                  <h4 class="text-[11px] font-bold uppercase tracking-widest text-[var(--text-primary)] group-hover:text-[#E1306C] transition-colors">Instagram</h4>
+                  <p class="text-[10px] text-[var(--text-secondary)] mt-1 font-medium">Mira mi trabajo</p>
+                </div>
+              </div>
+              <div class="text-neutral-600 group-hover:text-[#E1306C] group-hover:translate-x-1.5 transition-all">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+              </div>
+            </a>
+
           </div>
 
         </div>
@@ -127,9 +159,4 @@ import { PortfolioConfigService } from '../../services/portfolio-config.service'
   `]
 })
 export class ProposalComponent {
-  configService = inject(PortfolioConfigService);
-
-  getLinks() {
-    return this.configService.data()?.links || [];
-  }
 }

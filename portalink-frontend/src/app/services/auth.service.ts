@@ -29,27 +29,15 @@ export class AuthService {
   constructor() {}
 
   login(payload: any): Observable<LoginResponse> {
-    const mockResponse: LoginResponse = {
-      token: 'mock-jwt-token-xyz',
-      usuario: {
-        nombre: payload.email ? payload.email.split('@')[0] : 'Usuario',
-        rol: (payload.email && payload.email.includes('admin')) ? 'admin' : 'user'
-      }
-    };
-    this.setSession(mockResponse.token, mockResponse.usuario);
-    return of(mockResponse);
+    return this.http.post<LoginResponse>(`${environment.apiUrl}/auth/login`, payload).pipe(
+      tap(res => this.setSession(res.token, res.usuario))
+    );
   }
 
   register(payload: any): Observable<LoginResponse> {
-    const mockResponse: LoginResponse = {
-      token: 'mock-jwt-token-xyz',
-      usuario: {
-        nombre: payload.nombre || 'Nuevo Usuario',
-        rol: (payload.email && payload.email.includes('admin')) ? 'admin' : 'user'
-      }
-    };
-    this.setSession(mockResponse.token, mockResponse.usuario);
-    return of(mockResponse);
+    return this.http.post<LoginResponse>(`${environment.apiUrl}/auth/register`, payload).pipe(
+      tap(res => this.setSession(res.token, res.usuario))
+    );
   }
 
   getCaptcha(): Observable<{ id: string; svg: string }> {
