@@ -8,15 +8,8 @@
 }
 
 .lt-wrapper {
-  /* Forzar paleta oscura premium para este componente (ignorando el tema claro) */
-  --bg-primary: #030303;
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.5);
-  --card-bg: rgba(255, 255, 255, 0.02);
-  --card-border: rgba(255, 255, 255, 0.08);
-
   min-height: 100vh;
-  background: var(--bg-primary) !important;
+  background: var(--bg-primary);
   display: flex;
   justify-content: center;
   align-items: center;
