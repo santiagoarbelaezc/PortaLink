@@ -65,26 +65,22 @@ import { AnalyticsService } from '../../services/analytics.service';
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
               </ng-container>
-              <ng-container *ngIf="item.icon === 'link'">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              <ng-container *ngIf="item.icon === 'chat'">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
               </ng-container>
               <ng-container *ngIf="item.icon === 'grid'">
                 <rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect>
                 <rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect>
               </ng-container>
-              <ng-container *ngIf="item.icon === 'user'">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
+              <ng-container *ngIf="item.icon === 'planes'">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 17 12 22 22 17"></polyline>
+                <polyline points="2 12 12 17 22 12"></polyline>
               </ng-container>
               <ng-container *ngIf="item.icon === 'layers'">
                 <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
                 <polyline points="2 17 12 22 22 17"></polyline>
                 <polyline points="2 12 12 17 22 12"></polyline>
-              </ng-container>
-              <ng-container *ngIf="item.icon === 'edit'">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
               </ng-container>
             </svg>
             <span>{{ item.name }}</span>
@@ -473,20 +469,18 @@ export class NavbarComponent implements OnInit {
 
   navItemsTranslations: any = {
     es: [
-      { name: 'Inicio',      link: '#hero',        icon: 'home'   },
-      { name: 'Links',       link: '/links',       icon: 'link'   },
-      { name: 'Proyectos',   link: '#portfolio',   icon: 'grid'   },
-      { name: 'Perfil',      link: '#about',       icon: 'user'   },
-      { name: 'Servicios',   link: '#skills',      icon: 'layers' },
-      { name: 'Planes',      link: '/personalizar', icon: 'edit'   }
+      { name: 'Inicio',         link: '#hero',         icon: 'home'   },
+      { name: 'RotBot',         link: '/rotbot',       icon: 'chat'   },
+      { name: 'Proyectos',      link: '#portfolio',    icon: 'grid'   },
+      { name: 'Planes',         link: '/personalizar', icon: 'planes' },
+      { name: 'Crear tu sitio', link: '#contact',      icon: 'layers' }
     ],
     en: [
-      { name: 'Home',        link: '#hero',        icon: 'home'   },
-      { name: 'Links',       link: '/links',       icon: 'link'   },
-      { name: 'Projects',    link: '#portfolio',   icon: 'grid'   },
-      { name: 'Profile',     link: '#about',       icon: 'user'   },
-      { name: 'Services',    link: '#skills',      icon: 'layers' },
-      { name: 'Plans',       link: '/personalizar', icon: 'edit'   }
+      { name: 'Home',           link: '#hero',         icon: 'home'   },
+      { name: 'RotBot',         link: '/rotbot',       icon: 'chat'   },
+      { name: 'Projects',       link: '#portfolio',    icon: 'grid'   },
+      { name: 'Plans',          link: '/personalizar', icon: 'planes' },
+      { name: 'Create site',    link: '#contact',      icon: 'layers' }
     ]
   };
 
