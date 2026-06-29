@@ -200,8 +200,6 @@ import { ItineraryService } from '../../../services/itinerary.service';
 
       </div>
 
-      </div>
-
       <!-- ═══════════════════════ NOTIFICACIONES ITINERARIO ═══════════════════════ -->
       <div *ngIf="itineraryNotifs.current.length || itineraryNotifs.upcoming.length || itineraryNotifs.overdue.length || itineraryNotifs.no_time.length"
            class="rounded-2xl border p-6 transition-all duration-300"

@@ -404,6 +404,16 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
             <div>
               <label class="block text-[10px] font-bold uppercase tracking-widest mb-2"
                      [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Fecha *</label>
+              <!-- Quick Dates Pills -->
+              <div class="flex gap-2 mb-3 flex-wrap">
+                <button *ngFor="let qd of quickDates" type="button" (click)="form.date = qd.dateKey"
+                        class="px-3 py-1.5 rounded-lg border text-[10px] font-bold uppercase tracking-widest transition-all"
+                        [ngClass]="form.date === qd.dateKey
+                          ? (isDark ? 'bg-white text-black border-white' : 'bg-neutral-900 text-white border-neutral-900')
+                          : (isDark ? 'border-neutral-800 text-neutral-450 bg-neutral-900 hover:border-neutral-600' : 'border-neutral-200 text-neutral-550 bg-neutral-50 hover:border-neutral-300')">
+                  {{ qd.label }} <span class="opacity-60">({{ qd.display }})</span>
+                </button>
+              </div>
               <input type="date" [(ngModel)]="form.date"
                      [min]="minDate" [max]="maxDate"
                      class="w-full rounded-xl border px-4 py-3 text-sm font-medium focus:outline-none transition-all"
@@ -412,8 +422,24 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
 
             <!-- Time -->
             <div>
-              <label class="block text-[10px] font-bold uppercase tracking-widest mb-2"
-                     [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Hora (opcional)</label>
+              <div class="flex justify-between items-center mb-2">
+                <label class="text-[10px] font-bold uppercase tracking-widest"
+                       [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Hora (opcional)</label>
+                <button *ngIf="form.time" type="button" (click)="form.time = ''"
+                        class="text-[9px] font-bold uppercase tracking-widest text-red-400 hover:underline">
+                  Quitar hora
+                </button>
+              </div>
+              <!-- Quick Hours Pills -->
+              <div class="flex gap-1.5 mb-3 overflow-x-auto pb-1.5 scrollbar-thin">
+                <button *ngFor="let qh of quickHours" type="button" (click)="form.time = qh"
+                        class="px-2.5 py-1 rounded-lg border text-[10px] font-bold tracking-wide transition-all shrink-0"
+                        [ngClass]="form.time === qh
+                          ? (isDark ? 'bg-white text-black border-white' : 'bg-neutral-900 text-white border-neutral-900')
+                          : (isDark ? 'border-neutral-800 text-neutral-455 bg-neutral-900 hover:border-neutral-600' : 'border-neutral-200 text-neutral-555 bg-neutral-50 hover:border-neutral-300')">
+                  {{ qh }}
+                </button>
+              </div>
               <input type="time" [(ngModel)]="form.time"
                      class="w-full rounded-xl border px-4 py-3 text-sm font-medium focus:outline-none transition-all"
                      [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-100 focus:border-neutral-500 [color-scheme:dark]' : 'bg-neutral-50 border-neutral-200 text-neutral-800 focus:border-neutral-400'">
@@ -568,6 +594,25 @@ export class DashItineraryComponent implements OnInit, OnDestroy {
     const pad = (n: number) => n.toString().padStart(2, '0');
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   }
+
+  get quickDates() {
+    const today = new Date();
+    const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+    const nextMonday = new Date(today);
+    const dow = today.getDay();
+    const daysToMonday = dow === 0 ? 1 : 8 - dow;
+    nextMonday.setDate(today.getDate() + daysToMonday);
+
+    const formatQuick = (d: Date) => `${d.getDate()}/${d.getMonth() + 1}`;
+    
+    return [
+      { label: 'Hoy', dateKey: this.toDateKey(today), display: formatQuick(today) },
+      { label: 'Mañ.', dateKey: this.toDateKey(tomorrow), display: formatQuick(tomorrow) },
+      { label: 'Próx. Lun', dateKey: this.toDateKey(nextMonday), display: formatQuick(nextMonday) }
+    ];
+  }
+
+  quickHours = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
 
   get todayKey(): string { return this.toDateKey(new Date()); }
   get minDate(): string { return this.todayKey; }
