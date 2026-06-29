@@ -366,15 +366,15 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
       
       const now = Date.now();
       // Si ha pasado mucho tiempo desde el último scroll, reiniciar el acumulador
-      if (now - this.lastWheelTime > 400) { 
+      if (now - this.lastWheelTime > 300) { 
         this.accumulatedDeltaX = 0;
       }
       this.lastWheelTime = now;
       
       this.accumulatedDeltaX += deltaX;
       
-      // Umbral para avanzar de tarjeta (ajustado para trackpads y ratones)
-      if (Math.abs(this.accumulatedDeltaX) > 80) {
+      // Umbral intermedio (130px)
+      if (Math.abs(this.accumulatedDeltaX) > 130) {
         if (this.accumulatedDeltaX > 0) {
           this.next();
         } else {
