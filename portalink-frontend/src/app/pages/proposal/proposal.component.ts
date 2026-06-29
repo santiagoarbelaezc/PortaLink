@@ -130,6 +130,6 @@ export class ProposalComponent {
   configService = inject(PortfolioConfigService);
 
   getLinks() {
-    return this.configService.getConfig().links;
+    return this.configService.data()?.links || [];
   }
 }
