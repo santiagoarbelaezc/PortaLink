@@ -557,6 +557,13 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     if (!this.chatService.userInput.trim()) return;
     if (this.chatService.isTyping) return;
 
+    // Redirigir a la pantalla de propuesta si ya estamos interactuando con un diseño
+    if (this.activeDesign || this.isDesigning) {
+      this.chatService.userInput = '';
+      this.router.navigate(['/proposal']);
+      return;
+    }
+
     this.analyticsService.incrementMetric('rotbotMessagesSent');
     const userText = this.chatService.userInput.trim();
     this.chatService.userInput = '';
