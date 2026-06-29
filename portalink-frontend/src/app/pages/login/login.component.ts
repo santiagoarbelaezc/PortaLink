@@ -171,7 +171,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                              [(ngModel)]="email" name="email"
                              placeholder="usuario@example.com"
                              [disabled]="isLoading()"
-                             class="w-full bg-[var(--bg-secondary)]/60 border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-3 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
+                             class="w-full bg-[var(--bg-secondary)] border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-3 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
                     </div>
                   </div>
 
@@ -189,7 +189,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                              [(ngModel)]="password" name="password"
                              placeholder="••••••••••"
                              [disabled]="isLoading()"
-                             class="w-full bg-[var(--bg-secondary)]/60 border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-3 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
+                             class="w-full bg-[var(--bg-secondary)] border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-3 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
                     </div>
                   </div>
 
@@ -210,7 +210,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                              placeholder="Código"
                              [disabled]="isLoading()"
                              maxlength="5"
-                             class="flex-grow h-10 bg-[var(--bg-secondary)]/60 border border-[var(--card-border)] rounded-xl px-2 py-2 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50 text-center uppercase tracking-widest font-bold">
+                             class="flex-grow h-10 bg-[var(--bg-secondary)] border border-[var(--card-border)] rounded-xl px-2 py-2 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50 text-center uppercase tracking-widest font-bold">
                     </div>
                   </div>
 
@@ -241,7 +241,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                              [(ngModel)]="registerName" name="registerName"
                              placeholder="Tu nombre"
                              [disabled]="isLoading()"
-                             class="w-full bg-[var(--bg-secondary)]/60 border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
+                             class="w-full bg-[var(--bg-secondary)] border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
                     </div>
                   </div>
 
@@ -256,7 +256,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                              [(ngModel)]="registerEmail" name="registerEmail"
                              placeholder="usuario@example.com"
                              [disabled]="isLoading()"
-                             class="w-full bg-[var(--bg-secondary)]/60 border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
+                             class="w-full bg-[var(--bg-secondary)] border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
                     </div>
                   </div>
 
@@ -272,7 +272,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                                [(ngModel)]="registerPassword" name="registerPassword"
                                placeholder="••••••••"
                                [disabled]="isLoading()"
-                               class="w-full bg-[var(--bg-secondary)]/60 border border-[var(--card-border)] rounded-xl pl-9 pr-3 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
+                               class="w-full bg-[var(--bg-secondary)] border border-[var(--card-border)] rounded-xl pl-9 pr-3 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
                       </div>
                     </div>
                     <div class="space-y-1.5">
@@ -285,7 +285,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                                [(ngModel)]="registerConfirmPassword" name="registerConfirmPassword"
                                placeholder="••••••••"
                                [disabled]="isLoading()"
-                               class="w-full bg-[var(--bg-secondary)]/60 border border-[var(--card-border)] rounded-xl pl-9 pr-3 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
+                               class="w-full bg-[var(--bg-secondary)] border border-[var(--card-border)] rounded-xl pl-9 pr-3 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
                       </div>
                     </div>
                   </div>
