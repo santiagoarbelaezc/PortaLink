@@ -14,7 +14,34 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
     ],
     template: `
     <div class="lt-wrapper">
-      <div class="lt-container">
+      <!-- SKELETON LOADER FOR LINKS -->
+      <ng-container *ngIf="isLoading">
+        <div class="lt-container">
+          <main class="lt-main-grid animate-pulse w-full pt-16 md:pt-20 pb-20">
+            <!-- COLUMN 1: PORTRAIT SKELETON -->
+            <aside class="lt-col-photo flex items-center justify-center relative w-full h-[500px] md:h-[80vh] overflow-hidden" style="background-color: rgba(255,255,255,0.02); border-radius: 30px; border: 1px solid rgba(255,255,255,0.05);">
+               <div class="w-32 h-32 rounded-full opacity-10" style="background-color: var(--text-primary, #fff);"></div>
+            </aside>
+            <!-- COLUMN 2: INFO & LINKS SKELETON -->
+            <section class="lt-col-info flex flex-col justify-center">
+              <header class="lt-info-header mb-12">
+                <div class="h-16 w-3/4 rounded-xl opacity-20 mb-4" style="background-color: var(--text-primary, #fff);"></div>
+                <div class="h-16 w-1/2 rounded-xl opacity-20" style="background-color: var(--text-primary, #fff);"></div>
+                <div class="h-3 w-40 rounded-full opacity-10 mt-8" style="background-color: var(--text-primary, #fff);"></div>
+              </header>
+
+              <div class="lt-links-container flex flex-col gap-4">
+                <div class="h-28 w-full rounded-2xl opacity-10" style="background-color: var(--text-primary, #fff);"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                  <div *ngFor="let _ of [1,2,3,4]" class="h-32 w-full rounded-2xl opacity-10" style="background-color: var(--text-primary, #fff);"></div>
+                </div>
+              </div>
+            </section>
+          </main>
+        </div>
+      </ng-container>
+
+      <div class="lt-container animate-fade-in" *ngIf="!isLoading">
         
         <main class="lt-main-grid">
           
@@ -234,6 +261,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
     encapsulation: ViewEncapsulation.None
 })
 export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
+  isLoading = true;
   currentYear = new Date().getFullYear();
   deferredPrompt: any;
   showInstallModal = false;
@@ -358,6 +386,9 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   ngOnInit() {
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 800);
     this.initInstallSteps();
     if (isPlatformBrowser(this.platformId)) {
       this.checkPWAStatus();
