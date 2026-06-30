@@ -440,7 +440,7 @@ export class PdfReportService {
     // Invoice number on right
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
-    doc.text(invoice.id, 196, 14, { align: 'right' });
+    doc.text(String(invoice.id || ''), 196, 14, { align: 'right' });
 
     // Status badge
     const statusColor: Record<string, [number,number,number]> = {

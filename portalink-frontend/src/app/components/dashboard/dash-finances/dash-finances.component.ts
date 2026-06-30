@@ -155,7 +155,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                   <p class="text-xs font-bold uppercase tracking-widest truncate" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">{{ inv.clientName }}</p>
                 </div>
                 <div class="col-span-3 text-right">
-                  <span class="text-sm font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(inv.total) }}</span>
+                  <span class="text-sm font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(inv.total || 0) }}</span>
                 </div>
                 <div class="col-span-3 flex justify-end items-center gap-2">
                   <span class="text-xs" [ngClass]="inv.status === 'Pagada' ? 'text-emerald-500' : (inv.status === 'Enviada' ? 'text-blue-500' : 'text-amber-500')">
@@ -290,7 +290,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                         [ngClass]="isDark ? 'text-neutral-500 hover:text-white hover:bg-neutral-800' : 'text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100'">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                 </button>
-                <button (click)="deleteClient(c.id)" title="Eliminar" class="p-1.5 rounded-lg cursor-pointer transition-colors"
+                <button (click)="deleteClient(c.id!)" title="Eliminar" class="p-1.5 rounded-lg cursor-pointer transition-colors"
                         [ngClass]="isDark ? 'text-neutral-500 hover:text-red-400 hover:bg-red-900/20' : 'text-neutral-400 hover:text-red-600 hover:bg-red-50'">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                 </button>
@@ -376,7 +376,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                 <button (click)="editService(s)" class="p-1.5 rounded-lg cursor-pointer" [ngClass]="isDark ? 'text-neutral-500 hover:text-white hover:bg-neutral-800' : 'text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100'">
                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                 </button>
-                <button (click)="deleteService(s.id)" class="p-1.5 rounded-lg cursor-pointer" [ngClass]="isDark ? 'text-neutral-500 hover:text-red-400 hover:bg-red-900/20' : 'text-neutral-400 hover:text-red-600 hover:bg-red-50'">
+                <button (click)="deleteService(s.id!)" class="p-1.5 rounded-lg cursor-pointer" [ngClass]="isDark ? 'text-neutral-500 hover:text-red-400 hover:bg-red-900/20' : 'text-neutral-400 hover:text-red-600 hover:bg-red-50'">
                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                 </button>
               </div>
@@ -384,7 +384,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
             <div class="mt-auto pt-3 border-t flex items-center justify-between"
                  [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
               <span class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Precio base</span>
-              <span class="text-base font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(s.unitPrice) }}</span>
+              <span class="text-base font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(s.unitPrice || 0) }}</span>
             </div>
           </div>
         </div>
@@ -429,7 +429,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
               <select [(ngModel)]="serviceToAdd" class="flex-grow px-3 py-2.5 rounded-xl text-sm border outline-none cursor-pointer"
                       [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white' : 'bg-white border-neutral-300 text-neutral-900'">
                 <option value="">— Seleccionar servicio del catálogo —</option>
-                <option *ngFor="let s of allServices" [value]="s.id">{{ s.name }} ({{ formatCOP(s.unitPrice) }})</option>
+                <option *ngFor="let s of allServices" [value]="s.id">{{ s.name }} ({{ formatCOP(s.unitPrice || 0) }})</option>
               </select>
               <button (click)="addServiceToInvoice()" class="px-4 py-2.5 rounded-xl text-sm font-bold uppercase tracking-widest cursor-pointer shrink-0"
                       [ngClass]="isDark ? 'bg-neutral-700 text-white hover:bg-neutral-600' : 'bg-neutral-200 text-neutral-800 hover:bg-neutral-300'">
@@ -469,7 +469,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                        [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white' : 'bg-white border-neutral-300 text-neutral-900'">
               </div>
               <div class="col-span-2 text-right">
-                <span class="text-sm font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(item.subtotal) }}</span>
+                <span class="text-sm font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(item.subtotal || 0) }}</span>
               </div>
               <div class="col-span-1 flex justify-end">
                 <button (click)="removeInvoiceItem(i)" class="p-1 rounded cursor-pointer" [ngClass]="isDark ? 'text-neutral-600 hover:text-red-400' : 'text-neutral-400 hover:text-red-500'">
@@ -611,7 +611,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                 <p class="text-xs truncate" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ inv.clientCompany }}</p>
               </div>
               <div class="col-span-2 text-right">
-                <span class="text-sm font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(inv.total) }}</span>
+                <span class="text-sm font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(inv.total || 0) }}</span>
               </div>
               <div class="col-span-2 flex justify-center">
                 <select [(ngModel)]="inv.status" (change)="onStatusChange(inv)"
@@ -638,7 +638,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                         [ngClass]="isDark ? 'text-neutral-500 hover:text-white hover:bg-neutral-800' : 'text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100'">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                 </button>
-                <button (click)="deleteInvoice(inv.id)" title="Eliminar" class="p-1.5 rounded-lg cursor-pointer transition-colors"
+                <button (click)="deleteInvoice(inv.id || '')" title="Eliminar" class="p-1.5 rounded-lg cursor-pointer transition-colors"
                         [ngClass]="isDark ? 'text-neutral-500 hover:text-red-400 hover:bg-red-900/20' : 'text-neutral-400 hover:text-red-600 hover:bg-red-50'">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                 </button>
@@ -810,14 +810,14 @@ export class DashFinancesComponent implements OnInit {
       let match = true;
       if (this.invFilterCompany) {
          const term = this.invFilterCompany.toLowerCase();
-         if (!i.clientCompany?.toLowerCase().includes(term) && !i.clientName.toLowerCase().includes(term)) {
+         if (!i.clientCompany?.toLowerCase().includes(term) && !(i.clientName || '').toLowerCase().includes(term)) {
            match = false;
          }
       }
-      if (this.invFilterMinPrice !== null && i.total < this.invFilterMinPrice) match = false;
-      if (this.invFilterMaxPrice !== null && i.total > this.invFilterMaxPrice) match = false;
-      if (this.invFilterStartDate && i.issuedAt < this.invFilterStartDate) match = false;
-      if (this.invFilterEndDate && i.issuedAt > this.invFilterEndDate) match = false;
+      if (this.invFilterMinPrice !== null && (i.total || 0) < this.invFilterMinPrice) match = false;
+      if (this.invFilterMaxPrice !== null && (i.total || 0) > this.invFilterMaxPrice) match = false;
+      if (this.invFilterStartDate && (i.issuedAt || '') < this.invFilterStartDate) match = false;
+      if (this.invFilterEndDate && (i.issuedAt || '') > this.invFilterEndDate) match = false;
       return match;
     });
   }
@@ -903,7 +903,8 @@ export class DashFinancesComponent implements OnInit {
     }
   }
 
-  async toggleInvoice(id: string) {
+  async toggleInvoice(id?: string) {
+    if (!id) return;
     if (this.expandedInvoiceId === id) {
       this.expandedInvoiceId = null;
     } else {
@@ -925,7 +926,8 @@ export class DashFinancesComponent implements OnInit {
     }
   }
 
-  getClient(id: string) {
+  getClient(id?: string) {
+    if (!id) return undefined;
     return this.clients.find(c => c.id === id);
   }
   setKpiPeriod(period: 'all' | 'this_month' | 'last_month') {
@@ -998,7 +1000,7 @@ export class DashFinancesComponent implements OnInit {
 
     paidInvoices.forEach(inv => {
       const m = inv.paidAt!.substring(0, 7); // YYYY-MM
-      if (months[m] !== undefined) months[m] += inv.total;
+      if (months[m] !== undefined) months[m] += (inv.total || 0);
     });
 
     const maxIncome = Math.max(...Object.values(months), 1);
@@ -1016,8 +1018,8 @@ export class DashFinancesComponent implements OnInit {
     let totalPaid = 0;
     paidInvoices.forEach(inv => {
       totalPaid += inv.subtotal;
-      inv.items.forEach(item => {
-        srvMap[item.serviceName] = (srvMap[item.serviceName] || 0) + item.subtotal;
+      (inv.items || []).forEach(item => {
+        srvMap[item.serviceName || ''] = (srvMap[item.serviceName || ''] || 0) + (item.subtotal || 0);
       });
     });
 
@@ -1038,8 +1040,8 @@ export class DashFinancesComponent implements OnInit {
     this.invoices.forEach(inv => {
       if (statusMap[inv.status]) {
         statusMap[inv.status].count++;
-        statusMap[inv.status].amount += inv.total;
-        totalAll += inv.total;
+        statusMap[inv.status].amount += (inv.total || 0);
+        totalAll += (inv.total || 0);
       }
     });
 
@@ -1093,7 +1095,10 @@ export class DashFinancesComponent implements OnInit {
       }
     }
   }
-  getClientInvoiceCount(id: string) { return this.invoices.filter(i => i.clientId === id).length; }
+  getClientInvoiceCount(id?: string) {
+    if (!id) return 0;
+    return this.invoices.filter(i => i.clientId === id).length;
+  }
 
   // ─── SERVICES ──────────────────────────────
   openNewService() { this.editingService = { id: '', name: '', description: '', unitPrice: 0, category: 'desarrollo' }; this.showServiceForm = true; }
@@ -1124,7 +1129,7 @@ export class DashFinancesComponent implements OnInit {
   openNewInvoice() {
     const today = new Date().toISOString().split('T')[0];
     const due = new Date(Date.now() + 15 * 24 * 3600 * 1000).toISOString().split('T')[0];
-    this.editingInvoice = { id: this.financeService.getNextInvoiceId(), clientId: '', clientName: '', clientEmail: '', items: [], subtotal: 0, taxRate: 0, taxAmount: 0, total: 0, status: 'Borrador', notes: '', issuedAt: today, dueAt: due };
+    this.editingInvoice = { id: '', clientId: '', clientName: '', clientEmail: '', items: [], subtotal: 0, taxRate: 0, taxAmount: 0, total: 0, status: 'Borrador', notes: '', issuedAt: today, dueAt: due };
     this.selectedClientId = '';
     this.serviceToAdd = '';
     this.showInvoiceForm = true;
@@ -1137,7 +1142,7 @@ export class DashFinancesComponent implements OnInit {
     this.showInvoiceForm = true;
   }
   onClientSelect() {
-    const c = this.clients.find(cl => cl.id === this.selectedClientId);
+    const c = this.clients.find(cl => String(cl.id) === String(this.selectedClientId));
     if (c && this.editingInvoice) {
       this.editingInvoice.clientId = c.id;
       this.editingInvoice.clientName = c.name;
@@ -1147,9 +1152,9 @@ export class DashFinancesComponent implements OnInit {
   }
   addServiceToInvoice() {
     if (!this.serviceToAdd || !this.editingInvoice) return;
-    const svc = this.allServices.find(s => s.id === this.serviceToAdd);
+    const svc = this.allServices.find(s => String(s.id) === String(this.serviceToAdd));
     if (!svc) return;
-    const item: InvoiceItem = { service_id: svc.id, serviceName: svc.name, description: svc.description, quantity: 1, unitPrice: svc.unitPrice || 0, unit_price: svc.unitPrice || 0, subtotal: svc.unitPrice || 0, total_price: svc.unitPrice || 0 };
+    const item: InvoiceItem = { service_id: String(svc.id), serviceName: svc.name, description: svc.description, quantity: 1, unitPrice: svc.unitPrice || 0, unit_price: svc.unitPrice || 0, subtotal: svc.unitPrice || 0, total_price: svc.unitPrice || 0 };
     this.editingInvoice.items = [...(this.editingInvoice.items || []), item];
     this.serviceToAdd = '';
     this.recalcInvoice();
@@ -1196,7 +1201,36 @@ export class DashFinancesComponent implements OnInit {
 
   async downloadInvoicePdf(inv: Invoice) {
     this.pdfLoading = true;
-    try { await this.pdfService.downloadInvoicePdf(inv); } finally { this.pdfLoading = false; }
+    try {
+      const res = await firstValueFrom(this.financeService.getInvoiceDetails(inv.id!));
+      let fullInv = inv;
+      if (res?.invoice) {
+        const rawInv: any = res.invoice;
+        fullInv = {
+          ...inv,
+          notes: rawInv.notes || inv.notes,
+          clientName: rawInv.client_name || inv.clientName,
+          clientCompany: rawInv.company || inv.clientCompany,
+          clientEmail: rawInv.email || inv.clientEmail,
+          issuedAt: rawInv.issue_date ? rawInv.issue_date.split('T')[0] : inv.issuedAt,
+          dueAt: rawInv.due_date ? rawInv.due_date.split('T')[0] : inv.dueAt,
+          subtotal: Number(rawInv.subtotal),
+          total: Number(rawInv.total_amount),
+          items: (rawInv.items || []).map((it: any) => ({
+             ...it,
+             serviceName: it.description,
+             unitPrice: Number(it.unit_price),
+             subtotal: Number(it.total_price)
+          }))
+        };
+      }
+      await this.pdfService.downloadInvoicePdf(fullInv);
+    } catch (e) {
+      console.error(e);
+      alert('Error descargando PDF');
+    } finally { 
+      this.pdfLoading = false; 
+    }
   }
 
   async generatePreview() {
@@ -1231,7 +1265,8 @@ export class DashFinancesComponent implements OnInit {
     return map[status] || 'bg-neutral-500/20 text-neutral-400';
   }
 
-  getCategoryClass(cat: string) {
+  getCategoryClass(cat?: string) {
+    if (!cat) return 'bg-neutral-500/20 text-neutral-400';
     const map: Record<string, string> = {
       desarrollo: 'bg-blue-500/20 text-blue-400',
       diseño: 'bg-purple-500/20 text-purple-400',

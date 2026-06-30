@@ -13,6 +13,7 @@ export interface Client {
   address?: string;
   createdAt?: string; // Maps to created_at
   created_at?: string;
+  notes?: string;
 }
 
 export interface Service {
@@ -57,7 +58,7 @@ export interface Invoice {
   taxAmount?: number; // UI alias
   total_amount?: number;
   total?: number; // UI alias
-  notes: string;
+  notes?: string;
   items?: InvoiceItem[];
 }
 
@@ -138,7 +139,7 @@ export class FinanceService {
       due_date: invoice.dueAt,
       notes: invoice.notes,
       items: (invoice.items || []).map(i => ({
-        service_id: i.serviceId || i.service_id,
+        service_id: i.service_id,
         description: i.description || i.serviceName,
         quantity: i.quantity,
         unit_price: i.unitPrice || i.unit_price
