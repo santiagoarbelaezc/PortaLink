@@ -21,8 +21,14 @@ app.get('/', (req, res) => {
 
 // Importar rutas
 const authRoutes = require('./routes/auth.routes');
-
+const chatRoutes = require('./routes/chat.routes');
+const itineraryRoutes = require('./routes/itinerary.routes');
+const financeRoutes = require('./routes/finance.routes');
 // Usar rutas
 app.use('/api/auth', authRoutes);
+app.use('/api/chat', chatRoutes);
+app.use('/api/itinerary', itineraryRoutes);
+app.use('/api/finance', financeRoutes);
 
 module.exports = app;
+

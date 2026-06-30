@@ -473,7 +473,7 @@ export class PdfReportService {
     doc.setFontSize(9);
     doc.setTextColor(20, 20, 20);
     doc.text('Santiago Arbelaez Contreras', 14, y);
-    doc.text(invoice.clientName, 110, y);
+    doc.text(invoice.clientName || '', 110, y);
 
     y += 5;
     doc.setFont('helvetica', 'normal');
@@ -502,12 +502,12 @@ export class PdfReportService {
     doc.text('Detalle de Servicios', 14, y);
     y += 5;
 
-    const itemRows = invoice.items.map(item => [
-      item.serviceName,
+    const itemRows = (invoice.items || []).map(item => [
+      item.serviceName || '',
       item.description || '',
-      item.quantity.toString(),
-      fmtCOP(item.unitPrice),
-      fmtCOP(item.subtotal),
+      (item.quantity || 1).toString(),
+      fmtCOP(item.unitPrice || 0),
+      fmtCOP(item.subtotal || 0),
     ]);
 
     autoTable(doc, {
@@ -536,7 +536,7 @@ export class PdfReportService {
 
     // Background for totals
     doc.setFillColor(249, 250, 251);
-    doc.roundedRect(blockX - 5, y - 4, blockW + 10, invoice.taxRate > 0 ? 30 : 22, 3, 3, 'F');
+    doc.roundedRect(blockX - 5, y - 4, blockW + 10, (invoice.taxRate || 0) > 0 ? 30 : 22, 3, 3, 'F');
 
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
@@ -544,10 +544,10 @@ export class PdfReportService {
     doc.text('Subtotal:', blockX, y + 2);
     doc.text(fmtCOP(invoice.subtotal), blockX + blockW, y + 2, { align: 'right' });
 
-    if (invoice.taxRate > 0) {
+    if ((invoice.taxRate || 0) > 0) {
       y += 7;
       doc.text(`IVA (${invoice.taxRate}%):`, blockX, y + 2);
-      doc.text(fmtCOP(invoice.taxAmount), blockX + blockW, y + 2, { align: 'right' });
+      doc.text(fmtCOP(invoice.taxAmount || 0), blockX + blockW, y + 2, { align: 'right' });
     }
 
     y += 8;
@@ -560,7 +560,7 @@ export class PdfReportService {
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(10, 10, 10);
     doc.text('TOTAL:', blockX, y);
-    doc.text(fmtCOP(invoice.total), blockX + blockW, y, { align: 'right' });
+    doc.text(fmtCOP(invoice.total || 0), blockX + blockW, y, { align: 'right' });
 
     y += 10;
 

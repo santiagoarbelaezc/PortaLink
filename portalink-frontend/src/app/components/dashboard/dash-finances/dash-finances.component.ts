@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FinanceService, Client, Service, Invoice, InvoiceItem } from '../../../services/finance.service';
 import { PdfReportService } from '../../../services/pdf-report.service';
+import { firstValueFrom } from 'rxjs';
 
 type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
 
@@ -865,18 +866,63 @@ export class DashFinancesComponent implements OnInit {
     return this.allServices.filter(s => s.category === this.filterCategory);
   }
 
+  isLoading = false;
+
   ngOnInit() { this.refresh(); }
 
-  refresh() {
-    this.clients = this.financeService.getClients();
-    this.allServices = this.financeService.getServices();
-    this.invoices = this.financeService.getInvoices();
-    this.buildKpis();
-    this.buildReports();
+  async refresh() {
+    this.isLoading = true;
+    try {
+      const [clientsRes, servicesRes, invoicesRes] = await Promise.all([
+        firstValueFrom(this.financeService.getClients()),
+        firstValueFrom(this.financeService.getServices()),
+        firstValueFrom(this.financeService.getInvoices())
+      ]);
+
+      this.clients = clientsRes.clients.map((c: any) => ({ ...c, createdAt: c.created_at })) || [];
+      this.allServices = servicesRes.services.map((s: any) => ({ ...s, unitPrice: Number(s.price) })) || [];
+      this.invoices = invoicesRes.invoices.map((i: any) => ({
+        id: i.id,
+        clientId: i.client_id,
+        clientName: i.client_name,
+        total: Number(i.total_amount),
+        subtotal: Number(i.subtotal),
+        status: i.status === 'DRAFT' ? 'Borrador' : (i.status === 'ENVIADA' ? 'Enviada' : (i.status === 'PAGADA' ? 'Pagada' : 'Vencida')),
+        issuedAt: i.issue_date ? i.issue_date.split('T')[0] : '',
+        dueAt: i.due_date ? i.due_date.split('T')[0] : '',
+        paidAt: i.updated_at ? i.updated_at.split('T')[0] : '',
+        items: []
+      })) || [];
+
+      this.buildKpis();
+      this.buildReports();
+    } catch (e) {
+      console.error('Error fetching finance data:', e);
+    } finally {
+      this.isLoading = false;
+    }
   }
 
-  toggleInvoice(id: string) {
-    this.expandedInvoiceId = this.expandedInvoiceId === id ? null : id;
+  async toggleInvoice(id: string) {
+    if (this.expandedInvoiceId === id) {
+      this.expandedInvoiceId = null;
+    } else {
+      this.expandedInvoiceId = id;
+      try {
+        const res = await firstValueFrom(this.financeService.getInvoiceDetails(id));
+        const invIndex = this.invoices.findIndex(i => i.id === id);
+        if (invIndex >= 0 && res?.invoice) {
+           this.invoices[invIndex].items = res.invoice.items?.map((it: any) => ({
+             ...it,
+             serviceName: it.description, // fallback if no name joined
+             unitPrice: Number(it.unit_price),
+             subtotal: Number(it.total_price)
+           })) || [];
+        }
+      } catch (e) {
+        console.error('Error fetching invoice details:', e);
+      }
+    }
   }
 
   getClient(id: string) {
@@ -905,20 +951,35 @@ export class DashFinancesComponent implements OnInit {
     this.buildKpis();
   }
 
-  buildKpis() {
-    const filtered = this.displayedInvoices;
-    const total = filtered.reduce((a, b) => a + (b.total || 0), 0);
-    const paid = filtered.filter(i => i.status === 'Pagada').reduce((a, b) => a + (b.total || 0), 0);
-    const pending = total - paid;
-    const clientCount = new Set(filtered.map(i => i.clientId)).size;
+  async buildKpis() {
+    try {
+      const filters = {
+        search: this.invFilterCompany,
+        min_price: this.invFilterMinPrice,
+        max_price: this.invFilterMaxPrice,
+        date_from: this.invFilterStartDate,
+        date_to: this.invFilterEndDate
+      };
+      const dashboardRes = await firstValueFrom(this.financeService.getDashboard(filters));
+      const kpi = dashboardRes?.kpis || {};
+      
+      this.kpis = [
+        { label: 'Total Facturado', value: this.formatCOP(kpi.total_facturado || 0) },
+        { label: 'Pagado', value: this.formatCOP(kpi.total_pagado || 0), color: 'text-emerald-500' },
+        { label: 'Por Cobrar', value: this.formatCOP(kpi.total_por_cobrar || 0), color: 'text-amber-500' },
+        { label: 'Clientes Facturados', value: String(kpi.clientes_facturados || 0) },
+      ];
 
-    this.kpis = [
-      { label: 'Total Facturado', value: this.formatCOP(total) },
-      { label: 'Pagado', value: this.formatCOP(paid), color: 'text-emerald-500' },
-      { label: 'Por Cobrar', value: this.formatCOP(pending), color: 'text-amber-500' },
-      { label: 'Clientes Facturados', value: String(clientCount) },
-    ];
-    this.recentInvoices = filtered.slice(0, 5);
+      this.recentInvoices = (dashboardRes?.ledger || []).map((i: any) => ({
+        id: i.id,
+        clientId: i.client_id,
+        clientName: i.client_name,
+        total: Number(i.total_amount),
+        status: i.status === 'DRAFT' ? 'Borrador' : (i.status === 'ENVIADA' ? 'Enviada' : (i.status === 'PAGADA' ? 'Pagada' : 'Vencida'))
+      }));
+    } catch (e) {
+      console.error('Error building KPIs:', e);
+    }
   }
 
   buildReports() {
@@ -1011,30 +1072,52 @@ export class DashFinancesComponent implements OnInit {
   // ─── CLIENTS ───────────────────────────────
   openNewClient() { this.editingClient = { id: '', name: '', email: '', phone: '', company: '', notes: '', createdAt: new Date().toISOString().split('T')[0] }; this.showClientForm = true; }
   editClient(c: Client) { this.editingClient = { ...c }; this.showClientForm = true; }
-  saveClient() {
+  async saveClient() {
     if (!this.editingClient?.name || !this.editingClient?.email) return;
-    if (!this.editingClient.id) this.editingClient.id = this.financeService.newClientId();
-    this.financeService.saveClient(this.editingClient as Client);
-    this.showClientForm = false;
-    this.refresh();
+    try {
+      await firstValueFrom(this.financeService.saveClient(this.editingClient as Client));
+      this.showClientForm = false;
+      this.refresh();
+    } catch (e) {
+      console.error(e);
+      alert('Error al guardar cliente');
+    }
   }
-  deleteClient(id: string) {
-    if (confirm('¿Eliminar este cliente?')) { this.financeService.deleteClient(id); this.refresh(); }
+  async deleteClient(id: string) {
+    if (confirm('¿Eliminar este cliente?')) {
+      try {
+        await firstValueFrom(this.financeService.deleteClient(id));
+        this.refresh();
+      } catch (e) {
+        alert('Error al eliminar cliente. Puede tener facturas asociadas.');
+      }
+    }
   }
   getClientInvoiceCount(id: string) { return this.invoices.filter(i => i.clientId === id).length; }
 
   // ─── SERVICES ──────────────────────────────
   openNewService() { this.editingService = { id: '', name: '', description: '', unitPrice: 0, category: 'desarrollo' }; this.showServiceForm = true; }
   editService(s: Service) { this.editingService = { ...s }; this.showServiceForm = true; }
-  saveService() {
+  async saveService() {
     if (!this.editingService?.name) return;
-    if (!this.editingService.id) this.editingService.id = this.financeService.newServiceId();
-    this.financeService.saveService(this.editingService as Service);
-    this.showServiceForm = false;
-    this.refresh();
+    try {
+      await firstValueFrom(this.financeService.saveService(this.editingService as Service));
+      this.showServiceForm = false;
+      this.refresh();
+    } catch (e) {
+      console.error(e);
+      alert('Error al guardar servicio');
+    }
   }
-  deleteService(id: string) {
-    if (confirm('¿Eliminar este servicio?')) { this.financeService.deleteService(id); this.refresh(); }
+  async deleteService(id: string) {
+    if (confirm('¿Eliminar este servicio?')) {
+      try {
+        await firstValueFrom(this.financeService.deleteService(id));
+        this.refresh();
+      } catch (e) {
+        alert('Error al eliminar servicio');
+      }
+    }
   }
 
   // ─── INVOICES ──────────────────────────────
@@ -1048,8 +1131,8 @@ export class DashFinancesComponent implements OnInit {
     this.subTab = 'facturas';
   }
   editInvoice(inv: Invoice) {
-    this.editingInvoice = { ...inv, items: inv.items.map(i => ({ ...i })) };
-    this.selectedClientId = inv.clientId;
+    this.editingInvoice = { ...inv, items: (inv.items || []).map(i => ({ ...i })) };
+    this.selectedClientId = inv.clientId || '';
     this.serviceToAdd = '';
     this.showInvoiceForm = true;
   }
@@ -1066,7 +1149,7 @@ export class DashFinancesComponent implements OnInit {
     if (!this.serviceToAdd || !this.editingInvoice) return;
     const svc = this.allServices.find(s => s.id === this.serviceToAdd);
     if (!svc) return;
-    const item: InvoiceItem = { serviceId: svc.id, serviceName: svc.name, description: svc.description, quantity: 1, unitPrice: svc.unitPrice, subtotal: svc.unitPrice };
+    const item: InvoiceItem = { service_id: svc.id, serviceName: svc.name, description: svc.description, quantity: 1, unitPrice: svc.unitPrice || 0, unit_price: svc.unitPrice || 0, subtotal: svc.unitPrice || 0, total_price: svc.unitPrice || 0 };
     this.editingInvoice.items = [...(this.editingInvoice.items || []), item];
     this.serviceToAdd = '';
     this.recalcInvoice();
@@ -1078,28 +1161,37 @@ export class DashFinancesComponent implements OnInit {
   recalcInvoice() {
     if (!this.editingInvoice) return;
     const items = this.editingInvoice.items || [];
-    items.forEach(it => it.subtotal = it.quantity * it.unitPrice);
-    const subtotal = items.reduce((a, it) => a + it.subtotal, 0);
+    items.forEach(it => it.subtotal = (it.quantity || 1) * (it.unitPrice || it.unit_price || 0));
+    const subtotal = items.reduce((a, it) => a + (it.subtotal || 0), 0);
     const taxRate = this.editingInvoice.taxRate || 0;
     const taxAmount = Math.round(subtotal * taxRate / 100);
     this.editingInvoice.subtotal = subtotal;
     this.editingInvoice.taxAmount = taxAmount;
     this.editingInvoice.total = subtotal + taxAmount;
   }
-  saveInvoice(status: Invoice['status']) {
+  async saveInvoice(status: Invoice['status']) {
     if (!this.editingInvoice?.clientId) { alert('Selecciona un cliente primero.'); return; }
     if (!this.editingInvoice?.items?.length) { alert('Agrega al menos un servicio.'); return; }
     this.editingInvoice.status = status;
-    this.financeService.saveInvoice(this.editingInvoice as Invoice);
-    this.showInvoiceForm = false;
-    this.refresh();
+    try {
+      await firstValueFrom(this.financeService.saveInvoice(this.editingInvoice as Invoice));
+      this.showInvoiceForm = false;
+      this.refresh();
+    } catch (e) {
+      console.error(e);
+      alert('Error al crear cuenta de cobro');
+    }
   }
   deleteInvoice(id: string) {
-    if (confirm('¿Eliminar esta cuenta de cobro?')) { this.financeService.deleteInvoice(id); this.refresh(); }
+    alert('Esta función aún no está disponible por seguridad.');
   }
-  onStatusChange(inv: Invoice) {
-    this.financeService.updateInvoiceStatus(inv.id, inv.status);
-    this.buildKpis();
+  async onStatusChange(inv: Invoice) {
+    try {
+      await firstValueFrom(this.financeService.updateInvoiceStatus(inv.id!, inv.status));
+      this.buildKpis();
+    } catch (e) {
+      alert('Error al actualizar estado');
+    }
   }
 
   async downloadInvoicePdf(inv: Invoice) {

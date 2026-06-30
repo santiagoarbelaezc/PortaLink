@@ -1,219 +1,166 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+import { Observable } from 'rxjs';
 
 export interface Client {
-  id: string;
+  id?: string;
   name: string;
   email: string;
   phone: string;
   company?: string;
-  notes?: string;
-  createdAt: string;
+  tax_id?: string;
+  address?: string;
+  createdAt?: string; // Maps to created_at
+  created_at?: string;
 }
 
 export interface Service {
-  id: string;
+  id?: string;
   name: string;
   description: string;
-  unitPrice: number;
-  category: 'desarrollo' | 'diseño' | 'marketing' | 'consultoria' | 'otro';
+  price?: number; // Backend uses price, not unitPrice
+  unitPrice?: number; // Keep for compatibility with old interface during refactor
+  category?: 'desarrollo' | 'diseño' | 'marketing' | 'consultoria' | 'otro';
 }
 
 export interface InvoiceItem {
-  serviceId: string;
-  serviceName: string;
+  id?: string;
+  invoice_id?: string;
+  service_id?: string;
+  serviceName?: string; // UI alias
   description: string;
   quantity: number;
-  unitPrice: number;
-  subtotal: number;
+  unit_price: number;
+  unitPrice?: number; // UI alias
+  total_price?: number;
+  subtotal?: number; // UI alias
 }
 
 export interface Invoice {
-  id: string;
-  clientId: string;
-  clientName: string;
-  clientEmail: string;
+  id?: string;
+  client_id?: string;
+  clientId?: string; // UI alias
+  clientName?: string; // UI alias
+  clientEmail?: string;
   clientCompany?: string;
-  items: InvoiceItem[];
-  subtotal: number;
-  taxRate: number;
-  taxAmount: number;
-  total: number;
-  status: 'Borrador' | 'Enviada' | 'Pagada' | 'Vencida';
-  notes: string;
-  issuedAt: string;
-  dueAt: string;
+  invoice_number?: string;
+  issue_date?: string;
+  issuedAt?: string; // UI alias
+  due_date?: string;
+  dueAt?: string; // UI alias
   paidAt?: string;
+  status: 'DRAFT' | 'ENVIADA' | 'PAGADA' | 'VENCIDA' | 'ANULADA' | 'Borrador' | 'Enviada' | 'Pagada' | 'Vencida';
+  subtotal: number;
+  tax_amount?: number;
+  taxRate?: number; // UI alias
+  taxAmount?: number; // UI alias
+  total_amount?: number;
+  total?: number; // UI alias
+  notes: string;
+  items?: InvoiceItem[];
 }
-
-const DEFAULT_SERVICES: Service[] = [
-  { id: 's1', name: 'Landing Page / Sitio Web Básico', description: 'Sitio web de una página optimizado para conversión, diseño personalizado y responsive.', unitPrice: 800000, category: 'desarrollo' },
-  { id: 's2', name: 'Sitio Web Corporativo', description: 'Sitio web multipágina con secciones completas, optimización SEO y panel de administración básico.', unitPrice: 2500000, category: 'desarrollo' },
-  { id: 's3', name: 'Aplicación Web (WebApp)', description: 'Desarrollo de aplicación web con funcionalidades avanzadas, autenticación y base de datos.', unitPrice: 5000000, category: 'desarrollo' },
-  { id: 's4', name: 'Integración con IA / Automatización', description: 'Integración de modelos de IA, chatbots o flujos automatizados en sistemas existentes.', unitPrice: 1500000, category: 'desarrollo' },
-  { id: 's5', name: 'Identidad Visual / Branding', description: 'Diseño de logo, paleta de colores, tipografía y manual de marca completo.', unitPrice: 1200000, category: 'diseño' },
-  { id: 's6', name: 'Diseño UI / Prototipo', description: 'Diseño de interfaces de usuario en Figma con prototipos interactivos y entregables para desarrollo.', unitPrice: 900000, category: 'diseño' },
-  { id: 's7', name: 'Material Publicitario (pack)', description: 'Pack de piezas gráficas para redes sociales, banners, flyers digitales e impresos.', unitPrice: 600000, category: 'diseño' },
-  { id: 's8', name: 'Estrategia de Contenido Digital', description: 'Planificación y creación de contenido para redes sociales, calendario editorial y métricas.', unitPrice: 750000, category: 'marketing' },
-  { id: 's9', name: 'Consultoría Digital (por hora)', description: 'Sesión de consultoría para estrategia digital, revisión de proyectos o asesoría técnica.', unitPrice: 150000, category: 'consultoria' },
-  { id: 's10', name: 'Mantenimiento Mensual', description: 'Mantenimiento, actualizaciones y soporte técnico mensual para sitios o aplicaciones web.', unitPrice: 350000, category: 'otro' },
-];
-
-const DEFAULT_CLIENTS: Client[] = [
-  { id: 'c1', name: 'TechCorp Solutions', email: 'contacto@techcorp.com', phone: '+57 300 123 4567', company: 'TechCorp S.A.S.', createdAt: new Date(Date.now() - 90 * 24 * 3600 * 1000).toISOString() },
-  { id: 'c2', name: 'María Gómez', email: 'maria.gomez@gmail.com', phone: '+57 311 987 6543', company: 'Diseños MG', createdAt: new Date(Date.now() - 45 * 24 * 3600 * 1000).toISOString() },
-  { id: 'c3', name: 'Inversiones Alpha', email: 'admin@inversionesalpha.com', phone: '+57 320 555 1122', company: 'Inversiones Alpha S.A.', createdAt: new Date(Date.now() - 10 * 24 * 3600 * 1000).toISOString() },
-];
-
-const DEFAULT_INVOICES: Invoice[] = [
-  {
-    id: 'PL-2025-001', clientId: 'c1', clientName: 'TechCorp Solutions', clientEmail: 'contacto@techcorp.com', clientCompany: 'TechCorp S.A.S.',
-    items: [
-      { serviceId: 's2', serviceName: 'Sitio Web Corporativo', description: 'Rediseño completo con Next.js', quantity: 1, unitPrice: 2500000, subtotal: 2500000 },
-      { serviceId: 's10', serviceName: 'Mantenimiento Mensual', description: 'Mes de Enero', quantity: 1, unitPrice: 350000, subtotal: 350000 }
-    ],
-    subtotal: 2850000, taxRate: 19, taxAmount: 541500, total: 3391500, status: 'Pagada', notes: 'Pago recibido vía transferencia.',
-    issuedAt: new Date(Date.now() - 60 * 24 * 3600 * 1000).toISOString().split('T')[0],
-    dueAt: new Date(Date.now() - 45 * 24 * 3600 * 1000).toISOString().split('T')[0],
-    paidAt: new Date(Date.now() - 50 * 24 * 3600 * 1000).toISOString().split('T')[0],
-  },
-  {
-    id: 'PL-2025-002', clientId: 'c2', clientName: 'María Gómez', clientEmail: 'maria.gomez@gmail.com', clientCompany: 'Diseños MG',
-    items: [
-      { serviceId: 's5', serviceName: 'Identidad Visual / Branding', description: 'Renovación de marca personal', quantity: 1, unitPrice: 1200000, subtotal: 1200000 }
-    ],
-    subtotal: 1200000, taxRate: 0, taxAmount: 0, total: 1200000, status: 'Pagada', notes: 'Factura exenta de IVA',
-    issuedAt: new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString().split('T')[0],
-    dueAt: new Date(Date.now() - 15 * 24 * 3600 * 1000).toISOString().split('T')[0],
-    paidAt: new Date(Date.now() - 25 * 24 * 3600 * 1000).toISOString().split('T')[0],
-  },
-  {
-    id: 'PL-2025-003', clientId: 'c3', clientName: 'Inversiones Alpha', clientEmail: 'admin@inversionesalpha.com', clientCompany: 'Inversiones Alpha S.A.',
-    items: [
-      { serviceId: 's3', serviceName: 'Aplicación Web (WebApp)', description: 'Dashboard interno de gestión', quantity: 1, unitPrice: 5000000, subtotal: 5000000 },
-      { serviceId: 's4', serviceName: 'Integración con IA / Automatización', description: 'Bot de reportes automático', quantity: 1, unitPrice: 1500000, subtotal: 1500000 }
-    ],
-    subtotal: 6500000, taxRate: 19, taxAmount: 1235000, total: 7735000, status: 'Enviada', notes: 'Anticipo del 50% para iniciar desarrollo',
-    issuedAt: new Date(Date.now() - 5 * 24 * 3600 * 1000).toISOString().split('T')[0],
-    dueAt: new Date(Date.now() + 10 * 24 * 3600 * 1000).toISOString().split('T')[0],
-  }
-];
 
 @Injectable({ providedIn: 'root' })
 export class FinanceService {
-  private clientsKey = 'portalink_clients';
-  private servicesKey = 'portalink_services';
-  private invoicesKey = 'portalink_invoices';
-  private counterKey = 'portalink_invoice_counter';
+  private http = inject(HttpClient);
+  private apiUrl = `${environment.apiUrl}/finance`;
+
+  // ─── DASHBOARD ──────────────────────────────────────────────
+  getDashboard(filters?: any): Observable<any> {
+    let params = new HttpParams();
+    if (filters) {
+      if (filters.search) params = params.set('search', filters.search);
+      if (filters.min_price) params = params.set('min_price', filters.min_price);
+      if (filters.max_price) params = params.set('max_price', filters.max_price);
+      if (filters.date_from) params = params.set('date_from', filters.date_from);
+      if (filters.date_to) params = params.set('date_to', filters.date_to);
+    }
+    return this.http.get<any>(`${this.apiUrl}/dashboard`, { params });
+  }
 
   // ─── CLIENTS ──────────────────────────────────────────────
-  getClients(): Client[] {
-    const stored = localStorage.getItem(this.clientsKey);
-    if (!stored) {
-      localStorage.setItem(this.clientsKey, JSON.stringify(DEFAULT_CLIENTS));
-      return DEFAULT_CLIENTS;
+  getClients(): Observable<{ ok: boolean, clients: Client[] }> {
+    return this.http.get<any>(`${this.apiUrl}/clients`);
+  }
+
+  saveClient(client: Client): Observable<any> {
+    if (client.id && !client.id.startsWith('c')) {
+      // Is an existing ID from DB (usually a number or UUID). Wait, in local it was 'c123'. 
+      // Actually DB IDs are numbers (SERIAL).
+      return this.http.put<any>(`${this.apiUrl}/clients/${client.id}`, client);
+    } else {
+      // New client
+      return this.http.post<any>(`${this.apiUrl}/clients`, client);
     }
-    try { return JSON.parse(stored); }
-    catch { return DEFAULT_CLIENTS; }
   }
 
-  saveClient(client: Client): void {
-    const list = this.getClients();
-    const idx = list.findIndex(c => c.id === client.id);
-    if (idx >= 0) list[idx] = client;
-    else list.unshift(client);
-    localStorage.setItem(this.clientsKey, JSON.stringify(list));
-  }
-
-  deleteClient(id: string): void {
-    const list = this.getClients().filter(c => c.id !== id);
-    localStorage.setItem(this.clientsKey, JSON.stringify(list));
-  }
-
-  newClientId(): string {
-    return 'c' + Date.now();
+  deleteClient(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/clients/${id}`);
   }
 
   // ─── SERVICES ─────────────────────────────────────────────
-  getServices(): Service[] {
-    const stored = localStorage.getItem(this.servicesKey);
-    if (!stored) {
-      localStorage.setItem(this.servicesKey, JSON.stringify(DEFAULT_SERVICES));
-      return DEFAULT_SERVICES;
+  getServices(): Observable<{ ok: boolean, services: Service[] }> {
+    return this.http.get<any>(`${this.apiUrl}/services`);
+  }
+
+  saveService(service: Service): Observable<any> {
+    // Map unitPrice to price for backend
+    if (service.unitPrice !== undefined) {
+      service.price = service.unitPrice;
     }
-    try { return JSON.parse(stored); }
-    catch { return DEFAULT_SERVICES; }
+    if (service.id && !String(service.id).startsWith('sv')) {
+      return this.http.put<any>(`${this.apiUrl}/services/${service.id}`, service);
+    } else {
+      return this.http.post<any>(`${this.apiUrl}/services`, service);
+    }
   }
 
-  saveService(service: Service): void {
-    const list = this.getServices();
-    const idx = list.findIndex(s => s.id === service.id);
-    if (idx >= 0) list[idx] = service;
-    else list.unshift(service);
-    localStorage.setItem(this.servicesKey, JSON.stringify(list));
-  }
-
-  deleteService(id: string): void {
-    const list = this.getServices().filter(s => s.id !== id);
-    localStorage.setItem(this.servicesKey, JSON.stringify(list));
-  }
-
-  newServiceId(): string {
-    return 'sv' + Date.now();
+  deleteService(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/services/${id}`);
   }
 
   // ─── INVOICES ─────────────────────────────────────────────
-  getInvoices(): Invoice[] {
-    const stored = localStorage.getItem(this.invoicesKey);
-    if (!stored) {
-      localStorage.setItem(this.invoicesKey, JSON.stringify(DEFAULT_INVOICES));
-      localStorage.setItem(this.counterKey, '3');
-      return DEFAULT_INVOICES;
-    }
-    try { return JSON.parse(stored); }
-    catch { return DEFAULT_INVOICES; }
+  getInvoices(): Observable<{ ok: boolean, invoices: Invoice[] }> {
+    return this.http.get<any>(`${this.apiUrl}/invoices`);
   }
 
-  saveInvoice(invoice: Invoice): void {
-    const list = this.getInvoices();
-    const idx = list.findIndex(i => i.id === invoice.id);
-    if (idx >= 0) list[idx] = invoice;
-    else list.unshift(invoice);
-    localStorage.setItem(this.invoicesKey, JSON.stringify(list));
+  getInvoiceDetails(id: string): Observable<{ ok: boolean, invoice: Invoice }> {
+    return this.http.get<any>(`${this.apiUrl}/invoices/${id}`);
   }
 
-  deleteInvoice(id: string): void {
-    const list = this.getInvoices().filter(i => i.id !== id);
-    localStorage.setItem(this.invoicesKey, JSON.stringify(list));
+  saveInvoice(invoice: Invoice): Observable<any> {
+    // Prepare for backend
+    const payload = {
+      client_id: invoice.clientId,
+      invoice_number: invoice.id || `PL-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000)}`, // temporary auto-gen for backend if new
+      issue_date: invoice.issuedAt,
+      due_date: invoice.dueAt,
+      notes: invoice.notes,
+      items: (invoice.items || []).map(i => ({
+        service_id: i.serviceId || i.service_id,
+        description: i.description || i.serviceName,
+        quantity: i.quantity,
+        unit_price: i.unitPrice || i.unit_price
+      }))
+    };
+    
+    // We only create invoices for now, or update status. 
+    return this.http.post<any>(`${this.apiUrl}/invoices`, payload);
   }
 
-  updateInvoiceStatus(id: string, status: Invoice['status']): void {
-    const list = this.getInvoices();
-    const inv = list.find(i => i.id === id);
-    if (inv) {
-      inv.status = status;
-      if (status === 'Pagada') inv.paidAt = new Date().toISOString().split('T')[0];
-      localStorage.setItem(this.invoicesKey, JSON.stringify(list));
-    }
+  deleteInvoice(id: string): Observable<any> {
+    // Not implemented in backend yet, but we'll mock it or throw error
+    throw new Error('Not implemented in backend');
   }
 
-  getNextInvoiceId(): string {
-    const year = new Date().getFullYear();
-    const count = (parseInt(localStorage.getItem(this.counterKey) || '0', 10)) + 1;
-    localStorage.setItem(this.counterKey, String(count));
-    return `PL-${year}-${String(count).padStart(3, '0')}`;
+  updateInvoiceStatus(id: string, status: string): Observable<any> {
+    let backendStatus = status.toUpperCase();
+    if (backendStatus === 'BORRADOR') backendStatus = 'DRAFT';
+    return this.http.put<any>(`${this.apiUrl}/invoices/${id}/status`, { status: backendStatus });
   }
 
-  // ─── STATS ────────────────────────────────────────────────
-  getStats() {
-    const invoices = this.getInvoices();
-    const clients = this.getClients();
-    const paid = invoices.filter(i => i.status === 'Pagada').reduce((a, i) => a + i.total, 0);
-    const pending = invoices.filter(i => i.status === 'Enviada').reduce((a, i) => a + i.total, 0);
-    const overdue = invoices.filter(i => i.status === 'Vencida').reduce((a, i) => a + i.total, 0);
-    const total = paid + pending + overdue;
-    return { total, paid, pending, overdue, clientCount: clients.length, invoiceCount: invoices.length };
-  }
-
+  // ─── HELPERS ──────────────────────────────────────────────
   formatCOP(value: number): string {
     return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(value);
   }
