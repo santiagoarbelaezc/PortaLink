@@ -52,6 +52,17 @@ export class ChatStateService {
 
   constructor() {
     this._sessionToken = this.getOrCreateSessionToken();
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('auth-change', () => {
+        if (!this.authService.hasToken()) {
+          this.clear();
+        } else {
+          this.loadHistory().subscribe();
+          this.loadUsage();
+        }
+      });
+    }
   }
 
   /**
@@ -63,11 +74,10 @@ export class ChatStateService {
     this.addMessage('user', userText);
     this.isTyping = true;
 
-    const body: any = { message: userText.trim() };
-    // Para usuarios anónimos enviamos el token de sesión para poder rastrear el límite
-    if (!this.authService.hasToken()) {
-      body.session_token = this._sessionToken;
-    }
+    const body: any = { 
+      message: userText.trim(),
+      session_token: this._sessionToken 
+    };
 
     this.http.post<ChatSendResponse>(
       `${environment.apiUrl}/chat/send`,
@@ -118,10 +128,7 @@ export class ChatStateService {
    * Consultar cuántos mensajes le quedan al usuario.
    */
   loadUsage(): void {
-    const params: any = {};
-    if (!this.authService.hasToken()) {
-      params.session_token = this._sessionToken;
-    }
+    const params: any = { session_token: this._sessionToken };
 
     this.http.get<ChatUsageResponse>(
       `${environment.apiUrl}/chat/usage`,

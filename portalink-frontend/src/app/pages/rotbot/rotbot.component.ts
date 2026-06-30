@@ -490,6 +490,9 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
   activeDesign: string | null = null;
   isDesigning: boolean = false;
 
+  private previousMessageCount = 0;
+  private wasTyping = false;
+
   constructor(
     public chatService: ChatStateService,
     private router: Router,
@@ -541,7 +544,14 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   ngAfterViewChecked() {
-    this.scrollToBottom();
+    const currentMessageCount = this.chatService.messages.length;
+    const isTyping = this.chatService.isTyping;
+    
+    if (currentMessageCount !== this.previousMessageCount || isTyping !== this.wasTyping) {
+      this.scrollToBottom();
+      this.previousMessageCount = currentMessageCount;
+      this.wasTyping = isTyping;
+    }
   }
 
   goBack() {
