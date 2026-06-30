@@ -24,11 +24,17 @@ const authRoutes = require('./routes/auth.routes');
 const chatRoutes = require('./routes/chat.routes');
 const itineraryRoutes = require('./routes/itinerary.routes');
 const financeRoutes = require('./routes/finance.routes');
+const analyticsRoutes = require('./routes/analytics.routes');
+const reportsRoutes = require('./routes/reports.routes');
+const configRoutes = require('./routes/config.routes');
 // Usar rutas
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/itinerary', itineraryRoutes);
 app.use('/api/finance', financeRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/reports', reportsRoutes);
+app.use('/api/config', configRoutes);
 
 module.exports = app;
 

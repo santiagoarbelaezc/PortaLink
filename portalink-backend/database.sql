@@ -114,3 +114,52 @@ END
 $$;
 
 
+
+
+-- ══════════════════════════════════════════════════════════
+-- ANALYTICS
+-- ══════════════════════════════════════════════════════════
+CREATE TABLE IF NOT EXISTS analytics_events (
+    id SERIAL PRIMARY KEY,
+    session_id VARCHAR(255),
+    event_category VARCHAR(100) NOT NULL,
+    event_label VARCHAR(255),
+    event_value NUMERIC,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_analytics_events_category ON analytics_events(event_category);
+CREATE INDEX IF NOT EXISTS idx_analytics_events_session ON analytics_events(session_id);
+CREATE INDEX IF NOT EXISTS idx_analytics_events_created_at ON analytics_events(created_at);
+
+
+-- ==========================================
+-- 4. ACTIVITY LOGS (Registro de Acciones)
+-- ==========================================
+CREATE TABLE activity_logs (
+    id SERIAL PRIMARY KEY,
+    icon_type VARCHAR(50) NOT NULL,
+    label VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_activity_logs_created_at ON activity_logs(created_at DESC);
+
+
+
+-- ==========================================
+-- 5. SYSTEM SETTINGS (Configuraci�n Global)
+-- ==========================================
+CREATE TABLE IF NOT EXISTS system_settings (
+    id INT PRIMARY KEY DEFAULT 1,
+    currency VARCHAR(10) DEFAULT 'COP',
+    language VARCHAR(10) DEFAULT 'es',
+    time_format VARCHAR(10) DEFAULT '12h',
+    email_reminders BOOLEAN DEFAULT false,
+    feedback_loop BOOLEAN DEFAULT false,
+    overdue_alerts BOOLEAN DEFAULT true,
+    chatbot_name VARCHAR(255) DEFAULT 'Rotbot',
+    assistant_personality VARCHAR(50) DEFAULT 'formal',
+    maintenance_mode BOOLEAN DEFAULT false,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+

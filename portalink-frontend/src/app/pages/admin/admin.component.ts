@@ -269,6 +269,7 @@ export class AdminComponent implements OnInit {
   tabs: Tab[] = [
     { id: 'dashboard', name: 'Inicio' },
     { id: 'itinerary', name: 'Itinerario' },
+    { id: 'finances',  name: 'Finanzas' },
     { id: 'analytics', name: 'Analíticas' },
     { id: 'stats',     name: 'Estadísticas' },
     { id: 'messages',  name: 'Mensajes' },
@@ -276,7 +277,6 @@ export class AdminComponent implements OnInit {
     { id: 'users',     name: 'Usuarios' },
     { id: 'home',      name: 'Personalizar' },
     { id: 'reports',   name: 'Reportes' },
-    { id: 'finances',  name: 'Finanzas' },
     { id: 'config',    name: 'Configuración' },
   ];
 

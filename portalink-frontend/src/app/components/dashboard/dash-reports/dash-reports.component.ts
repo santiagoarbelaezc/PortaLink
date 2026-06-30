@@ -4,12 +4,9 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { AnalyticsService, SystemMetrics } from '../../../services/analytics.service';
 import { PortfolioConfigService } from '../../../services/portfolio-config.service';
 import { PdfReportService } from '../../../services/pdf-report.service';
-
-interface ActivityLog {
-  iconType: 'config' | 'message' | 'lead' | 'update' | 'export';
-  label: string;
-  date: string;
-}
+import { ReportsService, ActivityLog } from '../../../services/reports.service';
+import { AuthService } from '../../../services/auth.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-dash-reports',
@@ -253,6 +250,8 @@ export class DashReportsComponent implements OnInit {
   private analyticsService = inject(AnalyticsService);
   private configService = inject(PortfolioConfigService);
   private pdfService = inject(PdfReportService);
+  private reportsService = inject(ReportsService);
+  private authService = inject(AuthService);
 
   private sanitizer = inject(DomSanitizer);
 
@@ -266,20 +265,28 @@ export class DashReportsComponent implements OnInit {
   currentPdfType: 'analytics' | 'users' | 'health' | null = null;
   currentPdfName: string = '';
 
-  activityLog: ActivityLog[] = [
-    { iconType: 'config', label: 'Configuración del sistema actualizada', date: 'Hoy — 11:03 am' },
-    { iconType: 'message', label: '3 mensajes nuevos recibidos', date: 'Hoy — 09:45 am' },
-    { iconType: 'lead', label: 'Nueva solicitud de Plan Premium', date: 'Ayer — 4:22 pm' },
-    { iconType: 'update', label: 'Métricas actualizadas automáticamente', date: 'Hace 3 días' },
-    { iconType: 'export', label: 'portfolio.json exportado', date: 'Hace 5 días' },
-  ];
+  activityLog: ActivityLog[] = [];
 
   get isDark() { return this.theme === 'dark'; }
 
   ngOnInit() {
-    this.metrics = this.analyticsService.getMetrics();
+    this.analyticsService.getMetrics().subscribe(m => this.metrics = m);
+    this.loadLogs();
     this.buildSummary();
     this.buildLoadStats();
+  }
+
+  private loadLogs() {
+    this.reportsService.getLogs().subscribe(logs => {
+      this.activityLog = logs;
+    });
+  }
+
+  private trackExport(label: string) {
+    this.reportsService.logActivity('export', label).subscribe(newLog => {
+      // Add the new log at the beginning of the array
+      this.activityLog = [newLog, ...this.activityLog];
+    });
   }
 
   private buildSummary() {
@@ -308,10 +315,12 @@ export class DashReportsComponent implements OnInit {
     a.href = url;
     a.download = 'portalink_analytics.json';
     a.click();
+    this.trackExport('Métricas JSON exportadas');
   }
 
   exportConfig() {
     this.configService.exportJSON();
+    this.trackExport('portfolio.json exportado');
   }
 
   closeViewer() {
@@ -330,8 +339,12 @@ export class DashReportsComponent implements OnInit {
         rawUrl = await this.pdfService.downloadAnalyticsReport(this.metrics, 'bloburl');
       } else if (type === 'users') {
         this.currentPdfName = 'Listado de Usuarios';
-        const saved = localStorage.getItem('portalink_admin_users');
-        const users = saved ? JSON.parse(saved) : [];
+        let users = [];
+        try {
+          users = await firstValueFrom(this.authService.getUsers());
+        } catch (err) {
+          console.error('Error loading users for PDF', err);
+        }
         rawUrl = await this.pdfService.downloadUsersReport(users, 'bloburl');
       } else if (type === 'health') {
         this.currentPdfName = 'Salud del Sistema';
@@ -361,8 +374,12 @@ export class DashReportsComponent implements OnInit {
       if (this.currentPdfType === 'analytics') {
         await this.pdfService.downloadAnalyticsReport(this.metrics, 'save');
       } else if (this.currentPdfType === 'users') {
-        const saved = localStorage.getItem('portalink_admin_users');
-        const users = saved ? JSON.parse(saved) : [];
+        let users = [];
+        try {
+          users = await firstValueFrom(this.authService.getUsers());
+        } catch (err) {
+          console.error('Error loading users for PDF', err);
+        }
         await this.pdfService.downloadUsersReport(users, 'save');
       } else if (this.currentPdfType === 'health') {
         const legacyActivityLog = this.activityLog.map(log => {
@@ -375,6 +392,7 @@ export class DashReportsComponent implements OnInit {
         });
         await this.pdfService.downloadSystemHealthReport(this.metrics, legacyActivityLog, 'save');
       }
+      this.trackExport(`Reporte PDF: ${this.currentPdfName}`);
     } finally {
       this.pdfLoading = false;
     }

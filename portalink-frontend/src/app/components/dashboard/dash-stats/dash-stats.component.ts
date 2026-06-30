@@ -202,7 +202,7 @@ export class DashStatsComponent implements OnInit {
   get isDark() { return this.theme === 'dark'; }
 
   ngOnInit() {
-    this.metrics = this.analyticsService.getMetrics();
+    this.analyticsService.getMetrics().subscribe(m => this.metrics = m);
     this.buildRows();
     this.buildSummary();
   }

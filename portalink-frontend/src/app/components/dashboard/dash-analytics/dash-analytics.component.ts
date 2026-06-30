@@ -460,14 +460,70 @@ export class DashAnalyticsComponent implements OnInit {
   };
 
   ngOnInit() {
-    this.metrics = this.analyticsService.getMetrics();
-    this.buildRotbotStats();
-    this.themeTotal = this.metrics.themeSelections.dark + this.metrics.themeSelections.light;
+    this.analyticsService.getMetrics().subscribe(m => {
+      this.metrics = m;
+      this.buildRotbotStats();
+      this.themeTotal = this.metrics.themeSelections.dark + this.metrics.themeSelections.light;
+      this.buildCharts();
+    });
   }
 
   async downloadPdf() {
     this.pdfLoading = true;
     try { await this.pdfService.downloadAnalyticsReport(this.metrics); } finally { this.pdfLoading = false; }
+  }
+
+  private buildCharts() {
+    // 1. Line Chart (Weekly Trend) - Distributing total views across 7 days for the demo
+    const totalViews = this.metrics.homeViews + this.metrics.linktreeViews;
+    const baseCurve = [0.1, 0.15, 0.1, 0.2, 0.15, 0.1, 0.2]; // 7 days distribution
+    const trendData = baseCurve.map(pct => Math.round(totalViews * pct));
+    this.lineChartData = {
+      ...this.lineChartData,
+      datasets: [{ ...this.lineChartData.datasets[0], data: trendData }]
+    };
+
+    // 2. Bar Chart (Link Clicks / Sources)
+    const links = this.metrics.linktreeClicks;
+    this.barChartData = {
+      labels: ['Instagram', 'LinkedIn', 'WhatsApp', 'TikTok', 'Proyectos'],
+      datasets: [{
+        ...this.barChartData.datasets[0],
+        data: [
+          links['instagram'] || 0,
+          links['linkedin'] || 0,
+          links['whatsapp'] || 0,
+          links['tiktok'] || 0,
+          links['proyectos'] || 0
+        ]
+      }]
+    };
+
+    // 3. Radar Chart (Section Views)
+    const sections = this.metrics.sectionViews;
+    // Normalize to 100 max for the radar chart
+    const maxView = Math.max(
+      sections['skills'] || 0,
+      sections['portfolio'] || 0,
+      sections['contact'] || 0,
+      sections['about'] || 0,
+      sections['hero'] || 0,
+      1 // Prevent division by zero
+    );
+    
+    this.radarChartData = {
+      labels: ['Skills', 'Proyectos', 'Contacto', 'Sobre Mí', 'Hero'],
+      datasets: [{
+        ...this.radarChartData.datasets[0],
+        data: [
+          Math.round(((sections['skills'] || 0) / maxView) * 100),
+          Math.round(((sections['portfolio'] || 0) / maxView) * 100),
+          Math.round(((sections['contact'] || 0) / maxView) * 100),
+          Math.round(((sections['about'] || 0) / maxView) * 100),
+          Math.round(((sections['hero'] || 0) / maxView) * 100)
+        ]
+      }]
+    };
   }
 
   private buildRotbotStats() {

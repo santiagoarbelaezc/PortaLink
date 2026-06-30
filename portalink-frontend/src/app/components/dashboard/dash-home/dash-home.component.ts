@@ -448,9 +448,11 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   ];
 
   ngOnInit() {
-    this.metrics = this.analyticsService.getMetrics();
-    this.buildCards();
-    this.buildArrays();
+    this.analyticsService.getMetrics().subscribe(m => {
+      this.metrics = m;
+      this.buildCards();
+      this.buildArrays();
+    });
     this.loadBadges();
     this.loadItineraryToday();
     this.updateClock();
@@ -524,9 +526,11 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   resetMetrics() {
     if (confirm('¿Estás seguro de que deseas reiniciar todas las métricas?')) {
       this.analyticsService.resetMetrics();
-      this.metrics = this.analyticsService.getMetrics();
-      this.buildCards();
-      this.buildArrays();
+      this.analyticsService.getMetrics().subscribe(m => {
+          this.metrics = m;
+          this.buildCards();
+          this.buildArrays();
+      });
     }
   }
 

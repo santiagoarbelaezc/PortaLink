@@ -2,6 +2,8 @@ import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PortfolioConfigService } from '../../../services/portfolio-config.service';
+import { SystemConfigService } from '../../../services/system-config.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-dash-config',
@@ -212,6 +214,8 @@ import { PortfolioConfigService } from '../../../services/portfolio-config.servi
 export class DashConfigComponent {
   @Input() theme = 'dark';
   private configService = inject(PortfolioConfigService);
+  private systemConfig = inject(SystemConfigService);
+  private authService = inject(AuthService);
 
   get isDark() { return this.theme === 'dark'; }
 
@@ -236,25 +240,36 @@ export class DashConfigComponent {
   }
 
   loadSettings() {
-    const saved = localStorage.getItem('portalink_global_settings');
-    if (saved) {
-      try {
-        this.settings = { ...this.settings, ...JSON.parse(saved) };
-      } catch (e) {
-        console.error('Error loading settings', e);
-      }
-    }
+    this.systemConfig.getSettings().subscribe({
+      next: (settings) => {
+        if (settings) {
+          this.settings = { ...this.settings, ...settings };
+        }
+      },
+      error: (e) => console.error('Error loading settings', e)
+    });
   }
 
   saveSettings() {
-    localStorage.setItem('portalink_global_settings', JSON.stringify(this.settings));
-    this.showSaved('Configuración global guardada con éxito');
+    this.systemConfig.updateSettings(this.settings).subscribe({
+      next: () => this.showSaved('Configuración global guardada con éxito'),
+      error: (e) => console.error('Error saving settings', e)
+    });
   }
 
   savePassword() {
     if (!this.newPassword.trim()) return;
-    this.newPassword = '';
-    this.showSaved('Contraseña actualizada');
+    
+    this.authService.changePassword(this.newPassword).subscribe({
+      next: (res) => {
+        this.newPassword = '';
+        this.showSaved(res.message || 'Contraseña actualizada');
+      },
+      error: (e) => {
+        console.error('Error updating password', e);
+        this.showSaved('Error al actualizar contraseña');
+      }
+    });
   }
 
   exportConfig() {
