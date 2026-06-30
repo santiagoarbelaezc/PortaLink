@@ -8,7 +8,8 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
     standalone: true,
     imports: [CommonModule, RouterModule],
     template: `
-    <section id="portfolio" class="py-20 md:py-32 overflow-hidden relative">
+    <ng-container *ngIf="!isLoading; else skeleton">
+      <section id="portfolio" class="py-20 md:py-32 overflow-hidden relative">
       <div class="container mx-auto px-6">
         <!-- Section Header -->
         <div class="mb-4 md:mb-6">
@@ -93,7 +94,53 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
                   style="background-color: var(--text-primary, #ffffff); opacity: 0.25;"></button>
         </div>
       </div>
-    </section>
+      </section>
+    </ng-container>
+
+    <ng-template #skeleton>
+      <section class="py-20 md:py-32 overflow-hidden relative animate-pulse">
+        <div class="container mx-auto px-6">
+          <!-- Header Skeleton -->
+          <div class="mb-4 md:mb-6">
+            <div class="flex items-center gap-4 mb-4">
+              <div class="h-px w-12 opacity-20" style="background-color: var(--text-primary);"></div>
+              <div class="h-3 w-32 rounded-full opacity-20" style="background-color: var(--text-primary);"></div>
+            </div>
+            <div class="h-10 md:h-14 w-3/4 max-w-md rounded-2xl opacity-20" style="background-color: var(--text-primary);"></div>
+          </div>
+
+          <!-- Carousel Skeleton -->
+          <div class="relative w-full h-[calc(var(--card-w)+40px)] sm:h-[450px] lg:h-[600px] flex items-center justify-start overflow-hidden">
+            <div class="flex items-center gap-[var(--card-gap)] w-full">
+              
+              <!-- Active Card Skeleton -->
+              <div class="flex-shrink-0 w-[var(--card-w)] aspect-square sm:aspect-[16/9] rounded-[24px] sm:rounded-[36px] overflow-hidden border border-white/10 relative" style="background-color: rgba(128,128,128,0.1);">
+                <div class="absolute inset-0 flex flex-col justify-end p-5 sm:p-12 lg:p-14 text-left">
+                  <div class="h-3 w-24 rounded-full opacity-20 mb-3 sm:mb-5" style="background-color: var(--text-primary);"></div>
+                  <div class="h-10 sm:h-14 lg:h-16 w-3/4 rounded-2xl opacity-20 mb-4 sm:mb-8" style="background-color: var(--text-primary);"></div>
+                  <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 mt-2">
+                    <div class="h-10 sm:h-12 w-32 rounded-full opacity-20" style="background-color: var(--text-primary);"></div>
+                    <div class="space-y-2 hidden sm:block w-1/2">
+                      <div class="h-3 w-full rounded-full opacity-10" style="background-color: var(--text-primary);"></div>
+                      <div class="h-3 w-4/5 rounded-full opacity-10" style="background-color: var(--text-primary);"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Inactive Card Skeleton -->
+              <div class="flex-shrink-0 w-[var(--card-w)] aspect-square sm:aspect-[16/9] rounded-[24px] sm:rounded-[36px] overflow-hidden border border-white/10 opacity-35 scale-90" style="background-color: rgba(128,128,128,0.1);"></div>
+              
+            </div>
+          </div>
+
+          <!-- Indicator Dots Skeleton -->
+          <div class="flex justify-center gap-2 mt-8 sm:mt-12 z-20 relative">
+             <div *ngFor="let _ of [1,2,3]" class="w-2 h-2 rounded-full opacity-20" style="background-color: var(--text-primary);"></div>
+          </div>
+        </div>
+      </section>
+    </ng-template>
   `,
     styles: [`
     :host {
@@ -178,6 +225,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
 })
 export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() projects: any[] = [];
+  isLoading = true;
   currentIndex = 0;
   currentLanguage = 'es';
   private lastWheelTime = 0;
@@ -230,6 +278,11 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
       this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
       window.addEventListener('portfolio-language-change', this.onLanguageChange);
     }
+    
+    // Fake loading delay to mimic the dashboard shimmer experience smoothly
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 800);
   }
 
   onLanguageChange = (event: any) => {
