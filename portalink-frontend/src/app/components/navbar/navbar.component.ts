@@ -65,6 +65,10 @@ import { AnalyticsService } from '../../services/analytics.service';
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
               </ng-container>
+              <ng-container *ngIf="item.icon === 'link'">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              </ng-container>
               <ng-container *ngIf="item.icon === 'chat'">
                 <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
               </ng-container>
@@ -488,6 +492,7 @@ export class NavbarComponent implements OnInit {
   navItemsTranslations: any = {
     es: [
       { name: 'Inicio',         link: '#hero',         icon: 'home'   },
+      { name: 'Links',          link: '/links',        icon: 'link'   },
       { name: 'RotBot',         link: '/rotbot',       icon: 'chat'   },
       { name: 'Proyectos',      link: '#portfolio',    icon: 'grid'   },
       { name: 'Planes',         link: '/planes',       icon: 'planes' },
@@ -495,6 +500,7 @@ export class NavbarComponent implements OnInit {
     ],
     en: [
       { name: 'Home',           link: '#hero',         icon: 'home'   },
+      { name: 'Links',          link: '/links',        icon: 'link'   },
       { name: 'RotBot',         link: '/rotbot',       icon: 'chat'   },
       { name: 'Projects',       link: '#portfolio',    icon: 'grid'   },
       { name: 'Plans',          link: '/planes',       icon: 'planes' },
