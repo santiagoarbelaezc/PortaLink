@@ -8,7 +8,8 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
     imports: [CommonModule],
     encapsulation: ViewEncapsulation.None,
     template: `
-    <section id="hero" class="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
+    <ng-container *ngIf="!isLoading; else skeleton">
+      <section id="hero" class="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
 
       <div class="container mx-auto px-6 pt-20 pb-28 md:pt-32 md:pb-0 grid grid-cols-1 lg:grid-cols-[42%_58%] gap-8 md:gap-12 items-center relative z-10">
         <!-- Text Content -->
@@ -95,7 +96,65 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
           </div>
         </div>
       </div>
-    </section>
+      </section>
+    </ng-container>
+
+    <ng-template #skeleton>
+      <section class="relative min-h-screen w-full flex items-center justify-center overflow-hidden animate-pulse">
+        <div class="container mx-auto px-6 pt-20 pb-28 md:pt-32 md:pb-0 grid grid-cols-1 lg:grid-cols-[42%_58%] gap-8 md:gap-12 items-center relative z-10">
+          
+          <!-- Text Skeleton -->
+          <div class="w-full space-y-6">
+            <div class="flex items-center gap-4">
+              <div class="h-px w-10 opacity-20" style="background-color: var(--text-primary);"></div>
+              <div class="h-3 w-32 rounded-full opacity-20" style="background-color: var(--text-primary);"></div>
+            </div>
+            
+            <div class="space-y-4">
+              <div class="h-16 md:h-20 w-3/4 rounded-2xl opacity-20" style="background-color: var(--text-primary);"></div>
+              <div class="h-16 md:h-20 w-1/2 rounded-2xl opacity-20" style="background-color: var(--text-primary);"></div>
+            </div>
+            
+            <div class="space-y-3 pt-4">
+              <div class="h-4 w-full rounded-full opacity-10" style="background-color: var(--text-primary);"></div>
+              <div class="h-4 w-5/6 rounded-full opacity-10" style="background-color: var(--text-primary);"></div>
+              <div class="h-4 w-4/6 rounded-full opacity-10" style="background-color: var(--text-primary);"></div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3 pt-6 w-full max-w-xl">
+              <div class="h-12 w-full rounded-xl opacity-5" style="background-color: var(--text-primary);"></div>
+              <div class="h-12 w-full rounded-xl opacity-5" style="background-color: var(--text-primary);"></div>
+              <div class="h-12 w-full rounded-xl opacity-5" style="background-color: var(--text-primary);"></div>
+              <div class="h-12 w-full rounded-xl opacity-5" style="background-color: var(--text-primary);"></div>
+            </div>
+            
+            <div class="pt-6">
+              <div class="h-16 w-48 rounded-full opacity-20" style="background-color: var(--text-primary);"></div>
+            </div>
+          </div>
+          
+          <!-- Cards Skeleton -->
+          <div class="w-full py-6 overflow-hidden lg:-ml-8 xl:-ml-14 flex items-center">
+            <div class="flex gap-6 pb-6 w-full px-6 md:px-8">
+              <div *ngFor="let _ of [1,2,3]" class="shrink-0 w-[270px] sm:w-[310px] space-y-4">
+                <div class="w-full aspect-[3/4.2] rounded-[24px] sm:rounded-[32px] opacity-10 shadow-xl" style="background-color: var(--text-primary);"></div>
+                
+                <div class="flex gap-2 justify-center lg:justify-start">
+                  <div class="h-3 w-3 rounded-full opacity-20" style="background-color: var(--text-primary);"></div>
+                  <div class="h-3 w-3 rounded-full opacity-20" style="background-color: var(--text-primary);"></div>
+                  <div class="h-3 w-3 rounded-full opacity-20" style="background-color: var(--text-primary);"></div>
+                </div>
+                
+                <div class="h-5 w-3/4 rounded-full mx-auto lg:mx-0 opacity-20" style="background-color: var(--text-primary);"></div>
+                <div class="h-3 w-full rounded-full mx-auto lg:mx-0 opacity-10" style="background-color: var(--text-primary);"></div>
+                <div class="h-3 w-5/6 rounded-full mx-auto lg:mx-0 opacity-10" style="background-color: var(--text-primary);"></div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </section>
+    </ng-template>
   `,
     styles: [`
     .hero-title .title-soy {
@@ -187,6 +246,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
 })
 export class HeroComponent implements OnInit, OnDestroy {
   @Input() data: any;
+  isLoading = true;
 
   currentLanguage = 'es';
 
@@ -325,6 +385,11 @@ export class HeroComponent implements OnInit, OnDestroy {
       this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
       window.addEventListener('portfolio-language-change', this.onLanguageChange);
     }
+    
+    // Fake loading delay to mimic the dashboard shimmer experience smoothly
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 800);
   }
 
   ngOnDestroy() {
