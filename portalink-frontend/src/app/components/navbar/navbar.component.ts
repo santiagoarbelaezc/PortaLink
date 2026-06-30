@@ -490,15 +490,15 @@ export class NavbarComponent implements OnInit {
       { name: 'Inicio',         link: '#hero',         icon: 'home'   },
       { name: 'RotBot',         link: '/rotbot',       icon: 'chat'   },
       { name: 'Proyectos',      link: '#portfolio',    icon: 'grid'   },
-      { name: 'Planes',         link: '/personalizar', icon: 'planes' },
-      { name: 'Crear tu sitio', link: '#contact',      icon: 'layers' }
+      { name: 'Planes',         link: '/planes',       icon: 'planes' },
+      { name: 'Crear tu sitio', link: '/personalizar', icon: 'layers' }
     ],
     en: [
       { name: 'Home',           link: '#hero',         icon: 'home'   },
       { name: 'RotBot',         link: '/rotbot',       icon: 'chat'   },
       { name: 'Projects',       link: '#portfolio',    icon: 'grid'   },
-      { name: 'Plans',          link: '/personalizar', icon: 'planes' },
-      { name: 'Create site',    link: '#contact',      icon: 'layers' }
+      { name: 'Plans',          link: '/planes',       icon: 'planes' },
+      { name: 'Create site',    link: '/personalizar', icon: 'layers' }
     ]
   };
 
@@ -635,6 +635,12 @@ export class NavbarComponent implements OnInit {
 
     if (this.router.url.includes('/rotbot')) {
       this.activeSection = '/rotbot';
+      this.updatePillPosition();
+      return;
+    }
+
+    if (this.router.url.includes('/planes')) {
+      this.activeSection = '/planes';
       this.updatePillPosition();
       return;
     }

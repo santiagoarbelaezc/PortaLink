@@ -27,12 +27,12 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
             <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(0,245,255,0.3)]" alt="Rotbot">
           </div>
           <div>
-            <h3 class="font-sans text-[15px] font-bold tracking-wide leading-none" style="color: var(--text-primary);">
+            <h3 class="font-sans text-[16px] font-bold tracking-wide leading-none" style="color: var(--text-primary);">
               RotBot IA
             </h3>
             <div class="flex items-center gap-1.5 mt-1.5">
                <span class="w-1.5 h-1.5 rounded-full animate-pulse shadow-[0_0_5px_var(--accent-color)]" style="background-color: var(--accent-color);"></span>
-               <p class="text-[9px] uppercase tracking-widest font-sans font-medium" style="color: var(--text-secondary); opacity: 0.7;">System Active</p>
+               <p class="text-[10px] uppercase tracking-widest font-sans font-medium" style="color: var(--text-secondary); opacity: 0.7;">System Active</p>
             </div>
           </div>
         </div>
@@ -40,7 +40,7 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
         <!-- Actions Container -->
         <div class="flex items-center gap-4 relative z-10">
           <!-- Nuevo Chat -->
-          <button (click)="chatService.clearHistory()" class="text-xs font-semibold uppercase tracking-wider flex items-center gap-2 hover:opacity-100 opacity-60 transition-all mr-2" style="color: var(--text-primary);">
+          <button (click)="chatService.clearHistory()" class="text-sm font-semibold uppercase tracking-wider flex items-center gap-2 hover:opacity-100 opacity-60 transition-all mr-2" style="color: var(--text-primary);">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-3.08 2.82"/>
             </svg>
@@ -48,7 +48,7 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
           </button>
 
           <!-- Volver al Inicio -->
-          <a routerLink="/" class="text-xs font-semibold uppercase tracking-wider flex items-center gap-2 hover:opacity-100 opacity-60 transition-all mr-2" style="color: var(--text-primary);">
+          <a routerLink="/" class="text-sm font-semibold uppercase tracking-wider flex items-center gap-2 hover:opacity-100 opacity-60 transition-all mr-2" style="color: var(--text-primary);">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
               <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -93,44 +93,44 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
           
           <button (click)="sendShortcutMessage('Quiero E-commerce')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Quiero un E-commerce</span>
+            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Quiero un E-commerce</span>
           </button>
           
           <button (click)="sendShortcutMessage('Muéstrame diseños móviles')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Ver diseños móviles</span>
+            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Ver diseños móviles</span>
           </button>
           
           <button (click)="sendShortcutMessage('Necesito un sistema para mi negocio')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Sistema para mi negocio</span>
+            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Sistema para mi negocio</span>
           </button>
           
           <button (click)="sendShortcutMessage('Quiero una implementación de IA en mi negocio')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Implementación de IA</span>
+            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Implementación de IA</span>
           </button>
  
           <h4 class="sidebar-title mt-4 mb-2">Recomendaciones</h4>
  
           <button (click)="sendShortcutMessage('Diseño de portafolio web premium')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Portafolio web premium</span>
+            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Portafolio web premium</span>
           </button>
  
           <button (click)="sendShortcutMessage('Optimización SEO y rendimiento')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Optimización SEO</span>
+            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Optimización SEO</span>
           </button>
  
           <button (click)="sendShortcutMessage('Diseño UI/UX a medida')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Diseño UI/UX a medida</span>
+            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Diseño UI/UX a medida</span>
           </button>
  
           <button (click)="sendShortcutMessage('Infraestructura Cloud y bases de datos')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Infraestructura Cloud</span>
+            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Infraestructura Cloud</span>
           </button>
         </div>
  
@@ -145,10 +145,10 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
               <div class="w-48 h-48 sm:w-60 sm:h-60 mb-2 relative flex items-center justify-center overflow-visible">
                 <img src="assets/images/rotbot4.png" class="w-full h-full object-contain relative z-10" alt="Rotbot Full">
               </div>
-              <h2 class="text-lg sm:text-xl font-headline uppercase tracking-wider mb-2" style="color: var(--text-primary);">
+              <h2 class="text-xl sm:text-2xl font-headline uppercase tracking-wider mb-2" style="color: var(--text-primary);">
                 Sistemas con Rotbot IA
               </h2>
-              <div class="text-[13px] sm:text-[13.5px] font-light leading-relaxed px-4 max-w-[95%]" style="color: var(--text-secondary);">
+              <div class="text-[14px] sm:text-[15px] font-light leading-relaxed px-4 max-w-[95%]" style="color: var(--text-secondary);">
                 <p class="mb-2">
                   ¡Hola! Soy RotBot, tu copiloto tecnológico. Estoy listo para guiarte en el diseño y desarrollo de sistemas a medida, e-commerce e integración de Inteligencia Artificial para potenciar tu negocio.
                 </p>
@@ -166,8 +166,8 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
               <!-- Message Bubble -->
               <div 
                 [ngClass]="{
-                  'assistant-bubble py-2 text-[15px] leading-relaxed max-w-[72%]': msg.role === 'assistant',
-                  'user-bubble px-4 py-3 rounded-2xl rounded-tr-sm text-[15px] leading-relaxed max-w-[85%] border shadow-sm': msg.role === 'user'
+                  'assistant-bubble py-2 text-[16px] leading-relaxed max-w-[72%]': msg.role === 'assistant',
+                  'user-bubble px-4 py-3 rounded-2xl rounded-tr-sm text-[16px] leading-relaxed max-w-[85%] border shadow-sm': msg.role === 'user'
                 }"
               >
                 <span [innerHTML]="msg.content | markdown"></span>
@@ -195,7 +195,7 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
                 [(ngModel)]="chatService.userInput"
                 name="userInput"
                 placeholder="Pregúntale a Rotbot..."
-                class="chat-input w-full rounded-xl border py-4 pl-5 pr-14 text-[15px] font-light tracking-wide transition-all focus:ring-0 focus:outline-none"
+                class="chat-input w-full rounded-xl border py-4 pl-5 pr-14 text-[16px] font-light tracking-wide transition-all focus:ring-0 focus:outline-none"
               />
               <button 
                 type="submit"
@@ -209,7 +209,7 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
               </button>
             </form>
             <div class="flex justify-center mt-3">
-               <span class="text-[9px] uppercase tracking-widest font-sans font-medium opacity-30" style="color: var(--text-secondary);">Powered by Portalink IA</span>
+               <span class="text-[10px] uppercase tracking-widest font-sans font-medium opacity-30" style="color: var(--text-secondary);">Powered by Portalink IA</span>
             </div>
           </div>
         </div>
@@ -224,7 +224,7 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
             </div>
             <div>
               <h5 class="text-sm font-bold tracking-wide" style="color: var(--text-primary);">Copiloto Tecnológico</h5>
-              <p class="text-[11.5px] font-normal mt-2 leading-relaxed opacity-95" style="color: var(--text-secondary);">
+              <p class="text-[12.5px] font-normal mt-2 leading-relaxed opacity-95" style="color: var(--text-secondary);">
                 Rotbot es una inteligencia artificial diseñada para asesorar y guiar en el desarrollo de soluciones digitales avanzadas, desarrollo a medida y automatizaciones de procesos comerciales.
               </p>
               <button (click)="isInfoModalOpen = true" class="mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] transition-all group">
@@ -233,7 +233,7 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
                   <line x1="12" y1="16" x2="12" y2="12"></line>
                   <line x1="12" y1="8" x2="12.01" y2="8"></line>
                 </svg>
-                <span class="text-[11px] font-bold uppercase tracking-wider" style="color: var(--text-primary);">Info de la IA</span>
+                <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--text-primary);">Info de la IA</span>
               </button>
             </div>
           </div>
@@ -241,9 +241,9 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
           <h4 class="sidebar-title mt-2 mb-2">¿Tienes un Proyecto?</h4>
  
           <button (click)="sendShortcutMessage('Quiero una implementación de IA en mi negocio')" class="shortcut-btn flex flex-col gap-2 p-5 rounded-xl text-left border transition-all duration-300 shadow-sm hover:shadow-md">
-            <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--accent-color);">Oportunidad</span>
-            <span class="text-[14.5px] font-semibold leading-snug" style="color: var(--text-primary);">Quiero mi IA para mi negocio</span>
-            <span class="text-[11px] font-normal opacity-95 leading-normal block" style="color: var(--text-secondary);">
+            <span class="text-[11px] font-bold uppercase tracking-widest" style="color: var(--accent-color);">Oportunidad</span>
+            <span class="text-[15.5px] font-semibold leading-snug" style="color: var(--text-primary);">Quiero mi IA para mi negocio</span>
+            <span class="text-[12px] font-normal opacity-95 leading-normal block" style="color: var(--text-secondary);">
               Empieza hoy la transformación digital y automatiza tu negocio con Inteligencia Artificial.
             </span>
           </button>
@@ -450,7 +450,7 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
       box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.02);
     }
     .sidebar-title {
-      font-size: 11px;
+      font-size: 12px;
       text-transform: uppercase;
       letter-spacing: 0.2em;
       font-family: var(--font-sans, sans-serif);

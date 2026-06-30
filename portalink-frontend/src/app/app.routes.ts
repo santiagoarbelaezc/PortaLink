@@ -3,6 +3,7 @@ import { LinkComponent } from './pages/link/link.component';
 import { ProyectosComponent } from './pages/proyectos/proyectos.component';
 import { RotbotComponent } from './pages/rotbot/rotbot.component';
 import { PersonalizarComponent } from './pages/personalizar/personalizar.component';
+import { PlanesComponent } from './pages/planes/planes.component';
 import { AdminComponent } from './pages/admin/admin.component';
 import { LoginComponent } from './pages/login/login.component';
 import { ProposalComponent } from './pages/proposal/proposal.component';
@@ -38,6 +39,11 @@ export const routes: Routes = [
     path: 'rotbot',
     component: RotbotComponent,
     data: { animation: 'RotbotPage' }
+  },
+  {
+    path: 'planes',
+    component: PlanesComponent,
+    data: { animation: 'PlanesPage' }
   },
   {
     path: 'personalizar',
