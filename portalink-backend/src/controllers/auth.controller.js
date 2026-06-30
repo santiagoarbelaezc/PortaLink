@@ -228,3 +228,32 @@ exports.getUsers = async (req, res) => {
         res.status(500).json({ message: 'Error en el servidor al obtener usuarios' });
     }
 };
+
+exports.updatePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        const userId = req.user.id; // from verifyToken middleware
+        
+        // 1. Obtener usuario
+        const result = await db.query('SELECT * FROM usuarios WHERE id = $1', [userId]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+        const user = result.rows[0];
+
+        // 2. Verificar contraseña actual
+        const validPassword = await bcrypt.compare(currentPassword, user.password);
+        if (!validPassword) {
+            return res.status(401).json({ message: 'La contraseña actual es incorrecta' });
+        }
+
+        // 3. Encriptar y actualizar nueva contraseña
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await db.query('UPDATE usuarios SET password = $1 WHERE id = $2', [hashedPassword, userId]);
+
+        res.json({ message: 'Contraseña actualizada exitosamente' });
+    } catch (error) {
+        console.error('Error al actualizar contraseña:', error);
+        res.status(500).json({ message: 'Error en el servidor al actualizar la contraseña' });
+    }
+};
