@@ -27,6 +27,7 @@ const financeRoutes = require('./routes/finance.routes');
 const analyticsRoutes = require('./routes/analytics.routes');
 const reportsRoutes = require('./routes/reports.routes');
 const configRoutes = require('./routes/config.routes');
+const messagesRoutes = require('./routes/messages.routes');
 // Usar rutas
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
@@ -35,6 +36,7 @@ app.use('/api/finance', financeRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/config', configRoutes);
+app.use('/api/messages', messagesRoutes);
 
 module.exports = app;
 

@@ -163,3 +163,17 @@ CREATE TABLE IF NOT EXISTS system_settings (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+
+
+-- ==========================================
+-- 6. CONTACT MESSAGES (Formulario de Contacto)
+-- ==========================================
+CREATE TABLE IF NOT EXISTS contact_messages (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    correo VARCHAR(100) NOT NULL,
+    mensaje TEXT NOT NULL,
+    status VARCHAR(20) DEFAULT 'unread',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+

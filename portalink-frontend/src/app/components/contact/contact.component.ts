@@ -1,13 +1,15 @@
 import { Component, Input, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { MagneticDirective } from '../../shared/directives/magnetic.directive';
+import { MessagesService } from '../../services/messages.service';
 
 @Component({
   selector: 'app-contact',
   standalone: true,
-  imports: [CommonModule, RouterModule, RevealDirective, MagneticDirective],
+  imports: [CommonModule, RouterModule, FormsModule, RevealDirective, MagneticDirective],
   encapsulation: ViewEncapsulation.None,
   template: `
     <section id="contact" class="py-20 md:py-32 px-6 pb-32 md:pb-20">
@@ -61,25 +63,31 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
             </div>
 
             <!-- Right Side: Form (Only if active) -->
-            <form class="space-y-8 relative z-0" *ngIf="data?.formActive !== false">
+            <form class="space-y-8 relative z-0" *ngIf="data?.formActive !== false" (ngSubmit)="onSubmit()">
               <div class="relative group">
-                <input type="text" placeholder=" " class="contact-input peer w-full focus:outline-none" />
+                <input type="text" name="nombre" [(ngModel)]="formData.nombre" placeholder=" " class="contact-input peer w-full focus:outline-none" required />
                 <label class="contact-label">{{ getTranslation().labelName }}</label>
               </div>
 
               <div class="relative group">
-                <input type="email" placeholder=" " class="contact-input peer w-full focus:outline-none" />
+                <input type="email" name="correo" [(ngModel)]="formData.correo" placeholder=" " class="contact-input peer w-full focus:outline-none" required />
                 <label class="contact-label">{{ getTranslation().labelEmail }}</label>
               </div>
 
               <div class="relative group">
-                <textarea rows="4" placeholder=" " class="contact-input peer w-full focus:outline-none resize-none"></textarea>
+                <textarea name="mensaje" [(ngModel)]="formData.mensaje" rows="4" placeholder=" " class="contact-input peer w-full focus:outline-none resize-none" required></textarea>
                 <label class="contact-label">{{ getTranslation().labelMessage }}</label>
               </div>
 
-              <button type="button" class="btn-primary-custom w-full group">
-                <span class="uppercase tracking-[0.3em] font-bold text-xs">{{ getTranslation().btnSend }}</span>
+              <button type="submit" [disabled]="isSubmitting" class="btn-primary-custom w-full group disabled:opacity-50">
+                <span class="uppercase tracking-[0.3em] font-bold text-xs">
+                  {{ isSubmitting ? 'Enviando...' : getTranslation().btnSend }}
+                </span>
               </button>
+              
+              <div *ngIf="showSuccess" class="text-green-500 text-xs font-bold uppercase tracking-widest text-center mt-4">
+                ¡Mensaje enviado con éxito!
+              </div>
             </form>
             
             <div *ngIf="data?.formActive === false" class="flex items-center justify-center border p-10 rounded-xl" style="border-color: var(--card-border); background: var(--card-bg);">
@@ -201,6 +209,12 @@ export class ContactComponent implements OnInit, OnDestroy {
     { platform: 'GitHub', url: '#' }
   ];
 
+  formData = { nombre: '', correo: '', mensaje: '' };
+  isSubmitting = false;
+  showSuccess = false;
+
+  constructor(private messagesService: MessagesService) {}
+
   ngOnInit() {
     if (typeof window !== 'undefined') {
       this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
@@ -220,5 +234,26 @@ export class ContactComponent implements OnInit, OnDestroy {
 
   getTranslation() {
     return this.translations[this.currentLanguage] || this.translations['es'];
+  }
+
+  onSubmit() {
+    if (!this.formData.nombre || !this.formData.correo || !this.formData.mensaje) {
+      return;
+    }
+    
+    this.isSubmitting = true;
+    this.messagesService.sendMessage(this.formData).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        this.showSuccess = true;
+        this.formData = { nombre: '', correo: '', mensaje: '' };
+        setTimeout(() => this.showSuccess = false, 5000);
+      },
+      error: (err) => {
+        console.error('Error enviando mensaje', err);
+        this.isSubmitting = false;
+        alert('Hubo un error al enviar el mensaje. Inténtalo de nuevo más tarde.');
+      }
+    });
   }
 }
