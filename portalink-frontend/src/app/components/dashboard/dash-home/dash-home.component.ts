@@ -9,9 +9,10 @@ import { ItineraryService } from '../../../services/itinerary.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="space-y-6 tab-enter">
+    <ng-container *ngIf="!isLoading; else skeleton">
+      <div class="space-y-6 tab-enter">
 
-      <!-- ═══════════════════════ WELCOME BANNER ═══════════════════════ -->
+        <!-- ═══════════════════════ WELCOME BANNER ═══════════════════════ -->
       <div class="relative overflow-hidden rounded-2xl border p-6 md:p-10 min-h-[280px] flex flex-col justify-center"
            [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
 
@@ -381,8 +382,59 @@ import { ItineraryService } from '../../../services/itinerary.service';
           Reiniciar Métricas
         </button>
       </div>
-
     </div>
+    </ng-container>
+
+    <!-- ═══════════════════════ SKELETON LOADER ═══════════════════════ -->
+    <ng-template #skeleton>
+      <div class="space-y-6">
+        
+        <!-- Skeleton Banner -->
+        <div class="rounded-2xl border p-6 md:p-10 min-h-[280px] flex flex-col justify-center animate-pulse"
+             [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800/50' : 'bg-neutral-100/50 border-neutral-200/50'">
+          <div class="max-w-[75%] md:max-w-[60%] space-y-4">
+            <div class="h-3 w-24 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
+            <div class="h-8 md:h-10 w-3/4 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
+            <div class="h-5 w-48 rounded-md" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
+            <div class="flex flex-wrap gap-2 pt-4">
+              <div class="h-8 w-28 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
+              <div class="h-8 w-36 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
+              <div class="h-8 w-32 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Skeleton AI Command Center -->
+        <div class="rounded-2xl border p-6 animate-pulse"
+             [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800/50' : 'bg-neutral-100/50 border-neutral-200/50'">
+          <div class="flex gap-3 mb-4">
+            <div class="w-7 h-7 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
+            <div class="h-6 w-48 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
+          </div>
+          <div class="h-4 w-3/4 rounded-md mb-4" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
+          <div class="h-12 w-full rounded-xl" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
+          <div class="flex gap-2 mt-4">
+            <div class="h-6 w-24 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
+            <div class="h-6 w-32 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
+            <div class="h-6 w-32 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
+          </div>
+        </div>
+
+        <!-- Skeleton Metric Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          <div *ngFor="let _ of [1,2,3,4]" class="rounded-2xl border p-5 animate-pulse h-32"
+               [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800/50' : 'bg-neutral-100/50 border-neutral-200/50'">
+            <div class="flex justify-between items-start mb-3">
+              <div class="h-3 w-20 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
+              <div class="h-8 w-8 rounded-xl" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
+            </div>
+            <div class="h-10 w-24 rounded-lg mt-2" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
+            <div class="h-3 w-32 rounded-full mt-3" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
+          </div>
+        </div>
+        
+      </div>
+    </ng-template>
   `,
   styles: [`
     .tab-enter { animation: tabEnter 0.25s ease-out forwards; }
@@ -409,6 +461,9 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   metrics!: SystemMetrics;
   currentDate = '';
   currentTime = '';
+  isLoading = true;
+  private metricsLoaded = false;
+  private itineraryLoaded = false;
   unreadMessages = 0;
   pendingLeads = 0;
   private clockInterval: any;
@@ -452,6 +507,8 @@ export class DashHomeComponent implements OnInit, OnDestroy {
       this.metrics = m;
       this.buildCards();
       this.buildArrays();
+      this.metricsLoaded = true;
+      this.checkLoading();
     });
     this.loadBadges();
     this.loadItineraryToday();
@@ -653,9 +710,24 @@ export class DashHomeComponent implements OnInit, OnDestroy {
             // Optional: Auto-clear logic can go here.
           }
         }
+        this.itineraryLoaded = true;
+        this.checkLoading();
       },
-      error: (err) => console.error('Error loading itinerary notifs', err)
+      error: (err) => {
+        console.error('Error loading itinerary notifs', err);
+        this.itineraryLoaded = true;
+        this.checkLoading();
+      }
     });
+  }
+
+  private checkLoading() {
+    if (this.metricsLoaded && this.itineraryLoaded) {
+      // Un pequeño retraso para que la animación se aprecie (opcional pero hace que se sienta premium)
+      setTimeout(() => {
+        this.isLoading = false;
+      }, 300);
+    }
   }
 
   goToItinerary() {

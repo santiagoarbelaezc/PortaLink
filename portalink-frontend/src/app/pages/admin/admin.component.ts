@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import { MessagesService } from '../../services/messages.service';
 
 // Dashboard Components
 import { DashAiSearchComponent } from '../../components/dashboard/dash-ai-search/dash-ai-search.component';
@@ -125,12 +126,12 @@ interface Tab {
 
             <!-- Badges -->
             <ng-container *ngIf="!isSidebarCollapsed">
-              <span *ngIf="tab.id === 'messages' && unreadMessages > 0"
+              <span *ngIf="tab.id === 'messages' && unreadMessages > 0 && activeTab !== 'messages'"
                     class="text-[9px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center"
                     [ngClass]="activeTab === tab.id ? (isDark ? 'bg-black/20 text-white' : 'bg-white/20 text-black') : (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white')">
                 {{ unreadMessages }}
               </span>
-              <span *ngIf="tab.id === 'leads' && pendingLeads > 0"
+              <span *ngIf="tab.id === 'leads' && pendingLeads > 0 && activeTab !== 'leads'"
                     class="text-[9px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center"
                     [ngClass]="activeTab === tab.id ? (isDark ? 'bg-black/20 text-white' : 'bg-white/20 text-black') : (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white')">
                 {{ pendingLeads }}
@@ -259,6 +260,7 @@ interface Tab {
 })
 export class AdminComponent implements OnInit {
   private router = inject(Router);
+  private messagesService = inject(MessagesService);
 
   activeTab = 'dashboard';
   currentTheme = 'dark';
@@ -308,12 +310,19 @@ export class AdminComponent implements OnInit {
   }
 
   refreshBadges() {
+    // Leads is still local for now
     try {
-      const msgs = JSON.parse(localStorage.getItem('portalink_admin_messages') || '[]');
       const leads = JSON.parse(localStorage.getItem('portalink_admin_leads') || '[]');
-      this.unreadMessages = msgs.filter((m: any) => !m.read).length;
       this.pendingLeads = leads.filter((l: any) => l.status === 'Pendiente').length;
     } catch { }
+
+    // Fetch real unread messages from backend
+    this.messagesService.getMessages().subscribe({
+      next: (msgs) => {
+        this.unreadMessages = msgs.filter(m => m.status === 'unread').length;
+      },
+      error: () => {}
+    });
   }
 
   logout() {
