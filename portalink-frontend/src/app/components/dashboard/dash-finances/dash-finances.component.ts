@@ -1075,7 +1075,35 @@ export class DashFinancesComponent implements OnInit {
   openNewClient() { this.editingClient = { id: '', name: '', email: '', phone: '', company: '', notes: '', createdAt: new Date().toISOString().split('T')[0] }; this.showClientForm = true; }
   editClient(c: Client) { this.editingClient = { ...c }; this.showClientForm = true; }
   async saveClient() {
-    if (!this.editingClient?.name || !this.editingClient?.email) return;
+    if (!this.editingClient?.name || !this.editingClient?.email) {
+      alert('Por favor completa los campos obligatorios (Nombre, Email).');
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.editingClient.email)) {
+      alert('Por favor, ingresa un correo electrónico válido.');
+      return;
+    }
+
+    // Phone validation and extension addition
+    if (this.editingClient.phone) {
+      let phone = this.editingClient.phone.trim();
+      if (/^\d{10}$/.test(phone)) {
+        phone = '+57 ' + phone;
+      } else if (/^\d+$/.test(phone)) {
+        phone = '+57 ' + phone;
+      }
+      
+      const phoneRegex = /^\+?[0-9\s\-]+$/;
+      if (!phoneRegex.test(phone)) {
+        alert('Por favor, ingresa un número de celular válido.');
+        return;
+      }
+      this.editingClient.phone = phone;
+    }
+
     try {
       await firstValueFrom(this.financeService.saveClient(this.editingClient as Client));
       this.showClientForm = false;
@@ -1104,7 +1132,22 @@ export class DashFinancesComponent implements OnInit {
   openNewService() { this.editingService = { id: '', name: '', description: '', unitPrice: 0, category: 'desarrollo' }; this.showServiceForm = true; }
   editService(s: Service) { this.editingService = { ...s }; this.showServiceForm = true; }
   async saveService() {
-    if (!this.editingService?.name) return;
+    if (!this.editingService?.name) {
+      alert('El nombre del servicio es obligatorio.');
+      return;
+    }
+    
+    const price = this.editingService.unitPrice;
+    if (price !== undefined && price !== null) {
+      if (price < 0) {
+        alert('El precio no puede ser negativo.');
+        return;
+      }
+      if (!Number.isInteger(price)) {
+        alert('El precio no puede contener decimales.');
+        return;
+      }
+    }
     try {
       await firstValueFrom(this.financeService.saveService(this.editingService as Service));
       this.showServiceForm = false;
@@ -1177,6 +1220,25 @@ export class DashFinancesComponent implements OnInit {
   async saveInvoice(status: Invoice['status']) {
     if (!this.editingInvoice?.clientId) { alert('Selecciona un cliente primero.'); return; }
     if (!this.editingInvoice?.items?.length) { alert('Agrega al menos un servicio.'); return; }
+    
+    for (const item of this.editingInvoice.items) {
+      if (item.quantity === undefined || item.quantity < 1 || !Number.isInteger(item.quantity)) {
+        alert(`La cantidad para el servicio "${item.serviceName}" debe ser un número entero mayor a 0.`);
+        return;
+      }
+      if (item.unitPrice === undefined || item.unitPrice < 0 || !Number.isInteger(item.unitPrice)) {
+        alert(`El precio unitario para el servicio "${item.serviceName}" no puede ser negativo ni contener decimales.`);
+        return;
+      }
+    }
+
+    if (this.editingInvoice.taxRate !== undefined && this.editingInvoice.taxRate !== null) {
+        if (this.editingInvoice.taxRate < 0 || this.editingInvoice.taxRate > 100) {
+            alert('El IVA debe estar entre 0 y 100.');
+            return;
+        }
+    }
+
     this.editingInvoice.status = status;
     try {
       await firstValueFrom(this.financeService.saveInvoice(this.editingInvoice as Invoice));
