@@ -183,23 +183,25 @@ import { AuthService } from '../../services/auth.service';
             </div>
  
             <!-- Messages List -->
-            <div *ngFor="let msg of chatService.messages" class="flex w-full px-6 md:px-16 animate-fade-in" [ngClass]="{'justify-end': msg.role === 'user', 'justify-start': msg.role === 'assistant'}">
-              
-              <!-- Assistant Avatar -->
-              <div *ngIf="msg.role === 'assistant'" class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center mr-2.5 p-1 border avatar-bg">
-                <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain" alt="Rotbot">
+            <ng-container *ngIf="authService.hasToken()">
+              <div *ngFor="let msg of chatService.messages" class="flex w-full px-6 md:px-16 animate-fade-in" [ngClass]="{'justify-end': msg.role === 'user', 'justify-start': msg.role === 'assistant'}">
+                
+                <!-- Assistant Avatar -->
+                <div *ngIf="msg.role === 'assistant'" class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center mr-2.5 p-1 border avatar-bg">
+                  <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain" alt="Rotbot">
+                </div>
+   
+                <!-- Message Bubble -->
+                <div 
+                  [ngClass]="{
+                    'assistant-bubble py-2 text-[16px] leading-relaxed max-w-[72%]': msg.role === 'assistant',
+                    'user-bubble px-4 py-3 rounded-2xl rounded-tr-sm text-[16px] leading-relaxed max-w-[85%] border shadow-sm': msg.role === 'user'
+                  }"
+                >
+                  <span [innerHTML]="msg.content | markdown"></span>
+                </div>
               </div>
- 
-              <!-- Message Bubble -->
-              <div 
-                [ngClass]="{
-                  'assistant-bubble py-2 text-[16px] leading-relaxed max-w-[72%]': msg.role === 'assistant',
-                  'user-bubble px-4 py-3 rounded-2xl rounded-tr-sm text-[16px] leading-relaxed max-w-[85%] border shadow-sm': msg.role === 'user'
-                }"
-              >
-                <span [innerHTML]="msg.content | markdown"></span>
-              </div>
-            </div>
+            </ng-container>
  
             <!-- Typing Indicator -->
             <div *ngIf="chatService.isTyping" class="flex items-center gap-3 w-full px-6 md:px-16">
@@ -575,9 +577,14 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.chatService.loadHistory().subscribe(() => this.scrollToBottom());
     this.chatService.loadUsage();
 
-    // Si venía con un mensaje pre-cargado (desde el home), enviarlo
+    // Si venía con un mensaje pre-cargado (desde el home o el chat flotante), enviarlo solo si está logueado
     if (this.chatService.userInput.trim()) {
-      setTimeout(() => this.sendMessage(), 400);
+      if (this.authService.hasToken()) {
+        setTimeout(() => this.sendMessage(), 400);
+      } else {
+        // Si no está logueado, limpiamos el input para evitar que quede el texto "trabado" o que intente mandarlo
+        this.chatService.userInput = '';
+      }
     }
   }
 

@@ -5,6 +5,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { FormsModule } from '@angular/forms';
 import { ChatStateService } from '../../services/chat-state.service';
 import { AnalyticsService } from '../../services/analytics.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-ai-chat-floating',
@@ -100,23 +101,25 @@ import { AnalyticsService } from '../../services/analytics.service';
             </div>
 
             <!-- Message List -->
-            <div *ngFor="let msg of chatService.messages" class="flex w-full animate-fade-in" [ngClass]="{'justify-end': msg.role === 'user', 'justify-start': msg.role === 'assistant'}">
-              
-              <!-- Assistant Avatar -->
-              <div *ngIf="msg.role === 'assistant'" class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center mr-2.5 p-1 border avatar-bg">
-                <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain" alt="Rotbot">
+            <ng-container *ngIf="authService.hasToken()">
+              <div *ngFor="let msg of chatService.messages" class="flex w-full animate-fade-in" [ngClass]="{'justify-end': msg.role === 'user', 'justify-start': msg.role === 'assistant'}">
+                
+                <!-- Assistant Avatar -->
+                <div *ngIf="msg.role === 'assistant'" class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center mr-2.5 p-1 border avatar-bg">
+                  <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain" alt="Rotbot">
+                </div>
+  
+                <!-- Message Bubble -->
+                <div 
+                  [ngClass]="{
+                    'assistant-bubble py-2 text-[13.5px] leading-relaxed max-w-[72%]': msg.role === 'assistant',
+                    'user-bubble px-4 py-3 rounded-2xl rounded-tr-sm text-[13.5px] leading-relaxed max-w-[85%] border shadow-sm': msg.role === 'user'
+                  }"
+                >
+                  {{ msg.content }}
+                </div>
               </div>
-
-              <!-- Message Bubble -->
-              <div 
-                [ngClass]="{
-                  'assistant-bubble py-2 text-[13.5px] leading-relaxed max-w-[72%]': msg.role === 'assistant',
-                  'user-bubble px-4 py-3 rounded-2xl rounded-tr-sm text-[13.5px] leading-relaxed max-w-[85%] border shadow-sm': msg.role === 'user'
-                }"
-              >
-                {{ msg.content }}
-              </div>
-            </div>
+            </ng-container>
 
             <!-- Typing Indicator -->
             <div *ngIf="chatService.isTyping" class="flex items-center gap-3 w-full">
@@ -133,25 +136,34 @@ import { AnalyticsService } from '../../services/analytics.service';
 
           <!-- Input Area -->
           <div class="chat-input-area p-4 pt-3 border-t">
-            <form (submit)="sendMessage()" class="relative">
-              <input 
-                type="text" 
-                [(ngModel)]="chatService.userInput"
-                name="userInput"
-                placeholder="Pregúntale a Rotbot..."
-                class="chat-input w-full rounded-xl border py-3.5 pl-4 pr-12 text-[14px] font-light tracking-wide transition-all focus:ring-0 focus:outline-none"
-              />
-              <button 
-                type="submit"
-                [disabled]="!chatService.userInput.trim()"
-                class="chat-submit-btn absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-all"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="22" y1="2" x2="11" y2="13"></line>
-                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                </svg>
-              </button>
-            </form>
+            <ng-container *ngIf="authService.hasToken(); else floatingLoginPrompt">
+              <form (submit)="sendMessage()" class="relative">
+                <input 
+                  type="text" 
+                  [(ngModel)]="chatService.userInput"
+                  name="userInput"
+                  placeholder="Pregúntale a Rotbot..."
+                  class="chat-input w-full rounded-xl border py-3.5 pl-4 pr-12 text-[14px] font-light tracking-wide transition-all focus:ring-0 focus:outline-none"
+                />
+                <button 
+                  type="submit"
+                  [disabled]="!chatService.userInput.trim()"
+                  class="chat-submit-btn absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-all"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                  </svg>
+                </button>
+              </form>
+            </ng-container>
+            <ng-template #floatingLoginPrompt>
+              <div class="flex flex-col items-center justify-center text-center">
+                 <button (click)="toggleFullScreen()" class="w-full py-3 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98]" style="background: var(--accent-color, #00f5ff); color: #000; box-shadow: 0 0 15px rgba(0,245,255,0.2);">
+                    Iniciar Sesión para conversar
+                 </button>
+              </div>
+            </ng-template>
             <div class="flex justify-center mt-3">
                <span class="text-[8px] uppercase tracking-widest font-sans font-medium opacity-30" style="color: var(--text-secondary);">Powered by Portalink IA</span>
             </div>
@@ -317,7 +329,8 @@ export class AiChatFloatingComponent implements OnInit, OnDestroy {
   constructor(
     public chatService: ChatStateService,
     private router: Router,
-    private analyticsService: AnalyticsService
+    private analyticsService: AnalyticsService,
+    public authService: AuthService
   ) {}
 
   ngOnInit() {
