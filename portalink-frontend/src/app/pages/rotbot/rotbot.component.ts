@@ -41,7 +41,10 @@ import { AuthService } from '../../services/auth.service';
         <!-- Actions Container -->
         <div class="flex items-center gap-4 relative z-10">
           <!-- Nuevo Chat -->
-          <button (click)="chatService.clearHistory()" class="text-sm font-semibold uppercase tracking-wider flex items-center gap-2 hover:opacity-100 opacity-60 transition-all mr-2" style="color: var(--text-primary);">
+          <button (click)="chatService.clearHistory()" 
+                  [disabled]="!authService.hasToken()"
+                  [ngClass]="{'opacity-30 cursor-not-allowed': !authService.hasToken(), 'hover:opacity-100 opacity-60': authService.hasToken()}"
+                  class="text-sm font-semibold uppercase tracking-wider flex items-center gap-2 transition-all mr-2" style="color: var(--text-primary);">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-3.08 2.82"/>
             </svg>
@@ -89,7 +92,9 @@ import { AuthService } from '../../services/auth.service';
       <div class="flex flex-row flex-grow w-full overflow-hidden">
         
         <!-- Sidebar Izquierdo (Accesos Rápidos) -->
-        <div *ngIf="!activeDesign" class="chat-sidebar no-scrollbar hidden md:flex flex-col w-80 flex-shrink-0 border-r py-8 px-6 gap-4 overflow-y-auto animate-fade-in" style="border-color: var(--card-border);">
+        <div *ngIf="!activeDesign" 
+             [ngClass]="{'opacity-40 pointer-events-none grayscale': !authService.hasToken()}"
+             class="chat-sidebar no-scrollbar hidden md:flex flex-col w-80 flex-shrink-0 border-r py-8 px-6 gap-4 overflow-y-auto animate-fade-in transition-all duration-500" style="border-color: var(--card-border);">
           <h4 class="sidebar-title mb-2">Accesos Rápidos</h4>
           
           <button (click)="sendShortcutMessage('Quiero E-commerce')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
@@ -141,7 +146,28 @@ import { AuthService } from '../../services/auth.service';
           <!-- Messages Area -->
           <div #scrollContainer class="flex-grow overflow-y-auto scroll-smooth custom-scrollbar messages-area space-y-6" style="overscroll-behavior: contain;">
             
-            <!-- Welcome Intro Section -->
+            <ng-container *ngIf="chatService.isLoadingHistory(); else chatContent">
+              <!-- Skeleton Loader -->
+              <div class="flex flex-col gap-6 px-6 md:px-16 animate-pulse w-full max-w-5xl mx-auto">
+                 <!-- Skeleton Assistant -->
+                 <div class="flex w-full justify-start items-end">
+                    <div class="w-9 h-9 rounded-full bg-white/5 mr-2.5 flex-shrink-0"></div>
+                    <div class="bg-white/5 h-20 w-3/4 max-w-sm rounded-2xl rounded-bl-sm"></div>
+                 </div>
+                 <!-- Skeleton User -->
+                 <div class="flex w-full justify-end items-end">
+                    <div class="bg-white/10 h-14 w-2/3 max-w-xs rounded-2xl rounded-tr-sm"></div>
+                 </div>
+                 <!-- Skeleton Assistant -->
+                 <div class="flex w-full justify-start items-end">
+                    <div class="w-9 h-9 rounded-full bg-white/5 mr-2.5 flex-shrink-0"></div>
+                    <div class="bg-white/5 h-32 w-4/5 max-w-md rounded-2xl rounded-bl-sm"></div>
+                 </div>
+              </div>
+            </ng-container>
+
+            <ng-template #chatContent>
+              <!-- Welcome Intro Section -->
             <div *ngIf="chatService.messages.length <= 1" class="flex flex-col items-center justify-center text-center pb-4 border-b mt-0 mb-2 welcome-border">
               <div class="w-48 h-48 sm:w-60 sm:h-60 mb-2 relative flex items-center justify-center overflow-visible">
                 <img src="assets/images/rotbot4.png" class="w-full h-full object-contain relative z-10" alt="Rotbot Full">
@@ -185,7 +211,8 @@ import { AuthService } from '../../services/auth.service';
                 <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce [animation-delay:0.2s]"></div>
                 <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce [animation-delay:0.4s]"></div>
               </div>
-            </div>
+              </div>
+            </ng-template>
           </div>
  
           <!-- Input Area -->
@@ -212,11 +239,34 @@ import { AuthService } from '../../services/auth.service';
               </form>
             </ng-container>
             <ng-template #loginPrompt>
-              <div class="flex flex-col items-center justify-center py-2 max-w-4xl mx-auto">
-                <p class="text-[13px] font-medium mb-3 tracking-wide" style="color: var(--text-secondary);">Para conversar con RotBot debes iniciar sesión</p>
-                <button routerLink="/login" class="px-8 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98]" style="background: var(--accent-color, #00f5ff); color: #000; box-shadow: 0 0 15px rgba(0,245,255,0.2);">
-                  Iniciar Sesión
-                </button>
+              <div class="flex flex-col items-center justify-center py-6 px-5 max-w-2xl mx-auto rounded-3xl border border-dashed mb-4 relative overflow-hidden"
+                   style="border-color: rgba(0, 245, 255, 0.3); background: linear-gradient(180deg, rgba(0,245,255,0.03) 0%, rgba(0,0,0,0) 100%);">
+                
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1 rounded-full" style="background: var(--accent-color); opacity: 0.8; box-shadow: 0 0 20px var(--accent-color);"></div>
+
+                <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 mt-2 border" style="background: rgba(0,245,255,0.08); border-color: rgba(0,245,255,0.2);">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                </div>
+                
+                <h3 class="text-xl sm:text-2xl font-black uppercase tracking-widest mb-3 font-headline text-center" style="color: var(--text-primary); letter-spacing: 0.1em;">
+                  Desbloquea RotBot IA
+                </h3>
+                
+                <p class="text-sm font-light mb-6 text-center leading-relaxed max-w-lg" style="color: var(--text-secondary);">
+                  Regístrate o inicia sesión para conversar sin límites, acceder a diseños exclusivos y potenciar tu proyecto con nuestro copiloto experto.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto mt-2">
+                  <button routerLink="/register" class="px-8 py-3.5 rounded-2xl text-[11px] font-bold uppercase tracking-[0.2em] transition-all hover:scale-[1.02] active:scale-[0.98] w-full sm:w-auto text-center" style="background: var(--accent-color, #00f5ff); color: #000; box-shadow: 0 0 20px rgba(0,245,255,0.25);">
+                    Crear Cuenta Gratis
+                  </button>
+                  <button routerLink="/login" class="px-8 py-3.5 rounded-2xl text-[11px] font-bold uppercase tracking-[0.2em] transition-all hover:bg-white/5 w-full sm:w-auto text-center border border-white/10" style="color: var(--text-primary);">
+                    Iniciar Sesión
+                  </button>
+                </div>
               </div>
             </ng-template>
             <div class="flex justify-center mt-3">

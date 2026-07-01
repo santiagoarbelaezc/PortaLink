@@ -2,7 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Observable, BehaviorSubject, of } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
+import { tap, catchError, delay } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 
 export interface ChatMessage {
@@ -43,6 +43,7 @@ export class ChatStateService {
   userInput = '';
 
   // State signals
+  isLoadingHistory = signal<boolean>(false);
   remainingMessages = signal<number | null>(null);
   rateLimitEnabled = signal<boolean>(false);
   limitExceeded = signal<boolean>(false);
@@ -116,16 +117,26 @@ export class ChatStateService {
       return of({ messages: [], session_id: null });
     }
 
+    this.isLoadingHistory.set(true);
+
     return this.http.get<{ messages: ChatMessage[]; session_id: number | null }>(
       `${environment.apiUrl}/chat/history`,
       { headers: this.buildHeaders() }
     ).pipe(
+      delay(800), // Agregado para que se aprecie el skeleton loader (efecto visual)
       tap(res => {
         if (res.messages && res.messages.length > 0) {
           this.messages = [{ ...INITIAL_MESSAGE }, ...res.messages];
         }
+        this.isLoadingHistory.set(false);
       }),
-      catchError(() => of({ messages: [], session_id: null }))
+      catchError((err) => {
+        this.isLoadingHistory.set(false);
+        if (err.status === 401 || err.status === 403) {
+          this.clear();
+        }
+        return of({ messages: [], session_id: null });
+      })
     );
   }
 
