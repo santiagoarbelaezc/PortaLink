@@ -93,8 +93,13 @@ export class ChatStateService {
       },
       error: (err) => {
         this.isTyping = false;
-        if (err.status === 429 && err.error?.limit_exceeded) {
+        if (err.status === 429) {
           // Límite alcanzado
+          if (err.error && typeof err.error === 'object' && err.error.user_type) {
+            this.userType.set(err.error.user_type);
+          } else if (!this.authService.hasToken()) {
+            this.userType.set('anonymous');
+          }
           this.limitExceeded.set(true);
         } else {
           this.addMessage('assistant', 'Lo siento, ocurrió un error al procesar tu mensaje. Por favor intenta de nuevo en un momento.');

@@ -24,26 +24,23 @@ import { AuthService } from '../../services/auth.service';
              style="background: linear-gradient(90deg, transparent, var(--accent-color, #00f5ff), transparent); opacity: 0.8;"></div>
 
         <!-- Icon -->
-        <div class="flex justify-center mb-5">
-          <div class="w-16 h-16 rounded-2xl flex items-center justify-center"
-               style="background: rgba(0,245,255,0.08); border: 1px solid rgba(0,245,255,0.2);">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color, #00f5ff)" stroke-width="1.8">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="12" y1="8" x2="12" y2="12"/>
-              <line x1="12" y1="16" x2="12.01" y2="16"/>
-            </svg>
+        <div class="flex justify-center mb-5 relative">
+          <div class="w-20 h-20 rounded-2xl flex items-center justify-center p-2"
+               style="background: rgba(0,245,255,0.08); border: 1px solid rgba(0,245,255,0.2); box-shadow: 0 0 20px rgba(0,245,255,0.15);">
+            <!-- Rotbot Image -->
+            <img src="assets/icons/logo-link-dark.png" class="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(0,245,255,0.4)]" alt="Rotbot">
           </div>
         </div>
 
         <!-- Content: Anonymous user -->
-        <ng-container *ngIf="!isLoggedIn">
+        <ng-container *ngIf="chatService.userType() === 'anonymous'">
           <h3 class="text-xl font-black uppercase text-center tracking-tight mb-2"
               style="color: var(--text-primary, #fff); font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.05em; font-size: 1.5rem;">
-            ¡Usaste tu mensaje<br>gratuito!
+            ¡Ups! Límite<br>alcanzado
           </h3>
           <p class="text-center text-sm font-light leading-relaxed mb-6"
              style="color: var(--text-secondary, rgba(255,255,255,0.6));">
-            Crea una cuenta gratis y obtén <strong style="color: var(--accent-color, #00f5ff);">5 conversaciones diarias</strong> con RotBot IA.
+            Alcanzaste el número máximo de mensajes. <strong style="color: var(--accent-color, #00f5ff);">Regístrate para más</strong> conversaciones con RotBot IA.
           </p>
 
           <button (click)="goToRegister()"
@@ -59,7 +56,7 @@ import { AuthService } from '../../services/auth.service';
         </ng-container>
 
         <!-- Content: Logged in user (5 messages used) -->
-        <ng-container *ngIf="isLoggedIn">
+        <ng-container *ngIf="chatService.userType() !== 'anonymous'">
           <h3 class="text-xl font-black uppercase text-center tracking-tight mb-2"
               style="color: var(--text-primary, #fff); font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.05em; font-size: 1.5rem;">
             Límite diario<br>alcanzado
@@ -160,8 +157,7 @@ export class ChatLimitModalComponent implements OnInit, OnDestroy {
   private countdownInterval?: any;
 
   ngOnInit() {
-    this.isLoggedIn = this.authService.hasToken();
-    if (this.isLoggedIn) {
+    if (this.chatService.userType() !== 'anonymous') {
       this.startCountdown();
     }
   }
@@ -192,7 +188,7 @@ export class ChatLimitModalComponent implements OnInit, OnDestroy {
   }
 
   onBackdropClick(event: Event) {
-    if (this.isLoggedIn) {
+    if (this.chatService.userType() !== 'anonymous') {
       this.chatService.dismissLimitModal();
     }
   }

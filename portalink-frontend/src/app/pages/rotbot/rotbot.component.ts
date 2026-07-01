@@ -8,6 +8,7 @@ import { ChatLimitModalComponent } from '../../components/chat-limit-modal/chat-
 import { AiInfoModalComponent } from '../../components/ai-info-modal/ai-info-modal.component';
 import { RestaurantPosComponent } from '../../components/rotbot-designs/restaurant-pos/restaurant-pos.component';
 import { MarkdownPipe } from '../../pipes/markdown-pipe';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-rotbot-page',
@@ -189,25 +190,35 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
  
           <!-- Input Area -->
           <div class="chat-input-area p-3 sm:p-6 border-t">
-            <form (submit)="sendMessage()" class="relative max-w-4xl mx-auto">
-              <input 
-                type="text" 
-                [(ngModel)]="chatService.userInput"
-                name="userInput"
-                placeholder="Pregúntale a Rotbot..."
-                class="chat-input w-full rounded-xl border py-4 pl-5 pr-14 text-[16px] font-light tracking-wide transition-all focus:ring-0 focus:outline-none"
-              />
-              <button 
-                type="submit"
-                [disabled]="!chatService.userInput.trim()"
-                class="chat-submit-btn absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-all"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="22" y1="2" x2="11" y2="13"></line>
-                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                </svg>
-              </button>
-            </form>
+            <ng-container *ngIf="authService.hasToken(); else loginPrompt">
+              <form (submit)="sendMessage()" class="relative max-w-4xl mx-auto">
+                <input 
+                  type="text" 
+                  [(ngModel)]="chatService.userInput"
+                  name="userInput"
+                  placeholder="Pregúntale a Rotbot..."
+                  class="chat-input w-full rounded-xl border py-4 pl-5 pr-14 text-[16px] font-light tracking-wide transition-all focus:ring-0 focus:outline-none"
+                />
+                <button 
+                  type="submit"
+                  [disabled]="!chatService.userInput.trim()"
+                  class="chat-submit-btn absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-all"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                  </svg>
+                </button>
+              </form>
+            </ng-container>
+            <ng-template #loginPrompt>
+              <div class="flex flex-col items-center justify-center py-2 max-w-4xl mx-auto">
+                <p class="text-[13px] font-medium mb-3 tracking-wide" style="color: var(--text-secondary);">Para conversar con RotBot debes iniciar sesión</p>
+                <button routerLink="/login" class="px-8 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98]" style="background: var(--accent-color, #00f5ff); color: #000; box-shadow: 0 0 15px rgba(0,245,255,0.2);">
+                  Iniciar Sesión
+                </button>
+              </div>
+            </ng-template>
             <div class="flex justify-center mt-3">
                <span class="text-[10px] uppercase tracking-widest font-sans font-medium opacity-30" style="color: var(--text-secondary);">Powered by Portalink IA</span>
             </div>
@@ -497,7 +508,8 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     public chatService: ChatStateService,
     private router: Router,
     private location: Location,
-    private analyticsService: AnalyticsService
+    private analyticsService: AnalyticsService,
+    public authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -558,8 +570,12 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.location.back();
   }
 
-  sendShortcutMessage(text: string) {
-    this.chatService.userInput = text;
+  sendShortcutMessage(msg: string) {
+    if (!this.authService.hasToken()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    this.chatService.userInput = msg;
     this.sendMessage();
   }
 
