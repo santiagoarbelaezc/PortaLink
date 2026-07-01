@@ -3,6 +3,13 @@ require('dotenv').config();
 
 const db = new Pool({
     connectionString: process.env.DATABASE_URL,
+    max: 20,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 10000,
+});
+
+db.on('error', (err, client) => {
+    console.error('❌ [Supabase] Unexpected error on idle client', err.message);
 });
 
 // Probar conexión detallada

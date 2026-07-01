@@ -35,6 +35,10 @@ exports.sendMessage = async (req, res) => {
       return res.status(400).json({ message: 'El mensaje no puede estar vacío.' });
     }
 
+    if (!user && !session_token) {
+      return res.status(400).json({ message: 'Se requiere session_token para usuarios anónimos.' });
+    }
+
     // ── Rate Limiting ──────────────────────────────────────────
     if (RATE_LIMIT_ENABLED) {
       const usageCheck = await checkRateLimit(user, session_token);
