@@ -44,25 +44,39 @@ export class PortfolioConfigService {
   private normalizeImages(data: any): any {
     if (!data) return data;
     const str = JSON.stringify(data)
-      .replace(/about-portrait\.png/g, 'assets/images/fotos/principal.jpg')
-      .replace(/hero-portrait\.png/g, 'assets/images/fotos/principal.jpg')
+      .replace(/about-portrait\.png/g, 'assets/images/fotos/link-principal.jpg')
+      .replace(/hero-portrait\.png/g, 'assets/images/fotos/link-principal.jpg')
+      .replace(/assets\/images\/fotos\/principal\.jpg/g, 'assets/images/fotos/link-principal.jpg')
       .replace(/project-1\.png/g, 'assets/images/fotos/photo2.jpg')
       .replace(/project-3\.png/g, 'assets/images/fotos/photo3.jpeg')
       .replace(/project-2\.png/g, 'assets/images/fotos/photo4.jpeg');
     try {
       const parsed = JSON.parse(str);
+      if (parsed?.hero) {
+        parsed.hero.backgroundImage = 'assets/images/fotos/link-principal.jpg';
+      }
       if (parsed?.about) {
         parsed.about.avatarImage = 'assets/images/fotos/photo3.jpeg';
       }
+      if (parsed?.links) {
+        parsed.links.avatarImage = 'assets/images/fotos/link-principal.jpg';
+      }
       if (parsed?.pages?.home?.sections) {
         parsed.pages.home.sections.forEach((sec: any) => {
+          if (sec.id === 'home-hero' && sec.config) {
+            sec.config.backgroundImage = 'assets/images/fotos/link-principal.jpg';
+          }
           if (sec.id === 'home-about' && sec.config) {
             sec.config.avatarImage = 'assets/images/fotos/photo3.jpeg';
           }
         });
       }
-      if (parsed?.links) {
-        parsed.links.avatarImage = 'assets/images/fotos/principal.jpg';
+      if (parsed?.pages?.link?.sections) {
+        parsed.pages.link.sections.forEach((sec: any) => {
+          if (sec.id === 'links-main' && sec.config) {
+            sec.config.avatarImage = 'assets/images/fotos/link-principal.jpg';
+          }
+        });
       }
       return parsed;
     } catch {

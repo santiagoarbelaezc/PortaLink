@@ -342,7 +342,7 @@ export class HeroComponent implements OnInit, OnDestroy {
     {
       activeIndex: 0,
       options: [
-        { src: 'assets/images/fotos/principal.jpg', color: '#3B82F6' }, // Light Blue
+        { src: 'assets/images/fotos/link-principal.jpg', color: '#3B82F6' }, // Light Blue
         { src: 'assets/images/fotos/photo3.jpeg', color: '#E2E8F0' },  // White/Silver
         { src: 'assets/images/fotos/photo2.jpg', color: '#0F172A' }       // Dark Gray/Black
       ]
@@ -375,7 +375,7 @@ export class HeroComponent implements OnInit, OnDestroy {
       activeIndex: 0,
       options: [
         { src: 'assets/images/fotos/photo3.jpeg', color: '#6366F1' }, // Indigo
-        { src: 'assets/images/fotos/principal.jpg', color: '#8B5CF6' }, // Violet
+        { src: 'assets/images/fotos/link-principal.jpg', color: '#8B5CF6' }, // Violet
         { src: 'assets/images/fotos/photo2.jpg', color: '#6B7280' }  // Gray
       ]
     }

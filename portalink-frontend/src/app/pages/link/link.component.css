@@ -168,7 +168,8 @@
 
 .lt-profile-overlay {
   position: absolute;
-  inset: 0;
+  bottom: 24px;
+  right: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -178,8 +179,8 @@
 .lt-profile-overlay::before {
   content: '';
   position: absolute;
-  width: 150px;
-  height: 150px;
+  width: 82px;
+  height: 82px;
   border-radius: 50%;
   border: 2px dashed transparent;
   pointer-events: none;
@@ -198,14 +199,14 @@
 }
 
 .lt-profile-logo {
-  width: 140px;
-  height: 140px;
+  width: 72px;
+  height: 72px;
   flex-shrink: 0;
   border-radius: 50%;
   object-fit: contain;
-  padding: 22px;
+  padding: 12px;
   border: 2px solid var(--card-border);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7), 0 0 15px rgba(255, 255, 255, 0.08);
   background: #000;
   transition: var(--transition);
 }
@@ -409,7 +410,9 @@
     border-left: none;
     border-right: none;
   }
-  .lt-profile-logo { width: 95px; height: 95px; flex-shrink: 0; padding: 15px; } 
+  .lt-profile-overlay { bottom: 16px; right: 16px; }
+  .lt-profile-overlay::before { width: 66px; height: 66px; }
+  .lt-profile-logo { width: 58px; height: 58px; flex-shrink: 0; padding: 10px; } 
   
   .lt-info-header { text-align: center; }
   .lt-info-header .flex { justify-content: center; }

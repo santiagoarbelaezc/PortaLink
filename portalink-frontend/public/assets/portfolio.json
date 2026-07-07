@@ -8,7 +8,7 @@
     "title": "Creative Developer",
     "subtitle": "Santiago Arbeláez",
     "description": "Building digital experiences with passion and precision.",
-    "backgroundImage": "assets/images/fotos/principal.jpg",
+    "backgroundImage": "assets/images/fotos/link-principal.jpg",
     "ctaText": "Ver Proyectos"
   },
   "about": {
@@ -59,7 +59,7 @@
   "links": {
     "profileName": "Santiago Arbeláez",
     "profileTitle": "Digital Creator & Developer",
-    "avatarImage": "assets/images/fotos/principal.jpg",
+    "avatarImage": "assets/images/fotos/link-principal.jpg",
     "profileLogo": "assets/icons/mi-logo.png",
     "items": [
       { "id": "1", "title": "TikTok", "subtitle": "Videos", "url": "https://www.tiktok.com/@santiagoarbelaezc", "icon": "tiktok" },
@@ -87,7 +87,7 @@
             "title": "Creative Developer",
             "subtitle": "Santiago Arbeláez",
             "description": "Building digital experiences with passion and precision.",
-            "backgroundImage": "assets/images/fotos/principal.jpg",
+            "backgroundImage": "assets/images/fotos/link-principal.jpg",
             "ctaText": "Ver Proyectos"
           }
         },
@@ -117,7 +117,7 @@
           "config": {
             "profileName": "Santiago Arbeláez",
             "profileTitle": "Digital Creator & Developer",
-            "avatarImage": "assets/images/fotos/principal.jpg",
+            "avatarImage": "assets/images/fotos/link-principal.jpg",
             "items": [
               { "id": "1", "title": "TikTok", "subtitle": "Videos", "url": "https://www.tiktok.com/@santiagoarbelaezc", "icon": "tiktok" },
               { "id": "2", "title": "Instagram", "subtitle": "Fotos", "url": "https://www.instagram.com/santiagoarbelaezc/", "icon": "instagram" },
