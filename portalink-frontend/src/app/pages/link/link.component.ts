@@ -328,9 +328,10 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   modelingImages = [
-    { src: 'assets/images/model_1.png', alt: 'Editorial Portrait I' },
-    { src: 'assets/images/model_2.png', alt: 'Editorial Portrait II' },
-    { src: 'assets/images/model_3.png', alt: 'Editorial Portrait III' }
+    { src: 'assets/images/fotos/principal.jpg', alt: 'Retrato Principal' },
+    { src: 'assets/images/fotos/photo2.jpg', alt: 'Editorial Portrait I' },
+    { src: 'assets/images/fotos/photo3.jpeg', alt: 'Editorial Portrait II' },
+    { src: 'assets/images/fotos/photo4.jpeg', alt: 'Editorial Portrait III' }
   ];
 
   translations: any = {
@@ -419,7 +420,7 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   getProfileAvatar() {
-    return this.configService.data()?.links?.avatarImage || 'about-portrait.png';
+    return this.configService.data()?.links?.avatarImage || 'assets/images/fotos/principal.jpg';
   }
 
   getProfileLogo() {

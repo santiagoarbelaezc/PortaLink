@@ -41,22 +41,52 @@ export class PortfolioConfigService {
     return 'portfolio_config_draft';
   }
 
+  private normalizeImages(data: any): any {
+    if (!data) return data;
+    const str = JSON.stringify(data)
+      .replace(/about-portrait\.png/g, 'assets/images/fotos/principal.jpg')
+      .replace(/hero-portrait\.png/g, 'assets/images/fotos/principal.jpg')
+      .replace(/project-1\.png/g, 'assets/images/fotos/photo2.jpg')
+      .replace(/project-3\.png/g, 'assets/images/fotos/photo3.jpeg')
+      .replace(/project-2\.png/g, 'assets/images/fotos/photo4.jpeg');
+    try {
+      const parsed = JSON.parse(str);
+      if (parsed?.about) {
+        parsed.about.avatarImage = 'assets/images/fotos/photo3.jpeg';
+      }
+      if (parsed?.pages?.home?.sections) {
+        parsed.pages.home.sections.forEach((sec: any) => {
+          if (sec.id === 'home-about' && sec.config) {
+            sec.config.avatarImage = 'assets/images/fotos/photo3.jpeg';
+          }
+        });
+      }
+      if (parsed?.links) {
+        parsed.links.avatarImage = 'assets/images/fotos/principal.jpg';
+      }
+      return parsed;
+    } catch {
+      return data;
+    }
+  }
+
   loadUserConfig() {
     const key = this.getConfigKey();
     const savedDraft = localStorage.getItem(key);
     
     this.http.get('/assets/portfolio.json').subscribe({
       next: (originalData) => {
-        this._originalConfig.set(originalData);
+        const normOriginal = this.normalizeImages(originalData);
+        this._originalConfig.set(normOriginal);
         if (savedDraft) {
           try {
             const parsed = JSON.parse(savedDraft);
-            this._config.set({ ...originalData, ...parsed });
+            this._config.set(this.normalizeImages({ ...normOriginal, ...parsed }));
           } catch {
-            this._config.set(JSON.parse(JSON.stringify(originalData)));
+            this._config.set(JSON.parse(JSON.stringify(normOriginal)));
           }
         } else {
-          this._config.set(JSON.parse(JSON.stringify(originalData)));
+          this._config.set(JSON.parse(JSON.stringify(normOriginal)));
         }
       },
       error: (err) => console.error('Error loading portfolio config:', err)

@@ -8,12 +8,12 @@
     "title": "Creative Developer",
     "subtitle": "Santiago Arbeláez",
     "description": "Building digital experiences with passion and precision.",
-    "backgroundImage": "hero-portrait.png",
+    "backgroundImage": "assets/images/fotos/principal.jpg",
     "ctaText": "Ver Proyectos"
   },
   "about": {
     "text": "Transformo ideas abstractas en realidades interactivas que conectan con las personas. Ayudo a marcas y emprendedores a conceptualizar, diseñar y lanzar plataformas digitales atractivas y fáciles de usar, impulsando el crecimiento real de sus negocios.",
-    "avatarImage": "about-portrait.png",
+    "avatarImage": "assets/images/fotos/photo3.jpeg",
     "visible": true
   },
   "skills": [
@@ -27,7 +27,7 @@
       "title": "Portfolio Personal",
       "description": "Diseño y desarrollo de un espacio digital cinematográfico interactivo de presentación profesional. Incorpora un selector de paletas de color en tiempo real, efectos avanzados de desenfoque de fondo y un asistente inteligente conversacional para guiar a los visitantes, logrando una experiencia completamente inmersiva y fluida.",
       "techStack": [],
-      "images": ["project-1.png"],
+      "images": ["assets/images/fotos/photo2.jpg"],
       "liveUrl": "https://santiago-arbelaez.com",
       "githubUrl": "https://github.com/santiagoarbelaez",
       "featured": true,
@@ -38,7 +38,7 @@
       "title": "PortaLink AI Vision",
       "description": "Plataforma avanzada de procesamiento y análisis visual mediante modelos inteligentes de visión por computadora. Especializada en la detección automática de elementos, segmentación de objetos en tiempo real y el análisis detallado de planos y estructuras complejas con representación gráfica interactiva.",
       "techStack": [],
-      "images": ["project-3.png"],
+      "images": ["assets/images/fotos/photo3.jpeg"],
       "liveUrl": "#",
       "githubUrl": "#",
       "featured": false,
@@ -49,7 +49,7 @@
       "title": "E-Commerce Premium",
       "description": "Solución integral de comercio electrónico de alto rendimiento diseñada para la venta en línea automatizada. Cuenta con catálogo autogestionable de productos, carrito de compras optimizado, procesamiento seguro de pagos digitales y un completo panel administrativo para control de stock y pedidos.",
       "techStack": [],
-      "images": ["project-2.png"],
+      "images": ["assets/images/fotos/photo4.jpeg"],
       "liveUrl": "#",
       "githubUrl": "#",
       "featured": false,
@@ -59,7 +59,7 @@
   "links": {
     "profileName": "Santiago Arbeláez",
     "profileTitle": "Digital Creator & Developer",
-    "avatarImage": "about-portrait.png",
+    "avatarImage": "assets/images/fotos/principal.jpg",
     "profileLogo": "assets/icons/mi-logo.png",
     "items": [
       { "id": "1", "title": "TikTok", "subtitle": "Videos", "url": "https://www.tiktok.com/@santiagoarbelaezc", "icon": "tiktok" },
@@ -87,7 +87,7 @@
             "title": "Creative Developer",
             "subtitle": "Santiago Arbeláez",
             "description": "Building digital experiences with passion and precision.",
-            "backgroundImage": "hero-portrait.png",
+            "backgroundImage": "assets/images/fotos/principal.jpg",
             "ctaText": "Ver Proyectos"
           }
         },
@@ -97,7 +97,7 @@
           "active": true,
           "config": {
             "text": "Transformo ideas abstractas en realidades interactivas que conectan con las personas. Ayudo a marcas y emprendedores a conceptualizar, diseñar y lanzar plataformas digitales atractivas y fáciles de usar, impulsando el crecimiento real de sus negocios.",
-            "avatarImage": "about-portrait.png"
+            "avatarImage": "assets/images/fotos/photo3.jpeg"
           }
         },
         {
@@ -117,7 +117,7 @@
           "config": {
             "profileName": "Santiago Arbeláez",
             "profileTitle": "Digital Creator & Developer",
-            "avatarImage": "about-portrait.png",
+            "avatarImage": "assets/images/fotos/principal.jpg",
             "items": [
               { "id": "1", "title": "TikTok", "subtitle": "Videos", "url": "https://www.tiktok.com/@santiagoarbelaezc", "icon": "tiktok" },
               { "id": "2", "title": "Instagram", "subtitle": "Fotos", "url": "https://www.instagram.com/santiagoarbelaezc/", "icon": "instagram" },

@@ -66,6 +66,7 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
                    [src]="card.options[card.activeIndex].src"
                    [alt]="getCardTitle(cIdx)"
                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                   [ngClass]="{'grayscale': card.options[card.activeIndex].src.includes('principal')}"
                 />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent"></div>
               </div>
@@ -333,49 +334,49 @@ export class HeroComponent implements OnInit, OnDestroy {
     {
       activeIndex: 0,
       options: [
-        { src: 'project-1.png', color: '#E36B2B' }, // Orange-ish
-        { src: 'project-2.png', color: '#1E3A8A' }, // Dark Blue
-        { src: 'project-3.png', color: '#3B82F6' }  // Light Blue
+        { src: 'assets/images/fotos/photo2.jpg', color: '#E36B2B' }, // Orange-ish
+        { src: 'assets/images/fotos/photo4.jpeg', color: '#1E3A8A' }, // Dark Blue
+        { src: 'assets/images/fotos/photo3.jpeg', color: '#3B82F6' }  // Light Blue
       ]
     },
     {
       activeIndex: 0,
       options: [
-        { src: 'about-portrait.png', color: '#3B82F6' }, // Light Blue
-        { src: 'hero-portrait.png', color: '#E2E8F0' },  // White/Silver
-        { src: 'project-1.png', color: '#0F172A' }       // Dark Gray/Black
+        { src: 'assets/images/fotos/principal.jpg', color: '#3B82F6' }, // Light Blue
+        { src: 'assets/images/fotos/photo3.jpeg', color: '#E2E8F0' },  // White/Silver
+        { src: 'assets/images/fotos/photo2.jpg', color: '#0F172A' }       // Dark Gray/Black
       ]
     },
     {
       activeIndex: 0,
       options: [
-        { src: 'project-3.png', color: '#A78BFA' }, // Light Purple
-        { src: 'project-2.png', color: '#86EFAC' }, // Light Green
-        { src: 'project-1.png', color: '#93C5FD' }  // Soft Blue
+        { src: 'assets/images/fotos/photo3.jpeg', color: '#A78BFA' }, // Light Purple
+        { src: 'assets/images/fotos/photo4.jpeg', color: '#86EFAC' }, // Light Green
+        { src: 'assets/images/fotos/photo2.jpg', color: '#93C5FD' }  // Soft Blue
       ]
     },
     {
       activeIndex: 0,
       options: [
-        { src: 'project-2.png', color: '#F43F5E' }, // Rose
-        { src: 'project-3.png', color: '#14B8A6' }, // Teal
-        { src: 'hero-portrait.png', color: '#1E293B' } // Dark Slate
+        { src: 'assets/images/fotos/photo4.jpeg', color: '#F43F5E' }, // Rose
+        { src: 'assets/images/fotos/photo3.jpeg', color: '#14B8A6' }, // Teal
+        { src: 'assets/images/fotos/principal.jpg', color: '#1E293B' } // Dark Slate
       ]
     },
     {
       activeIndex: 0,
       options: [
-        { src: 'about-portrait.png', color: '#EC4899' }, // Pink
-        { src: 'project-1.png', color: '#F59E0B' }, // Amber
-        { src: 'project-2.png', color: '#10B981' }  // Green
+        { src: 'assets/images/fotos/photo3.jpeg', color: '#EC4899' }, // Pink
+        { src: 'assets/images/fotos/photo2.jpg', color: '#F59E0B' }, // Amber
+        { src: 'assets/images/fotos/photo4.jpeg', color: '#10B981' }  // Green
       ]
     },
     {
       activeIndex: 0,
       options: [
-        { src: 'project-3.png', color: '#6366F1' }, // Indigo
-        { src: 'about-portrait.png', color: '#8B5CF6' }, // Violet
-        { src: 'hero-portrait.png', color: '#6B7280' }  // Gray
+        { src: 'assets/images/fotos/photo3.jpeg', color: '#6366F1' }, // Indigo
+        { src: 'assets/images/fotos/principal.jpg', color: '#8B5CF6' }, // Violet
+        { src: 'assets/images/fotos/photo2.jpg', color: '#6B7280' }  // Gray
       ]
     }
   ];

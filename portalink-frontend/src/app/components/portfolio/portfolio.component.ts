@@ -38,7 +38,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
                  class="carousel-card relative flex-shrink-0 w-[var(--card-w)] aspect-square sm:aspect-[16/9] rounded-[24px] sm:rounded-[36px] overflow-hidden border border-white/10 transition-all duration-700 cursor-pointer">
               
               <!-- Background Image -->
-              <img [src]="project.images && project.images.length > 0 ? project.images[0] : 'project-1.png'" 
+              <img [src]="project.images && project.images.length > 0 ? project.images[0] : 'assets/images/fotos/photo2.jpg'" 
                    [alt]="getProjectTitle(project)" 
                    class="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 card-bg-img" />
               
