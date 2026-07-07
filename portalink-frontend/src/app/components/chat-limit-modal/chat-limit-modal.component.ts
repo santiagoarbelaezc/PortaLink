@@ -195,7 +195,7 @@ export class ChatLimitModalComponent implements OnInit, OnDestroy {
 
   goToRegister() {
     this.chatService.dismissLimitModal();
-    this.router.navigate(['/login'], { queryParams: { tab: 'register' } });
+    this.router.navigate(['/register']);
   }
 
   goToLogin() {

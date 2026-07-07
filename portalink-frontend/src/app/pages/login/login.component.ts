@@ -1,7 +1,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
@@ -387,6 +387,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 })
 export class LoginComponent implements OnInit {
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
   private sanitizer = inject(DomSanitizer);
 
@@ -417,7 +418,25 @@ export class LoginComponent implements OnInit {
   showRegisterConfirmPassword = false;
 
   ngOnInit() {
-    this.loadCaptcha();
+    this.route.url.subscribe(urlSegments => {
+      const path = urlSegments[0]?.path || '';
+      const queryTab = this.route.snapshot.queryParams['tab'];
+      const targetTab: 'login' | 'register' = (path === 'register' || queryTab === 'register') ? 'register' : 'login';
+
+      if (queryTab === 'register' && path === 'login') {
+        this.router.navigate(['/register'], { replaceUrl: true });
+        return;
+      }
+
+      if (this.activeTab !== targetTab || !this.captchaId) {
+        this.activeTab = targetTab;
+        this.error = '';
+        this.successMsg = '';
+        this.captchaCode = '';
+        this.loginCaptchaCode = '';
+        this.loadCaptcha();
+      }
+    });
   }
 
   loadCaptcha() {
@@ -433,12 +452,15 @@ export class LoginComponent implements OnInit {
   }
 
   switchTab(tab: 'login' | 'register') {
-    this.activeTab = tab;
-    this.error = '';
-    this.successMsg = '';
-    this.captchaCode = '';
-    this.loginCaptchaCode = '';
-    this.loadCaptcha();
+    if (this.activeTab !== tab) {
+      this.activeTab = tab;
+      this.error = '';
+      this.successMsg = '';
+      this.captchaCode = '';
+      this.loginCaptchaCode = '';
+      this.loadCaptcha();
+      this.router.navigate([`/${tab}`]);
+    }
   }
 
   login(event: Event) {

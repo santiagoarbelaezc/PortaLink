@@ -56,6 +56,11 @@ export const routes: Routes = [
     data: { animation: 'LoginPage' }
   },
   {
+    path: 'register',
+    component: LoginComponent,
+    data: { animation: 'LoginPage' }
+  },
+  {
     path: 'admin',
     component: AdminComponent,
     canActivate: [authGuard],
