@@ -53,15 +53,15 @@
 
 .lt-container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1260px;
   position: relative;
   z-index: 1;
 }
 
 .lt-main-grid {
   display: grid;
-  grid-template-columns: 1fr 1.4fr;
-  gap: 80px;
+  grid-template-columns: 1.15fr 1.25fr;
+  gap: 64px;
   align-items: stretch;
 }
 
@@ -90,7 +90,7 @@
 
 .lt-image-container {
   overflow: hidden;
-  aspect-ratio: 4/5.5;
+  aspect-ratio: 4/5.1;
   border: 1px solid var(--card-border);
   border-radius: 16px;
   background: #050505;

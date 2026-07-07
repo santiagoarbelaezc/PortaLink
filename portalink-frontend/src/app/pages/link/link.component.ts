@@ -67,6 +67,17 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
               <p class="text-[10px] md:text-xs uppercase tracking-[0.4em] mt-3 md:mt-4 opacity-60 font-headline" style="color: var(--text-secondary);">
                 {{ getProfileTitle() }}
               </p>
+
+              <!-- Desktop-only bio description to fill vertical gap -->
+              <div class="hidden md:block mt-8 max-w-lg border-l-2 pl-6 py-2" style="border-color: var(--accent-main); background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, transparent 100%);">
+                <p class="text-xs md:text-sm leading-relaxed font-light opacity-80" style="color: var(--text-secondary);">
+                  {{ getTranslation().bioDesc }}
+                </p>
+                <div class="flex items-center gap-3 mt-4 pt-4 border-t border-white/5">
+                  <span class="text-[9px] uppercase tracking-[0.2em] px-3 py-1 rounded-full bg-white/5 border border-white/10 opacity-70" style="color: var(--text-primary);">Full-Stack Engineering</span>
+                  <span class="text-[9px] uppercase tracking-[0.2em] px-3 py-1 rounded-full bg-white/5 border border-white/10 opacity-70" style="color: var(--text-primary);">Creative UX / UI</span>
+                </div>
+              </div>
             </header>
 
             <div class="lt-links-container">
@@ -341,6 +352,7 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
       creador: 'Creador',
       digital: 'Digital',
       desarrollador: '& Desarrollador',
+      bioDesc: 'Desarrollador y creador digital enfocado en construir experiencias interactivas y escalables. Combinando arquitectura de software robusta, diseño moderno y alto rendimiento para potenciar marcas y negocios en el mundo digital.',
       descubre: 'Descubre más',
       ingenieria: 'Ingeniería & Desarrollo',
       videos: 'Videos',
@@ -362,6 +374,7 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
       creador: 'Digital',
       digital: 'Creator',
       desarrollador: '& Developer',
+      bioDesc: 'Digital creator and developer focused on building scalable, interactive web experiences. Combining robust software architecture, modern aesthetics, and high performance to empower brands and businesses.',
       descubre: 'Discover more',
       ingenieria: 'Engineering & Development',
       videos: 'Videos',

@@ -1,11 +1,13 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { ImageOptimizerService } from './image-optimizer.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PortfolioConfigService {
   private http = inject(HttpClient);
+  private imageOptimizer = inject(ImageOptimizerService);
   
   // State Signals
   private _config = signal<any>(null);
@@ -101,6 +103,16 @@ export class PortfolioConfigService {
           }
         } else {
           this._config.set(JSON.parse(JSON.stringify(normOriginal)));
+        }
+
+        if (typeof window !== 'undefined') {
+          this.imageOptimizer.preloadAndOptimize([
+            'assets/images/fotos/link-principal.jpg',
+            'assets/images/fotos/principal.jpg',
+            'assets/images/fotos/photo2.jpg',
+            'assets/images/fotos/photo3.jpeg',
+            'assets/images/fotos/photo4.jpeg'
+          ], 1200, 0.75);
         }
       },
       error: (err) => console.error('Error loading portfolio config:', err)
