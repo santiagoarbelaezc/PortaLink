@@ -3,6 +3,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { PortfolioConfigService } from '../../services/portfolio-config.service';
 import { AnalyticsService } from '../../services/analytics.service';
+import { ImageOptimizerService } from '../../services/image-optimizer.service';
 import * as AOS from 'aos';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 @Component({
@@ -69,14 +70,10 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
               </p>
 
               <!-- Desktop-only bio description to fill vertical gap -->
-              <div class="hidden md:block mt-8 max-w-lg border-l-2 pl-6 py-2" style="border-color: var(--accent-main); background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, transparent 100%);">
+              <div class="hidden md:block mt-8 md:mt-10 w-full">
                 <p class="text-xs md:text-sm leading-relaxed font-light opacity-80" style="color: var(--text-secondary);">
                   {{ getTranslation().bioDesc }}
                 </p>
-                <div class="flex items-center gap-3 mt-4 pt-4 border-t border-white/5">
-                  <span class="text-[9px] uppercase tracking-[0.2em] px-3 py-1 rounded-full bg-white/5 border border-white/10 opacity-70" style="color: var(--text-primary);">Full-Stack Engineering</span>
-                  <span class="text-[9px] uppercase tracking-[0.2em] px-3 py-1 rounded-full bg-white/5 border border-white/10 opacity-70" style="color: var(--text-primary);">Creative UX / UI</span>
-                </div>
               </div>
             </header>
 
@@ -395,6 +392,7 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private configService = inject(PortfolioConfigService);
   private analyticsService = inject(AnalyticsService);
+  private imageOptimizer = inject(ImageOptimizerService);
   
   portfolioData = this.configService.data;
 
@@ -434,11 +432,13 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   getProfileAvatar() {
-    return this.configService.data()?.links?.avatarImage || 'assets/images/fotos/link-principal.jpg';
+    const rawUrl = this.configService.data()?.links?.avatarImage || 'assets/images/fotos/link-principal.jpg';
+    return this.imageOptimizer.getCachedOrOriginal(rawUrl, 800, 0.6);
   }
 
   getProfileLogo() {
-    return this.currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png';
+    const rawUrl = this.currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png';
+    return this.imageOptimizer.getCachedOrOriginal(rawUrl, 150, 0.5);
   }
 
   getProfileTitle() {

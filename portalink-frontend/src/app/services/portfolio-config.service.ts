@@ -112,7 +112,7 @@ export class PortfolioConfigService {
             'assets/images/fotos/photo2.jpg',
             'assets/images/fotos/photo3.jpeg',
             'assets/images/fotos/photo4.jpeg'
-          ], 1200, 0.75);
+          ], 900, 0.5);
         }
       },
       error: (err) => console.error('Error loading portfolio config:', err)

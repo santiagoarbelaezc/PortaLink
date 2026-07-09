@@ -10,17 +10,17 @@ export class ImageOptimizerService {
 
   /**
    * Optimiza una imagen a partir de su URL o ruta en el navegador,
-   * reduciendo su resolución máxima y calidad (por defecto 0.75 / 75%)
+   * reduciendo su resolución máxima y calidad (por defecto 0.5 / 50%)
    * y convirtiéndola al formato ligero WebP.
    * @param src Ruta de la imagen (ej. 'assets/images/fotos/link-principal.jpg')
-   * @param maxWidth Ancho máximo permitido en píxeles (por defecto 1200)
-   * @param quality Calidad de compresión entre 0 y 1 (por defecto 0.75)
+   * @param maxWidth Ancho máximo permitido en píxeles (por defecto 900)
+   * @param quality Calidad de compresión entre 0 y 1 (por defecto 0.5)
    * @param format Formato de salida deseado (por defecto 'image/webp')
    */
   optimize(
     src: string,
-    maxWidth: number = 1200,
-    quality: number = 0.75,
+    maxWidth: number = 900,
+    quality: number = 0.5,
     format: 'image/webp' | 'image/jpeg' = 'image/webp'
   ): Observable<string> {
     if (!src || typeof window === 'undefined' || typeof document === 'undefined') {
@@ -111,8 +111,8 @@ export class ImageOptimizerService {
    */
   getCachedOrOriginal(
     src: string,
-    maxWidth: number = 1200,
-    quality: number = 0.75,
+    maxWidth: number = 900,
+    quality: number = 0.5,
     format: 'image/webp' | 'image/jpeg' = 'image/webp'
   ): string {
     if (!src || typeof window === 'undefined') return src;
@@ -130,8 +130,8 @@ export class ImageOptimizerService {
    */
   preloadAndOptimize(
     sources: string[],
-    maxWidth: number = 1200,
-    quality: number = 0.75
+    maxWidth: number = 900,
+    quality: number = 0.5
   ): void {
     if (typeof window === 'undefined' || !sources?.length) return;
     sources.forEach((src) => {
@@ -147,8 +147,8 @@ export class ImageOptimizerService {
    */
   async optimizeFile(
     file: File,
-    maxWidth: number = 1200,
-    quality: number = 0.75
+    maxWidth: number = 900,
+    quality: number = 0.5
   ): Promise<File> {
     if (!file || !file.type.startsWith('image/') || typeof window === 'undefined') {
       return file;
