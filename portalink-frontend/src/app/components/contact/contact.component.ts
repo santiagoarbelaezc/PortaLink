@@ -240,6 +240,23 @@ export class ContactComponent implements OnInit, OnDestroy {
     if (!this.formData.nombre || !this.formData.correo || !this.formData.mensaje) {
       return;
     }
+
+    const email = this.formData.correo.trim().toLowerCase();
+
+    // 1. Validar que contenga @
+    if (!email.includes('@')) {
+      alert(this.currentLanguage === 'es' ? 'El correo electrónico debe contener un "@".' : 'Email must contain "@".');
+      return;
+    }
+
+    // 2. Validar que use un dominio de correo válido/común (gmail, hotmail, outlook, etc.)
+    const allowedDomains = /@(gmail|hotmail|outlook|live|msn|yahoo|icloud|protonmail|proton|aol|zoho|gmx|yandex)\.[a-zA-Z]{2,}/;
+    if (!allowedDomains.test(email)) {
+      alert(this.currentLanguage === 'es' ? 
+        'Por favor ingresa un correo con un proveedor válido (ej: gmail, hotmail, outlook, yahoo).' : 
+        'Please enter an email with a valid provider (e.g. gmail, hotmail, outlook, yahoo).');
+      return;
+    }
     
     this.isSubmitting = true;
     this.messagesService.sendMessage(this.formData).subscribe({
