@@ -150,55 +150,72 @@ import { Subscription } from 'rxjs';
               <div class="rounded-2xl border p-6 md:p-8 shadow-sm transition-all duration-300"
                    [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800' : 'bg-white border-neutral-200'">
                 
-                <div class="flex flex-col md:flex-row gap-8 items-center md:items-start">
-                  <!-- Gigantic Avatar with dynamic initials -->
-                  <div class="shrink-0 relative group">
-                    <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-600 via-purple-600 to-indigo-600 blur-[6px] opacity-60"></div>
-                    <div class="relative w-28 h-28 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-4xl font-extrabold text-white shadow-lg">
-                      {{ getUserInitials() }}
-                    </div>
-                  </div>
+                <!-- Profile Alert Messages -->
+                <div *ngIf="profileSuccess" 
+                     class="mb-6 p-4 rounded-xl border text-xs font-semibold bg-green-500/10 border-green-500/20 text-green-400 flex items-center gap-2">
+                  <span>✅</span> {{ profileSuccess }}
+                </div>
+                <div *ngIf="profileError" 
+                     class="mb-6 p-4 rounded-xl border text-xs font-semibold bg-red-500/10 border-red-500/20 text-red-400 flex items-center gap-2">
+                  <span>⚠️</span> {{ profileError }}
+                </div>
 
-                  <!-- Details Grid -->
-                  <div class="flex-grow space-y-5 w-full">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                      <div>
-                        <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1.5">Nombre Completo</label>
-                        <p class="text-sm font-semibold p-3.5 rounded-xl border"
-                           [ngClass]="isDark ? 'bg-neutral-950/40 border-neutral-800/80' : 'bg-neutral-50 border-neutral-100'">
-                          {{ authService.currentUser()?.nombre }}
-                        </p>
-                      </div>
-
-                      <div>
-                        <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1.5">Correo Electrónico</label>
-                        <p class="text-sm font-semibold p-3.5 rounded-xl border truncate"
-                           [ngClass]="isDark ? 'bg-neutral-950/40 border-neutral-800/80' : 'bg-neutral-50 border-neutral-100'">
-                          {{ authService.currentUser()?.email || 'N/A' }}
-                        </p>
+                <form (submit)="onProfileSubmit($event)">
+                  <div class="flex flex-col md:flex-row gap-8 items-center md:items-start">
+                    <!-- Gigantic Avatar with dynamic initials -->
+                    <div class="shrink-0 relative group">
+                      <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-600 via-purple-600 to-indigo-600 blur-[6px] opacity-60"></div>
+                      <div class="relative w-28 h-28 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-4xl font-extrabold text-white shadow-lg">
+                        {{ getUserInitials() }}
                       </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                      <div>
-                        <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1.5">Rol de Cuenta</label>
-                        <p class="text-sm font-semibold p-3.5 rounded-xl border capitalize"
-                           [ngClass]="isDark ? 'bg-neutral-950/40 border-neutral-800/80' : 'bg-neutral-50 border-neutral-100'">
-                          {{ authService.currentUser()?.rol?.toLowerCase() === 'admin' ? 'Administrador' : 'Usuario General' }}
-                        </p>
-                      </div>
+                    <!-- Details Grid -->
+                    <div class="flex-grow space-y-5 w-full">
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                          <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1.5">Nombre Completo</label>
+                          <input type="text" [(ngModel)]="nombre" name="nombre"
+                                 class="w-full text-sm font-semibold p-3.5 rounded-xl border focus:outline-none transition-all duration-300"
+                                 [ngClass]="isDark ? 'bg-neutral-950/40 border-neutral-800/80 text-white focus:border-blue-500/50' : 'bg-neutral-50 border-neutral-100 text-neutral-900 focus:border-blue-500'">
+                        </div>
 
-                      <div>
-                        <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1.5">Estado de Cuenta</label>
-                        <div class="p-3.5 rounded-xl border flex items-center gap-2"
-                             [ngClass]="isDark ? 'bg-neutral-950/40 border-neutral-800/80' : 'bg-neutral-50 border-neutral-100'">
-                          <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                          <span class="text-sm font-semibold text-green-500">Activo</span>
+                        <div>
+                          <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1.5">Correo Electrónico</label>
+                          <input type="email" [(ngModel)]="email" name="email"
+                                 class="w-full text-sm font-semibold p-3.5 rounded-xl border focus:outline-none transition-all duration-300"
+                                 [ngClass]="isDark ? 'bg-neutral-950/40 border-neutral-800/80 text-white focus:border-blue-500/50' : 'bg-neutral-50 border-neutral-100 text-neutral-900 focus:border-blue-500'">
                         </div>
                       </div>
+
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                          <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1.5">Número de Teléfono</label>
+                          <input type="text" [(ngModel)]="telefono" name="telefono"
+                                 class="w-full text-sm font-semibold p-3.5 rounded-xl border focus:outline-none transition-all duration-300"
+                                 [ngClass]="isDark ? 'bg-neutral-950/40 border-neutral-800/80 text-white focus:border-blue-500/50' : 'bg-neutral-50 border-neutral-100 text-neutral-900 focus:border-blue-500'">
+                        </div>
+
+                        <div>
+                          <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1.5">Rol de Cuenta</label>
+                          <p class="text-sm font-semibold p-3.5 rounded-xl border capitalize opacity-70 cursor-not-allowed select-none"
+                             [ngClass]="isDark ? 'bg-neutral-950/40 border-neutral-800/80' : 'bg-neutral-50 border-neutral-100'">
+                            {{ authService.currentUser()?.rol?.toLowerCase() === 'admin' ? 'Administrador' : 'Usuario General' }}
+                          </p>
+                        </div>
+                      </div>
+
+                      <!-- Save Profile Button -->
+                      <div class="pt-4 flex justify-end">
+                        <button type="submit" [disabled]="submittingProfile"
+                                class="px-6 py-3.5 rounded-xl text-xs font-bold uppercase tracking-widest text-white bg-blue-600 hover:bg-blue-500 transition-colors duration-200 cursor-pointer shadow-lg shadow-blue-500/20 disabled:opacity-50 flex items-center gap-2">
+                          {{ submittingProfile ? 'Guardando...' : 'Guardar Cambios' }}
+                        </button>
+                      </div>
+
                     </div>
                   </div>
-                </div>
+                </form>
               </div>
             </div>
 
@@ -294,15 +311,25 @@ export class PerfilComponent implements OnInit, OnDestroy {
 
   activeTab: 'profile' | 'password' = 'profile';
 
-  // Form Fields
+  // Form Fields (Password)
   currentPassword = '';
   newPassword = '';
   confirmPassword = '';
+
+  // Form Fields (Profile)
+  nombre = '';
+  email = '';
+  telefono = '';
 
   // Password submission UI state
   submittingPassword = false;
   successMessage = '';
   errorMessage = '';
+
+  // Profile submission UI state
+  submittingProfile = false;
+  profileSuccess = '';
+  profileError = '';
 
   get isDark(): boolean {
     if (typeof window !== 'undefined') {
@@ -319,6 +346,14 @@ export class PerfilComponent implements OnInit, OnDestroy {
         this.activeTab = 'profile';
       }
     });
+
+    // Initialize profile fields
+    const user = this.authService.currentUser();
+    if (user) {
+      this.nombre = user.nombre || '';
+      this.email = user.email || '';
+      this.telefono = user.telefono || '';
+    }
   }
 
   ngOnDestroy() {
@@ -400,6 +435,56 @@ export class PerfilComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.submittingPassword = false;
         this.errorMessage = err.error?.message || 'Error al intentar actualizar la contraseña.';
+      }
+    });
+  }
+
+  onProfileSubmit(event: Event) {
+    event.preventDefault();
+    this.profileSuccess = '';
+    this.profileError = '';
+
+    if (!this.nombre.trim() || !this.email.trim() || !this.telefono.trim()) {
+      this.profileError = 'Por favor completa todos los campos.';
+      return;
+    }
+
+    // 1. Validar Correo
+    const emailVal = this.email.trim().toLowerCase();
+    if (!emailVal.includes('@')) {
+      this.profileError = 'El correo electrónico debe contener un "@".';
+      return;
+    }
+    const allowedDomains = /@(gmail|hotmail|outlook|live|msn|yahoo|icloud|protonmail|proton|aol|zoho|gmx|yandex)\.[a-zA-Z]{2,}/;
+    if (!allowedDomains.test(emailVal)) {
+      this.profileError = 'Proveedor de correo inválido o no soportado (ej: gmail, hotmail, yahoo).';
+      return;
+    }
+
+    // 2. Validar Teléfono
+    const phoneVal = this.telefono.trim();
+    const phoneRegex = /^[0-9+() -]{7,15}$/;
+    if (!phoneRegex.test(phoneVal)) {
+      this.profileError = 'Número de teléfono inválido (debe tener entre 7 y 15 dígitos numéricos).';
+      return;
+    }
+
+    this.submittingProfile = true;
+    this.authService.updateProfile(this.nombre, this.email, this.telefono).subscribe({
+      next: (res) => {
+        this.submittingProfile = false;
+        this.profileSuccess = 'Perfil actualizado correctamente.';
+        // Update local bound states
+        if (res.usuario) {
+          this.nombre = res.usuario.nombre || '';
+          this.email = res.usuario.email || '';
+          this.telefono = res.usuario.telefono || '';
+        }
+        setTimeout(() => (this.profileSuccess = ''), 3000);
+      },
+      error: (err) => {
+        this.submittingProfile = false;
+        this.profileError = err.error?.message || 'Error al intentar actualizar el perfil.';
       }
     });
   }

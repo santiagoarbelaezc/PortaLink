@@ -10,6 +10,7 @@ export interface LoginResponse {
     nombre: string;
     rol: string;
     email?: string;
+    telefono?: string;
   };
 }
 
@@ -83,7 +84,7 @@ export class AuthService {
       if (userStr) {
         try {
           const user = JSON.parse(userStr);
-          if (!user.email) {
+          if (!user.email || !user.telefono) {
             const token = this.getToken();
             if (token) {
               const parts = token.split('.');
@@ -91,9 +92,19 @@ export class AuthService {
                 const base64Url = parts[1];
                 const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
                 const decoded = JSON.parse(atob(base64));
-                if (decoded && decoded.email) {
-                  user.email = decoded.email;
-                  localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+                if (decoded) {
+                  let updated = false;
+                  if (decoded.email && !user.email) {
+                    user.email = decoded.email;
+                    updated = true;
+                  }
+                  if (decoded.telefono && !user.telefono) {
+                    user.telefono = decoded.telefono;
+                    updated = true;
+                  }
+                  if (updated) {
+                    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+                  }
                 }
               }
             }
@@ -134,5 +145,11 @@ export class AuthService {
 
   changePassword(currentPassword: string, newPassword: string): Observable<{message: string}> {
     return this.http.put<{message: string}>(`${environment.apiUrl}/auth/password`, { currentPassword, newPassword });
+  }
+
+  updateProfile(nombre: string, email: string, telefono: string): Observable<LoginResponse> {
+    return this.http.put<LoginResponse>(`${environment.apiUrl}/auth/profile`, { nombre, email, telefono }).pipe(
+      tap(res => this.setSession(res.token, res.usuario))
+    );
   }
 }

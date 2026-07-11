@@ -154,7 +154,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
           <!-- Slider Container -->
           <div class="relative overflow-hidden w-full transition-[height] duration-300 ease-out"
-               [style.height]="activeTab === 'login' ? '270px' : '410px'">
+               [style.height]="activeTab === 'login' ? '270px' : '470px'">
             <div class="flex w-[200%] transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"
                  [style.transform]="activeTab === 'login' ? 'translateX(0)' : 'translateX(-50%)'">
                          <!-- Login Form Container (1/2 width of 200% = 100% of parent) -->
@@ -234,12 +234,27 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                   <div class="space-y-1.5">
                     <label class="text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)]">Correo Electrónico</label>
                     <div class="relative group">
-                      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-500 group-focus-within:text-[var(--accent-color)] transition-colors">
+                       <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-500 group-focus-within:text-[var(--accent-color)] transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path></svg>
                       </div>
                       <input type="email"
                              [(ngModel)]="registerEmail" name="registerEmail"
                              placeholder="usuario@example.com"
+                             [disabled]="isLoading()"
+                             class="w-full bg-transparent border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
+                    </div>
+                  </div>
+
+                  <!-- Phone Number -->
+                  <div class="space-y-1.5">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)]">Número de Teléfono</label>
+                    <div class="relative group">
+                      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-500 group-focus-within:text-[var(--accent-color)] transition-colors">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                      </div>
+                      <input type="text"
+                             [(ngModel)]="registerPhone" name="registerPhone"
+                             placeholder="123456789"
                              [disabled]="isLoading()"
                              class="w-full bg-transparent border border-[var(--card-border)] rounded-xl pl-11 pr-4 py-2.5 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50">
                     </div>
@@ -384,6 +399,7 @@ export class LoginComponent implements OnInit {
   registerEmail = '';
   registerPassword = '';
   registerConfirmPassword = '';
+  registerPhone = '';
 
   // Captcha
   captchaId = '';
@@ -476,8 +492,27 @@ export class LoginComponent implements OnInit {
   register(event: Event) {
     event.preventDefault();
     
-    if (!this.registerName || !this.registerEmail || !this.registerPassword || !this.registerConfirmPassword || !this.captchaCode) {
+    if (!this.registerName || !this.registerEmail || !this.registerPassword || !this.registerConfirmPassword || !this.registerPhone || !this.captchaCode) {
       this.showError('Por favor completa todos los campos.');
+      return;
+    }
+
+    const email = this.registerEmail.trim().toLowerCase();
+    if (!email.includes('@')) {
+      this.showError('El correo electrónico debe contener un "@".');
+      return;
+    }
+
+    const allowedDomains = /@(gmail|hotmail|outlook|live|msn|yahoo|icloud|protonmail|proton|aol|zoho|gmx|yandex)\.[a-zA-Z]{2,}/;
+    if (!allowedDomains.test(email)) {
+      this.showError('Proveedor de correo inválido (ej: gmail, hotmail, yahoo).');
+      return;
+    }
+
+    const phone = this.registerPhone.trim();
+    const phoneRegex = /^[0-9+() -]{7,15}$/;
+    if (!phoneRegex.test(phone)) {
+      this.showError('Número de teléfono inválido (debe tener entre 7 y 15 dígitos).');
       return;
     }
 
@@ -494,6 +529,7 @@ export class LoginComponent implements OnInit {
       nombre: this.registerName,
       email: this.registerEmail,
       password: this.registerPassword,
+      telefono: this.registerPhone,
       captchaId: this.captchaId,
       captchaCode: this.captchaCode
     };

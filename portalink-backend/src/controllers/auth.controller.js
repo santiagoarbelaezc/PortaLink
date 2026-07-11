@@ -75,7 +75,7 @@ exports.login = async (req, res) => {
         }
 
         const token = jwt.sign(
-            { id: usuario.id, rol: usuario.rol, email: usuario.email },
+            { id: usuario.id, rol: usuario.rol, email: usuario.email, telefono: usuario.telefono },
             process.env.JWT_SECRET,
             { expiresIn: '8h' }
         );
@@ -85,7 +85,8 @@ exports.login = async (req, res) => {
             usuario: {
                 nombre: usuario.nombre,
                 rol: usuario.rol,
-                email: usuario.email
+                email: usuario.email,
+                telefono: usuario.telefono
             }
         });
     } catch (error) {
@@ -122,9 +123,9 @@ exports.getCaptcha = async (req, res) => {
 };
 
 exports.register = async (req, res) => {
-    const { nombre, email, password, captchaId, captchaCode } = req.body;
+    const { nombre, email, password, telefono, captchaId, captchaCode } = req.body;
     
-    if (!nombre || !email || !password || !captchaId || !captchaCode) {
+    if (!nombre || !email || !password || !telefono || !captchaId || !captchaCode) {
         return res.status(400).json({ message: 'Todos los campos son obligatorios' });
     }
     
@@ -154,18 +155,18 @@ exports.register = async (req, res) => {
             return res.status(400).json({ message: 'El correo electrónico ya está registrado' });
         }
         
-        // 4. Registrar nuevo administrador
+        // 4. Registrar nuevo administrador/usuario
         const hashedPassword = await bcrypt.hash(password, 10);
         const result = await db.query(
-            'INSERT INTO usuarios (nombre, email, password, rol) VALUES ($1, $2, $3, $4) RETURNING id, nombre, email, rol',
-            [nombre, email, hashedPassword, 'admin']
+            'INSERT INTO usuarios (nombre, email, password, telefono, rol) VALUES ($1, $2, $3, $4, $5) RETURNING id, nombre, email, telefono, rol',
+            [nombre, email, hashedPassword, telefono, 'admin']
         );
         
         const nuevoUsuario = result.rows[0];
         
         // 5. Crear token de sesión automático para ingresar directamente tras registrarse
          const token = jwt.sign(
-            { id: nuevoUsuario.id, rol: nuevoUsuario.rol, email: nuevoUsuario.email },
+            { id: nuevoUsuario.id, rol: nuevoUsuario.rol, email: nuevoUsuario.email, telefono: nuevoUsuario.telefono },
             process.env.JWT_SECRET,
             { expiresIn: '8h' }
         );
@@ -176,7 +177,8 @@ exports.register = async (req, res) => {
             usuario: {
                 nombre: nuevoUsuario.nombre,
                 rol: nuevoUsuario.rol,
-                email: nuevoUsuario.email
+                email: nuevoUsuario.email,
+                telefono: nuevoUsuario.telefono
             }
         });
         
@@ -239,5 +241,68 @@ exports.updatePassword = async (req, res) => {
     } catch (error) {
         console.error('Error al actualizar contraseña:', error);
         res.status(500).json({ message: 'Error en el servidor al actualizar la contraseña' });
+    }
+};
+
+exports.updateProfile = async (req, res) => {
+    try {
+        const { nombre, email, telefono } = req.body;
+        const userId = req.user.id;
+
+        if (!nombre || !email || !telefono) {
+            return res.status(400).json({ message: 'Nombre, correo y teléfono son obligatorios' });
+        }
+
+        // 1. Validar correo electrónico
+        const cleanedEmail = email.trim().toLowerCase();
+        if (!cleanedEmail.includes('@')) {
+            return res.status(400).json({ message: 'El correo electrónico debe contener un "@"' });
+        }
+        const allowedDomains = /@(gmail|hotmail|outlook|live|msn|yahoo|icloud|protonmail|proton|aol|zoho|gmx|yandex)\.[a-zA-Z]{2,}/;
+        if (!allowedDomains.test(cleanedEmail)) {
+            return res.status(400).json({ message: 'El proveedor de correo no es válido o común' });
+        }
+
+        // 2. Validar teléfono
+        const cleanedPhone = telefono.trim();
+        const phoneRegex = /^[0-9+() -]{7,15}$/;
+        if (!phoneRegex.test(cleanedPhone)) {
+            return res.status(400).json({ message: 'El número de teléfono debe tener entre 7 y 15 dígitos numéricos' });
+        }
+
+        // 3. Validar duplicado de correo electrónico
+        const emailCheck = await db.query('SELECT id FROM usuarios WHERE email = $1 AND id <> $2', [cleanedEmail, userId]);
+        if (emailCheck.rows.length > 0) {
+            return res.status(400).json({ message: 'El correo electrónico ingresado ya pertenece a otra cuenta' });
+        }
+
+        // 4. Actualizar perfil
+        const updateResult = await db.query(
+            'UPDATE usuarios SET nombre = $1, email = $2, telefono = $3 WHERE id = $4 RETURNING id, nombre, email, telefono, rol',
+            [nombre.trim(), cleanedEmail, cleanedPhone, userId]
+        );
+
+        const updatedUser = updateResult.rows[0];
+
+        // 5. Regenerar el JWT
+        const token = jwt.sign(
+            { id: updatedUser.id, rol: updatedUser.rol, email: updatedUser.email, telefono: updatedUser.telefono },
+            process.env.JWT_SECRET,
+            { expiresIn: '8h' }
+        );
+
+        res.json({
+            message: 'Perfil actualizado exitosamente',
+            token,
+            usuario: {
+                nombre: updatedUser.nombre,
+                rol: updatedUser.rol,
+                email: updatedUser.email,
+                telefono: updatedUser.telefono
+            }
+        });
+    } catch (error) {
+        console.error('Error al actualizar perfil:', error);
+        res.status(500).json({ message: 'Error en el servidor al actualizar el perfil' });
     }
 };
