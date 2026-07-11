@@ -232,7 +232,17 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
   private accumulatedDeltaX = 0;
   private wheelListener = (e: WheelEvent) => this.onWheel(e);
 
-  @ViewChild('carouselContainer', { static: false }) containerRef?: ElementRef;
+  private _containerRef?: ElementRef;
+
+  @ViewChild('carouselContainer', { static: false }) set containerRef(el: ElementRef | undefined) {
+    if (this._containerRef) {
+      this._containerRef.nativeElement.removeEventListener('wheel', this.wheelListener);
+    }
+    this._containerRef = el;
+    if (el) {
+      el.nativeElement.addEventListener('wheel', this.wheelListener, { passive: false });
+    }
+  }
 
   // Touch Swiping variables
   private touchStartX = 0;
@@ -311,14 +321,12 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    if (this.containerRef) {
-      this.containerRef.nativeElement.addEventListener('wheel', this.wheelListener, { passive: false });
-    }
+    // Handled by dynamic @ViewChild setter to safely support *ngIf conditions
   }
 
   ngOnDestroy() {
-    if (this.containerRef) {
-      this.containerRef.nativeElement.removeEventListener('wheel', this.wheelListener);
+    if (this._containerRef) {
+      this._containerRef.nativeElement.removeEventListener('wheel', this.wheelListener);
     }
     if (typeof window !== 'undefined') {
       window.removeEventListener('portfolio-language-change', this.onLanguageChange);
@@ -409,33 +417,29 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onWheel(event: WheelEvent) {
-    const deltaX = event.deltaX;
-    const absX = Math.abs(deltaX);
+    const absX = Math.abs(event.deltaX);
     const absY = Math.abs(event.deltaY);
     
-    // Reaccionar solo a gestos puramente horizontales
+    // Si el scroll es dominantemente horizontal, interceptamos el evento y navegamos el carrusel
     if (absX > absY && absX > 2) {
       event.preventDefault();
       
       const now = Date.now();
-      // Si ha pasado mucho tiempo desde el último scroll, reiniciar el acumulador
       if (now - this.lastWheelTime > 300) { 
         this.accumulatedDeltaX = 0;
       }
       this.lastWheelTime = now;
+      this.accumulatedDeltaX += event.deltaX;
       
-      this.accumulatedDeltaX += deltaX;
-      
-      // Umbral intermedio (130px)
-      if (Math.abs(this.accumulatedDeltaX) > 130) {
+      if (Math.abs(this.accumulatedDeltaX) > 100) {
         if (this.accumulatedDeltaX > 0) {
           this.next();
         } else {
           this.prev();
         }
-        // Reseteamos el acumulador después de mover
         this.accumulatedDeltaX = 0;
       }
     }
+    // Si es vertical, no hacemos event.preventDefault(), permitiendo el scroll fluido de la página.
   }
 }
