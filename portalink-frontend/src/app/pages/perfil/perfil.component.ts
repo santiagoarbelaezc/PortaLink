@@ -106,8 +106,7 @@ import { Subscription } from 'rxjs';
 
           <!-- Quick Navigation Buttons -->
           <div class="flex items-center gap-3">
-            <!-- Back to dashboard (Admins only) -->
-            <a *ngIf="authService.currentUser()?.rol === 'admin'"
+            <a *ngIf="authService.currentUser()?.rol?.toLowerCase() === 'admin'"
                [routerLink]="['/admin']"
                class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest border transition-all duration-200 flex items-center gap-1.5"
                [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-900' : 'border-neutral-200 text-neutral-600 hover:bg-neutral-50'">
@@ -185,7 +184,7 @@ import { Subscription } from 'rxjs';
                         <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1.5">Rol de Cuenta</label>
                         <p class="text-sm font-semibold p-3.5 rounded-xl border capitalize"
                            [ngClass]="isDark ? 'bg-neutral-950/40 border-neutral-800/80' : 'bg-neutral-50 border-neutral-100'">
-                          {{ authService.currentUser()?.rol === 'admin' ? 'Administrador' : 'Usuario General' }}
+                          {{ authService.currentUser()?.rol?.toLowerCase() === 'admin' ? 'Administrador' : 'Usuario General' }}
                         </p>
                       </div>
 
