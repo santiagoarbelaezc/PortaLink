@@ -170,7 +170,7 @@ export class AppComponent implements OnInit {
   }
 
   showNavbar(): boolean {
-    return !this.isAdminRoute() && !this.router.url.includes('/rotbot');
+    return !this.isAdminRoute() && !this.router.url.includes('/rotbot') && !this.router.url.includes('/perfil');
   }
 
   ngOnInit() {

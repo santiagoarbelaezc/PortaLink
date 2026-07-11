@@ -130,25 +130,41 @@ import { AuthService } from '../../services/auth.service';
 
               <!-- Menu Items -->
               <div class="space-y-0.5">
-                <a (click)="goToPage('/rotbot')" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer hover:bg-neutral-500/10 transition-colors">
-                  <span>🤖</span> {{ currentLanguage === 'es' ? 'Hablar con Rotbot' : 'Talk to Rotbot' }}
+                <a (click)="goToPage('/rotbot')" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold cursor-pointer hover:bg-neutral-500/10 transition-colors">
+                  <svg class="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2zM9 10h.01M15 10h.01" />
+                  </svg>
+                  <span>{{ currentLanguage === 'es' ? 'Hablar con Rotbot' : 'Talk to Rotbot' }}</span>
                 </a>
-                <a (click)="goToPage('/personalizar')" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer hover:bg-neutral-500/10 transition-colors">
-                  <span>🎨</span> {{ currentLanguage === 'es' ? 'Personalizar Perfil' : 'Customize Profile' }}
+                <a (click)="goToPage('/personalizar')" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold cursor-pointer hover:bg-neutral-500/10 transition-colors">
+                  <svg class="w-4 h-4 text-purple-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                  </svg>
+                  <span>{{ currentLanguage === 'es' ? 'Personalizar Perfil' : 'Customize Profile' }}</span>
                 </a>
-                <a (click)="goToPage('/perfil')" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer hover:bg-neutral-500/10 transition-colors">
-                  <span>👤</span> {{ currentLanguage === 'es' ? 'Mi Perfil' : 'My Profile' }}
+                <a (click)="goToPage('/perfil')" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold cursor-pointer hover:bg-neutral-500/10 transition-colors">
+                  <svg class="w-4 h-4 text-indigo-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  <span>{{ currentLanguage === 'es' ? 'Mi Perfil' : 'My Profile' }}</span>
                 </a>
-                <a (click)="goToPage('/configuracion')" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer hover:bg-neutral-500/10 transition-colors">
-                  <span>⚙️</span> {{ currentLanguage === 'es' ? 'Configuración' : 'Settings' }}
+                <a (click)="goToPage('/perfil?tab=password')" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold cursor-pointer hover:bg-neutral-500/10 transition-colors">
+                  <svg class="w-4 h-4 text-neutral-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span>{{ currentLanguage === 'es' ? 'Configuración' : 'Settings' }}</span>
                 </a>
               </div>
 
               <!-- Logout Separator -->
               <div class="border-t mt-1.5 pt-1.5" [ngClass]="currentTheme === 'light' ? 'border-neutral-100' : 'border-neutral-800'">
                 <button (click)="logoutUser()" 
-                        class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer text-left border-none bg-transparent">
-                  <span>🚪</span> {{ currentLanguage === 'es' ? 'Cerrar Sesión' : 'Sign Out' }}
+                        class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer text-left border-none bg-transparent">
+                  <svg class="w-4 h-4 text-red-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  <span>{{ currentLanguage === 'es' ? 'Cerrar Sesión' : 'Sign Out' }}</span>
                 </button>
               </div>
             </div>

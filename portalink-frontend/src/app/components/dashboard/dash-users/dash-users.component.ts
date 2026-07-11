@@ -107,7 +107,8 @@ interface User {
 
             <!-- Actions -->
             <div class="col-span-1 flex justify-end">
-              <button (click)="toggleStatus(user.id)"
+              <button *ngIf="user.role !== 'Admin'"
+                      (click)="toggleStatus(user.id)"
                       class="p-2 rounded-lg text-xs transition-all duration-200 cursor-pointer"
                       [ngClass]="isDark ? 'text-neutral-500 hover:text-white hover:bg-neutral-800' : 'text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100'"
                       [title]="user.status === 'Activo' ? 'Desactivar' : 'Activar'">
@@ -116,6 +117,11 @@ interface User {
                   <path *ngIf="user.status !== 'Activo'" stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </button>
+              <span *ngIf="user.role === 'Admin'" 
+                    class="p-2 text-xs opacity-40 cursor-not-allowed select-none"
+                    [title]="'Los administradores no pueden ser desactivados'">
+                🔒
+              </span>
             </div>
           </div>
         </div>
@@ -171,7 +177,7 @@ export class DashUsersComponent implements OnInit {
 
   toggleStatus(id: number) {
     const user = this.usersList.find(u => u.id === id);
-    if (user) {
+    if (user && user.role !== 'Admin') {
       user.status = user.status === 'Activo' ? 'Inactivo' : 'Activo';
       localStorage.setItem('portalink_admin_users', JSON.stringify(this.usersList));
     }
