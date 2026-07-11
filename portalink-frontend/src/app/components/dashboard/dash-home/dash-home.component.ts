@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AnalyticsService, SystemMetrics } from '../../../services/analytics.service';
 import { ItineraryService } from '../../../services/itinerary.service';
+import { SessionTimerService } from '../../../services/session-timer.service';
+import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dash-home',
@@ -56,6 +59,14 @@ import { ItineraryService } from '../../../services/itinerary.service';
                   [ngClass]="isDark ? 'border-blue-500/30 text-blue-400 bg-blue-500/10' : 'border-blue-200 text-blue-700 bg-blue-50'">
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
               Servidor Online
+            </span>
+            <!-- Expiration Countdown Chip -->
+            <span class="text-xs font-semibold px-3 py-1.5 rounded-full border flex items-center gap-1.5 transition-all duration-300"
+                  [ngClass]="sessionIsWarning ? 
+                    (isDark ? 'border-amber-500/40 text-amber-400 bg-amber-500/10 animate-pulse' : 'border-amber-300 text-amber-800 bg-amber-50/80 animate-pulse') : 
+                    (isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-300 text-neutral-600 bg-white/80')">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              Sesión: {{ sessionTimeFormatted }}
             </span>
           </div>
         </div>
@@ -383,6 +394,26 @@ import { ItineraryService } from '../../../services/itinerary.service';
         </button>
       </div>
     </div>
+
+    <!-- Modal de Sesión Expirada (sin botón de cierre) -->
+    <div *ngIf="showSessionExpiredModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 backdrop-blur-md bg-black/60">
+      <div class="w-full max-w-md rounded-2xl border p-6 md:p-8 text-center shadow-2xl scale-in"
+           [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
+        <div class="w-16 h-16 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mx-auto mb-4 border border-red-500/20">
+          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold tracking-tight mb-2">Tu sesión ha expirado</h3>
+        <p class="text-sm mb-6 opacity-75 animate-pulse" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+          Por seguridad, tu sesión ha sido cerrada automáticamente. Por favor, inicia sesión nuevamente para continuar administrando tu portafolio.
+        </p>
+        <button (click)="goToLogin()"
+                class="w-full py-3 px-4 rounded-xl text-xs font-bold uppercase tracking-widest text-white bg-blue-600 hover:bg-blue-500 active:bg-blue-700 transition-all duration-200 cursor-pointer shadow-lg shadow-blue-500/25">
+          Iniciar sesión de nuevo
+        </button>
+      </div>
+    </div>
     </ng-container>
 
     <!-- ═══════════════════════ SKELETON LOADER ═══════════════════════ -->
@@ -449,6 +480,13 @@ import { ItineraryService } from '../../../services/itinerary.service';
       from { opacity: 0; transform: translateY(-6px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+    .scale-in {
+      animation: scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    @keyframes scaleIn {
+      from { transform: scale(0.95); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
   `]
 })
 export class DashHomeComponent implements OnInit, OnDestroy {
@@ -457,6 +495,8 @@ export class DashHomeComponent implements OnInit, OnDestroy {
 
   private analyticsService = inject(AnalyticsService);
   private itineraryService = inject(ItineraryService);
+  private sessionTimer = inject(SessionTimerService);
+  private router = inject(Router);
 
   metrics!: SystemMetrics;
   currentDate = '';
@@ -467,6 +507,13 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   unreadMessages = 0;
   pendingLeads = 0;
   private clockInterval: any;
+
+  // Session Expire Properties
+  sessionTimeFormatted = '';
+  sessionIsWarning = false;
+  showSessionExpiredModal = false;
+  private sessionSub!: Subscription;
+  private sessionExpiredSub!: Subscription;
 
   itineraryNotifs: any = { unseen: 0, current: [], upcoming: [], overdue: [], no_time: [] };
 
@@ -517,12 +564,38 @@ export class DashHomeComponent implements OnInit, OnDestroy {
 
     // Start typewriter
     this.startTypewriter();
+
+    // Session Countdown subscription
+    this.sessionSub = this.sessionTimer.sessionTimeLeft$.subscribe(seconds => {
+      if (seconds <= 0) {
+        this.sessionTimeFormatted = 'Expirada';
+        this.sessionIsWarning = true;
+      } else {
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = seconds % 60;
+        this.sessionTimeFormatted = h > 0 ? `${h}h ${m}m ${s}s` : `${m}m ${s}s`;
+        this.sessionIsWarning = seconds < 900; // Warning a falta de 15 minutos
+      }
+    });
+
+    // Session Expired Event subscription
+    this.sessionExpiredSub = this.sessionTimer.sessionExpired$.subscribe(() => {
+      this.showSessionExpiredModal = true;
+    });
   }
 
   ngOnDestroy() {
     clearInterval(this.clockInterval);
     clearInterval(this.typeInterval);
     clearTimeout(this.pauseTimeout);
+    if (this.sessionSub) this.sessionSub.unsubscribe();
+    if (this.sessionExpiredSub) this.sessionExpiredSub.unsubscribe();
+  }
+
+  goToLogin() {
+    this.showSessionExpiredModal = false;
+    this.router.navigate(['/login']);
   }
 
   private updateClock() {
