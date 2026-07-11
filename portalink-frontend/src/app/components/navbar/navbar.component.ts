@@ -2,6 +2,7 @@ import { Component, inject, HostListener, OnInit, ViewChild, ElementRef } from '
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { AnalyticsService } from '../../services/analytics.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'app-navbar',
@@ -91,15 +92,67 @@ import { AnalyticsService } from '../../services/analytics.service';
           </a>
         </div>
 
-        <!-- Right Side: Minimal CTA and Login -->
+        <!-- Right Side: Minimal CTA and Login / User Profile -->
         <div class="flex items-center justify-end flex-1 gap-4">
-          <!-- Elegant Login Button -->
-          <button *ngIf="!router.url.includes('/login') && !router.url.includes('/register')" (click)="openLoginModal()" 
+          <!-- Elegant Login Button (Only when not authenticated) -->
+          <button *ngIf="!authService.isAuthenticated() && !router.url.includes('/login') && !router.url.includes('/register')" (click)="openLoginModal()" 
                   class="px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-300 border hover:bg-white/5 cursor-pointer text-white"
                   [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.12)'"
                   [style.color]="currentTheme === 'light' ? '#1f2937' : '#ffffff'">
             {{ getLoginLabel() }}
           </button>
+
+          <!-- User Dropdown (When authenticated) -->
+          <div *ngIf="authService.isAuthenticated()" class="relative user-dropdown-container">
+            <button (click)="toggleUserDropdown($event)"
+                    class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl transition-all duration-300 border hover:bg-white/5 cursor-pointer"
+                    [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.12)'"
+                    [style.color]="currentTheme === 'light' ? '#1f2937' : '#ffffff'">
+              <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-[10px] font-bold text-white shadow-md">
+                {{ getUserInitials() }}
+              </div>
+              <span class="text-xs font-bold uppercase tracking-wider truncate max-w-[100px]">{{ authService.currentUser()?.nombre }}</span>
+              <svg class="w-3.5 h-3.5 opacity-60 transition-transform duration-300" [class.rotate-180]="showUserDropdown" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            <!-- Dropdown Card -->
+            <div *ngIf="showUserDropdown" 
+                 class="absolute right-0 top-full mt-2 w-56 rounded-2xl border p-2 shadow-2xl backdrop-blur-xl transition-all duration-200 animate-dropdown"
+                 [ngClass]="currentTheme === 'light' ? 'bg-white/95 border-neutral-200/80 text-neutral-800' : 'bg-neutral-900/95 border-neutral-800 text-white'"
+                 style="z-index: 10000;">
+              <!-- User Info Header -->
+              <div class="px-3 py-3 border-b mb-1" [ngClass]="currentTheme === 'light' ? 'border-neutral-100' : 'border-neutral-800'">
+                <p class="text-xs font-bold truncate">{{ authService.currentUser()?.nombre }}</p>
+                <p class="text-[9px] uppercase tracking-widest opacity-50 font-semibold truncate">{{ authService.currentUser()?.rol }}</p>
+              </div>
+
+              <!-- Menu Items -->
+              <div class="space-y-0.5">
+                <a (click)="goToPage('/rotbot')" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer hover:bg-neutral-500/10 transition-colors">
+                  <span>🤖</span> {{ currentLanguage === 'es' ? 'Hablar con Rotbot' : 'Talk to Rotbot' }}
+                </a>
+                <a (click)="goToPage('/personalizar')" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer hover:bg-neutral-500/10 transition-colors">
+                  <span>🎨</span> {{ currentLanguage === 'es' ? 'Personalizar Perfil' : 'Customize Profile' }}
+                </a>
+                <a (click)="goToPage('/perfil')" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer hover:bg-neutral-500/10 transition-colors">
+                  <span>👤</span> {{ currentLanguage === 'es' ? 'Mi Perfil' : 'My Profile' }}
+                </a>
+                <a (click)="goToPage('/configuracion')" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer hover:bg-neutral-500/10 transition-colors">
+                  <span>⚙️</span> {{ currentLanguage === 'es' ? 'Configuración' : 'Settings' }}
+                </a>
+              </div>
+
+              <!-- Logout Separator -->
+              <div class="border-t mt-1.5 pt-1.5" [ngClass]="currentTheme === 'light' ? 'border-neutral-100' : 'border-neutral-800'">
+                <button (click)="logoutUser()" 
+                        class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer text-left border-none bg-transparent">
+                  <span>🚪</span> {{ currentLanguage === 'es' ? 'Cerrar Sesión' : 'Sign Out' }}
+                </button>
+              </div>
+            </div>
+          </div>
 
           <!-- Clean Solid Contact Button -->
           <button (click)="scrollTo('#contact', $event)" 
@@ -589,6 +642,42 @@ export class NavbarComponent implements OnInit {
 
   isManualScroll = false; // Prevents scroll listener from reverting the pill during smooth scroll
 
+  authService = inject(AuthService);
+  showUserDropdown = false;
+
+  getUserInitials(): string {
+    const user = this.authService.currentUser();
+    if (!user || !user.nombre) return 'U';
+    const parts = user.nombre.split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return user.nombre[0].toUpperCase();
+  }
+
+  toggleUserDropdown(event: Event) {
+    event.stopPropagation();
+    this.showUserDropdown = !this.showUserDropdown;
+  }
+
+  goToPage(url: string) {
+    this.showUserDropdown = false;
+    this.router.navigate([url]);
+  }
+
+  logoutUser() {
+    this.showUserDropdown = false;
+    this.authService.logout();
+  }
+
+  @HostListener('document:click', ['$event'])
+  closeDropdowns(event: Event) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.user-dropdown-container')) {
+      this.showUserDropdown = false;
+    }
+  }
+
   constructor() {
     if (typeof window !== 'undefined') {
       let savedTheme = localStorage.getItem('portfolio-theme') || 'dark';
@@ -597,6 +686,11 @@ export class NavbarComponent implements OnInit {
       }
       this.setTheme(savedTheme);
       this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
+
+      // Listen to auth changes to update navigation links (especially mobile profile link)
+      window.addEventListener('auth-change', () => {
+        this.updateNavItems();
+      });
     }
   }
 
@@ -853,7 +947,7 @@ export class NavbarComponent implements OnInit {
       { name: 'Links',                      link: '/links',         icon: 'link' },
       { name: 'RotBot',                     link: '/rotbot',        icon: 'chat' },
       { name: isEs ? 'Planes' : 'Plans',    link: '/personalizar',  icon: 'planes' },
-      { name: isEs ? 'Perfil' : 'Profile',  link: '/login',         icon: 'user' }
+      { name: isEs ? 'Perfil' : 'Profile',  link: this.authService.isAuthenticated() ? '/perfil' : '/login',         icon: 'user' }
     ];
     setTimeout(() => this.updatePillPosition(), 100);
   }

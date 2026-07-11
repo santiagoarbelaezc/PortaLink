@@ -154,7 +154,7 @@ export class DashUsersComponent implements OnInit {
           email: u.email,
           role: u.rol === 'admin' ? 'Admin' : 'Usuario',
           status: 'Activo',
-          avatar: `https://images.unsplash.com/photo-${u.rol === 'admin' ? '1535713875002-d1d0cf377fde' : '1570295999919-56ceb5ecca61'}?auto=format&fit=crop&w=80&q=80`,
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(u.nombre)}&background=random&color=fff&size=128`,
           joined: u.created_at ? new Date(u.created_at).toLocaleDateString('es-ES', { month: 'short', year: 'numeric' }) : 'N/A'
         }));
       },

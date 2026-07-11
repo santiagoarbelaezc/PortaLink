@@ -161,14 +161,19 @@ import { AuthService } from '../../../services/auth.service';
             
             <div class="flex flex-col gap-1.5 pt-1">
               <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Actualizar Contraseña</label>
-              <div class="flex gap-2">
-                <input type="password" [(ngModel)]="newPassword" placeholder="Nueva contraseña..."
-                       class="flex-grow px-4 py-2.5 rounded-xl border text-sm focus:outline-none transition-all"
+              <div class="flex flex-col gap-2">
+                <input type="password" [(ngModel)]="currentPassword" placeholder="Contraseña actual..."
+                       class="px-4 py-2.5 rounded-xl border text-sm focus:outline-none transition-all"
                        [ngClass]="isDark ? 'bg-neutral-800/60 border-neutral-700 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-neutral-50 border-neutral-200 text-neutral-900 focus:border-neutral-400'">
-                <button (click)="savePassword()" class="px-4 rounded-xl text-[10px] font-bold uppercase tracking-widest border transition-all cursor-pointer shrink-0"
-                        [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:bg-neutral-800' : 'border-neutral-300 text-neutral-600 hover:bg-neutral-100'">
-                  Cambiar
-                </button>
+                <div class="flex gap-2">
+                  <input type="password" [(ngModel)]="newPassword" placeholder="Nueva contraseña..."
+                         class="flex-grow px-4 py-2.5 rounded-xl border text-sm focus:outline-none transition-all"
+                         [ngClass]="isDark ? 'bg-neutral-800/60 border-neutral-700 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-neutral-50 border-neutral-200 text-neutral-900 focus:border-neutral-400'">
+                  <button (click)="savePassword()" class="px-4 rounded-xl text-[10px] font-bold uppercase tracking-widest border transition-all cursor-pointer shrink-0"
+                          [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:bg-neutral-800' : 'border-neutral-300 text-neutral-600 hover:bg-neutral-100'">
+                    Cambiar
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -232,6 +237,7 @@ export class DashConfigComponent {
     maintenanceMode: false
   };
 
+  currentPassword = '';
   newPassword = '';
   savedMsg = '';
 
@@ -258,16 +264,20 @@ export class DashConfigComponent {
   }
 
   savePassword() {
-    if (!this.newPassword.trim()) return;
+    if (!this.currentPassword.trim() || !this.newPassword.trim()) {
+      this.showSaved('Completa todos los campos de contraseña');
+      return;
+    }
     
-    this.authService.changePassword(this.newPassword).subscribe({
+    this.authService.changePassword(this.currentPassword, this.newPassword).subscribe({
       next: (res) => {
+        this.currentPassword = '';
         this.newPassword = '';
         this.showSaved(res.message || 'Contraseña actualizada');
       },
       error: (e) => {
         console.error('Error updating password', e);
-        this.showSaved('Error al actualizar contraseña');
+        this.showSaved(e.error?.message || 'Error al actualizar contraseña');
       }
     });
   }

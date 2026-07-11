@@ -115,7 +115,7 @@ export class AuthService {
     return this.http.get<any[]>(`${environment.apiUrl}/auth/users`);
   }
 
-  changePassword(newPassword: string): Observable<{message: string}> {
-    return this.http.put<{message: string}>(`${environment.apiUrl}/auth/password`, { newPassword });
+  changePassword(currentPassword: string, newPassword: string): Observable<{message: string}> {
+    return this.http.put<{message: string}>(`${environment.apiUrl}/auth/password`, { currentPassword, newPassword });
   }
 }
