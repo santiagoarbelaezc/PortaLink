@@ -9,7 +9,6 @@ import { LoginComponent } from './pages/login/login.component';
 import { ProposalComponent } from './pages/proposal/proposal.component';
 import { authGuard } from './core/guards/auth.guard';
 import { PerfilComponent } from './pages/perfil/perfil.component';
-import { ConfiguracionComponent } from './pages/configuracion/configuracion.component';
 
 export const routes: Routes = [
   {
@@ -68,12 +67,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data: { animation: 'PerfilPage' }
   },
-  {
-    path: 'configuracion',
-    component: ConfiguracionComponent,
-    canActivate: [authGuard],
-    data: { animation: 'ConfiguracionPage' }
-  },
+
   {
     path: 'admin',
     component: AdminComponent,

@@ -93,7 +93,7 @@ exports.login = async (req, res) => {
         }
 
         const token = jwt.sign(
-            { id: usuario.id, rol: usuario.rol },
+            { id: usuario.id, rol: usuario.rol, email: usuario.email },
             process.env.JWT_SECRET,
             { expiresIn: '8h' }
         );
@@ -102,7 +102,8 @@ exports.login = async (req, res) => {
             token,
             usuario: {
                 nombre: usuario.nombre,
-                rol: usuario.rol
+                rol: usuario.rol,
+                email: usuario.email
             }
         });
     } catch (error) {
@@ -181,8 +182,8 @@ exports.register = async (req, res) => {
         const nuevoUsuario = result.rows[0];
         
         // 5. Crear token de sesión automático para ingresar directamente tras registrarse
-        const token = jwt.sign(
-            { id: nuevoUsuario.id, rol: nuevoUsuario.rol },
+         const token = jwt.sign(
+            { id: nuevoUsuario.id, rol: nuevoUsuario.rol, email: nuevoUsuario.email },
             process.env.JWT_SECRET,
             { expiresIn: '8h' }
         );
@@ -192,7 +193,8 @@ exports.register = async (req, res) => {
             token,
             usuario: {
                 nombre: nuevoUsuario.nombre,
-                rol: nuevoUsuario.rol
+                rol: nuevoUsuario.rol,
+                email: nuevoUsuario.email
             }
         });
         

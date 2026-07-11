@@ -9,6 +9,7 @@ export interface LoginResponse {
   usuario: {
     nombre: string;
     rol: string;
+    email?: string;
   };
 }
 
@@ -81,7 +82,23 @@ export class AuthService {
       const userStr = localStorage.getItem(this.USER_KEY);
       if (userStr) {
         try {
-          return JSON.parse(userStr);
+          const user = JSON.parse(userStr);
+          if (!user.email) {
+            const token = this.getToken();
+            if (token) {
+              const parts = token.split('.');
+              if (parts.length >= 2) {
+                const base64Url = parts[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const decoded = JSON.parse(atob(base64));
+                if (decoded && decoded.email) {
+                  user.email = decoded.email;
+                  localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+                }
+              }
+            }
+          }
+          return user;
         } catch (e) {
           return null;
         }
