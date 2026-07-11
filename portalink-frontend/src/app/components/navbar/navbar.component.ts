@@ -972,7 +972,7 @@ export class NavbarComponent implements OnInit {
     return this.currentLanguage === 'es' ? 'Contacto' : 'Contact';
   }
 
-  private scrollIntoView(id: string) {
+  private scrollIntoView(id: string, retries = 8) {
     const element = document.getElementById(id);
     if (element) {
       const offset = 100;
@@ -982,6 +982,8 @@ export class NavbarComponent implements OnInit {
         top: offsetPosition,
         behavior: 'smooth'
       });
+    } else if (retries > 0) {
+      setTimeout(() => this.scrollIntoView(id, retries - 1), 150);
     }
   }
 
