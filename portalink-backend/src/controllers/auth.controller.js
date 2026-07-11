@@ -53,32 +53,14 @@ function generateCaptcha() {
 }
 
 exports.login = async (req, res) => {
-    const { email, password, captchaId, captchaCode } = req.body;
+    const { email, password } = req.body;
 
-    if (!email || !password || !captchaId || !captchaCode) {
-        return res.status(400).json({ message: 'Todos los campos y el captcha son obligatorios' });
+    if (!email || !password) {
+        return res.status(400).json({ message: 'Todos los campos son obligatorios' });
     }
 
     try {
-        // 1. Validar Captcha
-        await db.query('DELETE FROM captchas WHERE expires_at < NOW()');
-        const captchaResult = await db.query('SELECT * FROM captchas WHERE id = $1', [captchaId]);
-        
-        if (captchaResult.rows.length === 0) {
-            return res.status(400).json({ message: 'El captcha ha expirado o es inválido' });
-        }
-        
-        const captchaRecord = captchaResult.rows[0];
-        
-        // Eliminar el captcha inmediatamente para evitar replay
-        await db.query('DELETE FROM captchas WHERE id = $1', [captchaId]);
-        
-        const captchaValido = await bcrypt.compare(captchaCode.toLowerCase().trim(), captchaRecord.codigo);
-        if (!captchaValido) {
-            return res.status(400).json({ message: 'El código captcha ingresado es incorrecto' });
-        }
-
-        // 2. Validar Usuario
+        // 1. Validar Usuario
         const result = await db.query('SELECT * FROM usuarios WHERE email = $1', [email]);
         
         if (result.rows.length === 0) {
