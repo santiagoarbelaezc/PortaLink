@@ -230,17 +230,20 @@ import { AuthService } from '../../services/auth.service';
           <div class="chat-input-area p-3 sm:p-6 border-t">
             <ng-container *ngIf="authService.hasToken(); else loginPrompt">
               <form (submit)="sendMessage()" class="relative max-w-4xl mx-auto">
-                <input 
-                  type="text" 
+                <textarea 
+                  #chatInputRef
                   [(ngModel)]="chatService.userInput"
+                  (keydown)="onInputKeydown($event)"
+                  (input)="autoResizeInput($event)"
                   name="userInput"
-                  placeholder="Pregúntale a Rotbot..."
-                  class="chat-input w-full rounded-xl border py-4 pl-5 pr-14 text-[16px] font-light tracking-wide transition-all focus:ring-0 focus:outline-none"
-                />
+                  rows="1"
+                  placeholder="Pregúntale a Rotbot... (Shift + Enter para salto de línea)"
+                  class="chat-input w-full rounded-xl border py-4 pl-5 pr-14 text-[16px] font-light tracking-wide transition-all focus:ring-0 focus:outline-none resize-none overflow-y-auto leading-normal max-h-36 block"
+                ></textarea>
                 <button 
                   type="submit"
                   [disabled]="!chatService.userInput.trim()"
-                  class="chat-submit-btn absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-all"
+                  class="chat-submit-btn absolute right-3 bottom-3 p-2 rounded-lg transition-all"
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -552,6 +555,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
+  @ViewChild('chatInputRef') private chatInputRef?: ElementRef<HTMLTextAreaElement>;
 
   private styleKeywords: { [key: string]: string } = {
     'elegante': 'elegant',
@@ -669,6 +673,28 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.sendMessage();
   }
 
+  onInputKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      if (event.shiftKey) {
+        setTimeout(() => {
+          if (this.chatInputRef?.nativeElement) {
+            this.autoResizeInput({ target: this.chatInputRef.nativeElement });
+          }
+        }, 10);
+        return;
+      } else {
+        event.preventDefault();
+        this.sendMessage();
+      }
+    }
+  }
+
+  autoResizeInput(event: any) {
+    const textarea = event.target;
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 144) + 'px';
+  }
+
   sendMessage() {
     if (!this.chatService.userInput.trim()) return;
     if (this.chatService.isTyping) return;
@@ -676,6 +702,10 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.analyticsService.incrementMetric('rotbotMessagesSent');
     const userText = this.chatService.userInput.trim();
     this.chatService.userInput = '';
+
+    if (this.chatInputRef?.nativeElement) {
+      this.chatInputRef.nativeElement.style.height = 'auto';
+    }
 
     this.chatService.sendMessage(userText);
     setTimeout(() => this.scrollToBottom(), 80);
