@@ -159,9 +159,24 @@ export class DashUsersComponent implements OnInit {
   pdfLoading = false;
 
   usersList: User[] = [];
+  updatingRole: { [key: number]: boolean } = {};
 
   get isDark() { return this.theme === 'dark'; }
   get activeUsers() { return this.usersList.filter(u => u.status === 'Activo').length; }
+
+  get currentUserId() {
+    return this.authService.currentUser()?.id;
+  }
+
+  get currentUserEmail() {
+    return this.authService.currentUser()?.email;
+  }
+
+  isCurrentUser(user: User): boolean {
+    if (this.currentUserId && user.id === Number(this.currentUserId)) return true;
+    if (this.currentUserEmail && user.email === this.currentUserEmail) return true;
+    return false;
+  }
 
   ngOnInit() {
     this.loadUsers();
@@ -174,7 +189,7 @@ export class DashUsersComponent implements OnInit {
           id: u.id,
           name: u.nombre,
           email: u.email,
-          role: u.rol === 'admin' ? 'Admin' : 'Usuario',
+          role: u.rol?.toLowerCase() === 'admin' ? 'Admin' : 'Usuario',
           status: 'Activo',
           avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(u.nombre)}&background=random&color=fff&size=128`,
           joined: u.created_at ? new Date(u.created_at).toLocaleDateString('es-ES', { month: 'short', year: 'numeric' }) : 'N/A'
@@ -182,7 +197,6 @@ export class DashUsersComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al cargar usuarios de la base de datos:', err);
-        // Fallback local en caso de error
         const saved = localStorage.getItem('portalink_admin_users');
         if (saved) {
           try { this.usersList = JSON.parse(saved); } catch { }
@@ -191,9 +205,28 @@ export class DashUsersComponent implements OnInit {
     });
   }
 
+  changeRole(user: User, newRole: string) {
+    if (this.isCurrentUser(user)) return;
+    const oldRole = user.role;
+    user.role = newRole;
+    this.updatingRole[user.id] = true;
+
+    this.authService.updateUserRole(user.id, newRole.toLowerCase()).subscribe({
+      next: () => {
+        this.updatingRole[user.id] = false;
+        localStorage.setItem('portalink_admin_users', JSON.stringify(this.usersList));
+      },
+      error: (err) => {
+        console.error('Error actualizando rol en backend:', err);
+        user.role = oldRole;
+        this.updatingRole[user.id] = false;
+      }
+    });
+  }
+
   toggleStatus(id: number) {
     const user = this.usersList.find(u => u.id === id);
-    if (user && user.role !== 'Admin') {
+    if (user && !this.isCurrentUser(user)) {
       user.status = user.status === 'Activo' ? 'Inactivo' : 'Activo';
       localStorage.setItem('portalink_admin_users', JSON.stringify(this.usersList));
     }
@@ -208,6 +241,16 @@ export class DashUsersComponent implements OnInit {
       if (role === 'Admin') return 'bg-neutral-900 text-white';
       if (role === 'Editor') return 'bg-neutral-200 text-neutral-700';
       return 'bg-neutral-100 text-neutral-500';
+    }
+  }
+
+  getRoleSelectClass(role: string): string {
+    if (this.isDark) {
+      if (role === 'Admin') return 'bg-neutral-800 text-cyan-400 border-cyan-500/40 hover:border-cyan-400';
+      return 'bg-neutral-900 text-neutral-300 border-neutral-700 hover:border-neutral-500';
+    } else {
+      if (role === 'Admin') return 'bg-neutral-900 text-white border-neutral-800';
+      return 'bg-white text-neutral-700 border-neutral-300';
     }
   }
 

@@ -11,7 +11,7 @@ export class MarkdownPipe implements PipeTransform {
   transform(value: string): SafeHtml {
     if (!value) return '';
 
-    let html = value;
+    let html = value.replace(/===LANDING_JSON_START===[\s\S]*?===LANDING_JSON_END===/g, '').trim();
 
     // Bold text (**text**)
     html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-[var(--text-primary)]">$1</strong>');

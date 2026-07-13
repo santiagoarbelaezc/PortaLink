@@ -89,18 +89,15 @@ export class ChatStateService {
     ).subscribe({
       next: (res) => {
         this.isTyping = false;
-        let cleanReply = res.reply;
-        if (cleanReply && cleanReply.includes('===LANDING_JSON_START===')) {
-          const before = cleanReply.split('===LANDING_JSON_START===')[0].trim();
-          const after = (cleanReply.split('===LANDING_JSON_END===')[1] || '').trim();
-          cleanReply = [before, after].filter(Boolean).join('\n\n') || '¡Tu landing page ha sido creada con éxito! Puedes explorarla en la vista previa.';
-        }
-        this.addMessage('assistant', cleanReply);
-        if (res.remaining_messages !== null && res.remaining_messages !== undefined) {
-          this.remainingMessages.set(res.remaining_messages);
-        }
         if (res.site_generated) {
           this.lastGeneratedSite.set(res.site_generated);
+          try {
+            localStorage.setItem('portalink_generated_site', JSON.stringify(res.site_generated.siteData));
+          } catch (e) {}
+        }
+        this.addMessage('assistant', res.reply);
+        if (res.remaining_messages !== null && res.remaining_messages !== undefined) {
+          this.remainingMessages.set(res.remaining_messages);
         }
       },
       error: (err) => {

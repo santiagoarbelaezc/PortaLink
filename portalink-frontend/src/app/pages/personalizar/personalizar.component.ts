@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { SiteService } from '../../services/site.service';
+import { AuthService } from '../../services/auth.service';
 
 interface ThemePreset {
   id: string;
@@ -1372,13 +1374,100 @@ export class PersonalizarComponent implements OnInit {
 
   selectedTheme = this.themes[0];
 
+  private siteService = inject(SiteService);
+  private authService = inject(AuthService);
+
   constructor(private router: Router) {}
 
   ngOnInit() {
-    // Fake loading delay to mimic the dashboard shimmer experience smoothly
+    // 1. Verificar si vienen datos del sitio web generados por Rotbot en history.state
+    const stateData = history.state?.siteData;
+    if (stateData) {
+      this.applySiteData(stateData);
+    } else {
+      // 2. Si no están en state, revisar si Rotbot los guardó en localStorage
+      const savedLocal = localStorage.getItem('portalink_generated_site');
+      if (savedLocal) {
+        try {
+          const parsed = JSON.parse(savedLocal);
+          this.applySiteData(parsed);
+        } catch (e) {}
+      }
+    }
+
+    // 3. Si el usuario está autenticado, intentar cargar su landing de la base de datos
+    if (this.authService.hasToken()) {
+      this.siteService.getMySite().subscribe({
+        next: (res) => {
+          if (res.site && res.site.site_data) {
+            this.applySiteData(res.site.site_data);
+          }
+        },
+        error: () => {}
+      });
+    }
+
     setTimeout(() => {
       this.isLoading = false;
     }, 800);
+  }
+
+  applySiteData(data: any) {
+    if (!data) return;
+
+    // 1. Título y Subtítulo / Hero
+    const name = data.hero?.name || data.name || data.hero?.headline;
+    const role = data.hero?.role || data.role || data.hero?.subheadline;
+
+    if (name) this.siteTitle = name.toUpperCase();
+    if (role) this.heroSubtitle = role.toUpperCase();
+
+    if (data.hero?.headline) {
+      this.heroTitle = data.hero.headline;
+    } else if (name && role) {
+      this.heroTitle = `${name}\n${role}`;
+    }
+
+    const bioOrDesc = data.hero?.bio || data.hero?.description || data.about?.description || data.hero?.subheadline;
+    if (bioOrDesc) {
+      this.heroDescription = bioOrDesc;
+    }
+
+    if (data.hero?.ctaText) {
+      this.heroCta1 = data.hero.ctaText;
+    }
+
+    // 2. Sobre Mí (About)
+    if (data.about?.title) this.aboutTitle = data.about.title;
+    if (data.about?.description || data.about?.bio) {
+      this.aboutText = data.about.description || data.about.bio;
+    } else if (bioOrDesc) {
+      this.aboutText = bioOrDesc;
+    }
+
+    // 3. Servicios
+    if (Array.isArray(data.services) && data.services.length > 0) {
+      this.servicesList = data.services.map((s: any, idx: number) => ({
+        id: idx + 1,
+        title: s.title || s.name || `Servicio ${idx + 1}`,
+        description: s.description || s.desc || 'Desarrollo web y soluciones digitales profesionales.'
+      }));
+    }
+
+    // 4. Contacto
+    if (data.contact?.email) {
+      this.contactEmail = data.contact.email;
+    }
+    if (data.contact?.phone) {
+      this.contactPhone = data.contact.phone;
+    }
+
+    // 5. Tema Visual
+    const styleOrScheme = `${data.theme?.style || ''} ${data.theme?.colorScheme || ''}`.toLowerCase();
+    if (styleOrScheme.includes('minimal') || styleOrScheme.includes('negro') || styleOrScheme.includes('black') || styleOrScheme.includes('dark')) {
+      const minimalTheme = this.themes.find(t => t.id === 'minimal-luxury' || t.id === 'dark-cyber');
+      if (minimalTheme) this.selectedTheme = minimalTheme;
+    }
   }
 
   routerToRotbot(message: string) {

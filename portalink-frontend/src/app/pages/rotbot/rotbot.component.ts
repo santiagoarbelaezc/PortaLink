@@ -189,6 +189,25 @@ import { AuthService } from '../../services/auth.service';
                   }"
                 >
                   <span [innerHTML]="msg.content | markdown"></span>
+
+                  <!-- Tarjeta interactiva para ir a personalizar con el JSON devuelto -->
+                  <div *ngIf="msg.role === 'assistant' && hasGeneratedSite(msg.content)" 
+                       class="mt-4 p-4 rounded-2xl border border-cyan-500/30 bg-cyan-500/10 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg animate-fade-in">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-300 text-lg">
+                        ✨
+                      </div>
+                      <div>
+                        <h4 class="text-sm font-bold text-white">¡Tu Landing Page está lista!</h4>
+                        <p class="text-xs text-neutral-300">Hemos estructurado tu sitio con los datos que nos diste.</p>
+                      </div>
+                    </div>
+                    <button (click)="customizeSiteFromMessage(msg.content)"
+                            class="px-5 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all shadow-md cursor-pointer whitespace-nowrap">
+                      <span>Personalizar Mi Sitio</span>
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                    </button>
+                  </div>
                 </div>
               </div>
             </ng-container>
@@ -305,12 +324,17 @@ import { AuthService } from '../../services/auth.service';
         <!-- Componente Interactivo Dinámico (Diseños en Formato Móvil) -->
         <div *ngIf="activeDesign || isDesigning" class="hidden lg:flex flex-col flex-grow h-full overflow-hidden relative animate-fade-in z-10 items-center justify-center bg-[var(--bg-primary)]/50 p-6">
           
-          <div *ngIf="generatedSlug" class="absolute top-6 left-6 z-20">
-            <a [routerLink]="['/site', generatedSlug]" target="_blank"
+          <div *ngIf="generatedSlug || generatedSiteData" class="absolute top-6 left-6 z-20 flex items-center gap-3">
+            <a *ngIf="generatedSlug" [routerLink]="['/site', generatedSlug]" target="_blank"
                class="px-4 py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-300 text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow-lg">
               <span>Ver página pública</span>
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
             </a>
+            <button (click)="customizeGeneratedSite()"
+                    class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-teal-400 hover:from-cyan-300 hover:to-teal-300 text-black text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all shadow-lg cursor-pointer">
+              <span>Personalizar Mi Sitio</span>
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+            </button>
           </div>
 
           <!-- Botón Cerrar Diseño -->
@@ -655,6 +679,34 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     this.chatService.sendMessage(userText);
     setTimeout(() => this.scrollToBottom(), 80);
+  }
+
+  hasGeneratedSite(content: string): boolean {
+    return !!content && content.includes('===LANDING_JSON_START===');
+  }
+
+  customizeSiteFromMessage(content: string) {
+    try {
+      const match = content.match(/===LANDING_JSON_START===([\s\S]*?)===LANDING_JSON_END===/);
+      if (match && match[1]) {
+        const siteData = JSON.parse(match[1].trim());
+        localStorage.setItem('portalink_generated_site', JSON.stringify(siteData));
+        this.router.navigate(['/personalizar'], { state: { siteData } });
+        return;
+      }
+    } catch (e) {
+      console.error('Error procesando JSON de landing page:', e);
+    }
+    this.customizeGeneratedSite();
+  }
+
+  customizeGeneratedSite() {
+    if (this.generatedSiteData) {
+      try {
+        localStorage.setItem('portalink_generated_site', JSON.stringify(this.generatedSiteData));
+      } catch (e) {}
+    }
+    this.router.navigate(['/personalizar'], { state: { siteData: this.generatedSiteData } });
   }
 
   private scrollToBottom(): void {
