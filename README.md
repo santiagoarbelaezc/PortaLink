@@ -18,7 +18,8 @@
 - Subida y optimización de imágenes para proyectos
 - Despliegue en producción (Frontend y Backend)
 - Mejoras en la interfaz del panel de control
-- Ultimas mejoras en el diseño del home 
+- Ultimas mejoras en el diseño del home
+- Implementacion para añadir los proyectos
 
 ## 📋 **Descripción del Proyecto**
 
