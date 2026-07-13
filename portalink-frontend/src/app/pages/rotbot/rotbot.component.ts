@@ -9,6 +9,7 @@ import { AiInfoModalComponent } from '../../components/ai-info-modal/ai-info-mod
 import { UserLandingComponent } from '../../components/user-landing/user-landing.component';
 import { MarkdownPipe } from '../../pipes/markdown-pipe';
 import { AuthService } from '../../services/auth.service';
+import { SiteService } from '../../services/site.service';
 
 @Component({
   selector: 'app-rotbot-page',
@@ -237,7 +238,7 @@ import { AuthService } from '../../services/auth.service';
                   (input)="autoResizeInput($event)"
                   name="userInput"
                   rows="1"
-                  placeholder="Pregúntale a Rotbot... (Shift + Enter para salto de línea)"
+                  placeholder="Pregúntale a Rotbot..."
                   class="chat-input w-full rounded-xl border py-4 pl-5 pr-14 text-[16px] font-light tracking-wide transition-all focus:ring-0 focus:outline-none resize-none overflow-y-auto leading-normal max-h-36 block"
                 ></textarea>
                 <button 
@@ -589,7 +590,8 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     private router: Router,
     private location: Location,
     private analyticsService: AnalyticsService,
-    public authService: AuthService
+    public authService: AuthService,
+    private siteService: SiteService
   ) {
     effect(() => {
       const site = this.chatService.lastGeneratedSite();
@@ -721,6 +723,9 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
       if (match && match[1]) {
         const siteData = JSON.parse(match[1].trim());
         localStorage.setItem('portalink_generated_site', JSON.stringify(siteData));
+        if (this.authService.hasToken()) {
+          this.siteService.saveMySite(siteData).subscribe();
+        }
         this.router.navigate(['/personalizar'], { state: { siteData } });
         return;
       }
@@ -734,6 +739,9 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     if (this.generatedSiteData) {
       try {
         localStorage.setItem('portalink_generated_site', JSON.stringify(this.generatedSiteData));
+        if (this.authService.hasToken()) {
+          this.siteService.saveMySite(this.generatedSiteData).subscribe();
+        }
       } catch (e) {}
     }
     this.router.navigate(['/personalizar'], { state: { siteData: this.generatedSiteData } });

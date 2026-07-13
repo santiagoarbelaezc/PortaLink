@@ -40,4 +40,12 @@ export class SiteService {
       `${environment.apiUrl}/site/${slug}`
     );
   }
+
+  saveMySite(siteData: any): Observable<any> {
+    return this.http.post<any>(
+      `${environment.apiUrl}/site/save`,
+      { site_data: siteData },
+      { headers: this.buildHeaders() }
+    );
+  }
 }

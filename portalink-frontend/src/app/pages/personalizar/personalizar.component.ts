@@ -1416,21 +1416,21 @@ export class PersonalizarComponent implements OnInit {
     if (!data) return;
 
     // 1. Título y Subtítulo / Hero
-    const name = data.hero?.name || data.name || data.hero?.headline;
-    const role = data.hero?.role || data.role || data.hero?.subheadline;
+    const name = data.hero?.name || data.name;
+    const title = data.hero?.title || data.hero?.headline || data.title;
+    const subtitle = data.hero?.subtitle || data.hero?.subheadline || data.subtitle || data.hero?.bio || data.hero?.description;
 
     if (name) this.siteTitle = name.toUpperCase();
-    if (role) this.heroSubtitle = role.toUpperCase();
-
-    if (data.hero?.headline) {
-      this.heroTitle = data.hero.headline;
-    } else if (name && role) {
-      this.heroTitle = `${name}\n${role}`;
+    if (title && name) {
+      this.heroTitle = `${name}\n${title}`;
+    } else if (title) {
+      this.heroTitle = title;
+    } else if (name) {
+      this.heroTitle = name;
     }
-
-    const bioOrDesc = data.hero?.bio || data.hero?.description || data.about?.description || data.hero?.subheadline;
-    if (bioOrDesc) {
-      this.heroDescription = bioOrDesc;
+    if (subtitle) {
+      this.heroSubtitle = subtitle.toUpperCase();
+      this.heroDescription = subtitle;
     }
 
     if (data.hero?.ctaText) {
@@ -1438,11 +1438,13 @@ export class PersonalizarComponent implements OnInit {
     }
 
     // 2. Sobre Mí (About)
-    if (data.about?.title) this.aboutTitle = data.about.title;
-    if (data.about?.description || data.about?.bio) {
-      this.aboutText = data.about.description || data.about.bio;
-    } else if (bioOrDesc) {
-      this.aboutText = bioOrDesc;
+    if (data.about?.heading || data.about?.title) {
+      this.aboutTitle = data.about.heading || data.about.title;
+    }
+    if (data.about?.text || data.about?.description || data.about?.bio) {
+      this.aboutText = data.about.text || data.about.description || data.about.bio;
+    } else if (subtitle) {
+      this.aboutText = subtitle;
     }
 
     // 3. Servicios
@@ -1464,7 +1466,10 @@ export class PersonalizarComponent implements OnInit {
 
     // 5. Tema Visual
     const styleOrScheme = `${data.theme?.style || ''} ${data.theme?.colorScheme || ''}`.toLowerCase();
-    if (styleOrScheme.includes('minimal') || styleOrScheme.includes('negro') || styleOrScheme.includes('black') || styleOrScheme.includes('dark')) {
+    if (styleOrScheme.includes('claro') || styleOrScheme.includes('light')) {
+      const lightTheme = this.themes.find(t => t.id === 'editorial-warm' || t.id === 'sunset-peach');
+      if (lightTheme) this.selectedTheme = lightTheme;
+    } else if (styleOrScheme.includes('minimal') || styleOrScheme.includes('negro') || styleOrScheme.includes('black') || styleOrScheme.includes('dark')) {
       const minimalTheme = this.themes.find(t => t.id === 'minimal-luxury' || t.id === 'dark-cyber');
       if (minimalTheme) this.selectedTheme = minimalTheme;
     }

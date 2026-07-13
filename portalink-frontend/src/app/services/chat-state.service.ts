@@ -165,6 +165,8 @@ export class ChatStateService {
       if (res.rate_limit_enabled && res.remaining !== null) {
         this.remainingMessages.set(res.remaining);
         this.limitExceeded.set(res.remaining <= 0);
+      } else {
+        this.limitExceeded.set(false);
       }
       // Detectar tipo de usuario
       if (this.authService.hasToken()) {
