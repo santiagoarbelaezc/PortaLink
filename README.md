@@ -14,8 +14,7 @@
 ---
 
 ### **PENDIENTE PARA EL PROYECTO**
-- Integración completa del frontend con los endpoints del backend
-- Autenticación segura y persistencia de sesión en el cliente
+
 - Subida y optimización de imágenes para proyectos
 - Despliegue en producción (Frontend y Backend)
 - Mejoras en la interfaz del panel de control
