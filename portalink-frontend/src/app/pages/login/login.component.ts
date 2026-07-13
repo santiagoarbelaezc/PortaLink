@@ -312,10 +312,11 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                       </button>
                       <input type="text"
                              [(ngModel)]="captchaCode" name="captchaCode"
-                             placeholder="Código"
+                             placeholder="CÓDIGO"
+                             autocomplete="off"
                              [disabled]="isLoading()"
                              maxlength="5"
-                             class="flex-grow h-10 bg-[var(--bg-secondary)]/60 border border-[var(--card-border)] rounded-xl px-2 py-2 text-sm text-[var(--text-primary)] placeholder-neutral-600 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50 text-center uppercase tracking-widest font-bold">
+                             class="flex-grow h-10 bg-[#121217] border border-neutral-700 rounded-xl px-2 py-2 text-sm text-cyan-400 placeholder-neutral-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all duration-300 disabled:opacity-50 text-center uppercase tracking-widest font-black">
                     </div>
                   </div>
 
