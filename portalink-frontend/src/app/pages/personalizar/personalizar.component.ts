@@ -582,7 +582,7 @@ interface ProductItem {
                         (click)="scrollToMockupSection('prev-contact', $event)"
                         class="px-4 py-2 text-[10px] uppercase tracking-wider font-bold transition-all hover:scale-105 active:scale-95"
                         [style.background]="selectedTheme.accent"
-                        style="color: #000000;">
+                        [style.color]="getAccentTextColor()">
                   {{ getTranslation('navContact') }}
                 </button>
               </div>
@@ -603,7 +603,7 @@ interface ProductItem {
                 <button [class]="buttonStyle"
                         class="px-7 py-3.5 text-xs font-bold uppercase tracking-widest transition-all hover:scale-105"
                         [style.background]="selectedTheme.accent"
-                        style="color: #000000;">
+                        [style.color]="getAccentTextColor()">
                   {{ heroCta1 || 'Empezar' }}
                 </button>
                 <button [class]="buttonStyle"
@@ -701,7 +701,7 @@ interface ProductItem {
                     <button [class]="buttonStyle"
                             class="w-full py-2 text-[10px] uppercase font-bold tracking-widest text-center transition-all"
                             [style.background]="selectedTheme.accent"
-                            style="color: #000000;">
+                            [style.color]="getAccentTextColor()">
                       {{ getTranslation('buyNow') }}
                     </button>
                   </div>
@@ -712,12 +712,14 @@ interface ProductItem {
             <!-- 6. PROMO BANNERS MOCKUP -->
             <section *ngIf="includeBanner" class="px-8 md:px-16 py-12 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left"
                      [style.background]="selectedTheme.accent"
-                     style="color: #000000;">
+                     [style.color]="getAccentTextColor()">
               <h3 class="font-bold uppercase tracking-wide max-w-2xl" [style.fontSize.px]="titleFontSize * 0.5">
                 {{ bannerText || '¿Quieres cotizar tu proyecto a medida?' }}
               </h3>
               <button [class]="buttonStyle"
-                      class="px-6 py-3.5 bg-black text-white hover:bg-neutral-900 text-xs font-bold uppercase tracking-widest transition-all hover:scale-105">
+                      class="px-6 py-3.5 text-xs font-bold uppercase tracking-widest transition-all hover:scale-105 border"
+                      [style.background]="getAccentTextColor() === '#ffffff' ? '#ffffff' : '#000000'"
+                      [style.color]="getAccentTextColor() === '#ffffff' ? '#0f172a' : '#ffffff'">
                 {{ bannerCta || 'Hablemos Hoy' }}
               </button>
             </section>
@@ -754,7 +756,7 @@ interface ProductItem {
                 <button [class]="buttonStyle"
                         class="w-full py-3 text-xs font-bold uppercase tracking-widest transition-all"
                         [style.background]="selectedTheme.accent"
-                        style="color: #000000;">
+                        [style.color]="getAccentTextColor()">
                   {{ getTranslation('sendMsg') }}
                 </button>
               </div>
@@ -1362,10 +1364,15 @@ export class PersonalizarComponent implements OnInit {
 
   // Theme presets
   themes: ThemePreset[] = [
+    { id: 'white-minimal', name: 'White Executive', primary: '#111827', bg: '#ffffff', cardBg: '#f8fafc', accent: '#0f172a', lightTheme: true },
+    { id: 'white-gold', name: 'White & Gold Luxury', primary: '#18181b', bg: '#ffffff', cardBg: '#faf9f6', accent: '#c5a059', lightTheme: true },
+    { id: 'white-sapphire', name: 'White & Sapphire', primary: '#0f172a', bg: '#ffffff', cardBg: '#f1f5f9', accent: '#2563eb', lightTheme: true },
+    { id: 'white-monochrome', name: 'Snow Monochrome', primary: '#09090b', bg: '#ffffff', cardBg: '#f4f4f5', accent: '#3f3f46', lightTheme: true },
+    { id: 'white-emerald', name: 'White Emerald', primary: '#1e293b', bg: '#ffffff', cardBg: '#f0fdf4', accent: '#059669', lightTheme: true },
     { id: 'dark-cyber', name: 'Cyber Glow', primary: '#ffffff', bg: '#08080c', cardBg: '#111118', accent: '#00f5ff', lightTheme: false },
     { id: 'minimal-luxury', name: 'Luxury Minimal', primary: '#ffffff', bg: '#050505', cardBg: '#121212', accent: '#e5c158', lightTheme: false },
     { id: 'ocean-glass', name: 'Ocean Glass', primary: '#ffffff', bg: '#0a192f', cardBg: '#112240', accent: '#64ffda', lightTheme: false },
-    { id: 'editorial-warm', name: 'Editorial Warm', primary: '#2d2d2d', bg: '#fbf9f4', cardBg: '#f2eee3', accent: '#e05a47', lightTheme: true },
+    { id: 'editorial-warm', name: 'Editorial Warm', primary: '#2d2d2d', bg: '#ffffff', cardBg: '#f8f9fa', accent: '#d97706', lightTheme: true },
     { id: 'emerald-forest', name: 'Emerald Forest', primary: '#ffffff', bg: '#051610', cardBg: '#0b241c', accent: '#10b981', lightTheme: false },
     { id: 'sunset-peach', name: 'Sunset Peach', primary: '#2d2d2d', bg: '#fffaf5', cardBg: '#fef0e6', accent: '#f97316', lightTheme: true },
     { id: 'orchid-purple', name: 'Orchid Purple', primary: '#ffffff', bg: '#0d0516', cardBg: '#180a29', accent: '#a855f7', lightTheme: false },
@@ -1466,9 +1473,9 @@ export class PersonalizarComponent implements OnInit {
 
     // 5. Tema Visual
     const styleOrScheme = `${data.theme?.style || ''} ${data.theme?.colorScheme || ''}`.toLowerCase();
-    if (styleOrScheme.includes('claro') || styleOrScheme.includes('light')) {
-      const lightTheme = this.themes.find(t => t.id === 'editorial-warm' || t.id === 'sunset-peach');
-      if (lightTheme) this.selectedTheme = lightTheme;
+    if (styleOrScheme.includes('blanco') || styleOrScheme.includes('white') || styleOrScheme.includes('claro') || styleOrScheme.includes('light')) {
+      const whiteTheme = this.themes.find(t => t.id === 'white-minimal' || t.id === 'white-gold');
+      if (whiteTheme) this.selectedTheme = whiteTheme;
     } else if (styleOrScheme.includes('minimal') || styleOrScheme.includes('negro') || styleOrScheme.includes('black') || styleOrScheme.includes('dark')) {
       const minimalTheme = this.themes.find(t => t.id === 'minimal-luxury' || t.id === 'dark-cyber');
       if (minimalTheme) this.selectedTheme = minimalTheme;
@@ -1496,6 +1503,48 @@ export class PersonalizarComponent implements OnInit {
 
   selectTheme(theme: ThemePreset) {
     this.selectedTheme = theme;
+    this.saveCurrentDesignToProfile();
+  }
+
+  saveCurrentDesignToProfile() {
+    const updatedSiteData = {
+      hero: {
+        name: this.siteTitle,
+        title: this.heroTitle,
+        subtitle: this.heroSubtitle,
+        ctaText: this.heroCta1,
+        ctaLink: '#contact'
+      },
+      about: {
+        heading: this.aboutTitle,
+        text: this.aboutText
+      },
+      services: this.servicesList,
+      contact: {
+        email: this.contactEmail,
+        phone: this.contactPhone
+      },
+      theme: {
+        style: this.selectedTheme.name,
+        colorScheme: this.selectedTheme.lightTheme ? 'light' : 'dark',
+        accentColor: this.selectedTheme.accent
+      },
+      style: {
+        accentColor: this.selectedTheme.accent,
+        colorScheme: this.selectedTheme.lightTheme ? 'light' : 'dark'
+      }
+    };
+
+    try {
+      localStorage.setItem('portalink_generated_site', JSON.stringify(updatedSiteData));
+    } catch (e) {}
+
+    if (this.authService.hasToken()) {
+      this.siteService.saveMySite(updatedSiteData).subscribe({
+        next: (res) => console.log('✅ Diseño guardado en base de datos:', res),
+        error: (err) => console.error('❌ Error guardando diseño:', err)
+      });
+    }
   }
 
   // Get localized editor text
@@ -1635,6 +1684,17 @@ export class PersonalizarComponent implements OnInit {
     }
   }
 
+  // Returns white text color when the button background (accent) is dark, or black when light
+  getAccentTextColor(): string {
+    const hex = (this.selectedTheme?.accent || '#00f5ff').replace('#', '');
+    if (hex.length !== 6) return '#000000';
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b);
+    return luminance < 145 ? '#ffffff' : '#000000';
+  }
+
   // Returns raw SVG paths for the Brand Icon
   getBrandIconSvg(icon: string): string {
     switch (icon) {
@@ -1718,6 +1778,7 @@ export class PersonalizarComponent implements OnInit {
 
   confirmLaunch() {
     this.showModal = false;
+    this.saveCurrentDesignToProfile();
 
     // Build the customization payload message for Rotbot
     let payload = `¡Hola! Quiero iniciar el desarrollo de mi landing page personalizada. Estos son mis requerimientos:\n\n`;

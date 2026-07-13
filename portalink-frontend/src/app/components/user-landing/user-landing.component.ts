@@ -24,7 +24,7 @@ import { CommonModule } from '@angular/common';
            class="text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-full transition-all hover:scale-105"
            [ngStyle]="{
              'background-color': siteData?.style?.accentColor || '#00f5ff',
-             'color': '#000000',
+             'color': getContrastColor(siteData?.style?.accentColor),
              'box-shadow': '0 0 15px ' + (siteData?.style?.accentColor || '#00f5ff') + '40'
            }">
           {{ siteData?.hero?.ctaText || 'Contacto' }}
@@ -56,7 +56,7 @@ import { CommonModule } from '@angular/common';
              class="px-8 py-3.5 rounded-xl font-bold text-sm tracking-wide uppercase transition-all hover:scale-105 active:scale-95 shadow-lg"
              [ngStyle]="{
                'background-color': siteData?.style?.accentColor || '#00f5ff',
-               'color': '#000000',
+               'color': getContrastColor(siteData?.style?.accentColor),
                'box-shadow': '0 10px 25px -5px ' + (siteData?.style?.accentColor || '#00f5ff') + '50'
              }">
             {{ siteData?.hero?.ctaText || 'Comencemos' }}
@@ -175,7 +175,7 @@ import { CommonModule } from '@angular/common';
              class="inline-block px-8 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all hover:scale-105 shadow-md"
              [ngStyle]="{
                'background-color': siteData?.style?.accentColor || '#00f5ff',
-               'color': '#000000'
+               'color': getContrastColor(siteData?.style?.accentColor)
              }">
             Enviar Correo
           </a>
@@ -193,4 +193,14 @@ import { CommonModule } from '@angular/common';
 })
 export class UserLandingComponent {
   @Input() siteData: any;
+
+  getContrastColor(hexColor?: string): string {
+    const hex = (hexColor || '#00f5ff').replace('#', '');
+    if (hex.length !== 6) return '#000000';
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b);
+    return luminance < 145 ? '#ffffff' : '#000000';
+  }
 }

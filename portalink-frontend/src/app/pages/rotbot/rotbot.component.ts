@@ -6,7 +6,6 @@ import { ChatStateService } from '../../services/chat-state.service';
 import { AnalyticsService } from '../../services/analytics.service';
 import { ChatLimitModalComponent } from '../../components/chat-limit-modal/chat-limit-modal.component';
 import { AiInfoModalComponent } from '../../components/ai-info-modal/ai-info-modal.component';
-import { UserLandingComponent } from '../../components/user-landing/user-landing.component';
 import { MarkdownPipe } from '../../pipes/markdown-pipe';
 import { AuthService } from '../../services/auth.service';
 import { SiteService } from '../../services/site.service';
@@ -14,7 +13,7 @@ import { SiteService } from '../../services/site.service';
 @Component({
   selector: 'app-rotbot-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ChatLimitModalComponent, AiInfoModalComponent, UserLandingComponent, MarkdownPipe],
+  imports: [CommonModule, FormsModule, RouterModule, ChatLimitModalComponent, AiInfoModalComponent, MarkdownPipe],
   template: `
     <app-chat-limit-modal></app-chat-limit-modal>
     <app-ai-info-modal [isOpen]="isInfoModalOpen" (closeEvent)="isInfoModalOpen = false"></app-ai-info-modal>
@@ -291,7 +290,7 @@ import { SiteService } from '../../services/site.service';
         </div>
  
         <!-- Sidebar Derecho (Info Rotbot) -->
-        <div *ngIf="!activeDesign && !isDesigning" class="chat-sidebar no-scrollbar hidden md:flex flex-col w-80 flex-shrink-0 border-l py-8 px-6 gap-6 overflow-y-auto animate-fade-in" style="border-color: var(--card-border);">
+        <div class="chat-sidebar no-scrollbar hidden md:flex flex-col w-80 flex-shrink-0 border-l py-8 px-6 gap-6 overflow-y-auto animate-fade-in" style="border-color: var(--card-border);">
           <h4 class="sidebar-title mb-2">¿Quién es Rotbot?</h4>
           
           <div class="flex flex-col items-center text-center gap-4 p-5 rounded-2xl border right-sidebar-card" style="border-color: var(--card-border);">
@@ -323,55 +322,6 @@ import { SiteService } from '../../services/site.service';
               Empieza hoy la transformación digital y automatiza tu negocio con Inteligencia Artificial.
             </span>
           </button>
-        </div>
-
-        <!-- Componente Interactivo Dinámico (Diseños en Formato Móvil) -->
-        <div *ngIf="activeDesign || isDesigning" class="hidden lg:flex flex-col flex-grow h-full overflow-hidden relative animate-fade-in z-10 items-center justify-center bg-[var(--bg-primary)]/50 p-6">
-          
-          <div *ngIf="generatedSlug || generatedSiteData" class="absolute top-6 left-6 z-20 flex items-center gap-3">
-            <a *ngIf="generatedSlug" [routerLink]="['/site', generatedSlug]" target="_blank"
-               class="px-4 py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-300 text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow-lg">
-              <span>Ver página pública</span>
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-            </a>
-            <button (click)="customizeGeneratedSite()"
-                    class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-teal-400 hover:from-cyan-300 hover:to-teal-300 text-black text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all shadow-lg cursor-pointer">
-              <span>Personalizar Mi Sitio</span>
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
-            </button>
-          </div>
-
-          <!-- Botón Cerrar Diseño -->
-          <button (click)="activeDesign = null; isDesigning = false" class="absolute top-6 right-6 w-10 h-10 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 border border-white/10 transition-colors z-20 text-neutral-400 hover:text-white">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
-          </button>
-
-          <!-- Mobile Phone Frame -->
-          <div class="w-[330px] h-[715px] bg-white rounded-[2.5rem] border-[12px] border-[#1a1a1a] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.8)] relative overflow-hidden flex flex-col transform origin-center transition-transform hover:scale-[1.02] duration-500 ring-1 ring-white/10">
-            <!-- Dynamic Island / Notch Mock -->
-            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-5 bg-[#1a1a1a] rounded-b-2xl z-50"></div>
-            
-            <!-- Loading State -->
-            <div *ngIf="isDesigning" class="absolute inset-0 z-40 bg-white flex flex-col items-center justify-center animate-fade-in p-8 text-center">
-              <div class="relative w-20 h-20 mb-8">
-                <!-- Pulse rings -->
-                <div class="absolute inset-0 border-[3px] border-black/10 rounded-full animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]"></div>
-                <div class="absolute inset-0 border-[3px] border-black/20 rounded-full"></div>
-                <!-- Spin ring -->
-                <div class="absolute inset-0 border-[3px] border-black rounded-full border-t-transparent animate-spin"></div>
-                <!-- Center dot -->
-                <div class="absolute inset-0 m-auto w-4 h-4 bg-black rounded-full animate-pulse"></div>
-              </div>
-              <h3 class="font-black text-lg text-black mb-2 tracking-tight">RotBot IA</h3>
-              <p class="text-xs text-neutral-500 font-medium leading-relaxed">
-                Diseñando tu Landing Page...<br>
-                Compilando secciones premium...
-              </p>
-            </div>
-
-            <!-- App Render -->
-            <app-user-landing *ngIf="activeDesign === 'user-landing'" [siteData]="generatedSiteData" class="w-full h-full animate-fade-in block overflow-hidden"></app-user-landing>
-          </div>
         </div>
       </div>
     </div>
@@ -598,7 +548,6 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
       if (site) {
         this.generatedSiteData = site.siteData;
         this.generatedSlug = site.slug;
-        this.activeDesign = 'user-landing';
       }
     });
   }
