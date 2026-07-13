@@ -18,6 +18,7 @@
 - Subida y optimización de imágenes para proyectos
 - Despliegue en producción (Frontend y Backend)
 - Mejoras en la interfaz del panel de control
+- Ultimas mejoras en el diseño del home 
 
 ## 📋 **Descripción del Proyecto**
 
