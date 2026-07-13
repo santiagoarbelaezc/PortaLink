@@ -10,6 +10,9 @@ import { ProposalComponent } from './pages/proposal/proposal.component';
 import { authGuard } from './core/guards/auth.guard';
 import { PerfilComponent } from './pages/perfil/perfil.component';
 import { UserSiteComponent } from './pages/user-site/user-site.component';
+import { VerifyEmailComponent } from './pages/verify-email/verify-email.component';
+import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 
 export const routes: Routes = [
   {
@@ -79,6 +82,21 @@ export const routes: Routes = [
     path: 'site/:slug',
     component: UserSiteComponent,
     data: { animation: 'SitePage' }
+  },
+  {
+    path: 'verify-email',
+    component: VerifyEmailComponent,
+    data: { animation: 'VerifyEmailPage' }
+  },
+  {
+    path: 'forgot-password',
+    component: ForgotPasswordComponent,
+    data: { animation: 'ForgotPasswordPage' }
+  },
+  {
+    path: 'reset-password',
+    component: ResetPasswordComponent,
+    data: { animation: 'ResetPasswordPage' }
   },
   { path: '**', redirectTo: '' }
 ];

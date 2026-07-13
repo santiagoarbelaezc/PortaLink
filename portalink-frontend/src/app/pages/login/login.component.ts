@@ -179,7 +179,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                   <div class="space-y-2">
                     <div class="flex justify-between items-center">
                       <label class="text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)]">Contraseña</label>
-                      <a href="#" class="text-[10px] text-neutral-500 hover:text-[var(--text-primary)] transition-colors">¿Olvidaste tu contraseña?</a>
+                      <a routerLink="/forgot-password" class="text-[10px] text-neutral-500 hover:text-[var(--text-primary)] transition-colors">¿Olvidaste tu contraseña?</a>
                     </div>
                     <div class="relative group">
                       <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-500 group-focus-within:text-[var(--accent-color)] transition-colors">
@@ -535,12 +535,19 @@ export class LoginComponent implements OnInit {
     };
 
     this.authService.register(payload).subscribe({
-      next: () => {
+      next: (res: any) => {
         this.isLoading.set(false);
-        this.successMsg = '¡Cuenta creada exitosamente! Redirigiendo...';
-        setTimeout(() => {
-          this.router.navigate(['/admin']);
-        }, 1500);
+        if (res?.requireVerification) {
+          this.successMsg = res.message || 'Te hemos enviado un correo de verificación. Revisa tu bandeja de entrada.';
+          setTimeout(() => {
+            this.switchTab('login');
+          }, 4000);
+        } else {
+          this.successMsg = '¡Cuenta creada exitosamente! Redirigiendo...';
+          setTimeout(() => {
+            this.router.navigate(['/admin']);
+          }, 1500);
+        }
       },
       error: (err) => {
         this.isLoading.set(false);
