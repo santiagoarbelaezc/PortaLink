@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { PdfReportService } from '../../../services/pdf-report.service';
 import { AuthService } from '../../../services/auth.service';
 
+import { FormsModule } from '@angular/forms';
+
 interface User {
   id: number;
   name: string;
@@ -16,7 +18,7 @@ interface User {
 @Component({
   selector: 'app-dash-users',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="space-y-6 tab-enter">
 
@@ -86,8 +88,22 @@ interface User {
 
             <!-- Role -->
             <div class="col-span-2 flex justify-center">
-              <span class="text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full"
-                    [ngClass]="getRoleClass(user.role)">{{ user.role }}</span>
+              <span *ngIf="isCurrentUser(user)"
+                    class="text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full opacity-80 cursor-not-allowed flex items-center gap-1"
+                    [ngClass]="getRoleClass(user.role)"
+                    title="No puedes cambiar tu propio rol">
+                {{ user.role }} <span class="text-[9px]">🔒</span>
+              </span>
+
+              <select *ngIf="!isCurrentUser(user)"
+                      [ngModel]="user.role"
+                      (ngModelChange)="changeRole(user, $event)"
+                      [disabled]="updatingRole[user.id]"
+                      class="text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full border cursor-pointer transition-all duration-200 focus:outline-none"
+                      [ngClass]="getRoleSelectClass(user.role)">
+                <option value="Admin">ADMIN</option>
+                <option value="Usuario">USUARIO</option>
+              </select>
             </div>
 
             <!-- Status -->
@@ -107,7 +123,7 @@ interface User {
 
             <!-- Actions -->
             <div class="col-span-1 flex justify-end">
-              <button *ngIf="user.role !== 'Admin'"
+              <button *ngIf="!isCurrentUser(user)"
                       (click)="toggleStatus(user.id)"
                       class="p-2 rounded-lg text-xs transition-all duration-200 cursor-pointer"
                       [ngClass]="isDark ? 'text-neutral-500 hover:text-white hover:bg-neutral-800' : 'text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100'"
@@ -117,9 +133,9 @@ interface User {
                   <path *ngIf="user.status !== 'Activo'" stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </button>
-              <span *ngIf="user.role === 'Admin'" 
+              <span *ngIf="isCurrentUser(user)" 
                     class="p-2 text-xs opacity-40 cursor-not-allowed select-none"
-                    [title]="'Los administradores no pueden ser desactivados'">
+                    title="No puedes desactivar tu propia cuenta">
                 🔒
               </span>
             </div>
