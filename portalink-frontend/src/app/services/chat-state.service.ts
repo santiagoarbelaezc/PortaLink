@@ -14,6 +14,7 @@ export interface ChatSendResponse {
   reply: string;
   session_id: number | null;
   remaining_messages: number | null;
+  site_generated?: { slug: string; siteData: any } | null;
 }
 
 export interface ChatUsageResponse {
@@ -26,7 +27,7 @@ export interface ChatUsageResponse {
 
 const INITIAL_MESSAGE: ChatMessage = {
   role: 'assistant',
-  content: '¡Hola! Cuéntame qué tipo de sistema tienes en mente, o pregúntame cómo podemos integrar IA en tu próximo proyecto. ¿En qué te puedo ayudar hoy?'
+  content: '¡Hola! Soy RotBot IA, tu especialista en diseño de Landing Pages. Para empezar a crear tu sitio en segundos, ¿cómo te llamas y a qué te dedicas?'
 };
 
 const SESSION_TOKEN_KEY = 'rotbot_session_token';
@@ -48,6 +49,7 @@ export class ChatStateService {
   rateLimitEnabled = signal<boolean>(false);
   limitExceeded = signal<boolean>(false);
   userType = signal<'anonymous' | 'user' | 'admin'>('anonymous');
+  lastGeneratedSite = signal<{ slug: string; siteData: any } | null>(null);
 
   private _sessionToken: string | null = null;
 
@@ -87,9 +89,18 @@ export class ChatStateService {
     ).subscribe({
       next: (res) => {
         this.isTyping = false;
-        this.addMessage('assistant', res.reply);
-        if (res.remaining_messages !== null) {
+        let cleanReply = res.reply;
+        if (cleanReply && cleanReply.includes('===LANDING_JSON_START===')) {
+          const before = cleanReply.split('===LANDING_JSON_START===')[0].trim();
+          const after = (cleanReply.split('===LANDING_JSON_END===')[1] || '').trim();
+          cleanReply = [before, after].filter(Boolean).join('\n\n') || '¡Tu landing page ha sido creada con éxito! Puedes explorarla en la vista previa.';
+        }
+        this.addMessage('assistant', cleanReply);
+        if (res.remaining_messages !== null && res.remaining_messages !== undefined) {
           this.remainingMessages.set(res.remaining_messages);
+        }
+        if (res.site_generated) {
+          this.lastGeneratedSite.set(res.site_generated);
         }
       },
       error: (err) => {
@@ -201,6 +212,7 @@ export class ChatStateService {
     this.isTyping = false;
     this.userInput = '';
     this.limitExceeded.set(false);
+    this.lastGeneratedSite.set(null);
   }
 
   dismissLimitModal() {

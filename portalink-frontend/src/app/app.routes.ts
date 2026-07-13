@@ -9,6 +9,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { ProposalComponent } from './pages/proposal/proposal.component';
 import { authGuard } from './core/guards/auth.guard';
 import { PerfilComponent } from './pages/perfil/perfil.component';
+import { UserSiteComponent } from './pages/user-site/user-site.component';
 
 export const routes: Routes = [
   {
@@ -73,6 +74,11 @@ export const routes: Routes = [
     component: AdminComponent,
     canActivate: [authGuard],
     data: { animation: 'AdminPage' }
+  },
+  {
+    path: 'site/:slug',
+    component: UserSiteComponent,
+    data: { animation: 'SitePage' }
   },
   { path: '**', redirectTo: '' }
 ];

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { SiteService, UserSite } from '../../services/site.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -144,6 +145,38 @@ import { Subscription } from 'rxjs';
                 <p class="text-xs font-bold uppercase tracking-[0.3em]"
                    [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Resumen</p>
                 <h2 class="text-3xl font-bold uppercase tracking-tight mt-0.5">Información Personal</h2>
+              </div>
+
+              <!-- Landing Page Status Card -->
+              <div class="rounded-2xl border p-6 md:p-8 shadow-sm transition-all duration-300 relative overflow-hidden"
+                   [ngClass]="isDark ? 'bg-gradient-to-r from-neutral-900/80 to-cyan-950/20 border-cyan-500/30' : 'bg-gradient-to-r from-white to-cyan-50 border-cyan-200'">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                  <div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-cyan-400">RotBot IA Landing Page</span>
+                    <h3 class="text-xl font-bold mt-1">Tu Página Web Personal</h3>
+                    <p *ngIf="mySite" class="text-xs opacity-75 mt-1">
+                      Tu sitio está publicado y disponible en tu dirección personalizada: <span class="font-mono text-cyan-400">/site/{{ mySite.slug }}</span>
+                    </p>
+                    <p *ngIf="!mySite" class="text-xs opacity-75 mt-1">
+                      Crea tu landing page en segundos hablando con RotBot, el asistente de inteligencia artificial.
+                    </p>
+                  </div>
+
+                  <div class="flex items-center gap-3 shrink-0">
+                    <a *ngIf="mySite" [routerLink]="['/site', mySite.slug]" target="_blank"
+                       class="px-5 py-2.5 rounded-xl bg-cyan-400 text-black font-bold text-xs uppercase tracking-wider hover:bg-cyan-300 transition-all shadow-md flex items-center gap-2">
+                      <span>Ver página pública</span>
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    </a>
+
+                    <a routerLink="/rotbot"
+                       class="px-5 py-2.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2"
+                       [ngClass]="isDark ? 'border-white/10 hover:bg-white/5 text-white' : 'border-neutral-300 hover:bg-neutral-100 text-neutral-900'">
+                      <span>{{ mySite ? 'Modificar con RotBot' : 'Crear Landing con RotBot' }}</span>
+                      <span>🤖</span>
+                    </a>
+                  </div>
+                </div>
               </div>
 
               <!-- Content Card -->
@@ -305,11 +338,13 @@ import { Subscription } from 'rxjs';
 })
 export class PerfilComponent implements OnInit, OnDestroy {
   authService = inject(AuthService);
+  private siteService = inject(SiteService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private querySub!: Subscription;
 
   activeTab: 'profile' | 'password' = 'profile';
+  mySite: UserSite | null = null;
 
   // Form Fields (Password)
   currentPassword = '';
@@ -354,6 +389,17 @@ export class PerfilComponent implements OnInit, OnDestroy {
       this.email = user.email || '';
       this.telefono = user.telefono || '';
     }
+
+    this.siteService.getMySite().subscribe({
+      next: (res) => {
+        if (res && res.site) {
+          this.mySite = res.site;
+        }
+      },
+      error: () => {
+        this.mySite = null;
+      }
+    });
   }
 
   ngOnDestroy() {

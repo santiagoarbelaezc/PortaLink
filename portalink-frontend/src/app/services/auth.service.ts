@@ -36,10 +36,26 @@ export class AuthService {
     );
   }
 
-  register(payload: any): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${environment.apiUrl}/auth/register`, payload).pipe(
-      tap(res => this.setSession(res.token, res.usuario))
+  register(payload: any): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/auth/register`, payload).pipe(
+      tap(res => {
+        if (res && res.token && res.usuario) {
+          this.setSession(res.token, res.usuario);
+        }
+      })
     );
+  }
+
+  verifyEmail(token: string): Observable<{ message: string }> {
+    return this.http.get<{ message: string }>(`${environment.apiUrl}/auth/verify-email?token=${token}`);
+  }
+
+  forgotPassword(email: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${environment.apiUrl}/auth/forgot-password`, { email });
+  }
+
+  resetPassword(payload: { token: string; newPassword: string }): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${environment.apiUrl}/auth/reset-password`, payload);
   }
 
   getCaptcha(): Observable<{ id: string; svg: string }> {

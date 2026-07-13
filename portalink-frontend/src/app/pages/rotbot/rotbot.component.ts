@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, OnInit, AfterViewChecked, OnDestroy } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, AfterViewChecked, OnDestroy, effect } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -6,14 +6,14 @@ import { ChatStateService } from '../../services/chat-state.service';
 import { AnalyticsService } from '../../services/analytics.service';
 import { ChatLimitModalComponent } from '../../components/chat-limit-modal/chat-limit-modal.component';
 import { AiInfoModalComponent } from '../../components/ai-info-modal/ai-info-modal.component';
-import { RestaurantPosComponent } from '../../components/rotbot-designs/restaurant-pos/restaurant-pos.component';
+import { UserLandingComponent } from '../../components/user-landing/user-landing.component';
 import { MarkdownPipe } from '../../pipes/markdown-pipe';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-rotbot-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ChatLimitModalComponent, AiInfoModalComponent, RestaurantPosComponent, MarkdownPipe],
+  imports: [CommonModule, FormsModule, RouterModule, ChatLimitModalComponent, AiInfoModalComponent, UserLandingComponent, MarkdownPipe],
   template: `
     <app-chat-limit-modal></app-chat-limit-modal>
     <app-ai-info-modal [isOpen]="isInfoModalOpen" (closeEvent)="isInfoModalOpen = false"></app-ai-info-modal>
@@ -97,46 +97,36 @@ import { AuthService } from '../../services/auth.service';
              class="chat-sidebar no-scrollbar hidden md:flex flex-col w-80 flex-shrink-0 border-r py-8 px-6 gap-4 overflow-y-auto animate-fade-in transition-all duration-500" style="border-color: var(--card-border);">
           <h4 class="sidebar-title mb-2">Accesos Rápidos</h4>
           
-          <button (click)="sendShortcutMessage('Quiero E-commerce')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
+          <button (click)="sendShortcutMessage('Hola, quiero crear una Landing Page profesional para mi negocio')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Quiero un E-commerce</span>
+            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Landing para mi negocio</span>
           </button>
           
-          <button (click)="sendShortcutMessage('Muéstrame diseños móviles')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
+          <button (click)="sendShortcutMessage('Hola, soy fotógrafo y quiero una Landing Page para mostrar mis servicios')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Ver diseños móviles</span>
+            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Landing para Fotógrafo</span>
           </button>
           
-          <button (click)="sendShortcutMessage('Necesito un sistema para mi negocio')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
+          <button (click)="sendShortcutMessage('Hola, quiero una Landing Page para consultoría profesional y servicios')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Sistema para mi negocio</span>
+            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Consultoría y Servicios</span>
           </button>
           
-          <button (click)="sendShortcutMessage('Quiero una implementación de IA en mi negocio')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
+          <button (click)="sendShortcutMessage('Hola, soy desarrollador y quiero un Portafolio Web con mis servicios')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Implementación de IA</span>
+            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Portafolio de Servicios</span>
           </button>
- 
-          <h4 class="sidebar-title mt-4 mb-2">Recomendaciones</h4>
- 
-          <button (click)="sendShortcutMessage('Diseño de portafolio web premium')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
+
+          <h4 class="sidebar-title mt-4 mb-2">Estilos y Temas</h4>
+
+          <button (click)="sendShortcutMessage('Quiero que mi Landing Page tenga un estilo oscuro elegante con acentos cian')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Portafolio web premium</span>
+            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Estilo Oscuro Premium</span>
           </button>
- 
-          <button (click)="sendShortcutMessage('Optimización SEO y rendimiento')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
+
+          <button (click)="sendShortcutMessage('Quiero que mi Landing Page tenga un estilo claro moderno y minimalista')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Optimización SEO</span>
-          </button>
- 
-          <button (click)="sendShortcutMessage('Diseño UI/UX a medida')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
-            <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Diseño UI/UX a medida</span>
-          </button>
- 
-          <button (click)="sendShortcutMessage('Infraestructura Cloud y bases de datos')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
-            <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Infraestructura Cloud</span>
+            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Estilo Claro Minimalista</span>
           </button>
         </div>
  
@@ -315,6 +305,14 @@ import { AuthService } from '../../services/auth.service';
         <!-- Componente Interactivo Dinámico (Diseños en Formato Móvil) -->
         <div *ngIf="activeDesign || isDesigning" class="hidden lg:flex flex-col flex-grow h-full overflow-hidden relative animate-fade-in z-10 items-center justify-center bg-[var(--bg-primary)]/50 p-6">
           
+          <div *ngIf="generatedSlug" class="absolute top-6 left-6 z-20">
+            <a [routerLink]="['/site', generatedSlug]" target="_blank"
+               class="px-4 py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-300 text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow-lg">
+              <span>Ver página pública</span>
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </a>
+          </div>
+
           <!-- Botón Cerrar Diseño -->
           <button (click)="activeDesign = null; isDesigning = false" class="absolute top-6 right-6 w-10 h-10 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 border border-white/10 transition-colors z-20 text-neutral-400 hover:text-white">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -338,13 +336,13 @@ import { AuthService } from '../../services/auth.service';
               </div>
               <h3 class="font-black text-lg text-black mb-2 tracking-tight">RotBot IA</h3>
               <p class="text-xs text-neutral-500 font-medium leading-relaxed">
-                Diseñando interfaces...<br>
-                Compilando vistas premium...
+                Diseñando tu Landing Page...<br>
+                Compilando secciones premium...
               </p>
             </div>
 
             <!-- App Render -->
-            <app-restaurant-pos *ngIf="activeDesign === 'restaurant-pos'" class="w-full h-full animate-fade-in"></app-restaurant-pos>
+            <app-user-landing *ngIf="activeDesign === 'user-landing'" [siteData]="generatedSiteData" class="w-full h-full animate-fade-in block overflow-hidden"></app-user-landing>
           </div>
         </div>
       </div>
@@ -552,6 +550,8 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
   isInfoModalOpen = false;
   activeDesign: string | null = null;
   isDesigning: boolean = false;
+  generatedSiteData: any = null;
+  generatedSlug: string = '';
 
   private previousMessageCount = 0;
   private wasTyping = false;
@@ -562,7 +562,16 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     private location: Location,
     private analyticsService: AnalyticsService,
     public authService: AuthService
-  ) {}
+  ) {
+    effect(() => {
+      const site = this.chatService.lastGeneratedSite();
+      if (site) {
+        this.generatedSiteData = site.siteData;
+        this.generatedSlug = site.slug;
+        this.activeDesign = 'user-landing';
+      }
+    });
+  }
 
   ngOnInit() {
     this.analyticsService.incrementMetric('rotbotOpens');
@@ -640,26 +649,9 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     if (!this.chatService.userInput.trim()) return;
     if (this.chatService.isTyping) return;
 
-    // Redirigir a la pantalla de propuesta si ya estamos interactuando con un diseño
-    if (this.activeDesign || this.isDesigning) {
-      this.chatService.userInput = '';
-      this.router.navigate(['/proposal']);
-      return;
-    }
-
     this.analyticsService.incrementMetric('rotbotMessagesSent');
     const userText = this.chatService.userInput.trim();
     this.chatService.userInput = '';
-
-    const textLower = userText.toLowerCase();
-    if (textLower.includes('restaurante') || textLower.includes('caja')) {
-      this.isDesigning = true;
-      this.activeDesign = null;
-      setTimeout(() => {
-        this.isDesigning = false;
-        this.activeDesign = 'restaurant-pos';
-      }, 5000);
-    }
 
     this.chatService.sendMessage(userText);
     setTimeout(() => this.scrollToBottom(), 80);
