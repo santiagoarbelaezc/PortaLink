@@ -480,7 +480,12 @@ export class LoginComponent implements OnInit {
     this.authService.login(payload).subscribe({
       next: () => {
         this.isLoading.set(false);
-        this.router.navigate(['/admin']);
+        const user = this.authService.currentUser();
+        if (user && user.rol?.toLowerCase() === 'admin') {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/personalizar']);
+        }
       },
       error: (err) => {
         this.isLoading.set(false);

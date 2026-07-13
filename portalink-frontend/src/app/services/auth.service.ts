@@ -168,4 +168,8 @@ export class AuthService {
       tap(res => this.setSession(res.token, res.usuario))
     );
   }
+
+  updateUserRole(userId: number, rol: string): Observable<any> {
+    return this.http.put<any>(`${environment.apiUrl}/auth/users/${userId}/role`, { rol });
+  }
 }
