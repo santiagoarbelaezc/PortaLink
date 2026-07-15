@@ -581,6 +581,46 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                Limpiar
              </button>
            </div>
+         </div>
+
+        <!-- Batch / Cascade Download Bar -->
+        <div class="flex items-center justify-between flex-wrap gap-3 mb-4 p-3.5 rounded-2xl border transition-all"
+             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3"/>
+            </svg>
+            <span class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">Descarga en Cascada (PDFs en Lote):</span>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <button (click)="downloadCascadeInvoices(['Borrador'])" [disabled]="pdfLoading || batchLoading || getCountByStatus(['Borrador']) === 0"
+                    class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-widest border transition-all duration-200 cursor-pointer shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                    [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800 text-neutral-300 hover:text-white hover:bg-neutral-700' : 'border-neutral-300 bg-neutral-50 text-neutral-700 hover:text-black hover:bg-neutral-100'">
+              <svg class="w-3.5 h-3.5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+              {{ batchLoadingStatus === 'Borrador' ? batchProgressText : 'Borradores (' + getCountByStatus(['Borrador']) + ')' }}
+            </button>
+
+            <button (click)="downloadCascadeInvoices(['Enviada'])" [disabled]="pdfLoading || batchLoading || getCountByStatus(['Enviada']) === 0"
+                    class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-widest border transition-all duration-200 cursor-pointer shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                    [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800 text-blue-400 hover:text-blue-300 hover:bg-neutral-700' : 'border-neutral-300 bg-neutral-50 text-blue-600 hover:text-blue-700 hover:bg-neutral-100'">
+              <svg class="w-3.5 h-3.5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+              {{ batchLoadingStatus === 'Enviada' ? batchProgressText : 'Enviadas (' + getCountByStatus(['Enviada']) + ')' }}
+            </button>
+
+            <button (click)="downloadCascadeInvoices(['Borrador', 'Enviada'])" [disabled]="pdfLoading || batchLoading || getCountByStatus(['Borrador', 'Enviada']) === 0"
+                    class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-widest border transition-all duration-200 cursor-pointer shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                    [ngClass]="isDark ? 'border-white/20 bg-white text-black hover:bg-neutral-200' : 'border-black/20 bg-neutral-900 text-white hover:bg-neutral-800'">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+              {{ batchLoadingStatus === 'Ambas' ? batchProgressText : 'Ambas (' + getCountByStatus(['Borrador', 'Enviada']) + ')' }}
+            </button>
+          </div>
         </div>
 
         <!-- Invoice list -->
