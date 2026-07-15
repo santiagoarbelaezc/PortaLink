@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, DoCheck, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -521,9 +521,12 @@ interface ProductItem {
           </div>
 
           <!-- Bottom Panel Action -->
-          <div class="p-6 border-t border-white/10 bg-[#07070a]">
-            <button (click)="submitDesign()" class="launch-btn w-full py-4 rounded-xl font-bold uppercase tracking-widest text-xs transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
-              {{ getTranslation('deployBtn') }}
+          <div class="p-6 border-t border-white/10 bg-[#07070a] flex flex-col gap-2.5">
+            <button (click)="openLiveSite()" class="launch-btn w-full py-3.5 rounded-xl font-bold uppercase tracking-widest text-xs transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-400 to-blue-600 text-black shadow-lg shadow-cyan-500/20">
+              <span>👁️ Ver Sitio Desplegado</span>
+            </button>
+            <button (click)="submitDesign()" class="w-full py-2 rounded-xl text-[11px] text-neutral-400 hover:text-white transition-colors flex items-center justify-center gap-1.5 font-medium">
+              <span>💬 Consultar con Rotbot IA</span>
             </button>
           </div>
         </aside>
@@ -531,8 +534,20 @@ interface ProductItem {
         <!-- RIGHT PANEL: Giant Live Preview -->
         <main class="flex-grow h-full bg-[#0d0d0f] overflow-hidden p-10 flex flex-col items-center">
           <div class="w-full max-w-[1000px] flex items-center justify-between mb-4">
-            <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-white/30">{{ getTranslation('livePreviewTitle') }}</h2>
-            <div class="flex gap-2">
+            <div class="flex items-center gap-3">
+              <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-white/30">{{ getTranslation('livePreviewTitle') }}</h2>
+              <span *ngIf="isSaving" class="text-[10px] bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 px-2.5 py-0.5 rounded-full font-medium animate-pulse flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Sincronizando...
+              </span>
+              <span *ngIf="!isSaving" class="text-[10px] bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Desplegado en vivo
+              </span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button (click)="openLiveSite()"
+                      class="px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95">
+                <span>👁️ Ver Sitio</span>
+              </button>
               <span class="text-[10px] text-white/40 bg-white/5 border border-white/10 px-3 py-1 rounded-full uppercase tracking-wider font-semibold">{{ getTranslation('responsiveBadge') }}</span>
               <div class="flex gap-1.5 items-center">
                 <span class="w-2.5 h-2.5 rounded-full bg-red-500/75"></span>
@@ -1019,8 +1034,13 @@ interface ProductItem {
     }
   `]
 })
-export class PersonalizarComponent implements OnInit {
+export class PersonalizarComponent implements OnInit, DoCheck {
   isLoading = true;
+  isSaving = false;
+  currentSiteSlug: string = '';
+  private autoSaveTimeout: any;
+  private lastSavedJsonString: string = '';
+
   // General & Styling States
   activeAccordion = 'style';
   selectedFont = 'font-sans';
@@ -1406,8 +1426,13 @@ export class PersonalizarComponent implements OnInit {
     if (this.authService.hasToken()) {
       this.siteService.getMySite().subscribe({
         next: (res) => {
-          if (res.site && res.site.site_data) {
-            this.applySiteData(res.site.site_data);
+          if (res.site) {
+            if (res.site.slug) {
+              this.currentSiteSlug = res.site.slug;
+            }
+            if (res.site.site_data) {
+              this.applySiteData(res.site.site_data);
+            }
           }
         },
         error: () => {}
@@ -1416,7 +1441,8 @@ export class PersonalizarComponent implements OnInit {
 
     setTimeout(() => {
       this.isLoading = false;
-    }, 800);
+      this.lastSavedJsonString = JSON.stringify(this.getCurrentSiteDataPayload());
+    }, 850);
   }
 
   applySiteData(data: any) {
@@ -1506,23 +1532,79 @@ export class PersonalizarComponent implements OnInit {
     this.saveCurrentDesignToProfile();
   }
 
-  saveCurrentDesignToProfile() {
-    const updatedSiteData = {
+  ngDoCheck() {
+    if (this.isLoading) return;
+    try {
+      const currentPayload = this.getCurrentSiteDataPayload();
+      const currentJson = JSON.stringify(currentPayload);
+      if (this.lastSavedJsonString && currentJson !== this.lastSavedJsonString) {
+        this.triggerAutoSave();
+      }
+    } catch (e) {}
+  }
+
+  triggerAutoSave() {
+    clearTimeout(this.autoSaveTimeout);
+    this.isSaving = true;
+    this.autoSaveTimeout = setTimeout(() => {
+      this.saveCurrentDesignToProfile();
+    }, 450);
+  }
+
+  getCurrentSiteDataPayload(): any {
+    return {
       hero: {
         name: this.siteTitle,
         title: this.heroTitle,
         subtitle: this.heroSubtitle,
+        description: this.heroDescription,
         ctaText: this.heroCta1,
+        ctaText2: this.heroCta2,
         ctaLink: '#contact'
       },
       about: {
         heading: this.aboutTitle,
-        text: this.aboutText
+        text: this.aboutText,
+        stats: [
+          { value: this.aboutStat1Val, label: this.aboutStat1Lbl },
+          { value: this.aboutStat2Val, label: this.aboutStat2Lbl }
+        ]
       },
       services: this.servicesList,
+      products: this.productsList,
+      banner: {
+        text: this.bannerText,
+        cta: this.bannerCta
+      },
       contact: {
+        title: this.contactTitle,
         email: this.contactEmail,
         phone: this.contactPhone
+      },
+      socials: {
+        instagram: this.showInstagram ? this.instagramLink : null,
+        tiktok: this.showTiktok ? this.tiktokLink : null,
+        whatsapp: this.showWhatsapp ? this.whatsappLink : null,
+        linkedin: this.showLinkedin ? this.linkedinLink : null
+      },
+      footer: {
+        copy: this.footerCopy
+      },
+      themePreset: this.selectedTheme,
+      customizations: {
+        selectedFont: this.selectedFont,
+        buttonStyle: this.buttonStyle,
+        cardBorderStyle: this.cardBorderStyle,
+        brandIcon: this.brandIcon,
+        includeNavbar: this.includeNavbar,
+        includeHero: this.includeHero,
+        includeAbout: this.includeAbout,
+        includeServices: this.includeServices,
+        includeCarousel: this.includeCarousel,
+        includeBanner: this.includeBanner,
+        includeContact: this.includeContact,
+        includeFooter: this.includeFooter,
+        showLoginBtn: this.showLoginBtn
       },
       theme: {
         style: this.selectedTheme.name,
@@ -1534,16 +1616,58 @@ export class PersonalizarComponent implements OnInit {
         colorScheme: this.selectedTheme.lightTheme ? 'light' : 'dark'
       }
     };
+  }
+
+  saveCurrentDesignToProfile() {
+    const updatedSiteData = this.getCurrentSiteDataPayload();
+    const jsonString = JSON.stringify(updatedSiteData);
+    this.lastSavedJsonString = jsonString;
 
     try {
-      localStorage.setItem('portalink_generated_site', JSON.stringify(updatedSiteData));
+      localStorage.setItem('portalink_generated_site', jsonString);
     } catch (e) {}
 
     if (this.authService.hasToken()) {
       this.siteService.saveMySite(updatedSiteData).subscribe({
-        next: (res) => console.log('✅ Diseño guardado en base de datos:', res),
-        error: (err) => console.error('❌ Error guardando diseño:', err)
+        next: (res) => {
+          this.isSaving = false;
+          if (res && res.site && res.site.slug) {
+            this.currentSiteSlug = res.site.slug;
+          }
+        },
+        error: (err) => {
+          this.isSaving = false;
+          console.error('❌ Error en autoguardado:', err);
+        }
       });
+    } else {
+      this.isSaving = false;
+    }
+  }
+
+  openLiveSite() {
+    this.saveCurrentDesignToProfile();
+    if (this.currentSiteSlug) {
+      window.open(`/site/${this.currentSiteSlug}`, '_blank');
+    } else if (this.authService.hasToken()) {
+      this.siteService.getMySite().subscribe({
+        next: (res) => {
+          if (res.site && res.site.slug) {
+            this.currentSiteSlug = res.site.slug;
+            window.open(`/site/${this.currentSiteSlug}`, '_blank');
+          } else {
+            const fallbackSlug = (this.siteTitle || 'santiago-arbelaez').toLowerCase().replace(/[^a-z0-9-]/g, '-');
+            window.open(`/site/${fallbackSlug}`, '_blank');
+          }
+        },
+        error: () => {
+          const fallbackSlug = (this.siteTitle || 'santiago-arbelaez').toLowerCase().replace(/[^a-z0-9-]/g, '-');
+          window.open(`/site/${fallbackSlug}`, '_blank');
+        }
+      });
+    } else {
+      const fallbackSlug = (this.siteTitle || 'santiago-arbelaez').toLowerCase().replace(/[^a-z0-9-]/g, '-');
+      window.open(`/site/${fallbackSlug}`, '_blank');
     }
   }
 
