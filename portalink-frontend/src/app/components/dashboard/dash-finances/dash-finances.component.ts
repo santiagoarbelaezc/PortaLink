@@ -222,13 +222,13 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
             <div *ngFor="let f of clientFields" class="flex flex-col gap-1.5">
               <label class="text-xs font-bold uppercase tracking-widest"
                      [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ f.label }}<span *ngIf="f.required" class="text-red-500 ml-0.5">*</span></label>
-              <input [type]="f.type" [(ngModel)]="$any(editingClient)![f.key]" [placeholder]="f.placeholder"
+              <input [type]="f.type" [(ngModel)]="$any(editingClient)![f.key]" [style.color-scheme]="isDark ? 'dark' : 'light'" [placeholder]="f.placeholder"
                      class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none transition-all duration-200 focus:ring-2"
                      [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-600 focus:border-neutral-500 focus:ring-neutral-700' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500 focus:ring-neutral-200'">
             </div>
             <div class="md:col-span-2 flex flex-col gap-1.5">
               <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Notas</label>
-              <textarea [(ngModel)]="editingClient!.notes" rows="2" placeholder="Observaciones del cliente..."
+              <textarea [(ngModel)]="editingClient!.notes" rows="2" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="Observaciones del cliente..."
                         class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none transition-all duration-200 resize-none"
                         [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-600' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400'"></textarea>
             </div>
@@ -325,14 +325,14 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex flex-col gap-1.5 md:col-span-2">
               <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Nombre *</label>
-              <input type="text" [(ngModel)]="editingService!.name" placeholder="Nombre del servicio"
-                     class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none" [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-600' : 'bg-white border-neutral-300 text-neutral-900'">
+              <input type="text" [(ngModel)]="editingService!.name" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="Nombre del servicio"
+                     class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none transition-colors" [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500 focus:border-white focus:ring-1 focus:ring-white' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black focus:ring-1 focus:ring-black'">
             </div>
             <div class="flex flex-col gap-1.5">
               <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Categoría</label>
-              <select [(ngModel)]="editingService!.category"
-                      class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none cursor-pointer"
-                      [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white' : 'bg-white border-neutral-300 text-neutral-900'">
+              <select [(ngModel)]="editingService!.category" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                      class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none cursor-pointer transition-colors"
+                      [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white focus:border-white focus:ring-1 focus:ring-white' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black focus:ring-1 focus:ring-black'">
                 <option value="desarrollo">Desarrollo</option>
                 <option value="diseño">Diseño</option>
                 <option value="marketing">Marketing</option>
@@ -342,14 +342,14 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
             </div>
             <div class="flex flex-col gap-1.5">
               <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Precio Unitario (COP) *</label>
-              <input type="number" [(ngModel)]="editingService!.unitPrice" placeholder="0"
-                     class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none" [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-600' : 'bg-white border-neutral-300 text-neutral-900'">
+              <input type="number" [(ngModel)]="editingService!.unitPrice" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="0"
+                     class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none transition-colors" [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500 focus:border-white focus:ring-1 focus:ring-white' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black focus:ring-1 focus:ring-black'">
             </div>
             <div class="flex flex-col gap-1.5 md:col-span-2">
               <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Descripción</label>
-              <textarea [(ngModel)]="editingService!.description" rows="2" placeholder="Descripción del servicio..."
-                        class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none resize-none"
-                        [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-600' : 'bg-white border-neutral-300 text-neutral-900'"></textarea>
+              <textarea [(ngModel)]="editingService!.description" rows="2" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="Descripción del servicio..."
+                        class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none resize-none transition-colors"
+                        [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500 focus:border-white focus:ring-1 focus:ring-white' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black focus:ring-1 focus:ring-black'"></textarea>
             </div>
           </div>
           <div class="flex gap-3 justify-end">
@@ -414,21 +414,21 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="flex flex-col gap-1.5">
               <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Cliente *</label>
-              <select [(ngModel)]="selectedClientId" (change)="onClientSelect()" class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none cursor-pointer"
-                      [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white' : 'bg-white border-neutral-300 text-neutral-900'">
+              <select [(ngModel)]="selectedClientId" (change)="onClientSelect()" [style.color-scheme]="isDark ? 'dark' : 'light'" class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none cursor-pointer transition-colors"
+                      [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white focus:border-white focus:ring-1 focus:ring-white' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black focus:ring-1 focus:ring-black'">
                 <option value="">— Seleccionar cliente —</option>
                 <option *ngFor="let c of clients" [value]="c.id">{{ c.name }}{{ c.company ? ' · ' + c.company : '' }}</option>
               </select>
             </div>
             <div class="flex flex-col gap-1.5">
               <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Fecha de emisión</label>
-              <input type="date" [(ngModel)]="editingInvoice!.issuedAt" class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none"
-                     [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white' : 'bg-white border-neutral-300 text-neutral-900'">
+              <input type="date" [(ngModel)]="editingInvoice!.issuedAt" [style.color-scheme]="isDark ? 'dark' : 'light'" class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none cursor-pointer transition-colors"
+                     [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white focus:border-white focus:ring-1 focus:ring-white' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black focus:ring-1 focus:ring-black'">
             </div>
             <div class="flex flex-col gap-1.5">
               <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Fecha de vencimiento</label>
-              <input type="date" [(ngModel)]="editingInvoice!.dueAt" class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none"
-                     [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white' : 'bg-white border-neutral-300 text-neutral-900'">
+              <input type="date" [(ngModel)]="editingInvoice!.dueAt" [style.color-scheme]="isDark ? 'dark' : 'light'" class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none cursor-pointer transition-colors"
+                     [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white focus:border-white focus:ring-1 focus:ring-white' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black focus:ring-1 focus:ring-black'">
             </div>
           </div>
 
@@ -436,12 +436,12 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
           <div>
             <label class="text-xs font-bold uppercase tracking-widest block mb-2" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Agregar Servicios</label>
             <div class="flex gap-2">
-              <select [(ngModel)]="serviceToAdd" class="flex-grow px-3 py-2.5 rounded-xl text-sm border outline-none cursor-pointer"
-                      [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white' : 'bg-white border-neutral-300 text-neutral-900'">
+              <select [(ngModel)]="serviceToAdd" [style.color-scheme]="isDark ? 'dark' : 'light'" class="flex-grow px-3 py-2.5 rounded-xl text-sm border outline-none cursor-pointer transition-colors"
+                      [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white focus:border-white focus:ring-1 focus:ring-white' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black focus:ring-1 focus:ring-black'">
                 <option value="">— Seleccionar servicio del catálogo —</option>
                 <option *ngFor="let s of allServices" [value]="s.id">{{ s.name }} ({{ formatCOP(s.unitPrice || 0) }})</option>
               </select>
-              <button (click)="addServiceToInvoice()" class="px-4 py-2.5 rounded-xl text-sm font-bold uppercase tracking-widest cursor-pointer shrink-0"
+              <button (click)="addServiceToInvoice()" class="px-4 py-2.5 rounded-xl text-sm font-bold uppercase tracking-widest cursor-pointer shrink-0 transition-colors"
                       [ngClass]="isDark ? 'bg-neutral-700 text-white hover:bg-neutral-600' : 'bg-neutral-200 text-neutral-800 hover:bg-neutral-300'">
                 + Agregar
               </button>
@@ -463,26 +463,26 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                  [ngClass]="isDark ? 'border-neutral-700' : 'border-neutral-200'">
               <div class="col-span-5">
                 <p class="text-sm font-semibold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ item.serviceName }}</p>
-                <input type="text" [(ngModel)]="item.description" placeholder="Descripción adicional..."
+                <input type="text" [(ngModel)]="item.description" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="Descripción adicional..."
                        class="text-xs mt-0.5 w-full bg-transparent border-0 outline-none"
-                       [ngClass]="isDark ? 'text-neutral-500 placeholder-neutral-700' : 'text-neutral-400 placeholder-neutral-300'"
+                       [ngClass]="isDark ? 'text-neutral-400 placeholder-neutral-600 focus:text-white' : 'text-neutral-600 placeholder-neutral-400 focus:text-black'"
                        (change)="recalcInvoice()">
               </div>
               <div class="col-span-2 flex justify-center">
-                <input type="number" [(ngModel)]="item.quantity" min="1" (change)="recalcInvoice()"
-                       class="w-14 text-center px-2 py-1 rounded-lg text-sm border outline-none"
-                       [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white' : 'bg-white border-neutral-300 text-neutral-900'">
+                <input type="number" [(ngModel)]="item.quantity" min="1" (change)="recalcInvoice()" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                       class="w-14 text-center px-2 py-1 rounded-lg text-sm border outline-none transition-colors"
+                       [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white focus:border-white focus:ring-1 focus:ring-white' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black focus:ring-1 focus:ring-black'">
               </div>
               <div class="col-span-2 flex justify-end">
-                <input type="number" [(ngModel)]="item.unitPrice" (change)="recalcInvoice()"
-                       class="w-28 text-right px-2 py-1 rounded-lg text-sm border outline-none"
-                       [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white' : 'bg-white border-neutral-300 text-neutral-900'">
+                <input type="number" [(ngModel)]="item.unitPrice" (change)="recalcInvoice()" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                       class="w-28 text-right px-2 py-1 rounded-lg text-sm border outline-none transition-colors"
+                       [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white focus:border-white focus:ring-1 focus:ring-white' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black focus:ring-1 focus:ring-black'">
               </div>
               <div class="col-span-2 text-right">
                 <span class="text-sm font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(item.subtotal || 0) }}</span>
               </div>
               <div class="col-span-1 flex justify-end">
-                <button (click)="removeInvoiceItem(i)" class="p-1 rounded cursor-pointer" [ngClass]="isDark ? 'text-neutral-600 hover:text-red-400' : 'text-neutral-400 hover:text-red-500'">
+                <button (click)="removeInvoiceItem(i)" class="p-1 rounded cursor-pointer transition-colors" [ngClass]="isDark ? 'text-neutral-600 hover:text-red-400' : 'text-neutral-400 hover:text-red-500'">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
               </div>
@@ -493,9 +493,9 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex flex-col gap-1.5">
               <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Notas / Términos de pago</label>
-              <textarea [(ngModel)]="editingInvoice!.notes" rows="3" placeholder="Ej: Pago a 15 días, transferencia bancaria..."
-                        class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none resize-none"
-                        [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-600' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400'"></textarea>
+              <textarea [(ngModel)]="editingInvoice!.notes" rows="3" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="Ej: Pago a 15 días, transferencia bancaria..."
+                        class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none resize-none transition-colors"
+                        [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500 focus:border-white focus:ring-1 focus:ring-white' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black focus:ring-1 focus:ring-black'"></textarea>
             </div>
             <div class="rounded-xl border p-4 space-y-3"
                  [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700' : 'bg-white border-neutral-200'">
@@ -506,9 +506,9 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
               <div class="flex items-center justify-between text-sm">
                 <div class="flex items-center gap-2">
                   <span [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">IVA</span>
-                  <input type="number" [(ngModel)]="editingInvoice!.taxRate" min="0" max="100" (change)="recalcInvoice()"
-                         class="w-14 text-center px-2 py-0.5 rounded-lg text-xs border outline-none"
-                         [ngClass]="isDark ? 'bg-neutral-700 border-neutral-600 text-white' : 'bg-neutral-100 border-neutral-300 text-neutral-900'">
+                  <input type="number" [(ngModel)]="editingInvoice!.taxRate" min="0" max="100" (change)="recalcInvoice()" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                         class="w-14 text-center px-2 py-0.5 rounded-lg text-xs border outline-none transition-colors"
+                         [ngClass]="isDark ? 'bg-neutral-700 border-neutral-600 text-white focus:border-white focus:ring-1 focus:ring-white' : 'bg-neutral-100 border-neutral-300 text-neutral-900 focus:border-black focus:ring-1 focus:ring-black'">
                   <span [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">%</span>
                 </div>
                 <span class="font-semibold" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ formatCOP(editingInvoice!.taxAmount || 0) }}</span>
@@ -832,7 +832,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                     <span>FECHA DE PAGO</span>
                     <span class="font-extrabold" [ngClass]="isDark ? 'text-white' : 'text-black'">*</span>
                   </label>
-                  <input type="date" [(ngModel)]="paymentForm.paidAt"
+                  <input type="date" [(ngModel)]="paymentForm.paidAt" [style.color-scheme]="isDark ? 'dark' : 'light'"
                          class="w-full px-3.5 py-2.5 rounded-xl text-sm font-semibold border outline-none cursor-pointer transition-colors"
                          [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white focus:border-white focus:ring-1 focus:ring-white' : 'bg-neutral-100 border-neutral-300 text-black focus:border-black focus:ring-1 focus:ring-black'">
                 </div>
@@ -842,7 +842,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                     <span>MÉTODO DE PAGO</span>
                     <span class="font-extrabold" [ngClass]="isDark ? 'text-white' : 'text-black'">*</span>
                   </label>
-                  <select [(ngModel)]="paymentForm.paymentMethod"
+                  <select [(ngModel)]="paymentForm.paymentMethod" [style.color-scheme]="isDark ? 'dark' : 'light'"
                           class="w-full px-3.5 py-2.5 rounded-xl text-sm font-semibold border outline-none cursor-pointer transition-colors"
                           [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white focus:border-white focus:ring-1 focus:ring-white' : 'bg-neutral-100 border-neutral-300 text-black focus:border-black focus:ring-1 focus:ring-black'">
                     <option *ngFor="let m of paymentMethodsList" [value]="m">{{ m }}</option>
@@ -856,7 +856,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                   <span class="text-[9px] uppercase font-bold tracking-widest px-2 py-0.5 rounded border transition-colors"
                         [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 bg-neutral-900' : 'border-neutral-300 text-neutral-600 bg-neutral-100'">OPCIONAL</span>
                 </div>
-                <textarea [(ngModel)]="paymentForm.paymentNotes" rows="3"
+                <textarea [(ngModel)]="paymentForm.paymentNotes" rows="3" [style.color-scheme]="isDark ? 'dark' : 'light'"
                           placeholder="Ej: Transferencia Bancolombia Ref #982341029..."
                           class="w-full px-3.5 py-2.5 rounded-xl text-sm border outline-none resize-none transition-colors font-medium"
                           [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white placeholder-neutral-600 focus:border-white focus:ring-1 focus:ring-white' : 'bg-neutral-100 border-neutral-300 text-black placeholder-neutral-400 focus:border-black focus:ring-1 focus:ring-black'"></textarea>

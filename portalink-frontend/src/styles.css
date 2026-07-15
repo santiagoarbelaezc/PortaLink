@@ -309,5 +309,17 @@ input:-webkit-autofill:active {
   transition: background-color 5000s ease-in-out 0s;
 }
 
+/* Forzar color-scheme para evitar fondos o controles nativos blancos en Windows/Mac */
+.theme-dark input,
+.theme-dark select,
+.theme-dark textarea {
+  color-scheme: dark;
+}
+
+.theme-light input,
+.theme-light select,
+.theme-light textarea {
+  color-scheme: light;
+}
 
 
