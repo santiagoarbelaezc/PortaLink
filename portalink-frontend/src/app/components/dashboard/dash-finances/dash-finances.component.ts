@@ -804,10 +804,10 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                 <div class="flex items-center gap-2">
                   <div class="w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black shrink-0"
                        [ngClass]="isDark ? 'bg-neutral-800 text-emerald-400' : 'bg-neutral-200 text-emerald-700'">
-                    {{ paymentInvoiceTarget.clientName.charAt(0) }}
+                    {{ (paymentInvoiceTarget.clientName || '').charAt(0) || '#' }}
                   </div>
                   <div class="min-w-0">
-                    <p class="text-sm font-extrabold truncate" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ paymentInvoiceTarget.clientName }}</p>
+                    <p class="text-sm font-extrabold truncate" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ paymentInvoiceTarget.clientName || 'Sin Nombre' }}</p>
                     <p class="text-[11px] truncate" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ paymentInvoiceTarget.clientCompany || 'Independiente' }}</p>
                   </div>
                 </div>
