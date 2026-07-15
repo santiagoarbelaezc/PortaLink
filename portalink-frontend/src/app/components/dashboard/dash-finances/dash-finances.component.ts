@@ -937,6 +937,9 @@ export class DashFinancesComponent implements OnInit, OnChanges {
   kpis: { label: string; value: string; color?: string }[] = [];
   recentInvoices: Invoice[] = [];
   pdfLoading = false;
+  batchLoading = false;
+  batchLoadingStatus = '';
+  batchProgressText = '';
   expandedInvoiceId: string | null = null;
   kpiPeriod: 'all' | 'this_month' | 'last_month' = 'all';
 
@@ -1623,6 +1626,63 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       alert('Error descargando PDF');
     } finally { 
       this.pdfLoading = false; 
+      this.cdr.detectChanges();
+    }
+  }
+
+  getCountByStatus(statuses: string[]): number {
+    return this.displayedInvoices.filter(i => statuses.includes(i.status)).length;
+  }
+
+  async downloadCascadeInvoices(statuses: string[]) {
+    const toDownload = this.displayedInvoices.filter(i => statuses.includes(i.status));
+    if (toDownload.length === 0) {
+      alert('No hay cuentas de cobro con el/los estado(s) seleccionado(s) para descargar en la lista actual.');
+      return;
+    }
+    this.batchLoading = true;
+    this.batchLoadingStatus = statuses.length > 1 ? 'Ambas' : statuses[0];
+    this.cdr.detectChanges();
+
+    try {
+      for (let i = 0; i < toDownload.length; i++) {
+        const inv = toDownload[i];
+        this.batchProgressText = `Descargando (${i + 1}/${toDownload.length})...`;
+        this.cdr.detectChanges();
+
+        try {
+          const res = await firstValueFrom(this.financeService.getInvoiceDetails(inv.id!));
+          let fullInv = inv;
+          if (res?.invoice) {
+            const rawInv: any = res.invoice;
+            fullInv = {
+              ...inv,
+              notes: rawInv.notes || inv.notes,
+              clientName: rawInv.client_name || inv.clientName,
+              clientCompany: rawInv.company || inv.clientCompany,
+              clientEmail: rawInv.email || inv.clientEmail,
+              issuedAt: rawInv.issue_date ? rawInv.issue_date.split('T')[0] : inv.issuedAt,
+              dueAt: rawInv.due_date ? rawInv.due_date.split('T')[0] : inv.dueAt,
+              subtotal: Number(rawInv.subtotal),
+              total: Number(rawInv.total_amount),
+              items: (rawInv.items || []).map((it: any) => ({
+                 ...it,
+                 serviceName: it.description,
+                 unitPrice: Number(it.unit_price),
+                 subtotal: Number(it.total_price)
+              }))
+            };
+          }
+          await this.pdfService.downloadInvoicePdf(fullInv);
+          await new Promise(r => setTimeout(r, 600));
+        } catch (e) {
+          console.error(`Error descargando factura #${inv.id}:`, e);
+        }
+      }
+    } finally {
+      this.batchLoading = false;
+      this.batchLoadingStatus = '';
+      this.batchProgressText = '';
       this.cdr.detectChanges();
     }
   }
