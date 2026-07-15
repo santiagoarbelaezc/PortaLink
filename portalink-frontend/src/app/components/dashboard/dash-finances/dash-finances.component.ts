@@ -540,110 +540,6 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
           </div>
         </div>
 
-        <!-- PDF Preview Modal -->
-        <div *ngIf="showPdfPreview" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div class="w-full max-w-4xl h-[90vh] rounded-2xl flex flex-col overflow-hidden shadow-2xl border"
-               [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700' : 'bg-white border-neutral-300'">
-            <div class="px-4 py-3 border-b flex justify-between items-center" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-              <h3 class="text-sm font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Vista Previa de Cuenta de Cobro</h3>
-              <button (click)="closePreview()" class="p-1 rounded-lg transition-colors cursor-pointer"
-                      [ngClass]="isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-500 hover:text-black hover:bg-neutral-100'">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-              </button>
-            </div>
-            <div class="flex-grow bg-neutral-800/20 relative">
-              <iframe *ngIf="previewPdfUrl" [src]="previewPdfUrl" class="w-full h-full border-0"></iframe>
-            </div>
-          </div>
-        </div>
-
-        <!-- Payment Modal -->
-        <div *ngIf="showPaymentModal && paymentInvoiceTarget" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div class="w-full max-w-lg rounded-2xl border p-6 shadow-2xl space-y-5 transition-all"
-               [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-white' : 'bg-white border-neutral-300 text-neutral-900'">
-            
-            <!-- Header -->
-            <div class="flex items-start justify-between border-b pb-4" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-              <div>
-                <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-500 flex items-center gap-1.5 mb-1">
-                  <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  Confirmación de Recaudo
-                </span>
-                <h3 class="text-xl font-bold">Registrar Pago de Cuenta #{{ paymentInvoiceTarget.id }}</h3>
-              </div>
-              <button (click)="closePaymentModal()" class="p-1 rounded-lg transition-colors cursor-pointer"
-                      [ngClass]="isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-500 hover:text-black hover:bg-neutral-100'">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-              </button>
-            </div>
-
-            <!-- Summary Card -->
-            <div class="rounded-xl p-4 border flex items-center justify-between"
-                 [ngClass]="isDark ? 'bg-neutral-800/60 border-neutral-700' : 'bg-neutral-50 border-neutral-200'">
-              <div>
-                <p class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Cliente</p>
-                <p class="text-sm font-bold truncate mt-0.5">{{ paymentInvoiceTarget.clientName }}</p>
-              </div>
-              <div class="text-right">
-                <p class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Total a Recaudar</p>
-                <p class="text-lg font-black text-emerald-500 mt-0.5">{{ formatCOP(paymentInvoiceTarget.total || 0) }}</p>
-              </div>
-            </div>
-
-            <!-- Form Fields -->
-            <div class="space-y-4">
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="flex flex-col gap-1.5">
-                  <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Fecha de Pago *</label>
-                  <input type="date" [(ngModel)]="paymentForm.paidAt"
-                         class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none cursor-pointer"
-                         [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white focus:border-emerald-500' : 'bg-white border-neutral-300 text-neutral-900 focus:border-emerald-500'">
-                </div>
-                <div class="flex flex-col gap-1.5">
-                  <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Método de Pago *</label>
-                  <select [(ngModel)]="paymentForm.paymentMethod"
-                          class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none cursor-pointer"
-                          [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white focus:border-emerald-500' : 'bg-white border-neutral-300 text-neutral-900 focus:border-emerald-500'">
-                    <option *ngFor="let m of paymentMethodsList" [value]="m">{{ m }}</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="flex flex-col gap-1.5">
-                <div class="flex justify-between items-center">
-                  <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Referencia / Comprobante / Notas</label>
-                  <span class="text-[10px] uppercase font-semibold" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">(Opcional)</span>
-                </div>
-                <textarea [(ngModel)]="paymentForm.paymentNotes" rows="2"
-                          placeholder="Ej: Transferencia Bancolombia Ref #982341..."
-                          class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none resize-none transition-colors"
-                          [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-600 focus:border-emerald-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-emerald-500'"></textarea>
-              </div>
-            </div>
-
-            <!-- Footer Buttons -->
-            <div class="flex justify-end gap-3 pt-3 border-t" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-              <button (click)="closePaymentModal()"
-                      class="px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest border transition-colors cursor-pointer"
-                      [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-300 text-neutral-500 hover:text-black hover:bg-neutral-100'">
-                Cancelar
-              </button>
-              <button (click)="confirmPayment()" [disabled]="isLoading"
-                      class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-emerald-500 text-black hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/10 cursor-pointer disabled:opacity-50">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                {{ isLoading ? 'Guardando...' : 'Confirmar y Registrar Pago' }}
-              </button>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- Success Toast Notification -->
-        <div *ngIf="paymentSuccessToast" class="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-emerald-500 text-black shadow-2xl shadow-emerald-500/20 font-bold text-sm tracking-wide">
-          <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          <span>{{ paymentSuccessToast }}</span>
-        </div>
-
         <!-- Invoice Filters -->
         <div class="rounded-2xl border p-4 mb-4 flex flex-wrap gap-4 items-end"
              [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
@@ -849,6 +745,145 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
 
       </ng-container>
 
+      <!-- ══════════════════ MODALES GLOBALMENTE DISPONIBLES EN TODAS LAS PESTAÑAS ══════════════════ -->
+
+      <!-- PDF Preview Modal -->
+      <div *ngIf="showPdfPreview" class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/75 backdrop-blur-md animate-fadeIn">
+        <div class="w-full max-w-4xl h-[90vh] rounded-3xl flex flex-col overflow-hidden shadow-2xl border modal-enter my-auto"
+             [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white shadow-black/80' : 'bg-white border-neutral-200 text-neutral-900 shadow-xl'">
+          <div class="px-6 py-4 border-b flex justify-between items-center shrink-0" [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900/90' : 'border-neutral-200 bg-neutral-50/90'">
+            <div class="flex items-center gap-3">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <h3 class="text-sm font-extrabold uppercase tracking-widest">Vista Previa de Cuenta de Cobro</h3>
+            </div>
+            <button (click)="closePreview()" class="p-2 rounded-xl transition-all duration-200 cursor-pointer border"
+                    [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:text-white hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-500 hover:text-black hover:bg-neutral-100'">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+          <div class="flex-grow bg-neutral-800/20 relative">
+            <iframe *ngIf="previewPdfUrl" [src]="previewPdfUrl" class="w-full h-full border-0"></iframe>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Modal (Mejorado, Centrado y Alinear Perfectamente) -->
+      <div *ngIf="showPaymentModal && paymentInvoiceTarget" class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/75 backdrop-blur-md animate-fadeIn">
+        <div class="w-full max-w-xl rounded-3xl border shadow-2xl overflow-hidden transition-all modal-enter my-auto"
+             [ngClass]="isDark ? 'bg-[#141416] border-neutral-800/90 text-white shadow-black/90' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-2xl'">
+          
+          <!-- Header Elegante -->
+          <div class="p-6 pb-5 border-b flex items-start justify-between gap-4"
+               [ngClass]="isDark ? 'bg-gradient-to-r from-emerald-500/10 via-neutral-900/60 to-neutral-900/30 border-neutral-800/80' : 'bg-gradient-to-r from-emerald-50 via-neutral-50/50 to-white border-neutral-200/80'">
+            <div class="min-w-0">
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest mb-2.5 border shadow-sm"
+                   [ngClass]="isDark ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' : 'bg-emerald-100/80 text-emerald-800 border-emerald-300'">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Confirmación de Recaudo</span>
+              </div>
+              <h3 class="text-xl sm:text-2xl font-black tracking-tight text-balance">
+                Registrar Pago de Cuenta #{{ paymentInvoiceTarget.id }}
+              </h3>
+              <p class="text-xs font-medium mt-1" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+                Confirma la fecha y método de pago para actualizar el estado a pagada.
+              </p>
+            </div>
+            <button (click)="closePaymentModal()"
+                    class="p-2.5 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center justify-center shrink-0"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900 text-neutral-400 hover:text-white hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 bg-white text-neutral-500 hover:text-black hover:bg-neutral-100'">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          <!-- Summary Card Destacada -->
+          <div class="p-6 pb-2">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-2xl border relative overflow-hidden"
+                 [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800/90' : 'bg-neutral-50/90 border-neutral-200/90'">
+              <div class="flex flex-col justify-center border-b sm:border-b-0 sm:border-r pb-3 sm:pb-0 sm:pr-4" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+                <span class="text-[10px] font-extrabold uppercase tracking-widest mb-1.5" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Cliente Facturado</span>
+                <div class="flex items-center gap-2">
+                  <div class="w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black shrink-0"
+                       [ngClass]="isDark ? 'bg-neutral-800 text-emerald-400' : 'bg-neutral-200 text-emerald-700'">
+                    {{ paymentInvoiceTarget.clientName.charAt(0) }}
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-sm font-extrabold truncate" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ paymentInvoiceTarget.clientName }}</p>
+                    <p class="text-[11px] truncate" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ paymentInvoiceTarget.clientCompany || 'Independiente' }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="flex flex-col justify-center sm:pl-2 text-left sm:text-right pt-2 sm:pt-0">
+                <span class="text-[10px] font-extrabold uppercase tracking-widest mb-1 text-emerald-500">Total a Recaudar</span>
+                <p class="text-2xl sm:text-3xl font-black text-emerald-500 tracking-tight leading-none">{{ formatCOP(paymentInvoiceTarget.total || 0) }}</p>
+                <span class="text-[10px] font-semibold mt-1" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">COP Moneda Local</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Formulario Principal -->
+          <div class="p-6 pt-4 space-y-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div class="flex flex-col gap-2">
+                <label class="text-xs font-bold uppercase tracking-widest flex items-center justify-between"
+                       [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
+                  <span>Fecha de Pago</span>
+                  <span class="text-emerald-500 font-extrabold">*</span>
+                </label>
+                <input type="date" [(ngModel)]="paymentForm.paidAt"
+                       class="w-full px-4 py-3 rounded-2xl text-sm font-semibold border outline-none transition-all duration-200 cursor-pointer shadow-sm"
+                       [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20' : 'bg-white border-neutral-300 text-neutral-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20'">
+              </div>
+              <div class="flex flex-col gap-2">
+                <label class="text-xs font-bold uppercase tracking-widest flex items-center justify-between"
+                       [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
+                  <span>Método de Pago</span>
+                  <span class="text-emerald-500 font-extrabold">*</span>
+                </label>
+                <select [(ngModel)]="paymentForm.paymentMethod"
+                        class="w-full px-4 py-3 rounded-2xl text-sm font-semibold border outline-none transition-all duration-200 cursor-pointer shadow-sm"
+                        [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20' : 'bg-white border-neutral-300 text-neutral-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20'">
+                  <option *ngFor="let m of paymentMethodsList" [value]="m">{{ m }}</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <div class="flex justify-between items-center">
+                <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">Referencia / Comprobante / Notas</label>
+                <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full border"
+                      [ngClass]="isDark ? 'bg-neutral-800/80 border-neutral-700 text-neutral-400' : 'bg-neutral-100 border-neutral-200 text-neutral-600'">Opcional</span>
+              </div>
+              <textarea [(ngModel)]="paymentForm.paymentNotes" rows="3"
+                        placeholder="Ej: Transferencia Bancolombia Ref #982341029..."
+                        class="w-full px-4 py-3 rounded-2xl text-sm border outline-none resize-none transition-all duration-200 font-medium shadow-sm"
+                        [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 text-white placeholder-neutral-600 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20'"></textarea>
+            </div>
+          </div>
+
+          <!-- Footer Botones -->
+          <div class="p-6 pt-4 mt-2 border-t flex flex-col sm:flex-row items-center justify-end gap-3"
+               [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800/80' : 'bg-neutral-50/80 border-neutral-200/80'">
+            <button (click)="closePaymentModal()"
+                    class="w-full sm:w-auto px-6 py-3 rounded-2xl text-xs font-extrabold uppercase tracking-widest border transition-all duration-200 cursor-pointer text-center"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900 text-neutral-400 hover:text-white hover:border-neutral-700' : 'border-neutral-300 bg-white text-neutral-600 hover:text-black hover:border-neutral-400'">
+              Cancelar
+            </button>
+            <button (click)="confirmPayment()" [disabled]="isLoading"
+                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3 rounded-2xl text-xs font-extrabold uppercase tracking-widest bg-emerald-500 text-black hover:bg-emerald-400 active:scale-[0.98] transition-all duration-200 shadow-xl shadow-emerald-500/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+              <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              <span>{{ isLoading ? 'Guardando...' : 'Confirmar y Registrar Pago' }}</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Success Toast Notification (Flotante y Global) -->
+      <div *ngIf="paymentSuccessToast" class="fixed bottom-6 right-6 z-[110] flex items-center gap-3.5 px-6 py-4 rounded-2xl bg-emerald-500 text-black shadow-2xl shadow-emerald-500/30 font-extrabold text-sm tracking-wide modal-enter border border-emerald-400">
+        <svg class="w-5 h-5 shrink-0 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span>{{ paymentSuccessToast }}</span>
+      </div>
+
     </div>
   `,
   styles: [`
@@ -856,6 +891,10 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
     @keyframes tabEnter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
     .animate-ticker { animation: ticker 25s linear infinite; }
+    .animate-fadeIn { animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal-enter { animation: modalEnter 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes modalEnter { from { opacity: 0; transform: scale(0.95) translateY(12px); } to { opacity: 1; transform: scale(1) translateY(0); } }
   `]
 })
 export class DashFinancesComponent implements OnInit {
