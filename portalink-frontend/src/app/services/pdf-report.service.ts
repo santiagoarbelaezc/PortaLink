@@ -34,6 +34,9 @@ export class PdfReportService {
   private async getJsPDF() {
     const jsPDFModule = await import('jspdf');
     const autoTableModule = await import('jspdf-autotable');
+    if (autoTableModule.applyPlugin) {
+      autoTableModule.applyPlugin(jsPDFModule.default);
+    }
     return { jsPDF: jsPDFModule.default, autoTable: autoTableModule.default };
   }
 
@@ -542,7 +545,7 @@ export class PdfReportService {
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(80, 80, 80);
     doc.text('Subtotal:', blockX, y + 2);
-    doc.text(fmtCOP(invoice.subtotal), blockX + blockW, y + 2, { align: 'right' });
+    doc.text(fmtCOP(invoice.subtotal || 0), blockX + blockW, y + 2, { align: 'right' });
 
     if ((invoice.taxRate || 0) > 0) {
       y += 7;
@@ -581,7 +584,7 @@ export class PdfReportService {
 
     // ── Legal Text & Signatures ──
     y += 8;
-    if (y > 205) { doc.addPage(); y = 20; }
+    if (y > 195) { doc.addPage(); y = 20; }
 
     doc.setFontSize(7);
     doc.setFont('helvetica', 'bold');
@@ -597,7 +600,9 @@ export class PdfReportService {
     const legalLines = doc.splitTextToSize(legalText, 182);
     doc.text(legalLines, 14, y);
     
-    y += (legalLines.length * 3) + 25;
+    y += (legalLines.length * 3) + 20;
+
+    if (y > 245) { doc.addPage(); y = 35; }
 
     // Signatures
     doc.setDrawColor(180, 180, 180);

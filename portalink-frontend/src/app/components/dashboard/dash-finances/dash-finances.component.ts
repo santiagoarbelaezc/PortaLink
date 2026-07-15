@@ -798,10 +798,22 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
               <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
               <h3 class="text-sm font-extrabold uppercase tracking-widest">Vista Previa de Cuenta de Cobro</h3>
             </div>
-            <button (click)="closePreview()" class="p-2 rounded-xl transition-all duration-200 cursor-pointer border"
-                    [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:text-white hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-500 hover:text-black hover:bg-neutral-100'">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+            <div class="flex items-center gap-2">
+              <button (click)="downloadPreviewPdf()" [disabled]="pdfLoading" class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest border transition-all cursor-pointer flex items-center gap-1.5"
+                      [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200 border-white' : 'bg-black text-white hover:bg-neutral-800 border-black'">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Descargar PDF
+              </button>
+              <button (click)="printPreviewPdf()" class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest border transition-all cursor-pointer flex items-center gap-1.5"
+                      [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:text-white hover:bg-neutral-800' : 'border-neutral-300 text-neutral-700 hover:text-black hover:bg-neutral-100'">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                Imprimir
+              </button>
+              <button (click)="closePreview()" class="p-2 rounded-xl transition-all duration-200 cursor-pointer border ml-1"
+                      [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:text-white hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-500 hover:text-black hover:bg-neutral-100'">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
           </div>
           <div class="flex-grow bg-neutral-800/20 relative">
             <iframe *ngIf="previewPdfUrl" [src]="previewPdfUrl" class="w-full h-full border-0"></iframe>
@@ -963,6 +975,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
   subTab: SubTab = 'resumen';
   showPdfPreview = false;
   previewPdfUrl: SafeResourceUrl | null = null;
+  previewInvoiceTarget: Invoice | null = null;
   subTabs = [
     { id: 'resumen' as SubTab, label: 'Resumen' },
     { id: 'clientes' as SubTab, label: 'Clientes' },
@@ -1205,12 +1218,18 @@ export class DashFinancesComponent implements OnInit, OnChanges {
         const res = await firstValueFrom(this.financeService.getInvoiceDetails(id));
         const invIndex = this.invoices.findIndex(i => i.id === id);
         if (invIndex >= 0 && res?.invoice) {
-           this.invoices[invIndex].items = res.invoice.items?.map((it: any) => ({
-             ...it,
-             serviceName: it.description, // fallback if no name joined
-             unitPrice: Number(it.unit_price),
-             subtotal: Number(it.total_price)
-           })) || [];
+           this.invoices[invIndex].items = res.invoice.items?.map((it: any) => {
+             const qty = Number(it.quantity || 1);
+             const uPrice = Number(it.unit_price || it.unitPrice || 0);
+             return {
+               ...it,
+               serviceName: it.service_name || it.description || it.serviceName || 'Servicio',
+               description: it.description !== it.service_name ? (it.description || '') : '',
+               quantity: qty,
+               unitPrice: uPrice,
+               subtotal: Number(it.total_price || it.subtotal || (qty * uPrice))
+             };
+           }) || [];
         }
       } catch (e) {
         console.error('Error fetching invoice details:', e);
@@ -1642,22 +1661,35 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       let fullInv = inv;
       if (res?.invoice) {
         const rawInv: any = res.invoice;
+        const subtotal = Number(rawInv.subtotal || 0);
+        const taxAmount = Number(rawInv.tax_amount || rawInv.taxAmount || 0);
+        const taxRate = subtotal > 0 && taxAmount > 0 ? Math.round((taxAmount / subtotal) * 100) : 0;
         fullInv = {
           ...inv,
-          notes: rawInv.notes || inv.notes,
+          id: String(rawInv.id),
+          clientId: rawInv.client_id || inv.clientId,
           clientName: rawInv.client_name || inv.clientName,
           clientCompany: rawInv.company || inv.clientCompany,
           clientEmail: rawInv.email || inv.clientEmail,
+          notes: rawInv.notes !== null && rawInv.notes !== undefined ? rawInv.notes : (inv.notes || ''),
           issuedAt: rawInv.issue_date ? rawInv.issue_date.split('T')[0] : inv.issuedAt,
           dueAt: rawInv.due_date ? rawInv.due_date.split('T')[0] : inv.dueAt,
-          subtotal: Number(rawInv.subtotal),
-          total: Number(rawInv.total_amount),
-          items: (rawInv.items || []).map((it: any) => ({
-             ...it,
-             serviceName: it.description,
-             unitPrice: Number(it.unit_price),
-             subtotal: Number(it.total_price)
-          }))
+          subtotal: subtotal,
+          taxRate: taxRate,
+          taxAmount: taxAmount,
+          total: Number(rawInv.total_amount || rawInv.total || 0),
+          items: (rawInv.items || []).map((it: any) => {
+             const qty = Number(it.quantity || 1);
+             const uPrice = Number(it.unit_price || it.unitPrice || 0);
+             return {
+               ...it,
+               serviceName: it.service_name || it.description || it.serviceName || 'Servicio',
+               description: it.description !== it.service_name ? (it.description || '') : '',
+               quantity: qty,
+               unitPrice: uPrice,
+               subtotal: Number(it.total_price || it.subtotal || (qty * uPrice))
+             };
+          })
         };
       }
       await this.pdfService.downloadInvoicePdf(fullInv);
@@ -1695,22 +1727,35 @@ export class DashFinancesComponent implements OnInit, OnChanges {
           let fullInv = inv;
           if (res?.invoice) {
             const rawInv: any = res.invoice;
+            const subtotal = Number(rawInv.subtotal || 0);
+            const taxAmount = Number(rawInv.tax_amount || rawInv.taxAmount || 0);
+            const taxRate = subtotal > 0 && taxAmount > 0 ? Math.round((taxAmount / subtotal) * 100) : 0;
             fullInv = {
               ...inv,
-              notes: rawInv.notes || inv.notes,
+              id: String(rawInv.id),
+              clientId: rawInv.client_id || inv.clientId,
               clientName: rawInv.client_name || inv.clientName,
               clientCompany: rawInv.company || inv.clientCompany,
               clientEmail: rawInv.email || inv.clientEmail,
+              notes: rawInv.notes !== null && rawInv.notes !== undefined ? rawInv.notes : (inv.notes || ''),
               issuedAt: rawInv.issue_date ? rawInv.issue_date.split('T')[0] : inv.issuedAt,
               dueAt: rawInv.due_date ? rawInv.due_date.split('T')[0] : inv.dueAt,
-              subtotal: Number(rawInv.subtotal),
-              total: Number(rawInv.total_amount),
-              items: (rawInv.items || []).map((it: any) => ({
-                 ...it,
-                 serviceName: it.description,
-                 unitPrice: Number(it.unit_price),
-                 subtotal: Number(it.total_price)
-              }))
+              subtotal: subtotal,
+              taxRate: taxRate,
+              taxAmount: taxAmount,
+              total: Number(rawInv.total_amount || rawInv.total || 0),
+              items: (rawInv.items || []).map((it: any) => {
+                 const qty = Number(it.quantity || 1);
+                 const uPrice = Number(it.unit_price || it.unitPrice || 0);
+                 return {
+                   ...it,
+                   serviceName: it.service_name || it.description || it.serviceName || 'Servicio',
+                   description: it.description !== it.service_name ? (it.description || '') : '',
+                   quantity: qty,
+                   unitPrice: uPrice,
+                   subtotal: Number(it.total_price || it.subtotal || (qty * uPrice))
+                 };
+              })
             };
           }
           await this.pdfService.downloadInvoicePdf(fullInv);
@@ -1732,6 +1777,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
     this.pdfLoading = true;
     this.cdr.detectChanges();
     try {
+      this.previewInvoiceTarget = this.editingInvoice as Invoice;
       const url = await this.pdfService.downloadInvoicePdf(this.editingInvoice as Invoice, 'bloburl');
       this.previewPdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url as string);
       this.showPdfPreview = true;
@@ -1743,9 +1789,53 @@ export class DashFinancesComponent implements OnInit, OnChanges {
     }
   }
 
+  async downloadPreviewPdf() {
+    if (!this.previewInvoiceTarget && !this.editingInvoice) return;
+    const inv = this.previewInvoiceTarget || (this.editingInvoice as Invoice);
+    this.pdfLoading = true;
+    this.cdr.detectChanges();
+    try {
+      await this.pdfService.downloadInvoicePdf(inv, 'save');
+    } catch (err) {
+      console.error(err);
+      alert('Error descargando PDF');
+    } finally {
+      this.pdfLoading = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  printPreviewPdf() {
+    const iframe = document.querySelector('iframe[src*="blob:"]') as HTMLIFrameElement;
+    try {
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+        return;
+      }
+    } catch (e) {
+      console.warn('Iframe print blocked, opening new window:', e);
+    }
+    if (this.previewInvoiceTarget || this.editingInvoice) {
+      const inv = this.previewInvoiceTarget || (this.editingInvoice as Invoice);
+      this.pdfService.downloadInvoicePdf(inv, 'bloburl').then(url => {
+        if (typeof url === 'string') {
+          const win = window.open(url, '_blank');
+          if (win) {
+            win.addEventListener('load', () => {
+              win.focus();
+              win.print();
+            });
+          }
+        }
+      });
+    }
+  }
+
   closePreview() {
     this.showPdfPreview = false;
     this.previewPdfUrl = null;
+    this.previewInvoiceTarget = null;
     this.cdr.detectChanges();
   }
 
