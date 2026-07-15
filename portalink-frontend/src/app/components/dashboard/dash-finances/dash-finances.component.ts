@@ -185,7 +185,8 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                         <p *ngIf="inv.paymentMethod" class="text-[10px] text-neutral-400">{{ inv.paymentMethod }} <span *ngIf="inv.paymentNotes">({{ inv.paymentNotes }})</span></p>
                       </div>
                       <button *ngIf="inv.status !== 'Pagada'" (click)="openPaymentModal(inv); $event.stopPropagation()"
-                              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-emerald-500 text-black hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/10 cursor-pointer">
+                              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all shadow-lg cursor-pointer border"
+                              [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200 border-white shadow-white/10' : 'bg-black text-white hover:bg-neutral-800 border-black shadow-black/10'">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                         Marcar como Pagada
                       </button>
@@ -533,10 +534,10 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                     [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:text-white' : 'border-neutral-300 text-neutral-500 hover:text-neutral-900'">Cancelar</button>
             <button (click)="saveInvoice('Borrador')" class="px-5 py-2 rounded-xl text-sm font-bold uppercase tracking-widest border cursor-pointer"
                     [ngClass]="isDark ? 'border-neutral-600 text-neutral-300 hover:bg-neutral-800' : 'border-neutral-300 text-neutral-600 hover:bg-neutral-100'">Guardar Borrador</button>
-            <button (click)="saveInvoice('Enviada')" class="px-5 py-2 rounded-xl text-sm font-bold uppercase tracking-widest cursor-pointer border"
-                    [ngClass]="isDark ? 'border-neutral-600 bg-neutral-800 text-white hover:bg-neutral-700' : 'border-neutral-300 bg-neutral-100 text-neutral-900 hover:bg-neutral-200'">Guardar como Enviada</button>
-            <button (click)="saveInvoice('Pagada')" class="px-5 py-2 rounded-xl text-sm font-bold uppercase tracking-widest cursor-pointer shadow-lg transition-all"
-                    [ngClass]="isDark ? 'bg-emerald-500 text-black hover:bg-emerald-400 shadow-emerald-500/10' : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-600/10'">Guardar y Marcar como Pagada</button>
+            <button (click)="saveInvoice('Enviada')" class="px-5 py-2 rounded-xl text-sm font-bold uppercase tracking-widest cursor-pointer border transition-all shadow-lg"
+                    [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200 border-white shadow-white/10' : 'bg-black text-white hover:bg-neutral-800 border-black shadow-black/10'">Guardar como Enviada</button>
+            <button (click)="saveInvoice('Pagada')" class="px-5 py-2 rounded-xl text-sm font-bold uppercase tracking-widest cursor-pointer border"
+                    [ngClass]="isDark ? 'border-neutral-600 bg-neutral-900 text-white hover:bg-neutral-800' : 'border-neutral-300 bg-neutral-100 text-neutral-900 hover:bg-neutral-200'">Guardar y Registrar Pago</button>
           </div>
         </div>
 
@@ -622,7 +623,8 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
               </div>
               <div class="col-span-1 flex justify-end gap-1">
                 <button *ngIf="inv.status !== 'Pagada'" (click)="openPaymentModal(inv)" title="Registrar Pago"
-                        class="p-1.5 rounded-lg cursor-pointer transition-colors text-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/10">
+                        class="p-1.5 rounded-lg cursor-pointer transition-colors"
+                        [ngClass]="isDark ? 'text-white hover:bg-white/10' : 'text-black hover:bg-black/10'">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                 </button>
                 <button (click)="downloadInvoicePdf(inv)" title="Descargar PDF" [disabled]="pdfLoading"
@@ -968,12 +970,9 @@ export class DashFinancesComponent implements OnInit, OnChanges {
   }
 
   closePaymentModal() {
-    const original = this.invoices.find(i => i.id === this.paymentInvoiceTarget?.id);
-    if (original && original.status !== 'Pagada' && this.paymentInvoiceTarget?.status === 'Pagada') {
-       this.refresh();
-    }
     this.showPaymentModal = false;
     this.paymentInvoiceTarget = null;
+    this.refresh();
     this.cdr.detectChanges();
   }
 
@@ -1507,7 +1506,8 @@ export class DashFinancesComponent implements OnInit, OnChanges {
         }
     }
 
-    this.editingInvoice.status = status;
+    const initialStatus = status === 'Pagada' ? 'Enviada' : status;
+    this.editingInvoice.status = initialStatus;
     try {
       const res = await firstValueFrom(this.financeService.saveInvoice(this.editingInvoice as Invoice));
       this.showInvoiceForm = false;
