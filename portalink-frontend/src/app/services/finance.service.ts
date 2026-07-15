@@ -51,6 +51,11 @@ export interface Invoice {
   due_date?: string;
   dueAt?: string; // UI alias
   paidAt?: string;
+  paid_at?: string;
+  paymentMethod?: string;
+  payment_method?: string;
+  paymentNotes?: string;
+  payment_notes?: string;
   status: 'DRAFT' | 'ENVIADA' | 'PAGADA' | 'VENCIDA' | 'ANULADA' | 'Borrador' | 'Enviada' | 'Pagada' | 'Vencida';
   subtotal: number;
   tax_amount?: number;
@@ -132,12 +137,20 @@ export class FinanceService {
 
   saveInvoice(invoice: Invoice): Observable<any> {
     // Prepare for backend
+    let backendStatus = (invoice.status || 'Borrador').toUpperCase();
+    if (backendStatus === 'BORRADOR') backendStatus = 'DRAFT';
+
     const payload = {
       client_id: invoice.clientId,
       invoice_number: invoice.id || `PL-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000)}`, // temporary auto-gen for backend if new
       issue_date: invoice.issuedAt,
       due_date: invoice.dueAt,
       notes: invoice.notes,
+      status: backendStatus,
+      paid_at: invoice.paidAt || invoice.paid_at,
+      payment_method: invoice.paymentMethod || invoice.payment_method,
+      payment_notes: invoice.paymentNotes || invoice.payment_notes,
+      tax_amount: invoice.taxAmount || invoice.tax_amount || 0,
       items: (invoice.items || []).map(i => ({
         service_id: i.service_id,
         description: i.description || i.serviceName,
@@ -155,10 +168,15 @@ export class FinanceService {
     throw new Error('Not implemented in backend');
   }
 
-  updateInvoiceStatus(id: string, status: string): Observable<any> {
+  updateInvoiceStatus(id: string, status: string, paymentData?: { paid_at?: string; payment_method?: string; payment_notes?: string }): Observable<any> {
     let backendStatus = status.toUpperCase();
     if (backendStatus === 'BORRADOR') backendStatus = 'DRAFT';
-    return this.http.put<any>(`${this.apiUrl}/invoices/${id}/status`, { status: backendStatus });
+    return this.http.put<any>(`${this.apiUrl}/invoices/${id}/status`, { 
+      status: backendStatus,
+      paid_at: paymentData?.paid_at,
+      payment_method: paymentData?.payment_method,
+      payment_notes: paymentData?.payment_notes
+    });
   }
 
   // ─── HELPERS ──────────────────────────────────────────────

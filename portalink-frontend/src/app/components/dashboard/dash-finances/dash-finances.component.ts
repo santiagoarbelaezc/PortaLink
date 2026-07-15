@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -179,7 +179,16 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                       <p class="text-xs uppercase tracking-widest mt-0.5" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ getClient(inv.clientId)?.company || 'Independiente' }}</p>
                       <p class="text-xs mt-1" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">{{ getClient(inv.clientId)?.email }} &nbsp;•&nbsp; {{ getClient(inv.clientId)?.phone || 'Sin teléfono' }}</p>
                     </div>
-                    <div class="flex md:justify-end">
+                    <div class="flex flex-wrap md:justify-end items-center gap-3">
+                      <div *ngIf="inv.status === 'Pagada'" class="text-right mr-2">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-emerald-500">Recaudado el {{ inv.paidAt }}</p>
+                        <p *ngIf="inv.paymentMethod" class="text-[10px] text-neutral-400">{{ inv.paymentMethod }} <span *ngIf="inv.paymentNotes">({{ inv.paymentNotes }})</span></p>
+                      </div>
+                      <button *ngIf="inv.status !== 'Pagada'" (click)="openPaymentModal(inv); $event.stopPropagation()"
+                              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-emerald-500 text-black hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/10 cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        Marcar como Pagada
+                      </button>
                       <button (click)="downloadInvoicePdf(inv)" [disabled]="pdfLoading" class="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest border transition-colors cursor-pointer flex items-center gap-2"
                               [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:text-white hover:bg-neutral-800 disabled:opacity-50' : 'border-neutral-300 text-neutral-600 hover:text-black hover:bg-neutral-100 disabled:opacity-50'">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -524,8 +533,10 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                     [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:text-white' : 'border-neutral-300 text-neutral-500 hover:text-neutral-900'">Cancelar</button>
             <button (click)="saveInvoice('Borrador')" class="px-5 py-2 rounded-xl text-sm font-bold uppercase tracking-widest border cursor-pointer"
                     [ngClass]="isDark ? 'border-neutral-600 text-neutral-300 hover:bg-neutral-800' : 'border-neutral-300 text-neutral-600 hover:bg-neutral-100'">Guardar Borrador</button>
-            <button (click)="saveInvoice('Enviada')" class="px-5 py-2 rounded-xl text-sm font-bold uppercase tracking-widest cursor-pointer"
-                    [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-neutral-700'">Guardar y Marcar como Enviada</button>
+            <button (click)="saveInvoice('Enviada')" class="px-5 py-2 rounded-xl text-sm font-bold uppercase tracking-widest cursor-pointer border"
+                    [ngClass]="isDark ? 'border-neutral-600 bg-neutral-800 text-white hover:bg-neutral-700' : 'border-neutral-300 bg-neutral-100 text-neutral-900 hover:bg-neutral-200'">Guardar como Enviada</button>
+            <button (click)="saveInvoice('Pagada')" class="px-5 py-2 rounded-xl text-sm font-bold uppercase tracking-widest cursor-pointer shadow-lg transition-all"
+                    [ngClass]="isDark ? 'bg-emerald-500 text-black hover:bg-emerald-400 shadow-emerald-500/10' : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-600/10'">Guardar y Marcar como Pagada</button>
           </div>
         </div>
 
@@ -544,6 +555,93 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
               <iframe *ngIf="previewPdfUrl" [src]="previewPdfUrl" class="w-full h-full border-0"></iframe>
             </div>
           </div>
+        </div>
+
+        <!-- Payment Modal -->
+        <div *ngIf="showPaymentModal && paymentInvoiceTarget" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div class="w-full max-w-lg rounded-2xl border p-6 shadow-2xl space-y-5 transition-all"
+               [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-white' : 'bg-white border-neutral-300 text-neutral-900'">
+            
+            <!-- Header -->
+            <div class="flex items-start justify-between border-b pb-4" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-500 flex items-center gap-1.5 mb-1">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  Confirmación de Recaudo
+                </span>
+                <h3 class="text-xl font-bold">Registrar Pago de Cuenta #{{ paymentInvoiceTarget.id }}</h3>
+              </div>
+              <button (click)="closePaymentModal()" class="p-1 rounded-lg transition-colors cursor-pointer"
+                      [ngClass]="isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-500 hover:text-black hover:bg-neutral-100'">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+
+            <!-- Summary Card -->
+            <div class="rounded-xl p-4 border flex items-center justify-between"
+                 [ngClass]="isDark ? 'bg-neutral-800/60 border-neutral-700' : 'bg-neutral-50 border-neutral-200'">
+              <div>
+                <p class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Cliente</p>
+                <p class="text-sm font-bold truncate mt-0.5">{{ paymentInvoiceTarget.clientName }}</p>
+              </div>
+              <div class="text-right">
+                <p class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Total a Recaudar</p>
+                <p class="text-lg font-black text-emerald-500 mt-0.5">{{ formatCOP(paymentInvoiceTarget.total || 0) }}</p>
+              </div>
+            </div>
+
+            <!-- Form Fields -->
+            <div class="space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1.5">
+                  <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Fecha de Pago *</label>
+                  <input type="date" [(ngModel)]="paymentForm.paidAt"
+                         class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none cursor-pointer"
+                         [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white focus:border-emerald-500' : 'bg-white border-neutral-300 text-neutral-900 focus:border-emerald-500'">
+                </div>
+                <div class="flex flex-col gap-1.5">
+                  <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Método de Pago *</label>
+                  <select [(ngModel)]="paymentForm.paymentMethod"
+                          class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none cursor-pointer"
+                          [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white focus:border-emerald-500' : 'bg-white border-neutral-300 text-neutral-900 focus:border-emerald-500'">
+                    <option *ngFor="let m of paymentMethodsList" [value]="m">{{ m }}</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="flex flex-col gap-1.5">
+                <div class="flex justify-between items-center">
+                  <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Referencia / Comprobante / Notas</label>
+                  <span class="text-[10px] uppercase font-semibold" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">(Opcional)</span>
+                </div>
+                <textarea [(ngModel)]="paymentForm.paymentNotes" rows="2"
+                          placeholder="Ej: Transferencia Bancolombia Ref #982341..."
+                          class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none resize-none transition-colors"
+                          [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-600 focus:border-emerald-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-emerald-500'"></textarea>
+              </div>
+            </div>
+
+            <!-- Footer Buttons -->
+            <div class="flex justify-end gap-3 pt-3 border-t" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+              <button (click)="closePaymentModal()"
+                      class="px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest border transition-colors cursor-pointer"
+                      [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-300 text-neutral-500 hover:text-black hover:bg-neutral-100'">
+                Cancelar
+              </button>
+              <button (click)="confirmPayment()" [disabled]="isLoading"
+                      class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-emerald-500 text-black hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/10 cursor-pointer disabled:opacity-50">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                {{ isLoading ? 'Guardando...' : 'Confirmar y Registrar Pago' }}
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Success Toast Notification -->
+        <div *ngIf="paymentSuccessToast" class="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-emerald-500 text-black shadow-2xl shadow-emerald-500/20 font-bold text-sm tracking-wide">
+          <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <span>{{ paymentSuccessToast }}</span>
         </div>
 
         <!-- Invoice Filters -->
@@ -627,6 +725,10 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                 <span class="text-xs" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ inv.dueAt | date:'dd MMM yyyy' }}</span>
               </div>
               <div class="col-span-1 flex justify-end gap-1">
+                <button *ngIf="inv.status !== 'Pagada'" (click)="openPaymentModal(inv)" title="Registrar Pago"
+                        class="p-1.5 rounded-lg cursor-pointer transition-colors text-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/10">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                </button>
                 <button (click)="downloadInvoicePdf(inv)" title="Descargar PDF" [disabled]="pdfLoading"
                         class="p-1.5 rounded-lg cursor-pointer transition-colors"
                         [ngClass]="isDark ? 'text-neutral-500 hover:text-red-400 hover:bg-red-900/20' : 'text-neutral-400 hover:text-red-600 hover:bg-red-50'">
@@ -762,6 +864,7 @@ export class DashFinancesComponent implements OnInit {
   private financeService = inject(FinanceService);
   private pdfService = inject(PdfReportService);
   private sanitizer = inject(DomSanitizer);
+  private cdr = inject(ChangeDetectorRef);
 
   get isDark() { return this.theme === 'dark'; }
 
@@ -784,6 +887,97 @@ export class DashFinancesComponent implements OnInit {
   pdfLoading = false;
   expandedInvoiceId: string | null = null;
   kpiPeriod: 'all' | 'this_month' | 'last_month' = 'all';
+
+  // Payment Modal State
+  showPaymentModal = false;
+  paymentInvoiceTarget: Invoice | null = null;
+  paymentForm = {
+    paidAt: new Date().toISOString().split('T')[0],
+    paymentMethod: 'Transferencia Bancaria',
+    paymentNotes: ''
+  };
+  paymentMethodsList = [
+    'Transferencia Bancaria',
+    'Nequi',
+    'Daviplata',
+    'Tarjeta de Crédito/Débito',
+    'Efectivo',
+    'Otro'
+  ];
+  paymentSuccessToast = '';
+
+  openPaymentModal(inv: Invoice) {
+    this.paymentInvoiceTarget = { ...inv };
+    this.paymentForm = {
+      paidAt: inv.paidAt || new Date().toISOString().split('T')[0],
+      paymentMethod: inv.paymentMethod || inv.payment_method || 'Transferencia Bancaria',
+      paymentNotes: inv.paymentNotes || inv.payment_notes || ''
+    };
+    this.showPaymentModal = true;
+    this.cdr.detectChanges();
+  }
+
+  closePaymentModal() {
+    const original = this.invoices.find(i => i.id === this.paymentInvoiceTarget?.id);
+    if (original && original.status !== 'Pagada' && this.paymentInvoiceTarget?.status === 'Pagada') {
+       this.refresh();
+    }
+    this.showPaymentModal = false;
+    this.paymentInvoiceTarget = null;
+    this.cdr.detectChanges();
+  }
+
+  async confirmPayment() {
+    if (!this.paymentInvoiceTarget?.id) return;
+    this.isLoading = true;
+    this.cdr.detectChanges();
+    try {
+      await firstValueFrom(this.financeService.updateInvoiceStatus(
+        this.paymentInvoiceTarget.id,
+        'PAGADA',
+        {
+          paid_at: this.paymentForm.paidAt,
+          payment_method: this.paymentForm.paymentMethod,
+          payment_notes: this.paymentForm.paymentNotes
+        }
+      ));
+      
+      const index = this.invoices.findIndex(i => i.id === this.paymentInvoiceTarget?.id);
+      if (index >= 0) {
+        this.invoices[index].status = 'Pagada';
+        this.invoices[index].paidAt = this.paymentForm.paidAt;
+        this.invoices[index].paymentMethod = this.paymentForm.paymentMethod;
+        this.invoices[index].paymentNotes = this.paymentForm.paymentNotes;
+      }
+      const recIndex = this.recentInvoices.findIndex(i => i.id === this.paymentInvoiceTarget?.id);
+      if (recIndex >= 0) {
+        this.recentInvoices[recIndex].status = 'Pagada';
+        this.recentInvoices[recIndex].paidAt = this.paymentForm.paidAt;
+        this.recentInvoices[recIndex].paymentMethod = this.paymentForm.paymentMethod;
+        this.recentInvoices[recIndex].paymentNotes = this.paymentForm.paymentNotes;
+      }
+
+      this.closePaymentModal();
+      await this.buildKpis();
+      this.buildReports();
+      this.showSuccessToast(`¡Pago de Cuenta #${this.paymentInvoiceTarget.id} registrado con éxito!`);
+    } catch (e) {
+      console.error(e);
+      alert('Error al registrar el pago de la cuenta de cobro.');
+    } finally {
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  showSuccessToast(msg: string) {
+    this.paymentSuccessToast = msg;
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      this.paymentSuccessToast = '';
+      this.cdr.detectChanges();
+    }, 4500);
+  }
 
   // Client filters
   clientFilterText = '';
@@ -872,6 +1066,7 @@ export class DashFinancesComponent implements OnInit {
 
   async refresh() {
     this.isLoading = true;
+    this.cdr.detectChanges();
     try {
       const [clientsRes, servicesRes, invoicesRes] = await Promise.all([
         firstValueFrom(this.financeService.getClients()),
@@ -890,16 +1085,19 @@ export class DashFinancesComponent implements OnInit {
         status: i.status === 'DRAFT' ? 'Borrador' : (i.status === 'ENVIADA' ? 'Enviada' : (i.status === 'PAGADA' ? 'Pagada' : 'Vencida')),
         issuedAt: i.issue_date ? i.issue_date.split('T')[0] : '',
         dueAt: i.due_date ? i.due_date.split('T')[0] : '',
-        paidAt: i.updated_at ? i.updated_at.split('T')[0] : '',
+        paidAt: i.paid_at ? i.paid_at.split('T')[0] : (i.updated_at ? i.updated_at.split('T')[0] : ''),
+        paymentMethod: i.payment_method || '',
+        paymentNotes: i.payment_notes || '',
         items: []
       })) || [];
 
-      this.buildKpis();
+      await this.buildKpis();
       this.buildReports();
     } catch (e) {
       console.error('Error fetching finance data:', e);
     } finally {
       this.isLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -907,8 +1105,10 @@ export class DashFinancesComponent implements OnInit {
     if (!id) return;
     if (this.expandedInvoiceId === id) {
       this.expandedInvoiceId = null;
+      this.cdr.detectChanges();
     } else {
       this.expandedInvoiceId = id;
+      this.cdr.detectChanges();
       try {
         const res = await firstValueFrom(this.financeService.getInvoiceDetails(id));
         const invIndex = this.invoices.findIndex(i => i.id === id);
@@ -922,6 +1122,8 @@ export class DashFinancesComponent implements OnInit {
         }
       } catch (e) {
         console.error('Error fetching invoice details:', e);
+      } finally {
+        this.cdr.detectChanges();
       }
     }
   }
@@ -951,6 +1153,7 @@ export class DashFinancesComponent implements OnInit {
       this.invFilterEndDate = `${end.getFullYear()}-${String(end.getMonth()+1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`;
     }
     this.buildKpis();
+    this.cdr.detectChanges();
   }
 
   async buildKpis() {
@@ -977,10 +1180,15 @@ export class DashFinancesComponent implements OnInit {
         clientId: i.client_id,
         clientName: i.client_name,
         total: Number(i.total_amount),
-        status: i.status === 'DRAFT' ? 'Borrador' : (i.status === 'ENVIADA' ? 'Enviada' : (i.status === 'PAGADA' ? 'Pagada' : 'Vencida'))
+        status: i.status === 'DRAFT' ? 'Borrador' : (i.status === 'ENVIADA' ? 'Enviada' : (i.status === 'PAGADA' ? 'Pagada' : 'Vencida')),
+        paidAt: i.paid_at ? i.paid_at.split('T')[0] : (i.updated_at ? i.updated_at.split('T')[0] : ''),
+        paymentMethod: i.payment_method || '',
+        paymentNotes: i.payment_notes || ''
       }));
     } catch (e) {
       console.error('Error building KPIs:', e);
+    } finally {
+      this.cdr.detectChanges();
     }
   }
 
@@ -1072,8 +1280,8 @@ export class DashFinancesComponent implements OnInit {
   }
 
   // ─── CLIENTS ───────────────────────────────
-  openNewClient() { this.editingClient = { id: '', name: '', email: '', phone: '', company: '', notes: '', createdAt: new Date().toISOString().split('T')[0] }; this.showClientForm = true; }
-  editClient(c: Client) { this.editingClient = { ...c }; this.showClientForm = true; }
+  openNewClient() { this.editingClient = { id: '', name: '', email: '', phone: '', company: '', notes: '', createdAt: new Date().toISOString().split('T')[0] }; this.showClientForm = true; this.cdr.detectChanges(); }
+  editClient(c: Client) { this.editingClient = { ...c }; this.showClientForm = true; this.cdr.detectChanges(); }
   async saveClient() {
     if (!this.editingClient?.name || !this.editingClient?.email) {
       alert('Por favor completa los campos obligatorios (Nombre, Email).');
@@ -1111,6 +1319,8 @@ export class DashFinancesComponent implements OnInit {
     } catch (e) {
       console.error(e);
       alert('Error al guardar cliente');
+    } finally {
+      this.cdr.detectChanges();
     }
   }
   async deleteClient(id: string) {
@@ -1120,6 +1330,8 @@ export class DashFinancesComponent implements OnInit {
         this.refresh();
       } catch (e) {
         alert('Error al eliminar cliente. Puede tener facturas asociadas.');
+      } finally {
+        this.cdr.detectChanges();
       }
     }
   }
@@ -1129,8 +1341,8 @@ export class DashFinancesComponent implements OnInit {
   }
 
   // ─── SERVICES ──────────────────────────────
-  openNewService() { this.editingService = { id: '', name: '', description: '', unitPrice: 0, category: 'desarrollo' }; this.showServiceForm = true; }
-  editService(s: Service) { this.editingService = { ...s }; this.showServiceForm = true; }
+  openNewService() { this.editingService = { id: '', name: '', description: '', unitPrice: 0, category: 'desarrollo' }; this.showServiceForm = true; this.cdr.detectChanges(); }
+  editService(s: Service) { this.editingService = { ...s }; this.showServiceForm = true; this.cdr.detectChanges(); }
   async saveService() {
     if (!this.editingService?.name) {
       alert('El nombre del servicio es obligatorio.');
@@ -1155,6 +1367,8 @@ export class DashFinancesComponent implements OnInit {
     } catch (e) {
       console.error(e);
       alert('Error al guardar servicio');
+    } finally {
+      this.cdr.detectChanges();
     }
   }
   async deleteService(id: string) {
@@ -1164,6 +1378,8 @@ export class DashFinancesComponent implements OnInit {
         this.refresh();
       } catch (e) {
         alert('Error al eliminar servicio');
+      } finally {
+        this.cdr.detectChanges();
       }
     }
   }
@@ -1177,12 +1393,14 @@ export class DashFinancesComponent implements OnInit {
     this.serviceToAdd = '';
     this.showInvoiceForm = true;
     this.subTab = 'facturas';
+    this.cdr.detectChanges();
   }
   editInvoice(inv: Invoice) {
     this.editingInvoice = { ...inv, items: (inv.items || []).map(i => ({ ...i })) };
     this.selectedClientId = inv.clientId || '';
     this.serviceToAdd = '';
     this.showInvoiceForm = true;
+    this.cdr.detectChanges();
   }
   onClientSelect() {
     const c = this.clients.find(cl => String(cl.id) === String(this.selectedClientId));
@@ -1241,28 +1459,41 @@ export class DashFinancesComponent implements OnInit {
 
     this.editingInvoice.status = status;
     try {
-      await firstValueFrom(this.financeService.saveInvoice(this.editingInvoice as Invoice));
+      const res = await firstValueFrom(this.financeService.saveInvoice(this.editingInvoice as Invoice));
       this.showInvoiceForm = false;
       this.refresh();
+      if (status === 'Pagada' && res?.invoice) {
+        this.openPaymentModal(res.invoice);
+      }
     } catch (e) {
       console.error(e);
       alert('Error al crear cuenta de cobro');
+    } finally {
+      this.cdr.detectChanges();
     }
   }
   deleteInvoice(id: string) {
     alert('Esta función aún no está disponible por seguridad.');
   }
   async onStatusChange(inv: Invoice) {
+    if (inv.status === 'Pagada') {
+      this.openPaymentModal(inv);
+      return;
+    }
     try {
       await firstValueFrom(this.financeService.updateInvoiceStatus(inv.id!, inv.status));
-      this.buildKpis();
+      await this.buildKpis();
+      this.buildReports();
     } catch (e) {
       alert('Error al actualizar estado');
+    } finally {
+      this.cdr.detectChanges();
     }
   }
 
   async downloadInvoicePdf(inv: Invoice) {
     this.pdfLoading = true;
+    this.cdr.detectChanges();
     try {
       const res = await firstValueFrom(this.financeService.getInvoiceDetails(inv.id!));
       let fullInv = inv;
@@ -1292,12 +1523,14 @@ export class DashFinancesComponent implements OnInit {
       alert('Error descargando PDF');
     } finally { 
       this.pdfLoading = false; 
+      this.cdr.detectChanges();
     }
   }
 
   async generatePreview() {
     if (!this.editingInvoice) return;
     this.pdfLoading = true;
+    this.cdr.detectChanges();
     try {
       const url = await this.pdfService.downloadInvoicePdf(this.editingInvoice as Invoice, 'bloburl');
       this.previewPdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url as string);
@@ -1306,12 +1539,14 @@ export class DashFinancesComponent implements OnInit {
       console.error(err);
     } finally {
       this.pdfLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
   closePreview() {
     this.showPdfPreview = false;
     this.previewPdfUrl = null;
+    this.cdr.detectChanges();
   }
 
   // ─── HELPERS ───────────────────────────────
