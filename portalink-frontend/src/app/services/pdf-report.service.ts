@@ -625,7 +625,10 @@ export class PdfReportService {
     if (action === 'bloburl') {
       return doc.output('bloburl').toString();
     } else {
-      doc.save(`cuenta_cobro_${invoice.id}_${this.getDateSlug()}.pdf`);
+      const rawName = (invoice.clientCompany || invoice.clientName || 'Cliente').trim();
+      const sanitizedName = rawName.replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, '_');
+      const invNum = invoice.id || invoice.invoice_number || '0';
+      doc.save(`Cuenta_de_Cobro_${sanitizedName}_No_${invNum}.pdf`);
     }
   }
 }
