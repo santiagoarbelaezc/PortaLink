@@ -159,7 +159,9 @@ export class FinanceService {
       }))
     };
     
-    // We only create invoices for now, or update status. 
+    if (invoice.id && invoice.id !== '') {
+      return this.http.put<any>(`${this.apiUrl}/invoices/${invoice.id}`, payload);
+    }
     return this.http.post<any>(`${this.apiUrl}/invoices`, payload);
   }
 

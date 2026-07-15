@@ -1444,12 +1444,62 @@ export class DashFinancesComponent implements OnInit, OnChanges {
     this.subTab = 'facturas';
     this.cdr.detectChanges();
   }
-  editInvoice(inv: Invoice) {
-    this.editingInvoice = { ...inv, items: (inv.items || []).map(i => ({ ...i })) };
-    this.selectedClientId = inv.clientId || '';
-    this.serviceToAdd = '';
+  async editInvoice(inv: Invoice) {
     this.showInvoiceForm = true;
+    this.isLoading = true;
     this.cdr.detectChanges();
+    try {
+      const res = await firstValueFrom(this.financeService.getInvoiceDetails(inv.id!));
+      if (res && res.invoice) {
+        const rawInv: any = res.invoice;
+        const subtotal = Number(rawInv.subtotal || 0);
+        const taxAmount = Number(rawInv.tax_amount || rawInv.taxAmount || 0);
+        const taxRate = subtotal > 0 && taxAmount > 0 ? Math.round((taxAmount / subtotal) * 100) : 0;
+        
+        this.editingInvoice = {
+          ...inv,
+          id: String(rawInv.id),
+          clientId: rawInv.client_id || inv.clientId,
+          clientName: rawInv.client_name || inv.clientName,
+          clientCompany: rawInv.company || inv.clientCompany,
+          clientEmail: rawInv.email || inv.clientEmail,
+          notes: rawInv.notes !== null && rawInv.notes !== undefined ? rawInv.notes : (inv.notes || ''),
+          issuedAt: rawInv.issue_date ? rawInv.issue_date.split('T')[0] : inv.issuedAt,
+          dueAt: rawInv.due_date ? rawInv.due_date.split('T')[0] : inv.dueAt,
+          subtotal: subtotal,
+          taxRate: taxRate,
+          taxAmount: taxAmount,
+          total: Number(rawInv.total_amount || rawInv.total || 0),
+          items: (rawInv.items || []).map((it: any) => {
+             const qty = Number(it.quantity || 1);
+             const uPrice = Number(it.unit_price || it.unitPrice || 0);
+             return {
+               ...it,
+               service_id: it.service_id ? String(it.service_id) : undefined,
+               serviceName: it.service_name || it.description || it.serviceName || 'Servicio',
+               description: it.description !== it.service_name ? (it.description || '') : '',
+               quantity: qty,
+               unitPrice: uPrice,
+               unit_price: uPrice,
+               subtotal: Number(it.total_price || it.subtotal || (qty * uPrice)),
+               total_price: Number(it.total_price || it.subtotal || (qty * uPrice))
+             };
+          })
+        };
+      } else {
+        this.editingInvoice = { ...inv, items: (inv.items || []).map(i => ({ ...i })) };
+      }
+      this.selectedClientId = this.editingInvoice.clientId || inv.clientId || '';
+      this.recalcInvoice();
+    } catch (e) {
+      console.error('Error loading invoice details:', e);
+      this.editingInvoice = { ...inv, items: (inv.items || []).map(i => ({ ...i })) };
+      this.selectedClientId = inv.clientId || '';
+    } finally {
+      this.isLoading = false;
+      this.serviceToAdd = '';
+      this.cdr.detectChanges();
+    }
   }
   onClientSelect() {
     const c = this.clients.find(cl => String(cl.id) === String(this.selectedClientId));
