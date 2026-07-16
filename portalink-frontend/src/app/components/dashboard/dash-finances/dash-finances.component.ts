@@ -1068,17 +1068,17 @@ export class DashFinancesComponent implements OnInit, OnChanges {
   closePaymentModal() {
     this.showPaymentModal = false;
     this.paymentInvoiceTarget = null;
-    this.refresh();
     this.cdr.detectChanges();
   }
 
   async confirmPayment() {
     if (!this.paymentInvoiceTarget?.id) return;
+    const targetId = this.paymentInvoiceTarget.id;
     this.isLoading = true;
     this.cdr.detectChanges();
     try {
       await firstValueFrom(this.financeService.updateInvoiceStatus(
-        this.paymentInvoiceTarget.id,
+        targetId,
         'PAGADA',
         {
           paid_at: this.paymentForm.paidAt,
@@ -1087,14 +1087,14 @@ export class DashFinancesComponent implements OnInit, OnChanges {
         }
       ));
       
-      const index = this.invoices.findIndex(i => i.id === this.paymentInvoiceTarget?.id);
+      const index = this.invoices.findIndex(i => i.id === targetId);
       if (index >= 0) {
         this.invoices[index].status = 'Pagada';
         this.invoices[index].paidAt = this.paymentForm.paidAt;
         this.invoices[index].paymentMethod = this.paymentForm.paymentMethod;
         this.invoices[index].paymentNotes = this.paymentForm.paymentNotes;
       }
-      const recIndex = this.recentInvoices.findIndex(i => i.id === this.paymentInvoiceTarget?.id);
+      const recIndex = this.recentInvoices.findIndex(i => i.id === targetId);
       if (recIndex >= 0) {
         this.recentInvoices[recIndex].status = 'Pagada';
         this.recentInvoices[recIndex].paidAt = this.paymentForm.paidAt;
@@ -1102,10 +1102,10 @@ export class DashFinancesComponent implements OnInit, OnChanges {
         this.recentInvoices[recIndex].paymentNotes = this.paymentForm.paymentNotes;
       }
 
-      this.closePaymentModal();
-      await this.buildKpis();
-      this.buildReports();
-      this.showSuccessToast(`¡Pago de Cuenta #${this.paymentInvoiceTarget.id} registrado con éxito!`);
+      this.showPaymentModal = false;
+      this.paymentInvoiceTarget = null;
+      await this.refresh();
+      this.showSuccessToast(`¡Pago de Cuenta #${targetId} registrado con éxito!`);
     } catch (e) {
       console.error(e);
       alert('Error al registrar el pago de la cuenta de cobro.');
@@ -1470,9 +1470,11 @@ export class DashFinancesComponent implements OnInit, OnChanges {
     }
 
     try {
+      const isEdit = !!(this.editingClient?.id && this.editingClient.id !== '');
       await firstValueFrom(this.financeService.saveClient(this.editingClient as Client));
       this.showClientForm = false;
       this.refresh();
+      this.showGadget(isEdit ? '¡Cliente actualizado con éxito!' : '¡Cliente creado con éxito!', isEdit ? 'edit' : 'create');
     } catch (e) {
       console.error(e);
       alert('Error al guardar cliente');
@@ -1485,6 +1487,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       try {
         await firstValueFrom(this.financeService.deleteClient(id));
         this.refresh();
+        this.showGadget('¡Cliente eliminado con éxito!', 'delete');
       } catch (e) {
         alert('Error al eliminar cliente. Puede tener facturas asociadas.');
       } finally {
@@ -1518,9 +1521,11 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       }
     }
     try {
+      const isEdit = !!(this.editingService?.id && this.editingService.id !== '');
       await firstValueFrom(this.financeService.saveService(this.editingService as Service));
       this.showServiceForm = false;
       this.refresh();
+      this.showGadget(isEdit ? '¡Servicio actualizado con éxito!' : '¡Servicio creado con éxito!', isEdit ? 'edit' : 'create');
     } catch (e) {
       console.error(e);
       alert('Error al guardar servicio');
@@ -1533,6 +1538,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       try {
         await firstValueFrom(this.financeService.deleteService(id));
         this.refresh();
+        this.showGadget('¡Servicio eliminado con éxito!', 'delete');
       } catch (e) {
         alert('Error al eliminar servicio');
       } finally {
@@ -1666,12 +1672,15 @@ export class DashFinancesComponent implements OnInit, OnChanges {
 
     const initialStatus = status === 'Pagada' ? 'Enviada' : status;
     this.editingInvoice.status = initialStatus;
+    const isEdit = !!(this.editingInvoice?.id && this.editingInvoice.id !== '');
     try {
       const res = await firstValueFrom(this.financeService.saveInvoice(this.editingInvoice as Invoice));
       this.showInvoiceForm = false;
       this.refresh();
       if (status === 'Pagada' && res?.invoice) {
         this.openPaymentModal(res.invoice);
+      } else {
+        this.showGadget(isEdit ? '¡Cuenta de cobro actualizada con éxito!' : '¡Cuenta de cobro creada con éxito!', isEdit ? 'edit' : 'create');
       }
     } catch (e) {
       console.error(e);
@@ -1680,8 +1689,19 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       this.cdr.detectChanges();
     }
   }
-  deleteInvoice(id: string) {
-    alert('Esta función aún no está disponible por seguridad.');
+  async deleteInvoice(id: string) {
+    if (confirm('¿Estás seguro de que deseas eliminar esta cuenta de cobro?')) {
+      try {
+        await firstValueFrom(this.financeService.deleteInvoice(id));
+        this.refresh();
+        this.showGadget('¡Cuenta de cobro eliminada con éxito!', 'delete');
+      } catch (e) {
+        console.error(e);
+        alert('Error al eliminar la cuenta de cobro.');
+      } finally {
+        this.cdr.detectChanges();
+      }
+    }
   }
   async onStatusChange(inv: Invoice) {
     if (inv.status === 'Pagada') {
@@ -1690,8 +1710,8 @@ export class DashFinancesComponent implements OnInit, OnChanges {
     }
     try {
       await firstValueFrom(this.financeService.updateInvoiceStatus(inv.id!, inv.status));
-      await this.buildKpis();
-      this.buildReports();
+      await this.refresh();
+      this.showGadget('¡Estado de cuenta de cobro actualizado!', 'success');
     } catch (e) {
       alert('Error al actualizar estado');
     } finally {
