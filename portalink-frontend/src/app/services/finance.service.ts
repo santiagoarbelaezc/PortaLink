@@ -91,12 +91,9 @@ export class FinanceService {
   }
 
   saveClient(client: Client): Observable<any> {
-    if (client.id && !client.id.startsWith('c')) {
-      // Is an existing ID from DB (usually a number or UUID). Wait, in local it was 'c123'. 
-      // Actually DB IDs are numbers (SERIAL).
+    if (client.id !== undefined && client.id !== null && String(client.id).trim() !== '' && !String(client.id).startsWith('c')) {
       return this.http.put<any>(`${this.apiUrl}/clients/${client.id}`, client);
     } else {
-      // New client
       return this.http.post<any>(`${this.apiUrl}/clients`, client);
     }
   }
@@ -115,7 +112,7 @@ export class FinanceService {
     if (service.unitPrice !== undefined) {
       service.price = service.unitPrice;
     }
-    if (service.id && !String(service.id).startsWith('sv')) {
+    if (service.id !== undefined && service.id !== null && String(service.id).trim() !== '' && !String(service.id).startsWith('sv')) {
       return this.http.put<any>(`${this.apiUrl}/services/${service.id}`, service);
     } else {
       return this.http.post<any>(`${this.apiUrl}/services`, service);
@@ -166,8 +163,7 @@ export class FinanceService {
   }
 
   deleteInvoice(id: string): Observable<any> {
-    // Not implemented in backend yet, but we'll mock it or throw error
-    throw new Error('Not implemented in backend');
+    return this.http.delete<any>(`${this.apiUrl}/invoices/${id}`);
   }
 
   updateInvoiceStatus(id: string, status: string, paymentData?: { paid_at?: string; payment_method?: string; payment_notes?: string }): Observable<any> {

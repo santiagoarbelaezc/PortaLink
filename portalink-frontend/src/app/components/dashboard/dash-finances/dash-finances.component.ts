@@ -936,11 +936,44 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
         </div>
       </div>
 
-      <!-- Success Toast Notification (Monocromático y Adaptable) -->
-      <div *ngIf="paymentSuccessToast" class="fixed bottom-6 right-6 z-[110] flex items-center gap-3.5 px-6 py-4 rounded-2xl shadow-2xl font-extrabold text-sm tracking-wide modal-enter border transition-colors"
-           [ngClass]="isDark ? 'bg-white text-black border-white shadow-white/20' : 'bg-black text-white border-black shadow-black/20'">
-        <svg class="w-5 h-5 shrink-0" [ngClass]="isDark ? 'text-black' : 'text-white'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        <span>{{ paymentSuccessToast }}</span>
+      <!-- Premium Success Gadget Toast -->
+      <div *ngIf="gadgetToast && gadgetToast.show" class="fixed bottom-6 right-6 z-[120] flex flex-col min-w-[320px] max-w-[420px] rounded-2xl shadow-2xl font-sans overflow-hidden modal-enter border backdrop-blur-xl transition-all"
+           [ngClass]="isDark ? 'bg-neutral-900/95 text-white border-neutral-700/80 shadow-black/60' : 'bg-white/95 text-neutral-900 border-neutral-200/80 shadow-xl'">
+        <div class="flex items-center justify-between px-5 py-4 gap-3.5">
+          <div class="flex items-center gap-3.5">
+            <!-- Icon by type -->
+            <div *ngIf="gadgetToast.type === 'create'" class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                 [ngClass]="isDark ? 'bg-emerald-500/15 text-emerald-400' : 'bg-emerald-50 text-emerald-600'">
+              <svg class="w-5 h-5 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            </div>
+            <div *ngIf="gadgetToast.type === 'edit'" class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                 [ngClass]="isDark ? 'bg-blue-500/15 text-blue-400' : 'bg-blue-50 text-blue-600'">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            </div>
+            <div *ngIf="gadgetToast.type === 'delete'" class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                 [ngClass]="isDark ? 'bg-rose-500/15 text-rose-400' : 'bg-rose-50 text-rose-600'">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </div>
+            <div *ngIf="gadgetToast.type === 'success'" class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                 [ngClass]="isDark ? 'bg-emerald-500/15 text-emerald-400' : 'bg-emerald-50 text-emerald-600'">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-[11px] font-bold uppercase tracking-wider opacity-60">
+                {{ gadgetToast.type === 'create' ? 'Creación exitosa' : (gadgetToast.type === 'edit' ? 'Edición guardada' : (gadgetToast.type === 'delete' ? 'Registro eliminado' : 'Operación completada')) }}
+              </span>
+              <span class="text-sm font-extrabold leading-snug">{{ gadgetToast.message }}</span>
+            </div>
+          </div>
+          <button (click)="gadgetToast = null" class="p-1 rounded-lg opacity-50 hover:opacity-100 transition-opacity">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <!-- Progress Bar -->
+        <div class="h-1 w-full bg-neutral-500/10 overflow-hidden">
+          <div class="h-full gadget-progress-bar"
+               [ngClass]="gadgetToast.type === 'create' || gadgetToast.type === 'success' ? 'bg-emerald-500' : (gadgetToast.type === 'edit' ? 'bg-blue-500' : 'bg-rose-500')"></div>
+        </div>
       </div>
 
     </div>
@@ -954,6 +987,8 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     .modal-enter { animation: modalEnter 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     @keyframes modalEnter { from { opacity: 0; transform: scale(0.95) translateY(12px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    @keyframes gadgetProgress { from { width: 100%; } to { width: 0%; } }
+    .gadget-progress-bar { animation: gadgetProgress 4.2s linear forwards; }
   `]
 })
 export class DashFinancesComponent implements OnInit, OnChanges {
@@ -1013,6 +1048,11 @@ export class DashFinancesComponent implements OnInit, OnChanges {
     'Otro'
   ];
   paymentSuccessToast = '';
+  gadgetToast: {
+    show: boolean;
+    message: string;
+    type: 'create' | 'edit' | 'delete' | 'success';
+  } | null = null;
 
   openPaymentModal(inv: Invoice) {
     this.paymentInvoiceTarget = { ...inv };
@@ -1075,13 +1115,19 @@ export class DashFinancesComponent implements OnInit, OnChanges {
     }
   }
 
-  showSuccessToast(msg: string) {
-    this.paymentSuccessToast = msg;
+  showGadget(message: string, type: 'create' | 'edit' | 'delete' | 'success' = 'success') {
+    this.gadgetToast = { show: true, message, type };
     this.cdr.detectChanges();
     setTimeout(() => {
-      this.paymentSuccessToast = '';
-      this.cdr.detectChanges();
-    }, 4500);
+      if (this.gadgetToast && this.gadgetToast.message === message) {
+        this.gadgetToast = null;
+        this.cdr.detectChanges();
+      }
+    }, 4200);
+  }
+
+  showSuccessToast(msg: string) {
+    this.showGadget(msg, 'success');
   }
 
   // Client filters
