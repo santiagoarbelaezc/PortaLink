@@ -32,6 +32,77 @@ import { PdfReportService } from '../../../services/pdf-report.service';
         </button>
       </div>
 
+      <!-- Link KPIs Summary -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" *ngIf="metrics">
+        <!-- Card 1: Visitas al Link -->
+        <div class="rounded-2xl border p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow"
+             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-[11px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Visitas al Link</span>
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-blue-500/10 text-blue-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-3xl font-extrabold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ metrics.linktreeViews || 0 }}</h3>
+            <p class="text-[11px] mt-1 flex items-center gap-1.5" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">
+              <span>Home: {{ metrics.homeViews || 0 }} visitas</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 2: Total Clics -->
+        <div class="rounded-2xl border p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow"
+             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-[11px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Clics en Enlaces</span>
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-emerald-500/10 text-emerald-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-3xl font-extrabold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ metrics.totalClicks || 0 }}</h3>
+            <p class="text-[11px] mt-1 flex items-center gap-1.5 text-emerald-500">
+              <span>Interacción social y redes</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 3: CTR del Link -->
+        <div class="rounded-2xl border p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow"
+             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-[11px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Tasa de Clics (CTR)</span>
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-purple-500/10 text-purple-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-3xl font-extrabold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ metrics.linkCtr || 0 }}%</h3>
+            <p class="text-[11px] mt-1 flex items-center gap-1.5" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">
+              <span>Conversión de visitantes</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 4: Enlace Más Popular -->
+        <div class="rounded-2xl border p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow"
+             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-[11px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Enlace Top</span>
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-amber-500/10 text-amber-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-2xl font-extrabold tracking-tight truncate" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'" [title]="metrics.topLink?.name || 'Ninguno'">{{ metrics.topLink?.name || 'Ninguno' }}</h3>
+            <p class="text-[11px] mt-1 flex items-center gap-1.5 text-amber-500 font-medium">
+              <span>{{ metrics.topLink?.count || 0 }} clics totales</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
       <!-- Row 1: Tendencia Semanal -->
       <div class="perspective-1000 bg-transparent h-[400px]">
         <div class="relative w-full h-full transition-transform duration-700 preserve-3d"
@@ -43,7 +114,7 @@ import { PdfReportService } from '../../../services/pdf-report.service';
                (click)="toggleFlip('weekly')" title="Clic para ver datos">
             <h4 class="text-sm font-bold uppercase tracking-wide mb-5 flex justify-between items-center"
                 [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">
-              Tendencia de Visitas (7 Días)
+              Tendencia de Visitas Reales (7 Días)
               <svg class="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
             </h4>
             <div class="w-full relative flex-grow min-h-[280px]">
@@ -71,14 +142,24 @@ import { PdfReportService } from '../../../services/pdf-report.service';
                     <th class="pb-2 font-semibold text-right">Visitas</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr *ngFor="let label of lineChartData.labels; let i = index" 
+                <tbody *ngIf="metrics?.dailyTrend && metrics.dailyTrend!.length > 0; else defaultWeeklyRows">
+                  <tr *ngFor="let item of metrics.dailyTrend" 
                       class="border-b last:border-0 transition-colors"
                       [ngClass]="isDark ? 'border-neutral-700/50 text-neutral-300 hover:bg-neutral-700/30' : 'border-neutral-200 text-neutral-700 hover:bg-white'">
-                    <td class="py-3 pl-2">{{ label }}</td>
-                    <td class="py-3 pr-2 text-right font-medium">{{ lineChartData.datasets[0].data[i] }}</td>
+                    <td class="py-3 pl-2">{{ item.day }} <span class="text-xs opacity-50">({{ item.date }})</span></td>
+                    <td class="py-3 pr-2 text-right font-medium">{{ item.total }} <span class="text-xs opacity-60">({{ item.linktree }} Link)</span></td>
                   </tr>
                 </tbody>
+                <ng-template #defaultWeeklyRows>
+                  <tbody>
+                    <tr *ngFor="let label of lineChartData.labels; let i = index" 
+                        class="border-b last:border-0 transition-colors"
+                        [ngClass]="isDark ? 'border-neutral-700/50 text-neutral-300 hover:bg-neutral-700/30' : 'border-neutral-200 text-neutral-700 hover:bg-white'">
+                      <td class="py-3 pl-2">{{ label }}</td>
+                      <td class="py-3 pr-2 text-right font-medium">{{ lineChartData.datasets[0].data[i] }}</td>
+                    </tr>
+                  </tbody>
+                </ng-template>
               </table>
             </div>
           </div>
@@ -98,7 +179,7 @@ import { PdfReportService } from '../../../services/pdf-report.service';
                  (click)="toggleFlip('traffic')">
               <h4 class="text-sm font-bold uppercase tracking-wide mb-5 flex justify-between items-center"
                   [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">
-                Fuentes de Tráfico
+                Clics por Enlace / Red Social
                 <svg class="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
               </h4>
               <div class="w-full relative flex-grow">
@@ -114,15 +195,15 @@ import { PdfReportService } from '../../../services/pdf-report.service';
                  (click)="toggleFlip('traffic')">
               <h4 class="text-sm font-bold uppercase tracking-wide mb-5 flex justify-between items-center"
                   [ngClass]="isDark ? 'text-blue-400' : 'text-blue-600'">
-                Datos: Fuentes
+                Datos: Clics y Porcentajes
                 <svg class="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
               </h4>
               <div class="flex-grow overflow-y-auto pr-2 custom-scrollbar">
                 <table class="w-full text-sm text-left">
                   <thead>
                     <tr class="border-b" [ngClass]="isDark ? 'border-neutral-700 text-neutral-400' : 'border-neutral-200 text-neutral-500'">
-                      <th class="pb-2 font-semibold">Fuente</th>
-                      <th class="pb-2 font-semibold text-right">Sesiones</th>
+                      <th class="pb-2 font-semibold">Enlace</th>
+                      <th class="pb-2 font-semibold text-right">Clics</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -130,7 +211,7 @@ import { PdfReportService } from '../../../services/pdf-report.service';
                         class="border-b last:border-0 transition-colors"
                         [ngClass]="isDark ? 'border-neutral-700/50 text-neutral-300 hover:bg-neutral-700/30' : 'border-neutral-200 text-neutral-700 hover:bg-white'">
                       <td class="py-3 pl-2">{{ label }}</td>
-                      <td class="py-3 pr-2 text-right font-medium">{{ barChartData.datasets[0].data[i] }}</td>
+                      <td class="py-3 pr-2 text-right font-medium">{{ barChartData.datasets[0].data[i] }} <span class="text-xs opacity-50">({{ ((barChartData.datasets[0].data[i] as number) / (metrics?.totalClicks || 1)) * 100 | number:'1.0-1' }}%)</span></td>
                     </tr>
                   </tbody>
                 </table>
@@ -199,7 +280,7 @@ import { PdfReportService } from '../../../services/pdf-report.service';
         <div class="rounded-2xl border p-6"
              [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
           <h4 class="text-sm font-bold uppercase tracking-wide mb-5"
-              [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">Dispositivos (estimados)</h4>
+              [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">Dispositivos Reales (Sesiones)</h4>
 
           <div class="space-y-4">
             <div *ngFor="let dev of devices" class="space-y-1.5">
@@ -463,7 +544,30 @@ export class DashAnalyticsComponent implements OnInit {
     this.analyticsService.getMetrics().subscribe(m => {
       this.metrics = m;
       this.buildRotbotStats();
-      this.themeTotal = this.metrics.themeSelections.dark + this.metrics.themeSelections.light;
+      this.themeTotal = (this.metrics?.themeSelections?.dark || 0) + (this.metrics?.themeSelections?.light || 0);
+      if (this.metrics?.devices && this.metrics.devices.length > 0) {
+        this.devices = this.metrics.devices.map(d => {
+          let icon = 'desktop';
+          let color = '#60a5fa';
+          let svg = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>';
+          if (d.name.toLowerCase().includes('mobile')) {
+            icon = 'mobile';
+            color = '#3b82f6';
+            svg = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>';
+          } else if (d.name.toLowerCase().includes('tablet')) {
+            icon = 'tablet';
+            color = '#93c5fd';
+            svg = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>';
+          }
+          return {
+            icon,
+            name: d.name,
+            pct: d.pct,
+            color,
+            svg: this.sanitizer.bypassSecurityTrustHtml(svg)
+          };
+        });
+      }
       this.buildCharts();
     });
   }
@@ -474,45 +578,62 @@ export class DashAnalyticsComponent implements OnInit {
   }
 
   private buildCharts() {
-    // 1. Line Chart (Weekly Trend) - Distributing total views across 7 days for the demo
-    const totalViews = this.metrics.homeViews + this.metrics.linktreeViews;
-    const baseCurve = [0.1, 0.15, 0.1, 0.2, 0.15, 0.1, 0.2]; // 7 days distribution
-    const trendData = baseCurve.map(pct => Math.round(totalViews * pct));
-    this.lineChartData = {
-      ...this.lineChartData,
-      datasets: [{ ...this.lineChartData.datasets[0], data: trendData }]
-    };
+    // 1. Line Chart (Weekly Trend) - Real Daily Trend from backend
+    if (this.metrics.dailyTrend && this.metrics.dailyTrend.length > 0) {
+      this.lineChartData = {
+        labels: this.metrics.dailyTrend.map(d => d.day),
+        datasets: [{
+          ...this.lineChartData.datasets[0],
+          data: this.metrics.dailyTrend.map(d => d.total || (d.home + d.linktree)),
+          label: 'Visitas Reales'
+        }]
+      };
+    } else {
+      const totalViews = (this.metrics.homeViews || 0) + (this.metrics.linktreeViews || 0);
+      const baseCurve = [0.1, 0.15, 0.1, 0.2, 0.15, 0.1, 0.2];
+      const trendData = baseCurve.map(pct => Math.round(totalViews * pct));
+      this.lineChartData = {
+        ...this.lineChartData,
+        datasets: [{ ...this.lineChartData.datasets[0], data: trendData }]
+      };
+    }
 
-    // 2. Bar Chart (Link Clicks / Sources)
-    const links = this.metrics.linktreeClicks;
-    this.barChartData = {
-      labels: ['Instagram', 'LinkedIn', 'WhatsApp', 'TikTok', 'Proyectos'],
-      datasets: [{
-        ...this.barChartData.datasets[0],
-        data: [
-          links['instagram'] || 0,
-          links['linkedin'] || 0,
-          links['whatsapp'] || 0,
-          links['tiktok'] || 0,
-          links['proyectos'] || 0
-        ]
-      }]
-    };
+    // 2. Bar Chart (Link Clicks / Sources) - Real Ranking from backend
+    const links = this.metrics.linktreeClicks || {};
+    const entries = Object.entries(links).sort((a,b) => (b[1] as number) - (a[1] as number));
+    if (entries.length > 0) {
+      this.barChartData = {
+        labels: entries.map(e => e[0].charAt(0).toUpperCase() + e[0].slice(1)),
+        datasets: [{
+          ...this.barChartData.datasets[0],
+          data: entries.map(e => e[1] as number),
+          label: 'Clics Registrados'
+        }]
+      };
+    } else {
+      this.barChartData = {
+        labels: ['Instagram', 'LinkedIn', 'WhatsApp', 'TikTok', 'Proyectos'],
+        datasets: [{
+          ...this.barChartData.datasets[0],
+          data: [0, 0, 0, 0, 0]
+        }]
+      };
+    }
 
     // 3. Radar Chart (Section Views)
-    const sections = this.metrics.sectionViews;
-    // Normalize to 100 max for the radar chart
+    const sections = this.metrics.sectionViews || {};
     const maxView = Math.max(
       sections['skills'] || 0,
       sections['portfolio'] || 0,
       sections['contact'] || 0,
       sections['about'] || 0,
       sections['hero'] || 0,
-      1 // Prevent division by zero
+      sections['retratos'] || 0,
+      1
     );
     
     this.radarChartData = {
-      labels: ['Skills', 'Proyectos', 'Contacto', 'Sobre Mí', 'Hero'],
+      labels: ['Skills', 'Proyectos', 'Contacto', 'Sobre Mí', 'Hero', 'Retratos'],
       datasets: [{
         ...this.radarChartData.datasets[0],
         data: [
@@ -520,7 +641,8 @@ export class DashAnalyticsComponent implements OnInit {
           Math.round(((sections['portfolio'] || 0) / maxView) * 100),
           Math.round(((sections['contact'] || 0) / maxView) * 100),
           Math.round(((sections['about'] || 0) / maxView) * 100),
-          Math.round(((sections['hero'] || 0) / maxView) * 100)
+          Math.round(((sections['hero'] || 0) / maxView) * 100),
+          Math.round(((sections['retratos'] || 0) / maxView) * 100)
         ]
       }]
     };

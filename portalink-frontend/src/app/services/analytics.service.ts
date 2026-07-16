@@ -13,6 +13,19 @@ export interface LinkClicks {
   [key: string]: number;
 }
 
+export interface DailyTrendPoint {
+  day: string;
+  linktree: number;
+  home: number;
+  total: number;
+}
+
+export interface DeviceMetric {
+  name: string;
+  count: number;
+  pct: number;
+}
+
 export interface SystemMetrics {
   homeViews: number;
   linktreeViews: number;
@@ -22,6 +35,11 @@ export interface SystemMetrics {
   linktreeClicks: LinkClicks;
   loadTimes: number[];
   themeSelections: { light: number; dark: number };
+  dailyTrend?: DailyTrendPoint[];
+  devices?: DeviceMetric[];
+  topLink?: { name: string; count: number };
+  totalClicks?: number;
+  linkCtr?: number;
 }
 
 @Injectable({
@@ -50,11 +68,23 @@ export class AnalyticsService {
   private initSession() {
     const key = 'portalink_session_id';
     let sid = sessionStorage.getItem(key);
+    const isNewSession = !sid;
     if (!sid) {
       sid = 'sess_' + Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
       sessionStorage.setItem(key, sid);
     }
     this.sessionId = sid;
+
+    if (isNewSession && isPlatformBrowser(this.platformId)) {
+      const ua = navigator.userAgent.toLowerCase();
+      let dev = 'desktop';
+      if (/(ipad|tablet|(android(?!.*mobile))|(windows(?!.*phone)(.*touch))|kindle|playbook|silk|(puffin(?!.*(IP|AP|R))))/.test(ua)) {
+        dev = 'tablet';
+      } else if (/(mobi|ipod|phone|blackberry|opera mini|fennec|minimo|symbian|psp|nintendo ds|archos|skyfire|puffin|blazer|bolt|gobrowser|iris|maemo|semc|teashark|uzard)/.test(ua)) {
+        dev = 'mobile';
+      }
+      this.queueEvent('device', dev, 1);
+    }
   }
 
   private queueEvent(category: string, label?: string, value?: number) {
@@ -98,11 +128,20 @@ export class AnalyticsService {
       sectionViews: { hero: 0, portfolio: 0, about: 0, skills: 0, contact: 0 },
       linktreeClicks: { tiktok: 0, instagram: 0, whatsapp: 0, linkedin: 0, proyectos: 0 },
       loadTimes: [],
-      themeSelections: { light: 0, dark: 0 }
+      themeSelections: { light: 0, dark: 0 },
+      dailyTrend: [],
+      devices: [
+        { name: 'Mobile', count: 0, pct: 0 },
+        { name: 'Desktop', count: 0, pct: 0 },
+        { name: 'Tablet', count: 0, pct: 0 }
+      ],
+      topLink: { name: 'N/A', count: 0 },
+      totalClicks: 0,
+      linkCtr: 0
     };
   }
 
-  incrementMetric(key: keyof Omit<SystemMetrics, 'sectionViews' | 'linktreeClicks' | 'loadTimes' | 'themeSelections'>): void {
+  incrementMetric(key: keyof Omit<SystemMetrics, 'sectionViews' | 'linktreeClicks' | 'loadTimes' | 'themeSelections' | 'dailyTrend' | 'devices' | 'topLink' | 'totalClicks' | 'linkCtr'>): void {
     if (key === 'homeViews') this.queueEvent('page_view', 'home');
     else if (key === 'linktreeViews') this.queueEvent('page_view', 'linktree');
     else if (key === 'rotbotOpens') this.queueEvent('rotbot', 'open');

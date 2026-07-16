@@ -145,7 +145,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                 <div *ngFor="let img of modelingImages; let i = index" 
                      data-aos="fade-up"
                      [attr.data-aos-delay]="i * 150"
-                     class="lt-reveal-item overflow-hidden relative border aspect-[3/4]" 
+                     (click)="trackSectionView('retratos')"
+                     class="lt-reveal-item overflow-hidden relative border aspect-[3/4] cursor-pointer" 
                      style="border-color: var(--card-border);">
                   <img [src]="img.src" [alt]="img.alt" class="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-700" />
                   <div class="absolute inset-0 bg-gradient-to-t from-[#000000]/70 via-transparent to-transparent flex items-end p-4">
@@ -168,23 +169,23 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
           </div>
           
           <div class="lt-footer-contact">
-            <a href="tel:+573054078225" class="lt-footer-link">
+            <a href="tel:+573054078225" (click)="trackLinkClick('telefono')" class="lt-footer-link">
               <svg class="lt-footer-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
               <span>+57 3054078225</span>
             </a>
             <span class="lt-footer-sep">|</span>
-            <a href="mailto:arbelaezz.c11@gmail.com" class="lt-footer-link">
+            <a href="mailto:arbelaezz.c11@gmail.com" (click)="trackLinkClick('email')" class="lt-footer-link">
               <svg class="lt-footer-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
               <span>arbelaezz.c11@gmail.com</span>
             </a>
           </div>
 
           <div class="lt-footer-socials">
-            <a href="https://www.instagram.com/santiarbelaezz/" target="_blank" class="lt-footer-social-link">
+            <a href="https://www.instagram.com/santiarbelaezz/" target="_blank" (click)="trackLinkClick('instagram')" class="lt-footer-social-link">
               Instagram
             </a>
             <span class="lt-footer-dot">•</span>
-            <a href="https://www.tiktok.com/@santiarbelaezz" target="_blank" class="lt-footer-social-link">
+            <a href="https://www.tiktok.com/@santiarbelaezz" target="_blank" (click)="trackLinkClick('tiktok')" class="lt-footer-social-link">
               TikTok
             </a>
           </div>
@@ -456,6 +457,10 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
 
   trackLinkClick(id: string) {
     this.analyticsService.incrementLinkClick(id);
+  }
+
+  trackSectionView(section: string) {
+    this.analyticsService.incrementSectionView(section);
   }
 
   ngAfterViewInit() {
