@@ -15,6 +15,7 @@ export interface LinkClicks {
 
 export interface DailyTrendPoint {
   day: string;
+  date?: string;
   linktree: number;
   home: number;
   total: number;

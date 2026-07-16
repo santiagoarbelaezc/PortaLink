@@ -101,7 +101,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
               </a>
 
               <!-- Dynamic Links from Config Service -->
-              <a *ngFor="let link of getLinks()" [href]="link.url" target="_blank" (click)="trackLinkClick(link.id)"
+              <a *ngFor="let link of getLinks()" [href]="link.url" target="_blank" (click)="trackLinkClick(link)"
                  class="lt-card-social group" [ngClass]="'lt-item-' + link.icon">
                 <div class="flex justify-between w-full mb-2">
                   <svg *ngIf="link.icon === 'tiktok'" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40 group-hover:text-white transition-colors">
@@ -145,7 +145,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                 <div *ngFor="let img of modelingImages; let i = index" 
                      data-aos="fade-up"
                      [attr.data-aos-delay]="i * 150"
-                     (click)="trackSectionView('retratos')"
+                     (click)="trackSectionView('retratos'); trackLinkClick('foto_' + (i + 1))"
                      class="lt-reveal-item overflow-hidden relative border aspect-[3/4] cursor-pointer" 
                      style="border-color: var(--card-border);">
                   <img [src]="img.src" [alt]="img.alt" class="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-700" />
@@ -181,11 +181,11 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
           </div>
 
           <div class="lt-footer-socials">
-            <a href="https://www.instagram.com/santiarbelaezz/" target="_blank" (click)="trackLinkClick('instagram')" class="lt-footer-social-link">
+            <a href="https://www.instagram.com/santiarbelaezz/" target="_blank" (click)="trackLinkClick('instagram_footer')" class="lt-footer-social-link">
               Instagram
             </a>
             <span class="lt-footer-dot">•</span>
-            <a href="https://www.tiktok.com/@santiarbelaezz" target="_blank" (click)="trackLinkClick('tiktok')" class="lt-footer-social-link">
+            <a href="https://www.tiktok.com/@santiarbelaezz" target="_blank" (click)="trackLinkClick('tiktok_footer')" class="lt-footer-social-link">
               TikTok
             </a>
           </div>
@@ -206,7 +206,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
         <!-- Header -->
         <div class="flex items-center justify-between mb-4 relative z-10">
           <span class="text-[10px] font-bold text-[#00b4d8] uppercase tracking-[0.2em]">{{ getTranslation().instalarTitulo }}</span>
-          <button type="button" (click)="closeModal(); $event.stopPropagation()" class="text-white/40 hover:text-white transition-colors cursor-pointer p-1">
+          <button type="button" (click)="trackLinkClick('pwa_cerrar'); closeModal(); $event.stopPropagation()" class="text-white/40 hover:text-white transition-colors cursor-pointer p-1">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -231,7 +231,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
         <!-- Dots Indicator -->
         <div class="flex justify-center gap-2 mt-4 relative z-10">
           <span *ngFor="let step of installSteps; let idx = index" 
-                (click)="currentInstallStep = idx; $event.stopPropagation()"
+                (click)="trackLinkClick('pwa_paso_' + (idx + 1)); currentInstallStep = idx; $event.stopPropagation()"
                 class="h-1 rounded-full cursor-pointer transition-all duration-300"
                 [ngClass]="currentInstallStep === idx ? 'bg-[#00b4d8] w-5' : 'bg-white/20 hover:bg-white/40 w-1.5'">
           </span>
@@ -239,25 +239,25 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
         <!-- Footer Actions -->
         <div class="flex items-center justify-between mt-6 border-t border-white/5 pt-4 relative z-10">
-          <button type="button" (click)="currentInstallStep === 0 ? closeModal() : prevStep(); $event.stopPropagation()" 
+          <button type="button" (click)="trackLinkClick(currentInstallStep === 0 ? 'pwa_cerrar' : 'pwa_atras'); currentInstallStep === 0 ? closeModal() : prevStep(); $event.stopPropagation()" 
                   class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-white/40 hover:text-white cursor-pointer transition-all">
             {{ currentInstallStep === 0 ? (currentLanguage === 'es' ? 'Cerrar' : 'Close') : (currentLanguage === 'es' ? 'Atrás' : 'Back') }}
           </button>
           
           <button type="button" *ngIf="currentInstallStep < installSteps.length - 1"
-                  (click)="nextStep(); $event.stopPropagation()" 
+                  (click)="trackLinkClick('pwa_siguiente'); nextStep(); $event.stopPropagation()" 
                   class="px-5 py-2.5 rounded-xl bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-neutral-200 cursor-pointer transition-all shadow-md">
             {{ currentLanguage === 'es' ? 'Siguiente' : 'Next' }}
           </button>
           
           <button type="button" *ngIf="currentInstallStep === installSteps.length - 1 && !isIOS"
-                  (click)="installPWA(); $event.stopPropagation()" 
+                  (click)="trackLinkClick('pwa_instalar_btn'); installPWA(); $event.stopPropagation()" 
                   class="px-5 py-2.5 rounded-xl bg-[#00b4d8] text-black text-xs font-bold uppercase tracking-widest hover:bg-[#0077b6] cursor-pointer transition-all shadow-md">
             {{ getTranslation().instalarBtn }}
           </button>
           
           <button type="button" *ngIf="currentInstallStep === installSteps.length - 1 && isIOS"
-                  (click)="closeModal(); $event.stopPropagation()" 
+                  (click)="trackLinkClick('pwa_entendido'); closeModal(); $event.stopPropagation()" 
                   class="px-5 py-2.5 rounded-xl bg-[#00b4d8] text-black text-xs font-bold uppercase tracking-widest hover:bg-[#0077b6] cursor-pointer transition-all shadow-md">
             {{ getTranslation().entendido }}
           </button>
@@ -455,7 +455,12 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
     return name;
   }
 
-  trackLinkClick(id: string) {
+  trackLinkClick(idOrLink: any) {
+    let id = typeof idOrLink === 'string' ? idOrLink : (idOrLink?.icon || idOrLink?.title?.toLowerCase()?.replace(/\s+/g, '_') || idOrLink?.id || 'enlace');
+    const defaultMap: { [key: string]: string } = { '1': 'tiktok', '2': 'instagram', '3': 'whatsapp', '4': 'linkedin' };
+    if (defaultMap[id]) {
+      id = defaultMap[id];
+    }
     this.analyticsService.incrementLinkClick(id);
   }
 

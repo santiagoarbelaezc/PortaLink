@@ -142,7 +142,7 @@ import { PdfReportService } from '../../../services/pdf-report.service';
                     <th class="pb-2 font-semibold text-right">Visitas</th>
                   </tr>
                 </thead>
-                <tbody *ngIf="metrics?.dailyTrend && metrics.dailyTrend!.length > 0; else defaultWeeklyRows">
+                <tbody *ngIf="metrics && metrics.dailyTrend && metrics.dailyTrend.length > 0; else defaultWeeklyRows">
                   <tr *ngFor="let item of metrics.dailyTrend" 
                       class="border-b last:border-0 transition-colors"
                       [ngClass]="isDark ? 'border-neutral-700/50 text-neutral-300 hover:bg-neutral-700/30' : 'border-neutral-200 text-neutral-700 hover:bg-white'">
@@ -211,7 +211,7 @@ import { PdfReportService } from '../../../services/pdf-report.service';
                         class="border-b last:border-0 transition-colors"
                         [ngClass]="isDark ? 'border-neutral-700/50 text-neutral-300 hover:bg-neutral-700/30' : 'border-neutral-200 text-neutral-700 hover:bg-white'">
                       <td class="py-3 pl-2">{{ label }}</td>
-                      <td class="py-3 pr-2 text-right font-medium">{{ barChartData.datasets[0].data[i] }} <span class="text-xs opacity-50">({{ ((barChartData.datasets[0].data[i] as number) / (metrics?.totalClicks || 1)) * 100 | number:'1.0-1' }}%)</span></td>
+                      <td class="py-3 pr-2 text-right font-medium">{{ barChartData.datasets[0].data[i] }} <span class="text-xs opacity-50">({{ getClickPercentage(i) }}%)</span></td>
                     </tr>
                   </tbody>
                 </table>
@@ -403,6 +403,12 @@ export class DashAnalyticsComponent implements OnInit {
 
   toggleFlip(card: string) {
     this.flippedCards[card] = !this.flippedCards[card];
+  }
+
+  getClickPercentage(index: number): number {
+    const val = Number(this.barChartData.datasets[0].data[index] || 0);
+    const total = Number((this.metrics && this.metrics.totalClicks) || 1);
+    return Math.round((val / (total || 1)) * 100);
   }
 
   private sanitizer = inject(DomSanitizer);
@@ -599,20 +605,63 @@ export class DashAnalyticsComponent implements OnInit {
     }
 
     // 2. Bar Chart (Link Clicks / Sources) - Real Ranking from backend
-    const links = this.metrics.linktreeClicks || {};
-    const entries = Object.entries(links).sort((a,b) => (b[1] as number) - (a[1] as number));
+    const rawLinks = { ...(this.metrics.linktreeClicks || {}) };
+    
+    // Diccionario de nombres legibles para cada botón del componente link
+    const buttonNamesMap: { [key: string]: string } = {
+      '1': 'TikTok (Tarjeta)', 'tiktok': 'TikTok (Tarjeta)',
+      '2': 'Instagram (Tarjeta)', 'instagram': 'Instagram (Tarjeta)',
+      '3': 'WhatsApp (Chat)', 'whatsapp': 'WhatsApp (Chat)',
+      '4': 'LinkedIn (Tarjeta)', 'linkedin': 'LinkedIn (Tarjeta)',
+      'proyectos': 'Portafolio / Proyectos',
+      'telefono': 'Teléfono (+57 3054078225)',
+      'email': 'Correo Electrónico',
+      'instagram_footer': 'Instagram (Footer)',
+      'tiktok_footer': 'TikTok (Footer)',
+      'foto_1': 'Foto 1 - Galería',
+      'foto_2': 'Foto 2 - Galería',
+      'foto_3': 'Foto 3 - Galería',
+      'foto_4': 'Foto 4 - Galería',
+      'foto_5': 'Foto 5 - Galería',
+      'pwa_instalar_btn': 'Botón Instalar App (PWA)',
+      'pwa_cerrar': 'Cerrar Modal App (PWA)',
+      'pwa_siguiente': 'Siguiente Paso PWA',
+      'pwa_atras': 'Atrás Paso PWA',
+      'pwa_entendido': 'Entendido Modal PWA'
+    };
+
+    // Asegurar que todos los botones principales de la interfaz estén presentes para desglose completo
+    const officialKeys = [
+      'proyectos', 'tiktok', 'instagram', 'whatsapp', 'linkedin',
+      'telefono', 'email', 'instagram_footer', 'tiktok_footer'
+    ];
+    officialKeys.forEach(k => {
+      if (rawLinks[k] === undefined && rawLinks[k === 'tiktok' ? '1' : k === 'instagram' ? '2' : k === 'whatsapp' ? '3' : k === 'linkedin' ? '4' : k] === undefined) {
+        rawLinks[k] = 0;
+      }
+    });
+
+    // Consolidar IDs numéricos antiguos y nombres nuevos
+    const consolidated: { [label: string]: number } = {};
+    for (const [key, val] of Object.entries(rawLinks)) {
+      const label = buttonNamesMap[key] || (key.charAt(0).toUpperCase() + key.slice(1));
+      consolidated[label] = (consolidated[label] || 0) + Number(val);
+    }
+
+    const entries = Object.entries(consolidated).sort((a, b) => b[1] - a[1]);
+
     if (entries.length > 0) {
       this.barChartData = {
-        labels: entries.map(e => e[0].charAt(0).toUpperCase() + e[0].slice(1)),
+        labels: entries.map(e => e[0]),
         datasets: [{
           ...this.barChartData.datasets[0],
-          data: entries.map(e => e[1] as number),
+          data: entries.map(e => e[1]),
           label: 'Clics Registrados'
         }]
       };
     } else {
       this.barChartData = {
-        labels: ['Instagram', 'LinkedIn', 'WhatsApp', 'TikTok', 'Proyectos'],
+        labels: ['TikTok (Tarjeta)', 'Instagram (Tarjeta)', 'WhatsApp (Chat)', 'LinkedIn (Tarjeta)', 'Portafolio / Proyectos'],
         datasets: [{
           ...this.barChartData.datasets[0],
           data: [0, 0, 0, 0, 0]
