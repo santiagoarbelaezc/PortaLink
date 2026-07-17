@@ -57,8 +57,7 @@ import { RouterModule, Router } from '@angular/router';
         <div class="w-full max-w-[96%] mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 items-stretch">
           
           <!-- Paquete 1: Landing Page -->
-          <div (click)="routerToRotbot('Quiero adquirir el paquete Landing Page con diseño móvil al gusto')" 
-               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative pt-10 px-8 pb-10 h-full transition-all duration-300">
+          <div class="plan-card rounded-3xl flex flex-col justify-between group overflow-hidden relative pt-10 px-8 pb-10 h-full transition-all duration-300">
             <!-- Top Content -->
             <div class="flex flex-col">
               <h3 class="text-2xl font-bold uppercase tracking-wide text-white mb-3 min-h-[56px] flex items-center">Landing Page</h3>
@@ -94,17 +93,17 @@ import { RouterModule, Router } from '@angular/router';
               </ul>
             </div>
             
-            <!-- Bottom Button -->
+            <!-- Bottom Action to Gallery -->
             <div class="mt-auto">
-              <button class="plan-btn-outlined w-full py-4 rounded-xl font-bold text-sm uppercase tracking-widest">
-                Adquirir el paquete
+              <button (click)="exploreProjects('Landing Page', $event)" 
+                      class="plan-btn-outlined w-full py-4 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer">
+                <span>✨ Explorar Proyectos →</span>
               </button>
             </div>
           </div>
 
           <!-- Paquete 3: E-commerce Autopersonalizable -->
-          <div (click)="routerToPersonalizar()" 
-               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative pt-10 px-8 pb-10 h-full transition-all duration-300">
+          <div class="plan-card rounded-3xl flex flex-col justify-between group overflow-hidden relative pt-10 px-8 pb-10 h-full transition-all duration-300">
             <!-- Top Content -->
             <div class="flex flex-col">
               <h3 class="text-xl font-bold uppercase tracking-wide text-white mb-3 min-h-[56px] flex items-center">E-commerce Autopersonalizable</h3>
@@ -140,17 +139,17 @@ import { RouterModule, Router } from '@angular/router';
               </ul>
             </div>
             
-            <!-- Bottom Button -->
+            <!-- Bottom Action to Gallery -->
             <div class="mt-auto">
-              <button class="plan-btn-outlined w-full py-4 rounded-xl font-bold text-sm uppercase tracking-widest">
-                Adquirir el paquete
+              <button (click)="exploreProjects('E-commerce', $event)" 
+                      class="plan-btn-outlined w-full py-4 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer">
+                <span>✨ Explorar Proyectos →</span>
               </button>
             </div>
           </div>
 
           <!-- Paquete 4: E-commerce + IA + Autopersonalizable (MÁS VENDIDO) -->
-          <div (click)="routerToPersonalizar()" 
-               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative h-full border-2 transition-all duration-300"
+          <div class="plan-card rounded-3xl flex flex-col justify-between group overflow-hidden relative h-full border-2 transition-all duration-300"
                style="border-color: var(--accent-color, #00f5ff);">
             <!-- Header Popular -->
             <div class="text-white text-[10px] font-bold uppercase tracking-[0.25em] py-3 text-center w-full"
@@ -194,19 +193,19 @@ import { RouterModule, Router } from '@angular/router';
                 </ul>
               </div>
               
-              <!-- Bottom Button -->
+              <!-- Bottom Action to Gallery -->
               <div class="mt-auto">
-                <button class="plan-btn-filled w-full py-3.5 rounded-xl font-bold text-sm uppercase tracking-widest"
+                <button (click)="exploreProjects('E-commerce + IA', $event)" 
+                        class="plan-btn-filled w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer"
                         style="background: var(--accent-color, #00f5ff); color: #000000;">
-                  Adquirir el paquete
+                  <span>✨ Explorar Proyectos →</span>
                 </button>
               </div>
             </div>
           </div>
 
           <!-- Paquete 5: Opciones Personalizadas -->
-          <div (click)="routerToRotbot('Hola, me gustaría diseñar una solución web personalizada a medida para mi negocio. Conversemos.')" 
-               class="plan-card rounded-3xl cursor-pointer flex flex-col justify-between group overflow-hidden relative pt-10 px-8 pb-10 h-full transition-all duration-300">
+          <div class="plan-card rounded-3xl flex flex-col justify-between group overflow-hidden relative pt-10 px-8 pb-10 h-full transition-all duration-300">
             <!-- Top Content -->
             <div class="flex flex-col">
               <h3 class="text-2xl font-bold uppercase tracking-wide text-white mb-3 min-h-[56px] flex items-center">Opción Personalizada</h3>
@@ -242,10 +241,11 @@ import { RouterModule, Router } from '@angular/router';
               </ul>
             </div>
             
-            <!-- Bottom Button -->
+            <!-- Bottom Action to Gallery -->
             <div class="mt-auto">
-              <button class="plan-btn-outlined w-full py-4 rounded-xl font-bold text-sm uppercase tracking-widest">
-                Hablar con Asistente
+              <button (click)="exploreProjects('Sistemas', $event)" 
+                      class="plan-btn-outlined w-full py-4 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer">
+                <span>✨ Explorar Proyectos →</span>
               </button>
             </div>
           </div>
@@ -454,6 +454,7 @@ import { RouterModule, Router } from '@angular/router';
 })
 export class PlanesComponent implements OnInit {
   isLoading = true;
+  activeFilter = 'Todos';
 
   constructor(private router: Router) {}
 
@@ -461,6 +462,13 @@ export class PlanesComponent implements OnInit {
     setTimeout(() => {
       this.isLoading = false;
     }, 800);
+  }
+
+  exploreProjects(category: string, event: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.router.navigate(['/planes-galeria'], { queryParams: { categoria: category } });
   }
 
   routerToRotbot(message: string) {

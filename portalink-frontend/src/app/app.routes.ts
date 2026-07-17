@@ -4,6 +4,7 @@ import { ProyectosComponent } from './pages/proyectos/proyectos.component';
 import { RotbotComponent } from './pages/rotbot/rotbot.component';
 import { PersonalizarComponent } from './pages/personalizar/personalizar.component';
 import { PlanesComponent } from './pages/planes/planes.component';
+import { PlanesGaleriaComponent } from './pages/planes-galeria/planes-galeria.component';
 import { AdminComponent } from './pages/admin/admin.component';
 import { LoginComponent } from './pages/login/login.component';
 import { ProposalComponent } from './pages/proposal/proposal.component';
@@ -49,6 +50,11 @@ export const routes: Routes = [
     path: 'planes',
     component: PlanesComponent,
     data: { animation: 'PlanesPage' }
+  },
+  {
+    path: 'planes-galeria',
+    component: PlanesGaleriaComponent,
+    data: { animation: 'PlanesGaleriaPage' }
   },
   {
     path: 'personalizar',
