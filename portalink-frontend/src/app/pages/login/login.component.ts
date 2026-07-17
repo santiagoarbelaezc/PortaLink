@@ -316,7 +316,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                              autocomplete="off"
                              [disabled]="isLoading()"
                              maxlength="5"
-                             class="flex-grow h-10 bg-[#121217] border border-neutral-700 rounded-xl px-2 py-2 text-sm text-cyan-400 placeholder-neutral-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all duration-300 disabled:opacity-50 text-center uppercase tracking-widest font-black">
+                             class="flex-grow h-10 bg-transparent border border-[var(--card-border)] rounded-xl px-2 py-2 text-sm text-[var(--text-primary)] placeholder-neutral-500 focus:outline-none focus:border-[var(--accent-color)]/50 focus:ring-1 focus:ring-[var(--accent-color)]/50 transition-all duration-300 disabled:opacity-50 text-center uppercase tracking-widest font-black">
                     </div>
                   </div>
 
@@ -406,8 +406,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
     :host ::ng-deep input:-webkit-autofill:focus,
     :host ::ng-deep input:-webkit-autofill:active {
       -webkit-text-fill-color: var(--text-primary) !important;
-      -webkit-box-shadow: 0 0 0px 1000px #0a0a0a inset !important;
-      background-color: #0a0a0a !important;
+      -webkit-box-shadow: 0 0 0px 1000px var(--bg-primary) inset !important;
+      background-color: var(--bg-primary) !important;
       transition: background-color 5000s ease-in-out 0s;
       caret-color: var(--text-primary) !important;
     }

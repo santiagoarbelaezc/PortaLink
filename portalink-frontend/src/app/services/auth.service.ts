@@ -172,4 +172,8 @@ export class AuthService {
   updateUserRole(userId: number, rol: string): Observable<any> {
     return this.http.put<any>(`${environment.apiUrl}/auth/users/${userId}/role`, { rol });
   }
+
+  deleteUser(userId: number): Observable<any> {
+    return this.http.delete<any>(`${environment.apiUrl}/auth/users/${userId}`);
+  }
 }
