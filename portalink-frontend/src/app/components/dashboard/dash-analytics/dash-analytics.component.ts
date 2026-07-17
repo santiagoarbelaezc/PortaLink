@@ -389,7 +389,20 @@ export class DashAnalyticsComponent implements OnInit {
   private analyticsService = inject(AnalyticsService);
   private pdfService = inject(PdfReportService);
 
-  metrics!: SystemMetrics;
+  metrics: SystemMetrics = {
+    homeViews: 0,
+    linktreeViews: 0,
+    rotbotOpens: 0,
+    rotbotMessagesSent: 0,
+    sectionViews: {},
+    linktreeClicks: {},
+    loadTimes: [],
+    themeSelections: { light: 0, dark: 0 },
+    dailyTrend: [],
+    devices: [],
+    totalClicks: 0,
+    linkCtr: 0
+  };
   get isDark() { return this.theme === 'dark'; }
   pdfLoading = false;
 
@@ -548,6 +561,7 @@ export class DashAnalyticsComponent implements OnInit {
 
   ngOnInit() {
     this.analyticsService.getMetrics().subscribe(m => {
+      if (!m) return;
       this.metrics = m;
       this.buildRotbotStats();
       this.themeTotal = (this.metrics?.themeSelections?.dark || 0) + (this.metrics?.themeSelections?.light || 0);

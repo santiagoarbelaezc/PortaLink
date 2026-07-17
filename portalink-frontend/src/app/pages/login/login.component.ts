@@ -342,6 +342,44 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
           </p>
         </div>
       </div>
+
+      <!-- MODAL DE VERIFICACIÓN DE CORREO -->
+      <div *ngIf="showVerificationModal" class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in">
+        <div class="relative w-full max-w-md bg-[#0a0a0a] border border-[#00b4d8]/50 rounded-3xl p-8 shadow-[0_0_60px_rgba(0,180,216,0.25)] text-center overflow-hidden animate-slide-down">
+          
+          <!-- Brillo decorativo -->
+          <div class="absolute -top-24 -left-24 w-48 h-48 bg-[#00b4d8]/20 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-[#00b4d8]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+          <!-- Icono de correo animado -->
+          <div class="relative mx-auto mb-6 w-20 h-20 rounded-2xl bg-gradient-to-br from-[#00b4d8]/20 to-transparent border border-[#00b4d8]/40 flex items-center justify-center shadow-[0_0_25px_rgba(0,180,216,0.2)] animate-float">
+            <svg class="w-10 h-10 text-[#00b4d8]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+
+          <span class="inline-block px-3.5 py-1 mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#00b4d8] bg-[#00b4d8]/10 border border-[#00b4d8]/30 rounded-full shadow-[0_0_10px_rgba(0,180,216,0.15)]">
+            Verificación Requerida
+          </span>
+
+          <h3 class="text-2xl font-black text-white uppercase tracking-tight mb-4 drop-shadow-md">
+            ¡Revisa tu correo!
+          </h3>
+
+          <p class="text-sm text-neutral-300 leading-relaxed mb-6">
+            Hemos enviado un enlace de confirmación a <br><span class="text-[#00b4d8] font-bold text-base underline decoration-[#00b4d8]/40">{{ registeredEmailDisplay }}</span>.<br><br>
+            <span class="inline-block p-3 rounded-xl bg-neutral-900/80 border border-neutral-800 text-xs text-neutral-200">
+              ⚠️ <strong class="text-white">Importante:</strong> Sin la verificación, <strong class="text-[#00b4d8]">tu cuenta no podrá quedar activa</strong> ni podrás iniciar sesión. Si no lo encuentras en tu bandeja principal, revisa la carpeta de <strong class="text-white">Spam o Correo No Deseado</strong>.
+            </span>
+          </p>
+
+          <!-- Botón de acción -->
+          <button type="button" (click)="closeVerificationModal()"
+                  class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-[#00b4d8] to-[#0077b6] text-black font-black uppercase text-xs tracking-[0.15em] hover:brightness-110 hover:shadow-[0_0_30px_rgba(0,180,216,0.5)] active:scale-[0.98] transition-all duration-300 cursor-pointer">
+            Entendido, ir a Iniciar Sesión
+          </button>
+        </div>
+      </div>
     </div>
   `,
   styles: [`
@@ -414,6 +452,14 @@ export class LoginComponent implements OnInit {
   showLoginPassword = false;
   showRegisterPassword = false;
   showRegisterConfirmPassword = false;
+
+  showVerificationModal = false;
+  registeredEmailDisplay = '';
+
+  closeVerificationModal() {
+    this.showVerificationModal = false;
+    this.switchTab('login');
+  }
 
   ngOnInit() {
     this.route.url.subscribe(urlSegments => {
@@ -544,10 +590,12 @@ export class LoginComponent implements OnInit {
       next: (res: any) => {
         this.isLoading.set(false);
         if (res?.requireVerification) {
-          this.successMsg = res.message || 'Te hemos enviado un correo de verificación. Revisa tu bandeja de entrada.';
-          setTimeout(() => {
-            this.switchTab('login');
-          }, 4000);
+          this.registeredEmailDisplay = this.registerEmail;
+          this.showVerificationModal = true;
+          this.registerPassword = '';
+          this.registerConfirmPassword = '';
+          this.loadCaptcha();
+          this.captchaCode = '';
         } else {
           this.successMsg = '¡Cuenta creada exitosamente! Redirigiendo...';
           setTimeout(() => {

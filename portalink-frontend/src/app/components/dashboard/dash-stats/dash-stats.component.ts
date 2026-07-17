@@ -194,7 +194,20 @@ export class DashStatsComponent implements OnInit {
   @Input() theme = 'dark';
   private analyticsService = inject(AnalyticsService);
 
-  metrics!: SystemMetrics;
+  metrics: SystemMetrics = {
+    homeViews: 0,
+    linktreeViews: 0,
+    rotbotOpens: 0,
+    rotbotMessagesSent: 0,
+    sectionViews: {},
+    linktreeClicks: {},
+    loadTimes: [],
+    themeSelections: { light: 0, dark: 0 },
+    dailyTrend: [],
+    devices: [],
+    totalClicks: 0,
+    linkCtr: 0
+  };
   sectionRows: SectionRow[] = [];
   selectedSection: string | null = null;
   summaryCards: { label: string; value: any }[] = [];
@@ -202,9 +215,15 @@ export class DashStatsComponent implements OnInit {
   get isDark() { return this.theme === 'dark'; }
 
   ngOnInit() {
-    this.analyticsService.getMetrics().subscribe(m => this.metrics = m);
     this.buildRows();
     this.buildSummary();
+    this.analyticsService.getMetrics().subscribe(m => {
+      if (m) {
+        this.metrics = m;
+        this.buildRows();
+        this.buildSummary();
+      }
+    });
   }
 
   private buildRows() {
