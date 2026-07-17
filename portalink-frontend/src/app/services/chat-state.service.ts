@@ -27,7 +27,7 @@ export interface ChatUsageResponse {
 
 const INITIAL_MESSAGE: ChatMessage = {
   role: 'assistant',
-  content: '¡Hola! Soy RotBot IA, tu especialista en diseño de Landing Pages. Para empezar a crear tu sitio en segundos, ¿cómo te llamas y a qué te dedicas?'
+  content: '¡Hola! Soy RotBot IA. ¿Necesitas ayuda para crear tu diseño web a medida, o prefieres que te brinde asesoramiento estratégico para tu proyecto?'
 };
 
 const SESSION_TOKEN_KEY = 'rotbot_session_token';
@@ -50,6 +50,7 @@ export class ChatStateService {
   limitExceeded = signal<boolean>(false);
   userType = signal<'anonymous' | 'user' | 'admin'>('anonymous');
   lastGeneratedSite = signal<{ slug: string; siteData: any } | null>(null);
+  chatMode = signal<'design' | 'consulting' | null>(null);
 
   private _sessionToken: string | null = null;
 
@@ -79,7 +80,8 @@ export class ChatStateService {
 
     const body: any = { 
       message: userText.trim(),
-      session_token: this._sessionToken 
+      session_token: this._sessionToken,
+      chat_mode: this.chatMode()
     };
 
     this.http.post<ChatSendResponse>(
@@ -212,6 +214,7 @@ export class ChatStateService {
     this.userInput = '';
     this.limitExceeded.set(false);
     this.lastGeneratedSite.set(null);
+    this.chatMode.set(null);
   }
 
   dismissLimitModal() {

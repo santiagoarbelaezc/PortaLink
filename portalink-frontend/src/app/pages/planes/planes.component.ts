@@ -97,7 +97,7 @@ import { RouterModule, Router } from '@angular/router';
             <div class="mt-auto">
               <button (click)="exploreProjects('Landing Page', $event)" 
                       class="plan-btn-outlined w-full py-4 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer">
-                <span>✨ Explorar Proyectos →</span>
+                <span>Explorar Proyectos →</span>
               </button>
             </div>
           </div>
@@ -143,7 +143,7 @@ import { RouterModule, Router } from '@angular/router';
             <div class="mt-auto">
               <button (click)="exploreProjects('E-commerce', $event)" 
                       class="plan-btn-outlined w-full py-4 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer">
-                <span>✨ Explorar Proyectos →</span>
+                <span>Explorar Proyectos →</span>
               </button>
             </div>
           </div>
@@ -198,7 +198,7 @@ import { RouterModule, Router } from '@angular/router';
                 <button (click)="exploreProjects('E-commerce + IA', $event)" 
                         class="plan-btn-filled w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer"
                         style="background: var(--accent-color, #00f5ff); color: #000000;">
-                  <span>✨ Explorar Proyectos →</span>
+                  <span>Explorar Proyectos →</span>
                 </button>
               </div>
             </div>
@@ -245,7 +245,7 @@ import { RouterModule, Router } from '@angular/router';
             <div class="mt-auto">
               <button (click)="exploreProjects('Sistemas', $event)" 
                       class="plan-btn-outlined w-full py-4 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer">
-                <span>✨ Explorar Proyectos →</span>
+                <span>Explorar Proyectos →</span>
               </button>
             </div>
           </div>

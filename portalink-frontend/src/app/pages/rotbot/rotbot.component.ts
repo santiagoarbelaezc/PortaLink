@@ -158,14 +158,14 @@ import { SiteService } from '../../services/site.service';
 
             <ng-template #chatContent>
               <!-- Welcome Intro Section -->
-            <div *ngIf="chatService.messages.length <= 1" class="flex flex-col items-center justify-center text-center pb-4 border-b mt-0 mb-2 welcome-border">
-              <div class="w-48 h-48 sm:w-60 sm:h-60 mb-2 relative flex items-center justify-center overflow-visible">
+            <div *ngIf="chatService.messages.length <= 1" class="flex flex-col items-center justify-center text-center pb-2 border-b mt-0 mb-2 welcome-border">
+              <div class="w-32 h-32 sm:w-40 sm:h-40 mb-2 relative flex items-center justify-center overflow-visible">
                 <img src="assets/images/rotbot4.png" class="w-full h-full object-contain relative z-10" alt="Rotbot Full">
               </div>
-              <h2 class="text-xl sm:text-2xl font-headline uppercase tracking-wider mb-2" style="color: var(--text-primary);">
+              <h2 class="text-lg sm:text-xl font-headline uppercase tracking-wider mb-2" style="color: var(--text-primary);">
                 Sistemas con Rotbot IA
               </h2>
-              <div class="text-[14px] sm:text-[15px] font-light leading-relaxed px-4 max-w-[95%]" style="color: var(--text-secondary);">
+              <div class="text-[13px] sm:text-[14px] font-light leading-relaxed px-4 max-w-[95%]" style="color: var(--text-secondary);">
                 <p class="mb-2">
                   ¡Hola! Soy RotBot, tu copiloto tecnológico. Estoy listo para guiarte en el diseño y desarrollo de sistemas a medida, e-commerce e integración de Inteligencia Artificial para potenciar tu negocio.
                 </p>
@@ -189,6 +189,22 @@ import { SiteService } from '../../services/site.service';
                   }"
                 >
                   <span [innerHTML]="msg.content | markdown"></span>
+
+                  <!-- Botones de selección de modo (Solo primer mensaje) -->
+                  <div *ngIf="msg.role === 'assistant' && chatService.messages.length === 1 && !chatService.chatMode()" class="mt-4 flex flex-col sm:flex-row gap-3">
+                    <button (click)="selectMode('design')" class="px-5 py-2.5 rounded-xl border border-[var(--accent-color)] bg-[var(--accent-color)]/10 hover:bg-[var(--accent-color)]/20 text-white text-sm font-semibold transition-all flex items-center justify-center gap-2">
+                      <svg class="w-5 h-5 text-[var(--accent-color)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" />
+                      </svg>
+                      Quiero un Diseño
+                    </button>
+                    <button (click)="selectMode('consulting')" class="px-5 py-2.5 rounded-xl border border-purple-500 bg-purple-500/10 hover:bg-purple-500/20 text-white text-sm font-semibold transition-all flex items-center justify-center gap-2">
+                      <svg class="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.516 0c.85.493 1.509 1.333 1.509 2.316V18" />
+                      </svg>
+                      Necesito Asesoramiento
+                    </button>
+                  </div>
 
                   <!-- Tarjeta interactiva para ir a personalizar con el JSON devuelto -->
                   <div *ngIf="msg.role === 'assistant' && hasGeneratedSite(msg.content)" 
@@ -620,7 +636,24 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.router.navigate(['/login']);
       return;
     }
+    // If chat is new, set mode implicitly to design for these shortcuts
+    if (this.chatService.messages.length === 1 && !this.chatService.chatMode()) {
+      this.chatService.chatMode.set('design');
+    }
     this.chatService.userInput = msg;
+    this.sendMessage();
+  }
+
+  selectMode(mode: 'design' | 'consulting') {
+    if (!this.authService.hasToken()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    this.chatService.chatMode.set(mode);
+    const firstMsg = mode === 'design' 
+      ? 'Quiero crear mi landing page a medida.' 
+      : 'Necesito asesoramiento estratégico para mi proyecto.';
+    this.chatService.userInput = firstMsg;
     this.sendMessage();
   }
 
