@@ -367,7 +367,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
           </h3>
 
           <p class="text-sm text-neutral-300 leading-relaxed mb-6">
-            Hemos enviado un enlace de confirmación a <br><span class="text-[#00b4d8] font-bold text-base underline decoration-[#00b4d8]/40">{{ registeredEmailDisplay }}</span>.<br><br>
+            Hemos enviado un enlace de confirmación a <br><span class="text-[#00b4d8] font-bold text-base underline decoration-[#00b4d8]/40">{{ registeredEmailDisplay }}</span>.<br>
+            <strong class="text-[#00b4d8] text-base mt-2 block">¡Por favor, revisa tu bandeja de Spam o Correo No Deseado!</strong><br>
             <span class="inline-block p-3 rounded-xl bg-neutral-900/80 border border-neutral-800 text-xs text-neutral-200">
               ⚠️ <strong class="text-white">Importante:</strong> Sin la verificación, <strong class="text-[#00b4d8]">tu cuenta no podrá quedar activa</strong> ni podrás iniciar sesión. Si no lo encuentras en tu bandeja principal, revisa la carpeta de <strong class="text-white">Spam o Correo No Deseado</strong>.
             </span>
