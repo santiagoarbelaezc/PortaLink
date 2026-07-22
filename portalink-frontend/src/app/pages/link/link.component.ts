@@ -135,22 +135,34 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
             </div>
 
-            <!-- Mobile Modeling Book Gallery -->
-            <div class="block md:hidden mt-14 lt-gallery-section">
-              <div class="flex items-center justify-between mb-6 px-1">
-                <h3 class="text-sm font-headline uppercase tracking-[0.25em]" style="color: var(--text-primary);">{{ getTranslation().retratos }}</h3>
-                <span class="text-[9px] uppercase tracking-[0.1em]" style="color: var(--text-secondary);">{{ modelingImages.length }} Photos</span>
+            <!-- Mobile Modeling Book Gallery (Optimized Grid & Performance) -->
+            <div class="block md:hidden mt-12 lt-gallery-section">
+              <div class="flex items-center justify-between mb-4 px-1">
+                <div class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background-color: var(--accent-color, #00f5ff);"></span>
+                  <h3 class="text-xs font-mono font-bold uppercase tracking-[0.25em]" style="color: var(--text-primary);">{{ getTranslation().retratos }}</h3>
+                </div>
+                <span class="text-[10px] font-mono uppercase tracking-[0.1em] text-white/40">{{ modelingImages.length }} Photos</span>
               </div>
-              <div class="space-y-6">
+
+              <!-- Optimized 2-Column Mobile Grid -->
+              <div class="grid grid-cols-2 gap-3.5">
                 <div *ngFor="let img of modelingImages; let i = index" 
                      data-aos="fade-up"
-                     [attr.data-aos-delay]="i * 150"
+                     [attr.data-aos-delay]="i * 100"
                      (click)="trackSectionView('retratos'); trackLinkClick('foto_' + (i + 1))"
-                     class="lt-reveal-item overflow-hidden relative border aspect-[3/4] cursor-pointer" 
-                     style="border-color: var(--card-border);">
-                  <img [src]="img.src" [alt]="img.alt" class="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-700" />
-                  <div class="absolute inset-0 bg-gradient-to-t from-[#000000]/70 via-transparent to-transparent flex items-end p-4">
-                    <span class="text-[9px] font-headline uppercase tracking-[0.3em] text-white/50">{{ img.alt }}</span>
+                     [ngClass]="i === 0 ? 'col-span-2 aspect-[16/10]' : 'col-span-1 aspect-[3/4]'"
+                     class="lt-reveal-item overflow-hidden relative rounded-2xl border cursor-pointer active:scale-[0.98] transition-all duration-300 group shadow-lg" 
+                     style="border-color: var(--card-border, rgba(255,255,255,0.1)); background: #080808;">
+                  
+                  <img [src]="img.src" 
+                       [alt]="img.alt" 
+                       loading="lazy" 
+                       decoding="async" 
+                       class="w-full h-full object-cover object-top filter grayscale group-hover:grayscale-0 group-active:grayscale-0 transition-all duration-500 ease-out group-hover:scale-105" />
+                  
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent flex items-end p-3 pointer-events-none">
+                    <span class="text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-white/80 line-clamp-1">{{ img.alt }}</span>
                   </div>
                 </div>
               </div>
