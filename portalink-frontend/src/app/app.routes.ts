@@ -14,8 +14,32 @@ import { UserSiteComponent } from './pages/user-site/user-site.component';
 import { VerifyEmailComponent } from './pages/verify-email/verify-email.component';
 import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
+import { TerminosCondicionesComponent } from './pages/terminos-condiciones/terminos-condiciones.component';
+import { PoliticaPrivacidadComponent } from './pages/politica-privacidad/politica-privacidad.component';
+import { TratamientoDatosComponent } from './pages/tratamiento-datos/tratamiento-datos.component';
+import { DeslindeIaComponent } from './pages/deslinde-ia/deslinde-ia.component';
 
 export const routes: Routes = [
+  {
+    path: 'terminos',
+    component: TerminosCondicionesComponent,
+    data: { animation: 'TerminosPage' }
+  },
+  {
+    path: 'privacidad',
+    component: PoliticaPrivacidadComponent,
+    data: { animation: 'PrivacidadPage' }
+  },
+  {
+    path: 'tratamiento-datos',
+    component: TratamientoDatosComponent,
+    data: { animation: 'TratamientoDatosPage' }
+  },
+  {
+    path: 'deslinde-ia',
+    component: DeslindeIaComponent,
+    data: { animation: 'DeslindeIaPage' }
+  },
   {
     path: 'proposal',
     component: ProposalComponent,
