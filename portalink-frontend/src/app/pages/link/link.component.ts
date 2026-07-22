@@ -452,7 +452,7 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   getProfileLogo() {
-    const rawUrl = this.currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png';
+    const rawUrl = this.currentTheme === 'dark' ? 'assets/icons/navbar-logodark.png' : 'assets/icons/navbar-logolight.png';
     return this.imageOptimizer.getCachedOrOriginal(rawUrl, 250, 0.8);
   }
 
