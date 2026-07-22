@@ -16,8 +16,15 @@ import { AuthService } from '../../services/auth.service';
          style="background: var(--nav-bg); border-bottom: 1px solid var(--card-border);">
       <div class="w-full flex items-center justify-between">
 
-        <!-- Left Side: Premium Theme & Language Switchers -->
-        <div class="flex items-center flex-1 gap-3">
+        <!-- Left Side: Brand Logo & Premium Theme / Language Switchers -->
+        <div class="flex items-center flex-1 gap-4">
+          <!-- Brand Logo Icon -->
+          <a (click)="scrollTo('#hero', $event)" routerLink="/" class="flex items-center gap-2 cursor-pointer group no-underline mr-1">
+            <img [src]="currentTheme === 'light' ? 'assets/icons/icon-portalinknavbarlight.png' : 'assets/icons/icon-portalinknavbardark.png'" 
+                 alt="Portalink" 
+                 class="h-8 sm:h-9 w-auto object-contain transition-transform group-hover:scale-105" />
+          </a>
+
           <button (click)="toggleTheme()" 
                   class="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer border hover:scale-105 active:scale-95"
                   [style.background]="currentTheme === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)'"
@@ -180,8 +187,17 @@ import { AuthService } from '../../services/auth.service';
       </div>
     </nav>
 
+    <!-- Mobile floating Brand Logo (top left) -->
+    <div class="md:hidden fixed top-5 left-6 z-[9000]">
+      <a (click)="scrollTo('#hero', $event)" routerLink="/" class="flex items-center cursor-pointer">
+        <img [src]="currentTheme === 'light' ? 'assets/icons/icon-portalinknavbarlight.png' : 'assets/icons/icon-portalinknavbardark.png'" 
+             alt="Portalink" 
+             class="h-8 w-auto object-contain drop-shadow-md transition-transform active:scale-95" />
+      </a>
+    </div>
+
     <!-- Mobile floating Switcher Group (top right) -->
-    <div class="md:hidden fixed top-6 right-6 z-[9000] flex gap-2">
+    <div class="md:hidden fixed top-5 right-6 z-[9000] flex gap-2">
 
       <!-- Theme Switcher -->
       <button (click)="toggleTheme()" 
