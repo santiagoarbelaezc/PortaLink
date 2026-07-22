@@ -16,50 +16,16 @@ import { AuthService } from '../../services/auth.service';
          style="background: var(--nav-bg); border-bottom: 1px solid var(--card-border);">
       <div class="w-full flex items-center justify-between">
 
-        <!-- Left Side: Brand Logo & Premium Theme / Language Switchers -->
-        <div class="flex items-center flex-1 gap-4">
-          <!-- Brand Logo Icon -->
-          <a (click)="scrollTo('#hero', $event)" routerLink="/" class="flex items-center gap-2 cursor-pointer group no-underline mr-1">
-            <img [src]="currentTheme === 'light' ? 'assets/icons/icon-portalinknavbarlight.png' : 'assets/icons/icon-portalinknavbardark.png'" 
+        <!-- Left Side: Brand Logo (Larger) -->
+        <div class="flex items-center flex-1">
+          <a (click)="scrollTo('#hero', $event)" routerLink="/" class="flex items-center gap-2 cursor-pointer group no-underline">
+            <img [src]="currentTheme === 'light' ? 'assets/icons/navbar-logolight.png' : 'assets/icons/navbar-logodark.png'" 
                  alt="Portalink" 
-                 class="h-8 sm:h-9 w-auto object-contain transition-transform group-hover:scale-105" />
+                 class="h-11 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105" />
           </a>
-
-          <button (click)="toggleTheme()" 
-                  class="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer border hover:scale-105 active:scale-95"
-                  [style.background]="currentTheme === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)'"
-                  [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.12)'"
-                  [title]="currentTheme === 'light' ? 'Cambiar a Tema Oscuro' : 'Cambiar a Tema Claro'">
-            <!-- Moon Icon (Light Mode - click to go Dark) -->
-            <svg *ngIf="currentTheme === 'light'" class="w-5 h-5 text-neutral-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-            <!-- Sun Icon (Dark Mode - click to go Light) -->
-            <svg *ngIf="currentTheme === 'dark'" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="5"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line>
-              <line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
-          </button>
-
-          <!-- Language Selector Button (ES/EN) -->
-          <button (click)="toggleLanguage()" 
-                  class="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer border hover:scale-105 active:scale-95 text-[10px] font-bold tracking-tight"
-                  [style.background]="currentTheme === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)'"
-                  [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.12)'"
-                  [style.color]="currentTheme === 'light' ? '#1f2937' : '#ffffff'"
-                  [title]="currentLanguage === 'es' ? 'Switch to English' : 'Cambiar a Español'">
-            {{ currentLanguage.toUpperCase() }}
-          </button>
         </div>
 
-        <!-- Center: Nav Links with typography from Links component -->
+        <!-- Center: Nav Links (Inicio, Links, RotBot, Servicios) -->
         <div class="flex items-center gap-10 justify-center">
           <a *ngFor="let item of desktopItems"
              (click)="scrollTo(item.link, $event)"
@@ -89,24 +55,60 @@ import { AuthService } from '../../services/auth.service';
                 <polyline points="2 17 12 22 22 17"></polyline>
                 <polyline points="2 12 12 17 22 12"></polyline>
               </ng-container>
-              <ng-container *ngIf="item.icon === 'layers'">
-                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                <polyline points="2 17 12 22 22 17"></polyline>
-                <polyline points="2 12 12 17 22 12"></polyline>
-              </ng-container>
             </svg>
             <span>{{ item.name }}</span>
           </a>
         </div>
 
-        <!-- Right Side: Minimal CTA and Login / User Profile -->
-        <div class="flex items-center justify-end flex-1 gap-4">
-          <!-- Elegant Login Button (Only when not authenticated) -->
-          <button *ngIf="!authService.isAuthenticated() && !router.url.includes('/login') && !router.url.includes('/register')" (click)="openLoginModal()" 
-                  class="px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-300 border hover:bg-white/5 cursor-pointer text-white"
+        <!-- Right Side: Theme Switcher, Language Switcher, Regístrate, Contacto & User Profile -->
+        <div class="flex items-center justify-end flex-1 gap-3 sm:gap-3.5">
+          <!-- Monochromatic Minimalist Theme Switcher -->
+          <button (click)="toggleTheme()" 
+                  class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer border group relative overflow-hidden hover:scale-105 active:scale-95 shadow-sm"
+                  [ngClass]="currentTheme === 'light' 
+                    ? 'bg-neutral-100 border-neutral-300 text-neutral-900 hover:bg-neutral-200 hover:border-neutral-400' 
+                    : 'bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/40'"
+                  [title]="currentTheme === 'light' ? 'Cambiar a Tema Oscuro' : 'Cambiar a Tema Claro'">
+            
+            <!-- Crescent Moon (Light Mode -> switch to Dark) -->
+            <div *ngIf="currentTheme === 'light'" class="flex items-center justify-center text-neutral-900 transition-transform duration-300 group-hover:-rotate-12">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            </div>
+
+            <!-- Sun (Dark Mode -> switch to Light) -->
+            <div *ngIf="currentTheme === 'dark'" class="flex items-center justify-center text-white transition-transform duration-300 group-hover:rotate-45">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
+          </button>
+
+          <!-- Language Selector Button (ES/EN) -->
+          <button (click)="toggleLanguage()" 
+                  class="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer border hover:scale-105 active:scale-95 text-[10px] font-bold tracking-tight"
+                  [style.background]="currentTheme === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)'"
+                  [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.12)'"
+                  [style.color]="currentTheme === 'light' ? '#1f2937' : '#ffffff'"
+                  [title]="currentLanguage === 'es' ? 'Switch to English' : 'Cambiar a Español'">
+            {{ currentLanguage.toUpperCase() }}
+          </button>
+
+          <!-- Regístrate Button (Only when not authenticated) -->
+          <button *ngIf="!authService.isAuthenticated()" 
+                  (click)="openRegisterModal()" 
+                  class="px-4 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-300 border hover:bg-white/5 cursor-pointer"
                   [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.12)'"
                   [style.color]="currentTheme === 'light' ? '#1f2937' : '#ffffff'">
-            {{ getLoginLabel() }}
+            {{ currentLanguage === 'es' ? 'Regístrate' : 'Register' }}
+          </button>
+
+          <!-- Contacto Button -->
+          <button (click)="scrollTo('#contact', $event)" 
+                  class="px-5 py-2 rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-300 hover:opacity-90 cursor-pointer shadow-md"
+                  style="background: var(--text-primary); color: var(--bg-primary);">
+            {{ getContactLabel() }}
           </button>
 
           <!-- User Dropdown (When authenticated) -->
@@ -176,13 +178,6 @@ import { AuthService } from '../../services/auth.service';
               </div>
             </div>
           </div>
-
-          <!-- Clean Solid Contact Button -->
-          <button (click)="scrollTo('#contact', $event)" 
-                  class="px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-300 hover:opacity-80 cursor-pointer"
-                  style="background: var(--text-primary); color: var(--bg-primary);">
-            {{ getContactLabel() }}
-          </button>
         </div>
       </div>
     </nav>
@@ -190,7 +185,7 @@ import { AuthService } from '../../services/auth.service';
     <!-- Mobile floating Brand Logo (top left) -->
     <div class="md:hidden fixed top-5 left-6 z-[9000]">
       <a (click)="scrollTo('#hero', $event)" routerLink="/" class="flex items-center cursor-pointer">
-        <img [src]="currentTheme === 'light' ? 'assets/icons/icon-portalinknavbarlight.png' : 'assets/icons/icon-portalinknavbardark.png'" 
+        <img [src]="currentTheme === 'light' ? 'assets/icons/navbar-logolight.png' : 'assets/icons/navbar-logodark.png'" 
              alt="Portalink" 
              class="h-8 w-auto object-contain drop-shadow-md transition-transform active:scale-95" />
       </a>
@@ -199,28 +194,27 @@ import { AuthService } from '../../services/auth.service';
     <!-- Mobile floating Switcher Group (top right) -->
     <div class="md:hidden fixed top-5 right-6 z-[9000] flex gap-2">
 
-      <!-- Theme Switcher -->
+      <!-- Monochromatic Mobile Theme Switcher -->
       <button (click)="toggleTheme()" 
-              class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer border shadow-lg backdrop-blur-md active:scale-95"
-              [style.background]="currentTheme === 'light' ? 'rgba(255,255,255,0.9)' : 'rgba(15,15,15,0.85)'"
-              [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.12)'"
+              class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer border group relative overflow-hidden active:scale-95 shadow-md backdrop-blur-md"
+              [ngClass]="currentTheme === 'light' 
+                ? 'bg-neutral-100/90 border-neutral-300 text-neutral-900' 
+                : 'bg-white/10 border-white/20 text-white'"
               [title]="currentTheme === 'light' ? 'Cambiar a Tema Oscuro' : 'Cambiar a Tema Claro'">
-        <!-- Moon Icon (Light Mode - click to go Dark) -->
-        <svg *ngIf="currentTheme === 'light'" class="w-5 h-5 text-neutral-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
-        <!-- Sun Icon (Dark Mode - click to go Light) -->
-        <svg *ngIf="currentTheme === 'dark'" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="5"></circle>
-          <line x1="12" y1="1" x2="12" y2="3"></line>
-          <line x1="12" y1="21" x2="12" y2="23"></line>
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-          <line x1="1" y1="12" x2="3" y2="12"></line>
-          <line x1="21" y1="12" x2="23" y2="12"></line>
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-        </svg>
+        
+        <!-- Crescent Moon (Light Mode -> switch to Dark) -->
+        <div *ngIf="currentTheme === 'light'" class="flex items-center justify-center text-neutral-900">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        </div>
+
+        <!-- Sun (Dark Mode -> switch to Light) -->
+        <div *ngIf="currentTheme === 'dark'" class="flex items-center justify-center text-white">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+        </div>
       </button>
 
       <!-- Language Switcher -->
@@ -576,20 +570,16 @@ export class NavbarComponent implements OnInit {
 
   navItemsTranslations: any = {
     es: [
-      { name: 'Inicio',         link: '#hero',         icon: 'home'   },
-      { name: 'Links',          link: '/links',        icon: 'link'   },
-      { name: 'RotBot',         link: '/rotbot',       icon: 'chat'   },
-      { name: 'Proyectos',      link: '#portfolio',    icon: 'grid'   },
-      { name: 'Planes',         link: '/planes',       icon: 'planes' },
-      { name: 'Crear tu sitio', link: '/personalizar', icon: 'layers' }
+      { name: 'Inicio',    link: '#hero',   icon: 'home'   },
+      { name: 'Links',     link: '/links',  icon: 'link'   },
+      { name: 'RotBot',    link: '/rotbot', icon: 'chat'   },
+      { name: 'Servicios', link: '/planes', icon: 'planes' }
     ],
     en: [
-      { name: 'Home',           link: '#hero',         icon: 'home'   },
-      { name: 'Links',          link: '/links',        icon: 'link'   },
-      { name: 'RotBot',         link: '/rotbot',       icon: 'chat'   },
-      { name: 'Projects',       link: '#portfolio',    icon: 'grid'   },
-      { name: 'Plans',          link: '/planes',       icon: 'planes' },
-      { name: 'Create site',    link: '/personalizar', icon: 'layers' }
+      { name: 'Home',      link: '#hero',   icon: 'home'   },
+      { name: 'Links',     link: '/links',  icon: 'link'   },
+      { name: 'RotBot',    link: '/rotbot', icon: 'chat'   },
+      { name: 'Services',  link: '/planes', icon: 'planes' }
     ]
   };
 
@@ -643,6 +633,10 @@ export class NavbarComponent implements OnInit {
 
   openLoginModal() {
     this.router.navigate(['/login']);
+  }
+
+  openRegisterModal() {
+    this.router.navigate(['/register']);
   }
 
   closeLoginModal() {
