@@ -244,49 +244,49 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       code: 'ECOM_01', badge: 'E-COMMERCE',
       tagline: 'Tienda de mobiliario premium para mascotas con catálogo interactivo.',
       title: 'CAMASCOTAS',
-      image: 'assets/images/proyectos/proyecto1.png',
+      image: 'assets/images/proyectos/proyecto-camascotas.png',
       description: 'E-commerce completo de muebles y accesorios para mascotas con catálogo, carrito, panel de administración y diseño responsive.',
       prompt: 'Hola, quiero una tienda E-commerce como CAMASCOTAS con catálogo, carrito de compras y panel de administración para mi negocio.'
     },
     {
-      code: 'SYS_02', badge: 'SISTEMA + IA',
-      tagline: 'Catálogo digital inteligente con analítica y asistente IA en tiempo real.',
+      code: 'SYS_02', badge: 'PLATAFORMA',
+      tagline: 'Portal directivo para gestión de proyectos de arquitectura y diseño CAD.',
       title: 'SYSMICON',
-      image: 'assets/images/proyectos/proyecto2.png',
+      image: 'assets/images/proyectos/proyecto-sysmiconarquitectura.png',
+      description: 'Plataforma directiva con dashboard de cotizaciones, diseños CAD, galería visual inmersiva y comunidad de profesionales.',
+      prompt: 'Hola, necesito una plataforma de gestión de proyectos con dashboard ejecutivo y galería visual, similar a SYSMICON.'
+    },
+    {
+      code: 'SYS_03', badge: 'SISTEMA + IA',
+      tagline: 'Catálogo digital inteligente con analítica y asistente IA en tiempo real.',
+      title: 'CATÁLOGO DIGITAL',
+      image: 'assets/images/proyectos/proyecto-catalogodigital.png',
       description: 'Plataforma de catálogo digital con IA integrada. Gestión de productos, inventario multi-línea y reportes analíticos automáticos.',
-      prompt: 'Hola, necesito un sistema de catálogo digital con inteligencia artificial para gestionar mis productos, similar a SYSMICON.'
+      prompt: 'Hola, necesito un sistema de catálogo digital con inteligencia artificial para gestionar mis productos, similar a CATÁLOGO DIGITAL.'
     },
     {
-      code: 'ECOM_03', badge: 'TIENDA + IA',
-      tagline: 'E-commerce de moda íntima con panel administrativo y asistente inteligente.',
-      title: 'TIENDAÍNTIMA',
-      image: 'assets/images/proyectos/proyecto3.png',
-      description: 'Comercio electrónico para moda íntima con IA para gestión de productos, análisis de ventas e inventario en tiempo real.',
-      prompt: 'Hola, quiero una tienda E-commerce con panel de administración e inteligencia artificial integrada, similar a TIENDAÍNTIMA.'
+      code: 'ECOM_04', badge: 'E-COMMERCE',
+      tagline: 'Tienda de colchones premium con consulta directa por WhatsApp.',
+      title: 'COLCHONES DISTRICOL',
+      image: 'assets/images/proyectos/proyecto-colchonesdistricol.png',
+      description: 'E-commerce de colchones y descanso con catálogo HD, ficha de producto, consulta WhatsApp e integración con inventario en vivo.',
+      prompt: 'Hola, quiero una tienda E-commerce de productos premium con catálogo, ficha de producto y WhatsApp, similar a COLCHONES DISTRICOL.'
     },
     {
-      code: 'SYS_04', badge: 'IA COPILOTO',
+      code: 'SYS_05', badge: 'IA COPILOTO',
       tagline: 'Sistema de gestión empresarial con copiloto de inteligencia artificial.',
       title: 'ASISTENTE IA',
-      image: 'assets/images/proyectos/proyecto4.png',
+      image: 'assets/images/proyectos/proyecto-asistenteia.png',
       description: 'Panel de administración empresarial con copiloto IA que responde consultas, analiza inventarios y apoya decisiones en tiempo real.',
       prompt: 'Hola, necesito un sistema de gestión con copiloto de inteligencia artificial integrado, como ASISTENTE IA.'
     },
     {
-      code: 'ECOM_05', badge: 'E-COMMERCE',
-      tagline: 'Tienda de colchones premium con consulta directa por WhatsApp.',
-      title: 'DISTRICOL',
-      image: 'assets/images/proyectos/proyecto5.png',
-      description: 'E-commerce de colchones y descanso con catálogo HD, ficha de producto, consulta WhatsApp e integración con inventario en vivo.',
-      prompt: 'Hola, quiero una tienda E-commerce de productos premium con catálogo, ficha de producto y WhatsApp, similar a DISTRICOL.'
-    },
-    {
-      code: 'SYS_06', badge: 'PLATAFORMA',
-      tagline: 'Portal directivo para gestión de proyectos de arquitectura y diseño CAD.',
-      title: 'SYSMICON PORTAL',
-      image: 'assets/images/proyectos/proyecto6.png',
-      description: 'Plataforma directiva con dashboard de cotizaciones, diseños CAD, galería visual inmersiva y comunidad de +500 profesionales.',
-      prompt: 'Hola, necesito una plataforma de gestión de proyectos con dashboard ejecutivo y galería visual, similar a SYSMICON PORTAL.'
+      code: 'ECOM_06', badge: 'TIENDA + IA',
+      tagline: 'E-commerce de moda íntima con panel administrativo y asistente inteligente.',
+      title: 'TIENDA ÍNTIMA',
+      image: 'assets/images/proyectos/proyecto-tiendaintima.png',
+      description: 'Comercio electrónico para moda íntima con IA para gestión de productos, análisis de ventas e inventario en tiempo real.',
+      prompt: 'Hola, quiero una tienda E-commerce con panel de administración e inteligencia artificial integrada, similar a TIENDA ÍNTIMA.'
     }
   ];
 

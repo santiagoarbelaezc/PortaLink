@@ -27,7 +27,7 @@
       "title": "Camascotas",
       "description": "E-commerce de muebles y accesorios para mascotas con catálogo interactivo de productos, carrito de compras, panel de administración y diseño responsive.",
       "techStack": ["Angular", "PHP", "MySQL"],
-      "images": ["assets/images/proyectos/proyecto1.png"],
+      "images": ["assets/images/proyectos/proyecto-camascotas.png"],
       "liveUrl": "#/planes-galeria",
       "githubUrl": "#",
       "featured": true,
@@ -35,10 +35,10 @@
     },
     {
       "id": "2",
-      "title": "Sysmicon Portal IA",
-      "description": "Plataforma de catálogo digital inteligente y portal empresarial con inteligencia artificial integrada. Gestiona productos, categorías e inventario multilinea con analítica en tiempo real.",
-      "techStack": ["Angular", "PHP", "Groq IA"],
-      "images": ["assets/images/proyectos/proyecto2.png"],
+      "title": "Sysmicon",
+      "description": "Plataforma de gestión de proyectos de arquitectura y diseño CAD con dashboard de cotizaciones, galería visual inmersiva y comunidad profesional.",
+      "techStack": ["Angular", "PHP", "CAD Studio"],
+      "images": ["assets/images/proyectos/proyecto-sysmiconarquitectura.png"],
       "liveUrl": "#/planes-galeria",
       "githubUrl": "#",
       "featured": true,
@@ -46,14 +46,25 @@
     },
     {
       "id": "3",
-      "title": "Asistente IA Copiloto",
-      "description": "Plataforma de administración empresarial con copiloto de inteligencia artificial integrado para responder consultas, analizar inventarios y apoyar la toma de decisiones.",
-      "techStack": ["Angular", "PHP", "Real-Time IA"],
-      "images": ["assets/images/proyectos/proyecto4.png"],
+      "title": "Catálogo Digital IA",
+      "description": "Plataforma de catálogo digital inteligente con inteligencia artificial integrada. Gestiona productos, categorías e inventario multilinea con analítica en tiempo real.",
+      "techStack": ["Angular", "PHP", "Groq IA"],
+      "images": ["assets/images/proyectos/proyecto-catalogodigital.png"],
       "liveUrl": "#/planes-galeria",
       "githubUrl": "#",
       "featured": true,
       "order": 3
+    },
+    {
+      "id": "4",
+      "title": "Asistente IA Copiloto",
+      "description": "Plataforma de administración empresarial con copiloto de inteligencia artificial integrado para responder consultas, analizar inventarios y apoyar la toma de decisiones.",
+      "techStack": ["Angular", "PHP", "Real-Time IA"],
+      "images": ["assets/images/proyectos/proyecto-asistenteia.png"],
+      "liveUrl": "#/planes-galeria",
+      "githubUrl": "#",
+      "featured": true,
+      "order": 4
     }
   ],
   "links": {

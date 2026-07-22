@@ -198,14 +198,14 @@ export class PortfolioComponent implements OnInit, OnDestroy {
       defaultTag: 'Diseño Web & Sistemas',
       projectTitles: {
         'Camascotas': 'Camascotas',
-        'Sysmicon Portal IA': 'Sysmicon Portal IA',
-        'Sysmicon Catálogo IA': 'Sysmicon Portal IA',
+        'Sysmicon': 'Sysmicon',
+        'Catálogo Digital IA': 'Catálogo Digital IA',
         'Asistente IA Copiloto': 'Asistente IA Copiloto'
       },
       projectDescriptions: {
         'E-commerce de muebles y accesorios para mascotas con catálogo interactivo de productos, carrito de compras, panel de administración y diseño responsive.': 'E-commerce de muebles y accesorios para mascotas con catálogo interactivo de productos, carrito de compras, panel de administración y diseño responsive.',
-        'Plataforma de catálogo digital inteligente y portal empresarial con inteligencia artificial integrada. Gestiona productos, categorías e inventario multilinea con analítica en tiempo real.': 'Plataforma de catálogo digital inteligente y portal empresarial con inteligencia artificial integrada. Gestiona productos, categorías e inventario multilinea con analítica en tiempo real.',
-        'Plataforma de catálogo digital inteligente con inteligencia artificial integrada. Gestiona productos, categorías e inventario multilinea con analítica en tiempo real.': 'Plataforma de catálogo digital inteligente y portal empresarial con inteligencia artificial integrada. Gestiona productos, categorías e inventario multilinea con analítica en tiempo real.',
+        'Plataforma de gestión de proyectos de arquitectura y diseño CAD con dashboard de cotizaciones, galería visual inmersiva y comunidad profesional.': 'Plataforma de gestión de proyectos de arquitectura y diseño CAD con dashboard de cotizaciones, galería visual inmersiva y comunidad profesional.',
+        'Plataforma de catálogo digital inteligente con inteligencia artificial integrada. Gestiona productos, categorías e inventario multilinea con analítica en tiempo real.': 'Plataforma de catálogo digital inteligente con inteligencia artificial integrada. Gestiona productos, categorías e inventario multilinea con analítica en tiempo real.',
         'Plataforma de administración empresarial con copiloto de inteligencia artificial integrado para responder consultas, analizar inventarios y apoyar la toma de decisiones.': 'Plataforma de administración empresarial con copiloto de inteligencia artificial integrado para responder consultas, analizar inventarios y apoyar la toma de decisiones.'
       }
     },
@@ -216,14 +216,14 @@ export class PortfolioComponent implements OnInit, OnDestroy {
       defaultTag: 'Web & Systems Design',
       projectTitles: {
         'Camascotas': 'Camascotas Pet Store',
-        'Sysmicon Portal IA': 'Sysmicon Portal & AI Catalog',
-        'Sysmicon Catálogo IA': 'Sysmicon Portal & AI Catalog',
+        'Sysmicon': 'Sysmicon CAD & Architecture',
+        'Catálogo Digital IA': 'Smart Digital Catalog & AI',
         'Asistente IA Copiloto': 'AI Assistant Copilot'
       },
       projectDescriptions: {
         'E-commerce de muebles y accesorios para mascotas con catálogo interactivo de productos, carrito de compras, panel de administración y diseño responsive.': 'Pet furniture e-commerce with interactive catalog, shopping cart, admin panel, and responsive design.',
-        'Plataforma de catálogo digital inteligente y portal empresarial con inteligencia artificial integrada. Gestiona productos, categorías e inventario multilinea con analítica en tiempo real.': 'Smart digital catalog & business portal with integrated AI. Manages multi-line products, categories, and inventory with real-time analytics.',
-        'Plataforma de catálogo digital inteligente con inteligencia artificial integrada. Gestiona productos, categorías e inventario multilinea con analítica en tiempo real.': 'Smart digital catalog & business portal with integrated AI. Manages multi-line products, categories, and inventory with real-time analytics.',
+        'Plataforma de gestión de proyectos de arquitectura y diseño CAD con dashboard de cotizaciones, galería visual inmersiva y comunidad profesional.': 'Architecture & CAD project management platform with quote dashboard, visual gallery, and professional community.',
+        'Plataforma de catálogo digital inteligente con inteligencia artificial integrada. Gestiona productos, categorías e inventario multilinea con analítica en tiempo real.': 'Smart digital catalog platform with integrated AI. Manages multi-line products, categories, and inventory with real-time analytics.',
         'Plataforma de administración empresarial con copiloto de inteligencia artificial integrado para responder consultas, analizar inventarios y apoyar la toma de decisiones.': 'Business management platform with integrated AI copilot to answer queries, analyze inventory, and support decision making.'
       }
     }

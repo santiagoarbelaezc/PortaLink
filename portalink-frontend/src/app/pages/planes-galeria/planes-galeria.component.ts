@@ -8,7 +8,7 @@ export interface GalleryProject {
   badge: string;
   tagline: string;
   title: string;
-  category: 'Landing Page' | 'E-commerce' | 'E-commerce + IA' | 'Sistemas';
+  category: 'Landing Page' | 'E-commerce' | 'E-commerce + IA' | 'Sistemas' | 'Sistemas + IA';
   client: string;
   image: string;
   gradient: string;
@@ -343,7 +343,7 @@ export class PlanesGaleriaComponent implements OnInit {
       title: 'CAMASCOTAS',
       category: 'E-commerce',
       client: 'Camascotas Pet Premium',
-      image: 'assets/images/proyectos/proyecto1.png',
+      image: 'assets/images/proyectos/proyecto-camascotas.png',
       gradient: 'linear-gradient(135deg, #0a2e1a 0%, #1a4a2e 100%)',
       description: 'E-commerce de muebles y accesorios para mascotas con catálogo de productos, carrito de compras, panel de administración y diseño responsive. Desarrollado con Angular + PHP/MySQL.',
       highlights: [
@@ -359,12 +359,33 @@ export class PlanesGaleriaComponent implements OnInit {
     {
       id: 'sysmicon-catalogo',
       code: 'SYS_02',
-      badge: 'SISTEMA + IA',
-      tagline: 'Catálogo digital inteligente con gestión de productos y analítica en tiempo real.',
+      badge: 'PLATAFORMA',
+      tagline: 'Portal directivo para gestión de proyectos de arquitectura y diseño CAD.',
       title: 'SYSMICON',
       category: 'Sistemas',
-      client: 'Sysmicon / Plastilineas',
-      image: 'assets/images/proyectos/proyecto2.png',
+      client: 'Sysmicon / Plataforma de Arquitectura',
+      image: 'assets/images/proyectos/proyecto-sysmiconarquitectura.png',
+      gradient: 'linear-gradient(135deg, #0d1f0d 0%, #1a3a1a 100%)',
+      description: 'Plataforma directiva para estudios de arquitectura con dashboard de cotizaciones, diseños CAD 2D, galería de proyectos visual y módulo de mensajería.',
+      highlights: [
+        'Dashboard directivo con métricas de cotizaciones, diseños y pipeline estimado',
+        'Galería de proyectos inmersiva con cards de casas y edificios en construcción',
+        'Módulo CAD 2D con seguimiento de diseños y actividad en tiempo real',
+        'Comunidad de arquitectos con perfiles, mensajería y colaboración'
+      ],
+      technologies: ['Angular 19', 'PHP 8.5', 'MySQL', 'CAD Studio'],
+      stats: { label: 'Proyectos Gestionados', value: '+50' },
+      rotbotPrompt: 'Hola, necesito una plataforma de gestión de proyectos con dashboard ejecutivo y galería visual, similar a SYSMICON.'
+    },
+    {
+      id: 'catalogodigital',
+      code: 'SYS_03',
+      badge: 'SISTEMA + IA',
+      tagline: 'Catálogo digital inteligente con gestión de productos y analítica en tiempo real.',
+      title: 'CATÁLOGO DIGITAL',
+      category: 'Sistemas + IA',
+      client: 'Plastilíneas / Districol',
+      image: 'assets/images/proyectos/proyecto-catalogodigital.png',
       gradient: 'linear-gradient(135deg, #0d1f0d 0%, #1a3a1a 100%)',
       description: 'Plataforma de catálogo digital con inteligencia artificial integrada. Gestiona productos, categorías e inventario para múltiples líneas de negocio con reportes analíticos y asistente IA.',
       highlights: [
@@ -375,38 +396,38 @@ export class PlanesGaleriaComponent implements OnInit {
       ],
       technologies: ['Angular 19', 'PHP 8.5', 'MySQL', 'Groq IA'],
       stats: { label: 'Productos Gestionados', value: '119+' },
-      rotbotPrompt: 'Hola, necesito un sistema de catálogo digital con inteligencia artificial para gestionar mis productos, similar a SYSMICON.'
+      rotbotPrompt: 'Hola, necesito un sistema de catálogo digital con inteligencia artificial para gestionar mis productos, similar a CATÁLOGO DIGITAL.'
     },
     {
-      id: 'tiendaintima',
-      code: 'ECOM_03',
-      badge: 'TIENDA + IA',
-      tagline: 'E-commerce de moda íntima con panel administrativo y asistente inteligente.',
-      title: 'TIENDAÍNTIMA',
-      category: 'E-commerce + IA',
-      client: 'Tiendaíntima / Moda & Descanso',
-      image: 'assets/images/proyectos/proyecto3.png',
-      gradient: 'linear-gradient(135deg, #2a0a1a 0%, #4a1a30 100%)',
-      description: 'Plataforma de comercio electrónico para moda íntima y descanso con IA integrada para gestión de productos, análisis de ventas, inventario y experiencia de compra personalizada.',
+      id: 'districol',
+      code: 'ECOM_04',
+      badge: 'E-COMMERCE',
+      tagline: 'Tienda de colchones premium con gestión de catálogo y consulta por WhatsApp.',
+      title: 'COLCHONES DISTRICOL',
+      category: 'E-commerce',
+      client: 'Districol / Colchones Armenia',
+      image: 'assets/images/proyectos/proyecto-colchonesdistricol.png',
+      gradient: 'linear-gradient(135deg, #0a1a2a 0%, #1a3a4a 100%)',
+      description: 'E-commerce de colchones y muebles de descanso premium para Armenia con catálogo completo, detalle de productos, consulta por WhatsApp e integración con el sistema administrativo de inventario.',
       highlights: [
-        'Panel de administración con resumen de ventas, pedidos y usuarios en vivo',
-        'Asistente IA para clasificar y optimizar descripciones de productos',
-        'Tienda pública responsive con catálogo de pijamas, ropa interior y más',
-        'Reportes de evolución de ventas con gráficos y tendencias'
+        'Catálogo visual de colchones con fotografías HD y especificaciones técnicas',
+        'Detalle de producto con precio, stock disponible y consulta directa por WhatsApp',
+        'Integración con sistema administrativo para sincronización de inventario en vivo',
+        'Diseño elegante con hero de video y navegación premium'
       ],
-      technologies: ['Angular 19', 'PHP 8.5', 'MySQL', 'IA Integrada'],
-      stats: { label: 'Ventas del Mes', value: '$4.85M' },
-      rotbotPrompt: 'Hola, quiero una tienda E-commerce con panel de administración e inteligencia artificial integrada, similar a TIENDAÍNTIMA.'
+      technologies: ['Angular 19', 'PHP 8.5', 'MySQL', 'WhatsApp API'],
+      stats: { label: 'Clientes Satisfechos', value: '+500' },
+      rotbotPrompt: 'Hola, quiero una tienda E-commerce de productos premium con catálogo, ficha de producto y consulta por WhatsApp, similar a COLCHONES DISTRICOL.'
     },
     {
       id: 'asistente-ia',
-      code: 'SYS_04',
+      code: 'SYS_05',
       badge: 'IA COPILOTO',
       tagline: 'Sistema de gestión empresarial con copiloto de inteligencia artificial.',
       title: 'ASISTENTE IA',
       category: 'E-commerce + IA',
       client: 'Asistente IA / Negocios Inteligentes',
-      image: 'assets/images/proyectos/proyecto4.png',
+      image: 'assets/images/proyectos/proyecto-asistenteia.png',
       gradient: 'linear-gradient(135deg, #0a1f0a 0%, #1a3a1a 100%)',
       description: 'Plataforma de administración empresarial con asistente de inteligencia artificial integrado que responde consultas, analiza inventarios, genera cotizaciones y apoya la toma de decisiones en tiempo real.',
       highlights: [
@@ -420,46 +441,25 @@ export class PlanesGaleriaComponent implements OnInit {
       rotbotPrompt: 'Hola, necesito un sistema de gestión empresarial con copiloto de inteligencia artificial integrado, como ASISTENTE IA.'
     },
     {
-      id: 'districol',
-      code: 'ECOM_05',
-      badge: 'E-COMMERCE',
-      tagline: 'Tienda de colchones premium con gestión de catálogo y consulta por WhatsApp.',
-      title: 'DISTRICOL',
-      category: 'E-commerce',
-      client: 'Districol / Colchones Armenia',
-      image: 'assets/images/proyectos/proyecto5.png',
-      gradient: 'linear-gradient(135deg, #0a1a2a 0%, #1a3a4a 100%)',
-      description: 'E-commerce de colchones y muebles de descanso premium para Armenia con catálogo completo, detalle de productos, consulta por WhatsApp e integración con el sistema administrativo de inventario.',
+      id: 'tiendaintima',
+      code: 'ECOM_06',
+      badge: 'TIENDA + IA',
+      tagline: 'E-commerce de moda íntima con panel administrativo y asistente inteligente.',
+      title: 'TIENDA ÍNTIMA',
+      category: 'E-commerce + IA',
+      client: 'Tiendaíntima / Moda & Descanso',
+      image: 'assets/images/proyectos/proyecto-tiendaintima.png',
+      gradient: 'linear-gradient(135deg, #2a0a1a 0%, #4a1a30 100%)',
+      description: 'Plataforma de comercio electrónico para moda íntima y descanso con IA integrada para gestión de productos, análisis de ventas, inventario y experiencia de compra personalizada.',
       highlights: [
-        'Catálogo visual de colchones con fotografías HD y especificaciones técnicas',
-        'Detalle de producto con precio, stock disponible y consulta directa por WhatsApp',
-        'Integración con sistema administrativo para sincronización de inventario en vivo',
-        'Diseño elegante con hero de video y navegación premium'
+        'Panel de administración con resumen de ventas, pedidos y usuarios en vivo',
+        'Asistente IA para clasificar y optimizar descripciones de productos',
+        'Tienda pública responsive con catálogo de pijamas, ropa interior y más',
+        'Reportes de evolución de ventas con gráficos y tendencias'
       ],
-      technologies: ['Angular 19', 'PHP 8.5', 'MySQL', 'WhatsApp API'],
-      stats: { label: 'Clientes Satisfechos', value: '+500' },
-      rotbotPrompt: 'Hola, quiero una tienda E-commerce de productos premium con catálogo, ficha de producto y consulta por WhatsApp, similar a DISTRICOL.'
-    },
-    {
-      id: 'sysmicon-portal',
-      code: 'SYS_06',
-      badge: 'PLATAFORMA',
-      tagline: 'Portal directivo para gestión de proyectos de arquitectura y diseño CAD.',
-      title: 'SYSMICON PORTAL',
-      category: 'Sistemas',
-      client: 'Sysmicon / Plataforma de Arquitectura',
-      image: 'assets/images/proyectos/proyecto6.png',
-      gradient: 'linear-gradient(135deg, #0a0f1a 0%, #1a2a3a 100%)',
-      description: 'Plataforma directiva para estudios de arquitectura con dashboard de cotizaciones, diseños CAD 2D, galería de proyectos visual y módulo de mensajería. Soporta más de 500 profesionales activos.',
-      highlights: [
-        'Dashboard directivo con métricas de cotizaciones, diseños y pipeline estimado',
-        'Galería de proyectos inmersiva con cards de casas y edificios en construcción',
-        'Módulo CAD 2D con seguimiento de diseños y actividad en tiempo real',
-        'Comunidad de arquitectos con perfiles, mensajería y colaboración'
-      ],
-      technologies: ['Angular 19', 'PHP 8.5', 'MySQL', 'Real-Time Dashboard'],
-      stats: { label: 'Pipeline Proyectado', value: '$4.25M' },
-      rotbotPrompt: 'Hola, necesito una plataforma de gestión de proyectos con dashboard ejecutivo y galería visual, similar a SYSMICON PORTAL.'
+      technologies: ['Angular 19', 'PHP 8.5', 'MySQL', 'IA Integrada'],
+      stats: { label: 'Ventas del Mes', value: '$4.85M' },
+      rotbotPrompt: 'Hola, quiero una tienda E-commerce con panel de administración e inteligencia artificial integrada, similar a TIENDA ÍNTIMA.'
     }
   ];
 
