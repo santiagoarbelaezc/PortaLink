@@ -147,3 +147,102 @@
     padding: 12px 16px !important; /* Make cards slightly more compact for mobile space */
   }
 }
+
+/* ======================================================= */
+/* SHOWCASE DE PROYECTOS - THEME ADAPTIVE STYLING          */
+/* ======================================================= */
+.projects-showcase-section {
+  background: var(--bg-primary, #080808);
+  transition: background 0.5s ease, border-color 0.5s ease;
+}
+
+.showcase-line {
+  background: linear-gradient(to right, transparent, var(--card-border, rgba(255, 255, 255, 0.1)), transparent);
+}
+
+.showcase-title {
+  color: var(--text-primary, #ffffff);
+}
+
+.showcase-desc {
+  color: var(--text-secondary, rgba(255, 255, 255, 0.6));
+}
+
+.showcase-btn-gallery {
+  background: var(--card-bg, rgba(255, 255, 255, 0.03));
+  border-color: var(--card-border, rgba(255, 255, 255, 0.1));
+  color: var(--text-primary, #ffffff);
+}
+.showcase-btn-gallery:hover {
+  background: var(--text-primary, #ffffff);
+  color: var(--bg-primary, #050505);
+  border-color: var(--text-primary, #ffffff);
+}
+
+.showcase-card {
+  background: var(--card-bg, rgba(255, 255, 255, 0.03));
+  border: 1px solid var(--card-border, rgba(255, 255, 255, 0.1));
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.showcase-card:hover {
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+}
+
+.showcase-card-footer {
+  background: rgba(255, 255, 255, 0.015);
+  border-top: 1px solid var(--card-border, rgba(255, 255, 255, 0.05));
+}
+
+.showcase-card-desc {
+  color: var(--text-secondary, rgba(255, 255, 255, 0.6));
+}
+
+/* Light Theme Overrides for Showcase Section */
+.theme-light .projects-showcase-section {
+  background: #f4f5f7;
+}
+
+.theme-light .showcase-line {
+  background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.08), transparent);
+}
+
+.theme-light .showcase-title {
+  color: #111111;
+}
+
+.theme-light .showcase-desc {
+  color: #555555;
+}
+
+.theme-light .showcase-btn-gallery {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #1f2937;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+.theme-light .showcase-btn-gallery:hover {
+  background: #000000;
+  border-color: #000000;
+  color: #ffffff;
+}
+
+.theme-light .showcase-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+.theme-light .showcase-card:hover {
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.theme-light .showcase-card-footer {
+  background: #ffffff;
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.theme-light .showcase-card-desc {
+  color: #4b5563;
+}
+

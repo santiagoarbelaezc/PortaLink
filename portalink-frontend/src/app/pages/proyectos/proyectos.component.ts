@@ -38,12 +38,12 @@ import { Router, RouterModule } from '@angular/router';
       <app-hero [data]="portfolioData().hero"></app-hero>
       
       <!-- ═══════════════════════════════════════════════════════════ -->
-      <!-- GALERÍA DE PROYECTOS REALIZADOS                            -->
+      <!-- GALERÍA DE PROYECTOS REALIZADOS (THEME ADAPTIVE)             -->
       <!-- ═══════════════════════════════════════════════════════════ -->
-      <section class="projects-showcase-section relative bg-[#080808] py-24 px-6 sm:px-12 lg:px-20 overflow-hidden">
+      <section class="projects-showcase-section relative py-24 px-6 sm:px-12 lg:px-20 overflow-hidden">
 
         <!-- Línea decorativa superior -->
-        <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+        <div class="showcase-line absolute top-0 left-0 right-0 h-px"></div>
 
         <!-- Encabezado editorial -->
         <div class="max-w-[1500px] mx-auto mb-16">
@@ -53,14 +53,14 @@ import { Router, RouterModule } from '@angular/router';
                 <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent-color)] animate-pulse"></span>
                 SHOWCASE DE PROYECTOS
               </div>
-              <h2 class="text-4xl sm:text-5xl lg:text-6xl font-headline font-black uppercase tracking-tight text-white leading-[1.05]">
+              <h2 class="showcase-title text-4xl sm:text-5xl lg:text-6xl font-headline font-black uppercase tracking-tight leading-[1.05]">
                 Trabajos Realizados
               </h2>
-              <p class="text-sm text-white/50 mt-3 font-light max-w-lg leading-relaxed">
+              <p class="showcase-desc text-sm mt-3 font-light max-w-lg leading-relaxed">
                 Una selección de proyectos construidos a medida: e-commerce, sistemas de gestión y plataformas con inteligencia artificial.
               </p>
             </div>
-            <a routerLink="/planes-galeria" class="inline-flex items-center gap-2.5 px-5 py-3 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-[var(--accent-color)]/10 hover:border-[var(--accent-color)]/40 text-xs font-bold uppercase tracking-widest text-white/70 hover:text-white transition-all duration-200 flex-shrink-0 whitespace-nowrap">
+            <a routerLink="/planes-galeria" class="showcase-btn-gallery inline-flex items-center gap-2.5 px-5 py-3 rounded-xl border text-xs font-bold uppercase tracking-widest transition-all duration-200 flex-shrink-0 whitespace-nowrap">
               Ver galería completa
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
             </a>
@@ -71,7 +71,7 @@ import { Router, RouterModule } from '@angular/router';
         <div class="max-w-[1500px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
 
           <div *ngFor="let p of showcaseProjects" 
-               class="project-card group relative rounded-[28px] overflow-hidden cursor-pointer"
+               class="showcase-card group relative rounded-[28px] overflow-hidden cursor-pointer"
                (click)="openChatWithMessage(p.prompt)">
 
             <!-- Imagen de fondo en proporción 16:9 -->
@@ -81,12 +81,12 @@ import { Router, RouterModule } from '@angular/router';
                    class="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105">
 
               <!-- Gradiente sobre imagen -->
-              <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
-              <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent"></div>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent"></div>
+              <div class="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-transparent"></div>
 
               <!-- Badge superior izquierdo -->
               <div class="absolute top-4 left-4">
-                <span class="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-white/60 group-hover:text-[var(--accent-color)] transition-colors">#{{ p.code }}</span>
+                <span class="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-white/80 group-hover:text-[var(--accent-color)] transition-colors">#{{ p.code }}</span>
               </div>
 
               <!-- Badge superior derecho -->
@@ -101,7 +101,7 @@ import { Router, RouterModule } from '@angular/router';
                 <!-- Tagline -->
                 <div class="flex items-start gap-2.5 mb-2">
                   <div class="w-0.5 h-6 bg-[var(--accent-color)] flex-shrink-0 rounded-full mt-0.5"></div>
-                  <p class="text-xs text-white/70 font-light leading-relaxed">{{ p.tagline }}</p>
+                  <p class="text-xs text-white/80 font-light leading-relaxed">{{ p.tagline }}</p>
                 </div>
                 <!-- Título -->
                 <h3 class="text-3xl sm:text-4xl font-headline font-black uppercase tracking-tight text-white group-hover:text-[var(--accent-color)] transition-colors duration-200 leading-none">
@@ -120,8 +120,8 @@ import { Router, RouterModule } from '@angular/router';
             </div>
 
             <!-- Zona inferior: descripción + acción -->
-            <div class="px-2 pt-5 pb-2 flex items-start justify-between gap-4">
-              <p class="text-xs sm:text-[13px] text-white/55 font-light leading-relaxed line-clamp-2 flex-1">
+            <div class="showcase-card-footer px-4 pt-5 pb-3 flex items-start justify-between gap-4">
+              <p class="showcase-card-desc text-xs sm:text-[13px] font-light leading-relaxed line-clamp-2 flex-1">
                 {{ p.description }}
               </p>
               <button (click)="openChatWithMessage(p.prompt); $event.stopPropagation()"
@@ -136,7 +136,7 @@ import { Router, RouterModule } from '@angular/router';
         </div>
 
         <!-- Línea decorativa inferior -->
-        <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+        <div class="showcase-line absolute bottom-0 left-0 right-0 h-px"></div>
       </section>
 
       <section class="rotbot-banner relative">
