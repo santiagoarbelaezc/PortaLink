@@ -18,6 +18,7 @@ import { TerminosCondicionesComponent } from './pages/terminos-condiciones/termi
 import { PoliticaPrivacidadComponent } from './pages/politica-privacidad/politica-privacidad.component';
 import { TratamientoDatosComponent } from './pages/tratamiento-datos/tratamiento-datos.component';
 import { DeslindeIaComponent } from './pages/deslinde-ia/deslinde-ia.component';
+import { DescripcionProyectoComponent } from './pages/descripcion-proyecto/descripcion-proyecto.component';
 
 export const routes: Routes = [
   {
@@ -79,6 +80,16 @@ export const routes: Routes = [
     path: 'planes-galeria',
     component: PlanesGaleriaComponent,
     data: { animation: 'PlanesGaleriaPage' }
+  },
+  {
+    path: 'proyecto/:id',
+    component: DescripcionProyectoComponent,
+    data: { animation: 'ProyectoDetallePage' }
+  },
+  {
+    path: 'descripcion-proyecto/:id',
+    component: DescripcionProyectoComponent,
+    data: { animation: 'ProyectoDetallePage' }
   },
   {
     path: 'personalizar',
