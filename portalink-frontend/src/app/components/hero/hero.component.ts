@@ -15,7 +15,7 @@ import { RouterModule } from '@angular/router';
         <!-- Text Content -->
         <div class="w-full">
           <!-- Author / Brand Tag -->
-          <div class="flex items-center gap-3 mb-4">
+          <div class="flex items-center gap-3 mb-4 hero-animate-1">
             <div class="h-px w-8" style="background-color: var(--accent-color, #00f5ff); opacity: 0.8;"></div>
             <span class="text-xs sm:text-sm uppercase tracking-[0.3em] font-mono font-bold hero-author-text">
               {{ getTranslation().author }}
@@ -23,18 +23,18 @@ import { RouterModule } from '@angular/router';
           </div>
 
           <!-- Main Title -->
-          <h1 class="text-4xl sm:text-6xl md:text-[68px] font-headline uppercase leading-[0.96] tracking-tight mb-4 hero-title">
+          <h1 class="text-4xl sm:text-6xl md:text-[68px] font-headline uppercase leading-[0.96] tracking-tight mb-4 hero-title hero-animate-2">
             <span class="title-name">{{ getTranslation().mainTitle }}</span>
           </h1>
           
           <!-- Role Subtitle -->
-          <p class="text-xs sm:text-sm font-mono uppercase tracking-[0.25em] mb-8 text-[var(--accent-color,#00f5ff)] font-bold flex items-center gap-3">
+          <p class="text-xs sm:text-sm font-mono uppercase tracking-[0.25em] mb-8 text-[var(--accent-color,#00f5ff)] font-bold flex items-center gap-3 hero-animate-3">
             <span class="w-2 h-2 rounded-full animate-pulse" style="background-color: var(--accent-color, #00f5ff);"></span>
             {{ getTranslation().role }}
           </p>
 
           <!-- 3 Minimalist Action Buttons -->
-          <div class="flex flex-col gap-3.5 w-full max-w-xl mt-8">
+          <div class="flex flex-col gap-3.5 w-full max-w-xl mt-8 hero-animate-4">
             
             <!-- Button 1: Rotbot AI -->
             <a routerLink="/rotbot" class="hero-btn-rotbot group cursor-pointer">
@@ -91,7 +91,7 @@ import { RouterModule } from '@angular/router';
         </div>
 
         <!-- Single Large Featured Showcase Image Column -->
-        <div class="w-full py-4 flex flex-col items-center lg:items-start">
+        <div class="w-full py-4 flex flex-col items-center lg:items-start hero-animate-5">
           <div class="relative w-full aspect-[16/10] rounded-[28px] sm:rounded-[36px] overflow-hidden border transition-all duration-500 shadow-2xl group border-white/10 hover:border-[#00f5ff]/40">
             <img
                src="assets/images/proyectos/proyecto-0.png"
@@ -240,6 +240,43 @@ import { RouterModule } from '@angular/router';
     .no-scrollbar {
       -ms-overflow-style: none;
       scrollbar-width: none;
+    }
+
+    @keyframes heroFadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(28px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .hero-animate-1 {
+      animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: 0.05s;
+      opacity: 0;
+    }
+    .hero-animate-2 {
+      animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: 0.18s;
+      opacity: 0;
+    }
+    .hero-animate-3 {
+      animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: 0.32s;
+      opacity: 0;
+    }
+    .hero-animate-4 {
+      animation: heroFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: 0.46s;
+      opacity: 0;
+    }
+    .hero-animate-5 {
+      animation: heroFadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: 0.6s;
+      opacity: 0;
     }
   `]
 })
