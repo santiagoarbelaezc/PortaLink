@@ -135,34 +135,36 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
             </div>
 
-            <!-- Mobile Modeling Book Gallery (Optimized Grid & Performance) -->
-            <div class="block md:hidden mt-12 lt-gallery-section">
-              <div class="flex items-center justify-between mb-4 px-1">
+            <!-- Mobile Modeling Book Gallery (Low-Quality & Alternating B&W / Color) -->
+            <div class="block md:hidden mt-14 lt-gallery-section">
+              <div class="flex items-center justify-between mb-6 px-1">
                 <div class="flex items-center gap-2">
                   <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background-color: var(--accent-color, #00f5ff);"></span>
                   <h3 class="text-xs font-mono font-bold uppercase tracking-[0.25em]" style="color: var(--text-primary);">{{ getTranslation().retratos }}</h3>
                 </div>
                 <span class="text-[10px] font-mono uppercase tracking-[0.1em] text-white/40">{{ modelingImages.length }} Photos</span>
               </div>
-
-              <!-- Optimized 2-Column Mobile Grid -->
-              <div class="grid grid-cols-2 gap-3.5">
+              
+              <div class="space-y-6">
                 <div *ngFor="let img of modelingImages; let i = index" 
                      data-aos="fade-up"
-                     [attr.data-aos-delay]="i * 100"
+                     [attr.data-aos-delay]="i * 120"
                      (click)="trackSectionView('retratos'); trackLinkClick('foto_' + (i + 1))"
-                     [ngClass]="i === 0 ? 'col-span-2 aspect-[16/10]' : 'col-span-1 aspect-[3/4]'"
-                     class="lt-reveal-item overflow-hidden relative rounded-2xl border cursor-pointer active:scale-[0.98] transition-all duration-300 group shadow-lg" 
+                     class="lt-reveal-item overflow-hidden relative border aspect-[3/4] rounded-2xl cursor-pointer shadow-2xl transition-all duration-500 group" 
                      style="border-color: var(--card-border, rgba(255,255,255,0.1)); background: #080808;">
                   
-                  <img [src]="img.src" 
+                  <img [src]="getLowQualityImage(img.src)" 
                        [alt]="img.alt" 
                        loading="lazy" 
                        decoding="async" 
-                       class="w-full h-full object-cover object-top filter grayscale group-hover:grayscale-0 group-active:grayscale-0 transition-all duration-500 ease-out group-hover:scale-105" />
+                       class="w-full h-full object-cover object-top transition-all duration-500" 
+                       [ngClass]="i % 2 === 0 ? 'filter-none' : 'filter grayscale brightness-[0.8] contrast-[1.1]'" />
                   
-                  <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent flex items-end p-3 pointer-events-none">
-                    <span class="text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-white/80 line-clamp-1">{{ img.alt }}</span>
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent flex items-end p-5 pointer-events-none">
+                    <span class="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-white/80 flex items-center gap-2">
+                      <span>{{ img.alt }}</span>
+                      <span class="text-[8px] opacity-50 font-mono font-normal">({{ i % 2 === 0 ? 'COLOR' : 'B&N' }})</span>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -446,12 +448,16 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
 
   getProfileAvatar() {
     const rawUrl = this.configService.data()?.links?.avatarImage || 'assets/images/fotos/link-principal.jpg';
-    return this.imageOptimizer.getCachedOrOriginal(rawUrl, 800, 0.6);
+    return this.imageOptimizer.getCachedOrOriginal(rawUrl, 500, 0.35);
   }
 
   getProfileLogo() {
     const rawUrl = this.currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png';
-    return this.imageOptimizer.getCachedOrOriginal(rawUrl, 150, 0.5);
+    return this.imageOptimizer.getCachedOrOriginal(rawUrl, 150, 0.35);
+  }
+
+  getLowQualityImage(src: string): string {
+    return this.imageOptimizer.getCachedOrOriginal(src, 450, 0.35);
   }
 
   getProfileTitle() {
