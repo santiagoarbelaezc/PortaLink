@@ -51,49 +51,15 @@ import { MagneticDirective } from '../../shared/directives/magnetic.directive';
           </div>
         </div>
  
-        <!-- Apple Product Cards Column -->
-        <div class="w-full py-6 overflow-visible lg:-ml-8 xl:-ml-14">
-          <!-- Horizontal Scroll Wrapper (Smooth continuous scroll without snapping) -->
-          <div class="flex gap-6 overflow-x-auto no-scrollbar pb-6 w-full px-6 md:px-8">
-            <!-- Card Loop -->
-            <div *ngFor="let card of cards; let cIdx = index" 
-                 class="shrink-0 w-[270px] sm:w-[310px] flex flex-col items-center text-center lg:items-start lg:text-left">
-              <!-- Card Image Box (Taller and Larger) -->
-              <div class="relative w-full aspect-[3/4.2] rounded-[24px] sm:rounded-[32px] overflow-hidden border transition-all duration-500 shadow-xl group"
-                   [style.background]="'var(--card-bg)'"
-                   [style.borderColor]="'var(--card-border)'">
-                <img
-                   [src]="card.options[card.activeIndex].src"
-                   [alt]="getCardTitle(cIdx)"
-                   class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                   [ngClass]="{'grayscale': card.options[card.activeIndex].src.includes('principal')}"
-                />
-                <div class="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent"></div>
-              </div>
-              
-              <!-- Color Selector Dots -->
-              <div class="flex justify-center lg:justify-start items-center gap-2 mt-4 mb-3 h-5">
-                <button *ngFor="let opt of card.options; let oIdx = index"
-                        (click)="card.activeIndex = oIdx"
-                        class="w-4 h-4 rounded-full transition-all duration-300 focus:outline-none flex items-center justify-center relative cursor-pointer"
-                        [class.scale-110]="card.activeIndex === oIdx">
-                  <!-- The color dot itself -->
-                  <span class="w-2.5 h-2.5 rounded-full block" [style.backgroundColor]="opt.color"></span>
-                  <!-- Apple-style outer ring if selected -->
-                  <span *ngIf="card.activeIndex === oIdx" 
-                        class="absolute -inset-0.5 rounded-full border border-gray-400 dark:border-gray-500">
-                  </span>
-                </button>
-              </div>
- 
-              <!-- Product Details -->
-              <h3 class="text-lg md:text-xl font-sans font-bold tracking-tight mb-2" style="color: var(--text-primary);">
-                {{ getCardTitle(cIdx) }}
-              </h3>
-              <p class="text-xs md:text-sm leading-relaxed" style="color: var(--text-secondary);">
-                {{ getCardDescription(cIdx) }}
-              </p>
-            </div>
+        <!-- Single Large Featured Showcase Image Column -->
+        <div class="w-full py-4 flex flex-col items-center lg:items-start">
+          <div class="relative w-full aspect-[16/10] rounded-[28px] sm:rounded-[36px] overflow-hidden border transition-all duration-500 shadow-2xl group border-white/10 hover:border-[#00f5ff]/40">
+            <img
+               src="assets/images/proyectos/proyecto-0.png"
+               alt="Portalink Ecosystem"
+               class="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none"></div>
           </div>
         </div>
       </div>
@@ -263,30 +229,30 @@ export class HeroComponent implements OnInit, OnDestroy {
         'dashboard administrativo'
       ],
       ctaText: 'Ver Proyectos',
+      featured: {
+        title: 'Portalink Ecosystem',
+        description: 'Plataforma integral multinegocio a medida con diseño exclusivo e Inteligencia Artificial.'
+      },
       cards: [
         {
           title: 'E-commerce desde 0',
           description: 'Plataformas de venta online a medida, rápidas y optimizadas para conversión.'
         },
         {
-          title: 'Integración IA',
-          description: 'Automatización de procesos y agentes inteligentes con modelos de lenguaje.'
+          title: 'Integración IA Copiloto',
+          description: 'Automatización de procesos, catálogos inteligentes y asistentes virtuales 24/7.'
         },
         {
-          title: 'Aplicaciones Móviles',
-          description: 'Experiencias nativas e híbridas fluidas con soporte multiplataforma.'
+          title: 'Camascotas Pet Store',
+          description: 'E-commerce de muebles para mascotas con catálogo interactivo y carrito dinámico.'
         },
         {
-          title: 'Dashboard Administrativo',
-          description: 'Paneles de control modernos para gestionar tu negocio en tiempo real.'
+          title: 'Sysmicon Catálogo IA',
+          description: 'Catálogo digital inteligente con gestión multilinea y reportes en tiempo real.'
         },
         {
-          title: 'Diseño UI/UX',
-          description: 'Interfaces interactivas y flujos de usuario diseñados para enamorar.'
-        },
-        {
-          title: 'Optimización SEO',
-          description: 'Estrategias de posicionamiento web para maximizar tu tráfico orgánico.'
+          title: 'Tiendaíntima Moda & IA',
+          description: 'Comercio electrónico con análisis de ventas, tienda pública y asistente inteligente.'
         }
       ]
     },
@@ -301,6 +267,10 @@ export class HeroComponent implements OnInit, OnDestroy {
         'admin dashboard'
       ],
       ctaText: 'View Projects',
+      featured: {
+        title: 'Portalink Ecosystem',
+        description: 'Custom all-in-one platform with bespoke design and artificial intelligence.'
+      },
       cards: [
         {
           title: 'E-commerce from scratch',
@@ -308,75 +278,72 @@ export class HeroComponent implements OnInit, OnDestroy {
         },
         {
           title: 'AI Integration',
-          description: 'Process automation and intelligent agents using language models.'
+          description: 'Process automation, smart catalogs, and 24/7 virtual assistants.'
         },
         {
-          title: 'Mobile Applications',
-          description: 'Smooth native and hybrid experiences with multiplatform support.'
+          title: 'Camascotas Pet Store',
+          description: 'Pet furniture e-commerce with interactive catalog and dynamic cart.'
         },
         {
-          title: 'Administrative Dashboard',
-          description: 'Modern control panels to manage your business in real-time.'
+          title: 'Sysmicon AI Catalog',
+          description: 'Smart digital catalog with multi-line management and real-time reports.'
         },
         {
-          title: 'UI/UX Design',
-          description: 'Interactive interfaces and user flows designed to make users fall in love.'
-        },
-        {
-          title: 'SEO Optimization',
-          description: 'Web positioning strategies to maximize your organic traffic.'
+          title: 'Tiendaíntima Fashion & AI',
+          description: 'E-commerce with sales analytics, public store, and AI assistant.'
         }
       ]
     }
+  };
+
+  featuredCard = {
+    activeIndex: 0,
+    options: [
+      { src: 'assets/images/proyectos/proyecto-0.png', color: '#00f5ff' },
+      { src: 'assets/images/proyectos/card1.png', color: '#3B82F6' },
+      { src: 'assets/images/proyectos/card2.png', color: '#8B5CF6' }
+    ]
   };
 
   cards = [
     {
       activeIndex: 0,
       options: [
-        { src: 'assets/images/fotos/photo2.jpg', color: '#E36B2B' }, // Orange-ish
-        { src: 'assets/images/fotos/photo4.jpeg', color: '#1E3A8A' }, // Dark Blue
-        { src: 'assets/images/fotos/photo3.jpeg', color: '#3B82F6' }  // Light Blue
+        { src: 'assets/images/proyectos/card1.png', color: '#3B82F6' },
+        { src: 'assets/images/proyectos/proyecto1.png', color: '#10B981' },
+        { src: 'assets/images/proyectos/proyecto2.png', color: '#F59E0B' }
       ]
     },
     {
       activeIndex: 0,
       options: [
-        { src: 'assets/images/fotos/link-principal.jpg', color: '#3B82F6' }, // Light Blue
-        { src: 'assets/images/fotos/photo3.jpeg', color: '#E2E8F0' },  // White/Silver
-        { src: 'assets/images/fotos/photo2.jpg', color: '#0F172A' }       // Dark Gray/Black
+        { src: 'assets/images/proyectos/card2.png', color: '#8B5CF6' },
+        { src: 'assets/images/proyectos/proyecto3.png', color: '#EC4899' },
+        { src: 'assets/images/proyectos/proyecto4.png', color: '#14B8A6' }
       ]
     },
     {
       activeIndex: 0,
       options: [
-        { src: 'assets/images/fotos/photo3.jpeg', color: '#A78BFA' }, // Light Purple
-        { src: 'assets/images/fotos/photo4.jpeg', color: '#86EFAC' }, // Light Green
-        { src: 'assets/images/fotos/photo2.jpg', color: '#93C5FD' }  // Soft Blue
+        { src: 'assets/images/proyectos/proyecto1.png', color: '#10B981' },
+        { src: 'assets/images/proyectos/proyecto5.png', color: '#3B82F6' },
+        { src: 'assets/images/proyectos/proyecto6.png', color: '#00f5ff' }
       ]
     },
     {
       activeIndex: 0,
       options: [
-        { src: 'assets/images/fotos/photo4.jpeg', color: '#F43F5E' }, // Rose
-        { src: 'assets/images/fotos/photo3.jpeg', color: '#14B8A6' }, // Teal
-        { src: 'assets/images/fotos/principal.jpg', color: '#1E293B' } // Dark Slate
+        { src: 'assets/images/proyectos/proyecto2.png', color: '#F59E0B' },
+        { src: 'assets/images/proyectos/proyecto3.png', color: '#EC4899' },
+        { src: 'assets/images/proyectos/proyecto-0.png', color: '#00f5ff' }
       ]
     },
     {
       activeIndex: 0,
       options: [
-        { src: 'assets/images/fotos/photo3.jpeg', color: '#EC4899' }, // Pink
-        { src: 'assets/images/fotos/photo2.jpg', color: '#F59E0B' }, // Amber
-        { src: 'assets/images/fotos/photo4.jpeg', color: '#10B981' }  // Green
-      ]
-    },
-    {
-      activeIndex: 0,
-      options: [
-        { src: 'assets/images/fotos/photo3.jpeg', color: '#6366F1' }, // Indigo
-        { src: 'assets/images/fotos/link-principal.jpg', color: '#8B5CF6' }, // Violet
-        { src: 'assets/images/fotos/photo2.jpg', color: '#6B7280' }  // Gray
+        { src: 'assets/images/proyectos/proyecto3.png', color: '#EC4899' },
+        { src: 'assets/images/proyectos/proyecto4.png', color: '#14B8A6' },
+        { src: 'assets/images/proyectos/card1.png', color: '#3B82F6' }
       ]
     }
   ];
@@ -415,6 +382,16 @@ export class HeroComponent implements OnInit, OnDestroy {
       return this.data.ctaText;
     }
     return this.getTranslation().ctaText;
+  }
+
+  getFeaturedTitle() {
+    const t = this.getTranslation();
+    return t.featured?.title || 'Portalink Ecosystem';
+  }
+
+  getFeaturedDescription() {
+    const t = this.getTranslation();
+    return t.featured?.description || '';
   }
 
   getCardTitle(index: number) {

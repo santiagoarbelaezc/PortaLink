@@ -162,7 +162,7 @@ import { SiteService } from '../../services/site.service';
               <div class="w-32 h-32 sm:w-40 sm:h-40 mb-2 relative flex items-center justify-center overflow-visible">
                 <img src="assets/images/rotbot4.png" class="w-full h-full object-contain relative z-10" alt="Rotbot Full">
               </div>
-              <h2 class="text-lg sm:text-xl font-headline uppercase tracking-wider mb-2" style="color: var(--text-primary);">
+              <h2 class="text-lg sm:text-xl font-bold tracking-tight mb-2" style="color: var(--text-primary);">
                 Sistemas con Rotbot IA
               </h2>
               <div class="text-[13px] sm:text-[14px] font-light leading-relaxed px-4 max-w-[95%]" style="color: var(--text-secondary);">

@@ -90,7 +90,7 @@ import { AuthService } from '../../services/auth.service';
               <div class="w-60 h-60 mb-2 relative flex items-center justify-center overflow-visible">
                 <img src="assets/images/rotbot4.png" class="w-52 h-52 object-contain relative z-10" alt="Rotbot Full">
               </div>
-              <h2 class="text-lg font-headline uppercase tracking-wider mb-2" style="color: var(--text-primary);">
+              <h2 class="text-base font-bold tracking-tight mb-2" style="color: var(--text-primary);">
                 Sistemas con Rotbot IA
               </h2>
               <div class="text-[12px] font-light leading-relaxed px-4 max-w-[95%]" style="color: var(--text-secondary);">

@@ -51,7 +51,7 @@ export interface GalleryProject {
               SHOWCASE DE EXCELENCIA & DISEÑO
             </div>
             <h1 class="text-4xl sm:text-6xl font-headline font-black uppercase tracking-tight text-white leading-[1.05]">
-              Galería de Proyectos <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/90 to-[#00f5ff]">Realizados</span>
+              Galería de Proyectos Realizados
             </h1>
             <p class="text-xs sm:text-sm text-white/60 mt-4 leading-relaxed max-w-2xl font-light">
               Explora nuestra colección de desarrollos web de alto nivel. Desde estructuras de una sola página con geometría minimalista hasta complejos sistemas de comercio electrónico impulsados por inteligencia artificial.
@@ -67,25 +67,21 @@ export interface GalleryProject {
               
               <!-- Icono SVG según categoría -->
               <span class="flex-shrink-0" [ngSwitch]="cat.id">
-                <!-- Todos (Grid / Sparkles) -->
+                <!-- Todos (Grid) -->
                 <svg *ngSwitchCase="'Todos'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
                 </svg>
-                <!-- Landing Page (Lightning / Browser) -->
-                <svg *ngSwitchCase="'Landing Page'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
-                </svg>
-                <!-- E-commerce (Store / Shopping Bag) -->
+                <!-- E-commerce (Shopping Bag) -->
                 <svg *ngSwitchCase="'E-commerce'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                 </svg>
-                <!-- E-commerce + IA (Brain / AI Sparkles) -->
+                <!-- E-commerce + IA (Sparkles) -->
                 <svg *ngSwitchCase="'E-commerce + IA'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
                 </svg>
-                <!-- Sistemas (CPU / Code Gears) -->
+                <!-- Sistemas & Portales (Server / CPU) -->
                 <svg *ngSwitchCase="'Sistemas'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z" />
                 </svg>
               </span>
 
@@ -106,13 +102,13 @@ export interface GalleryProject {
               <div class="relative h-[480px] sm:h-[540px] lg:h-[580px] rounded-[32px] overflow-hidden border border-white/10 bg-[#0d0d0d] shadow-2xl flex flex-col justify-between p-7 sm:p-9 transition-colors duration-300 group-hover:border-[#00f5ff]/60 cursor-pointer"
                    (click)="openPreview(project)">
                 
-                <!-- Imagen de Fondo (Panorámica en alta definición y acelerada por GPU) -->
-                <img [src]="project.image" 
-                     (error)="onImgError($event)"
-                     [alt]="project.title"
-                     loading="lazy"
-                     decoding="async" 
-                     class="absolute inset-0 w-full h-full object-cover opacity-65 group-hover:opacity-90 group-hover:scale-105 transition duration-500 ease-out transform-gpu mix-blend-normal">
+                <!-- Imagen de Fondo (Screenshot del proyecto - Proporcional como el referente) -->
+                 <img [src]="project.image" 
+                      (error)="onImgError($event)"
+                      [alt]="project.title"
+                      loading="lazy"
+                      decoding="async" 
+                      class="absolute inset-0 w-full h-full object-cover object-top opacity-75 group-hover:opacity-100 group-hover:scale-105 transition duration-500 ease-out transform-gpu">
                 
                 <!-- Gradiente Cinematográfico Oscuro -->
                 <div class="absolute inset-0 bg-gradient-to-t from-black/95 sm:from-black/90 via-black/40 to-black/70 pointer-events-none"></div>
@@ -333,138 +329,137 @@ export class PlanesGaleriaComponent implements OnInit {
 
   categories = [
     { id: 'Todos', label: 'Todos los Proyectos' },
-    { id: 'Landing Page', label: 'Landing Pages' },
     { id: 'E-commerce', label: 'E-commerce' },
-    { id: 'E-commerce + IA', label: 'IA & Tiendas Smart' },
-    { id: 'Sistemas', label: 'Sistemas & POS' }
+    { id: 'E-commerce + IA', label: 'IA & Smart Stores' },
+    { id: 'Sistemas', label: 'Sistemas & Portales' }
   ];
 
   projects: GalleryProject[] = [
     {
-      id: 'luxe-arch',
-      code: 'LANDING_01',
-      badge: 'DESTACADO',
-      tagline: 'Geometría minimalista e intimidad visual en alta definición.',
-      title: 'LUXE STUDIO',
-      category: 'Landing Page',
-      client: 'Estudio Luxe SA',
-      image: 'assets/images/fotos/photo2.jpg',
-      gradient: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
-      description: 'Landing page inmersiva de una sola página diseñada para presentar proyectos arquitectónicos y creativos de alta gama con transiciones fluidas y velocidad subsegundo.',
-      highlights: [
-        'Sección Hero con video de alta definición de fondo y tipografía editorial',
-        'Portafolio visual filtrable con cuadrícula asimétrica y modal interactivo',
-        'Formulario de cotización de proyectos multi-paso con validación en vivo',
-        'Optimización extrema de carga y rendimiento (Google PageSpeed 99/100)'
-      ],
-      technologies: ['Angular 19', 'Tailwind CSS', 'GSAP Motion', 'Stripe Ready'],
-      stats: { label: 'Tasa de Conversión', value: '+54%' },
-      rotbotPrompt: 'Hola, quiero desarrollar una Landing Page estilo "LUXE STUDIO" con diseño minimalista, portafolio arquitectónico y formulario de cotización para mi negocio.'
-    },
-    {
-      id: 'aura-boutique',
-      code: 'STORE_02',
-      badge: 'EDITOR EN VIVO',
-      tagline: 'Autogestión total y diseño modular en tiempo real.',
-      title: 'AURA BOUTIQUE',
+      id: 'camascotas',
+      code: 'ECOM_01',
+      badge: 'E-COMMERCE',
+      tagline: 'Tienda de mobiliario premium para mascotas con catálogo interactivo.',
+      title: 'CAMASCOTAS',
       category: 'E-commerce',
-      client: 'Aura Moda & Belleza',
-      image: 'assets/images/fotos/photo3.jpeg',
-      gradient: 'linear-gradient(135deg, #434343 0%, #000000 100%)',
-      description: 'Tienda en línea autopersonalizable que otorga al propietario la libertad de alterar banners, colores, tipografías y secciones estacionales sin tocar una sola línea de código.',
+      client: 'Camascotas Pet Premium',
+      image: 'assets/images/proyectos/proyecto1.png',
+      gradient: 'linear-gradient(135deg, #0a2e1a 0%, #1a4a2e 100%)',
+      description: 'E-commerce de muebles y accesorios para mascotas con catálogo de productos, carrito de compras, panel de administración y diseño responsive. Desarrollado con Angular + PHP/MySQL.',
       highlights: [
-        'Editor Visual Interactivo en tiempo real para personalizar la apariencia',
-        'Catálogo de productos inteligente con filtros dinámicos por talla y color',
-        'Carrito lateral deslizable optimizado para compras exprés desde móviles',
-        'Panel administrativo completo para inventario, envíos y descuentos'
+        'Catálogo de productos filtrable por categorías (perros, gatos, accesorios)',
+        'Carrito de compras lateral optimizado para conversión en móvil',
+        'Panel de administración completo para inventario y pedidos',
+        'Hero animado con colecciones destacadas y llamadas a la acción'
       ],
-      technologies: ['Editor Visual', 'Angular 19', 'PHP 8.5 Backend', 'MySQL DB'],
-      stats: { label: 'Ventas en Móvil', value: '78%' },
-      rotbotPrompt: 'Hola, me interesa adquirir una tienda E-commerce Autopersonalizable estilo "AURA BOUTIQUE" con editor visual en vivo y carrito de compras ágil.'
+      technologies: ['Angular 19', 'PHP 8.5', 'MySQL', 'Responsive'],
+      stats: { label: 'Productos en Catálogo', value: '+120' },
+      rotbotPrompt: 'Hola, quiero una tienda E-commerce como CAMASCOTAS con catálogo de productos, carrito de compras y panel de administración para mi negocio.'
     },
     {
-      id: 'autoparts-ai',
-      code: 'COPILOT_03',
-      badge: 'IA COPILOTO',
-      tagline: 'Búsqueda predictiva con asistencia guiada por inteligencia artificial.',
-      title: 'MOTORSMART AI',
-      category: 'E-commerce + IA',
-      client: 'Grupo MotorSmart',
-      image: 'assets/images/fotos/photo4.jpeg',
-      gradient: 'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)',
-      description: 'Comercio electrónico de alta complejidad equipado con un Copiloto Rotbot IA 24/7 que asiste a los clientes a localizar el repuesto o producto exacto en segundos.',
-      highlights: [
-        'Copiloto Rotbot IA que dialoga, asesora e identifica ítems por VIN o descripción',
-        'Motor de búsqueda semántica con autocompletado y sugerencias inteligentes',
-        'Integración con bases de datos masivas con actualización de stock en vivo',
-        'Cierre de ventas asistido e inmediato vía WhatsApp o pasarela de pago'
-      ],
-      technologies: ['Rotbot IA 24/7', 'Angular', 'REST API', 'Smart Search'],
-      stats: { label: 'Atención Automática', value: '94%' },
-      rotbotPrompt: 'Hola, quiero una tienda E-commerce + IA estilo "MOTORSMART AI" con un asistente de inteligencia artificial 24/7 que recomiende y venda mis productos.'
-    },
-    {
-      id: 'fitpulse-gym',
-      code: 'LANDING_04',
-      badge: 'ALTA CONVERSIÓN',
-      tagline: 'Interfaz motivadora enfocada en captación y reservas directas.',
-      title: 'FITPULSE GYM',
-      category: 'Landing Page',
-      client: 'FitPulse Club',
-      image: 'assets/images/fotos/principal.jpg',
-      gradient: 'linear-gradient(135deg, #cb2d3e 0%, #ef476f 100%)',
-      description: 'Sitio web de alto impacto para centros deportivos, spas o consultorios, incorporando herramientas de cálculo en vivo y agendamiento directo de citas o clases.',
-      highlights: [
-        'Diseño visual enérgico con modo oscuro nativo y alto contraste lumínico',
-        'Calculadora de objetivos fitness / IMC interactiva para el visitante',
-        'Grilla de clases en vivo y reserva inmediata conectada a WhatsApp y calendario',
-        'Sección audiovisual de testimonios e historias de éxito verificadas'
-      ],
-      technologies: ['Angular 19', 'Responsive Mobile', 'WhatsApp API', 'SEO Score 100'],
-      stats: { label: 'Nuevos Clientes/Mes', value: '+120' },
-      rotbotPrompt: 'Hola, me gustaría tener una Landing Page estilo "FITPULSE GYM" enfocada en captar prospectos, mostrar servicios y permitir reservas directas.'
-    },
-    {
-      id: 'nova-bio',
-      code: 'SMART_05',
-      badge: 'TEST IA',
-      tagline: 'Diagnosticador facial y rutina de compra personalizada por IA.',
-      title: 'NOVA COSMETICS',
-      category: 'E-commerce + IA',
-      client: 'Nova Bio Lab',
-      image: 'assets/images/fotos/link-principal.jpg',
-      gradient: 'linear-gradient(135deg, #134e5e 0%, #71b280 100%)',
-      description: 'Plataforma de comercio electrónico con inteligencia artificial que realiza un diagnóstico virtual a los clientes para construir y recomendarles una rutina a su medida.',
-      highlights: [
-        'Cuestionario interactivo guiado por IA para recomendar productos precisos',
-        'Editor autopersonalizable para campañas de lanzamiento y promociones',
-        'Módulo de suscripción de entregas mensuales con cobro automático recurrente',
-        'Analítica avanzada del comportamiento de compra y fidelización'
-      ],
-      technologies: ['Rotbot IA', 'Suscripciones', 'Autopersonalizable', 'UX Premium'],
-      stats: { label: 'Ticket Promedio', value: '+38%' },
-      rotbotPrompt: 'Hola, quiero crear una tienda E-commerce + IA estilo "NOVA COSMETICS" con diagnóstico guiado y recomendaciones personalizadas por inteligencia artificial.'
-    },
-    {
-      id: 'restaurant-pos',
-      code: 'SYSTEM_06',
-      badge: 'SISTEMA POS',
-      tagline: 'Control total de comandas, menú digital QR y cocina en vivo.',
-      title: 'ROTBOT POS & KDS',
+      id: 'sysmicon-catalogo',
+      code: 'SYS_02',
+      badge: 'SISTEMA + IA',
+      tagline: 'Catálogo digital inteligente con gestión de productos y analítica en tiempo real.',
+      title: 'SYSMICON',
       category: 'Sistemas',
-      client: 'Gourmet Tech Holdings',
-      image: 'assets/images/rotbot.png',
-      gradient: 'linear-gradient(135deg, #b92b27 0%, #1565C0 100%)',
-      description: 'Sistema integral de gestión para restaurantes y franquicias. Integra menú digital interactivo, toma de pedidos en mesa por tablet, pantalla de cocina (KDS) y facturación.',
+      client: 'Sysmicon / Plastilineas',
+      image: 'assets/images/proyectos/proyecto2.png',
+      gradient: 'linear-gradient(135deg, #0d1f0d 0%, #1a3a1a 100%)',
+      description: 'Plataforma de catálogo digital con inteligencia artificial integrada. Gestiona productos, categorías e inventario para múltiples líneas de negocio con reportes analíticos y asistente IA.',
       highlights: [
-        'Menú digital QR autogestionable con fotografías HD, alérgenos y precios en vivo',
-        'App para mozos con envío instantáneo de comandas a la pantalla de cocina (KDS)',
-        'Facturación rápida, control de mesas, división de cuentas y cuadre de caja',
-        'Arquitectura robusta con soporte local offline por si falla la conexión'
+        'Asistente IA para generar descripciones y clasificar productos automáticamente',
+        'Dashboard con analítica de completitud del catálogo en tiempo real',
+        'Gestión multilinea: Plastilineas, Espumas y Districol unificados',
+        'Control de calidad con métricas de productos incompletos o sin imagen'
       ],
-      technologies: ['POS Sistema', 'Real-Time KDS', 'QR Dinámico', 'PHP/MySQL'],
-      stats: { label: 'Tiempo de Pedido', value: '-65%' },
-      rotbotPrompt: 'Hola, necesito una solución de Sistema a Medida o POS estilo "ROTBOT POS & KDS" para gestionar mesas, pedidos, menú digital y ventas de mi negocio.'
+      technologies: ['Angular 19', 'PHP 8.5', 'MySQL', 'Groq IA'],
+      stats: { label: 'Productos Gestionados', value: '119+' },
+      rotbotPrompt: 'Hola, necesito un sistema de catálogo digital con inteligencia artificial para gestionar mis productos, similar a SYSMICON.'
+    },
+    {
+      id: 'tiendaintima',
+      code: 'ECOM_03',
+      badge: 'TIENDA + IA',
+      tagline: 'E-commerce de moda íntima con panel administrativo y asistente inteligente.',
+      title: 'TIENDAÍNTIMA',
+      category: 'E-commerce + IA',
+      client: 'Tiendaíntima / Moda & Descanso',
+      image: 'assets/images/proyectos/proyecto3.png',
+      gradient: 'linear-gradient(135deg, #2a0a1a 0%, #4a1a30 100%)',
+      description: 'Plataforma de comercio electrónico para moda íntima y descanso con IA integrada para gestión de productos, análisis de ventas, inventario y experiencia de compra personalizada.',
+      highlights: [
+        'Panel de administración con resumen de ventas, pedidos y usuarios en vivo',
+        'Asistente IA para clasificar y optimizar descripciones de productos',
+        'Tienda pública responsive con catálogo de pijamas, ropa interior y más',
+        'Reportes de evolución de ventas con gráficos y tendencias'
+      ],
+      technologies: ['Angular 19', 'PHP 8.5', 'MySQL', 'IA Integrada'],
+      stats: { label: 'Ventas del Mes', value: '$4.85M' },
+      rotbotPrompt: 'Hola, quiero una tienda E-commerce con panel de administración e inteligencia artificial integrada, similar a TIENDAÍNTIMA.'
+    },
+    {
+      id: 'asistente-ia',
+      code: 'SYS_04',
+      badge: 'IA COPILOTO',
+      tagline: 'Sistema de gestión empresarial con copiloto de inteligencia artificial.',
+      title: 'ASISTENTE IA',
+      category: 'E-commerce + IA',
+      client: 'Asistente IA / Negocios Inteligentes',
+      image: 'assets/images/proyectos/proyecto4.png',
+      gradient: 'linear-gradient(135deg, #0a1f0a 0%, #1a3a1a 100%)',
+      description: 'Plataforma de administración empresarial con asistente de inteligencia artificial integrado que responde consultas, analiza inventarios, genera cotizaciones y apoya la toma de decisiones en tiempo real.',
+      highlights: [
+        'Copiloto IA que responde preguntas sobre stock, ventas y reportes',
+        'Dashboard con métricas clave: ventas, pedidos, usuarios y ticket promedio',
+        'Gestión completa de productos, categorías, pedidos e inventario',
+        'Interfaz móvil nativa para consultar el negocio desde cualquier lugar'
+      ],
+      technologies: ['Angular 19', 'PHP 8.5', 'Groq IA', 'Real-Time'],
+      stats: { label: 'Atención Automática', value: '94%' },
+      rotbotPrompt: 'Hola, necesito un sistema de gestión empresarial con copiloto de inteligencia artificial integrado, como ASISTENTE IA.'
+    },
+    {
+      id: 'districol',
+      code: 'ECOM_05',
+      badge: 'E-COMMERCE',
+      tagline: 'Tienda de colchones premium con gestión de catálogo y consulta por WhatsApp.',
+      title: 'DISTRICOL',
+      category: 'E-commerce',
+      client: 'Districol / Colchones Armenia',
+      image: 'assets/images/proyectos/proyecto5.png',
+      gradient: 'linear-gradient(135deg, #0a1a2a 0%, #1a3a4a 100%)',
+      description: 'E-commerce de colchones y muebles de descanso premium para Armenia con catálogo completo, detalle de productos, consulta por WhatsApp e integración con el sistema administrativo de inventario.',
+      highlights: [
+        'Catálogo visual de colchones con fotografías HD y especificaciones técnicas',
+        'Detalle de producto con precio, stock disponible y consulta directa por WhatsApp',
+        'Integración con sistema administrativo para sincronización de inventario en vivo',
+        'Diseño elegante con hero de video y navegación premium'
+      ],
+      technologies: ['Angular 19', 'PHP 8.5', 'MySQL', 'WhatsApp API'],
+      stats: { label: 'Clientes Satisfechos', value: '+500' },
+      rotbotPrompt: 'Hola, quiero una tienda E-commerce de productos premium con catálogo, ficha de producto y consulta por WhatsApp, similar a DISTRICOL.'
+    },
+    {
+      id: 'sysmicon-portal',
+      code: 'SYS_06',
+      badge: 'PLATAFORMA',
+      tagline: 'Portal directivo para gestión de proyectos de arquitectura y diseño CAD.',
+      title: 'SYSMICON PORTAL',
+      category: 'Sistemas',
+      client: 'Sysmicon / Plataforma de Arquitectura',
+      image: 'assets/images/proyectos/proyecto6.png',
+      gradient: 'linear-gradient(135deg, #0a0f1a 0%, #1a2a3a 100%)',
+      description: 'Plataforma directiva para estudios de arquitectura con dashboard de cotizaciones, diseños CAD 2D, galería de proyectos visual y módulo de mensajería. Soporta más de 500 profesionales activos.',
+      highlights: [
+        'Dashboard directivo con métricas de cotizaciones, diseños y pipeline estimado',
+        'Galería de proyectos inmersiva con cards de casas y edificios en construcción',
+        'Módulo CAD 2D con seguimiento de diseños y actividad en tiempo real',
+        'Comunidad de arquitectos con perfiles, mensajería y colaboración'
+      ],
+      technologies: ['Angular 19', 'PHP 8.5', 'MySQL', 'Real-Time Dashboard'],
+      stats: { label: 'Pipeline Proyectado', value: '$4.25M' },
+      rotbotPrompt: 'Hola, necesito una plataforma de gestión de proyectos con dashboard ejecutivo y galería visual, similar a SYSMICON PORTAL.'
     }
   ];
 

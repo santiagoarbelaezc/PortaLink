@@ -253,32 +253,32 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
       subtitle: 'Portafolio',
       title: 'Proyectos Destacados',
       viewNow: 'Ver ahora',
-      defaultTag: 'Diseño Web',
+      defaultTag: 'Diseño Web & Sistemas',
       projectTitles: {
-        'Portfolio Personal': 'Portfolio Personal',
-        'PortaLink AI Vision': 'PortaLink AI Vision',
-        'E-Commerce Premium': 'E-Commerce Premium'
+        'Camascotas': 'Camascotas',
+        'Sysmicon Catálogo IA': 'Sysmicon Catálogo IA',
+        'Asistente IA Copiloto': 'Asistente IA Copiloto'
       },
       projectDescriptions: {
-        'Diseño y desarrollo de un espacio digital cinematográfico interactivo de presentación profesional. Incorpora un selector de paletas de color en tiempo real, efectos avanzados de desenfoque de fondo y un asistente inteligente conversacional para guiar a los visitantes, logrando una experiencia completamente inmersiva y fluida.': 'Diseño y desarrollo de un espacio digital cinematográfico interactivo de presentación profesional. Incorpora un selector de paletas de color en tiempo real, efectos avanzados de desenfoque de fondo y un asistente inteligente conversacional para guiar a los visitantes, logrando una experiencia completamente inmersiva y fluida.',
-        'Plataforma avanzada de procesamiento y análisis visual mediante modelos inteligentes de visión por computadora. Especializada en la detección automática de elementos, segmentación de objetos en tiempo real y el análisis detallado de planos y estructuras complejas con representación gráfica interactiva.': 'Plataforma avanzada de procesamiento y análisis visual mediante modelos inteligentes de visión por computadora. Especializada en la detección automática de elementos, segmentación de objetos en tiempo real y el análisis detallado de planos y estructuras complejas con representación gráfica interactiva.',
-        'Solución integral de comercio electrónico de alto rendimiento diseñada para la venta en línea automatizada. Cuenta con catálogo autogestionable de productos, carrito de compras optimizado, procesamiento seguro de pagos digitales y un completo panel administrativo para control de stock y pedidos.': 'Solución integral de comercio electrónico de alto rendimiento diseñada para la venta en línea automatizada. Cuenta con catálogo autogestionable de productos, carrito de compras optimizado, procesamiento seguro de pagos digitales y un completo panel administrativo para control de stock y pedidos.'
+        'E-commerce de muebles y accesorios para mascotas con catálogo interactivo de productos, carrito de compras, panel de administración y diseño responsive.': 'E-commerce de muebles y accesorios para mascotas con catálogo interactivo de productos, carrito de compras, panel de administración y diseño responsive.',
+        'Plataforma de catálogo digital inteligente con inteligencia artificial integrada. Gestiona productos, categorías e inventario multilinea con analítica en tiempo real.': 'Plataforma de catálogo digital inteligente con inteligencia artificial integrada. Gestiona productos, categorías e inventario multilinea con analítica en tiempo real.',
+        'Plataforma de administración empresarial con copiloto de inteligencia artificial integrado para responder consultas, analizar inventarios y apoyar la toma de decisiones.': 'Plataforma de administración empresarial con copiloto de inteligencia artificial integrado para responder consultas, analizar inventarios y apoyar la toma de decisiones.'
       }
     },
     en: {
       subtitle: 'Portfolio',
       title: 'Featured Projects',
       viewNow: 'View now',
-      defaultTag: 'Web Design',
+      defaultTag: 'Web & Systems Design',
       projectTitles: {
-        'Portfolio Personal': 'Personal Portfolio',
-        'PortaLink AI Vision': 'PortaLink AI Vision',
-        'E-Commerce Premium': 'Premium E-Commerce'
+        'Camascotas': 'Camascotas Pet Store',
+        'Sysmicon Catálogo IA': 'Sysmicon AI Catalog',
+        'Asistente IA Copiloto': 'AI Assistant Copilot'
       },
       projectDescriptions: {
-        'Diseño y desarrollo de un espacio digital cinematográfico interactivo de presentación profesional. Incorpora un selector de paletas de color en tiempo real, efectos avanzados de desenfoque de fondo y un asistente inteligente conversacional para guiar a los visitantes, logrando una experiencia completamente inmersiva y fluida.': 'Design and development of an interactive cinematic digital space for professional presentation. Features real-time color palette selector, backdrop blur effects, and an intelligent assistant to guide the visitor for a fully immersive and smooth experience.',
-        'Plataforma avanzada de procesamiento y análisis visual mediante modelos inteligentes de visión por computadora. Especializada en la detección automática de elementos, segmentación de objetos en tiempo real y el análisis detallado de planos y estructuras complejas con representación gráfica interactiva.': 'Advanced visual processing and analysis platform using intelligent computer vision models. Specialized in automatic element detection, real-time object segmentation, and detailed analysis of complex diagrams and structures with interactive graphical representation.',
-        'Solución integral de comercio electrónico de alto rendimiento diseñada para la venta en línea automatizada. Cuenta con catálogo autogestionable de productos, carrito de compras optimizado, procesamiento seguro de pagos digitales y un completo panel administrativo para control de stock y pedidos.': 'Comprehensive high-performance e-commerce solution designed for automated online sales. Features self-managed product catalog, optimized shopping cart, secure digital payment processing, and a full admin dashboard for stock and order control.'
+        'E-commerce de muebles y accesorios para mascotas con catálogo interactivo de productos, carrito de compras, panel de administración y diseño responsive.': 'Pet furniture e-commerce with interactive catalog, shopping cart, admin panel, and responsive design.',
+        'Plataforma de catálogo digital inteligente con inteligencia artificial integrada. Gestiona productos, categorías e inventario multilinea con analítica en tiempo real.': 'Smart digital catalog platform with integrated AI. Manages multi-line products, categories, and inventory with real-time analytics.',
+        'Plataforma de administración empresarial con copiloto de inteligencia artificial integrado para responder consultas, analizar inventarios y apoyar la toma de decisiones.': 'Business management platform with integrated AI copilot to answer queries, analyze inventory, and support decision making.'
       }
     }
   };
