@@ -448,16 +448,16 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
 
   getProfileAvatar() {
     const rawUrl = this.configService.data()?.links?.avatarImage || 'assets/images/fotos/link-principal.jpg';
-    return this.imageOptimizer.getCachedOrOriginal(rawUrl, 500, 0.35);
+    return this.imageOptimizer.getCachedOrOriginal(rawUrl, 950, 0.75);
   }
 
   getProfileLogo() {
     const rawUrl = this.currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png';
-    return this.imageOptimizer.getCachedOrOriginal(rawUrl, 150, 0.35);
+    return this.imageOptimizer.getCachedOrOriginal(rawUrl, 250, 0.8);
   }
 
   getLowQualityImage(src: string): string {
-    return this.imageOptimizer.getCachedOrOriginal(src, 450, 0.35);
+    return this.imageOptimizer.getCachedOrOriginal(src, 800, 0.7);
   }
 
   getProfileTitle() {

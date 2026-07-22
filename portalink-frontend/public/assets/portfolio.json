@@ -35,8 +35,8 @@
     },
     {
       "id": "2",
-      "title": "Sysmicon Catálogo IA",
-      "description": "Plataforma de catálogo digital inteligente con inteligencia artificial integrada. Gestiona productos, categorías e inventario multilinea con analítica en tiempo real.",
+      "title": "Sysmicon Portal IA",
+      "description": "Plataforma de catálogo digital inteligente y portal empresarial con inteligencia artificial integrada. Gestiona productos, categorías e inventario multilinea con analítica en tiempo real.",
       "techStack": ["Angular", "PHP", "Groq IA"],
       "images": ["assets/images/proyectos/proyecto2.png"],
       "liveUrl": "#/planes-galeria",
