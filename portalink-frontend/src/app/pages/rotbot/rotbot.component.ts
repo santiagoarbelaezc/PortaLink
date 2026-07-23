@@ -162,7 +162,7 @@ import { SiteService } from '../../services/site.service';
               <div class="w-48 h-48 sm:w-60 sm:h-60 mb-4 relative flex items-center justify-center overflow-visible transition-transform duration-500 hover:scale-105">
                 <img src="assets/images/rotbot4.png" class="w-full h-full object-contain relative z-10 filter drop-shadow-[0_10px_25px_rgba(0,245,255,0.25)]" alt="Rotbot Full">
               </div>
-              <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2 font-headline uppercase" style="color: var(--text-primary);">
+              <h2 class="text-xl sm:text-2xl font-bold tracking-tight mb-2 font-sans" style="color: var(--text-primary);">
                 Sistemas con Rotbot IA
               </h2>
               <div class="text-[14px] sm:text-[15px] font-light leading-relaxed px-4 max-w-lg" style="color: var(--text-secondary);">
@@ -283,7 +283,7 @@ import { SiteService } from '../../services/site.service';
                   </svg>
                 </div>
                 
-                <h3 class="text-base sm:text-lg font-bold uppercase tracking-wider mb-1.5 font-headline text-center" style="color: var(--text-primary);">
+                <h3 class="text-base sm:text-lg font-bold tracking-wide mb-1.5 font-sans text-center" style="color: var(--text-primary);">
                   Desbloquea RotBot IA
                 </h3>
                 
