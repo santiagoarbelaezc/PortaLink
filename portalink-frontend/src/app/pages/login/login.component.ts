@@ -32,7 +32,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
             <h2 class="text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black uppercase leading-[1] tracking-tight mb-0 text-white drop-shadow-xl break-words" style="font-family: var(--font-headline, sans-serif);">
               Regístrate
             </h2>
-            <h2 class="text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black uppercase leading-[1] tracking-tight mb-8 text-[#00b4d8] drop-shadow-[0_0_20px_rgba(0,180,216,0.4)] break-words" style="font-family: var(--font-headline, sans-serif);">
+            <h2 class="text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black uppercase leading-[1] tracking-tight mb-8 text-[#00b4d8] break-words" style="font-family: var(--font-headline, sans-serif);">
               Y comienza a personalizar
             </h2>
 

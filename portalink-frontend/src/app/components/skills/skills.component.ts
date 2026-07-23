@@ -16,7 +16,7 @@ import { CommonModule } from '@angular/common';
             <div class="flex items-center gap-5 px-8 py-4 glass-card group cursor-default hover:border-white/40 transition-all duration-300">
               <!-- Logo Container -->
               <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-white/5 border border-white/10 group-hover:border-white/20 transition-all duration-300">
-                <img [src]="currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png'" alt="Logo" class="w-7 h-7 object-contain opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300" />
+                <img [src]="currentTheme === 'dark' ? 'assets/icons/navbar-logodark.png' : 'assets/icons/navbar-logolight.png'" alt="Logo" class="w-7 h-7 object-contain opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300" />
               </div>
               
               <!-- Name & Tagline -->

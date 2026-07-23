@@ -85,16 +85,6 @@ import { AuthService } from '../../services/auth.service';
             </div>
           </button>
 
-          <!-- Language Selector Button (ES/EN) -->
-          <button (click)="toggleLanguage()" 
-                  class="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer border hover:scale-105 active:scale-95 text-[10px] font-bold tracking-tight"
-                  [style.background]="currentTheme === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)'"
-                  [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.12)'"
-                  [style.color]="currentTheme === 'light' ? '#1f2937' : '#ffffff'"
-                  [title]="currentLanguage === 'es' ? 'Switch to English' : 'Cambiar a Español'">
-            {{ currentLanguage.toUpperCase() }}
-          </button>
-
           <!-- Regístrate Button (Only when not authenticated) -->
           <button *ngIf="!authService.isAuthenticated()" 
                   (click)="openRegisterModal()" 
@@ -215,16 +205,6 @@ import { AuthService } from '../../services/auth.service';
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
         </div>
-      </button>
-
-      <!-- Language Switcher -->
-      <button (click)="toggleLanguage()" 
-              class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer border shadow-lg backdrop-blur-md active:scale-95 text-[11px] font-bold"
-              [style.background]="currentTheme === 'light' ? 'rgba(255,255,255,0.9)' : 'rgba(15,15,15,0.85)'"
-              [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.12)'"
-              [style.color]="currentTheme === 'light' ? '#1f2937' : '#ffffff'"
-              [title]="currentLanguage === 'es' ? 'Switch to English' : 'Cambiar a Español'">
-        {{ currentLanguage.toUpperCase() }}
       </button>
     </div>
 
