@@ -72,7 +72,7 @@ import { Router, RouterModule } from '@angular/router';
 
           <div *ngFor="let p of showcaseProjects" 
                class="showcase-card group relative rounded-[28px] overflow-hidden cursor-pointer"
-               (click)="openChatWithMessage(p.prompt)">
+               [routerLink]="['/proyecto', p.id]">
 
             <!-- Imagen de fondo en proporción 16:9 -->
             <div class="relative w-full overflow-hidden" style="aspect-ratio: 16/9;">
@@ -109,26 +109,32 @@ import { Router, RouterModule } from '@angular/router';
                 </h3>
               </div>
 
-              <!-- Overlay hover central -->
+              <!-- Overlay hover central con botón Ver Detalles -->
               <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div class="w-16 h-16 rounded-full bg-[var(--accent-color)] text-black flex items-center justify-center shadow-[0_0_40px_rgba(0,245,255,0.6)] scale-90 group-hover:scale-100 transition-transform duration-300">
-                  <svg class="w-7 h-7 ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <div class="px-6 py-3 rounded-full bg-[var(--accent-color)] text-black font-extrabold text-xs uppercase tracking-widest flex items-center gap-2 shadow-[0_0_30px_rgba(0,245,255,0.5)] scale-90 group-hover:scale-100 transition-transform duration-300">
+                  <span>Ver Detalles del Proyecto</span>
+                  <svg class="w-4 h-4 ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
                   </svg>
                 </div>
               </div>
             </div>
 
-            <!-- Zona inferior: descripción + acción -->
+            <!-- Zona inferior: descripción + acciones -->
             <div class="showcase-card-footer px-4 pt-5 pb-3 flex items-start justify-between gap-4">
               <p class="showcase-card-desc text-xs sm:text-[13px] font-light leading-relaxed line-clamp-2 flex-1">
                 {{ p.description }}
               </p>
-              <button (click)="openChatWithMessage(p.prompt); $event.stopPropagation()"
-                      class="flex-shrink-0 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--accent-color)] flex items-center gap-1.5 hover:gap-3 transition-all duration-200 whitespace-nowrap mt-0.5">
-                CONOCE MÁS
-                <span class="text-base font-extrabold">+</span>
-              </button>
+              <div class="flex items-center gap-3 flex-shrink-0 mt-0.5">
+                <a [routerLink]="['/proyecto', p.id]" (click)="$event.stopPropagation()"
+                   class="text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--accent-color)] flex items-center gap-1 hover:underline">
+                  VER MÁS ↗
+                </a>
+                <button (click)="openChatWithMessage(p.prompt); $event.stopPropagation()"
+                        class="text-[11px] font-bold uppercase tracking-[0.15em] opacity-70 hover:opacity-100 transition-opacity flex items-center gap-1">
+                  COTIZAR +
+                </button>
+              </div>
             </div>
 
           </div>
@@ -241,6 +247,7 @@ export class ProyectosComponent implements OnInit, OnDestroy {
 
   showcaseProjects = [
     {
+      id: 'camascotas',
       code: 'ECOM_01', badge: 'E-COMMERCE',
       tagline: 'Tienda de mobiliario premium para mascotas con catálogo interactivo.',
       title: 'CAMASCOTAS',
@@ -249,6 +256,7 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       prompt: 'Hola, quiero una tienda E-commerce como CAMASCOTAS con catálogo, carrito de compras y panel de administración para mi negocio.'
     },
     {
+      id: 'sysmicon',
       code: 'SYS_02', badge: 'PLATAFORMA',
       tagline: 'Portal directivo para gestión de proyectos de arquitectura y diseño CAD.',
       title: 'SYSMICON',
@@ -257,6 +265,7 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       prompt: 'Hola, necesito una plataforma de gestión de proyectos con dashboard ejecutivo y galería visual, similar a SYSMICON.'
     },
     {
+      id: 'catalogodigital',
       code: 'SYS_03', badge: 'SISTEMA + IA',
       tagline: 'Catálogo digital inteligente con analítica y asistente IA en tiempo real.',
       title: 'CATÁLOGO DIGITAL',
@@ -265,6 +274,7 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       prompt: 'Hola, necesito un sistema de catálogo digital con inteligencia artificial para gestionar mis productos, similar a CATÁLOGO DIGITAL.'
     },
     {
+      id: 'districol',
       code: 'ECOM_04', badge: 'E-COMMERCE',
       tagline: 'Tienda de colchones premium con consulta directa por WhatsApp.',
       title: 'COLCHONES DISTRICOL',
@@ -273,6 +283,7 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       prompt: 'Hola, quiero una tienda E-commerce de productos premium con catálogo, ficha de producto y WhatsApp, similar a COLCHONES DISTRICOL.'
     },
     {
+      id: 'asistente-ia',
       code: 'SYS_05', badge: 'IA COPILOTO',
       tagline: 'Sistema de gestión empresarial con copiloto de inteligencia artificial.',
       title: 'ASISTENTE IA',
@@ -281,6 +292,7 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       prompt: 'Hola, necesito un sistema de gestión con copiloto de inteligencia artificial integrado, como ASISTENTE IA.'
     },
     {
+      id: 'tiendaintima',
       code: 'ECOM_06', badge: 'TIENDA + IA',
       tagline: 'E-commerce de moda íntima con panel administrativo y asistente inteligente.',
       title: 'TIENDA ÍNTIMA',

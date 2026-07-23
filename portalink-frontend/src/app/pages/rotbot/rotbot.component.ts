@@ -24,16 +24,16 @@ import { SiteService } from '../../services/site.service';
         <div class="absolute top-0 left-0 w-full h-[1px] scanner-line"></div>
         
         <div class="flex items-center gap-3 relative z-10">
-          <div class="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center p-1.5 border border-white/10 shadow-[inset_0_0_10px_rgba(255,255,255,0.05)]">
+          <div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center p-1.5 border border-white/10 shadow-[inset_0_0_10px_rgba(255,255,255,0.05)]">
             <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(0,245,255,0.3)]" alt="Rotbot">
           </div>
           <div>
-            <h3 class="font-sans text-[16px] font-bold tracking-wide leading-none" style="color: var(--text-primary);">
+            <h3 class="font-sans text-[18px] font-bold tracking-wide leading-none" style="color: var(--text-primary);">
               RotBot IA
             </h3>
             <div class="flex items-center gap-1.5 mt-1.5">
-               <span class="w-1.5 h-1.5 rounded-full animate-pulse shadow-[0_0_5px_var(--accent-color)]" style="background-color: var(--accent-color);"></span>
-               <p class="text-[10px] uppercase tracking-widest font-sans font-medium" style="color: var(--text-secondary); opacity: 0.7;">System Active</p>
+               <span class="w-2 h-2 rounded-full animate-pulse shadow-[0_0_5px_var(--accent-color)]" style="background-color: var(--accent-color);"></span>
+               <p class="text-[11px] uppercase tracking-widest font-sans font-semibold" style="color: var(--text-secondary); opacity: 0.75;">System Active</p>
             </div>
           </div>
         </div>
@@ -44,16 +44,16 @@ import { SiteService } from '../../services/site.service';
           <button (click)="chatService.clearHistory()" 
                   [disabled]="!authService.hasToken()"
                   [ngClass]="{'opacity-30 cursor-not-allowed': !authService.hasToken(), 'hover:opacity-100 opacity-60': authService.hasToken()}"
-                  class="text-sm font-semibold uppercase tracking-wider flex items-center gap-2 transition-all mr-2" style="color: var(--text-primary);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  class="text-[15px] font-semibold uppercase tracking-wider flex items-center gap-2 transition-all mr-2" style="color: var(--text-primary);">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-3.08 2.82"/>
             </svg>
             <span class="hidden sm:inline">Nuevo Chat</span>
           </button>
 
           <!-- Volver al Inicio -->
-          <a routerLink="/" class="text-sm font-semibold uppercase tracking-wider flex items-center gap-2 hover:opacity-100 opacity-60 transition-all mr-2" style="color: var(--text-primary);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <a routerLink="/" class="text-[15px] font-semibold uppercase tracking-wider flex items-center gap-2 hover:opacity-100 opacity-60 transition-all mr-2" style="color: var(--text-primary);">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
               <polyline points="9 22 9 12 15 12 15 22"></polyline>
             </svg>
@@ -62,7 +62,7 @@ import { SiteService } from '../../services/site.service';
 
           <!-- Theme Toggle -->
           <button (click)="toggleTheme()" class="p-2 rounded-lg transition-all icon-btn mr-1" title="Cambiar Tema">
-            <svg *ngIf="currentTheme === 'dark'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <svg *ngIf="currentTheme === 'dark'" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="5"></circle>
               <line x1="12" y1="1" x2="12" y2="3"></line>
               <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -73,14 +73,14 @@ import { SiteService } from '../../services/site.service';
               <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
               <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
             </svg>
-            <svg *ngIf="currentTheme !== 'dark'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <svg *ngIf="currentTheme !== 'dark'" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
             </svg>
           </button>
  
           <!-- Back / Close Button -->
           <button (click)="goBack()" class="p-2 rounded-lg transition-all icon-btn" title="Cerrar y Volver">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
@@ -94,39 +94,39 @@ import { SiteService } from '../../services/site.service';
         <!-- Sidebar Izquierdo (Accesos Rápidos) -->
         <div *ngIf="!activeDesign" 
              [ngClass]="{'opacity-40 pointer-events-none grayscale': !authService.hasToken()}"
-             class="chat-sidebar no-scrollbar hidden md:flex flex-col w-80 flex-shrink-0 border-r py-8 px-6 gap-4 overflow-y-auto animate-fade-in transition-all duration-500" style="border-color: var(--card-border);">
-          <h4 class="sidebar-title mb-2">Accesos Rápidos</h4>
+             class="chat-sidebar no-scrollbar hidden md:flex flex-col w-72 flex-shrink-0 border-r py-6 px-5 gap-3 overflow-y-auto animate-fade-in transition-all duration-500" style="border-color: var(--card-border);">
+          <h4 class="sidebar-title text-[11px] font-bold uppercase tracking-widest mb-1" style="color: var(--text-secondary); opacity: 0.6;">Accesos Rápidos</h4>
           
-          <button (click)="sendShortcutMessage('Hola, quiero crear una Landing Page profesional para mi negocio')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
+          <button (click)="sendShortcutMessage('Hola, quiero crear una Landing Page profesional para mi negocio')" class="shortcut-btn flex items-center gap-2.5 px-4 py-3 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Landing para mi negocio</span>
+            <span class="text-[13px] sm:text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Landing para mi negocio</span>
           </button>
           
-          <button (click)="sendShortcutMessage('Hola, soy fotógrafo y quiero una Landing Page para mostrar mis servicios')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
+          <button (click)="sendShortcutMessage('Hola, soy fotógrafo y quiero una Landing Page para mostrar mis servicios')" class="shortcut-btn flex items-center gap-2.5 px-4 py-3 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Landing para Fotógrafo</span>
+            <span class="text-[13px] sm:text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Landing para Fotógrafo</span>
           </button>
           
-          <button (click)="sendShortcutMessage('Hola, quiero una Landing Page para consultoría profesional y servicios')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
+          <button (click)="sendShortcutMessage('Hola, quiero una Landing Page para consultoría profesional y servicios')" class="shortcut-btn flex items-center gap-2.5 px-4 py-3 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Consultoría y Servicios</span>
+            <span class="text-[13px] sm:text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Consultoría y Servicios</span>
           </button>
           
-          <button (click)="sendShortcutMessage('Hola, soy desarrollador y quiero un Portafolio Web con mis servicios')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
+          <button (click)="sendShortcutMessage('Hola, soy desarrollador y quiero un Portafolio Web con mis servicios')" class="shortcut-btn flex items-center gap-2.5 px-4 py-3 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Portafolio de Servicios</span>
+            <span class="text-[13px] sm:text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Portafolio de Servicios</span>
           </button>
 
-          <h4 class="sidebar-title mt-4 mb-2">Estilos y Temas</h4>
+          <h4 class="sidebar-title text-[11px] font-bold uppercase tracking-widest mt-3 mb-1" style="color: var(--text-secondary); opacity: 0.6;">Estilos y Temas</h4>
 
-          <button (click)="sendShortcutMessage('Quiero que mi Landing Page tenga un estilo oscuro elegante con acentos cian')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
+          <button (click)="sendShortcutMessage('Quiero que mi Landing Page tenga un estilo oscuro elegante con acentos cian')" class="shortcut-btn flex items-center gap-2.5 px-4 py-3 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Estilo Oscuro Premium</span>
+            <span class="text-[13px] sm:text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Estilo Oscuro Premium</span>
           </button>
 
-          <button (click)="sendShortcutMessage('Quiero que mi Landing Page tenga un estilo claro moderno y minimalista')" class="shortcut-btn flex items-center gap-3 px-5 py-4 rounded-xl text-left border transition-all duration-300">
+          <button (click)="sendShortcutMessage('Quiero que mi Landing Page tenga un estilo claro moderno y minimalista')" class="shortcut-btn flex items-center gap-2.5 px-4 py-3 rounded-xl text-left border transition-all duration-300">
             <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: var(--accent-color);"></span>
-            <span class="text-[15px] font-medium leading-snug" style="color: var(--text-primary);">Estilo Claro Minimalista</span>
+            <span class="text-[13px] sm:text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Estilo Claro Minimalista</span>
           </button>
         </div>
  
@@ -157,17 +157,17 @@ import { SiteService } from '../../services/site.service';
             </ng-container>
 
             <ng-template #chatContent>
-              <!-- Welcome Intro Section -->
-            <div *ngIf="chatService.messages.length <= 1" class="flex flex-col items-center justify-center text-center pb-2 border-b mt-0 mb-2 welcome-border">
-              <div class="w-32 h-32 sm:w-40 sm:h-40 mb-2 relative flex items-center justify-center overflow-visible">
-                <img src="assets/images/rotbot4.png" class="w-full h-full object-contain relative z-10" alt="Rotbot Full">
+              <!-- Welcome Intro Section (Enlarged image, more top space, reduced punchy text) -->
+            <div *ngIf="chatService.messages.length <= 1" class="flex flex-col items-center justify-center text-center pb-4 border-b pt-6 sm:pt-10 mb-4 welcome-border">
+              <div class="w-48 h-48 sm:w-60 sm:h-60 mb-4 relative flex items-center justify-center overflow-visible transition-transform duration-500 hover:scale-105">
+                <img src="assets/images/rotbot4.png" class="w-full h-full object-contain relative z-10 filter drop-shadow-[0_10px_25px_rgba(0,245,255,0.25)]" alt="Rotbot Full">
               </div>
-              <h2 class="text-lg sm:text-xl font-bold tracking-tight mb-2" style="color: var(--text-primary);">
+              <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2 font-headline uppercase" style="color: var(--text-primary);">
                 Sistemas con Rotbot IA
               </h2>
-              <div class="text-[13px] sm:text-[14px] font-light leading-relaxed px-4 max-w-[95%]" style="color: var(--text-secondary);">
-                <p class="mb-2">
-                  ¡Hola! Soy RotBot, tu copiloto tecnológico. Estoy listo para guiarte en el diseño y desarrollo de sistemas a medida, e-commerce e integración de Inteligencia Artificial para potenciar tu negocio.
+              <div class="text-[14px] sm:text-[15px] font-light leading-relaxed px-4 max-w-lg" style="color: var(--text-secondary);">
+                <p>
+                  ¡Hola! Soy RotBot, tu copiloto tecnológico listo para guiarte en el desarrollo de tus proyectos web e Inteligencia Artificial.
                 </p>
               </div>
             </div>
@@ -184,8 +184,8 @@ import { SiteService } from '../../services/site.service';
                 <!-- Message Bubble -->
                 <div 
                   [ngClass]="{
-                    'assistant-bubble py-2 text-[16px] leading-relaxed max-w-[72%]': msg.role === 'assistant',
-                    'user-bubble px-4 py-3 rounded-2xl rounded-tr-sm text-[16px] leading-relaxed max-w-[85%] border shadow-sm': msg.role === 'user'
+                    'assistant-bubble py-2 text-[17px] sm:text-[18px] leading-relaxed max-w-[75%]': msg.role === 'assistant',
+                    'user-bubble px-5 py-3.5 rounded-2xl rounded-tr-sm text-[17px] sm:text-[18px] leading-relaxed max-w-[85%] border shadow-sm': msg.role === 'user'
                   }"
                 >
                   <span [innerHTML]="msg.content | markdown"></span>
@@ -254,7 +254,7 @@ import { SiteService } from '../../services/site.service';
                   name="userInput"
                   rows="1"
                   placeholder="Pregúntale a Rotbot..."
-                  class="chat-input w-full rounded-xl border py-4 pl-5 pr-14 text-[16px] font-light tracking-wide transition-all focus:ring-0 focus:outline-none resize-none overflow-y-auto leading-normal max-h-36 block"
+                  class="chat-input w-full rounded-xl border py-4 pl-5 pr-14 text-[17px] font-light tracking-wide transition-all focus:ring-0 focus:outline-none resize-none overflow-y-auto leading-normal max-h-36 block"
                 ></textarea>
                 <button 
                   type="submit"
@@ -269,38 +269,40 @@ import { SiteService } from '../../services/site.service';
               </form>
             </ng-container>
             <ng-template #loginPrompt>
-              <div class="flex flex-col items-center justify-center py-6 px-5 max-w-2xl mx-auto rounded-3xl border border-dashed mb-4 relative overflow-hidden"
-                   style="border-color: rgba(0, 245, 255, 0.3); background: linear-gradient(180deg, rgba(0,245,255,0.03) 0%, rgba(0,0,0,0) 100%);">
+              <div class="flex flex-col items-center justify-center py-5 px-6 max-w-md mx-auto rounded-2xl border mb-2 relative overflow-hidden backdrop-blur-md transition-all duration-300 shadow-[0_0_30px_rgba(0,245,255,0.08)] login-prompt-card"
+                   style="border-color: rgba(0, 245, 255, 0.25); background: linear-gradient(180deg, rgba(0,245,255,0.04) 0%, rgba(10,10,10,0.3) 100%);">
                 
-                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1 rounded-full" style="background: var(--accent-color); opacity: 0.8; box-shadow: 0 0 20px var(--accent-color);"></div>
+                <!-- Top Beam Accent -->
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-1 rounded-full" style="background: var(--accent-color, #00f5ff); opacity: 0.8; box-shadow: 0 0 15px var(--accent-color, #00f5ff);"></div>
 
-                <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 mt-2 border" style="background: rgba(0,245,255,0.08); border-color: rgba(0,245,255,0.2);">
-                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <!-- Subtle Icon Badge -->
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3 mt-1 border shadow-sm" style="background: rgba(0,245,255,0.08); border-color: rgba(0,245,255,0.2);">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color, #00f5ff)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                   </svg>
                 </div>
                 
-                <h3 class="text-xl sm:text-2xl font-black uppercase tracking-widest mb-3 font-headline text-center" style="color: var(--text-primary); letter-spacing: 0.1em;">
+                <h3 class="text-base sm:text-lg font-bold uppercase tracking-wider mb-1.5 font-headline text-center" style="color: var(--text-primary);">
                   Desbloquea RotBot IA
                 </h3>
                 
-                <p class="text-sm font-light mb-6 text-center leading-relaxed max-w-lg" style="color: var(--text-secondary);">
-                  Regístrate o inicia sesión para conversar sin límites, acceder a diseños exclusivos y potenciar tu proyecto con nuestro copiloto experto.
+                <p class="text-xs sm:text-[13px] font-light mb-4 text-center leading-normal max-w-xs" style="color: var(--text-secondary);">
+                  Inicia sesión o regístrate para conversar sin límites y potenciar tu proyecto.
                 </p>
                 
-                <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto mt-2">
-                  <button routerLink="/register" class="px-8 py-3.5 rounded-2xl text-[11px] font-bold uppercase tracking-[0.2em] transition-all hover:scale-[1.02] active:scale-[0.98] w-full sm:w-auto text-center" style="background: var(--accent-color, #00f5ff); color: #000; box-shadow: 0 0 20px rgba(0,245,255,0.25);">
+                <div class="flex flex-row gap-2.5 w-full sm:w-auto items-center justify-center">
+                  <button routerLink="/register" class="px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all hover:scale-105 active:scale-95 text-center cursor-pointer shadow-[0_0_15px_rgba(0,245,255,0.25)]" style="background: var(--accent-color, #00f5ff); color: #000;">
                     Crear Cuenta Gratis
                   </button>
-                  <button routerLink="/login" class="px-8 py-3.5 rounded-2xl text-[11px] font-bold uppercase tracking-[0.2em] transition-all hover:bg-white/5 w-full sm:w-auto text-center border border-white/10" style="color: var(--text-primary);">
+                  <button routerLink="/login" class="px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all hover:bg-white/10 border border-white/20 text-center cursor-pointer" style="color: var(--text-primary);">
                     Iniciar Sesión
                   </button>
                 </div>
               </div>
             </ng-template>
             <div class="flex justify-center mt-3">
-               <span class="text-[10px] uppercase tracking-widest font-sans font-medium opacity-30" style="color: var(--text-secondary);">Powered by Portalink IA</span>
+               <span class="text-[11px] uppercase tracking-widest font-sans font-medium opacity-40" style="color: var(--text-secondary);">Powered by Portalink IA</span>
             </div>
           </div>
         </div>
@@ -314,17 +316,17 @@ import { SiteService } from '../../services/site.service';
               <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(0,245,255,0.4)]" alt="Rotbot Logo">
             </div>
             <div>
-              <h5 class="text-sm font-bold tracking-wide" style="color: var(--text-primary);">Copiloto Tecnológico</h5>
-              <p class="text-[12.5px] font-normal mt-2 leading-relaxed opacity-95" style="color: var(--text-secondary);">
+              <h5 class="text-base font-bold tracking-wide" style="color: var(--text-primary);">Copiloto Tecnológico</h5>
+              <p class="text-[14px] font-normal mt-2 leading-relaxed opacity-95" style="color: var(--text-secondary);">
                 Rotbot es una inteligencia artificial diseñada para asesorar y guiar en el desarrollo de soluciones digitales avanzadas, desarrollo a medida y automatizaciones de procesos comerciales.
               </p>
               <button (click)="isInfoModalOpen = true" class="mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] transition-all group">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-cyan-400 group-hover:scale-110 transition-transform">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-cyan-400 group-hover:scale-110 transition-transform">
                   <circle cx="12" cy="12" r="10"></circle>
                   <line x1="12" y1="16" x2="12" y2="12"></line>
                   <line x1="12" y1="8" x2="12.01" y2="8"></line>
                 </svg>
-                <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--text-primary);">Info de la IA</span>
+                <span class="text-xs sm:text-sm font-bold uppercase tracking-wider" style="color: var(--text-primary);">Info de la IA</span>
               </button>
             </div>
           </div>
@@ -332,9 +334,9 @@ import { SiteService } from '../../services/site.service';
           <h4 class="sidebar-title mt-2 mb-2">¿Tienes un Proyecto?</h4>
  
           <button (click)="sendShortcutMessage('Quiero una implementación de IA en mi negocio')" class="shortcut-btn flex flex-col gap-2 p-5 rounded-xl text-left border transition-all duration-300 shadow-sm hover:shadow-md">
-            <span class="text-[11px] font-bold uppercase tracking-widest" style="color: var(--accent-color);">Oportunidad</span>
-            <span class="text-[15.5px] font-semibold leading-snug" style="color: var(--text-primary);">Quiero mi IA para mi negocio</span>
-            <span class="text-[12px] font-normal opacity-95 leading-normal block" style="color: var(--text-secondary);">
+            <span class="text-xs font-bold uppercase tracking-widest" style="color: var(--accent-color);">Oportunidad</span>
+            <span class="text-[17px] font-bold leading-snug" style="color: var(--text-primary);">Quiero mi IA para mi negocio</span>
+            <span class="text-[13.5px] font-normal opacity-95 leading-normal block" style="color: var(--text-secondary);">
               Empieza hoy la transformación digital y automatiza tu negocio con Inteligencia Artificial.
             </span>
           </button>
@@ -505,18 +507,23 @@ import { SiteService } from '../../services/site.service';
       box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.02);
     }
     .sidebar-title {
-      font-size: 12px;
+      font-size: 13.5px;
       text-transform: uppercase;
-      letter-spacing: 0.2em;
+      letter-spacing: 0.18em;
       font-family: var(--font-sans, sans-serif);
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text-secondary);
-      opacity: 0.5;
+      opacity: 0.65;
     }
     :host-context(.theme-light) .sidebar-title {
       color: var(--text-primary);
-      opacity: 0.65;
+      opacity: 0.8;
       font-weight: 700;
+    }
+    :host-context(.theme-light) .login-prompt-card {
+      background: linear-gradient(180deg, rgba(0,245,255,0.08) 0%, rgba(255,255,255,0.95) 100%) !important;
+      border-color: rgba(0, 245, 255, 0.4) !important;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05) !important;
     }
   `]
 })

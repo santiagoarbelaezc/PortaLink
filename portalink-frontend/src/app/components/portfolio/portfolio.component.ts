@@ -53,18 +53,20 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
               </h3>
 
               <!-- Description & CTAs -->
-              <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 mt-2">
-                <!-- Ver Ahora Button -->
-                <a *ngIf="project.liveUrl" [href]="project.liveUrl" target="_blank"
+              <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mt-2">
+                <!-- Ver Detalles Button -->
+                <a [routerLink]="['/proyecto', getProjectId(project)]"
                    (click)="$event.stopPropagation()"
-                   class="inline-flex items-center justify-center px-6 py-3 sm:px-9 sm:py-4 rounded-full bg-white text-black font-bold text-[10px] sm:text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all w-fit">
-                  {{ getTranslation().viewNow }}
+                   class="inline-flex items-center justify-center px-6 py-3 sm:px-8 sm:py-3.5 rounded-full bg-[var(--accent-color,#00f5ff)] text-black font-extrabold text-[10px] sm:text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all w-fit shadow-lg">
+                  Ver Detalles del Proyecto ↗
                 </a>
 
-                <!-- Meta/Tech stack & short description -->
-                <p class="text-xs md:text-sm font-medium leading-relaxed max-w-md sm:max-w-2xl hidden sm:block" style="color: rgba(255, 255, 255, 0.85);">
-                  {{ getProjectDescription(project) }}
-                </p>
+                <!-- Ver Ahora (Live Site) Button -->
+                <a *ngIf="project.liveUrl" [href]="project.liveUrl" target="_blank"
+                   (click)="$event.stopPropagation()"
+                   class="inline-flex items-center justify-center px-6 py-3 sm:px-8 sm:py-3.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold text-[10px] sm:text-xs uppercase tracking-widest hover:bg-white hover:text-black hover:scale-105 active:scale-95 transition-all w-fit">
+                  {{ getTranslation().viewNow }}
+                </a>
               </div>
 
             </div>
@@ -263,6 +265,18 @@ export class PortfolioComponent implements OnInit, OnDestroy {
       return project.techStack[0];
     }
     return this.getTranslation().defaultTag;
+  }
+
+  getProjectId(project: any): string {
+    if (project.id) return project.id;
+    const title = (project.title || '').toLowerCase();
+    if (title.includes('camascotas')) return 'camascotas';
+    if (title.includes('sysmicon')) return 'sysmicon';
+    if (title.includes('catálogo') || title.includes('catalogo')) return 'catalogodigital';
+    if (title.includes('colchones') || title.includes('districol')) return 'districol';
+    if (title.includes('asistente') || title.includes('copiloto')) return 'asistente-ia';
+    if (title.includes('íntima') || title.includes('intima')) return 'tiendaintima';
+    return 'camascotas';
   }
 
   ngOnDestroy() {

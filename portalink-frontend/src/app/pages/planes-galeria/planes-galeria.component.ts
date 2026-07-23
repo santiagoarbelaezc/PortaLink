@@ -277,11 +277,11 @@ export interface GalleryProject {
               <span class="text-xs text-white/50 text-center sm:text-left font-light">
                 ¿Te inspira este diseño? Podemos usarlo como base y adaptarlo al 100% con las reglas de tu negocio.
               </span>
-              <div class="flex items-center gap-3 w-full sm:w-auto">
-                <button (click)="closePreview()" 
-                        class="px-6 py-3 rounded-xl border border-white/15 hover:bg-white/5 text-white font-bold text-xs uppercase tracking-widest transition-all cursor-pointer w-full sm:w-auto">
-                  Cerrar
-                </button>
+              <div class="flex items-center gap-3 w-full sm:w-auto flex-wrap">
+                <a [routerLink]="['/proyecto', previewModalProject.id]" (click)="closePreview()"
+                   class="px-6 py-3 rounded-xl bg-white text-black font-extrabold text-xs uppercase tracking-widest hover:scale-105 transition-all cursor-pointer w-full sm:w-auto text-center shadow-md">
+                  Ver Ficha Completa ↗
+                </a>
                 <button (click)="selectDesign(previewModalProject)" 
                         class="px-7 py-3 rounded-xl bg-[#00f5ff] hover:bg-[#00f5ff]/90 text-black font-extrabold text-xs uppercase tracking-widest transition-all shadow-lg cursor-pointer flex items-center justify-center gap-2 w-full sm:w-auto">
                   <span>Solicitar este Estilo</span>
