@@ -15,9 +15,9 @@ import { RouterModule } from '@angular/router';
         <!-- Text Content -->
         <div class="w-full">
           <!-- Author / Brand Tag -->
-          <div class="flex items-center gap-3 mb-4 hero-animate-1">
-            <div class="h-px w-8" style="background-color: var(--accent-color, #00f5ff); opacity: 0.8;"></div>
-            <span class="text-xs sm:text-sm uppercase tracking-[0.3em] font-mono font-bold hero-author-text">
+          <div class="flex items-center gap-4 mb-4 hero-animate-1">
+            <div class="h-px w-12" style="background-color: var(--text-primary); opacity: 0.4;"></div>
+            <span class="text-xs sm:text-sm font-mono font-bold uppercase tracking-[0.4em] hero-author-text">
               {{ getTranslation().author }}
             </span>
           </div>
@@ -28,10 +28,12 @@ import { RouterModule } from '@angular/router';
           </h1>
           
           <!-- Role Subtitle -->
-          <p class="text-xs sm:text-sm font-mono uppercase tracking-[0.25em] mb-8 text-[var(--accent-color,#00f5ff)] font-bold flex items-center gap-3 hero-animate-3">
-            <span class="w-2 h-2 rounded-full animate-pulse" style="background-color: var(--accent-color, #00f5ff);"></span>
-            {{ getTranslation().role }}
-          </p>
+          <div class="flex items-center gap-4 mb-8 hero-animate-3">
+            <div class="h-px w-12 bg-[var(--accent-color,#00f5ff)]" style="opacity: 0.8;"></div>
+            <span class="text-xs sm:text-sm font-mono font-extrabold uppercase tracking-[0.35em] text-[var(--accent-color,#00f5ff)]">
+              {{ getTranslation().role }}
+            </span>
+          </div>
 
           <!-- 3 Minimalist Action Buttons -->
           <div class="flex flex-col gap-3.5 w-full max-w-xl mt-8 hero-animate-4">
@@ -133,6 +135,22 @@ import { RouterModule } from '@angular/router';
     }
     .theme-light .hero-author-text {
       color: #555555;
+    }
+    .hero-author-badge {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+    .theme-light .hero-author-badge {
+      background: rgba(0, 0, 0, 0.04);
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+    .hero-role-badge {
+      background: rgba(0, 245, 255, 0.06);
+      border-color: rgba(0, 245, 255, 0.25);
+    }
+    .theme-light .hero-role-badge {
+      background: rgba(0, 180, 216, 0.08);
+      border-color: rgba(0, 180, 216, 0.25);
     }
     .hero-btn-rotbot {
       display: flex;
