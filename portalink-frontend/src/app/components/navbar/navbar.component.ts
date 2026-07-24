@@ -972,9 +972,8 @@ export class NavbarComponent implements OnInit {
       { name: isEs ? 'Inicio' : 'Home',         link: '#hero',          icon: 'home' },
       { name: isEs ? 'Propuesta' : 'Proposal',  link: '/proposal',      icon: 'proposal' },
       { name: 'Links',                          link: '/links',         icon: 'link' },
-      { name: 'RotBot',                         link: '/rotbot',        icon: 'chat' },
-      { name: isEs ? 'Planes' : 'Plans',        link: '/personalizar',  icon: 'planes' },
-      { name: isEs ? 'Perfil' : 'Profile',      link: this.authService.isAuthenticated() ? '/perfil' : '/login', icon: 'user' }
+      { name: 'Chat',                           link: '/rotbot',        icon: 'chat' },
+      { name: isEs ? 'Cuenta' : 'Account',      link: this.authService.isAuthenticated() ? '/perfil' : '/login', icon: 'user' }
     ];
     setTimeout(() => this.updatePillPosition(), 100);
   }

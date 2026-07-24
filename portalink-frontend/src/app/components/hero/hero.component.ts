@@ -79,11 +79,18 @@ import { RouterModule } from '@angular/router';
 
         <!-- Single Large Featured Showcase Image Column -->
         <div class="w-full py-4 flex flex-col items-center lg:items-start hero-animate-4">
-          <div class="relative w-full aspect-[16/10] rounded-[28px] sm:rounded-[36px] overflow-hidden border transition-all duration-500 shadow-2xl group border-white/10 hover:border-[#00f5ff]/40">
+          <div class="relative w-full aspect-[9/14] sm:aspect-[3/4] md:aspect-[16/10] rounded-[28px] sm:rounded-[36px] overflow-hidden border transition-all duration-500 shadow-2xl group border-white/10 hover:border-[#00f5ff]/40">
+            <!-- Mobile Image (movil-banner.png - Extra Tall aspect ratio) -->
+            <img
+               src="assets/images/fotos/movil-banner.png"
+               alt="Portalink Mobile Showcase"
+               class="block md:hidden w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+            />
+            <!-- Desktop / Tablet Image (proyecto-0.png) -->
             <img
                src="assets/images/proyectos/proyecto-0.png"
                alt="Portalink Ecosystem"
-               class="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+               class="hidden md:block w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
             />
             <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none"></div>
           </div>
