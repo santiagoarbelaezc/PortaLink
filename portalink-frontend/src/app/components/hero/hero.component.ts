@@ -14,36 +14,23 @@ import { RouterModule } from '@angular/router';
       <div class="container mx-auto px-6 pt-24 pb-28 md:pt-32 md:pb-12 grid grid-cols-1 lg:grid-cols-[45%_55%] gap-8 md:gap-12 items-center relative z-10">
         <!-- Text Content -->
         <div class="w-full">
-          <!-- Author / Brand Tag -->
-          <div class="flex items-center gap-4 mb-4 hero-animate-1">
-            <div class="h-px w-12" style="background-color: var(--text-primary); opacity: 0.4;"></div>
-            <span class="text-xs sm:text-sm font-mono font-bold uppercase tracking-[0.4em] hero-author-text">
-              {{ getTranslation().author }}
-            </span>
-          </div>
-
-          <!-- Main Title -->
-          <h1 class="text-4xl sm:text-6xl md:text-[68px] font-headline uppercase leading-[0.96] tracking-tight mb-4 hero-title hero-animate-2">
+          <!-- Main Title (Enlarged) -->
+          <h1 class="text-5xl sm:text-7xl md:text-[76px] lg:text-[84px] font-headline uppercase leading-[0.93] tracking-tight mb-5 hero-title hero-animate-1">
             <span class="title-name">{{ getTranslation().mainTitle }}</span>
           </h1>
           
           <!-- Role Subtitle -->
-          <div class="flex items-center gap-4 mb-8 hero-animate-3">
-            <div class="h-px w-12 bg-[var(--accent-color,#00f5ff)]" style="opacity: 0.8;"></div>
-            <span class="text-xs sm:text-sm font-mono font-extrabold uppercase tracking-[0.35em] text-[var(--accent-color,#00f5ff)]">
-              {{ getTranslation().role }}
-            </span>
-          </div>
+          <p class="text-xs sm:text-sm md:text-base font-light tracking-[0.2em] uppercase mb-8 hero-subtitle hero-animate-2" style="color: var(--text-secondary);">
+            {{ getTranslation().role }}
+          </p>
 
           <!-- 3 Minimalist Action Buttons -->
-          <div class="flex flex-col gap-3.5 w-full max-w-xl mt-8 hero-animate-4">
+          <div class="flex flex-col gap-3.5 w-full max-w-xl mt-8 hero-animate-3">
             
             <!-- Button 1: Rotbot AI -->
             <a routerLink="/rotbot" class="hero-btn-rotbot group cursor-pointer">
               <div class="flex items-center gap-3">
-                <svg class="w-5 h-5 text-[var(--accent-color,#00f5ff)] group-hover:scale-105 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                </svg>
+                <img src="assets/icons/logo-link-dark.png" alt="RotBot" class="w-8 h-8 object-contain group-hover:scale-105 transition-transform" />
                 <span class="text-xs sm:text-sm font-bold uppercase tracking-wider">
                   {{ getTranslation().btnRotbot }}
                 </span>
@@ -77,10 +64,8 @@ import { RouterModule } from '@angular/router';
               <a href="https://wa.me/573054078225" 
                  target="_blank"
                  class="hero-btn-green group">
-                <div class="flex items-center gap-2.5">
-                  <svg class="w-4 h-4 text-black group-hover:scale-105 transition-transform" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-1.151 4.207 4.294-1.127z"/>
-                  </svg>
+                <div class="flex items-center gap-3">
+                  <img src="assets/icons/whatsapp-icon.png" alt="WhatsApp" class="w-7 h-7 object-contain group-hover:scale-110 transition-transform filter drop-shadow-sm" />
                   <span>{{ getTranslation().btnContacto }}</span>
                 </div>
                 <svg class="w-4 h-4 text-black opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
@@ -93,7 +78,7 @@ import { RouterModule } from '@angular/router';
         </div>
 
         <!-- Single Large Featured Showcase Image Column -->
-        <div class="w-full py-4 flex flex-col items-center lg:items-start hero-animate-5">
+        <div class="w-full py-4 flex flex-col items-center lg:items-start hero-animate-4">
           <div class="relative w-full aspect-[16/10] rounded-[28px] sm:rounded-[36px] overflow-hidden border transition-all duration-500 shadow-2xl group border-white/10 hover:border-[#00f5ff]/40">
             <img
                src="assets/images/proyectos/proyecto-0.png"
@@ -222,7 +207,7 @@ import { RouterModule } from '@angular/router';
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1rem 1.35rem;
+      padding: 0.95rem 1.35rem;
       border-radius: 1rem;
       background: #25D366;
       color: #000000;
@@ -230,27 +215,28 @@ import { RouterModule } from '@angular/router';
       transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
       text-decoration: none;
       font-size: 0.75rem;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      box-shadow: 0 4px 15px rgba(37, 211, 102, 0.2);
+      box-shadow: none;
       cursor: pointer;
     }
     .hero-btn-green:hover {
-      background: #20bd5a;
-      border-color: #20bd5a;
+      background: #25D366;
+      border-color: #25D366;
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(37, 211, 102, 0.35);
+      box-shadow: none;
     }
     .theme-light .hero-btn-green {
       background: #25D366;
       color: #000000;
       border-color: #25D366;
-      box-shadow: 0 4px 15px rgba(37, 211, 102, 0.25);
+      box-shadow: none;
     }
     .theme-light .hero-btn-green:hover {
-      background: #20bd5a;
-      border-color: #20bd5a;
+      background: #25D366;
+      border-color: #25D366;
+      box-shadow: none;
     }
     .no-scrollbar::-webkit-scrollbar {
       display: none;

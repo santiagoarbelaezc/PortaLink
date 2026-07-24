@@ -39,6 +39,12 @@ import { AuthService } from '../../services/auth.service';
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
               </ng-container>
+              <ng-container *ngIf="item.icon === 'proposal'">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+              </ng-container>
               <ng-container *ngIf="item.icon === 'link'">
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
@@ -248,6 +254,12 @@ import { AuthService } from '../../services/auth.service';
             <ng-container *ngIf="item.icon === 'home'">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
               <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </ng-container>
+            <ng-container *ngIf="item.icon === 'proposal'">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
             </ng-container>
             <ng-container *ngIf="item.icon === 'link'">
               <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
@@ -550,16 +562,18 @@ export class NavbarComponent implements OnInit {
 
   navItemsTranslations: any = {
     es: [
-      { name: 'Inicio',    link: '#hero',   icon: 'home'   },
-      { name: 'Links',     link: '/links',  icon: 'link'   },
-      { name: 'RotBot',    link: '/rotbot', icon: 'chat'   },
-      { name: 'Servicios', link: '/planes', icon: 'planes' }
+      { name: 'Inicio',    link: '#hero',     icon: 'home'     },
+      { name: 'Propuesta', link: '/proposal', icon: 'proposal' },
+      { name: 'Links',     link: '/links',    icon: 'link'     },
+      { name: 'RotBot',    link: '/rotbot',   icon: 'chat'     },
+      { name: 'Servicios', link: '/planes',   icon: 'planes'   }
     ],
     en: [
-      { name: 'Home',      link: '#hero',   icon: 'home'   },
-      { name: 'Links',     link: '/links',  icon: 'link'   },
-      { name: 'RotBot',    link: '/rotbot', icon: 'chat'   },
-      { name: 'Services',  link: '/planes', icon: 'planes' }
+      { name: 'Home',      link: '#hero',     icon: 'home'     },
+      { name: 'Proposal',  link: '/proposal', icon: 'proposal' },
+      { name: 'Links',     link: '/links',    icon: 'link'     },
+      { name: 'RotBot',    link: '/rotbot',   icon: 'chat'     },
+      { name: 'Services',  link: '/planes',   icon: 'planes'   }
     ]
   };
 
@@ -729,6 +743,12 @@ export class NavbarComponent implements OnInit {
 
     if (this.router.url.includes('/login') || this.router.url.includes('/register')) {
       this.activeSection = '/login';
+      this.updatePillPosition();
+      return;
+    }
+
+    if (this.router.url.includes('/proposal')) {
+      this.activeSection = '/proposal';
       this.updatePillPosition();
       return;
     }
@@ -949,11 +969,12 @@ export class NavbarComponent implements OnInit {
     
     const isEs = this.currentLanguage === 'es';
     this.mobileItems = [
-      { name: isEs ? 'Inicio' : 'Home',     link: '#hero',          icon: 'home' },
-      { name: 'Links',                      link: '/links',         icon: 'link' },
-      { name: 'RotBot',                     link: '/rotbot',        icon: 'chat' },
-      { name: isEs ? 'Planes' : 'Plans',    link: '/personalizar',  icon: 'planes' },
-      { name: isEs ? 'Perfil' : 'Profile',  link: this.authService.isAuthenticated() ? '/perfil' : '/login',         icon: 'user' }
+      { name: isEs ? 'Inicio' : 'Home',         link: '#hero',          icon: 'home' },
+      { name: isEs ? 'Propuesta' : 'Proposal',  link: '/proposal',      icon: 'proposal' },
+      { name: 'Links',                          link: '/links',         icon: 'link' },
+      { name: 'RotBot',                         link: '/rotbot',        icon: 'chat' },
+      { name: isEs ? 'Planes' : 'Plans',        link: '/personalizar',  icon: 'planes' },
+      { name: isEs ? 'Perfil' : 'Profile',      link: this.authService.isAuthenticated() ? '/perfil' : '/login', icon: 'user' }
     ];
     setTimeout(() => this.updatePillPosition(), 100);
   }

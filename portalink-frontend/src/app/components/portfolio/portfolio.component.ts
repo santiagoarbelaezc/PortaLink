@@ -9,7 +9,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
     imports: [CommonModule, RouterModule],
     template: `
     <ng-container *ngIf="!isLoading; else skeleton">
-      <section id="portfolio" class="py-20 md:py-32 overflow-hidden relative">
+      <section id="portfolio" class="py-10 md:py-16 overflow-hidden relative">
       <div class="container mx-auto px-6">
         <!-- Section Header -->
         <div class="mb-4 md:mb-6">

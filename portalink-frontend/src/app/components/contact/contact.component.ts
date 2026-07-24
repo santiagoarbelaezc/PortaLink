@@ -12,7 +12,7 @@ import { MessagesService } from '../../services/messages.service';
   imports: [CommonModule, RouterModule, FormsModule, RevealDirective, MagneticDirective],
   encapsulation: ViewEncapsulation.None,
   template: `
-    <section id="contact" class="py-20 md:py-32 px-6 pb-32 md:pb-20">
+    <section id="contact" class="py-10 md:py-16 px-6">
       <div class="container mx-auto">
         <div class="max-w-[1400px] mx-auto glass-card p-12 md:p-20 relative overflow-hidden border" style="border-color: var(--card-border);" appReveal>
           
@@ -49,16 +49,6 @@ import { MessagesService } from '../../services/messages.service';
                      </span>
                   </a>
                 </div>
-                
-                <!-- Botón hacia Propuesta -->
-                <div class="pt-10">
-                  <a routerLink="/proposal" class="inline-flex items-center gap-4 border rounded-full px-6 py-3 transition-colors group cursor-pointer" style="border-color: var(--card-border); color: var(--text-primary);">
-                    <div class="w-2 h-2 rounded-full bg-[#00b4d8] shadow-[0_0_8px_#00b4d8] animate-pulse"></div>
-                    <span class="text-[10px] uppercase tracking-widest font-bold">Ver Propuesta Digital</span>
-                    <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                  </a>
-                </div>
-
               </div>
             </div>
 

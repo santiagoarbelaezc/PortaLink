@@ -40,7 +40,7 @@ import { Router, RouterModule } from '@angular/router';
       <!-- ═══════════════════════════════════════════════════════════ -->
       <!-- GALERÍA DE PROYECTOS REALIZADOS (THEME ADAPTIVE)             -->
       <!-- ═══════════════════════════════════════════════════════════ -->
-      <section class="projects-showcase-section relative py-24 px-6 sm:px-12 lg:px-20 overflow-hidden">
+      <section class="projects-showcase-section relative py-10 md:py-16 px-6 sm:px-12 lg:px-20 overflow-hidden">
 
         <!-- Línea decorativa superior -->
         <div class="showcase-line absolute top-0 left-0 right-0 h-px"></div>
@@ -49,14 +49,14 @@ import { Router, RouterModule } from '@angular/router';
         <div class="max-w-[1500px] mx-auto mb-16">
           <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
             <div>
-              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[var(--accent-color)]/10 border border-[var(--accent-color)]/30 text-[10px] uppercase tracking-[0.25em] font-mono font-bold text-[var(--accent-color)] mb-4">
-                <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent-color)] animate-pulse"></span>
-                SHOWCASE DE PROYECTOS
+              <div class="flex items-center gap-4 mb-4">
+                <div class="h-px w-12" style="background-color: var(--text-primary); opacity: 0.5;"></div>
+                <span class="text-xs uppercase tracking-[0.4em] font-mono" style="color: var(--text-secondary);">SHOWCASE DE PROYECTOS</span>
               </div>
               <h2 class="showcase-title text-4xl sm:text-5xl lg:text-6xl font-headline font-black uppercase tracking-tight leading-[1.05]">
                 Trabajos Realizados
               </h2>
-              <p class="showcase-desc text-sm mt-3 font-light max-w-lg leading-relaxed">
+              <p class="showcase-desc text-base sm:text-lg mt-3 font-light max-w-xl leading-relaxed">
                 Una selección de proyectos construidos a medida: e-commerce, sistemas de gestión y plataformas con inteligencia artificial.
               </p>
             </div>
@@ -84,11 +84,6 @@ import { Router, RouterModule } from '@angular/router';
               <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent"></div>
               <div class="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-transparent"></div>
 
-              <!-- Badge superior izquierdo -->
-              <div class="absolute top-4 left-4">
-                <span class="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-white/80 group-hover:text-[var(--accent-color)] transition-colors">#{{ p.code }}</span>
-              </div>
-
               <!-- Badge superior derecho -->
               <div class="absolute top-4 right-4">
                 <span class="px-3 py-1 rounded-lg bg-white text-black text-[10px] font-extrabold uppercase tracking-widest shadow-md">
@@ -99,9 +94,9 @@ import { Router, RouterModule } from '@angular/router';
               <!-- Contenido inferior sobre la imagen -->
               <div class="absolute bottom-0 left-0 right-0 p-6">
                 <!-- Tagline -->
-                <div class="flex items-start gap-2.5 mb-2">
+                <div class="flex items-start gap-2.5 mb-2.5">
                   <div class="w-0.5 h-6 bg-[var(--accent-color)] flex-shrink-0 rounded-full mt-0.5"></div>
-                  <p class="text-xs text-white/80 font-light leading-relaxed">{{ p.tagline }}</p>
+                  <p class="text-sm sm:text-base text-white/90 font-medium leading-snug">{{ p.tagline }}</p>
                 </div>
                 <!-- Título -->
                 <h3 class="text-3xl sm:text-4xl font-headline font-black uppercase tracking-tight text-white group-hover:text-[var(--accent-color)] transition-colors duration-200 leading-none">
@@ -130,10 +125,6 @@ import { Router, RouterModule } from '@angular/router';
                    class="text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--accent-color)] flex items-center gap-1 hover:underline">
                   VER MÁS ↗
                 </a>
-                <button (click)="openChatWithMessage(p.prompt); $event.stopPropagation()"
-                        class="text-[11px] font-bold uppercase tracking-[0.15em] opacity-70 hover:opacity-100 transition-opacity flex items-center gap-1">
-                  COTIZAR +
-                </button>
               </div>
             </div>
 
