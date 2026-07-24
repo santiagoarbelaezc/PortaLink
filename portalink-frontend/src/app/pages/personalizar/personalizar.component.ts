@@ -11,10 +11,10 @@ import { RouterModule } from '@angular/router';
       
       <div class="max-w-[1300px] w-full mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center relative z-10">
 
-        <!-- Left Column: Enlarged RotBot Feature Image -->
+        <!-- Left Column: Enlarged RotBot Feature Image (Señalando a la Derecha) -->
         <div class="md:col-span-6 relative flex justify-center items-center">
           <div class="absolute inset-0 bg-cyan-500/10 rounded-full blur-3xl scale-95 pointer-events-none"></div>
-          <img src="assets/images/rotbot-señalandoizquierda.png"
+          <img src="assets/images/rotbot-señalandoderecha.png"
                alt="RotBot IA Mantenimiento"
                class="relative z-10 w-full max-w-[300px] sm:max-w-[400px] md:max-w-[480px] lg:max-w-[540px] max-h-[75vh] object-contain hover:scale-105 transition-transform duration-500 drop-shadow-2xl" />
         </div>
