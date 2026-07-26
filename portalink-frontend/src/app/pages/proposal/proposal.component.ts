@@ -228,71 +228,47 @@ import { RouterModule } from '@angular/router';
 
         <!-- ═══════════════════════════════════════════════════════════ -->
         <!-- 5. SECCIÓN 4: DASHBOARD ORGANIZACIONAL PROFESIONAL          -->
-        <!-- ═══════════════════════════════════════════════════════════ -->
-        <section class="space-y-8 pt-4">
-          
-          <div class="text-center max-w-3xl mx-auto space-y-3">
-            <div class="flex items-center justify-center gap-4 mb-2">
-              <div class="h-px w-12" style="background-color: var(--text-primary); opacity: 0.5;"></div>
-              <span class="text-xs uppercase tracking-[0.4em] font-mono text-white font-bold" style="color: var(--text-secondary);">04 — ANALÍTICA & CONTROL CORPORATIVO</span>
-              <div class="h-px w-12" style="background-color: var(--text-primary); opacity: 0.5;"></div>
-            </div>
-
-            <h2 class="text-3xl sm:text-4xl md:text-5xl font-headline font-black uppercase leading-tight" style="font-family: var(--font-headline, sans-serif);">
-              4. DASHBOARD PARA GESTIONAR TUS FINANZAS & TRÁFICO
-            </h2>
-
-            <p class="text-sm sm:text-base font-light" style="color: var(--text-secondary);">
-              Panel organizacional corporativo de alto rendimiento con procesamiento de datos en vivo e indicadores que impulsan el valor financiero de tu empresa.
-            </p>
-
-            <!-- Selector Interactivo de Pestañas (Finanzas, Tráfico, Citas IA) -->
+        <!-- ══════════════════════�            <!-- Selector Interactivo de Pestañas (Finanzas, Tráfico, Citas IA) -->
             <div class="flex flex-wrap items-center justify-center gap-3 pt-4">
               <button (click)="setTab('finanzas')"
                       [class]="activeTab === 'finanzas' 
-                        ? 'px-5 py-3 rounded-2xl bg-white text-black font-bold uppercase text-[11px] tracking-wider shadow-lg transition-all flex items-center gap-2 cursor-pointer'
+                        ? 'px-5 py-3 rounded-2xl bg-[#ccff00] text-black font-extrabold uppercase text-[11px] tracking-wider shadow-[0_4px_20px_rgba(204,255,0,0.3)] transition-all flex items-center gap-2 cursor-pointer'
                         : 'px-5 py-3 rounded-2xl bg-white/[0.04] border border-white/10 hover:bg-white/10 text-white font-bold uppercase text-[11px] tracking-wider transition-all flex items-center gap-2 cursor-pointer'">
-                <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
+                <span class="w-2 h-2 rounded-full" [class]="activeTab === 'finanzas' ? 'bg-black' : 'bg-[#ccff00]'"></span>
                 <span>Finanzas & Rentabilidad</span>
               </button>
 
               <button (click)="setTab('trafico')"
                       [class]="activeTab === 'trafico' 
-                        ? 'px-5 py-3 rounded-2xl bg-white text-black font-bold uppercase text-[11px] tracking-wider shadow-lg transition-all flex items-center gap-2 cursor-pointer'
+                        ? 'px-5 py-3 rounded-2xl bg-[#ccff00] text-black font-extrabold uppercase text-[11px] tracking-wider shadow-[0_4px_20px_rgba(204,255,0,0.3)] transition-all flex items-center gap-2 cursor-pointer'
                         : 'px-5 py-3 rounded-2xl bg-white/[0.04] border border-white/10 hover:bg-white/10 text-white font-bold uppercase text-[11px] tracking-wider transition-all flex items-center gap-2 cursor-pointer'">
-                <svg class="w-3.5 h-3.5 text-cyan-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
-                </svg>
+                <span class="w-2 h-2 rounded-full" [class]="activeTab === 'trafico' ? 'bg-black' : 'bg-[#ccff00]'"></span>
                 <span>Tráfico & Audiencia</span>
               </button>
 
               <button (click)="setTab('citas')"
                       [class]="activeTab === 'citas' 
-                        ? 'px-5 py-3 rounded-2xl bg-white text-black font-bold uppercase text-[11px] tracking-wider shadow-lg transition-all flex items-center gap-2 cursor-pointer'
+                        ? 'px-5 py-3 rounded-2xl bg-[#ccff00] text-black font-extrabold uppercase text-[11px] tracking-wider shadow-[0_4px_20px_rgba(204,255,0,0.3)] transition-all flex items-center gap-2 cursor-pointer'
                         : 'px-5 py-3 rounded-2xl bg-white/[0.04] border border-white/10 hover:bg-white/10 text-white font-bold uppercase text-[11px] tracking-wider transition-all flex items-center gap-2 cursor-pointer'">
-                <svg class="w-3.5 h-3.5 text-teal-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                </svg>
+                <span class="w-2 h-2 rounded-full" [class]="activeTab === 'citas' ? 'bg-black' : 'bg-[#ccff00]'"></span>
                 <span>Citas & Leads IA</span>
               </button>
             </div>
           </div>
 
-          <!-- MOCKUP DEL DASHBOARD ORGANIZACIONAL PROFESIONAL (ENTERPRISE UI) -->
-          <div class="relative rounded-3xl border border-white/15 bg-[#070a10] p-6 sm:p-8 shadow-[0_30px_90px_rgba(0,0,0,0.7)] overflow-hidden">
+          <!-- MOCKUP DEL DASHBOARD ORGANIZACIONAL PROFESIONAL (MONOCHROME & LIME ACCENT) -->
+          <div class="relative rounded-3xl border border-white/15 bg-[#050505] p-6 sm:p-8 shadow-[0_30px_90px_rgba(0,0,0,0.9)] overflow-hidden">
             
-            <!-- Barra Superior Corporativa (Top Enterprise Bar) -->
+            <!-- Barra Superior Corporativa -->
             <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 mb-6 border-b border-white/10 relative z-10">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white font-black text-xs tracking-tighter">
+                <div class="w-10 h-10 rounded-xl bg-white text-black flex items-center justify-center font-black text-xs tracking-tighter shadow-md">
                   PL
                 </div>
                 <div>
-                  <h3 class="text-lg sm:text-xl font-bold uppercase tracking-tight text-white flex items-center gap-2">
+                  <h3 class="text-lg sm:text-xl font-black uppercase tracking-tight text-white flex items-center gap-2">
                     <span>PORTALINK EXECUTIVE CONTROL</span>
-                    <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">ONLINE</span>
+                    <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-[#ccff00]/15 text-[#ccff00] border border-[#ccff00]/30 font-bold">ONLINE</span>
                   </h3>
                   <p class="text-xs text-neutral-400">Sistema de analítica empresarial y flujo de caja en tiempo real</p>
                 </div>
@@ -300,29 +276,29 @@ import { RouterModule } from '@angular/router';
 
               <!-- Stream Ticker de Eventos en Vivo -->
               <div class="flex items-center gap-3 px-4 py-2 rounded-xl bg-white/[0.04] border border-white/10 text-xs font-mono text-neutral-300">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-                <span class="text-emerald-400 font-bold">{{ lastActivityText }}</span>
+                <span class="w-2.5 h-2.5 rounded-full bg-[#ccff00] animate-ping"></span>
+                <span class="text-[#ccff00] font-bold">{{ lastActivityText }}</span>
               </div>
             </div>
 
-            <!-- TAB 1: FINANZAS & RENTABILIDAD (MÉTRICAS FLUCTUANTES EN VIVO) -->
+            <!-- TAB 1: FINANZAS & RENTABILIDAD -->
             <div *ngIf="activeTab === 'finanzas'" class="space-y-6 relative z-10 animate-fade-in">
               
               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 
-                <!-- KPI Card 1: Ingresos Totales -->
-                <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3 hover:border-white/30 transition-all relative overflow-hidden">
+                <!-- KPI Card 1: Ingresos Brutos -->
+                <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3 hover:border-[#ccff00]/50 transition-all relative overflow-hidden group">
                   <div class="flex items-center justify-between">
                     <span class="text-neutral-400 text-xs font-bold uppercase tracking-wider">Ingresos Brutos</span>
-                    <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
+                    <div class="w-9 h-9 rounded-xl bg-[#ccff00]/10 border border-[#ccff00]/30 text-[#ccff00] flex items-center justify-center">
                       <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
                   </div>
                   <div class="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight flex items-center gap-2">
                     <span>\${{ formatMoney(revenueMetric) }}</span>
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="w-2 h-2 rounded-full bg-[#ccff00] animate-pulse"></span>
                   </div>
-                  <div class="text-xs text-emerald-400 font-semibold flex items-center gap-1">
+                  <div class="text-xs text-[#ccff00] font-semibold flex items-center gap-1">
                     <span>↑ +28.4%</span>
                     <span class="text-neutral-400 font-normal">flujo de caja acumulado</span>
                   </div>
@@ -332,14 +308,14 @@ import { RouterModule } from '@angular/router';
                 <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3 hover:border-white/30 transition-all">
                   <div class="flex items-center justify-between">
                     <span class="text-neutral-400 text-xs font-bold uppercase tracking-wider">Margen Neto</span>
-                    <div class="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center">
+                    <div class="w-9 h-9 rounded-xl bg-white/10 border border-white/20 text-white flex items-center justify-center">
                       <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
                   </div>
                   <div class="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">
                     \${{ formatMoney(netBalanceMetric) }}
                   </div>
-                  <div class="text-xs text-cyan-400 font-semibold flex items-center gap-1">
+                  <div class="text-xs text-[#ccff00] font-semibold flex items-center gap-1">
                     <span>↑ 66.7%</span>
                     <span class="text-neutral-400 font-normal">utilidad limpia</span>
                   </div>
@@ -349,101 +325,101 @@ import { RouterModule } from '@angular/router';
                 <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3 hover:border-white/30 transition-all">
                   <div class="flex items-center justify-between">
                     <span class="text-neutral-400 text-xs font-bold uppercase tracking-wider">Ticket Promedio</span>
-                    <div class="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-400 flex items-center justify-center">
+                    <div class="w-9 h-9 rounded-xl bg-white/10 border border-white/20 text-white flex items-center justify-center">
                       <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
                     </div>
                   </div>
                   <div class="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">
                     \${{ formatMoney(ticketMetric) }}
                   </div>
-                  <div class="text-xs text-emerald-400 font-semibold">↑ Venta promedio optimizada</div>
+                  <div class="text-xs text-[#ccff00] font-semibold">↑ Venta promedio optimizada</div>
                 </div>
 
                 <!-- KPI Card 4: Retorno ROI -->
                 <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3 hover:border-white/30 transition-all">
                   <div class="flex items-center justify-between">
                     <span class="text-neutral-400 text-xs font-bold uppercase tracking-wider">Retorno ROI</span>
-                    <div class="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center">
+                    <div class="w-9 h-9 rounded-xl bg-[#ccff00]/10 border border-[#ccff00]/30 text-[#ccff00] flex items-center justify-center">
                       <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
                     </div>
                   </div>
                   <div class="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">
                     340%
                   </div>
-                  <div class="text-xs text-purple-400 font-semibold">Rentabilidad comprobada</div>
+                  <div class="text-xs text-white font-semibold">Rentabilidad comprobada</div>
                 </div>
 
               </div>
 
-              <!-- Gráfica de Rendimiento Financiero Corporativo con Tooltips Interactivos al pasar el cursor -->
-              <div class="p-6 rounded-2xl bg-white/[0.03] border border-white/10 space-y-4">
+              <!-- Gráfica de Rendimiento Financiero Corporativo en Negro, Blanco y Verde Amarillento -->
+              <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/10 space-y-4">
                 <div class="flex items-center justify-between">
                   <h4 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                    <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
+                    <svg class="w-4 h-4 text-[#ccff00]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
                     Proyección e Ingresos Mensuales Acumulados
                   </h4>
-                  <span class="text-xs font-mono text-emerald-400 font-bold">Sumando Transacciones (Pasa el cursor)</span>
+                  <span class="text-xs font-mono text-[#ccff00] font-bold">Sumando Transacciones (Pasa el cursor)</span>
                 </div>
 
-                <div class="grid grid-cols-6 items-end gap-3 h-52 pt-8 pb-2 border-b border-white/10">
+                <div class="grid grid-cols-6 items-end gap-3.5 h-56 pt-8 pb-2 border-b border-white/10">
                   <!-- Enero -->
                   <div class="relative group/bar flex flex-col items-center justify-end h-full">
-                    <div class="absolute -top-9 opacity-0 group-hover/bar:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black/95 text-white border border-emerald-500/40 px-2.5 py-1 rounded-xl shadow-xl text-center whitespace-nowrap">
-                      <div class="text-[11px] font-bold text-emerald-400 font-mono">$18.500.000</div>
+                    <div class="absolute -top-9 opacity-0 group-hover/bar:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black text-white border border-[#ccff00]/50 px-2.5 py-1 rounded-xl shadow-xl text-center whitespace-nowrap">
+                      <div class="text-[11px] font-bold text-[#ccff00] font-mono">$18.500.000</div>
                       <div class="text-[9px] text-neutral-400">Enero (+12.4%)</div>
                     </div>
-                    <div class="w-full bg-emerald-500/30 group-hover/bar:bg-emerald-400 transition-all duration-300 h-20 rounded-t-lg border-t-2 border-emerald-400 cursor-pointer"></div>
+                    <div class="w-full bg-[#ccff00]/25 group-hover/bar:bg-[#ccff00] transition-all duration-300 h-20 rounded-t-lg border-t-2 border-[#ccff00] cursor-pointer"></div>
                     <span class="text-[10px] font-mono text-neutral-400 mt-2">Ene</span>
                   </div>
 
                   <!-- Febrero -->
                   <div class="relative group/bar flex flex-col items-center justify-end h-full">
-                    <div class="absolute -top-9 opacity-0 group-hover/bar:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black/95 text-white border border-emerald-500/40 px-2.5 py-1 rounded-xl shadow-xl text-center whitespace-nowrap">
-                      <div class="text-[11px] font-bold text-emerald-400 font-mono">$24.200.000</div>
+                    <div class="absolute -top-9 opacity-0 group-hover/bar:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black text-white border border-[#ccff00]/50 px-2.5 py-1 rounded-xl shadow-xl text-center whitespace-nowrap">
+                      <div class="text-[11px] font-bold text-[#ccff00] font-mono">$24.200.000</div>
                       <div class="text-[9px] text-neutral-400">Febrero (+15.1%)</div>
                     </div>
-                    <div class="w-full bg-emerald-500/40 group-hover/bar:bg-emerald-400 transition-all duration-300 h-28 rounded-t-lg border-t-2 border-emerald-400 cursor-pointer"></div>
+                    <div class="w-full bg-[#ccff00]/35 group-hover/bar:bg-[#ccff00] transition-all duration-300 h-28 rounded-t-lg border-t-2 border-[#ccff00] cursor-pointer"></div>
                     <span class="text-[10px] font-mono text-neutral-400 mt-2">Feb</span>
                   </div>
 
                   <!-- Marzo -->
                   <div class="relative group/bar flex flex-col items-center justify-end h-full">
-                    <div class="absolute -top-9 opacity-0 group-hover/bar:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black/95 text-white border border-emerald-500/40 px-2.5 py-1 rounded-xl shadow-xl text-center whitespace-nowrap">
-                      <div class="text-[11px] font-bold text-emerald-400 font-mono">$29.800.000</div>
+                    <div class="absolute -top-9 opacity-0 group-hover/bar:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black text-white border border-[#ccff00]/50 px-2.5 py-1 rounded-xl shadow-xl text-center whitespace-nowrap">
+                      <div class="text-[11px] font-bold text-[#ccff00] font-mono">$29.800.000</div>
                       <div class="text-[9px] text-neutral-400">Marzo (+18.3%)</div>
                     </div>
-                    <div class="w-full bg-emerald-500/50 group-hover/bar:bg-emerald-400 transition-all duration-300 h-32 rounded-t-lg border-t-2 border-emerald-400 cursor-pointer"></div>
+                    <div class="w-full bg-[#ccff00]/45 group-hover/bar:bg-[#ccff00] transition-all duration-300 h-32 rounded-t-lg border-t-2 border-[#ccff00] cursor-pointer"></div>
                     <span class="text-[10px] font-mono text-neutral-400 mt-2">Mar</span>
                   </div>
 
                   <!-- Abril -->
                   <div class="relative group/bar flex flex-col items-center justify-end h-full">
-                    <div class="absolute -top-9 opacity-0 group-hover/bar:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black/95 text-white border border-emerald-500/40 px-2.5 py-1 rounded-xl shadow-xl text-center whitespace-nowrap">
-                      <div class="text-[11px] font-bold text-emerald-400 font-mono">$34.500.000</div>
+                    <div class="absolute -top-9 opacity-0 group-hover/bar:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black text-white border border-[#ccff00]/50 px-2.5 py-1 rounded-xl shadow-xl text-center whitespace-nowrap">
+                      <div class="text-[11px] font-bold text-[#ccff00] font-mono">$34.500.000</div>
                       <div class="text-[9px] text-neutral-400">Abril (+21.0%)</div>
                     </div>
-                    <div class="w-full bg-emerald-500/60 group-hover/bar:bg-emerald-400 transition-all duration-300 h-36 rounded-t-lg border-t-2 border-emerald-400 cursor-pointer"></div>
+                    <div class="w-full bg-[#ccff00]/60 group-hover/bar:bg-[#ccff00] transition-all duration-300 h-36 rounded-t-lg border-t-2 border-[#ccff00] cursor-pointer"></div>
                     <span class="text-[10px] font-mono text-neutral-400 mt-2">Abr</span>
                   </div>
 
                   <!-- Mayo -->
                   <div class="relative group/bar flex flex-col items-center justify-end h-full">
-                    <div class="absolute -top-9 opacity-0 group-hover/bar:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black/95 text-white border border-emerald-500/40 px-2.5 py-1 rounded-xl shadow-xl text-center whitespace-nowrap">
-                      <div class="text-[11px] font-bold text-emerald-400 font-mono">$41.000.000</div>
+                    <div class="absolute -top-9 opacity-0 group-hover/bar:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black text-white border border-[#ccff00]/50 px-2.5 py-1 rounded-xl shadow-xl text-center whitespace-nowrap">
+                      <div class="text-[11px] font-bold text-[#ccff00] font-mono">$41.000.000</div>
                       <div class="text-[9px] text-neutral-400">Mayo (+24.5%)</div>
                     </div>
-                    <div class="w-full bg-emerald-500/80 group-hover/bar:bg-emerald-400 transition-all duration-300 h-40 rounded-t-lg border-t-2 border-emerald-400 cursor-pointer"></div>
+                    <div class="w-full bg-[#ccff00]/80 group-hover/bar:bg-[#ccff00] transition-all duration-300 h-40 rounded-t-lg border-t-2 border-[#ccff00] cursor-pointer"></div>
                     <span class="text-[10px] font-mono text-neutral-400 mt-2">May</span>
                   </div>
 
                   <!-- Junio (En Vivo) -->
                   <div class="relative group/bar flex flex-col items-center justify-end h-full">
-                    <div class="absolute -top-9 opacity-0 group-hover/bar:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black/95 text-white border border-emerald-400 px-2.5 py-1 rounded-xl shadow-xl text-center whitespace-nowrap">
-                      <div class="text-[11px] font-bold text-emerald-300 font-mono">\${{ formatMoney(revenueMetric) }}</div>
-                      <div class="text-[9px] text-neutral-300 font-bold">Junio (En Vivo ↑ +28.4%)</div>
+                    <div class="absolute -top-9 opacity-0 group-hover/bar:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black text-white border border-[#ccff00] px-2.5 py-1 rounded-xl shadow-xl text-center whitespace-nowrap">
+                      <div class="text-[11px] font-bold text-[#ccff00] font-mono">\${{ formatMoney(revenueMetric) }}</div>
+                      <div class="text-[9px] text-white font-bold">Junio (En Vivo ↑ +28.4%)</div>
                     </div>
-                    <div class="w-full bg-emerald-400 group-hover/bar:bg-emerald-300 transition-all duration-300 h-48 rounded-t-lg border-t-2 border-white shadow-[0_0_20px_#25D366] cursor-pointer"></div>
-                    <span class="text-[10px] font-mono font-bold text-emerald-400 mt-2">Jun</span>
+                    <div class="w-full bg-[#ccff00] group-hover/bar:bg-[#d8ff33] transition-all duration-300 h-48 rounded-t-lg border-t-2 border-white shadow-[0_0_25px_rgba(204,255,0,0.6)] cursor-pointer"></div>
+                    <span class="text-[10px] font-mono font-bold text-[#ccff00] mt-2">Jun</span>
                   </div>
 
                 </div>
@@ -457,77 +433,77 @@ import { RouterModule } from '@angular/router';
                 <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3 hover:border-white/30 transition-all">
                   <div class="flex items-center justify-between">
                     <span class="text-neutral-400 text-xs font-bold uppercase tracking-wider">Visitas Únicas</span>
-                    <div class="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center">
+                    <div class="w-9 h-9 rounded-xl bg-[#ccff00]/10 border border-[#ccff00]/30 text-[#ccff00] flex items-center justify-center">
                       <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                     </div>
                   </div>
                   <div class="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight flex items-center gap-2">
                     <span>{{ trafficMetric.toLocaleString('es-CO') }}</span>
-                    <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                    <span class="w-2 h-2 rounded-full bg-[#ccff00] animate-pulse"></span>
                   </div>
-                  <div class="text-xs text-emerald-400 font-semibold">↑ +35.2% crecimiento constante</div>
+                  <div class="text-xs text-[#ccff00] font-semibold">↑ +35.2% crecimiento constante</div>
                 </div>
 
                 <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3 hover:border-white/30 transition-all">
                   <div class="flex items-center justify-between">
                     <span class="text-neutral-400 text-xs font-bold uppercase tracking-wider">Tasa Conversión</span>
-                    <div class="w-9 h-9 rounded-xl bg-teal-500/10 border border-teal-500/30 text-teal-400 flex items-center justify-center">
+                    <div class="w-9 h-9 rounded-xl bg-white/10 border border-white/20 text-white flex items-center justify-center">
                       <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                     </div>
                   </div>
                   <div class="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">
                     4.8%
                   </div>
-                  <div class="text-xs text-cyan-400 font-semibold">SEO & Carga ultrarrápida</div>
+                  <div class="text-xs text-white font-semibold">SEO & Carga ultrarrápida</div>
                 </div>
 
                 <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3 hover:border-white/30 transition-all">
                   <div class="flex items-center justify-between">
                     <span class="text-neutral-400 text-xs font-bold uppercase tracking-wider">Tiempo Medio</span>
-                    <div class="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-400 flex items-center justify-center">
+                    <div class="w-9 h-9 rounded-xl bg-white/10 border border-white/20 text-white flex items-center justify-center">
                       <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
                   </div>
                   <div class="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">
                     3m 45s
                   </div>
-                  <div class="text-xs text-emerald-400 font-semibold">Alta retención de clientes</div>
+                  <div class="text-xs text-[#ccff00] font-semibold">Alta retención de clientes</div>
                 </div>
 
                 <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3 hover:border-white/30 transition-all">
                   <div class="flex items-center justify-between">
                     <span class="text-neutral-400 text-xs font-bold uppercase tracking-wider">Páginas / Sesión</span>
-                    <div class="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center">
+                    <div class="w-9 h-9 rounded-xl bg-[#ccff00]/10 border border-[#ccff00]/30 text-[#ccff00] flex items-center justify-center">
                       <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
                     </div>
                   </div>
                   <div class="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">
                     4.2
                   </div>
-                  <div class="text-xs text-cyan-400 font-semibold">Navegación intuitiva</div>
+                  <div class="text-xs text-white font-semibold">Navegación intuitiva</div>
                 </div>
 
               </div>
 
-              <!-- Gráfica de Flujo de Tráfico Interactivo de Alto Nivel (Alineación Perfecta de Puntos) -->
-              <div class="p-6 rounded-2xl bg-white/[0.03] border border-white/10 space-y-6">
+              <!-- Gráfica de Flujo de Tráfico Interactivo de Alto Nivel -->
+              <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/10 space-y-6">
                 
                 <!-- Top Summary Metrics & Header -->
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-white/10">
                   <div class="space-y-1">
                     <h4 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                      <svg class="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                      <svg class="w-4 h-4 text-[#ccff00]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
                       Flujo de Tráfico y Visitas Diarias
                     </h4>
                     <p class="text-xs text-neutral-400">Monitoreo continuo de tráfico web y comportamiento de audiencia</p>
                   </div>
 
                   <div class="flex items-center gap-4 text-xs font-mono">
-                    <div class="px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center gap-2">
-                      <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                    <div class="px-3 py-1.5 rounded-xl bg-[#ccff00]/10 border border-[#ccff00]/30 text-[#ccff00] flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full bg-[#ccff00] animate-pulse"></span>
                       <span>Pico Máximo: <strong>{{ trafficMetric.toLocaleString('es-CO') }} / día</strong></span>
                     </div>
-                    <div class="hidden md:flex px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 items-center gap-2">
+                    <div class="hidden md:flex px-3 py-1.5 rounded-xl bg-white/10 border border-white/20 text-white items-center gap-2">
                       <span>Crecimiento: <strong>+35.2%</strong></span>
                     </div>
                   </div>
@@ -538,9 +514,9 @@ import { RouterModule } from '@angular/router';
                   <div class="w-full h-56 relative">
                     <svg class="w-full h-full overflow-visible" viewBox="0 0 500 130" preserveAspectRatio="none">
                       <defs>
-                        <linearGradient id="trafficGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stop-color="#00f5ff" stop-opacity="0.35"/>
-                          <stop offset="100%" stop-color="#00f5ff" stop-opacity="0.0"/>
+                        <linearGradient id="limeTrafficGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stop-color="#ccff00" stop-opacity="0.3"/>
+                          <stop offset="100%" stop-color="#ccff00" stop-opacity="0.0"/>
                         </linearGradient>
                       </defs>
 
@@ -550,81 +526,81 @@ import { RouterModule } from '@angular/router';
                       <line x1="0" y1="90" x2="500" y2="90" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3 3"/>
                       
                       <!-- Area Fill & Exact Curve Line -->
-                      <path d="M 0,105 L 100,85 L 200,68 L 300,52 L 400,36 L 500,20 L 500,130 L 0,130 Z" fill="url(#trafficGradient)"/>
-                      <path d="M 0,105 L 100,85 L 200,68 L 300,52 L 400,36 L 500,20" fill="none" stroke="#00f5ff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M 0,105 L 100,85 L 200,68 L 300,52 L 400,36 L 500,20 L 500,130 L 0,130 Z" fill="url(#limeTrafficGradient)"/>
+                      <path d="M 0,105 L 100,85 L 200,68 L 300,52 L 400,36 L 500,20" fill="none" stroke="#ccff00" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
 
-                    <!-- Interactive Month Columns Overlaid at Exact Percent Heights (Puntos 100% sobre la Línea) -->
+                    <!-- Interactive Month Columns Overlaid at Exact Percent Heights -->
                     <div class="absolute inset-0 grid grid-cols-6 z-20">
                       
-                      <!-- Ene (y = 105 -> top: 80.7%) -->
+                      <!-- Ene -->
                       <div class="relative group/traffic flex flex-col items-center justify-start">
-                        <div class="absolute inset-y-0 w-px bg-cyan-400/20 group-hover/traffic:bg-cyan-400 border-r border-dashed border-cyan-400/50 opacity-0 group-hover/traffic:opacity-100 transition-opacity pointer-events-none"></div>
+                        <div class="absolute inset-y-0 w-px bg-[#ccff00]/20 group-hover/traffic:bg-[#ccff00] border-r border-dashed border-[#ccff00]/50 opacity-0 group-hover/traffic:opacity-100 transition-opacity pointer-events-none"></div>
                         <div class="absolute top-[80.7%] -translate-y-1/2 flex flex-col items-center">
-                          <div class="w-4 h-4 rounded-full bg-cyan-400 group-hover/traffic:scale-150 transition-all shadow-[0_0_12px_#00f5ff] ring-4 ring-cyan-400/20 cursor-pointer"></div>
-                          <div class="absolute -top-12 opacity-0 group-hover/traffic:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black/95 text-white border border-cyan-500/50 px-3 py-1.5 rounded-xl shadow-2xl text-center whitespace-nowrap">
-                            <div class="text-[11px] font-black text-cyan-400 font-mono">8.450 Visitas</div>
+                          <div class="w-4 h-4 rounded-full bg-[#ccff00] group-hover/traffic:scale-150 transition-all shadow-[0_0_12px_#ccff00] ring-4 ring-[#ccff00]/20 cursor-pointer"></div>
+                          <div class="absolute -top-12 opacity-0 group-hover/traffic:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black text-white border border-[#ccff00]/50 px-3 py-1.5 rounded-xl shadow-2xl text-center whitespace-nowrap">
+                            <div class="text-[11px] font-black text-[#ccff00] font-mono">8.450 Visitas</div>
                             <div class="text-[9px] text-neutral-300">Enero (+14%)</div>
                           </div>
                         </div>
                       </div>
 
-                      <!-- Feb (y = 85 -> top: 65.3%) -->
+                      <!-- Feb -->
                       <div class="relative group/traffic flex flex-col items-center justify-start">
-                        <div class="absolute inset-y-0 w-px bg-cyan-400/20 group-hover/traffic:bg-cyan-400 border-r border-dashed border-cyan-400/50 opacity-0 group-hover/traffic:opacity-100 transition-opacity pointer-events-none"></div>
+                        <div class="absolute inset-y-0 w-px bg-[#ccff00]/20 group-hover/traffic:bg-[#ccff00] border-r border-dashed border-[#ccff00]/50 opacity-0 group-hover/traffic:opacity-100 transition-opacity pointer-events-none"></div>
                         <div class="absolute top-[65.3%] -translate-y-1/2 flex flex-col items-center">
-                          <div class="w-4 h-4 rounded-full bg-cyan-400 group-hover/traffic:scale-150 transition-all shadow-[0_0_12px_#00f5ff] ring-4 ring-cyan-400/20 cursor-pointer"></div>
-                          <div class="absolute -top-12 opacity-0 group-hover/traffic:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black/95 text-white border border-cyan-500/50 px-3 py-1.5 rounded-xl shadow-2xl text-center whitespace-nowrap">
-                            <div class="text-[11px] font-black text-cyan-400 font-mono">11.200 Visitas</div>
+                          <div class="w-4 h-4 rounded-full bg-[#ccff00] group-hover/traffic:scale-150 transition-all shadow-[0_0_12px_#ccff00] ring-4 ring-[#ccff00]/20 cursor-pointer"></div>
+                          <div class="absolute -top-12 opacity-0 group-hover/traffic:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black text-white border border-[#ccff00]/50 px-3 py-1.5 rounded-xl shadow-2xl text-center whitespace-nowrap">
+                            <div class="text-[11px] font-black text-[#ccff00] font-mono">11.200 Visitas</div>
                             <div class="text-[9px] text-neutral-300">Febrero (+18%)</div>
                           </div>
                         </div>
                       </div>
 
-                      <!-- Mar (y = 68 -> top: 52.3%) -->
+                      <!-- Mar -->
                       <div class="relative group/traffic flex flex-col items-center justify-start">
-                        <div class="absolute inset-y-0 w-px bg-cyan-400/20 group-hover/traffic:bg-cyan-400 border-r border-dashed border-cyan-400/50 opacity-0 group-hover/traffic:opacity-100 transition-opacity pointer-events-none"></div>
+                        <div class="absolute inset-y-0 w-px bg-[#ccff00]/20 group-hover/traffic:bg-[#ccff00] border-r border-dashed border-[#ccff00]/50 opacity-0 group-hover/traffic:opacity-100 transition-opacity pointer-events-none"></div>
                         <div class="absolute top-[52.3%] -translate-y-1/2 flex flex-col items-center">
-                          <div class="w-4 h-4 rounded-full bg-cyan-400 group-hover/traffic:scale-150 transition-all shadow-[0_0_12px_#00f5ff] ring-4 ring-cyan-400/20 cursor-pointer"></div>
-                          <div class="absolute -top-12 opacity-0 group-hover/traffic:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black/95 text-white border border-cyan-500/50 px-3 py-1.5 rounded-xl shadow-2xl text-center whitespace-nowrap">
-                            <div class="text-[11px] font-black text-cyan-400 font-mono">13.900 Visitas</div>
+                          <div class="w-4 h-4 rounded-full bg-[#ccff00] group-hover/traffic:scale-150 transition-all shadow-[0_0_12px_#ccff00] ring-4 ring-[#ccff00]/20 cursor-pointer"></div>
+                          <div class="absolute -top-12 opacity-0 group-hover/traffic:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black text-white border border-[#ccff00]/50 px-3 py-1.5 rounded-xl shadow-2xl text-center whitespace-nowrap">
+                            <div class="text-[11px] font-black text-[#ccff00] font-mono">13.900 Visitas</div>
                             <div class="text-[9px] text-neutral-300">Marzo (+22%)</div>
                           </div>
                         </div>
                       </div>
 
-                      <!-- Abr (y = 52 -> top: 40%) -->
+                      <!-- Abr -->
                       <div class="relative group/traffic flex flex-col items-center justify-start">
-                        <div class="absolute inset-y-0 w-px bg-cyan-400/20 group-hover/traffic:bg-cyan-400 border-r border-dashed border-cyan-400/50 opacity-0 group-hover/traffic:opacity-100 transition-opacity pointer-events-none"></div>
+                        <div class="absolute inset-y-0 w-px bg-[#ccff00]/20 group-hover/traffic:bg-[#ccff00] border-r border-dashed border-[#ccff00]/50 opacity-0 group-hover/traffic:opacity-100 transition-opacity pointer-events-none"></div>
                         <div class="absolute top-[40%] -translate-y-1/2 flex flex-col items-center">
-                          <div class="w-4 h-4 rounded-full bg-cyan-400 group-hover/traffic:scale-150 transition-all shadow-[0_0_12px_#00f5ff] ring-4 ring-cyan-400/20 cursor-pointer"></div>
-                          <div class="absolute -top-12 opacity-0 group-hover/traffic:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black/95 text-white border border-cyan-500/50 px-3 py-1.5 rounded-xl shadow-2xl text-center whitespace-nowrap">
-                            <div class="text-[11px] font-black text-cyan-400 font-mono">15.600 Visitas</div>
+                          <div class="w-4 h-4 rounded-full bg-[#ccff00] group-hover/traffic:scale-150 transition-all shadow-[0_0_12px_#ccff00] ring-4 ring-[#ccff00]/20 cursor-pointer"></div>
+                          <div class="absolute -top-12 opacity-0 group-hover/traffic:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black text-white border border-[#ccff00]/50 px-3 py-1.5 rounded-xl shadow-2xl text-center whitespace-nowrap">
+                            <div class="text-[11px] font-black text-[#ccff00] font-mono">15.600 Visitas</div>
                             <div class="text-[9px] text-neutral-300">Abril (+25%)</div>
                           </div>
                         </div>
                       </div>
 
-                      <!-- May (y = 36 -> top: 27.6%) -->
+                      <!-- May -->
                       <div class="relative group/traffic flex flex-col items-center justify-start">
-                        <div class="absolute inset-y-0 w-px bg-cyan-400/20 group-hover/traffic:bg-cyan-400 border-r border-dashed border-cyan-400/50 opacity-0 group-hover/traffic:opacity-100 transition-opacity pointer-events-none"></div>
+                        <div class="absolute inset-y-0 w-px bg-[#ccff00]/20 group-hover/traffic:bg-[#ccff00] border-r border-dashed border-[#ccff00]/50 opacity-0 group-hover/traffic:opacity-100 transition-opacity pointer-events-none"></div>
                         <div class="absolute top-[27.6%] -translate-y-1/2 flex flex-col items-center">
-                          <div class="w-4 h-4 rounded-full bg-cyan-400 group-hover/traffic:scale-150 transition-all shadow-[0_0_12px_#00f5ff] ring-4 ring-cyan-400/20 cursor-pointer"></div>
-                          <div class="absolute -top-12 opacity-0 group-hover/traffic:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black/95 text-white border border-cyan-500/50 px-3 py-1.5 rounded-xl shadow-2xl text-center whitespace-nowrap">
-                            <div class="text-[11px] font-black text-cyan-400 font-mono">17.100 Visitas</div>
+                          <div class="w-4 h-4 rounded-full bg-[#ccff00] group-hover/traffic:scale-150 transition-all shadow-[0_0_12px_#ccff00] ring-4 ring-[#ccff00]/20 cursor-pointer"></div>
+                          <div class="absolute -top-12 opacity-0 group-hover/traffic:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black text-white border border-[#ccff00]/50 px-3 py-1.5 rounded-xl shadow-2xl text-center whitespace-nowrap">
+                            <div class="text-[11px] font-black text-[#ccff00] font-mono">17.100 Visitas</div>
                             <div class="text-[9px] text-neutral-300">Mayo (+30%)</div>
                           </div>
                         </div>
                       </div>
 
-                      <!-- Jun (y = 20 -> top: 15.3%) -->
+                      <!-- Jun -->
                       <div class="relative group/traffic flex flex-col items-center justify-start">
-                        <div class="absolute inset-y-0 w-px bg-cyan-400/30 group-hover/traffic:bg-cyan-400 border-r border-dashed border-cyan-400/70 opacity-0 group-hover/traffic:opacity-100 transition-opacity pointer-events-none"></div>
+                        <div class="absolute inset-y-0 w-px bg-[#ccff00]/30 group-hover/traffic:bg-[#ccff00] border-r border-dashed border-[#ccff00]/70 opacity-0 group-hover/traffic:opacity-100 transition-opacity pointer-events-none"></div>
                         <div class="absolute top-[15.3%] -translate-y-1/2 flex flex-col items-center">
-                          <div class="w-4.5 h-4.5 rounded-full bg-white group-hover/traffic:scale-150 transition-all shadow-[0_0_20px_#00f5ff] ring-4 ring-cyan-400/50 animate-pulse cursor-pointer"></div>
-                          <div class="absolute -top-12 opacity-0 group-hover/traffic:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black/95 text-white border border-cyan-400 px-3 py-1.5 rounded-xl shadow-2xl text-center whitespace-nowrap">
-                            <div class="text-[11px] font-black text-cyan-300 font-mono">{{ trafficMetric.toLocaleString('es-CO') }} Visitas</div>
-                            <div class="text-[9px] text-neutral-300 font-bold">Junio (En Vivo ↑ +35.2%)</div>
+                          <div class="w-4.5 h-4.5 rounded-full bg-white group-hover/traffic:scale-150 transition-all shadow-[0_0_20px_#ccff00] ring-4 ring-[#ccff00]/50 animate-pulse cursor-pointer"></div>
+                          <div class="absolute -top-12 opacity-0 group-hover/traffic:opacity-100 transition-all duration-300 pointer-events-none z-30 bg-black text-white border border-[#ccff00] px-3 py-1.5 rounded-xl shadow-2xl text-center whitespace-nowrap">
+                            <div class="text-[11px] font-black text-[#ccff00] font-mono">{{ trafficMetric.toLocaleString('es-CO') }} Visitas</div>
+                            <div class="text-[9px] text-white font-bold">Junio (En Vivo ↑ +35.2%)</div>
                           </div>
                         </div>
                       </div>
@@ -639,7 +615,7 @@ import { RouterModule } from '@angular/router';
                     <span class="hover:text-white transition-colors cursor-pointer">Mar</span>
                     <span class="hover:text-white transition-colors cursor-pointer">Abr</span>
                     <span class="hover:text-white transition-colors cursor-pointer">May</span>
-                    <span class="font-bold text-cyan-400 hover:text-cyan-300 transition-colors cursor-pointer">Jun</span>
+                    <span class="font-bold text-[#ccff00] hover:text-[#ccff00] transition-colors cursor-pointer">Jun</span>
                   </div>
                 </div>
               </div>
@@ -652,44 +628,58 @@ import { RouterModule } from '@angular/router';
                 <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3 hover:border-white/30 transition-all">
                   <div class="flex items-center justify-between">
                     <span class="text-neutral-400 text-xs font-bold uppercase tracking-wider">Citas Agendadas</span>
-                    <div class="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center">
+                    <div class="w-9 h-9 rounded-xl bg-[#ccff00]/10 border border-[#ccff00]/30 text-[#ccff00] flex items-center justify-center">
                       <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     </div>
                   </div>
                   <div class="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight flex items-center gap-2">
                     <span>{{ appointmentsMetric }} Citas</span>
-                    <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                    <span class="w-2 h-2 rounded-full bg-[#ccff00] animate-pulse"></span>
                   </div>
-                  <div class="text-xs text-emerald-400 font-semibold">Agendamiento automatizado 24/7</div>
+                  <div class="text-xs text-[#ccff00] font-semibold">Agendamiento automatizado 24/7</div>
                 </div>
 
                 <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3 hover:border-white/30 transition-all">
                   <div class="flex items-center justify-between">
                     <span class="text-neutral-400 text-xs font-bold uppercase tracking-wider">Atención IA</span>
-                    <div class="w-9 h-9 rounded-xl bg-teal-500/10 border border-teal-500/30 text-teal-400 flex items-center justify-center">
+                    <div class="w-9 h-9 rounded-xl bg-white/10 border border-white/20 text-white flex items-center justify-center">
                       <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                     </div>
                   </div>
                   <div class="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">
                     99.8%
                   </div>
-                  <div class="text-xs text-cyan-400 font-semibold">Sin intervención humana</div>
+                  <div class="text-xs text-white font-semibold">Sin intervención humana</div>
                 </div>
 
                 <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3 hover:border-white/30 transition-all">
                   <div class="flex items-center justify-between">
                     <span class="text-neutral-400 text-xs font-bold uppercase tracking-wider">Tiempo Respuesta</span>
-                    <div class="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-400 flex items-center justify-center">
+                    <div class="w-9 h-9 rounded-xl bg-white/10 border border-white/20 text-white flex items-center justify-center">
                       <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                     </div>
                   </div>
                   <div class="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">
                     &lt; 5 seg
                   </div>
-                  <div class="text-xs text-emerald-400 font-semibold">Respuesta inmediata 24/7</div>
+                  <div class="text-xs text-[#ccff00] font-semibold">Respuesta inmediata 24/7</div>
                 </div>
 
                 <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3 hover:border-white/30 transition-all">
+                  <div class="flex items-center justify-between">
+                    <span class="text-neutral-400 text-xs font-bold uppercase tracking-wider">Leads Convertidos</span>
+                    <div class="w-9 h-9 rounded-xl bg-[#ccff00]/10 border border-[#ccff00]/30 text-[#ccff00] flex items-center justify-center">
+                      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    </div>
+                  </div>
+                  <div class="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">
+                    88%
+                  </div>
+                  <div class="text-xs text-[#ccff00] font-semibold">Clientes agendados con éxito</div>
+                </div>
+
+              </div>
+            </div>              <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3 hover:border-white/30 transition-all">
                   <div class="flex items-center justify-between">
                     <span class="text-neutral-400 text-xs font-bold uppercase tracking-wider">Leads Convertidos</span>
                     <div class="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center">
