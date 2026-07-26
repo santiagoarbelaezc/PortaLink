@@ -62,17 +62,23 @@ import { RouterModule } from '@angular/router';
               Desarrollo web a medida con arquitectura moderna, carga instantánea, diseño de vanguardia y optimización SEO orientada a conversiones para posicionar tu empresa en los primeros lugares.
             </p>
 
-            <div class="space-y-3 pt-2">
-              <div class="flex items-center gap-3 text-sm text-neutral-300">
-                <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+            <div class="space-y-4 pt-2">
+              <div class="flex items-start gap-3.5 text-base sm:text-lg font-light leading-relaxed" style="color: var(--text-secondary);">
+                <svg class="w-5 h-5 text-white shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
                 <span>Carga ultra rápida optimizada para motores de búsqueda (SEO)</span>
               </div>
-              <div class="flex items-center gap-3 text-sm text-neutral-300">
-                <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+              <div class="flex items-start gap-3.5 text-base sm:text-lg font-light leading-relaxed" style="color: var(--text-secondary);">
+                <svg class="w-5 h-5 text-white shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
                 <span>Diseño responsivo adaptable a computadores, tablets y celulares</span>
               </div>
-              <div class="flex items-center gap-3 text-sm text-neutral-300">
-                <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+              <div class="flex items-start gap-3.5 text-base sm:text-lg font-light leading-relaxed" style="color: var(--text-secondary);">
+                <svg class="w-5 h-5 text-white shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
                 <span>Seguridad SSL de grado bancario e integración con pasarelas de pago</span>
               </div>
             </div>
@@ -128,17 +134,23 @@ import { RouterModule } from '@angular/router';
               Brinda a tus clientes una experiencia de usuario fluida e interactiva como una app móvil, permitiendo consultar tu catálogo, realizar compras y navegar velozmente desde cualquier smartphone.
             </p>
 
-            <div class="space-y-3 pt-2">
-              <div class="flex items-center gap-3 text-sm text-neutral-300">
-                <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+            <div class="space-y-4 pt-2">
+              <div class="flex items-start gap-3.5 text-base sm:text-lg font-light leading-relaxed" style="color: var(--text-secondary);">
+                <svg class="w-5 h-5 text-white shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
                 <span>Experiencia de usuario fluida e interactiva optimizada para dispositivos móviles como una app nativa</span>
               </div>
-              <div class="flex items-center gap-3 text-sm text-neutral-300">
-                <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+              <div class="flex items-start gap-3.5 text-base sm:text-lg font-light leading-relaxed" style="color: var(--text-secondary);">
+                <svg class="w-5 h-5 text-white shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
                 <span>Acceso rápido a productos, servicios y compra inmediata desde el celular</span>
               </div>
-              <div class="flex items-center gap-3 text-sm text-neutral-300">
-                <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+              <div class="flex items-start gap-3.5 text-base sm:text-lg font-light leading-relaxed" style="color: var(--text-secondary);">
+                <svg class="w-5 h-5 text-white shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
                 <span>Sincronización en tiempo real con tu catálogo y plataforma web</span>
               </div>
             </div>
@@ -167,26 +179,36 @@ import { RouterModule } from '@angular/router';
               Integramos una IA que responde dudas, atiende a tus clientes y agenda citas automáticamente las 24 horas del día, capacitada específicamente con la información de tus productos o servicios.
             </p>
 
-            <div class="space-y-3 pt-2">
-              <div class="flex items-center gap-3 text-sm text-neutral-300">
-                <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+            <div class="space-y-4 pt-2">
+              <div class="flex items-start gap-3.5 text-base sm:text-lg font-light leading-relaxed" style="color: var(--text-secondary);">
+                <svg class="w-5 h-5 text-white shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
                 <span>Agendamiento automático de citas y reuniones directamente en tu agenda</span>
               </div>
-              <div class="flex items-center gap-3 text-sm text-neutral-300">
-                <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+              <div class="flex items-start gap-3.5 text-base sm:text-lg font-light leading-relaxed" style="color: var(--text-secondary);">
+                <svg class="w-5 h-5 text-white shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
                 <span>Respuesta en menos de 5 segundos con atención humana simulada</span>
               </div>
-              <div class="flex items-center gap-3 text-sm text-neutral-300">
-                <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+              <div class="flex items-start gap-3.5 text-base sm:text-lg font-light leading-relaxed" style="color: var(--text-secondary);">
+                <svg class="w-5 h-5 text-white shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
                 <span>Capacitación personalizada con el catálogo e información de tu negocio</span>
               </div>
             </div>
 
-            <div class="pt-2">
-              <button routerLink="/rotbot" class="inline-flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-cyan-400 hover:bg-cyan-300 text-black font-bold uppercase text-xs tracking-wider transition-all cursor-pointer shadow-lg">
-                <span>Probar RotBot IA Ahora</span>
-                <span>→</span>
-              </button>
+            <div class="pt-4">
+              <a routerLink="/rotbot" 
+                 class="group inline-flex items-center gap-3 px-6 py-3.5 rounded-2xl bg-cyan-400 hover:bg-cyan-300 text-black font-extrabold uppercase text-xs sm:text-sm tracking-wider transition-all duration-300 hover:-translate-y-0.5 cursor-pointer shadow-lg">
+                <span class="w-2.5 h-2.5 rounded-full bg-black/80 animate-pulse shrink-0"></span>
+                <span class="whitespace-nowrap">Probar RotBot IA Ahora</span>
+                <svg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </a>
             </div>
           </div>
 
@@ -197,13 +219,7 @@ import { RouterModule } from '@angular/router';
                    alt="Asistente RotBot IA" 
                    class="w-full h-auto object-contain transform hover:scale-[1.02] transition-all duration-500" />
               
-              <div class="text-center pt-4 space-y-1.5">
-                <div class="text-xs font-bold uppercase tracking-widest text-cyan-400 flex items-center justify-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                  RotBot IA Copilot Active
-                </div>
-                <p class="text-xs sm:text-sm text-neutral-300 font-light italic max-w-sm mx-auto">"Respondo dudas de tus clientes y agendo citas en tu calendario en tiempo real 24/7."</p>
-              </div>
+
             </div>
           </div>
 
@@ -723,17 +739,23 @@ import { RouterModule } from '@angular/router';
               El sitio lo puedes personalizar libremente a tu gusto y realizar tus anuncios, lanzar ofertas o actualizar tu catálogo de productos en cualquier momento sin depender de un programador.
             </p>
 
-            <div class="space-y-3 pt-2">
-              <div class="flex items-center gap-3 text-sm text-neutral-300">
-                <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+            <div class="space-y-4 pt-2">
+              <div class="flex items-start gap-3.5 text-base sm:text-lg font-light leading-relaxed" style="color: var(--text-secondary);">
+                <svg class="w-5 h-5 text-white shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
                 <span>Edición intuitiva de textos, imágenes, banners y anuncios promocionales</span>
               </div>
-              <div class="flex items-center gap-3 text-sm text-neutral-300">
-                <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+              <div class="flex items-start gap-3.5 text-base sm:text-lg font-light leading-relaxed" style="color: var(--text-secondary);">
+                <svg class="w-5 h-5 text-white shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
                 <span>Gestión de catálogo, stock, precios y categorías sin tocar código</span>
               </div>
-              <div class="flex items-center gap-3 text-sm text-neutral-300">
-                <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+              <div class="flex items-start gap-3.5 text-base sm:text-lg font-light leading-relaxed" style="color: var(--text-secondary);">
+                <svg class="w-5 h-5 text-white shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
                 <span>Autonomía total para actualizar tu presencia digital cuando lo desees</span>
               </div>
             </div>

@@ -25,16 +25,24 @@ import { AuthService } from '../../services/auth.service';
           </a>
         </div>
 
-        <!-- Center: Nav Links (Inicio, Links, RotBot, Servicios) -->
+        <!-- Center: Nav Links (Inicio, Propuesta, Links, RotBot, Servicios) -->
         <div class="flex items-center gap-10 justify-center">
           <a *ngFor="let item of desktopItems"
              (click)="scrollTo(item.link, $event)"
-             class="nav-link font-headline text-sm font-medium tracking-[0.08em] uppercase cursor-pointer py-1 flex items-center gap-2"
+             class="nav-link font-headline text-sm font-medium tracking-[0.08em] uppercase cursor-pointer py-1 flex items-center gap-2 group"
              [class.active]="activeSection === item.link">
             
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            <!-- Custom Image Icon for RotBot (Chat) -->
+            <img *ngIf="item.icon === 'chat'" 
+                 [src]="currentTheme === 'light' ? 'assets/icons/logo-link-light.png' : 'assets/icons/logo-link-dark.png'" 
+                 alt="RotBot" 
+                 class="w-[20px] h-[20px] object-contain opacity-85 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300" />
+
+            <!-- Vector SVG Icons for standard items -->
+            <svg *ngIf="item.icon !== 'chat'" 
+                 width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                 class="opacity-75 transition-colors">
+                 class="opacity-75 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">
               <ng-container *ngIf="item.icon === 'home'">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -48,13 +56,6 @@ import { AuthService } from '../../services/auth.service';
               <ng-container *ngIf="item.icon === 'link'">
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-              </ng-container>
-              <ng-container *ngIf="item.icon === 'chat'">
-                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-              </ng-container>
-              <ng-container *ngIf="item.icon === 'grid'">
-                <rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect>
-                <rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect>
               </ng-container>
               <ng-container *ngIf="item.icon === 'planes'">
                 <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
@@ -241,16 +242,25 @@ import { AuthService } from '../../services/auth.service';
         <a *ngFor="let item of mobileItems; let i = index"
            (click)="scrollTo(item.link, $event)"
            [class.active]="activeSection === item.link"
-           class="mobile-nav-item flex flex-col items-center justify-center w-12 h-12 rounded-full cursor-pointer transition-all duration-200 relative z-10">
+           class="mobile-nav-item flex flex-col items-center justify-center w-12 h-12 rounded-full cursor-pointer transition-all duration-200 relative z-10 group">
           
-          <!-- Icon -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          <!-- Image Icon for RotBot (Chat) -->
+          <img *ngIf="item.icon === 'chat'" 
+               [src]="currentTheme === 'light' ? 'assets/icons/logo-link-light.png' : 'assets/icons/logo-link-dark.png'" 
+               alt="RotBot" 
+               class="w-5 h-5 object-contain transition-all duration-300 group-hover:scale-110" 
+               [class.opacity-100]="activeSection === item.link"
+               [class.opacity-60]="activeSection !== item.link" />
+
+          <!-- SVG Icon for standard items -->
+          <svg *ngIf="item.icon !== 'chat'" 
+               width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                [class.text-black]="currentTheme === 'light' && activeSection === item.link"
                [class.text-black\/50]="currentTheme === 'light' && activeSection !== item.link"
                [class.text-white]="currentTheme !== 'light' && activeSection === item.link"
                [class.text-white\/60]="currentTheme !== 'light' && activeSection !== item.link"
-               class="transition-colors">
+               class="transition-all duration-300 group-hover:scale-110">
             <ng-container *ngIf="item.icon === 'home'">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
               <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -264,9 +274,6 @@ import { AuthService } from '../../services/auth.service';
             <ng-container *ngIf="item.icon === 'link'">
               <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
               <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-            </ng-container>
-            <ng-container *ngIf="item.icon === 'chat'">
-              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
             </ng-container>
             <ng-container *ngIf="item.icon === 'planes'">
               <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
