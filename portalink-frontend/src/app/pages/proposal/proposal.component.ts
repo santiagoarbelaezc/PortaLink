@@ -27,10 +27,8 @@ import { RouterModule } from '@angular/router';
           <!-- Quick Action Buttons -->
           <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
             <a href="https://wa.me/573054078225" target="_blank"
-               class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-black font-bold uppercase text-xs sm:text-sm tracking-wider transition-all duration-300 shadow-[0_8px_25px_rgba(37,211,102,0.3)] hover:-translate-y-0.5 cursor-pointer">
-              <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
-              </svg>
+               class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-black font-bold uppercase text-xs sm:text-sm tracking-wider transition-all duration-300 hover:-translate-y-0.5 cursor-pointer">
+              <img src="assets/icons/whatsapp-icon.png" alt="WhatsApp" class="w-6.5 h-6.5 sm:w-7 sm:h-7 object-contain" />
               <span>Agendar Proyecto en WhatsApp</span>
             </a>
 
@@ -51,8 +49,9 @@ import { RouterModule } from '@angular/router';
           
           <!-- Content Column -->
           <div class="lg:col-span-6 space-y-6">
-            <div class="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full border border-cyan-500/20 bg-cyan-500/10 text-cyan-400 text-xs font-mono font-bold uppercase tracking-[0.25em]">
-              01 — Plataforma Digital
+            <div class="flex items-center gap-4 mb-2">
+              <div class="h-px w-12" style="background-color: var(--text-primary); opacity: 0.5;"></div>
+              <span class="text-xs uppercase tracking-[0.4em] font-mono text-white font-bold" style="color: var(--text-secondary);">01 — PLATAFORMA DIGITAL</span>
             </div>
 
             <h2 class="text-3xl sm:text-4xl md:text-5xl font-headline font-black uppercase leading-[1.05] tracking-tight" style="font-family: var(--font-headline, sans-serif);">
@@ -116,8 +115,9 @@ import { RouterModule } from '@angular/router';
 
           <!-- Content Column -->
           <div class="lg:col-span-6 space-y-6 order-1 lg:order-2">
-            <div class="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full border border-teal-500/20 bg-teal-500/10 text-teal-400 text-xs font-mono font-bold uppercase tracking-[0.25em]">
-              02 — Experiencia Móvil
+            <div class="flex items-center gap-4 mb-2">
+              <div class="h-px w-12" style="background-color: var(--text-primary); opacity: 0.5;"></div>
+              <span class="text-xs uppercase tracking-[0.4em] font-mono text-white font-bold" style="color: var(--text-secondary);">02 — EXPERIENCIA MÓVIL</span>
             </div>
 
             <h2 class="text-3xl sm:text-4xl md:text-5xl font-headline font-black uppercase leading-[1.05] tracking-tight" style="font-family: var(--font-headline, sans-serif);">
@@ -154,8 +154,9 @@ import { RouterModule } from '@angular/router';
           
           <!-- Content Column -->
           <div class="lg:col-span-6 space-y-6">
-            <div class="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full border border-cyan-500/20 bg-cyan-500/10 text-cyan-400 text-xs font-mono font-bold uppercase tracking-[0.25em]">
-              03 — Automatización 24/7
+            <div class="flex items-center gap-4 mb-2">
+              <div class="h-px w-12" style="background-color: var(--text-primary); opacity: 0.5;"></div>
+              <span class="text-xs uppercase tracking-[0.4em] font-mono text-white font-bold" style="color: var(--text-secondary);">03 — AUTOMATIZACIÓN 24/7</span>
             </div>
 
             <h2 class="text-3xl sm:text-4xl md:text-5xl font-headline font-black uppercase leading-[1.05] tracking-tight" style="font-family: var(--font-headline, sans-serif);">
@@ -215,8 +216,10 @@ import { RouterModule } from '@angular/router';
         <section class="space-y-8 pt-4">
           
           <div class="text-center max-w-3xl mx-auto space-y-3">
-            <div class="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full border border-cyan-500/20 bg-cyan-500/10 text-cyan-400 text-xs font-mono font-bold uppercase tracking-[0.25em]">
-              04 — Analítica & Control Corporativo
+            <div class="flex items-center justify-center gap-4 mb-2">
+              <div class="h-px w-12" style="background-color: var(--text-primary); opacity: 0.5;"></div>
+              <span class="text-xs uppercase tracking-[0.4em] font-mono text-white font-bold" style="color: var(--text-secondary);">04 — ANALÍTICA & CONTROL CORPORATIVO</span>
+              <div class="h-px w-12" style="background-color: var(--text-primary); opacity: 0.5;"></div>
             </div>
 
             <h2 class="text-3xl sm:text-4xl md:text-5xl font-headline font-black uppercase leading-tight" style="font-family: var(--font-headline, sans-serif);">
@@ -707,8 +710,9 @@ import { RouterModule } from '@angular/router';
 
           <!-- Content Column -->
           <div class="lg:col-span-6 space-y-6 order-1 lg:order-2">
-            <div class="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full border border-cyan-500/20 bg-cyan-500/10 text-cyan-400 text-xs font-mono font-bold uppercase tracking-[0.25em]">
-              05 — Autogestión & Anuncios
+            <div class="flex items-center gap-4 mb-2">
+              <div class="h-px w-12" style="background-color: var(--text-primary); opacity: 0.5;"></div>
+              <span class="text-xs uppercase tracking-[0.4em] font-mono text-white font-bold" style="color: var(--text-secondary);">05 — AUTOGESTIÓN & ANUNCIOS</span>
             </div>
 
             <h2 class="text-3xl sm:text-4xl md:text-5xl font-headline font-black uppercase leading-[1.05] tracking-tight" style="font-family: var(--font-headline, sans-serif);">
@@ -752,7 +756,8 @@ import { RouterModule } from '@angular/router';
             </p>
             <div class="pt-4 flex flex-wrap items-center justify-center gap-4">
               <a href="https://wa.me/573054078225" target="_blank"
-                 class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-black font-bold uppercase text-xs sm:text-sm tracking-wider transition-all duration-300 shadow-[0_8px_25px_rgba(37,211,102,0.3)] hover:-translate-y-0.5 cursor-pointer">
+                 class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-black font-bold uppercase text-xs sm:text-sm tracking-wider transition-all duration-300 hover:-translate-y-0.5 cursor-pointer">
+                <img src="assets/icons/whatsapp-icon.png" alt="WhatsApp" class="w-6.5 h-6.5 sm:w-7 sm:h-7 object-contain" />
                 <span>Hablar con Santiago por WhatsApp</span>
                 <span>→</span>
               </a>
