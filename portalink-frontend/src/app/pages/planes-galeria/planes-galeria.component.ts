@@ -10,6 +10,7 @@ export interface GalleryProject {
   title: string;
   category: 'Landing Page' | 'E-commerce' | 'E-commerce + IA' | 'Sistemas' | 'Sistemas + IA';
   client: string;
+  liveUrl?: string;
   image: string;
   gradient: string;
   description: string;
@@ -278,6 +279,10 @@ export interface GalleryProject {
                 ¿Te inspira este diseño? Podemos usarlo como base y adaptarlo al 100% con las reglas de tu negocio.
               </span>
               <div class="flex items-center gap-3 w-full sm:w-auto flex-wrap">
+                <a *ngIf="previewModalProject.liveUrl" [href]="previewModalProject.liveUrl" target="_blank" rel="noopener noreferrer"
+                   class="px-5 py-3 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 font-bold text-xs uppercase tracking-widest transition-all cursor-pointer w-full sm:w-auto text-center flex items-center justify-center gap-1.5">
+                  <span>Sitio en Vivo 🌐</span>
+                </a>
                 <a [routerLink]="['/proyecto', previewModalProject.id]" (click)="closePreview()"
                    class="px-6 py-3 rounded-xl bg-white text-black font-extrabold text-xs uppercase tracking-widest hover:scale-105 transition-all cursor-pointer w-full sm:w-auto text-center shadow-md">
                   Ver Ficha Completa ↗
@@ -343,6 +348,7 @@ export class PlanesGaleriaComponent implements OnInit {
       title: 'CAMASCOTAS',
       category: 'E-commerce',
       client: 'Camascotas Pet Premium',
+      liveUrl: 'https://camascotas.com/',
       image: 'assets/images/proyectos/proyecto-camascotas.png',
       gradient: 'linear-gradient(135deg, #0a2e1a 0%, #1a4a2e 100%)',
       description: 'E-commerce de muebles y accesorios para mascotas con catálogo de productos, carrito de compras, panel de administración y diseño responsive. Desarrollado con Angular + PHP/MySQL.',
@@ -357,13 +363,14 @@ export class PlanesGaleriaComponent implements OnInit {
       rotbotPrompt: 'Hola, quiero una tienda E-commerce como CAMASCOTAS con catálogo de productos, carrito de compras y panel de administración para mi negocio.'
     },
     {
-      id: 'sysmicon-catalogo',
+      id: 'sysmicon',
       code: 'SYS_02',
       badge: 'PLATAFORMA',
       tagline: 'Portal directivo para gestión de proyectos de arquitectura y diseño CAD.',
       title: 'SYSMICON',
       category: 'Sistemas',
       client: 'Sysmicon / Plataforma de Arquitectura',
+      liveUrl: 'https://sysmicon.com/',
       image: 'assets/images/proyectos/proyecto-sysmiconarquitectura.png',
       gradient: 'linear-gradient(135deg, #0d1f0d 0%, #1a3a1a 100%)',
       description: 'Plataforma directiva para estudios de arquitectura con dashboard de cotizaciones, diseños CAD 2D, galería de proyectos visual y módulo de mensajería.',
@@ -382,9 +389,10 @@ export class PlanesGaleriaComponent implements OnInit {
       code: 'SYS_03',
       badge: 'SISTEMA + IA',
       tagline: 'Catálogo digital inteligente con gestión de productos y analítica en tiempo real.',
-      title: 'CATÁLOGO DIGITAL',
+      title: 'CATÁLOGO DIGITAL PLAXTILÍNEAS',
       category: 'Sistemas + IA',
       client: 'Plastilíneas / Districol',
+      liveUrl: 'https://catalogoplaxtilineas.com/catalogo',
       image: 'assets/images/proyectos/proyecto-catalogodigital.png',
       gradient: 'linear-gradient(135deg, #0d1f0d 0%, #1a3a1a 100%)',
       description: 'Plataforma de catálogo digital con inteligencia artificial integrada. Gestiona productos, categorías e inventario para múltiples líneas de negocio con reportes analíticos y asistente IA.',
@@ -406,11 +414,12 @@ export class PlanesGaleriaComponent implements OnInit {
       title: 'COLCHONES DISTRICOL',
       category: 'E-commerce',
       client: 'Districol / Colchones Armenia',
+      liveUrl: 'https://colchonesdistricol.com/',
       image: 'assets/images/proyectos/proyecto-colchonesdistricol.png',
       gradient: 'linear-gradient(135deg, #0a1a2a 0%, #1a3a4a 100%)',
       description: 'E-commerce de colchones y muebles de descanso premium para Armenia con catálogo completo, detalle de productos, consulta por WhatsApp e integración con el sistema administrativo de inventario.',
       highlights: [
-        'Catálogo visual de colchones con fotografías HD y especificaciones técnicas',
+        'Catálogo visual de colchones con fotografías de alta calidad y especificaciones técnicas',
         'Detalle de producto con precio, stock disponible y consulta directa por WhatsApp',
         'Integración con sistema administrativo para sincronización de inventario en vivo',
         'Diseño elegante con hero de video y navegación premium'
@@ -420,34 +429,58 @@ export class PlanesGaleriaComponent implements OnInit {
       rotbotPrompt: 'Hola, quiero una tienda E-commerce de productos premium con catálogo, ficha de producto y consulta por WhatsApp, similar a COLCHONES DISTRICOL.'
     },
     {
-      id: 'asistente-ia',
-      code: 'SYS_05',
-      badge: 'IA COPILOTO',
-      tagline: 'Sistema de gestión empresarial con copiloto de inteligencia artificial.',
-      title: 'ASISTENTE IA',
-      category: 'E-commerce + IA',
-      client: 'Asistente IA / Negocios Inteligentes',
-      image: 'assets/images/proyectos/proyecto-asistenteia.png',
-      gradient: 'linear-gradient(135deg, #0a1f0a 0%, #1a3a1a 100%)',
-      description: 'Plataforma de administración empresarial con asistente de inteligencia artificial integrado que responde consultas, analiza inventarios, genera cotizaciones y apoya la toma de decisiones en tiempo real.',
+      id: 'espumasyplasticos',
+      code: 'ECOM_05',
+      badge: 'E-COMMERCE',
+      tagline: 'Plataforma e-commerce e industrial para soluciones de espumas y plásticos.',
+      title: 'ESPUMAS Y PLÁSTICOS',
+      category: 'E-commerce',
+      client: 'Espumas y Plásticos S.A.S.',
+      liveUrl: 'https://espumasyplasticos.com/',
+      image: 'assets/images/proyectos/proyecto-catalogodigital.png',
+      gradient: 'linear-gradient(135deg, #1f1f0d 0%, #3a3a1a 100%)',
+      description: 'Plataforma de comercio electrónico e industrial para soluciones en espumas, plásticos y materiales sintéticos con cotización en vivo.',
       highlights: [
-        'Copiloto IA que responde preguntas sobre stock, ventas y reportes',
-        'Dashboard con métricas clave: ventas, pedidos, usuarios y ticket promedio',
-        'Gestión completa de productos, categorías, pedidos e inventario',
-        'Interfaz móvil nativa para consultar el negocio desde cualquier lugar'
+        'Catálogo industrial con especificaciones técnicas de densidad y calibre',
+        'Módulo de cotizaciones masivas para empresas y distribuidores',
+        'Navegación ultrarrápida adaptable a móviles y escritorios',
+        'Integración con pasarelas de pago y soporte vía WhatsApp'
       ],
-      technologies: ['Angular 19', 'PHP 8.5', 'Groq IA', 'Real-Time'],
-      stats: { label: 'Atención Automática', value: '94%' },
-      rotbotPrompt: 'Hola, necesito un sistema de gestión empresarial con copiloto de inteligencia artificial integrado, como ASISTENTE IA.'
+      technologies: ['Angular 19', 'PHP 8.5', 'MySQL', 'TailwindCSS'],
+      stats: { label: 'Materiales Industriales', value: '+300' },
+      rotbotPrompt: 'Hola, quiero una tienda e-commerce como ESPUMAS Y PLÁSTICOS con catálogo industrial y cotizador.'
+    },
+    {
+      id: 'plaxtilineas',
+      code: 'CORP_06',
+      badge: 'SISTEMAS',
+      tagline: 'Portal corporativo e industrial de empaques y soluciones plásticas.',
+      title: 'PLAXTILÍNEAS',
+      category: 'Sistemas',
+      client: 'Plaxtilíneas Colombia',
+      liveUrl: 'https://plaxtilineas.com/',
+      image: 'assets/images/proyectos/proyecto-sysmiconarquitectura.png',
+      gradient: 'linear-gradient(135deg, #0d1a1f 0%, #1a303a 100%)',
+      description: 'Portal institucional e industrial para la exhibición de líneas de bolsas, empaques y plásticos biodegradables.',
+      highlights: [
+        'Exhibición corporativa de líneas de producción y certificados de calidad',
+        'Formulario interactivo de cotización según especificaciones de fábrica',
+        'Galería de aplicaciones en la industria de alimentos, comercio y logística',
+        'Optimización SEO de alto rendimiento para búsqueda orgánica'
+      ],
+      technologies: ['Angular 19', 'PHP 8.5', 'MySQL', 'SEO Pro'],
+      stats: { label: 'Capacidad de Fábrica', value: 'Industrial' },
+      rotbotPrompt: 'Hola, necesito un portal corporativo como PLAXTILÍNEAS con catálogo industrial y cotización en línea.'
     },
     {
       id: 'tiendaintima',
-      code: 'ECOM_06',
+      code: 'ECOM_07',
       badge: 'TIENDA + IA',
       tagline: 'E-commerce de moda íntima con panel administrativo y asistente inteligente.',
       title: 'TIENDA ÍNTIMA',
       category: 'E-commerce + IA',
       client: 'Tiendaíntima / Moda & Descanso',
+      liveUrl: 'https://tiendaintima.com/',
       image: 'assets/images/proyectos/proyecto-tiendaintima.png',
       gradient: 'linear-gradient(135deg, #2a0a1a 0%, #4a1a30 100%)',
       description: 'Plataforma de comercio electrónico para moda íntima y descanso con IA integrada para gestión de productos, análisis de ventas, inventario y experiencia de compra personalizada.',
@@ -458,7 +491,7 @@ export class PlanesGaleriaComponent implements OnInit {
         'Reportes de evolución de ventas con gráficos y tendencias'
       ],
       technologies: ['Angular 19', 'PHP 8.5', 'MySQL', 'IA Integrada'],
-      stats: { label: 'Ventas del Mes', value: '$4.85M' },
+      stats: { label: 'Pedidos Atendidos', value: '+850' },
       rotbotPrompt: 'Hola, quiero una tienda E-commerce con panel de administración e inteligencia artificial integrada, similar a TIENDA ÍNTIMA.'
     }
   ];

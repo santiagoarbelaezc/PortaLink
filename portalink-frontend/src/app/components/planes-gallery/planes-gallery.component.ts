@@ -408,7 +408,7 @@ export class PlanesGalleryComponent implements OnInit, OnChanges {
       gradient: 'linear-gradient(135deg, #b92b27 0%, #1565C0 100%)',
       description: 'Sistema integral de gestión para restaurantes y cafeterías. Incluye menú digital QR, toma de pedidos en mesa desde tablets, pantalla de cocina (KDS) y facturación.',
       highlights: [
-        'Menú digital interactivo autogestionable con fotos HD y alérgenos',
+        'Menú digital interactivo autogestionable con fotos de alta calidad y alérgenos',
         'Módulo de toma de pedidos para mozos y sincronización con cocina',
         'Facturación rápida, cuadre de caja e informes de ventas diarios',
         'Soporte offline-first para no detener operaciones si falla el internet'
