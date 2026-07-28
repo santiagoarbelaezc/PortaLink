@@ -105,28 +105,48 @@ export interface ProjectDetail {
         <!-- Main Interactive Media Showcase (Unified Gallery Carousel with Video) -->
         <section class="max-w-[1400px] mx-auto px-6 sm:px-10 mb-16">
           
-          <!-- Main Display Container (Image or Video) -->
-          <div class="main-image-container relative rounded-[28px] sm:rounded-[36px] overflow-hidden border border-white/15 bg-black shadow-2xl group min-h-[380px] sm:min-h-[550px] flex items-center justify-center">
+          <!-- Main Display Container (Image or Video with Fixed Uniform Height) -->
+          <div class="main-image-container relative rounded-[28px] sm:rounded-[36px] overflow-hidden border border-white/15 bg-black shadow-2xl group h-[420px] sm:h-[560px] lg:h-[650px] flex items-center justify-center">
             
+            <!-- Minimalist Left Navigation Arrow -->
+            <button *ngIf="project.images && project.images.length > 1"
+                    (click)="prevMedia()"
+                    aria-label="Imagen anterior"
+                    class="absolute left-4 sm:left-6 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/40 hover:bg-black/80 border border-white/20 hover:border-white/50 text-white backdrop-blur-md flex items-center justify-center transition-all duration-300 shadow-xl hover:scale-110 active:scale-95 group/navbtn cursor-pointer">
+              <svg class="w-5 h-5 sm:w-6 sm:h-6 -ml-0.5 transition-transform group-hover/navbtn:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+            </button>
+
             <!-- Video Player (when Video thumbnail is selected) -->
             <ng-container *ngIf="activeMediaType === 'video' && project.video; else mainImageBlock">
               <video [src]="project.video" controls autoplay loop muted playsinline
-                     class="w-full h-auto max-h-[680px] object-contain mx-auto">
+                     class="w-full h-full object-contain mx-auto">
               </video>
-              <div class="absolute top-4 left-4 backdrop-blur-md bg-emerald-500/20 border border-emerald-500/40 px-3.5 py-1.5 rounded-full text-emerald-300 text-xs font-mono font-bold flex items-center gap-2">
+              <div class="absolute top-4 left-4 backdrop-blur-md bg-emerald-500/20 border border-emerald-500/40 px-3.5 py-1.5 rounded-full text-emerald-300 text-xs font-mono font-bold flex items-center gap-2 z-20">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
                 <span>Reproduciendo Video</span>
               </div>
             </ng-container>
 
-            <!-- Main Image -->
+            <!-- Main Image (Uniform Height across all desktop slides) -->
             <ng-template #mainImageBlock>
               <img [src]="activeImage" [alt]="project.title"
-                   class="w-full h-auto max-h-[680px] object-cover object-top transition-all duration-500">
-              <div class="absolute bottom-6 right-6 backdrop-blur-md bg-black/60 border border-white/10 px-4 py-2 rounded-xl text-white text-xs font-mono">
+                   class="w-full h-full object-cover object-top transition-all duration-500">
+              <div class="absolute bottom-6 right-6 backdrop-blur-md bg-black/60 border border-white/10 px-4 py-2 rounded-xl text-white text-xs font-mono z-20 pointer-events-none">
                 Visualización de Alta Calidad
               </div>
             </ng-template>
+
+            <!-- Minimalist Right Navigation Arrow -->
+            <button *ngIf="project.images && project.images.length > 1"
+                    (click)="nextMedia()"
+                    aria-label="Siguiente imagen"
+                    class="absolute right-4 sm:right-6 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/40 hover:bg-black/80 border border-white/20 hover:border-white/50 text-white backdrop-blur-md flex items-center justify-center transition-all duration-300 shadow-xl hover:scale-110 active:scale-95 group/navbtn cursor-pointer">
+              <svg class="w-5 h-5 sm:w-6 sm:h-6 ml-0.5 transition-transform group-hover/navbtn:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
+            </button>
           </div>
 
           <!-- Thumbnail Gallery & Video Switcher -->
@@ -426,6 +446,26 @@ export class DescripcionProyectoComponent implements OnInit {
     }
   }
 
+  prevMedia() {
+    if (!this.project || !this.project.images || this.project.images.length === 0) return;
+    const currentIndex = this.project.images.indexOf(this.activeImage);
+    if (currentIndex > 0) {
+      this.selectMedia('image', this.project.images[currentIndex - 1]);
+    } else {
+      this.selectMedia('image', this.project.images[this.project.images.length - 1]);
+    }
+  }
+
+  nextMedia() {
+    if (!this.project || !this.project.images || this.project.images.length === 0) return;
+    const currentIndex = this.project.images.indexOf(this.activeImage);
+    if (currentIndex >= 0 && currentIndex < this.project.images.length - 1) {
+      this.selectMedia('image', this.project.images[currentIndex + 1]);
+    } else {
+      this.selectMedia('image', this.project.images[0]);
+    }
+  }
+
   // Dataset Completo de Proyectos
   projectsData: ProjectDetail[] = [
     {
@@ -446,7 +486,6 @@ export class DescripcionProyectoComponent implements OnInit {
         'assets/images/proyectos/camascotas/camascotas-contacto.png',
         'assets/images/proyectos/camascotas/login-camascotas.png'
       ],
-      video: 'assets/videos/camascotas/camascotas-video.mp4',
       mobileImages: [
         'assets/images/proyectos/camascotas/camascotas-movil.png',
         'assets/images/proyectos/camascotas/camascotas-movil2.png',
