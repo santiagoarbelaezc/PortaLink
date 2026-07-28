@@ -508,7 +508,13 @@ Incluye además un completo panel administrativo donde la marca puede gestionar 
       image: 'assets/images/proyectos/proyecto-sysmiconarquitectura.png',
       images: [
         'assets/images/proyectos/proyecto-sysmiconarquitectura.png',
-        'assets/images/proyectos/proyecto-0.png'
+        'assets/images/proyectos/sysmicon/sysmi-1.png',
+        'assets/images/proyectos/sysmicon/sysmi2.png',
+        'assets/images/proyectos/sysmicon/sysmi-3.png'
+      ],
+      mobileImages: [
+        'assets/images/proyectos/sysmicon/sysmi2.png',
+        'assets/images/proyectos/sysmicon/sysmi-3.png'
       ],
       description: 'Plataforma directiva con dashboard de cotizaciones, diseños CAD, galería visual y gestión de proyectos.',
       longDescription: `SYSMICON ARQUITECTURA es un portal ejecutivo y operativo desarrollado para firmas constructoras y estudios de diseño arquitectónico.
@@ -564,7 +570,15 @@ Integra una suite de herramientas avanzadas: visualización interactiva de plano
       image: 'assets/images/proyectos/proyecto-catalogodigital.png',
       images: [
         'assets/images/proyectos/proyecto-catalogodigital.png',
-        'assets/images/proyectos/card1.png'
+        'assets/images/proyectos/catalogo/catalogo-1.png',
+        'assets/images/proyectos/catalogo/catalogo-2.png',
+        'assets/images/proyectos/catalogo/catalogo-3.png',
+        'assets/images/proyectos/catalogo/catalogo-4.png'
+      ],
+      mobileImages: [
+        'assets/images/proyectos/catalogo/catalogo-2.png',
+        'assets/images/proyectos/catalogo/catalogo-3.png',
+        'assets/images/proyectos/catalogo/catalogo-4.png'
       ],
       description: 'Plataforma de catálogo digital con IA para gestión de productos, inventario y analítica.',
       longDescription: `CATÁLOGO DIGITAL PLAXTILÍNEAS es un ecosistema inteligente concebido para empresas con amplios volúmenes de productos y múltiples líneas de negocio.
@@ -673,10 +687,17 @@ Diseñada con un estándar visual premium, ofrece fichas fisiológicas de produc
       client: 'Espumas y Plásticos S.A.S.',
       year: '2026',
       liveUrl: 'https://espumasyplasticos.com/',
-      image: 'assets/images/proyectos/proyecto-catalogodigital.png',
+      image: 'assets/images/proyectos/espumasyplasticos/espuma-1.png',
       images: [
-        'assets/images/proyectos/proyecto-catalogodigital.png',
-        'assets/images/proyectos/card1.png'
+        'assets/images/proyectos/espumasyplasticos/espuma-1.png',
+        'assets/images/proyectos/espumasyplasticos/espuma-2.png',
+        'assets/images/proyectos/espumasyplasticos/espuma-3.png',
+        'assets/images/proyectos/espumasyplasticos/espuma-4.png',
+        'assets/images/proyectos/espumasyplasticos/espuma-5.png'
+      ],
+      mobileImages: [
+        'assets/images/proyectos/espumasyplasticos/espuma-4.png',
+        'assets/images/proyectos/espumasyplasticos/espuma-5.png'
       ],
       description: 'Plataforma de comercio electrónico e industrial para soluciones en espumas, plásticos y materiales sintéticos.',
       longDescription: `ESPUMAS Y PLÁSTICOS es una plataforma e-commerce de especificación industrial concebida para la distribución de láminas de espuma, plásticos técnicos y accesorios de empaque.
@@ -729,10 +750,17 @@ Cuenta con calculadora de volumen y densidad, cotización en lote para distribui
       client: 'Plaxtilíneas Colombia',
       year: '2026',
       liveUrl: 'https://plaxtilineas.com/',
-      image: 'assets/images/proyectos/proyecto-sysmiconarquitectura.png',
+      image: 'assets/images/proyectos/plaxtilineas/plaxti-1.png',
       images: [
-        'assets/images/proyectos/proyecto-sysmiconarquitectura.png',
-        'assets/images/proyectos/card2.png'
+        'assets/images/proyectos/plaxtilineas/plaxti-1.png',
+        'assets/images/proyectos/plaxtilineas/plaxti-2.png',
+        'assets/images/proyectos/plaxtilineas/plaxti-3.png',
+        'assets/images/proyectos/plaxtilineas/plaxti-4.png',
+        'assets/images/proyectos/plaxtilineas/plaxti-5.png'
+      ],
+      mobileImages: [
+        'assets/images/proyectos/plaxtilineas/plaxti-4.png',
+        'assets/images/proyectos/plaxtilineas/plaxti-5.png'
       ],
       description: 'Portal institucional e industrial para la exhibición de líneas de bolsas, empaques y plásticos biodegradables.',
       longDescription: `PLAXTILÍNEAS es el portal corporativo maestro para una firma líder en fabricación y distribución de empaques sintéticos e industriales.
@@ -788,7 +816,17 @@ Destaca por su presentación visual de alto impacto, catálogo interactivo de l�
       image: 'assets/images/proyectos/proyecto-tiendaintima.png',
       images: [
         'assets/images/proyectos/proyecto-tiendaintima.png',
-        'assets/images/proyectos/card2.png'
+        'assets/images/proyectos/tiendaintima/tienda-1.png',
+        'assets/images/proyectos/tiendaintima/tienda2.png',
+        'assets/images/proyectos/tiendaintima/tienda3.png',
+        'assets/images/proyectos/tiendaintima/tienda4.png',
+        'assets/images/proyectos/tiendaintima/tienda5.png',
+        'assets/images/proyectos/tiendaintima/tienda-5.png'
+      ],
+      mobileImages: [
+        'assets/images/proyectos/tiendaintima/tienda4.png',
+        'assets/images/proyectos/tiendaintima/tienda5.png',
+        'assets/images/proyectos/tiendaintima/tienda-5.png'
       ],
       description: 'E-commerce para moda íntima con IA para gestión de productos y recomendaciones.',
       longDescription: `TIENDA ÍNTIMA combina elegancia, privacidad y tecnología de personalización avanzada.
