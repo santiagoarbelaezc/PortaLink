@@ -255,28 +255,12 @@ export interface ProjectDetail {
             </p>
           </div>
 
-          <!-- Smartphone Frames Grid -->
+          <!-- Mobile Images Grid -->
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 items-start justify-center">
             <div *ngFor="let mImg of project.mobileImages; let idx = index"
-                 class="relative mx-auto w-full max-w-[320px] rounded-[40px] border-[8px] border-neutral-800 bg-black overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.8)] group hover:-translate-y-2 transition-all duration-500">
-              
-              <!-- Smartphone Notch Header -->
-              <div class="w-28 h-4 bg-neutral-800 rounded-b-xl mx-auto absolute top-0 left-0 right-0 z-30 flex items-center justify-center">
-                <div class="w-8 h-1 rounded-full bg-neutral-900"></div>
-              </div>
-
-              <!-- Mobile Image -->
-              <div class="pt-6 pb-6 px-1.5">
-                <img [src]="mImg" [alt]="'Vista Móvil ' + (idx + 1)"
-                     class="w-full h-auto rounded-2xl object-cover shadow-md transition-transform duration-700 group-hover:scale-[1.02]">
-              </div>
-
-              <!-- Floating Label -->
-              <div class="absolute bottom-3 left-0 right-0 text-center pointer-events-none">
-                <span class="text-[10px] font-mono font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-black/80 text-white/90 border border-white/10 backdrop-blur-md">
-                  Vista Móvil #0{{ idx + 1 }}
-                </span>
-              </div>
+                 class="relative mx-auto w-full max-w-[320px] rounded-2xl overflow-hidden shadow-xl border border-white/10 group hover:-translate-y-1 transition-all duration-300">
+              <img [src]="mImg" [alt]="'Vista Móvil ' + (idx + 1)"
+                   class="w-full h-auto object-cover rounded-2xl shadow-md transition-transform duration-500 group-hover:scale-[1.02]">
             </div>
           </div>
         </section>
