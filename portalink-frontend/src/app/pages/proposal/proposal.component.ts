@@ -25,17 +25,17 @@ import { RouterModule } from '@angular/router';
           </p>
 
           <!-- Quick Action Buttons -->
-          <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-4 pt-4 max-w-md mx-auto sm:max-w-none">
             <a href="https://wa.me/573054078225" target="_blank"
-               class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-black font-bold uppercase text-xs sm:text-sm tracking-wider transition-all duration-300 hover:-translate-y-0.5 cursor-pointer">
-              <img src="assets/icons/whatsapp-icon.png" alt="WhatsApp" class="w-6.5 h-6.5 sm:w-7 sm:h-7 object-contain" />
-              <span>Agendar Proyecto en WhatsApp</span>
+               class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3.5 sm:px-8 sm:py-4 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-black font-bold uppercase text-xs sm:text-sm tracking-wider transition-all duration-300 shadow-lg hover:-translate-y-0.5 cursor-pointer">
+              <img src="assets/icons/whatsapp-icon.png" alt="WhatsApp" class="w-6 h-6 sm:w-7 sm:h-7 shrink-0 object-contain" />
+              <span class="text-center">Agendar Proyecto en WhatsApp</span>
             </a>
 
             <a routerLink="/rotbot"
-               class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl border border-white/15 bg-white/[0.04] hover:bg-white/10 hover:border-cyan-400/50 text-white font-bold uppercase text-xs sm:text-sm tracking-wider transition-all duration-300 hover:-translate-y-0.5 cursor-pointer">
-              <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
-              <span>Consultar con RotBot IA</span>
+               class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3.5 sm:px-8 sm:py-4 rounded-2xl border border-white/15 bg-white/[0.04] hover:bg-white/10 hover:border-cyan-400/50 text-white font-bold uppercase text-xs sm:text-sm tracking-wider transition-all duration-300 shadow-md hover:-translate-y-0.5 cursor-pointer">
+              <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 shrink-0"></span>
+              <span class="text-center">Consultar con RotBot IA</span>
             </a>
           </div>
 
@@ -94,12 +94,17 @@ import { RouterModule } from '@angular/router';
             </div>
           </div>
 
-          <!-- Image Column (Sysmicon Project Image) -->
+          <!-- Image Column (Responsive: movil-banner on mobile, proyecto-0 on desktop) -->
           <div class="lg:col-span-6 relative flex justify-center">
-            <div class="relative z-10 rounded-2xl border border-white/15 overflow-hidden shadow-2xl group">
-              <img src="assets/images/proyectos/proyecto-sysmiconarquitectura.png" 
-                   alt="Plataforma Web a Medida" 
-                   class="w-full h-auto object-cover transform group-hover:scale-[1.02] transition-all duration-700" />
+            <div class="relative z-10 w-full rounded-2xl sm:rounded-3xl border border-white/15 overflow-hidden shadow-2xl group">
+              <!-- Mobile Image (movil-banner.png) -->
+              <img src="assets/images/fotos/movil-banner.png" 
+                   alt="Plataforma Web a Medida - Vista Móvil" 
+                   class="block lg:hidden w-full h-auto max-h-[550px] object-cover object-top transform group-hover:scale-[1.02] transition-all duration-700" />
+              <!-- Desktop Image (proyecto-0.png) -->
+              <img src="assets/images/proyectos/proyecto-0.png" 
+                   alt="Plataforma Web a Medida - Vista Desktop" 
+                   class="hidden lg:block w-full h-auto object-cover transform group-hover:scale-[1.02] transition-all duration-700" />
             </div>
           </div>
 
@@ -654,10 +659,10 @@ import { RouterModule } from '@angular/router';
             </p>
             <div class="pt-4 flex flex-wrap items-center justify-center gap-4">
               <a href="https://wa.me/573054078225" target="_blank"
-                 class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-black font-bold uppercase text-xs sm:text-sm tracking-wider transition-all duration-300 hover:-translate-y-0.5 cursor-pointer">
-                <img src="assets/icons/whatsapp-icon.png" alt="WhatsApp" class="w-6.5 h-6.5 sm:w-7 sm:h-7 object-contain" />
+                 class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3.5 sm:px-8 sm:py-4 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-black font-bold uppercase text-xs sm:text-sm tracking-wider transition-all duration-300 shadow-lg hover:-translate-y-0.5 cursor-pointer">
+                <img src="assets/icons/whatsapp-icon.png" alt="WhatsApp" class="w-6 h-6 sm:w-7 sm:h-7 shrink-0 object-contain" />
                 <span>Hablar con Santiago por WhatsApp</span>
-                <span>→</span>
+                <span class="shrink-0">→</span>
               </a>
             </div>
           </div>
