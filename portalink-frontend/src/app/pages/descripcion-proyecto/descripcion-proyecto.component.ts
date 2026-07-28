@@ -513,8 +513,9 @@ Incluye además un completo panel administrativo donde la marca puede gestionar 
         'assets/images/proyectos/sysmicon/sysmi-3.png'
       ],
       mobileImages: [
-        'assets/images/proyectos/sysmicon/sysmi2.png',
-        'assets/images/proyectos/sysmicon/sysmi-3.png'
+        'assets/images/proyectos/sysmicon/movil-sysmicon.jpeg',
+        'assets/images/proyectos/sysmicon/movil-sysmicon2.jpeg',
+        'assets/images/proyectos/sysmicon/movil-sysmicon3.jpeg'
       ],
       description: 'Plataforma directiva con dashboard de cotizaciones, diseños CAD, galería visual y gestión de proyectos.',
       longDescription: `SYSMICON ARQUITECTURA es un portal ejecutivo y operativo desarrollado para firmas constructoras y estudios de diseño arquitectónico.
