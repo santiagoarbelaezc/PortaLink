@@ -301,7 +301,7 @@ export class HeroComponent implements OnInit, OnDestroy {
     es: {
       author: 'Santiago Arbelaez Contreras',
       mainTitle: 'TRANSFORMA TU NEGOCIO DIGITALMENTE',
-      role: 'desarrollador web — creador digital',
+      role: 'DESARROLLO WEB — SOLUCIONES DIGITALES A MEDIDA',
       btnRotbot: '¿Tienes una idea? Transforma esa idea con Rotbot',
       btnProyectos: 'Conoce mis proyectos',
       btnContacto: 'Comunícate conmigo',
@@ -314,7 +314,7 @@ export class HeroComponent implements OnInit, OnDestroy {
     en: {
       author: 'Santiago Arbelaez Contreras',
       mainTitle: 'TRANSFORM YOUR BUSINESS DIGITALLY',
-      role: 'web developer — digital creator',
+      role: 'WEB DEVELOPMENT — CUSTOM DIGITAL SOLUTIONS',
       btnRotbot: 'Have an idea? Transform it with Rotbot',
       btnProyectos: 'Discover my projects',
       btnContacto: 'Get in touch with me',

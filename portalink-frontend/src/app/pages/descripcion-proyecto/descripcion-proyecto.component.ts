@@ -131,7 +131,7 @@ export interface ProjectDetail {
 
             <!-- Main Image (Uniform Height across all desktop slides) -->
             <ng-template #mainImageBlock>
-              <img [src]="activeImage" [alt]="project.title"
+              <img [src]="activeImage" (error)="onImgError($event)" [alt]="project.title"
                    class="w-full h-full object-cover object-top transition-all duration-500">
               <div class="absolute bottom-6 right-6 backdrop-blur-md bg-black/60 border border-white/10 px-4 py-2 rounded-xl text-white text-xs font-mono z-20 pointer-events-none">
                 Visualización de Alta Calidad
@@ -160,7 +160,7 @@ export interface ProjectDetail {
                     [class.ring-[var(--accent-color,#00f5ff)]]="activeMediaType === 'image' && activeImage === project.images[0]"
                     [class.scale-105]="activeMediaType === 'image' && activeImage === project.images[0]"
                     [class.opacity-50]="activeMediaType !== 'image' || activeImage !== project.images[0]">
-              <img [src]="project.images[0]" [alt]="project.title + ' Cover'" class="w-full h-full object-cover object-top">
+              <img [src]="project.images[0]" (error)="onImgError($event)" [alt]="project.title + ' Cover'" class="w-full h-full object-cover object-top">
               <span class="absolute bottom-1.5 left-1.5 text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-black/70 text-white border border-white/10">Portada</span>
             </button>
 
@@ -173,7 +173,7 @@ export interface ProjectDetail {
                     [class.ring-emerald-400]="activeMediaType === 'video'"
                     [class.scale-105]="activeMediaType === 'video'"
                     [class.opacity-50]="activeMediaType !== 'video'">
-              <img [src]="project.images[0]" [alt]="project.title + ' Video'" class="w-full h-full object-cover opacity-40 blur-[1px]">
+              <img [src]="project.images[0]" (error)="onImgError($event)" [alt]="project.title + ' Video'" class="w-full h-full object-cover opacity-40 blur-[1px]">
               <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col items-center justify-center gap-1">
                 <div class="w-10 h-10 rounded-full bg-emerald-400 text-black flex items-center justify-center shadow-lg group-hover/vthumb:scale-110 transition-transform">
                   <svg class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
@@ -193,7 +193,7 @@ export interface ProjectDetail {
                       [class.ring-[var(--accent-color,#00f5ff)]]="activeMediaType === 'image' && activeImage === img"
                       [class.scale-105]="activeMediaType === 'image' && activeImage === img"
                       [class.opacity-50]="activeMediaType !== 'image' || activeImage !== img">
-                <img [src]="img" [alt]="'Captura ' + (i + 2)" class="w-full h-full object-cover object-top">
+                <img [src]="img" (error)="onImgError($event)" [alt]="'Captura ' + (i + 2)" class="w-full h-full object-cover object-top">
               </button>
             </ng-container>
 
@@ -279,7 +279,7 @@ export interface ProjectDetail {
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 items-start justify-center">
             <div *ngFor="let mImg of project.mobileImages; let idx = index"
                  class="relative mx-auto w-full max-w-[320px] rounded-2xl overflow-hidden shadow-xl border border-white/10 group hover:-translate-y-1 transition-all duration-300">
-              <img [src]="mImg" [alt]="'Vista Móvil ' + (idx + 1)"
+              <img [src]="mImg" (error)="onImgError($event)" [alt]="'Vista Móvil ' + (idx + 1)"
                    class="w-full h-auto object-cover rounded-2xl shadow-md transition-transform duration-500 group-hover:scale-[1.02]">
             </div>
           </div>
@@ -446,6 +446,13 @@ export class DescripcionProyectoComponent implements OnInit {
     }
   }
 
+  onImgError(event: Event) {
+    const target = event.target as HTMLImageElement;
+    if (target && !target.src.includes('proyecto-sysmiconarquitectura.png')) {
+      target.src = 'assets/images/proyectos/proyecto-sysmiconarquitectura.png';
+    }
+  }
+
   prevMedia() {
     if (!this.project || !this.project.images || this.project.images.length === 0) return;
     const currentIndex = this.project.images.indexOf(this.activeImage);
@@ -554,7 +561,7 @@ Incluye además un completo panel administrativo donde la marca puede gestionar 
       mobileImages: [
         'assets/images/proyectos/sysmicon/movil-sysmicon.jpeg',
         'assets/images/proyectos/sysmicon/movil-sysmicon2.jpeg',
-        'assets/images/proyectos/sysmicon/movil-sysmicon3.jpeg'
+        'assets/images/proyectos/sysmicon/movil-sysmicon4.jpeg'
       ],
       description: 'Plataforma directiva con dashboard de cotizaciones, diseños CAD, galería visual y gestión de proyectos.',
       longDescription: `SYSMICON ARQUITECTURA es un portal ejecutivo y operativo desarrollado para firmas constructoras y estudios de diseño arquitectónico.
