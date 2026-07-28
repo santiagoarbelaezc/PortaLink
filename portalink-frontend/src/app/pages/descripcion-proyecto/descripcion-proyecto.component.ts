@@ -285,20 +285,6 @@ export interface ProjectDetail {
           </div>
         </section>
 
-        <!-- Technologies Stack Pill List -->
-        <section class="max-w-[1400px] mx-auto px-6 sm:px-10 mb-20 text-center">
-          <h3 class="text-xs font-mono font-bold uppercase tracking-[0.3em] text-muted mb-6">
-            Tecnologías e Infraestructura Utilizadas
-          </h3>
-
-          <div class="flex items-center justify-center flex-wrap gap-3">
-            <span *ngFor="let tech of project.technologies"
-                  class="px-5 py-2.5 rounded-full border text-xs font-bold uppercase tracking-widest tech-pill">
-              {{ tech }}
-            </span>
-          </div>
-        </section>
-
         <!-- Bottom Call-To-Action Banner -->
         <section class="max-w-[1400px] mx-auto px-6 sm:px-10 mb-12">
           <div class="p-8 sm:p-12 rounded-3xl border cta-banner relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
@@ -544,9 +530,9 @@ Incluye además un completo panel administrativo donde la marca puede gestionar 
     {
       id: 'sysmicon',
       code: 'SYS_02',
-      badge: 'PLATAFORMA CAD',
+      badge: 'PLATAFORMA WEB',
       title: 'SYSMICON ARQUITECTURA',
-      tagline: 'Portal directivo para gestión de proyectos de arquitectura y planos CAD 2D/3D.',
+      tagline: 'Portal directivo para gestión y exposición de proyectos de arquitectura.',
       category: 'Sistemas Corporativos',
       client: 'Sysmicon Constructora',
       year: '2026',
@@ -563,31 +549,30 @@ Incluye además un completo panel administrativo donde la marca puede gestionar 
         'assets/images/proyectos/sysmicon/movil-sysmicon2.jpeg',
         'assets/images/proyectos/sysmicon/movil-sysmicon4.jpeg'
       ],
-      description: 'Plataforma directiva con dashboard de cotizaciones, diseños CAD, galería visual y gestión de proyectos.',
+      description: 'Plataforma directiva con dashboard de estadísticas, exposición de proyectos y registro de usuarios.',
       longDescription: `SYSMICON ARQUITECTURA es un portal ejecutivo y operativo desarrollado para firmas constructoras y estudios de diseño arquitectónico.
 
-Integra una suite de herramientas avanzadas: visualización interactiva de planos CAD en 2D/3D, seguimiento de etapas de obra, módulo de cotizaciones ejecutivas y una galería inmersiva de proyectos habitacionales.`,
+Integra una suite de herramientas avanzadas: exposición interactiva de proyectos habitacionales, dashboard analítico de flujo de usuarios y módulo de registro seguro para clientes.`,
       highlights: [
-        'Dashboard ejecutivo con estimación de costos y avance físico de proyectos',
-        'Visor e inspección de planos CAD 2D y modelos tridimensionales',
-        'Comunidad de arquitectos y contratistas con seguimiento colaborativo',
-        'Generación de presupuestos y propuestas comerciales en PDF'
+        'Sitio web exclusivo para la exposición y exhibición de proyectos arquitectónicos de la empresa',
+        'Dashboard interactivo con métricas y estadísticas para analizar el flujo y comportamiento de usuarios',
+        'Módulo completo de registro de usuarios y autenticación de clientes'
       ],
       features: [
         {
           icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10',
-          title: 'Visor de Planos CAD',
-          desc: 'Carga e inspección interactiva de proyectos y diseños arquitectónicos.'
+          title: 'Exposición de Proyectos',
+          desc: 'Showcase visual e interactivo de obras y proyectos habitacionales.'
         },
         {
           icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10',
-          title: 'Dashboard Financiero',
-          desc: 'Monitoreo de inversiones, costos de materiales y avance de hitos de obra.'
+          title: 'Dashboard de Estadísticas',
+          desc: 'Monitoreo de métricas, análisis de tráfico y flujo de usuarios en tiempo real.'
         },
         {
           icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z',
-          title: 'Red de Colaboradores',
-          desc: 'Comunicación entre directores de obra, clientes y proyectistas.'
+          title: 'Registro de Usuarios',
+          desc: 'Autenticación segura y panel de control para clientes.'
         },
         {
           icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z',
@@ -595,7 +580,7 @@ Integra una suite de herramientas avanzadas: visualización interactiva de plano
           desc: 'Presentación inmersiva para clientes exigentes con vistas panorámicas.'
         }
       ],
-      technologies: ['Angular 19', 'PHP 8.5', 'MySQL', 'Three.js / CAD', 'WebSockets'],
+      technologies: ['Angular 19', 'PHP 8.5', 'MySQL', 'TailwindCSS', 'WebSockets'],
       stats: [
         { label: 'Proyectos', value: '+50' },
         { label: 'Tiempo de Carga', value: '< 300ms' },

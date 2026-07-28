@@ -246,3 +246,14 @@
   color: #4b5563;
 }
 
+/* Force card titles inside showcase cards to remain white in light theme */
+.showcase-card h3,
+.theme-light .showcase-card h3 {
+  color: #ffffff !important;
+}
+
+.showcase-card:hover h3,
+.theme-light .showcase-card:hover h3 {
+  color: var(--accent-color, #00f5ff) !important;
+}
+
