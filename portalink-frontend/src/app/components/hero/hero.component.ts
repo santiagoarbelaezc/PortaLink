@@ -82,7 +82,7 @@ import { RouterModule } from '@angular/router';
           <div class="relative w-full aspect-[9/14] sm:aspect-[3/4] md:aspect-[16/10] rounded-[28px] sm:rounded-[36px] overflow-hidden border transition-all duration-500 shadow-2xl group border-white/10 hover:border-[#00f5ff]/40">
             <!-- Mobile Image (movil-banner.png - Extra Tall aspect ratio) -->
             <img
-               src="assets/images/fotos/movil-banner.png"
+               src="assets/images/proyectos/movil-banner.png"
                alt="Portalink Mobile Showcase"
                class="block md:hidden w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
             />

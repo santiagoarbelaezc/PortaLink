@@ -19,6 +19,7 @@ import { PoliticaPrivacidadComponent } from './pages/politica-privacidad/politic
 import { TratamientoDatosComponent } from './pages/tratamiento-datos/tratamiento-datos.component';
 import { DeslindeIaComponent } from './pages/deslinde-ia/deslinde-ia.component';
 import { DescripcionProyectoComponent } from './pages/descripcion-proyecto/descripcion-proyecto.component';
+import { DisenosComponent } from './pages/disenos/disenos.component';
 
 export const routes: Routes = [
   {
@@ -45,6 +46,11 @@ export const routes: Routes = [
     path: 'proposal',
     component: ProposalComponent,
     data: { animation: 'ProposalPage' }
+  },
+  {
+    path: 'prototipos',
+    component: DisenosComponent,
+    data: { animation: 'DisenosPage' }
   },
   { 
     path: '', 

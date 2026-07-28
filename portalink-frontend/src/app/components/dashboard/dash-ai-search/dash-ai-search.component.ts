@@ -1,9 +1,8 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { AnalyticsService } from '../../../services/analytics.service';
-
-
 
 const TAB_LABELS: Record<string, string> = {
   dashboard: 'Inicio',
@@ -20,7 +19,7 @@ const TAB_LABELS: Record<string, string> = {
 @Component({
   selector: 'app-dash-ai-search',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   template: `
     <header class="flex-shrink-0 flex items-center justify-between px-6 md:px-8 py-4 border-b relative"
             [ngClass]="theme === 'dark' ? 'bg-[#07070a] border-neutral-800' : 'bg-white border-neutral-200'">
@@ -44,7 +43,24 @@ const TAB_LABELS: Record<string, string> = {
       </div>
 
       <!-- Right Actions -->
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-3">
+        <!-- Botón Ver sitio en vivo -->
+        <a routerLink="/"
+           target="_blank"
+           class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 border cursor-pointer hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+           [ngClass]="theme === 'dark'
+             ? 'bg-white/10 hover:bg-white text-white hover:text-black border-white/20 hover:border-white'
+             : 'bg-black/5 hover:bg-black text-neutral-800 hover:text-white border-black/15 hover:border-black'">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span>Ver sitio en vivo</span>
+          <svg class="w-3.5 h-3.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H18m0 0v4.5M18 6l-7.5 7.5M6 18h12"/>
+          </svg>
+        </a>
+
         <!-- Theme Toggle -->
         <button (click)="themeChange.emit()"
                 class="w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-200 cursor-pointer hover:scale-105 active:scale-95"

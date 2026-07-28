@@ -45,10 +45,10 @@ import { RouterModule } from '@angular/router';
         <!-- ═══════════════════════════════════════════════════════════ -->
         <!-- 2. SECCIÓN 1: APLICACIÓN WEB                                -->
         <!-- ═══════════════════════════════════════════════════════════ -->
-        <section class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           
           <!-- Content Column -->
-          <div class="lg:col-span-6 space-y-6">
+          <div class="lg:col-span-5 space-y-6">
             <div class="flex items-center gap-4 mb-2">
               <div class="h-px w-12" style="background-color: var(--text-primary); opacity: 0.5;"></div>
               <span class="text-xs uppercase tracking-[0.4em] font-mono text-white font-bold" style="color: var(--text-secondary);">01 — PLATAFORMA DIGITAL</span>
@@ -94,14 +94,14 @@ import { RouterModule } from '@angular/router';
             </div>
           </div>
 
-          <!-- Image Column (Responsive: movil-banner on mobile, proyecto-0 on desktop) -->
-          <div class="lg:col-span-6 relative flex justify-center">
-            <div class="relative z-10 w-full rounded-2xl sm:rounded-3xl border border-white/15 overflow-hidden shadow-2xl group">
+          <!-- Image Column (7 cols on desktop - Enlarged display) -->
+          <div class="lg:col-span-7 relative flex justify-center">
+            <div class="relative z-10 w-full rounded-2xl sm:rounded-3xl border border-white/15 overflow-hidden shadow-2xl group lg:scale-[1.03] transition-transform duration-500">
               <!-- Mobile Image (movil-banner.png) -->
-              <img src="assets/images/fotos/movil-banner.png" 
+              <img src="assets/images/proyectos/movil-banner.png" 
                    alt="Plataforma Web a Medida - Vista Móvil" 
                    class="block lg:hidden w-full h-auto max-h-[550px] object-cover object-top transform group-hover:scale-[1.02] transition-all duration-700" />
-              <!-- Desktop Image (proyecto-0.png) -->
+              <!-- Desktop Image (proyecto-0.png - Larger Viewport) -->
               <img src="assets/images/proyectos/proyecto-0.png" 
                    alt="Plataforma Web a Medida - Vista Desktop" 
                    class="hidden lg:block w-full h-auto object-cover transform group-hover:scale-[1.02] transition-all duration-700" />

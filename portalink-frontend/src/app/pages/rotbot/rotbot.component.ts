@@ -60,6 +60,14 @@ import { SiteService } from '../../services/site.service';
             <span class="hidden sm:inline">Volver al Inicio</span>
           </a>
 
+          <!-- Galería de Diseños -->
+          <a routerLink="/prototipos" class="hidden sm:flex items-center gap-2 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border transition-all" style="color: var(--accent-color); border-color: rgba(0,245,255,0.25); background: rgba(0,245,255,0.06);" title="Ver Galería de Prototipos">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            <span>Prototipos</span>
+          </a>
+
           <!-- Theme Toggle -->
           <button (click)="toggleTheme()" class="p-2 rounded-lg transition-all icon-btn mr-1" title="Cambiar Tema">
             <svg *ngIf="currentTheme === 'dark'" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -162,7 +170,7 @@ import { SiteService } from '../../services/site.service';
               <!-- Welcome Intro Section (Shifted higher up) -->
             <div *ngIf="chatService.messages.length <= 1" class="flex flex-col items-center justify-center text-center pb-4 border-b pt-1 sm:pt-2 mb-2 welcome-border">
               <div class="w-44 h-44 sm:w-56 sm:h-56 mb-3 relative flex items-center justify-center overflow-visible transition-transform duration-500 hover:scale-105">
-                <img src="assets/images/rotbot4.png" class="w-full h-full object-contain relative z-10 filter drop-shadow-[0_10px_25px_rgba(0,245,255,0.25)]" alt="Rotbot Full">
+                <img src="assets/images/rotbot4.png" class="w-full h-full object-contain relative z-10" alt="Rotbot Full">
               </div>
               <h2 class="text-xl sm:text-2xl font-bold tracking-tight mb-2 font-sans" style="color: var(--text-primary);">
                 Sistemas con Rotbot IA

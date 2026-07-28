@@ -117,13 +117,17 @@ import { Subscription } from 'rxjs';
               Dashboard
             </a>
             <!-- Back to website home -->
-            <a [routerLink]="['/']"
+            <a [routerLink]="['/']" target="_blank"
                class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all duration-200 flex items-center gap-1.5"
                [ngClass]="isDark ? 'bg-neutral-900 text-white hover:bg-neutral-800' : 'bg-neutral-100 text-neutral-800 hover:bg-neutral-200'">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span>Ver sitio en vivo</span>
+              <svg class="w-3.5 h-3.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H18m0 0v4.5M18 6l-7.5 7.5M6 18h12"/>
               </svg>
-              Ver Sitio
             </a>
           </div>
         </header>
