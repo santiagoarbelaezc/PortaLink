@@ -115,29 +115,30 @@ import { Router, RouterModule } from '@angular/router';
               </div>
             </div>
 
-            <!-- Zona inferior: descripción + acciones -->
-            <div class="showcase-card-footer px-4 pt-5 pb-3 flex items-start justify-between gap-4">
-              <p class="showcase-card-desc text-xs sm:text-[13px] font-light leading-relaxed line-clamp-2 flex-1">
-                {{ p.description }}
-              </p>
-              <div class="flex items-center gap-2 flex-shrink-0 mt-0.5">
-                <a *ngIf="p.liveUrl" [href]="p.liveUrl" target="_blank" rel="noopener noreferrer"
-                   (click)="$event.stopPropagation()"
-                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-white/10 hover:bg-white text-white hover:text-black border border-white/25 hover:border-white transition-all duration-300 backdrop-blur-md shadow-sm group/btn">
-                  <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-                  <span>EN VIVO</span>
-                  <svg class="w-3 h-3 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H18m0 0v4.5M18 6l-7.5 7.5"/>
-                  </svg>
-                </a>
-                <a [routerLink]="['/proyecto', p.id]" (click)="$event.stopPropagation()"
-                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-white/5 hover:bg-white text-white hover:text-black border border-white/15 hover:border-white transition-all duration-300 backdrop-blur-md group/btn">
-                  <span>VER MÁS</span>
-                  <svg class="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
-                  </svg>
-                </a>
-              </div>
+            <!-- Zona inferior: Solo botones de acción ultra-elegantes -->
+            <div class="showcase-card-footer px-5 pt-4 pb-4 flex items-center justify-end gap-3">
+              <!-- Botón En Vivo -->
+              <a *ngIf="p.liveUrl" [href]="p.liveUrl" target="_blank" rel="noopener noreferrer"
+                 (click)="$event.stopPropagation()"
+                 class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[11px] font-mono font-bold uppercase tracking-[0.2em] bg-white/[0.08] hover:bg-white text-white hover:text-black border border-white/20 hover:border-white transition-all duration-300 backdrop-blur-xl shadow-lg hover:shadow-white/20 group/btn cursor-pointer">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                </span>
+                <span>En Vivo</span>
+                <svg class="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H18m0 0v4.5M18 6l-7.5 7.5"/>
+                </svg>
+              </a>
+
+              <!-- Botón Ver Más -->
+              <a [routerLink]="['/proyecto', p.id]" (click)="$event.stopPropagation()"
+                 class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[11px] font-mono font-bold uppercase tracking-[0.2em] bg-white/[0.04] hover:bg-white text-white hover:text-black border border-white/12 hover:border-white transition-all duration-300 backdrop-blur-xl shadow-md hover:shadow-white/20 group/btn cursor-pointer">
+                <span>Ver Más</span>
+                <svg class="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+                </svg>
+              </a>
             </div>
 
           </div>
