@@ -461,7 +461,11 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   getProfileTitle() {
-    return this.configService.data()?.links?.profileTitle || 'Digital Creator & Developer';
+    const customTitle = this.configService.data()?.links?.profileTitle;
+    if (customTitle && customTitle !== 'Digital Creator & Developer' && customTitle !== 'Creador Digital & Desarrollador') {
+      return customTitle;
+    }
+    return this.currentLanguage === 'es' ? 'Creador Digital & Desarrollador' : 'Digital Creator & Developer';
   }
 
   getFormattedProfileName() {
