@@ -61,7 +61,7 @@ export class PortfolioConfigService {
         parsed.about.avatarImage = 'assets/images/fotos/photo3.jpeg';
       }
       if (parsed?.links) {
-        parsed.links.avatarImage = 'assets/images/fotos/link-principal.jpg';
+        parsed.links.avatarImage = 'assets/images/fotos/main-link.jpg';
       }
       if (parsed?.pages?.home?.sections) {
         parsed.pages.home.sections.forEach((sec: any) => {
@@ -76,7 +76,7 @@ export class PortfolioConfigService {
       if (parsed?.pages?.link?.sections) {
         parsed.pages.link.sections.forEach((sec: any) => {
           if (sec.id === 'links-main' && sec.config) {
-            sec.config.avatarImage = 'assets/images/fotos/link-principal.jpg';
+            sec.config.avatarImage = 'assets/images/fotos/main-link.jpg';
           }
         });
       }
@@ -107,11 +107,14 @@ export class PortfolioConfigService {
 
         if (typeof window !== 'undefined') {
           this.imageOptimizer.preloadAndOptimize([
-            'assets/images/fotos/link-principal.jpg',
-            'assets/images/fotos/principal.jpg',
-            'assets/images/fotos/photo2.jpg',
-            'assets/images/fotos/photo3.jpeg',
-            'assets/images/fotos/photo4.jpeg'
+            'assets/images/fotos/main-link.jpg',
+            'assets/images/fotos/color-1.jpg',
+            'assets/images/fotos/blanco-negro-1.jpg',
+            'assets/images/fotos/color-2.jpg',
+            'assets/images/fotos/blanco-negro-2.jpg',
+            'assets/images/fotos/color-3.jpg',
+            'assets/images/fotos/blanco-negro-3.jpg',
+            'assets/images/fotos/color-4.jpg'
           ], 900, 0.5);
         }
       },

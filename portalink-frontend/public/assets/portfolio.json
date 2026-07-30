@@ -70,7 +70,7 @@
   "links": {
     "profileName": "Santiago Arbeláez",
     "profileTitle": "Creador Digital & Desarrollador",
-    "avatarImage": "assets/images/fotos/link-principal.jpg",
+    "avatarImage": "assets/images/fotos/main-link.jpg",
     "profileLogo": "assets/icons/mi-logo.png",
     "items": [
       { "id": "1", "title": "TikTok", "subtitle": "Videos", "url": "https://www.tiktok.com/@santiagoarbelaezc", "icon": "tiktok" },
@@ -128,7 +128,7 @@
           "config": {
             "profileName": "Santiago Arbeláez",
             "profileTitle": "Digital Creator & Developer",
-            "avatarImage": "assets/images/fotos/link-principal.jpg",
+            "avatarImage": "assets/images/fotos/main-link.jpg",
             "items": [
               { "id": "1", "title": "TikTok", "subtitle": "Videos", "url": "https://www.tiktok.com/@santiagoarbelaezc", "icon": "tiktok" },
               { "id": "2", "title": "Instagram", "subtitle": "Fotos", "url": "https://www.instagram.com/santiagoarbelaezc/", "icon": "instagram" },

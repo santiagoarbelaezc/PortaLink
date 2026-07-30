@@ -157,13 +157,12 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                        [alt]="img.alt" 
                        loading="lazy" 
                        decoding="async" 
-                       class="w-full h-full object-cover object-top transition-all duration-500" 
-                       [ngClass]="i % 2 === 0 ? 'filter-none' : 'filter grayscale brightness-[0.8] contrast-[1.1]'" />
+                       class="w-full h-full object-cover object-top transition-all duration-500 filter-none" />
                   
                   <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent flex items-end p-5 pointer-events-none">
                     <span class="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-white/80 flex items-center gap-2">
                       <span>{{ img.alt }}</span>
-                      <span class="text-[8px] opacity-50 font-mono font-normal">({{ i % 2 === 0 ? 'COLOR' : 'B&N' }})</span>
+                      <span class="text-[8px] opacity-50 font-mono font-normal">({{ img.isColor ? 'COLOR' : 'B&N' }})</span>
                     </span>
                   </div>
                 </div>
@@ -351,11 +350,13 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   modelingImages = [
-    { src: 'assets/images/fotos/link-principal.jpg', alt: 'Retrato Principal Link' },
-    { src: 'assets/images/fotos/principal.jpg', alt: 'Retrato Principal' },
-    { src: 'assets/images/fotos/photo2.jpg', alt: 'Editorial Portrait I' },
-    { src: 'assets/images/fotos/photo3.jpeg', alt: 'Editorial Portrait II' },
-    { src: 'assets/images/fotos/photo4.jpeg', alt: 'Editorial Portrait III' }
+    { src: 'assets/images/fotos/color-1.jpg', alt: 'Editorial Portrait I', isColor: true },
+    { src: 'assets/images/fotos/blanco-negro-1.jpg', alt: 'Editorial Portrait II', isColor: false },
+    { src: 'assets/images/fotos/color-2.jpg', alt: 'Editorial Portrait III', isColor: true },
+    { src: 'assets/images/fotos/blanco-negro-2.jpg', alt: 'Editorial Portrait IV', isColor: false },
+    { src: 'assets/images/fotos/color-3.jpg', alt: 'Editorial Portrait V', isColor: true },
+    { src: 'assets/images/fotos/blanco-negro-3.jpg', alt: 'Editorial Portrait VI', isColor: false },
+    { src: 'assets/images/fotos/color-4.jpg', alt: 'Editorial Portrait VII', isColor: true }
   ];
 
   translations: any = {
@@ -447,7 +448,7 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   getProfileAvatar() {
-    const rawUrl = this.configService.data()?.links?.avatarImage || 'assets/images/fotos/link-principal.jpg';
+    const rawUrl = this.configService.data()?.links?.avatarImage || 'assets/images/fotos/main-link.jpg';
     return this.imageOptimizer.getCachedOrOriginal(rawUrl, 950, 0.75);
   }
 
