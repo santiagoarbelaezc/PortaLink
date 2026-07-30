@@ -1,14 +1,63 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="utf-8">
-  <title>SantiagoArbelaez</title>
+  <title>Santiago Arbelaez</title>
   <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover">
+  
+  <!-- PWA & Mobile Web App Standalone Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Santiago Arbelaez">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#080808">
+  
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/icons/logo-movil-install.png">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=Inter:wght@100..900&family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-  <!-- FontAwesome for modern icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Native Mobile PWA Interceptors (No-Zoom & Standalone Navigation) -->
+  <script>
+    // 1. Prevent Pinch-to-Zoom gestures on iOS Safari / Chrome
+    document.addEventListener('gesturestart', function (e) { e.preventDefault(); }, false);
+    document.addEventListener('gesturechange', function (e) { e.preventDefault(); }, false);
+    document.addEventListener('gestureend', function (e) { e.preventDefault(); }, false);
+
+    // 2. Prevent Double-Tap Zoom
+    var lastTouchEnd = 0;
+    document.addEventListener('touchend', function (event) {
+      var now = (new Date()).getTime();
+      if (now - lastTouchEnd <= 300) {
+        var tag = event.target ? event.target.tagName : '';
+        if (tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') {
+          event.preventDefault();
+        }
+      }
+      lastTouchEnd = now;
+    }, false);
+
+    // 3. iOS PWA Standalone Internal Navigation Interceptor
+    if (('standalone' in window.navigator) && window.navigator.standalone) {
+      document.addEventListener('click', function(e) {
+        var target = e.target;
+        while (target && target.tagName !== 'A') {
+          target = target.parentElement;
+        }
+        if (target && target.hasAttribute('href')) {
+          var href = target.getAttribute('href');
+          if (href && !href.startsWith('http') && !href.startsWith('//') && !href.startsWith('tel:') && !href.startsWith('mailto:') && !href.startsWith('https://wa.me')) {
+            e.preventDefault();
+            window.location.href = href;
+          }
+        }
+      }, false);
+    }
+  </script>
 </head>
 <body>
   <app-root></app-root>

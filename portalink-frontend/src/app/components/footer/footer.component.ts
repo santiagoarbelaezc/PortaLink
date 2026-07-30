@@ -76,8 +76,8 @@ import { RouterModule } from '@angular/router';
               <span>→</span>
             </a>
             <div class="pt-2 flex items-center gap-4 text-sm font-medium">
-              <a href="https://www.tiktok.com/@santiagoarbelaezc" target="_blank" class="footer-link transition-colors" style="color: var(--text-secondary);">TikTok</a>
-              <a href="https://www.instagram.com/santiagoarbelaezc/" target="_blank" class="footer-link transition-colors" style="color: var(--text-secondary);">Instagram</a>
+              <a href="https://www.tiktok.com/@santiarbelaezz" target="_blank" class="footer-link transition-colors" style="color: var(--text-secondary);">TikTok</a>
+              <a href="https://www.instagram.com/santiarbelaezz/" target="_blank" class="footer-link transition-colors" style="color: var(--text-secondary);">Instagram</a>
               <a href="https://www.linkedin.com/in/santiago-arbelaez-contreras-9830b5290/" target="_blank" class="footer-link transition-colors" style="color: var(--text-secondary);">LinkedIn</a>
             </div>
           </div>

@@ -93,11 +93,12 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                     <p class="text-[8px] uppercase tracking-[0.3em] text-white/50 mt-1">{{ getTranslation().ingenieria }}</p>
                   </div>
                 </div>
-                <div class="lt-action-line hidden md:flex">
-                  <div class="w-10 h-px bg-white/30 group-hover:w-20 group-hover:bg-white transition-all duration-700"></div>
-                  <span class="text-white/30 group-hover:text-white transition-colors text-xl">↗</span>
+                <div class="lt-action-line flex items-center gap-3">
+                  <div class="w-10 h-px bg-white/30 group-hover:w-20 group-hover:bg-white transition-all duration-700 hidden md:block"></div>
+                  <svg class="w-5 h-5 text-white/40 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M17 7H7M17 7V17"/>
+                  </svg>
                 </div>
-                <span class="md:hidden text-white/30 group-hover:text-white transition-colors">↗</span>
               </a>
 
               <!-- Dynamic Links from Config Service -->
@@ -124,7 +125,9 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                     <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                     <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
                   </svg>
-                  <span class="text-white/20 group-hover:text-white transition-colors">↗</span>
+                  <svg class="w-4 h-4 text-white/40 group-hover:text-white transition-colors shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M17 7H7M17 7V17"/>
+                  </svg>
                 </div>
                 <div class="w-full h-px bg-white/10 group-hover:bg-white/20 transition-colors my-3"></div>
                 <div>
@@ -373,7 +376,7 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
       chat: 'Chat',
       empleo: 'Profesional',
       retratos: 'EDITORIAL / BOOK',
-      instalarTitulo: 'Instalar PortaLink',
+      instalarTitulo: 'Instalar Santiago Arbelaez',
       instalarDescIOS: 'Añade esta aplicación a tu pantalla de inicio para acceder rápidamente a mi portafolio y redes.',
       instalarDescOther: 'Instala la aplicación para una experiencia más rápida y sin distracciones.',
       instalarBtn: 'Instalar Ahora',
@@ -395,7 +398,7 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
       chat: 'Chat',
       empleo: 'Work',
       retratos: 'EDITORIAL / PORTRAITS',
-      instalarTitulo: 'Install PortaLink',
+      instalarTitulo: 'Install Santiago Arbelaez',
       instalarDescIOS: 'Add this application to your home screen to quickly access my portfolio and networks.',
       instalarDescOther: 'Install the application for a faster experience without distractions.',
       instalarBtn: 'Install Now',

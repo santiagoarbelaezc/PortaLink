@@ -178,7 +178,7 @@ import { AuthService } from '../../services/auth.service';
     </nav>
 
     <!-- Mobile floating Brand Logo (top left) -->
-    <div class="md:hidden fixed top-5 left-6 z-[9000]">
+    <div class="md:hidden fixed left-6 z-[9000]" [style.top]="'calc(1.75rem + env(safe-area-inset-top, 0px))'">
       <a (click)="scrollTo('#hero', $event)" routerLink="/" class="flex items-center cursor-pointer">
         <img [src]="currentTheme === 'light' ? 'assets/icons/navbar-logolight.png' : 'assets/icons/navbar-logodark.png'" 
              alt="Portalink" 
@@ -187,7 +187,7 @@ import { AuthService } from '../../services/auth.service';
     </div>
 
     <!-- Mobile floating Switcher Group (top right) -->
-    <div class="md:hidden fixed top-5 right-6 z-[9000] flex gap-2">
+    <div class="md:hidden fixed right-6 z-[9000] flex gap-2" [style.top]="'calc(1.75rem + env(safe-area-inset-top, 0px))'">
 
       <!-- Monochromatic Mobile Theme Switcher -->
       <button (click)="toggleTheme()" 
@@ -216,7 +216,8 @@ import { AuthService } from '../../services/auth.service';
     <!-- ═══════════════════════════════════════════ -->
     <!-- MOBILE: Bottom app-style tab bar           -->
     <!-- ═══════════════════════════════════════════ -->
-    <nav class="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[9000] w-[92%] max-w-[360px]">
+    <nav class="md:hidden fixed left-1/2 -translate-x-1/2 z-[9000] w-[92%] max-w-[360px]"
+         [style.bottom]="'calc(1.25rem + env(safe-area-inset-bottom, 0px))'">
       <div #tabBar 
            (touchstart)="onTouchStart($event)"
            (touchmove)="onTouchMove($event)"

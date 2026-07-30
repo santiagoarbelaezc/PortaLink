@@ -55,11 +55,12 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
               <!-- Description & CTAs -->
               <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mt-2">
                 <!-- Ver Detalles Button -->
-                <a [routerLink]="['/proyecto', getProjectId(project)]"
-                   (click)="$event.stopPropagation()"
-                   class="inline-flex items-center justify-center px-6 py-3 sm:px-8 sm:py-3.5 rounded-full bg-[var(--accent-color,#00f5ff)] text-black font-extrabold text-[10px] sm:text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all w-fit shadow-lg">
-                  Ver Detalles del Proyecto ↗
-                </a>
+                 <a [routerLink]="['/proyecto', getProjectId(project)]"
+                    (click)="$event.stopPropagation()"
+                    class="inline-flex items-center justify-center gap-2 px-6 py-3 sm:px-8 sm:py-3.5 rounded-full bg-[var(--accent-color,#00f5ff)] text-black font-extrabold text-[10px] sm:text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all w-fit shadow-lg">
+                   <span>Ver Detalles del Proyecto</span>
+                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                 </a>
 
                 <!-- Ver Ahora (Live Site) Button -->
                 <a *ngIf="project.liveUrl" [href]="project.liveUrl" target="_blank"
