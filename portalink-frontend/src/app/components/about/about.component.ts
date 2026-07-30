@@ -17,7 +17,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
             <div class="aspect-[4/5] overflow-hidden border border-white/20 relative shadow-2xl">
               <div class="absolute top-2 left-2 w-3 h-3 border-t border-l border-white/50 z-10"></div>
               <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-white/50 z-10"></div>
-              <img [src]="data?.avatarImage || 'assets/images/fotos/photo3.jpeg'" alt="Creative Profile" class="w-full h-full object-cover grayscale brightness-75 hover:brightness-100 hover:grayscale-0 transition-all duration-700" />
+              <img [src]="data?.avatarImage || 'assets/images/fotos/main-link.jpg'" alt="Creative Profile" class="w-full h-full object-cover grayscale brightness-75 hover:brightness-100 hover:grayscale-0 transition-all duration-700" />
             </div>
 
             <!-- Decorative corner element -->

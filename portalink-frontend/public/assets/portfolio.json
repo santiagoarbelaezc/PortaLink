@@ -13,7 +13,7 @@
   },
   "about": {
     "text": "Transformo ideas abstractas en realidades interactivas que conectan con las personas. Ayudo a marcas y emprendedores a conceptualizar, diseñar y lanzar plataformas digitales atractivas y fáciles de usar, impulsando el crecimiento real de sus negocios.",
-    "avatarImage": "assets/images/fotos/photo3.jpeg",
+    "avatarImage": "assets/images/fotos/main-link.jpg",
     "visible": true
   },
   "skills": [
@@ -108,7 +108,7 @@
           "active": true,
           "config": {
             "text": "Transformo ideas abstractas en realidades interactivas que conectan con las personas. Ayudo a marcas y emprendedores a conceptualizar, diseñar y lanzar plataformas digitales atractivas y fáciles de usar, impulsando el crecimiento real de sus negocios.",
-            "avatarImage": "assets/images/fotos/photo3.jpeg"
+            "avatarImage": "assets/images/fotos/main-link.jpg"
           }
         },
         {

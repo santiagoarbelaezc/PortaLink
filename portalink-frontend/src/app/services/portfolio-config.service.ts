@@ -58,7 +58,7 @@ export class PortfolioConfigService {
         parsed.hero.backgroundImage = 'assets/images/fotos/link-principal.jpg';
       }
       if (parsed?.about) {
-        parsed.about.avatarImage = 'assets/images/fotos/photo3.jpeg';
+        parsed.about.avatarImage = 'assets/images/fotos/main-link.jpg';
       }
       if (parsed?.links) {
         parsed.links.avatarImage = 'assets/images/fotos/main-link.jpg';
@@ -69,7 +69,7 @@ export class PortfolioConfigService {
             sec.config.backgroundImage = 'assets/images/fotos/link-principal.jpg';
           }
           if (sec.id === 'home-about' && sec.config) {
-            sec.config.avatarImage = 'assets/images/fotos/photo3.jpeg';
+            sec.config.avatarImage = 'assets/images/fotos/main-link.jpg';
           }
         });
       }
