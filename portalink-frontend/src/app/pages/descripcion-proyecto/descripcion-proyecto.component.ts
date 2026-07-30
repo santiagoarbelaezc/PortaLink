@@ -298,9 +298,10 @@ export interface ProjectDetail {
             </div>
 
             <div class="flex items-center gap-4 flex-wrap flex-shrink-0">
-              <button (click)="openRotbotQuote()"
-                      class="px-6 py-4 rounded-xl bg-[var(--accent-color,#00f5ff)] text-black font-extrabold text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-lg">
-                Cotizar con RotBot AI ⚡
+              <button (click)="openWhatsappQuote()"
+                      class="px-6 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-lg flex items-center gap-2 cursor-pointer">
+                <i class="fa-brands fa-whatsapp text-sm"></i>
+                <span>Cotiza tu proyecto</span>
               </button>
 
               <a [href]="project.liveUrl" target="_blank" rel="noopener noreferrer"
@@ -989,11 +990,11 @@ Conectado a la base de datos empresarial, este copiloto comprende instrucciones 
     this.router.navigate(['/proyectos']);
   }
 
-  openRotbotQuote() {
+  openWhatsappQuote() {
     if (this.project) {
-      window.dispatchEvent(new CustomEvent('open-ai-chat', {
-        detail: { message: this.project.rotbotPrompt }
-      }));
+      const messageText = `Hola, quiero un proyecto como el de ${this.project.title}`;
+      const whatsappUrl = `https://wa.me/573054078225?text=${encodeURIComponent(messageText)}`;
+      window.open(whatsappUrl, '_blank');
     }
   }
 }

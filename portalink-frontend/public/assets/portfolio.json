@@ -2,7 +2,7 @@
   "general": {
     "authorName": "Santiago Arbeláez",
     "primaryColor": "#000000",
-    "favicon": "favicon.ico"
+    "favicon": "assets/icons/favicon.ico"
   },
   "hero": {
     "title": "Creative Developer",

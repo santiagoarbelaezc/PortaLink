@@ -1,8 +1,18 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { TemplateService, WebTemplate } from '../../services/template.service';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+
+export interface DesignItem {
+  id: string;
+  name: string;
+  category: string;
+  categoryName: string;
+  styleName: string;
+  description: string;
+  iconClass: string;
+  image: string;
+  tags: string[];
+}
 
 @Component({
   selector: 'app-disenos',
@@ -13,14 +23,14 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
       <!-- HEADER -->
       <header class="page-header">
-        <button class="back-btn" (click)="goBack()">
+        <button class="back-btn" (click)="goBack()" title="Volver atrás">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
           </svg>
         </button>
         <div class="header-center">
           <h1 class="header-title">Galería de Diseños</h1>
-          <p class="header-sub">{{ filteredTemplates().length }} plantillas disponibles · Selecciona una para previsualizar</p>
+          <p class="header-sub">{{ filteredTemplates().length }} modelos de proyectos listos · Selecciona uno para tu prototipo</p>
         </div>
         <button class="cta-rotbot" (click)="goToRotbot()">
           <span class="live-dot"></span>
@@ -35,36 +45,23 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
           class="filter-chip"
           [class.active]="activeCategory() === cat.id"
           (click)="setCategory(cat.id)">
-          {{ cat.icon }} {{ cat.label }}
+          <i [class]="cat.iconClass + ' icon-style'"></i>
+          <span>{{ cat.label }}</span>
         </button>
       </div>
 
-      <!-- GRID DE PLANTILLAS -->
+      <!-- GRID DE DISEÑOS -->
       <div class="templates-grid">
         <div
           *ngFor="let t of filteredTemplates(); trackBy: trackById"
-          class="template-card"
+          class="template-card group"
           [class.selected]="selectedId() === t.id"
           (click)="selectTemplate(t)">
 
-          <!-- Preview miniatura -->
-          <div class="card-preview" [style.background]="t.bgGradient">
-            <div class="preview-browser">
-              <div class="browser-bar">
-                <span class="dot red"></span>
-                <span class="dot yellow"></span>
-                <span class="dot green"></span>
-                <span class="browser-url">{{ t.id }}.vercel.app</span>
-              </div>
-              <div class="browser-content" [style.background]="getBgColor(t)">
-                <div class="preview-icon">{{ t.icon }}</div>
-                <div class="preview-bars">
-                  <div class="preview-bar bar-lg" [style.background]="t.primaryColor"></div>
-                  <div class="preview-bar bar-md" style="opacity:0.4"></div>
-                  <div class="preview-bar bar-sm" style="opacity:0.25"></div>
-                </div>
-              </div>
-            </div>
+          <!-- Preview Imagen Real del Proyecto -->
+          <div class="card-preview relative overflow-hidden bg-neutral-900 border-b border-white/10 aspect-[16/9] flex items-center justify-center">
+            <img [src]="t.image" [alt]="t.name" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105" />
+            
             <!-- Badge de estilo -->
             <div class="style-badge">{{ t.styleName }}</div>
           </div>
@@ -73,7 +70,10 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
           <div class="card-body">
             <div class="card-top">
               <h3 class="card-name">{{ t.name }}</h3>
-              <span class="card-category">{{ t.categoryName }}</span>
+              <span class="card-category">
+                <i [class]="t.iconClass + ' mr-1 text-[10px]'"></i>
+                {{ t.categoryName }}
+              </span>
             </div>
             <p class="card-desc">{{ t.description }}</p>
             <div class="card-tags">
@@ -85,7 +85,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                   <circle cx="12" cy="12" r="3"/>
                 </svg>
-                Preview
+                Ver Imagen
               </button>
               <button class="btn-use" (click)="useTemplate(t, $event)">
                 Usar Diseño
@@ -98,12 +98,14 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
         </div>
       </div>
 
-      <!-- MODAL PREVIEW -->
+      <!-- MODAL PREVIEW DE IMAGEN -->
       <div class="modal-overlay" *ngIf="previewTemplate()" (click)="closePreview()">
         <div class="modal-container" (click)="$event.stopPropagation()">
           <div class="modal-header">
             <div class="modal-info">
-              <span class="modal-icon">{{ previewTemplate()?.icon }}</span>
+              <div class="modal-icon-badge">
+                <i [class]="previewTemplate()?.iconClass"></i>
+              </div>
               <div>
                 <h2 class="modal-title">{{ previewTemplate()?.name }}</h2>
                 <p class="modal-sub">{{ previewTemplate()?.categoryName }} · {{ previewTemplate()?.styleName }}</p>
@@ -111,7 +113,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
             </div>
             <div class="modal-actions">
               <button class="btn-use-modal" (click)="useTemplate(previewTemplate()!, $event)">
-                Usar este Diseño →
+                Usar este Diseño en RotBot →
               </button>
               <button class="btn-close" (click)="closePreview()">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -120,13 +122,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
               </button>
             </div>
           </div>
-          <div class="modal-iframe-wrap">
-            <iframe
-              class="preview-iframe"
-              [srcdoc]="getPreviewHtml(previewTemplate()!)"
-              sandbox="allow-same-origin"
-              title="Preview de plantilla">
-            </iframe>
+          <div class="modal-image-wrap p-4 bg-neutral-950 flex justify-center items-center overflow-y-auto max-h-[80vh]">
+            <img [src]="previewTemplate()?.image" [alt]="previewTemplate()?.name" class="w-full h-auto max-w-5xl object-contain rounded-xl shadow-2xl border border-white/10" />
           </div>
         </div>
       </div>
@@ -237,7 +234,10 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
     .filter-chip {
       flex-shrink: 0;
-      padding: 8px 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 20px;
       border-radius: 20px;
       border: 1px solid rgba(255,255,255,0.1);
       background: rgba(255,255,255,0.03);
@@ -248,8 +248,14 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
       transition: all 0.2s;
       white-space: nowrap;
     }
+    .icon-style {
+      font-size: 13px;
+      color: var(--accent-color, #00f5ff);
+      opacity: 0.85;
+    }
     .filter-chip:hover { border-color: rgba(0,245,255,0.3); color: #00f5ff; background: rgba(0,245,255,0.05); }
     .filter-chip.active { background: rgba(0,245,255,0.1); border-color: rgba(0,245,255,0.4); color: #00f5ff; }
+    .filter-chip.active .icon-style { opacity: 1; color: #00f5ff; }
     :host-context(.theme-light) .filter-chip { border-color: rgba(0,0,0,0.1); background: rgba(0,0,0,0.03); color: #666; }
     :host-context(.theme-light) .filter-chip.active { background: rgba(0,0,0,0.06); border-color: #111; color: #111; }
     :host-context(.theme-light) .filter-chip:hover { background: rgba(0,0,0,0.05); color: #111; border-color: #111; }
@@ -257,10 +263,10 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
     /* GRID */
     .templates-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 24px;
-      padding: 32px;
-      max-width: 1400px;
+      grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+      gap: 32px;
+      padding: 40px 48px;
+      max-width: 1720px;
       margin: 0 auto;
     }
 
@@ -291,68 +297,11 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
       box-shadow: 0 12px 32px rgba(0,0,0,0.1);
     }
 
-    /* PREVIEW MINIATURA */
-    .card-preview {
-      position: relative;
-      padding: 20px 20px 0;
-      min-height: 220px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-end;
-    }
-
-    .preview-browser {
-      width: 100%;
-      max-width: 320px;
-      border-radius: 10px 10px 0 0;
-      overflow: hidden;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .browser-bar {
-      background: #1e1e1e;
-      padding: 8px 12px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-    }
-    .dot.red { background: #ff5f57; }
-    .dot.yellow { background: #ffbd2e; }
-    .dot.green { background: #28c940; }
-    .browser-url {
-      font-size: 10px;
-      color: #666;
-      margin-left: 8px;
-      font-family: monospace;
-    }
-
-    .browser-content {
-      padding: 20px;
-      min-height: 140px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    }
-    .preview-icon { font-size: 36px; }
-    .preview-bars { width: 100%; display: flex; flex-direction: column; gap: 6px; }
-    .preview-bar { height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; }
-    .preview-bar.bar-lg { width: 75%; }
-    .preview-bar.bar-md { width: 50%; }
-    .preview-bar.bar-sm { width: 66%; }
-
     .style-badge {
       position: absolute;
       top: 12px;
       right: 12px;
-      background: rgba(0,0,0,0.7);
+      background: rgba(0,0,0,0.75);
       color: #fff;
       font-size: 10px;
       font-weight: 700;
@@ -360,6 +309,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
       border-radius: 12px;
       letter-spacing: 0.5px;
       backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.15);
     }
 
     /* CARD BODY */
@@ -381,6 +331,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
       line-height: 1.3;
     }
     .card-category {
+      display: inline-flex;
+      align-items: center;
       font-size: 11px;
       font-weight: 700;
       color: #00f5ff;
@@ -497,7 +449,18 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
     :host-context(.theme-light) .modal-header { border-bottom-color: rgba(0,0,0,0.08); }
 
     .modal-info { display: flex; align-items: center; gap: 14px; }
-    .modal-icon { font-size: 32px; }
+    .modal-icon-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(0,245,255,0.1);
+      border: 1px solid rgba(0,245,255,0.25);
+      color: #00f5ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
     .modal-title { font-size: 20px; font-weight: 800; margin: 0 0 2px; }
     .modal-sub { font-size: 13px; color: var(--text-secondary, #888); margin: 0; }
 
@@ -535,27 +498,14 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
     :host-context(.theme-light) .btn-close { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); }
     :host-context(.theme-light) .btn-close:hover { background: rgba(0,0,0,0.08); color: #000; }
 
-    .modal-iframe-wrap {
-      flex: 1;
-      overflow: hidden;
-    }
-    .preview-iframe {
-      width: 100%;
-      height: 100%;
-      min-height: 580px;
-      border: none;
-      background: #fff;
-    }
-
     /* RESPONSIVE */
     @media (max-width: 768px) {
       .page-header { padding: 16px 20px; }
       .header-title { font-size: 18px; }
       .cta-rotbot span:not(.live-dot) { display: none; }
       .filters-bar { padding: 16px 20px; }
-      .templates-grid { grid-template-columns: 1fr; padding: 20px; gap: 16px; }
+      .templates-grid { grid-template-columns: 1fr; padding: 20px; gap: 20px; }
       .modal-container { max-height: 95vh; border-radius: 16px; }
-      .preview-iframe { min-height: 400px; }
     }
   `]
 })
@@ -563,34 +513,233 @@ export class DisenosComponent implements OnInit {
 
   activeCategory = signal<string>('all');
   selectedId = signal<string | null>(null);
-  previewTemplate = signal<WebTemplate | null>(null);
+  previewTemplate = signal<DesignItem | null>(null);
 
   categories = [
-    { id: 'all', label: 'Todos', icon: '✨' },
-    { id: 'gym', label: 'Gym & Fitness', icon: '🏋️' },
-    { id: 'ropa', label: 'Ropa & Moda', icon: '👗' },
-    { id: 'restaurante', label: 'Restaurante', icon: '🍽️' },
-    { id: 'tecnologia', label: 'Tecnología', icon: '💻' },
-    { id: 'salud', label: 'Salud & Spa', icon: '💆' },
-    { id: 'ecommerce', label: 'E-commerce', icon: '🛍️' },
-    { id: 'consultoria', label: 'Consultoría', icon: '💼' },
-    { id: 'fotografia', label: 'Fotografía', icon: '📷' },
-    { id: 'educacion', label: 'Educación', icon: '🎓' },
-    { id: 'inmobiliaria', label: 'Inmobiliaria', icon: '🏠' },
+    { id: 'all', label: 'Todos los Diseños', iconClass: 'fa-solid fa-layer-group' },
+    { id: 'gym', label: 'Gym & Fitness', iconClass: 'fa-solid fa-dumbbell' },
+    { id: 'ropa', label: 'Ropa & Moda', iconClass: 'fa-solid fa-shirt' },
+    { id: 'restaurante', label: 'Restaurante', iconClass: 'fa-solid fa-utensils' },
+    { id: 'servicios', label: 'Servicios & Citas', iconClass: 'fa-solid fa-scale-balanced' },
+    { id: 'arquitectura', label: 'Arquitectura & Obras', iconClass: 'fa-solid fa-compass-drafting' },
+    { id: 'salud', label: 'Salud & Médico', iconClass: 'fa-solid fa-stethoscope' },
+    { id: 'mascotas', label: 'Mascotas', iconClass: 'fa-solid fa-paw' },
+    { id: 'catalogo', label: 'Catálogos Digitales', iconClass: 'fa-solid fa-book-open' },
+    { id: 'ecommerce', label: 'E-Commerce', iconClass: 'fa-solid fa-store' },
+    { id: 'emprendimiento', label: 'Emprendimientos', iconClass: 'fa-solid fa-rocket' },
+    { id: 'influencer', label: 'Marca Personal', iconClass: 'fa-solid fa-star' },
+    { id: 'hogar', label: 'Hogar & Muebles', iconClass: 'fa-solid fa-couch' },
+    { id: 'personalizado', label: 'A Medida', iconClass: 'fa-solid fa-wand-magic-sparkles' }
+  ];
+
+  designList: DesignItem[] = [
+    {
+      id: 'gym',
+      name: 'Gym & Fitness Power',
+      category: 'gym',
+      categoryName: 'Gym & Fitness',
+      styleName: 'Oscuro & Deportivo',
+      description: 'Landing page de alto impacto para gimnasios, entrenadores personales y centros de alto rendimiento.',
+      iconClass: 'fa-solid fa-dumbbell',
+      image: 'assets/images/diseños/gym.png',
+      tags: ['Gimnasio', 'Fitness', 'Deporte', 'Entrenamiento']
+    },
+    {
+      id: 'gym2',
+      name: 'Centro Deportivo & Crossfit',
+      category: 'gym',
+      categoryName: 'Gym & Fitness',
+      styleName: 'Alto Rendimiento',
+      description: 'Diseño dinámico para estudios de crossfit, artes marciales y centros deportivos integrales.',
+      iconClass: 'fa-solid fa-[#ff5500]',
+      image: 'assets/images/diseños/gym2.png',
+      tags: ['Crossfit', 'Deporte', 'Fitness', 'Wellness']
+    },
+    {
+      id: 'tiendaropa',
+      name: 'Fashion Boutique & Moda',
+      category: 'ropa',
+      categoryName: 'Ropa & Moda',
+      styleName: 'Elegante & Editorial',
+      description: 'Plataforma visual de alto nivel para marcas de ropa, colecciones exclusivas y boutiques de moda.',
+      iconClass: 'fa-solid fa-shirt',
+      image: 'assets/images/diseños/tiendaropa.png',
+      tags: ['Moda', 'Boutique', 'Ropa', 'Tendencias']
+    },
+    {
+      id: 'restaurante',
+      name: 'Restaurante & Gastronomía',
+      category: 'restaurante',
+      categoryName: 'Restaurante',
+      styleName: 'Gourmet & Moderno',
+      description: 'Diseño apetecible para restaurantes, bares y negocios gastronómicos con menú interactivo.',
+      iconClass: 'fa-solid fa-utensils',
+      image: 'assets/images/diseños/restaurante.png',
+      tags: ['Restaurante', 'Gastronomía', 'Menú', 'Gourmet']
+    },
+    {
+      id: 'abogado',
+      name: 'Firma Legal & Abogados',
+      category: 'servicios',
+      categoryName: 'Servicios Legales',
+      styleName: 'Corporativo & Serio',
+      description: 'Sitio web profesional de alta confianza para firmas de abogados y consultores jurídicos.',
+      iconClass: 'fa-solid fa-scale-balanced',
+      image: 'assets/images/diseños/abogado.png',
+      tags: ['Legal', 'Abogados', 'Derecho', 'Consultoría']
+    },
+    {
+      id: 'arquitectura',
+      name: 'Estudio de Arquitectura Premium',
+      category: 'arquitectura',
+      categoryName: 'Arquitectura & Obras',
+      styleName: 'Minimalista & Estructural',
+      description: 'Portafolio de proyectos arquitectónicos, maquetas y diseño de espacios interiores.',
+      iconClass: 'fa-solid fa-compass-drafting',
+      image: 'assets/images/diseños/arquitectura.png',
+      tags: ['Arquitectura', 'Diseño', 'Construcción', 'Proyectos']
+    },
+    {
+      id: 'arquitecto',
+      name: 'Arquitecto & Diseñador de Interiores',
+      category: 'arquitectura',
+      categoryName: 'Arquitectura & Obras',
+      styleName: 'Vanguardista',
+      description: 'Presentación elegante para arquitectos independientes y despachos creativos.',
+      iconClass: 'fa-solid fa-building-columns',
+      image: 'assets/images/diseños/arquitecto.png',
+      tags: ['Arquitecto', 'Interiores', 'Diseño', 'Planos']
+    },
+    {
+      id: 'construccion',
+      name: 'Construcción Civil & Reformas',
+      category: 'arquitectura',
+      categoryName: 'Arquitectura & Obras',
+      styleName: 'Industrial & Sólido',
+      description: 'Sitio institucional para empresas de construcción, contratistas y reformas estructurales.',
+      iconClass: 'fa-solid fa-[#ff8800]',
+      image: 'assets/images/diseños/construccion.png',
+      tags: ['Construcción', 'Obras', 'Reformas', 'Ingeniería']
+    },
+    {
+      id: 'medico',
+      name: 'Clínica & Servicios Médicos',
+      category: 'salud',
+      categoryName: 'Salud & Médico',
+      styleName: 'Limpio & Confiable',
+      description: 'Plataforma médica para consultorios, clínicas de especialidades y agendamiento de pacientes.',
+      iconClass: 'fa-solid fa-stethoscope',
+      image: 'assets/images/diseños/medico.png',
+      tags: ['Médico', 'Salud', 'Clínica', 'Doctores']
+    },
+    {
+      id: 'mascotas',
+      name: 'Pet Care & Veterinaria',
+      category: 'mascotas',
+      categoryName: 'Mascotas',
+      styleName: 'Fresco & Amigable',
+      description: 'Plataforma para clínicas veterinarias, peluquerías caninas y tiendas de accesorios para mascotas.',
+      iconClass: 'fa-solid fa-paw',
+      image: 'assets/images/diseños/mascotas.png',
+      tags: ['Mascotas', 'Veterinaria', 'Pet Shop', 'Cuidado']
+    },
+    {
+      id: 'catalogodigital',
+      name: 'Catálogo Digital Express',
+      category: 'catalogo',
+      categoryName: 'Catálogo Digital',
+      styleName: 'Interactivo & Rápido',
+      description: 'Menú y catálogo de productos con pedidos instantáneos directamente a WhatsApp.',
+      iconClass: 'fa-solid fa-book-open',
+      image: 'assets/images/diseños/catalogodigital.png',
+      tags: ['Catálogo', 'Productos', 'WhatsApp', 'Menú']
+    },
+    {
+      id: 'catalogo-digital',
+      name: 'Catálogo Pro Interactivo',
+      category: 'catalogo',
+      categoryName: 'Catálogo Digital',
+      styleName: 'Visual & Dinámico',
+      description: 'Presentación de colecciones e inventario digital optimizado para dispositivos móviles.',
+      iconClass: 'fa-solid fa-mobile-screen',
+      image: 'assets/images/diseños/catalogo-digital.png',
+      tags: ['Catálogo', 'Ventas', 'Digital', 'Móvil']
+    },
+    {
+      id: 'agendamiento-citas',
+      name: 'Sistema de Agendamiento de Citas',
+      category: 'servicios',
+      categoryName: 'Servicios & Citas',
+      styleName: 'Automatizado 24/7',
+      description: 'Landing page integrada con reservas automáticas, agendas online y confirmación inmediata.',
+      iconClass: 'fa-solid fa-calendar-check',
+      image: 'assets/images/diseños/agendamiento-citas.png',
+      tags: ['Citas', 'Reservas', 'Agendamiento', 'Automatización']
+    },
+    {
+      id: 'ecommerce',
+      name: 'Tienda Virtual & E-Commerce',
+      category: 'ecommerce',
+      categoryName: 'E-Commerce',
+      styleName: 'Comercial & Escalable',
+      description: 'Tienda online completa con carrito de compras, pasarela de pago e inventario.',
+      iconClass: 'fa-solid fa-store',
+      image: 'assets/images/diseños/e-commerce.png',
+      tags: ['Tienda', 'E-Commerce', 'Compras', 'Ventas']
+    },
+    {
+      id: 'colchones',
+      name: 'Colchones & Muebles de Hogar',
+      category: 'hogar',
+      categoryName: 'Hogar & Muebles',
+      styleName: 'Confort & Calidez',
+      description: 'Diseño para tiendas de descanso, artículos del hogar, muebles y decoración.',
+      iconClass: 'fa-solid fa-couch',
+      image: 'assets/images/diseños/colchones.png',
+      tags: ['Colchones', 'Hogar', 'Muebles', 'Descanso']
+    },
+    {
+      id: 'emprendimiento',
+      name: 'Startup & Emprendimiento Tech',
+      category: 'emprendimiento',
+      categoryName: 'Emprendimientos',
+      styleName: 'Innovador & Futurista',
+      description: 'Landing page moderna para startups de tecnología, nuevos modelos de negocio y servicios.',
+      iconClass: 'fa-solid fa-rocket',
+      image: 'assets/images/diseños/emprendimiento.png',
+      tags: ['Startup', 'Emprendimiento', 'Tech', 'Innovación']
+    },
+    {
+      id: 'influencer',
+      name: 'Marca Personal & Influencer',
+      category: 'influencer',
+      categoryName: 'Marca Personal',
+      styleName: 'Vibrante & Atractivo',
+      description: 'Sitio personal para creadores de contenido, figuras públicas, artistas y consultores.',
+      iconClass: 'fa-solid fa-star',
+      image: 'assets/images/diseños/influencer.png',
+      tags: ['Influencer', 'Creador', 'Marca Personal', 'Bio']
+    },
+    {
+      id: 'personaliza',
+      name: 'Sistema a Medida Personalizado',
+      category: 'personalizado',
+      categoryName: 'A Medida',
+      styleName: '100% Personalizado',
+      description: 'Desarrollo web exclusivo construido desde cero según las especificaciones de tu empresa.',
+      iconClass: 'fa-solid fa-wand-magic-sparkles',
+      image: 'assets/images/diseños/personaliza.png',
+      tags: ['A Medida', 'Personalizado', 'Ingeniería', 'Software']
+    }
   ];
 
   filteredTemplates = computed(() => {
     const cat = this.activeCategory();
-    const all = this.templateService.getAllTemplates();
-    if (cat === 'all') return all;
-    return all.filter(t => t.category === cat);
+    if (cat === 'all') return this.designList;
+    return this.designList.filter(t => t.category === cat);
   });
 
-  constructor(
-    private templateService: TemplateService,
-    private router: Router,
-    private sanitizer: DomSanitizer
-  ) {}
+  constructor(private router: Router) {}
 
   ngOnInit() {}
 
@@ -598,18 +747,13 @@ export class DisenosComponent implements OnInit {
     this.activeCategory.set(id);
   }
 
-  selectTemplate(t: WebTemplate) {
+  selectTemplate(t: DesignItem) {
     this.selectedId.set(t.id);
   }
 
-  trackById(_: number, t: WebTemplate) { return t.id; }
+  trackById(_: number, t: DesignItem) { return t.id; }
 
-  getBgColor(t: WebTemplate): string {
-    const darkIds = ['gym', 'tecnologia', 'fotografia', 'inmobiliaria', 'restaurante', 'ecommerce'];
-    return darkIds.includes(t.id) ? '#0c0d10' : '#f8f8f8';
-  }
-
-  openPreview(t: WebTemplate, e: Event) {
+  openPreview(t: DesignItem, e: Event) {
     e.stopPropagation();
     this.previewTemplate.set(t);
     document.body.style.overflow = 'hidden';
@@ -620,15 +764,10 @@ export class DisenosComponent implements OnInit {
     document.body.style.overflow = '';
   }
 
-  getPreviewHtml(t: WebTemplate): string {
-    return t.htmlContent('');
-  }
-
-  useTemplate(t: WebTemplate, e: Event) {
+  useTemplate(t: DesignItem, e: Event) {
     e.stopPropagation();
     this.closePreview();
-    // Navegar a RotBot con la plantilla pre-seleccionada
-    this.router.navigate(['/rotbot'], { state: { selectedTemplate: t.id } });
+    this.router.navigate(['/rotbot'], { state: { selectedDesign: t.id, selectedDesignName: t.name } });
   }
 
   goToRotbot() {

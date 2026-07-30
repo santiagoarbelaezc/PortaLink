@@ -8,6 +8,17 @@ import { AuthService } from './auth.service';
 export interface ChatMessage {
   role: 'assistant' | 'user';
   content: string;
+  designImage?: string;
+  showCategorySelector?: boolean;
+  showDesignForm?: boolean;
+  showInitialActionButtons?: boolean;
+  formSubmitted?: boolean;
+  formData?: {
+    categoryName?: string;
+    businessName?: string;
+    style?: string;
+    description?: string;
+  };
 }
 
 export interface ChatSendResponse {
@@ -27,7 +38,8 @@ export interface ChatUsageResponse {
 
 const INITIAL_MESSAGE: ChatMessage = {
   role: 'assistant',
-  content: '¡Hola! Soy RotBot IA. ¿Necesitas ayuda para crear tu diseño web a medida, o prefieres que te brinde asesoramiento estratégico para tu proyecto?'
+  content: '¡Hola! Soy RotBot IA. ¿Necesitas ayuda para crear tu diseño web a medida, o prefieres que te brinde asesoramiento estratégico para tu proyecto?',
+  showInitialActionButtons: true
 };
 
 const SESSION_TOKEN_KEY = 'rotbot_session_token';
