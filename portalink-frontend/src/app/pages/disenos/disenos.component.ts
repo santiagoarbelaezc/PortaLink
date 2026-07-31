@@ -770,6 +770,8 @@ export class DisenosComponent implements OnInit {
 
   selectTemplate(t: DesignItem) {
     this.selectedId.set(t.id);
+    this.previewTemplate.set(t);
+    document.body.style.overflow = 'hidden';
   }
 
   trackById(_: number, t: DesignItem) { return t.id; }
