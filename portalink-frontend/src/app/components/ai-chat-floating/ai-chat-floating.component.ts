@@ -137,7 +137,8 @@ import { AuthService } from '../../services/auth.service';
           <!-- Input Area -->
           <div class="chat-input-area p-4 pt-3 border-t">
             <ng-container *ngIf="authService.hasToken(); else floatingLoginPrompt">
-              <form (submit)="sendMessage()" class="relative">
+              <!-- Active Input Form (RotBot Activated) -->
+              <form *ngIf="chatService.rotbotActive()" (submit)="sendMessage()" class="relative">
                 <input 
                   type="text" 
                   [(ngModel)]="chatService.userInput"
@@ -156,6 +157,21 @@ import { AuthService } from '../../services/auth.service';
                   </svg>
                 </button>
               </form>
+
+              <!-- Coming Soon Card (RotBot Deactivated) -->
+              <div *ngIf="!chatService.rotbotActive()" class="flex flex-col items-center justify-center p-4 text-center space-y-2 bg-black/60 rounded-xl border border-cyan-500/30">
+                <div class="flex items-center gap-1.5 text-cyan-400 font-bold text-[11px] uppercase tracking-wider">
+                  <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                  <span>Próximamente</span>
+                </div>
+                <p class="text-xs font-bold text-white">
+                  Pronto estaremos en línea, para que hables conmigo
+                </p>
+                <a href="https://wa.me/573054078225?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20mi%20proyecto" target="_blank" rel="noopener noreferrer" class="mt-1 px-4 py-2 rounded-lg bg-emerald-500 text-black font-extrabold text-[11px] uppercase tracking-wider flex items-center gap-1.5 cursor-pointer">
+                  <i class="fa-brands fa-whatsapp text-xs"></i>
+                  <span>Hablar por WhatsApp</span>
+                </a>
+              </div>
             </ng-container>
             <ng-template #floatingLoginPrompt>
               <div class="flex flex-col items-center justify-center text-center">
@@ -331,7 +347,7 @@ export class AiChatFloatingComponent implements OnInit, OnDestroy {
     private router: Router,
     private analyticsService: AnalyticsService,
     public authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit() {
     if (typeof window !== 'undefined') {
@@ -361,7 +377,7 @@ export class AiChatFloatingComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       try {
         this.scrollContainer.nativeElement.scrollTop = 0;
-      } catch (err) {}
+      } catch (err) { }
     }, 100);
   }
 
@@ -376,7 +392,7 @@ export class AiChatFloatingComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         try {
           this.scrollContainer.nativeElement.scrollTop = 0;
-        } catch (err) {}
+        } catch (err) { }
       }, 100);
     }
   }
@@ -406,6 +422,6 @@ export class AiChatFloatingComponent implements OnInit, OnDestroy {
   private scrollToBottom(): void {
     try {
       this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
-    } catch (err) {}
+    } catch (err) { }
   }
 }

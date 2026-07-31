@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { PortfolioConfigService } from '../../../services/portfolio-config.service';
 import { SystemConfigService } from '../../../services/system-config.service';
 import { AuthService } from '../../../services/auth.service';
+import { ChatStateService } from '../../../services/chat-state.service';
 
 @Component({
   selector: 'app-dash-config',
@@ -135,6 +136,26 @@ import { AuthService } from '../../../services/auth.service';
                 <option value="concise">Directo y Conciso</option>
               </select>
             </div>
+
+            <!-- Interruptor Activar / Desactivar RotBot IA -->
+            <div class="p-4 rounded-xl border flex items-center justify-between transition-all"
+                 [ngClass]="isDark ? 'bg-neutral-800/40 border-neutral-700/60' : 'bg-neutral-50 border-neutral-200'">
+              <div class="pr-3">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full" [ngClass]="chatStateService.rotbotActive() ? 'bg-emerald-400 animate-pulse' : 'bg-red-500'"></span>
+                  <p class="text-xs font-bold uppercase tracking-wider" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                    {{ chatStateService.rotbotActive() ? 'RotBot IA Activado (En Línea)' : 'RotBot IA Desactivado (Próximamente)' }}
+                  </p>
+                </div>
+                <p class="text-[11px] mt-1 leading-relaxed" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+                  {{ chatStateService.rotbotActive() ? 'El chat flotante y la vista completa están en línea.' : 'Muestra el modal "Pronto estaremos en línea, para que hables conmigo".' }}
+                </p>
+              </div>
+              <button (click)="toggleRotbotActive()" type="button" class="relative w-12 h-6 rounded-full transition-all duration-300 cursor-pointer flex-shrink-0"
+                      [ngClass]="chatStateService.rotbotActive() ? 'bg-cyan-500' : (isDark ? 'bg-neutral-700' : 'bg-neutral-300')">
+                <span class="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300" [ngClass]="chatStateService.rotbotActive() ? 'left-6' : 'left-0.5'"></span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -221,8 +242,19 @@ export class DashConfigComponent {
   private configService = inject(PortfolioConfigService);
   private systemConfig = inject(SystemConfigService);
   private authService = inject(AuthService);
+  public chatStateService = inject(ChatStateService);
 
   get isDark() { return this.theme === 'dark'; }
+
+  toggleRotbotActive() {
+    const nextState = !this.chatStateService.rotbotActive();
+    this.chatStateService.updateRotbotStatus(nextState).subscribe({
+      next: () => {
+        this.showSaved(nextState ? 'RotBot IA Activado (En Línea)' : 'RotBot IA Desactivado (Próximamente)');
+      },
+      error: (e: any) => console.error('Error toggling RotBot active', e)
+    });
+  }
 
   // Unified settings state
   settings = {
@@ -268,7 +300,7 @@ export class DashConfigComponent {
       this.showSaved('Completa todos los campos de contraseña');
       return;
     }
-    
+
     this.authService.changePassword(this.currentPassword, this.newPassword).subscribe({
       next: (res) => {
         this.currentPassword = '';

@@ -12,6 +12,7 @@ export interface DesignItem {
   iconClass: string;
   image: string;
   tags: string[];
+  liveUrl?: string;
 }
 
 @Component({
@@ -62,6 +63,12 @@ export interface DesignItem {
           <div class="card-preview relative overflow-hidden bg-neutral-900 border-b border-white/10 aspect-[16/9] flex items-center justify-center">
             <img [src]="t.image" [alt]="t.name" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105" />
             
+            <!-- Live URL Badge -->
+            <a *ngIf="t.liveUrl" [href]="t.liveUrl" target="_blank" rel="noopener noreferrer" (click)="$event.stopPropagation()" class="absolute top-3 left-3 bg-emerald-500/90 hover:bg-emerald-400 text-black font-black text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-lg border border-emerald-400/50 shadow-lg flex items-center gap-1.5 transition-all z-10">
+              <span class="w-1.5 h-1.5 rounded-full bg-black animate-pulse"></span>
+              <span>Prototipo en Vivo</span>
+            </a>
+
             <!-- Badge de estilo -->
             <div class="style-badge">{{ t.styleName }}</div>
           </div>
@@ -87,6 +94,12 @@ export interface DesignItem {
                 </svg>
                 Ver Imagen
               </button>
+
+              <a *ngIf="t.liveUrl" [href]="t.liveUrl" target="_blank" rel="noopener noreferrer" (click)="$event.stopPropagation()" class="btn-live text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3 py-2.5 rounded-xl hover:bg-emerald-500/20 transition-all flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-globe text-xs"></i>
+                <span>En Vivo</span>
+              </a>
+
               <button class="btn-use" (click)="useTemplate(t, $event)">
                 Usar Diseño
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -112,6 +125,10 @@ export interface DesignItem {
               </div>
             </div>
             <div class="modal-actions">
+              <a *ngIf="previewTemplate()?.liveUrl" [href]="previewTemplate()?.liveUrl" target="_blank" rel="noopener noreferrer" class="btn-live-modal px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg transition-all">
+                <i class="fa-solid fa-globe"></i>
+                <span>Ver Prototipo en Vivo →</span>
+              </a>
               <button class="btn-use-modal" (click)="useTemplate(previewTemplate()!, $event)">
                 Usar este Diseño en RotBot →
               </button>
@@ -551,20 +568,21 @@ export class DisenosComponent implements OnInit {
       categoryName: 'Gym & Fitness',
       styleName: 'Alto Rendimiento',
       description: 'Diseño dinámico para estudios de crossfit, artes marciales y centros deportivos integrales.',
-      iconClass: 'fa-solid fa-[#ff5500]',
+      iconClass: 'fa-solid fa-dumbbell',
       image: 'assets/images/diseños/gym2.png',
       tags: ['Crossfit', 'Deporte', 'Fitness', 'Wellness']
     },
     {
       id: 'tiendaropa',
-      name: 'Fashion Boutique & Moda',
+      name: 'Tienda Íntima & Boutique Moda',
       category: 'ropa',
       categoryName: 'Ropa & Moda',
       styleName: 'Elegante & Editorial',
-      description: 'Plataforma visual de alto nivel para marcas de ropa, colecciones exclusivas y boutiques de moda.',
+      description: 'Plataforma web activa en vivo para tienda de ropa, boutique y catálogo exclusivo.',
       iconClass: 'fa-solid fa-shirt',
       image: 'assets/images/diseños/tiendaropa.png',
-      tags: ['Moda', 'Boutique', 'Ropa', 'Tendencias']
+      tags: ['Moda', 'Boutique', 'Ropa', 'En Vivo'],
+      liveUrl: 'https://tiendaintima.com'
     },
     {
       id: 'restaurante',
@@ -590,14 +608,15 @@ export class DisenosComponent implements OnInit {
     },
     {
       id: 'arquitectura',
-      name: 'Estudio de Arquitectura Premium',
+      name: 'Sysmicon Arquitectura & Obras',
       category: 'arquitectura',
       categoryName: 'Arquitectura & Obras',
       styleName: 'Minimalista & Estructural',
-      description: 'Portafolio de proyectos arquitectónicos, maquetas y diseño de espacios interiores.',
+      description: 'Plataforma activa en vivo para firmas constructoras y exposición de proyectos arquitectónicos.',
       iconClass: 'fa-solid fa-compass-drafting',
       image: 'assets/images/diseños/arquitectura.png',
-      tags: ['Arquitectura', 'Diseño', 'Construcción', 'Proyectos']
+      tags: ['Arquitectura', 'Diseño', 'Construcción', 'En Vivo'],
+      liveUrl: 'https://sysmicon.com'
     },
     {
       id: 'arquitecto',
@@ -617,7 +636,7 @@ export class DisenosComponent implements OnInit {
       categoryName: 'Arquitectura & Obras',
       styleName: 'Industrial & Sólido',
       description: 'Sitio institucional para empresas de construcción, contratistas y reformas estructurales.',
-      iconClass: 'fa-solid fa-[#ff8800]',
+      iconClass: 'fa-solid fa-compass-drafting',
       image: 'assets/images/diseños/construccion.png',
       tags: ['Construcción', 'Obras', 'Reformas', 'Ingeniería']
     },
@@ -634,25 +653,27 @@ export class DisenosComponent implements OnInit {
     },
     {
       id: 'mascotas',
-      name: 'Pet Care & Veterinaria',
+      name: 'CamaMascotas & Pet Care',
       category: 'mascotas',
       categoryName: 'Mascotas',
       styleName: 'Fresco & Amigable',
-      description: 'Plataforma para clínicas veterinarias, peluquerías caninas y tiendas de accesorios para mascotas.',
+      description: 'Plataforma en vivo activa de e-commerce y mobiliario exclusivo para mascotas.',
       iconClass: 'fa-solid fa-paw',
       image: 'assets/images/diseños/mascotas.png',
-      tags: ['Mascotas', 'Veterinaria', 'Pet Shop', 'Cuidado']
+      tags: ['Mascotas', 'Pet Shop', 'Cuidado', 'En Vivo'],
+      liveUrl: 'https://camascotas.com'
     },
     {
       id: 'catalogodigital',
-      name: 'Catálogo Digital Express',
+      name: 'Catálogo Digital Plaxtilineas',
       category: 'catalogo',
       categoryName: 'Catálogo Digital',
       styleName: 'Interactivo & Rápido',
-      description: 'Menú y catálogo de productos con pedidos instantáneos directamente a WhatsApp.',
+      description: 'Catálogo digital en vivo de productos con pedidos instantáneos directamente a WhatsApp.',
       iconClass: 'fa-solid fa-book-open',
       image: 'assets/images/diseños/catalogodigital.png',
-      tags: ['Catálogo', 'Productos', 'WhatsApp', 'Menú']
+      tags: ['Catálogo', 'Productos', 'WhatsApp', 'En Vivo'],
+      liveUrl: 'https://catalogoplaxtilineas.com'
     },
     {
       id: 'catalogo-digital',

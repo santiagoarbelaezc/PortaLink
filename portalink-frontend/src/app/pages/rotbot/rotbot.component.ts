@@ -40,11 +40,9 @@ import { SiteService } from '../../services/site.service';
         
         <!-- Actions Container -->
         <div class="flex items-center gap-4 relative z-10">
-          <!-- Nuevo Chat -->
-          <button (click)="chatService.clearHistory()" 
-                  [disabled]="!authService.hasToken()"
-                  [ngClass]="{'opacity-30 cursor-not-allowed': !authService.hasToken(), 'hover:opacity-100 opacity-60': authService.hasToken()}"
-                  class="text-sm font-semibold uppercase tracking-wider flex items-center gap-2 transition-all mr-2" style="color: var(--text-primary);">
+          <!-- Nuevo Chat Desactivado -->
+          <button disabled="true"
+                  class="text-sm font-semibold uppercase tracking-wider flex items-center gap-2 transition-all mr-2 opacity-30 cursor-not-allowed pointer-events-none" style="color: var(--text-primary);">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-3.08 2.82"/>
             </svg>
@@ -99,10 +97,9 @@ import { SiteService } from '../../services/site.service';
       <!-- Main Chat Body Split (3 Columns) -->
       <div class="flex flex-row flex-grow w-full overflow-hidden">
         
-        <!-- Sidebar Izquierdo (Accesos Rápidos) -->
+        <!-- Sidebar Izquierdo (Accesos Rápidos Desactivados en Lanzamiento) -->
         <div *ngIf="!activeDesign" 
-             [ngClass]="{'opacity-40 pointer-events-none grayscale': !authService.hasToken()}"
-             class="chat-sidebar no-scrollbar hidden md:flex flex-col w-72 flex-shrink-0 border-r py-6 px-5 gap-3 overflow-y-auto animate-fade-in transition-all duration-500" style="border-color: var(--card-border);">
+             class="chat-sidebar no-scrollbar hidden md:flex flex-col w-72 flex-shrink-0 border-r py-6 px-5 gap-3 overflow-y-auto animate-fade-in transition-all duration-500 opacity-40 pointer-events-none grayscale" style="border-color: var(--card-border);">
           <h4 class="sidebar-title text-[11px] font-bold uppercase tracking-widest mb-1" style="color: var(--text-secondary); opacity: 0.6;">Principales</h4>
           
           <button (click)="startDesignFlow()" class="shortcut-btn flex items-center gap-2.5 px-4 py-3 rounded-xl text-left border transition-all duration-300">
@@ -205,8 +202,8 @@ import { SiteService } from '../../services/site.service';
                 >
                   <span [innerHTML]="msg.content | markdown"></span>
 
-                  <!-- Initial Action Buttons -->
-                  <div *ngIf="msg.role === 'assistant' && msg.showInitialActionButtons" class="mt-4 flex flex-wrap items-center gap-3">
+                  <!-- Initial Action Buttons (Ocultos en Lanzamiento) -->
+                  <div *ngIf="msg.role === 'assistant' && msg.showInitialActionButtons && !authService.hasToken()" class="mt-4 flex flex-wrap items-center gap-3">
                     <button 
                       (click)="startDesignFlow()" 
                       class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500/20 to-blue-500/20 hover:from-cyan-500/30 hover:to-blue-500/30 border border-cyan-400/40 hover:border-cyan-400 text-xs sm:text-sm font-bold text-white transition-all flex items-center gap-2 cursor-pointer shadow-lg active:scale-95">
@@ -221,8 +218,8 @@ import { SiteService } from '../../services/site.service';
                     </button>
                   </div>
 
-                  <!-- Category Selector Chips -->
-                  <div *ngIf="msg.role === 'assistant' && msg.showCategorySelector" class="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
+                  <!-- Category Selector Chips (Ocultos en Lanzamiento) -->
+                  <div *ngIf="msg.role === 'assistant' && msg.showCategorySelector && !authService.hasToken()" class="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
                     <button *ngFor="let cat of designCategories" 
                             (click)="selectCategory(cat)" 
                             class="px-3.5 py-2.5 rounded-xl bg-white/[0.04] hover:bg-cyan-400/20 border border-white/10 hover:border-cyan-400/50 text-xs font-semibold text-white transition-all text-left flex items-center gap-2.5 cursor-pointer shadow-sm active:scale-95">
@@ -339,10 +336,11 @@ import { SiteService } from '../../services/site.service';
             </ng-template>
           </div>
  
-          <!-- Input Area -->
+          <!-- Input Area (Modo Dinámico Activado / Desactivado) -->
           <div class="chat-input-area p-3 sm:p-6 border-t">
             <ng-container *ngIf="authService.hasToken(); else loginPrompt">
-              <form (submit)="sendMessage()" class="relative max-w-4xl mx-auto">
+              <!-- Active Chat Input (When RotBot is Activated) -->
+              <form *ngIf="chatService.rotbotActive()" (submit)="sendMessage()" class="relative max-w-4xl mx-auto">
                 <textarea 
                   #chatInputRef
                   [(ngModel)]="chatService.userInput"
@@ -364,6 +362,39 @@ import { SiteService } from '../../services/site.service';
                   </svg>
                 </button>
               </form>
+
+              <!-- Coming Soon Card (When RotBot is Deactivated) -->
+              <div *ngIf="!chatService.rotbotActive()" class="flex flex-col items-center justify-center py-7 px-8 w-full max-w-2xl sm:max-w-3xl mx-auto rounded-2xl border relative overflow-hidden backdrop-blur-xl transition-all duration-300 shadow-lg login-prompt-card space-y-4"
+                   style="border-color: var(--card-border, rgba(255, 255, 255, 0.12)); background: var(--card-bg, rgba(255, 255, 255, 0.03));">
+                
+                <!-- Icon Badge with Logo -->
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center border shadow-sm p-2"
+                     style="background: rgba(0, 245, 255, 0.08); border-color: rgba(0, 245, 255, 0.25);">
+                  <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(0,245,255,0.4)]" alt="Rotbot Logo">
+                </div>
+
+                <div class="space-y-1.5 text-center">
+                  <div class="flex items-center justify-center gap-2 mb-1">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                    <span class="text-xs font-bold uppercase tracking-widest text-cyan-400">Próximamente en Línea</span>
+                  </div>
+
+                  <h3 class="text-base sm:text-xl font-extrabold tracking-tight font-sans" style="color: var(--text-primary);">
+                    Pronto estaremos en línea, para que hables conmigo
+                  </h3>
+
+                  <p class="text-xs sm:text-[13.5px] font-light max-w-md mx-auto leading-relaxed opacity-90" style="color: var(--text-secondary);">
+                    Estamos afinando los últimos detalles del sistema para brindarte la mejor experiencia con RotBot IA. Mientras tanto, puedes contactarte directamente con Santiago por WhatsApp.
+                  </p>
+                </div>
+
+                <div class="pt-1">
+                  <a href="https://wa.me/573054078225?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20mi%20proyecto" target="_blank" rel="noopener noreferrer" class="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs uppercase tracking-wider flex items-center gap-2.5 shadow-xl transition-all cursor-pointer hover:scale-105 active:scale-95">
+                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                    <span>Hablar por WhatsApp (+57 3054078225)</span>
+                  </a>
+                </div>
+              </div>
             </ng-container>
             <ng-template #loginPrompt>
               <div class="flex flex-col items-center justify-center py-7 px-8 w-full max-w-2xl sm:max-w-3xl mx-auto rounded-2xl border mb-2 relative overflow-hidden backdrop-blur-xl transition-all duration-300 shadow-md login-prompt-card"
@@ -451,7 +482,9 @@ import { SiteService } from '../../services/site.service';
               </div>
               <div>
                 <h3 class="text-lg font-bold text-white tracking-tight">Descripción y Especificaciones del Proyecto</h3>
-                <p class="text-xs text-neutral-400">Prototipo sugerido: <span class="text-cyan-400 font-semibold">{{ selectedModalDesign()?.categoryName }}</span></p>
+                <div class="flex items-center gap-3 mt-0.5">
+                  <p class="text-xs text-neutral-400">Prototipo sugerido: <span class="text-cyan-400 font-semibold">{{ selectedModalDesign()?.categoryName }}</span></p>
+                </div>
               </div>
             </div>
             <button (click)="closeDesignDetailModal()" class="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-neutral-400 hover:text-white flex items-center justify-center transition-all cursor-pointer">
@@ -461,9 +494,22 @@ import { SiteService } from '../../services/site.service';
 
           <!-- Visor de Imagen Ampliada -->
           <div class="space-y-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-neutral-300 flex items-center gap-2">
-              <i class="fa-solid fa-image text-cyan-400"></i>
-              <span>Previsualización Ampliada del Prototipo</span>
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <div class="text-xs font-bold uppercase tracking-wider text-neutral-300 flex items-center gap-2">
+                <i class="fa-solid fa-image text-cyan-400"></i>
+                <span>Previsualización Ampliada del Prototipo</span>
+              </div>
+
+              <!-- Enlace a Prototipo en Vivo si existe -->
+              <a *ngIf="selectedModalDesign()?.liveUrl" 
+                 [href]="selectedModalDesign()?.liveUrl" 
+                 target="_blank" 
+                 rel="noopener noreferrer" 
+                 class="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg transition-all cursor-pointer">
+                <i class="fa-solid fa-globe text-sm"></i>
+                <span>Ver Sitio en Vivo: {{ selectedModalDesign()?.liveUrl }}</span>
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+              </a>
             </div>
 
             <div class="relative w-full max-h-[500px] rounded-2xl overflow-hidden border border-white/15 bg-black shadow-2xl flex items-center justify-center">
@@ -753,12 +799,21 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
   @ViewChild('chatInputRef') private chatInputRef?: ElementRef<HTMLTextAreaElement>;
 
-  selectedModalDesign = signal<{ designImage: string; categoryName?: string; msg?: any } | null>(null);
+  selectedModalDesign = signal<{ designImage: string; categoryName?: string; liveUrl?: string; msg?: any } | null>(null);
 
   openDesignDetailModal(msg: any) {
+    const categoryName = msg.formData?.categoryName || this.designFormState.categoryName || 'Proyecto Sugerido';
+    const foundCat = this.designCategories.find(c =>
+      c.image === msg.designImage ||
+      c.label.toLowerCase() === categoryName.toLowerCase() ||
+      categoryName.toLowerCase().includes(c.id) ||
+      (c.label && categoryName.toLowerCase().includes(c.label.toLowerCase()))
+    );
+
     this.selectedModalDesign.set({
       designImage: msg.designImage,
-      categoryName: msg.formData?.categoryName || this.designFormState.categoryName || 'Proyecto Sugerido',
+      categoryName: categoryName,
+      liveUrl: foundCat?.liveUrl,
       msg: msg
     });
   }
@@ -869,7 +924,7 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
   ngAfterViewChecked() {
     const currentMessageCount = this.chatService.messages.length;
     const isTyping = this.chatService.isTyping;
-    
+
     if (currentMessageCount !== this.previousMessageCount || isTyping !== this.wasTyping) {
       this.scrollToBottom();
       this.previousMessageCount = currentMessageCount;
@@ -883,13 +938,13 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   designCategories = [
     { id: 'gym', label: 'Gym & Fitness', iconClass: 'fa-solid fa-dumbbell', keywords: ['gym', 'gimnasio', 'fitness', 'entrenamiento'], image: 'assets/images/diseños/gym.png' },
-    { id: 'tiendaropa', label: 'Tienda de Ropa', iconClass: 'fa-solid fa-shirt', keywords: ['ropa', 'moda', 'vestuario', 'indumentaria', 'boutique', 'tiendaropa'], image: 'assets/images/diseños/tiendaropa.png' },
+    { id: 'tiendaropa', label: 'Tienda de Ropa', iconClass: 'fa-solid fa-shirt', keywords: ['ropa', 'moda', 'vestuario', 'indumentaria', 'boutique', 'tiendaropa'], image: 'assets/images/diseños/tiendaropa.png', liveUrl: 'https://tiendaintima.com' },
     { id: 'restaurante', label: 'Restaurante / Comida', iconClass: 'fa-solid fa-utensils', keywords: ['restaurante', 'comida', 'gastronomia', 'bar', 'cafeteria'], image: 'assets/images/diseños/restaurante.png' },
     { id: 'abogado', label: 'Abogado / Legal', iconClass: 'fa-solid fa-scale-balanced', keywords: ['abogado', 'legal', 'juridico', 'leyes', 'firma'], image: 'assets/images/diseños/abogado.png' },
-    { id: 'arquitectura', label: 'Arquitectura / Diseño', iconClass: 'fa-solid fa-compass-drafting', keywords: ['arquitectura', 'arquitecto', 'construccion', 'obra', 'diseño interior'], image: 'assets/images/diseños/arquitectura.png' },
+    { id: 'arquitectura', label: 'Arquitectura / Diseño', iconClass: 'fa-solid fa-compass-drafting', keywords: ['arquitectura', 'arquitecto', 'construccion', 'obra', 'diseño interior'], image: 'assets/images/diseños/arquitectura.png', liveUrl: 'https://sysmicon.com' },
     { id: 'medico', label: 'Médico / Salud', iconClass: 'fa-solid fa-stethoscope', keywords: ['medico', 'salud', 'doctor', 'clinica', 'odontologia'], image: 'assets/images/diseños/medico.png' },
-    { id: 'mascotas', label: 'Mascotas / Pet Care', iconClass: 'fa-solid fa-paw', keywords: ['mascotas', 'pet', 'perros', 'gatos', 'veterinaria'], image: 'assets/images/diseños/mascotas.png' },
-    { id: 'catalogodigital', label: 'Catálogo Digital', iconClass: 'fa-solid fa-book-open', keywords: ['catalogo', 'catalogo digital', 'menu digital'], image: 'assets/images/diseños/catalogodigital.png' },
+    { id: 'mascotas', label: 'Mascotas / Pet Care', iconClass: 'fa-solid fa-paw', keywords: ['mascotas', 'pet', 'perros', 'gatos', 'veterinaria'], image: 'assets/images/diseños/mascotas.png', liveUrl: 'https://camascotas.com' },
+    { id: 'catalogodigital', label: 'Catálogo Digital', iconClass: 'fa-solid fa-book-open', keywords: ['catalogo', 'catalogo digital', 'menu digital'], image: 'assets/images/diseños/catalogodigital.png', liveUrl: 'https://catalogoplaxtilineas.com' },
     { id: 'ecommerce', label: 'E-Commerce / Tienda', iconClass: 'fa-solid fa-store', keywords: ['e-commerce', 'ecommerce', 'tienda virtual', 'vender online'], image: 'assets/images/diseños/e-commerce.png' },
     { id: 'agendamiento', label: 'Agendamiento de Citas', iconClass: 'fa-solid fa-calendar-check', keywords: ['agendamiento', 'citas', 'reserva', 'turnos'], image: 'assets/images/diseños/agendamiento-citas.png' },
     { id: 'influencer', label: 'Influencer / Personal', iconClass: 'fa-solid fa-star', keywords: ['influencer', 'marca personal', 'creador', 'streamer'], image: 'assets/images/diseños/influencer.png' },
@@ -953,7 +1008,7 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     setTimeout(() => this.scrollToBottom(), 80);
   }
 
-  selectCategory(cat: { id: string; label: string; image: string }) {
+  selectCategory(cat: { id: string; label: string; image: string; liveUrl?: string }) {
     this.designFormState.categoryName = cat.label;
 
     this.chatService.messages.push({
@@ -1030,14 +1085,35 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     const lowerText = userText.toLowerCase();
 
     // Check if user requests consulting / asesoría
-    if (lowerText.includes('asesor') || lowerText.includes('consult') || lowerText.includes('automatiz')) {
+    if ((lowerText.includes('asesor') || lowerText.includes('consult') || lowerText.includes('automatiz')) && !lowerText.includes('diseño') && !lowerText.includes('dame')) {
       this.chatService.chatMode.set('consulting');
     }
 
-    // Check if user triggers design flow
-    if (lowerText.includes('quiero un diseño') || lowerText.includes('quiero diseño') || lowerText === 'diseño') {
+    // Check if user triggers design flow / requests a design
+    const isDesignRequest =
+      lowerText.includes('diseño') ||
+      lowerText.includes('diseños') ||
+      lowerText.includes('prototipo') ||
+      lowerText.includes('plantilla') ||
+      lowerText.includes('dame un') ||
+      lowerText.includes('dame otro') ||
+      lowerText.includes('quiero uno') ||
+      lowerText.includes('quiero otro');
+
+    if (isDesignRequest && !lowerText.includes('asesor') && !lowerText.includes('consult')) {
+      this.chatService.chatMode.set('design');
       this.chatService.userInput = '';
-      this.startDesignFlow();
+
+      // Check if user mentions a specific category (gym, ropa, etc.)
+      const matchedCat = this.designCategories.find(c =>
+        c.keywords.some(kw => lowerText.includes(kw)) || lowerText.includes(c.id)
+      );
+
+      if (matchedCat) {
+        this.selectCategory(matchedCat);
+      } else {
+        this.startDesignFlow();
+      }
       return;
     }
 
@@ -1045,8 +1121,8 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     const lastMsg = this.chatService.messages[this.chatService.messages.length - 1];
     if (lastMsg && lastMsg.role === 'assistant' && lastMsg.showCategorySelector) {
       this.chatService.userInput = '';
-      
-      const matchedCat = this.designCategories.find(c => 
+
+      const matchedCat = this.designCategories.find(c =>
         c.keywords.some(kw => lowerText.includes(kw)) || lowerText.includes(c.id)
       );
 
@@ -1095,7 +1171,7 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
         if (this.authService.hasToken()) {
           this.siteService.saveMySite(this.generatedSiteData).subscribe();
         }
-      } catch (e) {}
+      } catch (e) { }
     }
     this.router.navigate(['/personalizar'], { state: { siteData: this.generatedSiteData } });
   }
@@ -1103,6 +1179,6 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
   private scrollToBottom(): void {
     try {
       this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
-    } catch (err) {}
+    } catch (err) { }
   }
 }

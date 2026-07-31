@@ -63,11 +63,13 @@ export class ChatStateService {
   userType = signal<'anonymous' | 'user' | 'admin'>('anonymous');
   lastGeneratedSite = signal<{ slug: string; siteData: any } | null>(null);
   chatMode = signal<'design' | 'consulting' | null>(null);
+  rotbotActive = signal<boolean>(true);
 
   private _sessionToken: string | null = null;
 
   constructor() {
     this._sessionToken = this.getOrCreateSessionToken();
+    this.loadRotbotStatus().subscribe();
 
     if (typeof window !== 'undefined') {
       window.addEventListener('auth-change', () => {
@@ -76,9 +78,35 @@ export class ChatStateService {
         } else {
           this.loadHistory().subscribe();
           this.loadUsage();
+          this.loadRotbotStatus().subscribe();
         }
       });
     }
+  }
+
+  loadRotbotStatus(): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/config/settings`).pipe(
+      tap(res => {
+        const activeVal = res?.settings?.rotbot_active;
+        if (activeVal !== undefined && activeVal !== null) {
+          this.rotbotActive.set(activeVal === 'true' || activeVal === true);
+        } else {
+          this.rotbotActive.set(true);
+        }
+      }),
+      catchError(() => of(null))
+    );
+  }
+
+  updateRotbotStatus(active: boolean): Observable<any> {
+    const valueStr = active ? 'true' : 'false';
+    return this.http.put<any>(
+      `${environment.apiUrl}/config/settings`,
+      { settings: { rotbot_active: valueStr } },
+      { headers: this.buildHeaders() }
+    ).pipe(
+      tap(() => this.rotbotActive.set(active))
+    );
   }
 
   /**
@@ -90,7 +118,7 @@ export class ChatStateService {
     this.addMessage('user', userText);
     this.isTyping = true;
 
-    const body: any = { 
+    const body: any = {
       message: userText.trim(),
       session_token: this._sessionToken,
       chat_mode: this.chatMode()
@@ -107,7 +135,7 @@ export class ChatStateService {
           this.lastGeneratedSite.set(res.site_generated);
           try {
             localStorage.setItem('portalink_generated_site', JSON.stringify(res.site_generated.siteData));
-          } catch (e) {}
+          } catch (e) { }
         }
         this.addMessage('assistant', res.reply);
         if (res.remaining_messages !== null && res.remaining_messages !== undefined) {
@@ -197,23 +225,22 @@ export class ChatStateService {
    * Limpiar historial y empezar nueva conversación.
    */
   clearHistory(): void {
+    const options = {
+      headers: this.buildHeaders(),
+      body: { session_token: this._sessionToken }
+    };
+
+    this.http.request('delete', `${environment.apiUrl}/chat/clear`, options).subscribe({
+      next: () => this.clear(),
+      error: () => this.clear()
+    });
+
     if (!this.authService.hasToken()) {
-      // Para anónimos: solo limpiamos la UI y generamos un nuevo token
-      this.clear();
       this._sessionToken = this.generateToken();
       if (typeof sessionStorage !== 'undefined') {
         sessionStorage.setItem(SESSION_TOKEN_KEY, this._sessionToken);
       }
-      return;
     }
-
-    // Para logueados: llamar al backend para crear nueva sesión
-    this.http.delete(`${environment.apiUrl}/chat/clear`, {
-      headers: this.buildHeaders()
-    }).subscribe({
-      next: () => this.clear(),
-      error: () => this.clear()
-    });
   }
 
   addMessage(role: 'assistant' | 'user', content: string) {
