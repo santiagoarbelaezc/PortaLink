@@ -60,6 +60,12 @@ import { AuthService } from '../../services/auth.service';
                 <polyline points="2 17 12 22 22 17"></polyline>
                 <polyline points="2 12 12 17 22 12"></polyline>
               </ng-container>
+              <ng-container *ngIf="item.icon === 'disenos'">
+                <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+              </ng-container>
             </svg>
             <span>{{ item.name }}</span>
           </a>
@@ -283,6 +289,12 @@ import { AuthService } from '../../services/auth.service';
               <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
               <polyline points="2 17 12 22 22 17"></polyline>
               <polyline points="2 12 12 17 22 12"></polyline>
+            </ng-container>
+            <ng-container *ngIf="item.icon === 'disenos'">
+              <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+              <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+              <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+              <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
             </ng-container>
             <ng-container *ngIf="item.icon === 'user'">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -573,18 +585,20 @@ export class NavbarComponent implements OnInit {
 
   navItemsTranslations: any = {
     es: [
-      { name: 'Inicio',    link: '#hero',     icon: 'home'     },
-      { name: 'Propuesta', link: '/proposal', icon: 'proposal' },
-      { name: 'Links',     link: '/links',    icon: 'link'     },
-      { name: 'RotBot',    link: '/rotbot',   icon: 'chat'     },
-      { name: 'Servicios', link: '/planes',   icon: 'planes'   }
+      { name: 'Inicio',    link: '#hero',       icon: 'home'     },
+      { name: 'Diseños',   link: '/prototipos', icon: 'disenos'  },
+      { name: 'Propuesta', link: '/proposal',   icon: 'proposal' },
+      { name: 'Links',     link: '/links',      icon: 'link'     },
+      { name: 'RotBot',    link: '/rotbot',     icon: 'chat'     },
+      { name: 'Servicios', link: '/planes',     icon: 'planes'   }
     ],
     en: [
-      { name: 'Home',      link: '#hero',     icon: 'home'     },
-      { name: 'Proposal',  link: '/proposal', icon: 'proposal' },
-      { name: 'Links',     link: '/links',    icon: 'link'     },
-      { name: 'RotBot',    link: '/rotbot',   icon: 'chat'     },
-      { name: 'Services',  link: '/planes',   icon: 'planes'   }
+      { name: 'Home',      link: '#hero',       icon: 'home'     },
+      { name: 'Designs',   link: '/prototipos', icon: 'disenos'  },
+      { name: 'Proposal',  link: '/proposal',   icon: 'proposal' },
+      { name: 'Links',     link: '/links',      icon: 'link'     },
+      { name: 'RotBot',    link: '/rotbot',     icon: 'chat'     },
+      { name: 'Services',  link: '/planes',     icon: 'planes'   }
     ]
   };
 

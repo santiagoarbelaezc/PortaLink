@@ -56,11 +56,11 @@ import { RouterModule, Router } from '@angular/router';
         <!-- Grid de Paquetes -->
         <div class="w-full max-w-[96%] mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 items-stretch">
           
-          <!-- Paquete 1: Landing Page -->
+          <!-- Paquete 1: Landing Page Web y Móvil -->
           <div class="plan-card rounded-3xl flex flex-col justify-between group overflow-hidden relative pt-10 px-8 pb-10 h-full transition-all duration-300">
             <!-- Top Content -->
             <div class="flex flex-col">
-              <h3 class="text-2xl font-bold uppercase tracking-wide text-white mb-3 min-h-[56px] flex items-center">Landing Page</h3>
+              <h3 class="text-xl sm:text-2xl font-bold uppercase tracking-wide text-white mb-3 min-h-[56px] flex items-center">Landing Page Web y Móvil</h3>
               <p class="text-xs text-white/55 mb-6 leading-relaxed min-h-[54px]">Sitio web de una sola página con todas las secciones que requieras, diseñado para captar clientes y presentar tu negocio de forma directa.</p>
               
               <div class="h-px w-full bg-white/10 mb-6"></div>
@@ -93,20 +93,22 @@ import { RouterModule, Router } from '@angular/router';
               </ul>
             </div>
             
-            <!-- Bottom Action to Gallery -->
+            <!-- Bottom Action to WhatsApp -->
             <div class="mt-auto">
-              <button (click)="exploreProjects('Landing Page', $event)" 
-                      class="plan-btn-outlined w-full py-4 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer">
-                <span>Explorar Proyectos →</span>
-              </button>
+              <a href="https://wa.me/573054078225?text=Hola%2C%20quiero%20cotizar%20el%20servicio%20de%20Landing%20Page%20Web%20y%20M%C3%B3vil" 
+                 target="_blank" rel="noopener noreferrer" 
+                 class="plan-btn-outlined w-full py-4 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-105 active:scale-95">
+                <i class="fa-brands fa-whatsapp text-emerald-400 text-sm"></i>
+                <span>Cotiza tu Servicio Ya</span>
+              </a>
             </div>
           </div>
 
-          <!-- Paquete 3: E-commerce Autopersonalizable -->
+          <!-- Paquete 2: E-commerce Autopersonalizable Web y Móvil -->
           <div class="plan-card rounded-3xl flex flex-col justify-between group overflow-hidden relative pt-10 px-8 pb-10 h-full transition-all duration-300">
             <!-- Top Content -->
             <div class="flex flex-col">
-              <h3 class="text-xl font-bold uppercase tracking-wide text-white mb-3 min-h-[56px] flex items-center">E-commerce Autopersonalizable</h3>
+              <h3 class="text-xl font-bold uppercase tracking-wide text-white mb-3 min-h-[56px] flex items-center">E-commerce Autopersonalizable Web y Móvil</h3>
               <p class="text-xs text-white/55 mb-6 leading-relaxed min-h-[54px]">Tu tienda online con la libertad de cambiar el diseño, colores, fuentes y secciones en tiempo real con nuestro editor interactivo.</p>
               
               <div class="h-px w-full bg-white/10 mb-6"></div>
@@ -139,16 +141,18 @@ import { RouterModule, Router } from '@angular/router';
               </ul>
             </div>
             
-            <!-- Bottom Action to Gallery -->
+            <!-- Bottom Action to WhatsApp -->
             <div class="mt-auto">
-              <button (click)="exploreProjects('E-commerce', $event)" 
-                      class="plan-btn-outlined w-full py-4 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer">
-                <span>Explorar Proyectos →</span>
-              </button>
+              <a href="https://wa.me/573054078225?text=Hola%2C%20quiero%20cotizar%20el%20servicio%20de%20E-commerce%20Autopersonalizable%20Web%20y%20M%C3%B3vil" 
+                 target="_blank" rel="noopener noreferrer" 
+                 class="plan-btn-outlined w-full py-4 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-105 active:scale-95">
+                <i class="fa-brands fa-whatsapp text-emerald-400 text-sm"></i>
+                <span>Cotiza tu Servicio Ya</span>
+              </a>
             </div>
           </div>
 
-          <!-- Paquete 4: E-commerce + IA + Autopersonalizable (MÁS VENDIDO) -->
+          <!-- Paquete 3: E-commerce con IA Integrada Web y Móvil (MÁS VENDIDO) -->
           <div class="plan-card rounded-3xl flex flex-col justify-between group overflow-hidden relative h-full border-2 transition-all duration-300"
                style="border-color: var(--accent-color, #00f5ff);">
             <!-- Header Popular -->
@@ -160,7 +164,7 @@ import { RouterModule, Router } from '@angular/router';
             <div class="pt-8 px-8 pb-10 flex-grow flex flex-col justify-between">
               <!-- Top Content -->
               <div class="flex flex-col">
-                <h3 class="text-xl font-bold uppercase tracking-wide text-white mb-3 min-h-[56px] flex items-center">E-commerce + IA + Autopersonalizable</h3>
+                <h3 class="text-xl font-bold uppercase tracking-wide text-white mb-3 min-h-[56px] flex items-center">E-commerce con Inteligencia Artificial Integrada Web y Móvil</h3>
                 <p class="text-xs text-white/55 mb-6 leading-relaxed min-h-[54px]">La máxima potencia para tu negocio: tienda online personalizable integrada con inteligencia artificial (Rotbot IA) para potenciar tus ventas.</p>
                 
                 <div class="h-px w-full bg-white/10 mb-8"></div>
@@ -193,23 +197,25 @@ import { RouterModule, Router } from '@angular/router';
                 </ul>
               </div>
               
-              <!-- Bottom Action to Gallery -->
+              <!-- Bottom Action to WhatsApp -->
               <div class="mt-auto">
-                <button (click)="exploreProjects('E-commerce + IA', $event)" 
-                        class="plan-btn-filled w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer"
-                        style="background: var(--accent-color, #00f5ff); color: #000000;">
-                  <span>Explorar Proyectos →</span>
-                </button>
+                <a href="https://wa.me/573054078225?text=Hola%2C%20quiero%20cotizar%20el%20servicio%20de%20E-commerce%20con%20Inteligencia%20Artificial%20Integrada%20Web%20y%20M%C3%B3vil" 
+                   target="_blank" rel="noopener noreferrer" 
+                   class="plan-btn-filled w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-105 active:scale-95 shadow-lg"
+                   style="background: var(--accent-color, #00f5ff); color: #000000;">
+                  <i class="fa-brands fa-whatsapp text-black text-sm"></i>
+                  <span>Cotiza tu Servicio Ya</span>
+                </a>
               </div>
             </div>
           </div>
 
-          <!-- Paquete 5: Opciones Personalizadas -->
+          <!-- Paquete 4: Sistema a la Medida de tu Negocio Web y Móvil -->
           <div class="plan-card rounded-3xl flex flex-col justify-between group overflow-hidden relative pt-10 px-8 pb-10 h-full transition-all duration-300">
             <!-- Top Content -->
             <div class="flex flex-col">
-              <h3 class="text-2xl font-bold uppercase tracking-wide text-white mb-3 min-h-[56px] flex items-center">Opción Personalizada</h3>
-              <p class="text-xs text-white/55 mb-6 leading-relaxed min-h-[54px]">¿Requieres algo único? Otras opciones personalizadas, habla con nuestro asistente, para ajustar cuál es la solución que requieres.</p>
+              <h3 class="text-xl font-bold uppercase tracking-wide text-white mb-3 min-h-[56px] flex items-center">Sistema a la Medida de tu Negocio Web y Móvil</h3>
+              <p class="text-xs text-white/55 mb-6 leading-relaxed min-h-[54px]">¿Requieres algo único? Soluciones a la medida de tu negocio, habla con nosotros para ajustar cuál es la plataforma que requieres.</p>
               
               <div class="h-px w-full bg-white/10 mb-6"></div>
               
@@ -241,15 +247,16 @@ import { RouterModule, Router } from '@angular/router';
               </ul>
             </div>
             
-            <!-- Bottom Action to Gallery -->
+            <!-- Bottom Action to WhatsApp -->
             <div class="mt-auto">
-              <button (click)="exploreProjects('Sistemas', $event)" 
-                      class="plan-btn-outlined w-full py-4 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer">
-                <span>Explorar Proyectos →</span>
-              </button>
+              <a href="https://wa.me/573054078225?text=Hola%2C%20quiero%20cotizar%20un%20Sistema%20a%20la%20Medida%20de%20mi%20Negocio%20Web%20y%20M%C3%B3vil" 
+                 target="_blank" rel="noopener noreferrer" 
+                 class="plan-btn-outlined w-full py-4 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-105 active:scale-95">
+                <i class="fa-brands fa-whatsapp text-emerald-400 text-sm"></i>
+                <span>Cotiza tu Servicio Ya</span>
+              </a>
             </div>
           </div>
-
         </div>
 
         <!-- Sección de Servicios Incluidos -->

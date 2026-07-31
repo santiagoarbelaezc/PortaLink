@@ -60,10 +60,16 @@ import { Router, RouterModule } from '@angular/router';
                 Una selección de proyectos construidos a medida: e-commerce, sistemas de gestión y plataformas con inteligencia artificial.
               </p>
             </div>
-            <a routerLink="/planes-galeria" class="showcase-btn-gallery inline-flex items-center gap-2.5 px-5 py-3 rounded-xl border text-xs font-bold uppercase tracking-widest transition-all duration-200 flex-shrink-0 whitespace-nowrap">
-              Ver galería completa
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
-            </a>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+              <a routerLink="/prototipos" class="inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold text-xs uppercase tracking-widest transition-all duration-200 shadow-lg cursor-pointer">
+                <svg class="w-4 h-4 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg>
+                <span>Prototipos de Diseños</span>
+              </a>
+              <a routerLink="/planes-galeria" class="showcase-btn-gallery inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl border text-xs font-bold uppercase tracking-widest transition-all duration-200 flex-shrink-0 whitespace-nowrap">
+                Ver galería completa
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+              </a>
+            </div>
           </div>
         </div>
 
@@ -143,6 +149,24 @@ import { Router, RouterModule } from '@angular/router';
 
           </div>
 
+        </div>
+
+        <!-- Mobile Bottom Callout Banner for Prototypes -->
+        <div class="max-w-[1500px] mx-auto mt-8 sm:hidden px-2">
+          <a routerLink="/prototipos" class="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-cyan-500/20 to-blue-600/20 border border-cyan-500/40 text-cyan-400 font-bold text-xs uppercase tracking-wider shadow-xl transition-all hover:scale-[1.02] active:scale-98">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-sm">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg>
+              </div>
+              <div class="flex flex-col text-left">
+                <span class="text-white text-xs font-extrabold uppercase tracking-wide">Prototipos de Diseños</span>
+                <span class="text-[10px] text-cyan-300/80 font-normal normal-case">Explora maquetas y plantillas interactivas</span>
+              </div>
+            </div>
+            <div class="w-7 h-7 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+            </div>
+          </a>
         </div>
 
         <!-- Línea decorativa inferior -->
