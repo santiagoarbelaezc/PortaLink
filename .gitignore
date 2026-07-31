@@ -44,3 +44,10 @@ typings/
 # System files
 .DS_Store
 Thumbs.db
+
+# Archives & compressed files
+*.zip
+*.rar
+*.tar.gz
+*.7z
+

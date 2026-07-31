@@ -1,0 +1,4 @@
+# Ignore rules
+node_modules
+dist
+.git

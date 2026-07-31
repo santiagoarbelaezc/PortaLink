@@ -59,6 +59,7 @@ import { RouterModule } from '@angular/router';
               <li><a routerLink="/terminos" class="footer-link transition-colors" style="color: var(--text-secondary);">Términos y Condiciones</a></li>
               <li><a routerLink="/privacidad" class="footer-link transition-colors" style="color: var(--text-secondary);">Política de Privacidad</a></li>
               <li><a routerLink="/tratamiento-datos" class="footer-link transition-colors" style="color: var(--text-secondary);">Tratamiento de Datos (Habeas Data)</a></li>
+              <li><button (click)="openCookieSettings()" class="footer-link transition-colors cursor-pointer text-left" style="color: var(--text-secondary);">Configuración de Cookies</button></li>
               <li><a routerLink="/deslinde-ia" class="footer-link transition-colors font-medium" style="color: var(--text-primary);">Exención de Responsabilidad IA</a></li>
             </ul>
           </div>
@@ -197,5 +198,11 @@ export class FooterComponent implements OnInit, OnDestroy {
 
   getTranslation() {
     return this.translations[this.currentLanguage] || this.translations['es'];
+  }
+
+  openCookieSettings() {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('open-cookie-settings'));
+    }
   }
 }

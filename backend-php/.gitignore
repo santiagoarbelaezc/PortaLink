@@ -1,0 +1,7 @@
+# Backend PHP environment & vendor
+.env
+vendor/
+*.zip
+*.rar
+*.tar.gz
+*.7z

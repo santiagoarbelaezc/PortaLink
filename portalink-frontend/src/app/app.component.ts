@@ -3,11 +3,12 @@ import { RouterOutlet, Router, NavigationStart, NavigationEnd, NavigationCancel,
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { AiChatFloatingComponent } from './components/ai-chat-floating/ai-chat-floating.component';
+import { CookieConsentComponent } from './components/cookie-consent/cookie-consent.component';
 
 @Component({
     selector: 'app-root',
     standalone: true,
-    imports: [CommonModule, RouterOutlet, NavbarComponent, AiChatFloatingComponent],
+    imports: [CommonModule, RouterOutlet, NavbarComponent, AiChatFloatingComponent, CookieConsentComponent],
     template: `
     <!-- Elegant Glowing Top Loading Bar -->
     <div class="top-loader" [class.active]="isLoading" [class.finished]="isFinished">
@@ -23,6 +24,9 @@ import { AiChatFloatingComponent } from './components/ai-chat-floating/ai-chat-f
     <!-- Persistent Header & Chatbot (hidden on admin page) -->
     <app-navbar *ngIf="showNavbar()"></app-navbar>
     <app-ai-chat-floating *ngIf="!isAdminRoute() && !isLoginRoute()"></app-ai-chat-floating>
+
+    <!-- Cookie Consent Banner & Legal Preferences Modal -->
+    <app-cookie-consent></app-cookie-consent>
  
     <!-- Main Content Area -->
     <div class="content-container">
