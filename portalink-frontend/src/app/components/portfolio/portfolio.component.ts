@@ -1,6 +1,6 @@
-import { Component, Input, ViewChild, ElementRef, AfterViewInit, OnDestroy, HostListener, OnInit } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, AfterViewInit, OnDestroy, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 
 @Component({
@@ -26,7 +26,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
              class="carousel-scroll-track flex items-center gap-4 sm:gap-6 md:gap-8 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar py-6 px-2 -mx-2 select-none overscroll-x-contain">
           
           <div *ngFor="let project of projects; let i = index"
-               (click)="goTo(i)"
+               (click)="onProjectClick(project, i)"
                [class.active-card]="i === currentIndex"
                [class.inactive-card]="i !== currentIndex"
                class="carousel-card snap-center relative flex-shrink-0 w-[88vw] sm:w-[78vw] lg:w-[850px] aspect-[4/3] sm:aspect-[16/9] rounded-[24px] sm:rounded-[36px] overflow-hidden border border-white/10 transition-all duration-500 cursor-pointer">
@@ -186,10 +186,17 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
   `]
 })
 export class PortfolioComponent implements OnInit, OnDestroy {
+  private router = inject(Router);
   @Input() projects: any[] = [];
   isLoading = true;
   currentIndex = 0;
   currentLanguage = 'es';
+
+  onProjectClick(project: any, index: number) {
+    this.goTo(index);
+    const id = this.getProjectId(project);
+    this.router.navigate(['/proyecto', id]);
+  }
 
   @ViewChild('carouselTrack', { static: false }) carouselTrack?: ElementRef<HTMLDivElement>;
 

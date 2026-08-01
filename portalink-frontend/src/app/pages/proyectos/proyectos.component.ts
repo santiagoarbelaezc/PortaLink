@@ -106,41 +106,44 @@ import { Router, RouterModule } from '@angular/router';
                 </h3>
               </div>
 
-              <!-- Overlay hover central con botón Ver Detalles -->
-              <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div class="px-6 py-3 rounded-full bg-[var(--accent-color)] text-black font-extrabold text-xs uppercase tracking-widest flex items-center gap-2 shadow-[0_0_30px_rgba(0,245,255,0.5)] scale-90 group-hover:scale-100 transition-transform duration-300">
+              <!-- Overlay hover central con botón Ver Detalles Monocromático -->
+              <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-20">
+                <div class="px-6 py-3 rounded-full bg-white text-black font-bold text-xs uppercase tracking-widest flex items-center gap-2 shadow-2xl scale-95 group-hover:scale-100 transition-transform duration-300">
                   <span>Ver Detalles del Proyecto</span>
-                  <svg class="w-4 h-4 ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <svg class="w-4 h-4 ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
                   </svg>
                 </div>
               </div>
             </div>
 
-            <!-- Zona inferior: Solo botones de acción ultra-elegantes -->
-            <div class="showcase-card-footer px-5 pt-4 pb-4 flex items-center justify-end gap-3">
-              <!-- Botón En Vivo -->
-              <a *ngIf="p.liveUrl" [href]="p.liveUrl" target="_blank" rel="noopener noreferrer"
-                 (click)="$event.stopPropagation()"
-                 class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[11px] font-mono font-bold uppercase tracking-[0.2em] bg-white/[0.08] hover:bg-white text-white hover:text-black border border-white/20 hover:border-white transition-all duration-300 backdrop-blur-xl shadow-lg hover:shadow-white/20 group/btn cursor-pointer">
-                <span class="relative flex h-2 w-2">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-                </span>
-                <span>En Vivo</span>
-                <svg class="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H18m0 0v4.5M18 6l-7.5 7.5"/>
-                </svg>
-              </a>
+            <!-- Zona inferior: Barra de acciones monocromática, organizada y sutil -->
+            <div class="showcase-card-footer px-5 py-3.5 border-t border-white/10 flex items-center justify-between gap-3 bg-neutral-950/40 rounded-b-[28px]">
+              <span class="text-xs font-mono font-medium text-neutral-400 uppercase tracking-widest">
+                #{{ p.code }}
+              </span>
 
-              <!-- Botón Ver Más -->
-              <a [routerLink]="['/proyecto', p.id]" (click)="$event.stopPropagation()"
-                 class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[11px] font-mono font-bold uppercase tracking-[0.2em] bg-white/[0.04] hover:bg-white text-white hover:text-black border border-white/12 hover:border-white transition-all duration-300 backdrop-blur-xl shadow-md hover:shadow-white/20 group/btn cursor-pointer">
-                <span>Ver Más</span>
-                <svg class="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
-                </svg>
-              </a>
+              <div class="flex items-center gap-2.5">
+                <!-- Botón En Vivo -->
+                <a *ngIf="p.liveUrl" [href]="p.liveUrl" target="_blank" rel="noopener noreferrer"
+                   (click)="$event.stopPropagation()"
+                   class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold uppercase tracking-wider text-neutral-300 bg-white/5 border border-white/10 hover:bg-white hover:text-black hover:border-white transition-all duration-200 cursor-pointer group/btn">
+                  <span class="w-1.5 h-1.5 rounded-full bg-white group-hover/btn:bg-black transition-colors"></span>
+                  <span>En Vivo</span>
+                  <svg class="w-3.5 h-3.5 text-neutral-300 group-hover/btn:text-black group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H18m0 0v4.5M18 6l-7.5 7.5"/>
+                  </svg>
+                </a>
+
+                <!-- Botón Ver Más -->
+                <a [routerLink]="['/proyecto', p.id]" (click)="$event.stopPropagation()"
+                   class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold uppercase tracking-wider text-white bg-white/10 border border-white/20 hover:bg-white hover:text-black hover:border-white transition-all duration-200 cursor-pointer group/btn">
+                  <span>Ver Más</span>
+                  <svg class="w-3.5 h-3.5 text-white group-hover/btn:text-black group-hover/btn:translate-x-0.5 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+                  </svg>
+                </a>
+              </div>
             </div>
 
           </div>

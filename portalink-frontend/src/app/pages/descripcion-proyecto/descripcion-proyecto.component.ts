@@ -609,11 +609,7 @@ Integra una suite de herramientas avanzadas: exposición interactiva de proyecto
         'assets/images/proyectos/catalogo/catalogo-3.png',
         'assets/images/proyectos/catalogo/catalogo-4.png'
       ],
-      mobileImages: [
-        'assets/images/proyectos/catalogo/catalogo-2.png',
-        'assets/images/proyectos/catalogo/catalogo-3.png',
-        'assets/images/proyectos/catalogo/catalogo-4.png'
-      ],
+
       description: 'Plataforma de catálogo digital con IA para gestión de productos, inventario y analítica.',
       longDescription: `CATÁLOGO DIGITAL PLAXTILÍNEAS es un ecosistema inteligente concebido para empresas con amplios volúmenes de productos y múltiples líneas de negocio.
 
@@ -729,10 +725,7 @@ Diseñada con un estándar visual premium, ofrece fichas fisiológicas de produc
         'assets/images/proyectos/espumasyplasticos/espuma-4.png',
         'assets/images/proyectos/espumasyplasticos/espuma-5.png'
       ],
-      mobileImages: [
-        'assets/images/proyectos/espumasyplasticos/espuma-4.png',
-        'assets/images/proyectos/espumasyplasticos/espuma-5.png'
-      ],
+
       description: 'Plataforma de comercio electrónico e industrial para soluciones en espumas, plásticos y materiales sintéticos.',
       longDescription: `ESPUMAS Y PLÁSTICOS es una plataforma e-commerce de especificación industrial concebida para la distribución de láminas de espuma, plásticos técnicos y accesorios de empaque.
 
@@ -793,8 +786,9 @@ Cuenta con calculadora de volumen y densidad, cotización en lote para distribui
         'assets/images/proyectos/plaxtilineas/plaxti-5.png'
       ],
       mobileImages: [
-        'assets/images/proyectos/plaxtilineas/plaxti-4.png',
-        'assets/images/proyectos/plaxtilineas/plaxti-5.png'
+        'assets/images/proyectos/plaxtilineas/plaxti-1movil.jpeg',
+        'assets/images/proyectos/plaxtilineas/plaxti-2movil.jpeg',
+        'assets/images/proyectos/plaxtilineas/plaxti-3movil.jpeg'
       ],
       description: 'Portal institucional e industrial para la exhibición de líneas de bolsas, empaques y plásticos biodegradables.',
       longDescription: `PLAXTILÍNEAS es el portal corporativo maestro para una firma líder en fabricación y distribución de empaques sintéticos e industriales.
@@ -858,9 +852,9 @@ Destaca por su presentación visual de alto impacto, catálogo interactivo de l�
         'assets/images/proyectos/tiendaintima/tienda-5.png'
       ],
       mobileImages: [
-        'assets/images/proyectos/tiendaintima/tienda4.png',
-        'assets/images/proyectos/tiendaintima/tienda5.png',
-        'assets/images/proyectos/tiendaintima/tienda-5.png'
+        'assets/images/proyectos/tiendaintima/tienda-movil.jpeg',
+        'assets/images/proyectos/tiendaintima/tienda-movil2.jpeg',
+        'assets/images/proyectos/tiendaintima/tienda-movil3.jpeg'
       ],
       description: 'E-commerce para moda íntima con IA para gestión de productos y recomendaciones.',
       longDescription: `TIENDA ÍNTIMA combina elegancia, privacidad y tecnología de personalización avanzada.

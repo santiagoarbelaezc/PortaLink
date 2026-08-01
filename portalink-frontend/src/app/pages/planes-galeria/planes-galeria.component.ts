@@ -30,14 +30,14 @@ export interface GalleryProject {
         <!-- Fondo de color sólido optimizado (Sin desenfoques pesados para un rendimiento 60 FPS) -->
         <div class="max-w-[1760px] w-full mx-auto px-6 sm:px-12 lg:px-20 pt-8 pb-32 relative z-10">
           
-          <!-- Botón Volver a Planes -->
+          <!-- Botón Volver al Inicio -->
           <div class="mb-8 flex items-center justify-between">
-            <a routerLink="/planes" 
+            <a routerLink="/" 
                class="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-bold uppercase tracking-widest text-white/80 hover:text-white transition duration-200 cursor-pointer">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
               </svg>
-              <span>Volver a Paquetes</span>
+              <span>Volver al Inicio</span>
             </a>
 
             <div class="hidden sm:flex items-center gap-2 text-xs font-mono text-white/40 uppercase tracking-widest">
@@ -517,8 +517,7 @@ export class PlanesGaleriaComponent implements OnInit {
   }
 
   openPreview(project: GalleryProject) {
-    this.previewModalProject = project;
-    document.body.style.overflow = 'hidden';
+    this.router.navigate(['/proyecto', project.id]);
   }
 
   closePreview() {
