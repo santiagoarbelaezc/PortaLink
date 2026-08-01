@@ -153,7 +153,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                      data-aos="fade-up"
                      [attr.data-aos-delay]="i * 120"
                      (click)="trackSectionView('retratos'); trackLinkClick('foto_' + (i + 1))"
-                     class="lt-reveal-item overflow-hidden relative border aspect-[3/4] rounded-2xl cursor-pointer shadow-2xl transition-all duration-500 group" 
+                     class="lt-reveal-item overflow-hidden relative border aspect-[2/3] sm:aspect-[9/14] rounded-2xl cursor-pointer shadow-2xl transition-all duration-500 group" 
                      style="border-color: var(--card-border, rgba(255,255,255,0.1)); background: #080808;">
                   
                   <img [src]="getLowQualityImage(img.src)" 
@@ -354,11 +354,14 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   modelingImages = [
     { src: 'assets/images/fotos/color-1.jpg', alt: 'Editorial Portrait I', isColor: true },
     { src: 'assets/images/fotos/blanco-negro-1.jpg', alt: 'Editorial Portrait II', isColor: false },
-    { src: 'assets/images/fotos/color-2.jpg', alt: 'Editorial Portrait III', isColor: true },
-    { src: 'assets/images/fotos/blanco-negro-2.jpg', alt: 'Editorial Portrait IV', isColor: false },
+    { src: 'assets/images/fotos/color-2 (2).jpg', alt: 'Editorial Portrait III', isColor: true },
+    { src: 'assets/images/fotos/blanco-negro-2 (2).jpg', alt: 'Editorial Portrait IV', isColor: false },
     { src: 'assets/images/fotos/color-3.jpg', alt: 'Editorial Portrait V', isColor: true },
     { src: 'assets/images/fotos/blanco-negro-3.jpg', alt: 'Editorial Portrait VI', isColor: false },
-    { src: 'assets/images/fotos/color-4.jpg', alt: 'Editorial Portrait VII', isColor: true }
+    { src: 'assets/images/fotos/color-4.jpg', alt: 'Editorial Portrait VII', isColor: true },
+    { src: 'assets/images/fotos/blanco-negro3.jpg', alt: 'Editorial Portrait VIII', isColor: false },
+    { src: 'assets/images/fotos/color5.JPG', alt: 'Editorial Portrait IX', isColor: true },
+    { src: 'assets/images/fotos/color6.jpg', alt: 'Editorial Portrait X', isColor: true }
   ];
 
   translations: any = {
