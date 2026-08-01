@@ -20,12 +20,11 @@ import { Router } from '@angular/router';
            [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
 
         <!-- Rotbot flotando -->
-        <div class="absolute right-0 md:right-8 top-0 bottom-0 flex items-center justify-center pointer-events-none select-none py-6"
-             style="width: 350px;">
-          <img src="assets/images/rotbot4.png" class="h-full w-full object-contain opacity-95" alt="Rotbot">
+        <div class="absolute right-0 md:right-8 top-0 bottom-0 hidden sm:flex items-center justify-center pointer-events-none select-none py-6 w-[220px] md:w-[350px]">
+          <img src="assets/images/rotbot4.png" class="h-full w-full object-contain opacity-40 sm:opacity-95" alt="Rotbot">
         </div>
 
-        <div class="relative z-10 max-w-[75%] md:max-w-[60%]">
+        <div class="relative z-10 max-w-full sm:max-w-[75%] md:max-w-[60%]">
           <p class="text-xs font-bold uppercase tracking-[0.3em] mb-1"
              [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Panel de Control</p>
           <h2 class="text-3xl font-bold leading-tight"

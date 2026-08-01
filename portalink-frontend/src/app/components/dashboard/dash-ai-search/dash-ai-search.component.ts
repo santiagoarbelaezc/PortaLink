@@ -21,49 +21,49 @@ const TAB_LABELS: Record<string, string> = {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <header class="flex-shrink-0 flex items-center justify-between px-6 md:px-8 py-4 border-b relative"
+    <header class="flex-shrink-0 flex items-center justify-between px-4 sm:px-6 md:px-8 py-4 sm:py-5 border-b relative z-20 transition-all duration-300"
             [ngClass]="theme === 'dark' ? 'bg-[#07070a] border-neutral-800' : 'bg-white border-neutral-200'">
 
       <!-- Breadcrumb -->
       <div class="flex items-center gap-3 min-w-0">
-        <!-- Sidebar Toggle -->
-        <button (click)="toggleSidebar.emit()" class="p-2 -ml-2 rounded-xl transition-colors"
-                [ngClass]="theme === 'dark' ? 'hover:bg-white/10 text-neutral-400 hover:text-white' : 'hover:bg-black/5 text-neutral-500 hover:text-black'">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <!-- Sidebar Toggle (Hamburguesa) -->
+        <button (click)="toggleSidebar.emit()" class="p-2 sm:p-2.5 -ml-2 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
+                [ngClass]="theme === 'dark' ? 'hover:bg-white/10 text-neutral-200 hover:text-white' : 'hover:bg-black/5 text-neutral-700 hover:text-black'">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
-        <span class="text-xs font-semibold uppercase tracking-widest"
+        <span class="text-xs font-semibold uppercase tracking-widest hidden sm:inline-block"
               [ngClass]="theme === 'dark' ? 'text-neutral-500' : 'text-neutral-400'">Consola</span>
-        <svg class="w-3 h-3 flex-shrink-0" [ngClass]="theme === 'dark' ? 'text-neutral-700' : 'text-neutral-300'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <svg class="w-3.5 h-3.5 flex-shrink-0 hidden sm:inline-block" [ngClass]="theme === 'dark' ? 'text-neutral-700' : 'text-neutral-300'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
         </svg>
-        <span class="text-xs font-bold uppercase tracking-widest"
+        <span class="text-xs sm:text-sm font-extrabold uppercase tracking-widest truncate"
               [ngClass]="theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'">{{ currentLabel }}</span>
       </div>
 
       <!-- Right Actions -->
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2.5 sm:gap-4">
         <!-- Botón Ver sitio en vivo -->
         <a routerLink="/"
-           target="_blank"
-           class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 border cursor-pointer hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+           class="inline-flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all duration-200 border cursor-pointer hover:scale-[1.02] active:scale-[0.98] shadow-sm"
            [ngClass]="theme === 'dark'
              ? 'bg-white/10 hover:bg-white text-white hover:text-black border-white/20 hover:border-white'
              : 'bg-black/5 hover:bg-black text-neutral-800 hover:text-white border-black/15 hover:border-black'">
-          <span class="relative flex h-2 w-2">
+          <span class="relative flex h-2.5 w-2.5">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
           </span>
-          <span>Ver sitio en vivo</span>
-          <svg class="w-3.5 h-3.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <span class="hidden sm:inline">Ver sitio en vivo</span>
+          <span class="sm:hidden">Sitio</span>
+          <svg class="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H18m0 0v4.5M18 6l-7.5 7.5M6 18h12"/>
           </svg>
         </a>
 
         <!-- Theme Toggle -->
         <button (click)="themeChange.emit()"
-                class="w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-200 cursor-pointer hover:scale-105 active:scale-95"
+                class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center border transition-all duration-200 cursor-pointer hover:scale-105 active:scale-95"
                 [ngClass]="theme === 'dark'
                   ? 'bg-white/5 border-white/10 hover:border-white/20'
                   : 'bg-black/5 border-black/10 hover:border-black/20'">

@@ -154,7 +154,7 @@ interface SectionRow {
 
               <!-- View in site button -->
               <div class="flex justify-end mt-4">
-                <a href="/" target="_blank"
+                <a routerLink="/"
                    class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest border transition-all duration-200 cursor-pointer"
                    [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:text-white hover:border-neutral-500' : 'border-neutral-300 text-neutral-500 hover:text-neutral-900 hover:border-neutral-400'">
                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

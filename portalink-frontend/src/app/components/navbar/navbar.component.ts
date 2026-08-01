@@ -190,14 +190,7 @@ import { AuthService } from '../../services/auth.service';
       </div>
     </nav>
 
-    <!-- Mobile floating Brand Logo (top left) -->
-    <div class="md:hidden fixed left-6 z-[9000]" [style.top]="'calc(1.75rem + env(safe-area-inset-top, 0px))'">
-      <a (click)="scrollTo('#hero', $event)" routerLink="/" class="flex items-center cursor-pointer">
-        <img [src]="currentTheme === 'light' ? 'assets/icons/navbar-logolight.png' : 'assets/icons/navbar-logodark.png'" 
-             alt="Portalink" 
-             class="h-8 w-auto object-contain drop-shadow-md transition-transform active:scale-95" />
-      </a>
-    </div>
+
 
     <!-- Mobile floating Switcher Group (top right) -->
     <div class="md:hidden fixed right-6 z-[9000] flex gap-2" [style.top]="'calc(1.75rem + env(safe-area-inset-top, 0px))'">
@@ -332,7 +325,7 @@ import { AuthService } from '../../services/auth.service';
           
           <!-- Logo & Header -->
           <div class="flex flex-col items-center text-center mb-8">
-            <img [src]="currentTheme === 'dark' ? 'assets/icons/mi-logo-dark.png' : 'assets/icons/mi-logo-light.png'" class="w-16 h-16 object-contain mb-4" alt="Logo">
+            <img [src]="currentTheme === 'dark' ? 'assets/icons/navbar-logodark.png' : 'assets/icons/navbar-logolight.png'" class="w-16 h-16 object-contain mb-4" alt="Logo">
             <h4 class="text-xl font-bold uppercase tracking-wide" [style.color]="currentTheme === 'light' ? '#111827' : '#ffffff'">
               {{ activeTab === 'signin' ? getLoginTranslation('title') : getLoginTranslation('signUpTab') }}
             </h4>
