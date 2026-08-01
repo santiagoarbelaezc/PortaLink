@@ -23,8 +23,7 @@ export class MessagesService {
   sendMessage(data: { nombre: string; correo: string; mensaje: string }): Observable<any> {
     // Intenta enviar al backend HTTP; si falla (ej. 404 o error de red), guarda en localStorage y responde con éxito
     return this.http.post<any>(this.apiUrl, data).pipe(
-      catchError((error) => {
-        console.warn('Backend API /messages devolvió error (404/red), guardando mensaje localmente:', error);
+      catchError(() => {
         this.saveLocalMessage(data);
         return of({ success: true, message: 'Mensaje enviado correctamente (local)', fallback: true });
       })
