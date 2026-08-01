@@ -51,11 +51,11 @@ export interface DesignItem {
         </div>
       </div>
 
-      <!-- GRID DE DISEÑOS CON ANIMACIÓN DE ENTRADA AL SCROLL -->
+      <!-- GRID DE DISEÑOS CON ANIMACIÓN DE REVELACIÓN ESTILO LINKTREE -->
       <div class="templates-grid">
         <div
           *ngFor="let t of filteredTemplates(); let i = index; trackBy: trackById"
-          class="template-card group animate-card-entry"
+          class="template-card group animate-linktree-reveal"
           [style.--card-index]="i"
           [class.selected]="selectedId() === t.id"
           (click)="selectTemplate(t)">
@@ -69,40 +69,20 @@ export interface DesignItem {
               <span class="w-1.5 h-1.5 rounded-full bg-black animate-pulse"></span>
               <span>Prototipo en Vivo</span>
             </a>
-
-            <!-- Badge de estilo -->
-            <div class="style-badge">{{ t.styleName }}</div>
           </div>
 
-          <!-- Info de tarjeta limpia y minimalista -->
-          <div class="card-body">
-            <div class="card-top">
-              <h3 class="card-name">{{ t.name }}</h3>
-              <span class="card-category">
-                <i [class]="t.iconClass + ' mr-1 text-[10px]'"></i>
-                {{ t.categoryName }}
-              </span>
-            </div>
-            
-            <!-- Breve tagset limpio (sin explicaciones extensas) -->
-            <div class="card-tags">
-              <span class="tag" *ngFor="let tag of t.tags.slice(0,2)">{{ tag }}</span>
-            </div>
+          <!-- Info de tarjeta ultra-limpia (ÚNICAMENTE EL NOMBRE Y EL BOTÓN) -->
+          <div class="card-body flex items-center justify-between gap-3 p-3.5 sm:p-4">
+            <h3 class="card-name text-sm sm:text-base font-extrabold text-white truncate m-0 leading-snug">{{ t.name }}</h3>
 
-            <!-- Botones de Acción directos -->
-            <div class="card-actions">
-              <button class="btn-preview" (click)="openPreview(t, $event)">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <div class="flex items-center gap-2 shrink-0">
+              <button class="btn-preview flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold" (click)="openPreview(t, $event)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                   <circle cx="12" cy="12" r="3"/>
                 </svg>
                 <span>Ver Prototipo</span>
               </button>
-
-              <a *ngIf="t.liveUrl" [href]="t.liveUrl" target="_blank" rel="noopener noreferrer" (click)="$event.stopPropagation()" class="btn-live">
-                <i class="fa-solid fa-globe text-xs"></i>
-                <span>En Vivo</span>
-              </a>
             </div>
           </div>
         </div>
@@ -480,17 +460,17 @@ export interface DesignItem {
     :host-context(.theme-light) .btn-close { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); }
     :host-context(.theme-light) .btn-close:hover { background: rgba(0,0,0,0.08); color: #000; }
 
-    /* ANIMACIÓN DE ENTRADA AL SCROLL (AOS STYLE) */
-    .animate-card-entry {
+    /* ANIMACIÓN DE REVELACIÓN ESTILO LINKTREE */
+    .animate-linktree-reveal {
       opacity: 0;
-      animation: cardSlideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      animation-delay: calc((var(--card-index, 0) % 6) * 0.07s);
+      animation: linktreeReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: calc((var(--card-index, 0) % 8) * 0.08s);
       will-change: transform, opacity;
     }
-    @keyframes cardSlideUpFade {
+    @keyframes linktreeReveal {
       0% {
         opacity: 0;
-        transform: translateY(24px) scale(0.97);
+        transform: translateY(28px) scale(0.95);
       }
       100% {
         opacity: 1;
@@ -498,50 +478,60 @@ export interface DesignItem {
       }
     }
 
+    /* GRID Y SEPARACIÓN VERTICAL */
+    .templates-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 36px;
+      padding: 32px 40px;
+      max-width: 1720px;
+      margin: 0 auto;
+    }
+
     /* RESPONSIVE MÓVIL OPTIMIZADO */
     @media (max-width: 768px) {
       .sticky-top-section {
         position: sticky;
         top: 0;
-        padding-top: calc(3.5rem + env(safe-area-inset-top, 0px));
+        padding-top: calc(3.8rem + env(safe-area-inset-top, 0px));
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        background: rgba(8, 8, 8, 0.94);
         z-index: 80;
       }
       .page-header {
-        padding: 10px 14px;
-        gap: 10px;
+        padding: 12px 16px;
+        gap: 12px;
       }
       .back-btn {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
       }
       .header-title {
-        font-size: 15px;
+        font-size: 16px;
         font-weight: 800;
         letter-spacing: -0.3px;
       }
       .filters-bar {
-        padding: 6px 12px 10px;
-        gap: 6px;
+        padding: 8px 14px 12px;
+        gap: 8px;
       }
       .filter-chip {
-        padding: 5px 12px;
-        font-size: 11px;
-        border-radius: 14px;
+        padding: 6px 14px;
+        font-size: 11.5px;
+        border-radius: 16px;
       }
       .templates-grid {
         grid-template-columns: 1fr;
-        padding: 16px 12px 48px;
-        gap: 16px;
+        padding: 24px 14px 140px;
+        gap: 28px;
+        width: 100%;
+        max-width: 100%;
       }
       .card-body {
-        padding: 14px;
-      }
-      .card-tags {
-        margin-bottom: 10px;
+        padding: 14px 16px;
       }
     }
   `]
