@@ -38,7 +38,7 @@ export interface Transaction {
 
         <!-- Controls: Currency & Period -->
         <div class="flex flex-wrap items-center gap-3">
-          <!-- Currency Toggle (Moneda Colombiana COP por defecto) -->
+          <!-- Currency Toggle -->
           <div class="flex items-center rounded-xl p-1 border"
                [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800' : 'bg-neutral-100 border-neutral-200'">
             <button (click)="currency = 'COP'"
@@ -75,24 +75,24 @@ export interface Transaction {
       </div>
 
       <!-- ══════════════════════════════════════
-           HIGH-REVENUE KPI METRICS GRID (COP)
+           MODEST REVENUE KPI METRICS GRID (COP)
       ══════════════════════════════════════ -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
 
-        <!-- 1. Total Ingresos Brutos (ARR) -->
+        <!-- 1. Total Ingresos Anuales (ARR) -->
         <div class="rounded-2xl border p-5 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-neutral-600"
              [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
           <div class="flex items-center justify-between">
             <span class="text-xs font-medium uppercase tracking-wider opacity-60">Ingresos Anuales (ARR)</span>
             <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full border border-emerald-500/30 text-emerald-400 bg-emerald-500/10">
-              +42.8% vs 2025
+              +18.5% vs 2025
             </span>
           </div>
           <div class="space-y-1">
             <p class="text-xl sm:text-2xl font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              {{ formatValue(7380000000) }}
+              {{ formatValue(48000000) }}
             </p>
-            <p class="text-xs opacity-50 font-normal">Facturación proyectada en moneda colombiana</p>
+            <p class="text-xs opacity-50 font-normal">Facturación anual proyectada</p>
           </div>
           <!-- Sparkline Wave SVG -->
           <div class="pt-2">
@@ -108,14 +108,14 @@ export interface Transaction {
           <div class="flex items-center justify-between">
             <span class="text-xs font-medium uppercase tracking-wider opacity-60">Facturación Mensual (MRR)</span>
             <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full border border-emerald-500/30 text-emerald-400 bg-emerald-500/10">
-              +18.4% este mes
+              +12.0% este mes
             </span>
           </div>
           <div class="space-y-1">
             <p class="text-xl sm:text-2xl font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              {{ formatValue(615000000) }}
+              {{ formatValue(4000000) }}
             </p>
-            <p class="text-xs opacity-50 font-normal">Promedio mensual de ingresos recibidos</p>
+            <p class="text-xs opacity-50 font-normal">Promedio mensual de entradas libres</p>
           </div>
           <div class="pt-2">
             <svg class="w-full h-7 stroke-current text-white/40 opacity-70 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 100 25">
@@ -135,9 +135,9 @@ export interface Transaction {
           </div>
           <div class="space-y-1">
             <p class="text-xl sm:text-2xl font-bold tracking-tight text-emerald-400">
-              {{ formatValue(467400000) }}
+              {{ formatValue(3040000) }}
             </p>
-            <p class="text-xs opacity-50 font-normal">Ganancia neta libre de costos operativos</p>
+            <p class="text-xs opacity-50 font-normal">Ganancia neta libre de costos</p>
           </div>
           <div class="pt-2">
             <div class="w-full bg-neutral-800 rounded-full h-1.5 overflow-hidden">
@@ -146,24 +146,24 @@ export interface Transaction {
           </div>
         </div>
 
-        <!-- 4. Contratos Corporativos Activos -->
+        <!-- 4. Contratos Activos -->
         <div class="rounded-2xl border p-5 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-neutral-600"
              [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-medium uppercase tracking-wider opacity-60">Contratos Enterprise</span>
+            <span class="text-xs font-medium uppercase tracking-wider opacity-60">Contratos Activos</span>
             <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full border border-blue-500/30 text-blue-400 bg-blue-500/10">
-              18 Activos
+              5 Clientes
             </span>
           </div>
           <div class="space-y-1">
             <p class="text-xl sm:text-2xl font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              {{ formatValue(34160000) }} <span class="text-xs font-normal opacity-60">/mes</span>
+              {{ formatValue(800000) }} <span class="text-xs font-normal opacity-60">/mes</span>
             </p>
             <p class="text-xs opacity-50 font-normal">Valor promedio por contrato mensual</p>
           </div>
           <div class="pt-2 flex items-center justify-between text-xs font-medium opacity-70">
             <span>Retención: 98.2%</span>
-            <span>Churn: 0.8%</span>
+            <span>Churn: 0.0%</span>
           </div>
         </div>
 
@@ -211,64 +211,64 @@ export interface Transaction {
               <div class="border-b border-white w-full"></div>
             </div>
 
-            <!-- Month 1: Ene ($392M COP) -->
+            <!-- Month 1: Ene ($2.4M COP) -->
             <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
               <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
-                {{ formatValue(392000000) }}
+                {{ formatValue(2400000) }}
               </div>
               <div class="w-full max-w-[36px] bg-neutral-700/40 group-hover:bg-neutral-600 rounded-t-xl transition-all duration-300" style="height: 52%;"></div>
               <span class="text-xs font-normal opacity-60">Ene</span>
             </div>
 
-            <!-- Month 2: Feb ($448M COP) -->
+            <!-- Month 2: Feb ($2.8M COP) -->
             <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
               <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
-                {{ formatValue(448000000) }}
+                {{ formatValue(2800000) }}
               </div>
               <div class="w-full max-w-[36px] bg-neutral-700/50 group-hover:bg-neutral-600 rounded-t-xl transition-all duration-300" style="height: 60%;"></div>
               <span class="text-xs font-normal opacity-60">Feb</span>
             </div>
 
-            <!-- Month 3: Mar ($512M COP) -->
+            <!-- Month 3: Mar ($3.1M COP) -->
             <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
               <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
-                {{ formatValue(512000000) }}
+                {{ formatValue(3100000) }}
               </div>
               <div class="w-full max-w-[36px] bg-neutral-700/60 group-hover:bg-neutral-500 rounded-t-xl transition-all duration-300" style="height: 68%;"></div>
               <span class="text-xs font-normal opacity-60">Mar</span>
             </div>
 
-            <!-- Month 4: Abr ($552M COP) -->
+            <!-- Month 4: Abr ($3.4M COP) -->
             <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
               <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
-                {{ formatValue(552000000) }}
+                {{ formatValue(3400000) }}
               </div>
               <div class="w-full max-w-[36px] bg-neutral-600/70 group-hover:bg-neutral-400 rounded-t-xl transition-all duration-300" style="height: 74%;"></div>
               <span class="text-xs font-normal opacity-60">Abr</span>
             </div>
 
-            <!-- Month 5: May ($580M COP) -->
+            <!-- Month 5: May ($3.7M COP) -->
             <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
               <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
-                {{ formatValue(580000000) }}
+                {{ formatValue(3700000) }}
               </div>
               <div class="w-full max-w-[36px] bg-neutral-500/80 group-hover:bg-neutral-300 rounded-t-xl transition-all duration-300" style="height: 80%;"></div>
               <span class="text-xs font-normal opacity-60">May</span>
             </div>
 
-            <!-- Month 6: Jun ($615M COP) -->
+            <!-- Month 6: Jun ($4.0M COP) -->
             <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
               <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
-                {{ formatValue(615000000) }}
+                {{ formatValue(4000000) }}
               </div>
               <div class="w-full max-w-[36px] bg-neutral-300 group-hover:bg-white rounded-t-xl transition-all duration-300 shadow-lg" style="height: 86%;"></div>
               <span class="text-xs font-normal opacity-60">Jun</span>
             </div>
 
-            <!-- Month 7: Jul ($672M COP - Récord) -->
+            <!-- Month 7: Jul ($4.5M COP - Récord) -->
             <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
               <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-white text-black px-2 py-1 rounded absolute -top-8 shadow-xl whitespace-nowrap">
-                {{ formatValue(672000000) }} 🔥
+                {{ formatValue(4500000) }} 🔥
               </div>
               <div class="w-full max-w-[36px] bg-white rounded-t-xl transition-all duration-300 shadow-xl" style="height: 95%;"></div>
               <span class="text-xs font-bold text-emerald-400">Jul</span>
@@ -282,7 +282,7 @@ export interface Transaction {
               <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-3l3 3 3-3"/>
               </svg>
-              <span>Promedio de Crecimiento Compuesto: <strong class="font-semibold">+12.6% Mensual</strong></span>
+              <span>Promedio de Crecimiento Compuesto: <strong class="font-semibold">+9.8% Mensual</strong></span>
             </span>
             <span class="font-mono text-[11px] opacity-60">Auditoría en vivo</span>
           </div>
@@ -296,7 +296,7 @@ export interface Transaction {
             <h3 class="text-base font-semibold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
               Distribución de Ingresos
             </h3>
-            <p class="text-xs mt-0.5 opacity-60">Por líneas de negocio corporativo</p>
+            <p class="text-xs mt-0.5 opacity-60">Por líneas de negocio</p>
           </div>
 
           <!-- Circular Donut Graphic Simulation -->
@@ -316,7 +316,7 @@ export interface Transaction {
                 <span class="w-2.5 h-2.5 rounded-full bg-white"></span>
                 <span class="font-medium">RotBot IA Enterprise</span>
               </div>
-              <span class="font-semibold">{{ formatValue(276750000) }} (45%)</span>
+              <span class="font-semibold">{{ formatValue(1800000) }} (45%)</span>
             </div>
 
             <div class="flex items-center justify-between">
@@ -324,7 +324,7 @@ export interface Transaction {
                 <span class="w-2.5 h-2.5 rounded-full bg-neutral-300"></span>
                 <span class="font-medium">Desarrollo Web SaaS</span>
               </div>
-              <span class="font-semibold">{{ formatValue(215250000) }} (35%)</span>
+              <span class="font-semibold">{{ formatValue(1400000) }} (35%)</span>
             </div>
 
             <div class="flex items-center justify-between">
@@ -332,7 +332,7 @@ export interface Transaction {
                 <span class="w-2.5 h-2.5 rounded-full bg-neutral-600"></span>
                 <span class="font-medium">Retainers & Soporte</span>
               </div>
-              <span class="font-semibold">{{ formatValue(123000000) }} (20%)</span>
+              <span class="font-semibold">{{ formatValue(800000) }} (20%)</span>
             </div>
           </div>
 
@@ -341,7 +341,7 @@ export interface Transaction {
       </div>
 
       <!-- ══════════════════════════════════════
-           MONOCHROMATIC CHARTS ROW 2 (NUEVAS GRAFICAS)
+           MONOCHROMATIC CHARTS ROW 2
       ══════════════════════════════════════ -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
 
@@ -356,11 +356,11 @@ export interface Transaction {
           </div>
 
           <div class="space-y-4 pt-2">
-            <!-- Enterprise Direct -->
+            <!-- Directas -->
             <div class="space-y-1.5">
               <div class="flex justify-between text-xs font-medium">
-                <span>Ventas Directas Enterprise</span>
-                <span class="font-semibold">52% ({{ formatValue(319800000) }})</span>
+                <span>Ventas Directas</span>
+                <span class="font-semibold">52% ({{ formatValue(2080000) }})</span>
               </div>
               <div class="w-full bg-neutral-800 rounded-full h-2 overflow-hidden">
                 <div class="bg-white h-2 rounded-full" style="width: 52%;"></div>
@@ -371,18 +371,18 @@ export interface Transaction {
             <div class="space-y-1.5">
               <div class="flex justify-between text-xs font-medium">
                 <span>Leads Inbound RotBot IA</span>
-                <span class="font-semibold">32% ({{ formatValue(196800000) }})</span>
+                <span class="font-semibold">32% ({{ formatValue(1280000) }})</span>
               </div>
               <div class="w-full bg-neutral-800 rounded-full h-2 overflow-hidden">
                 <div class="bg-neutral-300 h-2 rounded-full" style="width: 32%;"></div>
               </div>
             </div>
 
-            <!-- Referidos Corporativos -->
+            <!-- Referidos -->
             <div class="space-y-1.5">
               <div class="flex justify-between text-xs font-medium">
                 <span>Referidos & Alianzas</span>
-                <span class="font-semibold">16% ({{ formatValue(98400000) }})</span>
+                <span class="font-semibold">16% ({{ formatValue(640000) }})</span>
               </div>
               <div class="w-full bg-neutral-800 rounded-full h-2 overflow-hidden">
                 <div class="bg-neutral-500 h-2 rounded-full" style="width: 16%;"></div>
@@ -476,7 +476,7 @@ export interface Transaction {
       </div>
 
       <!-- ══════════════════════════════════════
-           HIGH-REVENUE EXECUTIVE LEDGER / TRANSACTIONS
+           BALANCED EXECUTIVE LEDGER / TRANSACTIONS
       ══════════════════════════════════════ -->
       <div class="rounded-2xl border p-5 sm:p-6 space-y-5"
            [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
@@ -487,7 +487,7 @@ export interface Transaction {
             <h3 class="text-base font-semibold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
               Libro de Entradas & Depósitos Recientes
             </h3>
-            <p class="text-xs mt-0.5 opacity-60">Últimos pagos de clientes corporativos procesados con éxito</p>
+            <p class="text-xs mt-0.5 opacity-60">Últimos pagos de clientes procesados con éxito</p>
           </div>
           <span class="text-xs font-medium px-3 py-1 rounded-full border border-emerald-500/30 text-emerald-400 bg-emerald-500/10 self-start sm:self-center">
             Auditoría en tiempo real
@@ -556,13 +556,12 @@ export interface Transaction {
 export class DashFinancialControlComponent {
   @Input() theme = 'dark';
 
-  // Por defecto en moneda colombiana COP
   currency: 'COP' | 'USD' = 'COP';
   period = '2026-YTD';
 
   get isDark() { return this.theme === 'dark'; }
 
-  // Datos quemados de altos ingresos expresados en Pesos Colombianos (COP)
+  // Datos quemados moderados en Pesos Colombianos (COP)
   transactions: Transaction[] = [
     {
       id: 'TX-901',
@@ -570,7 +569,7 @@ export class DashFinancialControlComponent {
       client: 'Global Banking Corp LatAm',
       concept: 'Licencia Anual IA Rotbot Enterprise Multi-Node',
       category: 'Enterprise IA',
-      amountCop: 194000000,
+      amountCop: 1500000,
       status: 'VERIFICADO'
     },
     {
@@ -579,7 +578,7 @@ export class DashFinancialControlComponent {
       client: 'Inmobiliaria Capital Group',
       concept: 'Plataforma Web Custom + Integración CRM',
       category: 'Desarrollo Web',
-      amountCop: 112000000,
+      amountCop: 1200000,
       status: 'COMPLETADO'
     },
     {
@@ -588,7 +587,7 @@ export class DashFinancialControlComponent {
       client: 'TechVentures Holdings',
       concept: 'Consultoría Especializada Arquitectura IA',
       category: 'Consultoría',
-      amountCop: 74000000,
+      amountCop: 650000,
       status: 'COMPLETADO'
     },
     {
@@ -597,7 +596,7 @@ export class DashFinancialControlComponent {
       client: 'Consorcio Logístico LatAm',
       concept: 'Contrato de Mantenimiento Retainer Q3',
       category: 'Retainer SaaS',
-      amountCop: 128000000,
+      amountCop: 800000,
       status: 'COMPLETADO'
     },
     {
@@ -606,7 +605,7 @@ export class DashFinancialControlComponent {
       client: 'Fintech Solutions Inc',
       concept: 'Despliegue Multi-Cloud & Seguridad Web',
       category: 'Enterprise IA',
-      amountCop: 107000000,
+      amountCop: 950000,
       status: 'VERIFICADO'
     }
   ];

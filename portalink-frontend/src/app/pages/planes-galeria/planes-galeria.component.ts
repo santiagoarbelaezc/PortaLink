@@ -45,18 +45,11 @@ export interface GalleryProject {
             </div>
           </div>
 
-          <!-- Encabezado de la Galería -->
-          <div class="max-w-4xl mb-14">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#00f5ff]/10 border border-[#00f5ff]/30 text-[10px] uppercase tracking-[0.25em] font-mono font-bold text-[#00f5ff] mb-4">
-              <span class="w-1.5 h-1.5 rounded-full bg-[#00f5ff]"></span>
-              SHOWCASE DE EXCELENCIA & DISEÑO
-            </div>
-            <h1 class="text-4xl sm:text-6xl font-headline font-black uppercase tracking-tight text-white leading-[1.05]">
+          <!-- Encabezado de la Galería Limpio y Compacto -->
+          <div class="mb-8">
+            <h1 class="text-2xl sm:text-4xl font-headline font-bold uppercase tracking-tight text-white">
               Galería de Proyectos Realizados
             </h1>
-            <p class="text-xs sm:text-sm text-white/60 mt-4 leading-relaxed max-w-2xl font-light">
-              Explora nuestra colección de desarrollos web de alto nivel. Desde estructuras de una sola página con geometría minimalista hasta complejos sistemas de comercio electrónico impulsados por inteligencia artificial.
-            </p>
           </div>
 
           <!-- Botones de Filtro (Categorías con Iconos SVG Premium) -->
@@ -99,11 +92,11 @@ export interface GalleryProject {
             <div *ngFor="let project of filteredProjects; trackBy: trackById" 
                  class="group flex flex-col justify-between transition-transform duration-300 ease-out hover:-translate-y-2">
               
-              <!-- CAJA DE IMAGEN VERTICAL / SHOWCASE (Más ancha y majestuosa) -->
-              <div class="relative h-[480px] sm:h-[540px] lg:h-[580px] rounded-[32px] overflow-hidden border border-white/10 bg-[#0d0d0d] shadow-2xl flex flex-col justify-between p-7 sm:p-9 transition-colors duration-300 group-hover:border-[#00f5ff]/60 cursor-pointer"
+              <!-- CAJA DE IMAGEN VERTICAL / SHOWCASE (Optimizada para Móvil) -->
+              <div class="relative h-[340px] sm:h-[480px] lg:h-[540px] rounded-[28px] sm:rounded-[32px] overflow-hidden border border-white/10 bg-[#0d0d0d] shadow-2xl flex flex-col justify-between p-5 sm:p-9 transition-colors duration-300 group-hover:border-[#00f5ff]/60 cursor-pointer"
                    (click)="openPreview(project)">
                 
-                <!-- Imagen de Fondo (Screenshot del proyecto - Proporcional como el referente) -->
+                <!-- Imagen de Fondo (Screenshot del proyecto) -->
                  <img [src]="project.image" 
                       (error)="onImgError($event)"
                       [alt]="project.title"
@@ -121,46 +114,46 @@ export interface GalleryProject {
                     #{{ project.code }}
                   </span>
 
-                  <div class="px-3.5 py-1.5 bg-white text-black font-extrabold text-[11px] uppercase tracking-widest rounded-lg shadow-md flex items-center gap-1">
+                  <div class="px-3 py-1 bg-white text-black font-extrabold text-[10px] sm:text-[11px] uppercase tracking-widest rounded-lg shadow-md flex items-center gap-1">
                     <span>+ {{ project.badge }}</span>
                   </div>
                 </div>
 
-                <!-- Parte Inferior del Card: Tagline Poético & Título Grande -->
-                <div class="relative z-10 mt-auto pt-8">
+                <!-- Parte Inferior del Card: Tagline & Título -->
+                <div class="relative z-10 mt-auto pt-6">
                   <!-- Tagline con línea vertical cyan -->
-                  <div class="flex items-start gap-3 mb-3">
-                    <div class="w-0.5 h-8 bg-[#00f5ff] flex-shrink-0 rounded-full mt-0.5"></div>
-                    <p class="text-xs sm:text-sm text-white/80 font-light tracking-wide leading-relaxed">
+                  <div class="flex items-start gap-2.5 mb-2 sm:mb-3">
+                    <div class="w-0.5 h-6 sm:h-8 bg-[#00f5ff] flex-shrink-0 rounded-full mt-0.5"></div>
+                    <p class="text-xs sm:text-sm text-white/80 font-light tracking-wide leading-relaxed line-clamp-2">
                       {{ project.tagline }}
                     </p>
                   </div>
 
-                  <!-- Título Grande (Proporción ampliada y majestuosa) -->
-                  <h3 class="text-3xl sm:text-4xl lg:text-5xl font-headline font-black uppercase tracking-tight text-white group-hover:text-[#00f5ff] transition-colors duration-200 leading-none drop-shadow-md">
+                  <!-- Título Grande -->
+                  <h3 class="text-2xl sm:text-4xl lg:text-5xl font-headline font-black uppercase tracking-tight text-white group-hover:text-[#00f5ff] transition-colors duration-200 leading-none drop-shadow-md">
                     {{ project.title }}
                   </h3>
                 </div>
 
                 <!-- Indicador Flotante al Hover -->
                 <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20">
-                  <div class="w-18 h-18 sm:w-20 sm:h-20 rounded-full bg-[#00f5ff] text-black flex items-center justify-center shadow-[0_0_40px_rgba(0,245,255,0.8)] transform scale-90 group-hover:scale-100 transition duration-200">
-                    <svg class="w-8 h-8 ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#00f5ff] text-black flex items-center justify-center shadow-[0_0_40px_rgba(0,245,255,0.8)] transform scale-90 group-hover:scale-100 transition duration-200">
+                    <svg class="w-7 h-7 sm:w-8 sm:h-8 ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                     </svg>
                   </div>
                 </div>
               </div>
 
-              <!-- ÁREA INFERIOR DE DESCRIPCIÓN Y ACCIÓN (Proporción ancha y legible) -->
-              <div class="pt-6 px-2 flex flex-col justify-between flex-grow">
-                <!-- Descripción detallada -->
-                <p class="text-sm sm:text-[14.5px] text-white/65 font-light leading-relaxed mb-5 line-clamp-3">
+              <!-- ÁREA INFERIOR DE DESCRIPCIÓN Y ACCIÓN -->
+              <div class="pt-4 sm:pt-6 px-2 flex flex-col justify-between flex-grow">
+                <!-- Descripción oculta en móvil para un diseño limpio -->
+                <p class="hidden sm:block text-sm sm:text-[14.5px] text-white/65 font-light leading-relaxed mb-5 line-clamp-2">
                   {{ project.description }}
                 </p>
 
-                <!-- Botón minimalista de CONOCE MÁS + -->
-                <div class="flex items-center justify-between border-t border-white/10 pt-4 mt-auto">
+                <!-- Botones de Acción -->
+                <div class="flex items-center justify-between border-t border-white/10 pt-3.5 mt-auto">
                   <button (click)="openPreview(project)"
                           class="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-[#00f5ff] group-hover:text-white transition-colors duration-200 flex items-center gap-2 cursor-pointer py-1">
                     <span>CONOCE MÁS</span>

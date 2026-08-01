@@ -121,12 +121,171 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
 
         <!-- KPI cards (Trading panel style) -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div *ngFor="let kpi of kpis" class="relative rounded-xl border p-5 overflow-hidden group"
-               [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800' : 'bg-white border-neutral-200'">
-            <p class="text-[10px] font-bold uppercase tracking-widest mb-2"
-               [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ kpi.label }}</p>
-            <p class="text-2xl lg:text-3xl font-bold leading-tight" [ngClass]="kpi.color || (isDark ? 'text-white' : 'text-neutral-900')">{{ kpi.value }}</p>
+          <div *ngFor="let kpi of kpis" class="relative rounded-xl border p-5 overflow-hidden group transition-all duration-300 hover:border-neutral-600"
+               [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
+            <p class="text-xs font-medium uppercase tracking-wider mb-2 opacity-60"
+               [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ kpi.label }}</p>
+            <p class="text-xl lg:text-2xl font-bold leading-tight" [ngClass]="kpi.color || (isDark ? 'text-white' : 'text-neutral-900')">{{ kpi.value }}</p>
           </div>
+        </div>
+
+        <!-- ══════════════════════════════════════
+             MONOCHROMATIC ELEGANT CHARTS SECTION
+        ══════════════════════════════════════ -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-6">
+
+          <!-- Chart 1: Histórico de Facturación & Cobros (2 Cols) -->
+          <div class="lg:col-span-2 rounded-2xl border p-6 space-y-6 flex flex-col justify-between transition-all duration-300 hover:border-neutral-600"
+               [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 class="text-base font-semibold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                  Histórico de Cobros & Facturación
+                </h3>
+                <p class="text-xs mt-0.5 opacity-60">Tendencia mensual de recaudos y flujo financiero en COP</p>
+              </div>
+              <div class="flex items-center gap-4 text-xs font-normal opacity-80">
+                <span class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-white"></span>
+                  <span>Facturado</span>
+                </span>
+                <span class="flex items-center gap-1.5 opacity-50">
+                  <span class="w-2.5 h-2.5 rounded-full border border-dashed border-neutral-400"></span>
+                  <span>Proyección</span>
+                </span>
+              </div>
+            </div>
+
+            <!-- SVG Monochromatic Bar & Wave Graph -->
+            <div class="relative h-56 w-full flex items-end justify-between gap-2 pt-8 pb-2 px-2 border-b"
+                 [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+              <div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-10">
+                <div class="border-b border-white w-full"></div>
+                <div class="border-b border-white w-full"></div>
+                <div class="border-b border-white w-full"></div>
+                <div class="border-b border-white w-full"></div>
+              </div>
+
+              <!-- Bar 1 -->
+              <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
+                <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
+                  $ 2.400.000 COP
+                </div>
+                <div class="w-full max-w-[32px] bg-neutral-700/40 group-hover:bg-neutral-600 rounded-t-xl transition-all duration-300" style="height: 52%;"></div>
+                <span class="text-xs font-normal opacity-60">Ene</span>
+              </div>
+
+              <!-- Bar 2 -->
+              <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
+                <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
+                  $ 2.800.000 COP
+                </div>
+                <div class="w-full max-w-[32px] bg-neutral-700/50 group-hover:bg-neutral-600 rounded-t-xl transition-all duration-300" style="height: 60%;"></div>
+                <span class="text-xs font-normal opacity-60">Feb</span>
+              </div>
+
+              <!-- Bar 3 -->
+              <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
+                <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
+                  $ 3.100.000 COP
+                </div>
+                <div class="w-full max-w-[32px] bg-neutral-700/60 group-hover:bg-neutral-500 rounded-t-xl transition-all duration-300" style="height: 68%;"></div>
+                <span class="text-xs font-normal opacity-60">Mar</span>
+              </div>
+
+              <!-- Bar 4 -->
+              <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
+                <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
+                  $ 3.400.000 COP
+                </div>
+                <div class="w-full max-w-[32px] bg-neutral-600/70 group-hover:bg-neutral-400 rounded-t-xl transition-all duration-300" style="height: 74%;"></div>
+                <span class="text-xs font-normal opacity-60">Abr</span>
+              </div>
+
+              <!-- Bar 5 -->
+              <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
+                <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
+                  $ 3.700.000 COP
+                </div>
+                <div class="w-full max-w-[32px] bg-neutral-500/80 group-hover:bg-neutral-300 rounded-t-xl transition-all duration-300" style="height: 80%;"></div>
+                <span class="text-xs font-normal opacity-60">May</span>
+              </div>
+
+              <!-- Bar 6 -->
+              <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
+                <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
+                  $ 4.000.000 COP
+                </div>
+                <div class="w-full max-w-[32px] bg-neutral-300 group-hover:bg-white rounded-t-xl transition-all duration-300 shadow-lg" style="height: 86%;"></div>
+                <span class="text-xs font-normal opacity-60">Jun</span>
+              </div>
+
+              <!-- Bar 7 -->
+              <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
+                <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-white text-black px-2 py-1 rounded absolute -top-8 shadow-xl whitespace-nowrap">
+                  $ 4.500.000 COP 🔥
+                </div>
+                <div class="w-full max-w-[32px] bg-white rounded-t-xl transition-all duration-300 shadow-xl" style="height: 95%;"></div>
+                <span class="text-xs font-bold text-emerald-400">Jul</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-xs pt-1 opacity-80">
+              <span class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-3l3 3 3-3"/>
+                </svg>
+                <span>Tasa de Recaudo Efectivo: <strong class="font-semibold">96.8%</strong></span>
+              </span>
+              <span class="font-mono text-[11px] opacity-60">Auditoría en vivo</span>
+            </div>
+          </div>
+
+          <!-- Chart 2: Estado de Cuentas por Cobrar (1 Col) -->
+          <div class="rounded-2xl border p-6 space-y-6 flex flex-col justify-between transition-all duration-300 hover:border-neutral-600"
+               [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
+            <div>
+              <h3 class="text-base font-semibold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                Estado de Cuentas
+              </h3>
+              <p class="text-xs mt-0.5 opacity-60">Estado actual del Ledger de Cobros</p>
+            </div>
+
+            <!-- Monochromatic Donut Simulation -->
+            <div class="flex items-center justify-center py-2 relative">
+              <div class="w-32 h-32 rounded-full border-8 border-neutral-700 border-t-white border-r-neutral-300 border-b-neutral-500 flex items-center justify-center relative shadow-inner">
+                <div class="text-center">
+                  <span class="text-xl font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">82%</span>
+                  <p class="text-[9px] uppercase tracking-wider opacity-50 font-normal">Cobrado</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-2.5 text-xs">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-white"></span>
+                  <span class="font-medium">Pagadas</span>
+                </div>
+                <span class="font-semibold">82%</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-neutral-300"></span>
+                  <span class="font-medium">Enviadas / Pendientes</span>
+                </div>
+                <span class="font-semibold">12%</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-neutral-600"></span>
+                  <span class="font-medium">Vencidas</span>
+                </div>
+                <span class="font-semibold">6%</span>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <!-- Recent invoices (Ledger style) -->

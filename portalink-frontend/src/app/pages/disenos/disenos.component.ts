@@ -24,17 +24,18 @@ export interface DesignItem {
 
       <!-- STICKY TOP SECTION (HEADER + FILTROS) -->
       <div class="sticky-top-section">
-        <!-- HEADER -->
+        <!-- HEADER COMPACTO -->
         <header class="page-header">
           <button class="back-btn" (click)="goBack()" title="Volver atrás">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
             </svg>
           </button>
           <div class="header-center">
             <h1 class="header-title">Galería de Diseños</h1>
-            <p class="header-sub">{{ filteredTemplates().length }} modelos de proyectos listos · Selecciona uno para explorar</p>
+            <p class="header-sub hidden sm:block">{{ filteredTemplates().length }} modelos de proyectos listos · Selecciona uno para explorar</p>
           </div>
+          <div class="w-9 h-9 sm:hidden"></div>
         </header>
 
         <!-- FILTROS DE CATEGORÍA -->
@@ -50,20 +51,21 @@ export interface DesignItem {
         </div>
       </div>
 
-      <!-- GRID DE DISEÑOS -->
+      <!-- GRID DE DISEÑOS CON ANIMACIÓN DE ENTRADA AL SCROLL -->
       <div class="templates-grid">
         <div
-          *ngFor="let t of filteredTemplates(); trackBy: trackById"
-          class="template-card group"
+          *ngFor="let t of filteredTemplates(); let i = index; trackBy: trackById"
+          class="template-card group animate-card-entry"
+          [style.--card-index]="i"
           [class.selected]="selectedId() === t.id"
           (click)="selectTemplate(t)">
 
           <!-- Preview Imagen Real del Proyecto -->
           <div class="card-preview relative overflow-hidden bg-neutral-900 border-b border-white/10 aspect-[16/9] flex items-center justify-center">
-            <img [src]="t.image" [alt]="t.name" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105" />
+            <img [src]="t.image" [alt]="t.name" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105" loading="lazy" />
             
             <!-- Live URL Badge -->
-            <a *ngIf="t.liveUrl" [href]="t.liveUrl" target="_blank" rel="noopener noreferrer" (click)="$event.stopPropagation()" class="absolute top-3 left-3 bg-emerald-500/90 hover:bg-emerald-400 text-black font-black text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-lg border border-emerald-400/50 shadow-lg flex items-center gap-1.5 transition-all z-10">
+            <a *ngIf="t.liveUrl" [href]="t.liveUrl" target="_blank" rel="noopener noreferrer" (click)="$event.stopPropagation()" class="absolute top-2.5 left-2.5 bg-emerald-500/90 hover:bg-emerald-400 text-black font-extrabold text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-md border border-emerald-400/50 shadow-md flex items-center gap-1.5 transition-all z-10">
               <span class="w-1.5 h-1.5 rounded-full bg-black animate-pulse"></span>
               <span>Prototipo en Vivo</span>
             </a>
@@ -72,7 +74,7 @@ export interface DesignItem {
             <div class="style-badge">{{ t.styleName }}</div>
           </div>
 
-          <!-- Info de tarjeta -->
+          <!-- Info de tarjeta limpia y minimalista -->
           <div class="card-body">
             <div class="card-top">
               <h3 class="card-name">{{ t.name }}</h3>
@@ -81,17 +83,20 @@ export interface DesignItem {
                 {{ t.categoryName }}
               </span>
             </div>
-            <p class="card-desc">{{ t.description }}</p>
+            
+            <!-- Breve tagset limpio (sin explicaciones extensas) -->
             <div class="card-tags">
-              <span class="tag" *ngFor="let tag of t.tags.slice(0,3)">{{ tag }}</span>
+              <span class="tag" *ngFor="let tag of t.tags.slice(0,2)">{{ tag }}</span>
             </div>
+
+            <!-- Botones de Acción directos -->
             <div class="card-actions">
               <button class="btn-preview" (click)="openPreview(t, $event)">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                   <circle cx="12" cy="12" r="3"/>
                 </svg>
-                <span>Ver Imagen</span>
+                <span>Ver Prototipo</span>
               </button>
 
               <a *ngIf="t.liveUrl" [href]="t.liveUrl" target="_blank" rel="noopener noreferrer" (click)="$event.stopPropagation()" class="btn-live">
@@ -475,16 +480,38 @@ export interface DesignItem {
     :host-context(.theme-light) .btn-close { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); }
     :host-context(.theme-light) .btn-close:hover { background: rgba(0,0,0,0.08); color: #000; }
 
+    /* ANIMACIÓN DE ENTRADA AL SCROLL (AOS STYLE) */
+    .animate-card-entry {
+      opacity: 0;
+      animation: cardSlideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: calc((var(--card-index, 0) % 6) * 0.07s);
+      will-change: transform, opacity;
+    }
+    @keyframes cardSlideUpFade {
+      0% {
+        opacity: 0;
+        transform: translateY(24px) scale(0.97);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
     /* RESPONSIVE MÓVIL OPTIMIZADO */
     @media (max-width: 768px) {
       .sticky-top-section {
+        position: sticky;
+        top: 0;
+        padding-top: calc(3.5rem + env(safe-area-inset-top, 0px));
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
+        z-index: 80;
       }
       .page-header {
-        padding: 12px 16px;
-        gap: 12px;
+        padding: 10px 14px;
+        gap: 10px;
       }
       .back-btn {
         width: 36px;
@@ -492,27 +519,29 @@ export interface DesignItem {
         border-radius: 10px;
       }
       .header-title {
-        font-size: 16px;
+        font-size: 15px;
+        font-weight: 800;
         letter-spacing: -0.3px;
       }
-      .header-sub {
-        font-size: 11px;
-        margin-top: 2px;
-        opacity: 0.7;
-      }
       .filters-bar {
-        padding: 8px 14px 12px;
-        gap: 8px;
+        padding: 6px 12px 10px;
+        gap: 6px;
       }
       .filter-chip {
-        padding: 6px 14px;
-        font-size: 12px;
-        border-radius: 16px;
+        padding: 5px 12px;
+        font-size: 11px;
+        border-radius: 14px;
       }
       .templates-grid {
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        padding: 24px 16px 48px;
-        gap: 24px;
+        grid-template-columns: 1fr;
+        padding: 16px 12px 48px;
+        gap: 16px;
+      }
+      .card-body {
+        padding: 14px;
+      }
+      .card-tags {
+        margin-bottom: 10px;
       }
     }
   `]

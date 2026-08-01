@@ -58,16 +58,16 @@ interface Tab {
       <!-- ══════════════════════════════════════
            LEFT SIDEBAR / MOBILE DRAWER
       ══════════════════════════════════════ -->
-      <aside class="fixed md:static inset-y-0 left-0 z-50 shrink-0 flex flex-col h-full border-r overflow-hidden transition-transform md:transition-all duration-300 w-64 md:w-56"
+      <aside class="fixed md:static inset-y-0 left-0 z-50 shrink-0 flex flex-col h-full border-r overflow-hidden transition-all duration-300"
              [ngClass]="[
                isDark ? 'bg-[#07070a] border-neutral-800' : 'bg-neutral-50 border-neutral-200',
-               isMobileDrawerOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0',
-               isSidebarCollapsed ? 'md:w-20' : 'md:w-56'
+               isMobileDrawerOpen ? 'translate-x-0 shadow-2xl w-64' : '-translate-x-full md:translate-x-0',
+               isSidebarCollapsed ? 'md:w-0 md:border-r-0 md:opacity-0 md:pointer-events-none' : 'md:w-56 md:opacity-100'
              ]">
 
         <!-- Logo Header -->
-        <div class="py-4 md:py-5 border-b flex items-center shrink-0 transition-all duration-300"
-             [ngClass]="[isDark ? 'border-neutral-800' : 'border-neutral-200', isSidebarCollapsed ? 'px-4 md:px-0 md:justify-center justify-between' : 'px-5 justify-between md:justify-start gap-3']">
+        <div class="py-4 md:py-5 border-b flex items-center shrink-0 transition-all duration-300 px-5 justify-between md:justify-start gap-3"
+             [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
           <div class="flex items-center gap-3">
             <img [src]="isDark ? 'assets/icons/navbar-logodark.png' : 'assets/icons/navbar-logolight.png'" class="w-9 h-9 md:w-10 md:h-10 object-contain flex-shrink-0" alt="PortaLink">
             <div class="min-w-0" *ngIf="!isSidebarCollapsed || isMobileDrawerOpen">
@@ -89,8 +89,8 @@ interface Tab {
         <nav class="flex-grow p-3 space-y-0.5 overflow-y-auto sidebar-nav overflow-x-hidden">
           <button *ngFor="let tab of tabs"
                   (click)="setTab(tab.id)"
-                  class="flex items-center rounded-xl text-sm font-semibold tracking-wide transition-all duration-200 cursor-pointer group relative"
-                  [ngClass]="[getNavClass(tab.id), isSidebarCollapsed && !isMobileDrawerOpen ? 'px-0 py-2.5 justify-center w-14 mx-auto' : 'w-full px-3 py-2.5 gap-3']">
+                  class="flex items-center rounded-xl text-sm font-semibold tracking-wide transition-all duration-200 cursor-pointer group relative w-full px-3 py-2.5 gap-3"
+                  [ngClass]="getNavClass(tab.id)">
 
             <!-- Icon -->
             <span class="w-[18px] h-[18px] flex-shrink-0 flex items-center justify-center">
@@ -196,7 +196,7 @@ interface Tab {
         <!-- Content -->
         <main class="flex-grow overflow-y-auto overflow-x-hidden pb-20 md:pb-8"
               [ngClass]="isDark ? 'bg-[#020204]' : 'bg-white'">
-          <div class="p-4 sm:p-6 md:p-8 max-w-screen-2xl">
+          <div class="p-4 sm:p-6 md:p-8 w-full transition-all duration-300">
 
             <app-dash-home
               *ngIf="activeTab === 'dashboard'"
