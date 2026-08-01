@@ -163,9 +163,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                        class="w-full h-full object-cover object-top transition-all duration-500 filter-none" />
                   
                   <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent flex items-end p-5 pointer-events-none">
-                    <span class="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-white/80 flex items-center gap-2">
-                      <span>{{ img.alt }}</span>
-                      <span class="text-[8px] opacity-50 font-mono font-normal">({{ img.isColor ? 'COLOR' : 'B&N' }})</span>
+                    <span class="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-white/90">
+                      {{ img.isColor ? 'COLOR' : 'B&N' }}
                     </span>
                   </div>
                 </div>

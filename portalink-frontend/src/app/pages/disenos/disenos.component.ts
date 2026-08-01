@@ -22,33 +22,32 @@ export interface DesignItem {
   template: `
     <div class="page-wrap">
 
-      <!-- HEADER -->
-      <header class="page-header">
-        <button class="back-btn" (click)="goBack()" title="Volver atrás">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
-          </svg>
-        </button>
-        <div class="header-center">
-          <h1 class="header-title">Galería de Diseños</h1>
-          <p class="header-sub">{{ filteredTemplates().length }} modelos de proyectos listos · Selecciona uno para tu prototipo</p>
-        </div>
-        <button class="cta-rotbot" (click)="goToRotbot()">
-          <span class="live-dot"></span>
-          Crear con RotBot IA
-        </button>
-      </header>
+      <!-- STICKY TOP SECTION (HEADER + FILTROS) -->
+      <div class="sticky-top-section">
+        <!-- HEADER -->
+        <header class="page-header">
+          <button class="back-btn" (click)="goBack()" title="Volver atrás">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+            </svg>
+          </button>
+          <div class="header-center">
+            <h1 class="header-title">Galería de Diseños</h1>
+            <p class="header-sub">{{ filteredTemplates().length }} modelos de proyectos listos · Selecciona uno para explorar</p>
+          </div>
+        </header>
 
-      <!-- FILTROS -->
-      <div class="filters-bar">
-        <button
-          *ngFor="let cat of categories"
-          class="filter-chip"
-          [class.active]="activeCategory() === cat.id"
-          (click)="setCategory(cat.id)">
-          <i [class]="cat.iconClass + ' icon-style'"></i>
-          <span>{{ cat.label }}</span>
-        </button>
+        <!-- FILTROS DE CATEGORÍA -->
+        <div class="filters-bar">
+          <button
+            *ngFor="let cat of categories"
+            class="filter-chip"
+            [class.active]="activeCategory() === cat.id"
+            (click)="setCategory(cat.id)">
+            <i [class]="cat.iconClass + ' icon-style'"></i>
+            <span>{{ cat.label }}</span>
+          </button>
+        </div>
       </div>
 
       <!-- GRID DE DISEÑOS -->
@@ -92,20 +91,13 @@ export interface DesignItem {
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                   <circle cx="12" cy="12" r="3"/>
                 </svg>
-                Ver Imagen
+                <span>Ver Imagen</span>
               </button>
 
-              <a *ngIf="t.liveUrl" [href]="t.liveUrl" target="_blank" rel="noopener noreferrer" (click)="$event.stopPropagation()" class="btn-live text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3 py-2.5 rounded-xl hover:bg-emerald-500/20 transition-all flex items-center gap-1.5 shadow-sm">
+              <a *ngIf="t.liveUrl" [href]="t.liveUrl" target="_blank" rel="noopener noreferrer" (click)="$event.stopPropagation()" class="btn-live">
                 <i class="fa-solid fa-globe text-xs"></i>
                 <span>En Vivo</span>
               </a>
-
-              <button class="btn-use" (click)="useTemplate(t, $event)">
-                Usar Diseño
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
-                </svg>
-              </button>
             </div>
           </div>
         </div>
@@ -129,9 +121,6 @@ export interface DesignItem {
                 <i class="fa-solid fa-globe"></i>
                 <span>Ver Prototipo en Vivo →</span>
               </a>
-              <button class="btn-use-modal" (click)="useTemplate(previewTemplate()!, $event)">
-                Usar este Diseño en RotBot →
-              </button>
               <button class="btn-close" (click)="closePreview()">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
@@ -159,23 +148,35 @@ export interface DesignItem {
       color: var(--text-primary, #ffffff);
     }
 
+    /* STICKY TOP CONTAINER (HEADER + FILTROS) */
+    .sticky-top-section {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(8, 8, 8, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      transition: all 0.3s ease;
+    }
+    :host-context(.theme-light) .sticky-top-section {
+      background: rgba(255, 255, 255, 0.92);
+      border-bottom-color: rgba(0, 0, 0, 0.08);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    }
+
     /* HEADER */
     .page-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 20px 32px;
-      border-bottom: 1px solid rgba(255,255,255,0.07);
-      background: var(--bg-primary, #080808);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      backdrop-filter: blur(10px);
+      padding: 16px 28px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
       gap: 16px;
     }
     :host-context(.theme-light) .page-header {
-      border-bottom-color: rgba(0,0,0,0.07);
-      background: #ffffff;
+      border-bottom-color: rgba(0,0,0,0.05);
     }
     .back-btn {
       display: flex;
@@ -208,46 +209,16 @@ export interface DesignItem {
       margin: 4px 0 0;
     }
 
-    .cta-rotbot {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(0,245,255,0.08);
-      border: 1px solid rgba(0,245,255,0.25);
-      color: #00f5ff;
-      padding: 10px 18px;
-      border-radius: 10px;
-      font-weight: 700;
-      font-size: 13px;
-      cursor: pointer;
-      flex-shrink: 0;
-      transition: all 0.2s;
-    }
-    .cta-rotbot:hover { background: rgba(0,245,255,0.15); }
-    .live-dot {
-      width: 8px;
-      height: 8px;
-      background: #10b981;
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-      flex-shrink: 0;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.6; transform: scale(0.85); }
-    }
-
     /* FILTROS */
     .filters-bar {
       display: flex;
       gap: 10px;
-      padding: 20px 32px;
+      padding: 14px 28px;
       overflow-x: auto;
       scrollbar-width: none;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      -webkit-overflow-scrolling: touch;
     }
     .filters-bar::-webkit-scrollbar { display: none; }
-    :host-context(.theme-light) .filters-bar { border-bottom-color: rgba(0,0,0,0.05); }
 
     .filter-chip {
       flex-shrink: 0;
@@ -280,9 +251,9 @@ export interface DesignItem {
     /* GRID */
     .templates-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
-      gap: 32px;
-      padding: 40px 48px;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 28px;
+      padding: 32px 40px;
       max-width: 1720px;
       margin: 0 auto;
     }
@@ -405,25 +376,29 @@ export interface DesignItem {
     :host-context(.theme-light) .btn-preview { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.1); color: #555; }
     :host-context(.theme-light) .btn-preview:hover { background: rgba(0,0,0,0.07); color: #111; }
 
-    .btn-use {
-      flex: 1.4;
+    .btn-live {
+      flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 7px;
       padding: 11px;
       border-radius: 10px;
-      background: rgba(0,245,255,0.08);
-      border: 1px solid rgba(0,245,255,0.25);
-      color: #00f5ff;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #10b981;
       font-size: 13px;
-      font-weight: 800;
+      font-weight: 700;
       cursor: pointer;
       transition: all 0.2s;
+      text-decoration: none;
     }
-    .btn-use:hover { background: rgba(0,245,255,0.18); box-shadow: 0 4px 16px rgba(0,245,255,0.15); }
-    :host-context(.theme-light) .btn-use { background: #111; border-color: #111; color: #fff; }
-    :host-context(.theme-light) .btn-use:hover { background: #000; }
+    .btn-live:hover {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: rgba(16, 185, 129, 0.5);
+      color: #34d399;
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.15);
+    }
 
     /* MODAL */
     .modal-overlay {
@@ -483,21 +458,6 @@ export interface DesignItem {
 
     .modal-actions { display: flex; align-items: center; gap: 12px; }
 
-    .btn-use-modal {
-      padding: 12px 24px;
-      border-radius: 10px;
-      background: #00f5ff;
-      border: none;
-      color: #050811;
-      font-weight: 900;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 0 20px rgba(0,245,255,0.25);
-    }
-    .btn-use-modal:hover { background: #33f7ff; }
-    :host-context(.theme-light) .btn-use-modal { background: #111; color: #fff; box-shadow: none; }
-
     .btn-close {
       width: 38px;
       height: 38px;
@@ -515,14 +475,45 @@ export interface DesignItem {
     :host-context(.theme-light) .btn-close { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); }
     :host-context(.theme-light) .btn-close:hover { background: rgba(0,0,0,0.08); color: #000; }
 
-    /* RESPONSIVE */
+    /* RESPONSIVE MÓVIL OPTIMIZADO */
     @media (max-width: 768px) {
-      .page-header { padding: 16px 20px; }
-      .header-title { font-size: 18px; }
-      .cta-rotbot span:not(.live-dot) { display: none; }
-      .filters-bar { padding: 16px 20px; }
-      .templates-grid { grid-template-columns: 1fr; padding: 20px; gap: 20px; }
-      .modal-container { max-height: 95vh; border-radius: 16px; }
+      .sticky-top-section {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
+      .page-header {
+        padding: 12px 16px;
+        gap: 12px;
+      }
+      .back-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+      }
+      .header-title {
+        font-size: 16px;
+        letter-spacing: -0.3px;
+      }
+      .header-sub {
+        font-size: 11px;
+        margin-top: 2px;
+        opacity: 0.7;
+      }
+      .filters-bar {
+        padding: 8px 14px 12px;
+        gap: 8px;
+      }
+      .filter-chip {
+        padding: 6px 14px;
+        font-size: 12px;
+        border-radius: 16px;
+      }
+      .templates-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        padding: 24px 16px 48px;
+        gap: 24px;
+      }
     }
   `]
 })
