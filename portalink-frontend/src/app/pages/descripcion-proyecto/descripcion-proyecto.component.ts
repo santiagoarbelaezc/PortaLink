@@ -38,10 +38,10 @@ export interface ProjectDetail {
       <app-navbar></app-navbar>
 
       <!-- Main Project Content -->
-      <main class="flex-grow w-full pt-24 md:pt-28 pb-20 relative z-10" *ngIf="project">
+      <main class="flex-grow w-full pt-14 sm:pt-24 md:pt-28 pb-20 relative z-10" *ngIf="project">
         
         <!-- Top Breadcrumb & Back Navigation -->
-        <div class="max-w-[1400px] mx-auto px-6 sm:px-10 mb-8">
+        <div class="max-w-[1400px] mx-auto px-4 sm:px-10 mb-4 sm:mb-8">
           <div class="flex items-center justify-between gap-4 flex-wrap">
             <a (click)="goBack()" class="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-[0.2em] cursor-pointer nav-back-btn transition-colors">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -62,36 +62,36 @@ export interface ProjectDetail {
         </div>
 
         <!-- Hero Section Header -->
-        <section class="max-w-[1400px] mx-auto px-6 sm:px-10 mb-12">
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+        <section class="max-w-[1400px] mx-auto px-4 sm:px-10 mb-6 sm:mb-12">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-end">
             <div class="lg:col-span-8">
-              <div class="inline-flex items-center gap-2 mb-3">
+              <div class="inline-flex items-center gap-2 mb-2 sm:mb-3">
                 <span class="w-2 h-2 rounded-full bg-[var(--accent-color,#00f5ff)] animate-pulse"></span>
                 <span class="text-xs uppercase tracking-[0.3em] font-mono font-bold text-[var(--accent-color,#00f5ff)]">
                   {{ project.category }} — {{ project.year }}
                 </span>
               </div>
               
-              <h1 class="text-4xl sm:text-6xl lg:text-7xl font-headline font-black uppercase tracking-tight leading-[0.95] mb-4 project-title">
+              <h1 class="text-3xl sm:text-6xl lg:text-7xl font-headline font-black uppercase tracking-tight leading-[0.95] mb-3 sm:mb-4 project-title">
                 {{ project.title }}
               </h1>
 
-              <p class="text-base sm:text-xl font-light leading-relaxed max-w-2xl project-tagline">
+              <p class="text-sm sm:text-xl font-light leading-relaxed max-w-2xl project-tagline">
                 {{ project.tagline }}
               </p>
             </div>
 
             <!-- Client & Live Domain Action Card -->
             <div class="lg:col-span-4 flex flex-col gap-4">
-              <div class="p-6 rounded-2xl border client-card backdrop-blur-md">
+              <div class="p-5 sm:p-6 rounded-2xl border client-card backdrop-blur-md">
                 <div class="flex items-center justify-between mb-3 text-xs font-mono uppercase tracking-wider text-muted">
                   <span>Cliente</span>
                   <span>Dominio en Vivo</span>
                 </div>
-                <div class="text-lg font-bold font-headline mb-4">{{ project.client }}</div>
+                <div class="text-base sm:text-lg font-bold font-headline mb-4">{{ project.client }}</div>
 
                 <a [href]="project.liveUrl" target="_blank" rel="noopener noreferrer"
-                   class="w-full inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest live-domain-btn transition-all duration-300 shadow-lg group">
+                   class="w-full inline-flex items-center justify-center gap-2.5 px-5 py-3 sm:px-6 sm:py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest live-domain-btn transition-all duration-300 shadow-lg group">
                   <span>Visitar Proyecto en Vivo</span>
                   <svg class="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H18m0 0v4.5M18 6l-7.5 7.5M6 18h12"/>
@@ -103,17 +103,17 @@ export interface ProjectDetail {
         </section>
 
         <!-- Main Interactive Media Showcase (Unified Gallery Carousel with Video) -->
-        <section class="max-w-[1400px] mx-auto px-6 sm:px-10 mb-16">
+        <section class="max-w-[1400px] mx-auto px-4 sm:px-10 mb-12 sm:mb-16">
           
           <!-- Main Display Container (Image or Video with Fixed Uniform Height) -->
-          <div class="main-image-container relative rounded-[28px] sm:rounded-[36px] overflow-hidden border border-white/15 bg-black shadow-2xl group h-[420px] sm:h-[560px] lg:h-[650px] flex items-center justify-center">
+          <div class="main-image-container relative rounded-[20px] sm:rounded-[36px] overflow-hidden border border-white/15 bg-black shadow-2xl group h-[240px] sm:h-[560px] lg:h-[650px] flex items-center justify-center">
             
             <!-- Minimalist Left Navigation Arrow -->
             <button *ngIf="project.images && project.images.length > 1"
                     (click)="prevMedia()"
                     aria-label="Imagen anterior"
-                    class="absolute left-4 sm:left-6 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/40 hover:bg-black/80 border border-white/20 hover:border-white/50 text-white backdrop-blur-md flex items-center justify-center transition-all duration-300 shadow-xl hover:scale-110 active:scale-95 group/navbtn cursor-pointer">
-              <svg class="w-5 h-5 sm:w-6 sm:h-6 -ml-0.5 transition-transform group-hover/navbtn:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    class="absolute left-3 sm:left-6 z-30 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-black/40 hover:bg-black/80 border border-white/20 hover:border-white/50 text-white backdrop-blur-md flex items-center justify-center transition-all duration-300 shadow-xl hover:scale-110 active:scale-95 group/navbtn cursor-pointer">
+              <svg class="w-4 h-4 sm:w-6 sm:h-6 -ml-0.5 transition-transform group-hover/navbtn:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
               </svg>
             </button>
@@ -132,8 +132,8 @@ export interface ProjectDetail {
             <!-- Main Image (Uniform Height across all desktop slides) -->
             <ng-template #mainImageBlock>
               <img [src]="activeImage" (error)="onImgError($event)" [alt]="project.title"
-                   class="w-full h-full object-cover object-top transition-all duration-500">
-              <div class="absolute bottom-6 right-6 backdrop-blur-md bg-black/60 border border-white/10 px-4 py-2 rounded-xl text-white text-xs font-mono z-20 pointer-events-none">
+                   class="w-full h-full object-contain sm:object-cover sm:object-top transition-all duration-500">
+              <div class="absolute bottom-3 right-3 sm:bottom-6 sm:right-6 backdrop-blur-md bg-black/60 border border-white/10 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-white text-[10px] sm:text-xs font-mono z-20 pointer-events-none">
                 Visualización de Alta Calidad
               </div>
             </ng-template>
@@ -142,8 +142,8 @@ export interface ProjectDetail {
             <button *ngIf="project.images && project.images.length > 1"
                     (click)="nextMedia()"
                     aria-label="Siguiente imagen"
-                    class="absolute right-4 sm:right-6 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/40 hover:bg-black/80 border border-white/20 hover:border-white/50 text-white backdrop-blur-md flex items-center justify-center transition-all duration-300 shadow-xl hover:scale-110 active:scale-95 group/navbtn cursor-pointer">
-              <svg class="w-5 h-5 sm:w-6 sm:h-6 ml-0.5 transition-transform group-hover/navbtn:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    class="absolute right-3 sm:right-6 z-30 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-black/40 hover:bg-black/80 border border-white/20 hover:border-white/50 text-white backdrop-blur-md flex items-center justify-center transition-all duration-300 shadow-xl hover:scale-110 active:scale-95 group/navbtn cursor-pointer">
+              <svg class="w-4 h-4 sm:w-6 sm:h-6 ml-0.5 transition-transform group-hover/navbtn:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
               </svg>
             </button>

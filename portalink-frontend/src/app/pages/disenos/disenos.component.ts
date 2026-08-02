@@ -493,7 +493,7 @@ export interface DesignItem {
       .sticky-top-section {
         position: sticky;
         top: 0;
-        padding-top: calc(3.8rem + env(safe-area-inset-top, 0px));
+        padding-top: calc(0.6rem + env(safe-area-inset-top, 0px));
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(24px);
         -webkit-backdrop-filter: blur(24px);

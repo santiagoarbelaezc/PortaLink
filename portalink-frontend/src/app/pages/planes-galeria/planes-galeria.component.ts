@@ -26,14 +26,14 @@ export interface GalleryProject {
   imports: [CommonModule, RouterModule],
   template: `
     <div class="h-screen w-full flex flex-col overflow-hidden font-sans page-wrapper bg-[#0a0a0a]">
-      <div class="flex-grow w-full pt-20 overflow-y-auto custom-scrollbar relative">
+      <div class="flex-grow w-full pt-4 sm:pt-20 overflow-y-auto custom-scrollbar relative">
         <!-- Fondo de color sólido optimizado (Sin desenfoques pesados para un rendimiento 60 FPS) -->
-        <div class="max-w-[1760px] w-full mx-auto px-6 sm:px-12 lg:px-20 pt-8 pb-32 relative z-10">
+        <div class="max-w-[1760px] w-full mx-auto px-4 sm:px-12 lg:px-20 pt-2 sm:pt-8 pb-20 sm:pb-32 relative z-10">
           
           <!-- Botón Volver al Inicio -->
-          <div class="mb-8 flex items-center justify-between">
+          <div class="mb-4 sm:mb-8 flex items-center justify-between">
             <a routerLink="/" 
-               class="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-bold uppercase tracking-widest text-white/80 hover:text-white transition duration-200 cursor-pointer">
+               class="inline-flex items-center gap-2.5 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-[11px] sm:text-xs font-bold uppercase tracking-widest text-white/80 hover:text-white transition duration-200 cursor-pointer">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
               </svg>
@@ -46,35 +46,35 @@ export interface GalleryProject {
           </div>
 
           <!-- Encabezado de la Galería Limpio y Compacto -->
-          <div class="mb-8">
-            <h1 class="text-2xl sm:text-4xl font-headline font-bold uppercase tracking-tight text-white">
+          <div class="mb-4 sm:mb-8">
+            <h1 class="text-xl sm:text-4xl font-headline font-bold uppercase tracking-tight text-white">
               Galería de Proyectos Realizados
             </h1>
           </div>
 
-          <!-- Botones de Filtro (Categorías con Iconos SVG Premium) -->
-          <div class="flex flex-wrap items-center gap-2.5 mb-14 border-b border-white/10 pb-6">
+          <!-- Botones de Filtro (Categorías en Carrusel Horizontal Móvil) -->
+          <div class="flex items-center gap-2 mb-6 sm:mb-14 border-b border-white/10 pb-4 sm:pb-6 overflow-x-auto no-scrollbar scroll-smooth flex-nowrap -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
             <button *ngFor="let cat of categories; trackBy: trackByCatId"
                     (click)="setFilter(cat.id)"
                     [class.active-filter]="activeCategory === cat.id"
-                    class="filter-pill px-5 py-3 rounded-2xl text-xs font-bold uppercase tracking-wider transition duration-200 cursor-pointer flex items-center gap-2.5 border">
+                    class="filter-pill px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-bold uppercase tracking-wider transition duration-200 cursor-pointer flex items-center gap-2 border flex-shrink-0 whitespace-nowrap">
               
               <!-- Icono SVG según categoría -->
               <span class="flex-shrink-0" [ngSwitch]="cat.id">
                 <!-- Todos (Grid) -->
-                <svg *ngSwitchCase="'Todos'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg *ngSwitchCase="'Todos'" class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
                 </svg>
                 <!-- E-commerce (Shopping Bag) -->
-                <svg *ngSwitchCase="'E-commerce'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg *ngSwitchCase="'E-commerce'" class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                 </svg>
                 <!-- E-commerce + IA (Sparkles) -->
-                <svg *ngSwitchCase="'E-commerce + IA'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg *ngSwitchCase="'E-commerce + IA'" class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
                 </svg>
                 <!-- Sistemas & Portales (Server / CPU) -->
-                <svg *ngSwitchCase="'Sistemas'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg *ngSwitchCase="'Sistemas'" class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z" />
                 </svg>
               </span>
