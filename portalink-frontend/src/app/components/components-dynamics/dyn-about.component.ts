@@ -24,12 +24,6 @@ import { CommonModule } from '@angular/common';
           <!-- Bio Content -->
           <div class="space-y-8">
             <div>
-              <div class="flex items-center gap-4 mb-4">
-                <div class="h-px w-10" style="background-color: var(--text-primary); opacity: 0.4;"></div>
-                <span class="text-[10px] uppercase tracking-[0.4em] font-bold" style="color: var(--text-secondary);">
-                  {{ config?.subtitle || 'PERFIL' }}
-                </span>
-              </div>
               <h2 class="text-5xl sm:text-6xl md:text-[72px] font-headline uppercase leading-[0.95] tracking-tighter mb-6 md:mb-8" [innerHTML]="config?.headline || 'SOBRE MI'"></h2>
             </div>
 

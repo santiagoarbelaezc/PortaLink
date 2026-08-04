@@ -27,12 +27,6 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
           <!-- Bio Content -->
           <div class="space-y-6">
             <div appReveal>
-              <div class="flex items-center gap-4 mb-4">
-                <div class="h-px w-10" style="background-color: var(--text-primary); opacity: 0.4;"></div>
-                <span class="text-[10px] uppercase tracking-[0.4em] font-bold" style="color: var(--text-secondary);">
-                  {{ getTranslation().philosophy }}
-                </span>
-              </div>
               <h2 class="text-4xl md:text-5xl lg:text-6xl font-headline uppercase leading-none tracking-tighter mb-6" [innerHTML]="getTranslation().headline"></h2>
             </div>
 

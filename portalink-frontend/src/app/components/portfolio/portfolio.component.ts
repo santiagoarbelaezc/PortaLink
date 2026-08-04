@@ -13,10 +13,6 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
       <div class="container mx-auto px-6">
         <!-- Section Header -->
         <div class="mb-4 md:mb-6">
-          <div class="flex items-center gap-4 mb-4">
-            <div class="h-px w-12 bg-white/50"></div>
-            <span class="text-white/50 text-xs uppercase tracking-[0.4em]">{{ getTranslation().subtitle }}</span>
-          </div>
           <h2 class="text-4xl md:text-5xl font-headline uppercase leading-none tracking-tighter">{{ getTranslation().title }}</h2>
         </div>
 

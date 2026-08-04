@@ -5,11 +5,8 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { HeroComponent } from '../../components/hero/hero.component';
 import { PortfolioComponent } from '../../components/portfolio/portfolio.component';
 import { AboutComponent } from '../../components/about/about.component';
-import { SkillsComponent } from '../../components/skills/skills.component';
 import { ContactComponent } from '../../components/contact/contact.component';
 import { FooterComponent } from '../../components/footer/footer.component';
-
-
 
 import { ScrollColorService } from '../../services/scroll-color.service';
 import { PortfolioConfigService } from '../../services/portfolio-config.service';
@@ -28,7 +25,6 @@ import { Router, RouterModule } from '@angular/router';
     HeroComponent,
     PortfolioComponent,
     AboutComponent,
-    SkillsComponent,
     ContactComponent,
     FooterComponent
   ],
@@ -49,10 +45,6 @@ import { Router, RouterModule } from '@angular/router';
         <div class="max-w-[1500px] mx-auto mb-16">
           <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
             <div>
-              <div class="flex items-center gap-4 mb-4">
-                <div class="h-px w-12" style="background-color: var(--text-primary); opacity: 0.5;"></div>
-                <span class="text-xs uppercase tracking-[0.4em] font-mono" style="color: var(--text-secondary);">SHOWCASE DE PROYECTOS</span>
-              </div>
               <h2 class="showcase-title text-4xl sm:text-5xl lg:text-6xl font-headline font-black uppercase tracking-tight leading-[1.05]">
                 Trabajos Realizados
               </h2>
@@ -118,11 +110,7 @@ import { Router, RouterModule } from '@angular/router';
             </div>
 
             <!-- Zona inferior: Barra de acciones monocromática, organizada y sutil -->
-            <div class="showcase-card-footer px-5 py-3.5 border-t border-white/10 flex items-center justify-between gap-3 bg-neutral-950/40 rounded-b-[28px]">
-              <span class="text-xs font-mono font-medium text-neutral-400 uppercase tracking-widest">
-                #{{ p.code }}
-              </span>
-
+            <div class="showcase-card-footer px-5 py-3.5 border-t border-white/10 flex items-center justify-end gap-3 bg-neutral-950/40 rounded-b-[28px]">
               <div class="flex items-center gap-2.5">
                 <!-- Botón En Vivo -->
                 <a *ngIf="p.liveUrl" [href]="p.liveUrl" target="_blank" rel="noopener noreferrer"
@@ -249,7 +237,6 @@ import { Router, RouterModule } from '@angular/router';
 
       <app-portfolio [projects]="portfolioData().portfolio"></app-portfolio>
       <app-about [data]="portfolioData().about"></app-about>
-      <app-skills [skills]="portfolioData().skills"></app-skills>
       <app-contact [data]="portfolioData().contact"></app-contact>
       
 
