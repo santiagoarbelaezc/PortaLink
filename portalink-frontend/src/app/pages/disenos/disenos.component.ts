@@ -22,7 +22,7 @@ export interface DesignItem {
   template: `
     <div class="page-wrap">
 
-      <!-- STICKY TOP SECTION (HEADER + FILTROS) -->
+      <!-- STICKY TOP SECTION (HEADER COMPACTO ULTRAMINIMALISTA) -->
       <div class="sticky-top-section">
         <!-- HEADER COMPACTO -->
         <header class="page-header">
@@ -37,21 +37,9 @@ export interface DesignItem {
           </div>
           <div class="w-9 h-9 sm:hidden"></div>
         </header>
-
-        <!-- FILTROS DE CATEGORÍA -->
-        <div class="filters-bar">
-          <button
-            *ngFor="let cat of categories"
-            class="filter-chip"
-            [class.active]="activeCategory() === cat.id"
-            (click)="setCategory(cat.id)">
-            <i [class]="cat.iconClass + ' icon-style'"></i>
-            <span>{{ cat.label }}</span>
-          </button>
-        </div>
       </div>
 
-      <!-- GRID DE DISEÑOS CON ANIMACIÓN DE REVELACIÓN ESTILO LINKTREE -->
+      <!-- GRID DE DISEÑOS CON ANIMACIÓN DE REVELACIÓN ESTILO LINKTREE (TARJETAS GRANDES Y ULTRAMINIMALISTAS) -->
       <div class="templates-grid">
         <div
           *ngFor="let t of filteredTemplates(); let i = index; trackBy: trackById"
@@ -60,23 +48,23 @@ export interface DesignItem {
           [class.selected]="selectedId() === t.id"
           (click)="selectTemplate(t)">
 
-          <!-- Preview Imagen Real del Proyecto -->
-          <div class="card-preview relative overflow-hidden bg-neutral-900 border-b border-white/10 aspect-[16/9] flex items-center justify-center">
-            <img [src]="t.image" [alt]="t.name" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+          <!-- Preview Imagen Real del Proyecto con Aspecto Amplio -->
+          <div class="card-preview relative overflow-hidden bg-neutral-900/50 aspect-[16/10] flex items-center justify-center">
+            <img [src]="t.image" [alt]="t.name" class="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105" loading="lazy" />
             
-            <!-- Live URL Badge -->
-            <a *ngIf="t.liveUrl" [href]="t.liveUrl" target="_blank" rel="noopener noreferrer" (click)="$event.stopPropagation()" class="absolute top-2.5 left-2.5 bg-emerald-500/90 hover:bg-emerald-400 text-black font-extrabold text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-md border border-emerald-400/50 shadow-md flex items-center gap-1.5 transition-all z-10">
-              <span class="w-1.5 h-1.5 rounded-full bg-black animate-pulse"></span>
+            <!-- Live URL Badge Suave & Sutil -->
+            <a *ngIf="t.liveUrl" [href]="t.liveUrl" target="_blank" rel="noopener noreferrer" (click)="$event.stopPropagation()" class="absolute top-3.5 left-3.5 bg-white/90 backdrop-blur-md hover:bg-white text-emerald-700 font-extrabold text-[10px] uppercase tracking-wider px-3 py-1 rounded-full border border-emerald-500/20 shadow-sm flex items-center gap-1.5 transition-all z-10">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
               <span>Prototipo en Vivo</span>
             </a>
           </div>
 
-          <!-- Info de tarjeta ultra-limpia (ÚNICAMENTE EL NOMBRE Y EL BOTÓN) -->
-          <div class="card-body flex items-center justify-between gap-3 p-3.5 sm:p-4">
-            <h3 class="card-name text-sm sm:text-base font-extrabold text-white truncate m-0 leading-snug">{{ t.name }}</h3>
+          <!-- Info de tarjeta ultraminimalista -->
+          <div class="card-body flex items-center justify-between gap-4 p-5 sm:p-6">
+            <h3 class="card-name text-base sm:text-lg font-headline font-black text-white uppercase tracking-tight truncate m-0 leading-tight">{{ t.name }}</h3>
 
             <div class="flex items-center gap-2 shrink-0">
-              <button class="btn-preview flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold" (click)="openPreview(t, $event)">
+              <button class="btn-preview flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold transition-all duration-300" (click)="openPreview(t, $event)">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                   <circle cx="12" cy="12" r="3"/>
@@ -229,45 +217,64 @@ export interface DesignItem {
     .filter-chip:hover { border-color: rgba(0,245,255,0.3); color: #00f5ff; background: rgba(0,245,255,0.05); }
     .filter-chip.active { background: rgba(0,245,255,0.1); border-color: rgba(0,245,255,0.4); color: #00f5ff; }
     .filter-chip.active .icon-style { opacity: 1; color: #00f5ff; }
-    :host-context(.theme-light) .filter-chip { border-color: rgba(0,0,0,0.1); background: rgba(0,0,0,0.03); color: #666; }
-    :host-context(.theme-light) .filter-chip.active { background: rgba(0,0,0,0.06); border-color: #111; color: #111; }
-    :host-context(.theme-light) .filter-chip:hover { background: rgba(0,0,0,0.05); color: #111; border-color: #111; }
+    :host-context(.theme-light) .filter-chip { 
+      border-color: rgba(0,0,0,0.12); 
+      background: #ffffff; 
+      color: #4b5563; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    :host-context(.theme-light) .filter-chip.active { 
+      background: rgba(0,0,0,0.06); 
+      border-color: #111111; 
+      color: #111111; 
+      font-weight: 800;
+    }
+    :host-context(.theme-light) .filter-chip.active .icon-style {
+      color: #111111;
+      opacity: 1;
+    }
+    :host-context(.theme-light) .filter-chip:hover { 
+      background: rgba(0,0,0,0.04); 
+      color: #111827; 
+      border-color: rgba(0,0,0,0.2); 
+    }
 
-    /* GRID */
+    /* GRID Y SEPARACIÓN VERTICAL */
     .templates-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-      gap: 28px;
-      padding: 32px 40px;
-      max-width: 1720px;
+      grid-template-columns: repeat(auto-fill, minmax(460px, 1fr));
+      gap: 36px;
+      padding: 40px 48px;
+      max-width: 1760px;
       margin: 0 auto;
     }
 
     .template-card {
       background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 28px;
       overflow: hidden;
       cursor: pointer;
-      transition: all 0.25s ease;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .template-card:hover {
-      border-color: rgba(0,245,255,0.25);
-      transform: translateY(-4px);
-      box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+      border-color: rgba(0,245,255,0.3);
+      transform: translateY(-5px);
+      box-shadow: 0 20px 45px rgba(0,0,0,0.25);
     }
     .template-card.selected {
       border-color: rgba(0,245,255,0.5);
       box-shadow: 0 0 0 2px rgba(0,245,255,0.15);
     }
     :host-context(.theme-light) .template-card {
-      background: #fff;
-      border-color: rgba(0,0,0,0.08);
-      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      background: #ffffff;
+      border-color: rgba(0,0,0,0.05);
+      border-radius: 28px;
+      box-shadow: 0 10px 30px -8px rgba(0,0,0,0.03);
     }
     :host-context(.theme-light) .template-card:hover {
-      border-color: #111;
-      box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+      border-color: rgba(0,0,0,0.12);
+      box-shadow: 0 20px 45px -10px rgba(0,0,0,0.06);
     }
 
     .style-badge {
@@ -303,6 +310,10 @@ export interface DesignItem {
       margin: 0;
       line-height: 1.3;
     }
+    :host-context(.theme-light) .card-name {
+      color: #0d0d0d !important;
+    }
+
     .card-category {
       display: inline-flex;
       align-items: center;
@@ -358,8 +369,17 @@ export interface DesignItem {
       transition: all 0.2s;
     }
     .btn-preview:hover { background: rgba(255,255,255,0.08); color: #fff; }
-    :host-context(.theme-light) .btn-preview { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.1); color: #555; }
-    :host-context(.theme-light) .btn-preview:hover { background: rgba(0,0,0,0.07); color: #111; }
+    :host-context(.theme-light) .btn-preview { 
+      background: #ffffff !important; 
+      border-color: rgba(0, 0, 0, 0.14) !important; 
+      color: #1f2937 !important; 
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+    }
+    :host-context(.theme-light) .btn-preview:hover { 
+      background: #f3f4f6 !important; 
+      border-color: rgba(0, 0, 0, 0.28) !important; 
+      color: #000000 !important; 
+    }
 
     .btn-live {
       flex: 1;

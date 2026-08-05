@@ -27,33 +27,33 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
                [class.inactive-card]="i !== currentIndex"
                class="carousel-card snap-center relative flex-shrink-0 w-[88vw] sm:w-[78vw] lg:w-[850px] aspect-[4/3] sm:aspect-[16/9] rounded-[24px] sm:rounded-[36px] overflow-hidden border border-white/10 transition-all duration-500 cursor-pointer">
             
-            <!-- Background Image -->
+            <!-- Background Image (Clean & Crisp without dark shadow) -->
             <img [src]="project.images && project.images.length > 0 ? project.images[0] : 'assets/images/fotos/photo2.jpg'" 
                  [alt]="getProjectTitle(project)" 
                  class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 card-bg-img" />
             
-            <!-- Cinematic Gradient Vignette (Lighter) -->
-            <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent sm:bg-gradient-to-r sm:from-black/75 sm:via-black/30 sm:to-transparent transition-opacity duration-700 content-overlay"></div>
+            <!-- Soft Minimal Bottom Gradient (Only for subtle text contrast) -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent transition-opacity duration-500 content-overlay"></div>
 
-            <!-- Active Card Content (Only fully visible on active card) -->
-            <div class="absolute inset-0 flex flex-col justify-end p-5 sm:p-12 lg:p-14 text-left transition-all duration-700 content-details">
+            <!-- Active Card Content (Directly over the image without any container box) -->
+            <div class="absolute inset-0 flex flex-col justify-end p-6 sm:p-10 lg:p-12 text-left transition-all duration-500 content-details">
               
                <!-- Tag / Category -->
-              <span class="text-[10px] sm:text-[11px] uppercase tracking-[0.4em] font-bold block mb-2 sm:mb-4" style="color: rgba(255, 255, 255, 0.6);">
+              <span class="text-[10px] sm:text-[11px] uppercase tracking-[0.4em] font-bold block mb-1.5 sm:mb-3 text-[#00f5ff] drop-shadow-md">
                 {{ getTranslation().defaultTag }}
               </span>
 
-              <!-- Massive Bold Headline -->
-              <h3 class="font-headline uppercase leading-[0.9] tracking-tighter text-2xl sm:text-4xl lg:text-[54px] max-w-3xl mb-3 sm:mb-6 title-accent-color title-glow">
+              <!-- Massive Bold Headline directly over image -->
+              <h3 class="font-headline uppercase leading-[0.95] tracking-tight text-2xl sm:text-4xl lg:text-[48px] text-white mb-4 sm:mb-6 drop-shadow-lg">
                 {{ getProjectTitle(project) }}
               </h3>
 
               <!-- Description & CTAs -->
-              <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mt-2">
+              <div class="flex flex-wrap items-center gap-3">
                 <!-- Ver Detalles Button -->
                  <a [routerLink]="['/proyecto', getProjectId(project)]"
                     (click)="$event.stopPropagation()"
-                    class="inline-flex items-center justify-center gap-2 px-6 py-3 sm:px-8 sm:py-3.5 rounded-full bg-[var(--accent-color,#00f5ff)] text-black font-extrabold text-[10px] sm:text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all w-fit shadow-lg">
+                    class="btn-portfolio-main inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-extrabold text-[10px] sm:text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all w-fit shadow-lg">
                    <span>Ver Detalles del Proyecto</span>
                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
                  </a>
@@ -61,7 +61,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
                 <!-- Ver Ahora (Live Site) Button -->
                 <a *ngIf="project.liveUrl" [href]="project.liveUrl" target="_blank"
                    (click)="$event.stopPropagation()"
-                   class="inline-flex items-center justify-center px-6 py-3 sm:px-8 sm:py-3.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold text-[10px] sm:text-xs uppercase tracking-widest hover:bg-white hover:text-black hover:scale-105 active:scale-95 transition-all w-fit">
+                   class="btn-portfolio-sub inline-flex items-center justify-center px-6 py-3 rounded-full font-bold text-[10px] sm:text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all w-fit shadow-md">
                   {{ getTranslation().viewNow }}
                 </a>
               </div>
@@ -69,9 +69,9 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
             </div>
 
             <!-- Custom Logo Overlay on top right (Aesthetic detail) -->
-            <div class="absolute top-4 right-4 sm:top-6 sm:right-6 opacity-60 text-white flex items-center gap-1 text-[10px] sm:text-xs font-semibold tracking-wider">
+            <div class="absolute top-4 right-4 sm:top-6 sm:right-6 opacity-80 text-white flex items-center gap-1 text-[10px] sm:text-xs font-semibold tracking-wider bg-black/30 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
               <span>PORTALINK</span>
-              <span style="color: var(--accent-color, #00f5ff);">+</span>
+              <span class="text-cyan-400">+</span>
             </div>
 
           </div>
@@ -133,7 +133,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
       transform: scale(1);
       opacity: 1;
       filter: blur(0);
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25), 0 0 25px rgba(0, 245, 255, 0.12);
+      box-shadow: none !important;
       border-color: rgba(255, 255, 255, 0.25);
     }
     .carousel-card.inactive-card:hover {
@@ -157,14 +157,27 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
       opacity: 0;
     }
     .active-card .content-overlay {
-      opacity: 1;
+      opacity: 0.25;
+    }
+
+    .btn-portfolio-main {
+      background: #00f5ff;
+      color: #000000;
+    }
+    .btn-portfolio-sub {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+      backdrop-filter: blur(8px);
+    }
+    .btn-portfolio-sub:hover {
+      background: #ffffff;
+      color: #000000;
     }
 
     .title-accent-color {
       color: #ffffff;
-    }
-    .title-glow {
-      text-shadow: 0 0 35px rgba(255, 255, 255, 0.1);
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
     }
 
     .active-dot {
@@ -174,10 +187,38 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
     }
 
     .card-bg-img {
-      transform: scale(1.05);
+      transform: scale(1.02);
     }
     .active-card:hover .card-bg-img {
-      transform: scale(1.08);
+      transform: scale(1.05);
+    }
+
+    :host-context(.theme-light) .carousel-card.active-card {
+      border-color: rgba(0, 0, 0, 0.12);
+    }
+
+    :host-context(.theme-light) .content-details h3 {
+      color: #ffffff !important;
+      text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);
+    }
+
+    :host-context(.theme-light) .btn-portfolio-main {
+      background: #000000;
+      color: #ffffff;
+    }
+    :host-context(.theme-light) .btn-portfolio-main:hover {
+      background: #1f2937;
+    }
+
+    :host-context(.theme-light) .btn-portfolio-sub {
+      background: rgba(255, 255, 255, 0.9);
+      border-color: rgba(0, 0, 0, 0.2);
+      color: #111111;
+      backdrop-filter: blur(8px);
+    }
+    :host-context(.theme-light) .btn-portfolio-sub:hover {
+      background: #000000;
+      color: #ffffff;
     }
   `]
 })

@@ -7,18 +7,11 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <footer id="footer" class="pt-24 pb-12 px-6 sm:px-12 lg:px-20 overflow-hidden relative border-t transition-colors duration-500 footer-container" style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--card-border);">
-      <!-- Large Ghost Brand Text -->
-      <div class="absolute bottom-0 left-1/2 -translate-x-1/2 select-none pointer-events-none z-0">
-        <h2 class="text-[14vw] font-headline leading-none whitespace-nowrap uppercase footer-ghost-text" style="color: var(--text-primary); opacity: 0.025;">
-          SANTIAGO ARBELAEZ
-        </h2>
-      </div>
-
+    <footer id="footer" class="pt-16 pb-12 sm:pt-20 sm:pb-16 px-6 sm:px-12 lg:px-20 overflow-hidden relative border-t transition-colors duration-500 footer-container" style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--card-border);">
       <div class="max-w-[1500px] mx-auto relative z-10">
         
         <!-- Top Grid: 4 Columns -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-16 pb-16 border-b footer-border-grid" style="border-color: var(--card-border);">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-14 pb-12 sm:pb-16 border-b footer-border-grid" style="border-color: var(--card-border);">
           
           <!-- Col 1: Brand & Bio -->
           <div class="space-y-4">
@@ -109,22 +102,18 @@ import { RouterModule } from '@angular/router';
       border-color: var(--text-primary) !important;
     }
     :host-context(.theme-light) #footer {
-      background-color: #f9fafb !important;
+      background-color: #ffffff !important;
       color: #111827 !important;
-      border-color: rgba(0, 0, 0, 0.08) !important;
+      border-color: rgba(0, 0, 0, 0.06) !important;
     }
     :host-context(.theme-light) .footer-border-grid {
-      border-color: rgba(0, 0, 0, 0.08) !important;
-    }
-    :host-context(.theme-light) .footer-ghost-text {
-      color: #000000 !important;
-      opacity: 0.03 !important;
+      border-color: rgba(0, 0, 0, 0.06) !important;
     }
     :host-context(.theme-light) .footer-brand-title {
-      color: #111827 !important;
+      color: #0d0d0d !important;
     }
     :host-context(.theme-light) .footer-pill-badge {
-      background: rgba(0, 0, 0, 0.04) !important;
+      background: rgba(0, 0, 0, 0.03) !important;
       border-color: rgba(0, 0, 0, 0.08) !important;
       color: #4b5563 !important;
     }
@@ -132,17 +121,18 @@ import { RouterModule } from '@angular/router';
       color: #4b5563 !important;
     }
     :host-context(.theme-light) .footer-link:hover {
-      color: #000000 !important;
+      color: #0d0d0d !important;
     }
     :host-context(.theme-light) .footer-btn {
-      background: rgba(0, 0, 0, 0.04) !important;
-      border-color: rgba(0, 0, 0, 0.12) !important;
-      color: #111827 !important;
+      background: #000000 !important;
+      border-color: #000000 !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.1) !important;
     }
     :host-context(.theme-light) .footer-btn:hover {
-      background: #111827 !important;
+      background: #1f2937 !important;
       color: #ffffff !important;
-      border-color: #111827 !important;
+      border-color: #1f2937 !important;
     }
 
     @media (max-width: 768px) {
