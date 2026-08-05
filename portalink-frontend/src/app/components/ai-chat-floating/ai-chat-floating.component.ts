@@ -351,7 +351,7 @@ export class AiChatFloatingComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (typeof window !== 'undefined') {
-      this.currentTheme = localStorage.getItem('portfolio-theme') || 'dark';
+      this.currentTheme = localStorage.getItem('portfolio-theme') || 'light';
       window.addEventListener('portfolio-theme-change', this.onThemeChange);
     }
   }

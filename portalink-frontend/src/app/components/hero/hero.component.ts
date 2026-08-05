@@ -92,7 +92,6 @@ import { RouterModule } from '@angular/router';
                alt="Portalink Ecosystem"
                class="hidden md:block w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
             />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none"></div>
           </div>
         </div>
       </div>

@@ -878,7 +878,7 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.scrollToBottom();
 
     if (typeof window !== 'undefined') {
-      this.currentTheme = localStorage.getItem('portfolio-theme') || 'dark';
+      this.currentTheme = localStorage.getItem('portfolio-theme') || 'light';
       window.addEventListener('portfolio-theme-change', this.onThemeChange);
     }
 

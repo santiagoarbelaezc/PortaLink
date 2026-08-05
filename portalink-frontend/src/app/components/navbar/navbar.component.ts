@@ -718,7 +718,7 @@ export class NavbarComponent implements OnInit {
 
   constructor() {
     if (typeof window !== 'undefined') {
-      let savedTheme = localStorage.getItem('portfolio-theme') || 'dark';
+      let savedTheme = localStorage.getItem('portfolio-theme') || 'light';
       if (savedTheme === 'red') {
         savedTheme = 'dark';
       }

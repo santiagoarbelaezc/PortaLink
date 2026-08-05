@@ -58,6 +58,16 @@
         }
       }, false);
     }
+
+    // 4. Default Theme Initialization (Light Theme by Default)
+    (function() {
+      var saved = localStorage.getItem('portfolio-theme');
+      var theme = saved ? saved : 'light';
+      document.documentElement.classList.remove('theme-dark', 'theme-light', 'theme-red');
+      if (theme !== 'dark') {
+        document.documentElement.classList.add('theme-' + theme);
+      }
+    })();
   </script>
 </head>
 <body>

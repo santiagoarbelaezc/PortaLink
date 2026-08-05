@@ -175,7 +175,7 @@ export class FooterComponent implements OnInit, OnDestroy {
   ngOnInit() {
     if (typeof window !== 'undefined') {
       this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
-      this.currentTheme = localStorage.getItem('portfolio-theme') || 'dark';
+      this.currentTheme = localStorage.getItem('portfolio-theme') || 'light';
       window.addEventListener('portfolio-language-change', this.onLanguageChange);
       window.addEventListener('portfolio-theme-change', this.onThemeChange);
     }
