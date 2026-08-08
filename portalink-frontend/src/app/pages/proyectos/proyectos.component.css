@@ -169,14 +169,14 @@
 }
 
 .showcase-btn-gallery {
-  background: var(--card-bg, rgba(255, 255, 255, 0.03));
-  border-color: var(--card-border, rgba(255, 255, 255, 0.1));
-  color: var(--text-primary, #ffffff);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
 }
 .showcase-btn-gallery:hover {
-  background: var(--text-primary, #ffffff);
-  color: var(--bg-primary, #050505);
-  border-color: var(--text-primary, #ffffff);
+  background: #00f5ff;
+  color: #000000;
+  border-color: #00f5ff;
 }
 
 .showcase-card {
@@ -232,15 +232,15 @@
 }
 
 .theme-light .showcase-btn-gallery {
-  background: #000000;
-  border-color: #000000;
-  color: #ffffff;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.14) !important;
+  color: #1f2937 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
 }
 .theme-light .showcase-btn-gallery:hover {
-  background: #1f2937;
-  border-color: #1f2937;
-  color: #ffffff;
+  background: #f3f4f6 !important;
+  border-color: rgba(0, 0, 0, 0.28) !important;
+  color: #000000 !important;
 }
 
 .theme-light .showcase-card {
@@ -296,5 +296,49 @@
 .showcase-card:hover h3,
 .theme-light .showcase-card:hover h3 {
   color: var(--accent-color, #00f5ff) !important;
+}
+
+/* MOBILE BANNER PROTOTIPOS DE DISEÑOS (DARK THEME DEFAULT) */
+.prototipos-mobile-banner {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.banner-icon-box {
+  background: rgba(0, 245, 255, 0.15);
+  color: #00f5ff;
+}
+.banner-title {
+  color: #ffffff;
+}
+.banner-subtitle {
+  color: rgba(255, 255, 255, 0.6);
+}
+.banner-arrow-box {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+/* LIGHT THEME OVERRIDES FOR MOBILE BANNER */
+.theme-light .prototipos-mobile-banner {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+}
+.theme-light .prototipos-mobile-banner:hover {
+  border-color: rgba(0, 0, 0, 0.25) !important;
+}
+.theme-light .banner-icon-box {
+  background: #f3f4f6 !important;
+  color: #111827 !important;
+}
+.theme-light .banner-title {
+  color: #0d0d0d !important;
+}
+.theme-light .banner-subtitle {
+  color: #6b7280 !important;
+}
+.theme-light .banner-arrow-box {
+  background: #000000 !important;
+  color: #ffffff !important;
 }
 
