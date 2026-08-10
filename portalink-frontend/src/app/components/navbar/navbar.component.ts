@@ -12,116 +12,94 @@ import { AuthService } from '../../services/auth.service';
     <!-- ═══════════════════════════════════════════ -->
     <!-- DESKTOP: Top pill navbar (md+)              -->
     <!-- ═══════════════════════════════════════════ -->
-    <nav class="hidden md:block fixed top-0 left-0 w-full z-[9000] px-12 py-5 backdrop-blur-xl transition-all duration-500"
-         style="background: var(--nav-bg); border-bottom: 1px solid var(--card-border);">
+    <nav class="hidden md:block fixed top-0 left-0 w-full z-[9000] px-10 lg:px-20 py-3.5 backdrop-blur-xl transition-all duration-500"
+         [ngClass]="currentTheme === 'light' 
+           ? 'bg-white/90 border-b border-neutral-200/80 text-neutral-900 shadow-sm' 
+           : 'bg-black/90 border-b border-neutral-800/80 text-white shadow-md'">
       <div class="w-full flex items-center justify-between">
 
-        <!-- Left Side: Brand Logo (Larger) -->
+        <!-- Left Side: Brand Logo & Typography -->
         <div class="flex items-center flex-1">
-          <a (click)="scrollTo('#hero', $event)" routerLink="/" class="flex items-center gap-2 cursor-pointer group no-underline">
+          <a (click)="scrollTo('#hero', $event)" routerLink="/" class="flex items-center gap-3 cursor-pointer group no-underline">
             <img [src]="currentTheme === 'light' ? 'assets/icons/navbar-logolight.png' : 'assets/icons/navbar-logodark.png'" 
                  alt="Portalink" 
-                 class="h-11 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105" />
+                 class="h-8 sm:h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105" />
+            <span class="font-headline font-bold text-sm tracking-[0.24em] uppercase transition-colors"
+                  [ngClass]="currentTheme === 'light' ? 'text-neutral-900' : 'text-white'">
+              PORTALINK
+            </span>
           </a>
         </div>
 
-        <!-- Center: Nav Links (Inicio, Propuesta, Links, RotBot, Servicios) -->
-        <div class="flex items-center gap-10 justify-center">
+        <!-- Center: Pure Minimalist Nav Links with Active Underline (Increased Spacing & Lighter Font Weight) -->
+        <div class="flex items-center gap-10 lg:gap-16 justify-center">
           <a *ngFor="let item of desktopItems"
              (click)="scrollTo(item.link, $event)"
-             class="nav-link font-headline text-sm font-medium tracking-[0.08em] uppercase cursor-pointer py-1 flex items-center gap-2 group"
-             [class.active]="activeSection === item.link">
+             class="relative py-2 font-headline font-medium text-xs lg:text-[13px] tracking-[0.15em] uppercase cursor-pointer transition-all duration-300 group"
+             [ngClass]="activeSection === item.link 
+               ? (currentTheme === 'light' ? 'text-neutral-950 font-semibold' : 'text-white font-semibold') 
+               : (currentTheme === 'light' ? 'text-neutral-500 hover:text-neutral-950' : 'text-neutral-400 hover:text-white')">
             
-            <!-- Custom Image Icon for RotBot (Chat) -->
-            <img *ngIf="item.icon === 'chat'" 
-                 [src]="currentTheme === 'light' ? 'assets/icons/logo-link-light.png' : 'assets/icons/logo-link-dark.png'" 
-                 alt="RotBot" 
-                 class="w-[20px] h-[20px] object-contain opacity-85 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300" />
-
-            <!-- Vector SVG Icons for standard items -->
-            <svg *ngIf="item.icon !== 'chat'" 
-                 width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-                 class="opacity-75 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">
-              <ng-container *ngIf="item.icon === 'home'">
-                <path d="M3 10.5L12 3l9 7.5v9a2 2 0 0 1-2 2h-4a1 1 0 0 1-1-1v-4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v4a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2v-9z"></path>
-              </ng-container>
-              <ng-container *ngIf="item.icon === 'proposal'">
-                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"></path>
-                <rect x="9" y="3" width="6" height="4" rx="1"></rect>
-                <path d="M9 14l2 2 4-4"></path>
-              </ng-container>
-              <ng-container *ngIf="item.icon === 'link'">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-              </ng-container>
-              <ng-container *ngIf="item.icon === 'planes'">
-                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                <polyline points="2 17 12 22 22 17"></polyline>
-                <polyline points="2 12 12 17 22 12"></polyline>
-              </ng-container>
-              <ng-container *ngIf="item.icon === 'disenos'">
-                <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
-                <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
-                <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
-                <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
-              </ng-container>
-            </svg>
             <span>{{ item.name }}</span>
+
+            <!-- Sleek Minimalist Active Underline Bar -->
+            <span [ngClass]="activeSection === item.link ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0 group-hover:opacity-40 group-hover:scale-x-75'"
+                  class="absolute -bottom-1 left-0 w-full h-[2px] rounded-full transition-all duration-300 origin-center"
+                  [style.background]="currentTheme === 'light' ? '#000000' : '#ffffff'">
+            </span>
           </a>
         </div>
 
-        <!-- Right Side: Theme Switcher, Language Switcher, Regístrate, Contacto & User Profile -->
-        <div class="flex items-center justify-end flex-1 gap-3 sm:gap-3.5">
+        <!-- Right Side: Theme Switcher, Ingresar & Registrarse Button / User Dropdown -->
+        <div class="flex items-center justify-end flex-1 gap-6 sm:gap-8">
           <!-- Monochromatic Minimalist Theme Switcher -->
           <button (click)="toggleTheme()" 
-                  class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer border group relative overflow-hidden hover:scale-105 active:scale-95 shadow-sm"
-                  [ngClass]="currentTheme === 'light' 
-                    ? 'bg-neutral-100 border-neutral-300 text-neutral-900 hover:bg-neutral-200 hover:border-neutral-400' 
-                    : 'bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/40'"
+                  class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer group hover:scale-105 active:scale-95 opacity-70 hover:opacity-100"
                   [title]="currentTheme === 'light' ? 'Cambiar a Tema Oscuro' : 'Cambiar a Tema Claro'">
             
             <!-- Crescent Moon (Light Mode -> switch to Dark) -->
             <div *ngIf="currentTheme === 'light'" class="flex items-center justify-center text-neutral-900 transition-transform duration-300 group-hover:-rotate-12">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
               </svg>
             </div>
 
             <!-- Sun (Dark Mode -> switch to Light) -->
             <div *ngIf="currentTheme === 'dark'" class="flex items-center justify-center text-white transition-transform duration-300 group-hover:rotate-45">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
             </div>
           </button>
 
-          <!-- Regístrate Button (Only when not authenticated) -->
+          <!-- Ingresar Text Link (When not authenticated) -->
           <button *ngIf="!authService.isAuthenticated()" 
-                  (click)="openRegisterModal()" 
-                  class="px-4 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-300 border hover:bg-white/5 cursor-pointer"
-                  [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.12)'"
-                  [style.color]="currentTheme === 'light' ? '#1f2937' : '#ffffff'">
-            {{ currentLanguage === 'es' ? 'Regístrate' : 'Register' }}
+                  (click)="openLoginModal()" 
+                  class="font-headline font-medium text-xs uppercase tracking-[0.15em] transition-opacity duration-300 opacity-70 hover:opacity-100 cursor-pointer bg-transparent border-none p-0"
+                  [style.color]="currentTheme === 'light' ? '#111827' : '#ffffff'">
+            {{ getLoginLabel() }}
           </button>
 
-          <!-- Contacto Button -->
-          <button (click)="scrollTo('#contact', $event)" 
-                  class="px-5 py-2 rounded-xl font-bold text-xs uppercase tracking-widest transition-all duration-300 hover:opacity-90 cursor-pointer shadow-md"
-                  style="background: var(--text-primary); color: var(--bg-primary);">
-            {{ getContactLabel() }}
+          <!-- Registrarse Minimal Pill Button (When not authenticated) -->
+          <button *ngIf="!authService.isAuthenticated()" 
+                  (click)="openRegisterModal()" 
+                  class="px-5 py-1.5 rounded-full font-headline font-medium text-xs uppercase tracking-[0.15em] transition-all duration-300 border cursor-pointer hover:scale-105 active:scale-95 shadow-sm"
+                  [ngClass]="currentTheme === 'light' 
+                    ? 'border-neutral-900/80 text-neutral-900 hover:bg-neutral-900 hover:text-white' 
+                    : 'border-white/80 text-white hover:bg-white hover:text-black'">
+            {{ currentLanguage === 'es' ? 'REGISTRARSE' : 'REGISTER' }}
           </button>
 
           <!-- User Dropdown (When authenticated) -->
           <div *ngIf="authService.isAuthenticated()" class="relative user-dropdown-container">
             <button (click)="toggleUserDropdown($event)"
-                    class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl transition-all duration-300 border hover:bg-white/5 cursor-pointer"
-                    [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.12)'"
+                    class="flex items-center gap-2.5 px-3.5 py-1.5 rounded-full transition-all duration-300 border hover:bg-white/5 cursor-pointer"
+                    [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.3)'"
                     [style.color]="currentTheme === 'light' ? '#1f2937' : '#ffffff'">
-              <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-[10px] font-bold text-white shadow-md">
+              <div class="w-5 h-5 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-[9px] font-semibold text-white shadow-md">
                 {{ getUserInitials() }}
               </div>
-              <span class="text-xs font-bold uppercase tracking-wider truncate max-w-[100px]">{{ authService.currentUser()?.nombre }}</span>
+              <span class="font-headline text-xs font-semibold uppercase tracking-[0.12em] truncate max-w-[100px]">{{ authService.currentUser()?.nombre }}</span>
               <svg class="w-3.5 h-3.5 opacity-60 transition-transform duration-300" [class.rotate-180]="showUserDropdown" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
@@ -582,16 +560,14 @@ export class NavbarComponent implements OnInit {
       { name: 'Diseños',   link: '/prototipos', icon: 'disenos'  },
       { name: 'Propuesta', link: '/proposal',   icon: 'proposal' },
       { name: 'Links',     link: '/links',      icon: 'link'     },
-      { name: 'RotBot',    link: '/rotbot',     icon: 'chat'     },
-      { name: 'Servicios', link: '/planes',     icon: 'planes'   }
+      { name: 'RotBot',    link: '/rotbot',     icon: 'chat'     }
     ],
     en: [
       { name: 'Home',      link: '#hero',       icon: 'home'     },
       { name: 'Designs',   link: '/prototipos', icon: 'disenos'  },
       { name: 'Proposal',  link: '/proposal',   icon: 'proposal' },
       { name: 'Links',     link: '/links',      icon: 'link'     },
-      { name: 'RotBot',    link: '/rotbot',     icon: 'chat'     },
-      { name: 'Services',  link: '/planes',     icon: 'planes'   }
+      { name: 'RotBot',    link: '/rotbot',     icon: 'chat'     }
     ]
   };
 
