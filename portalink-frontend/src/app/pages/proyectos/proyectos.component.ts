@@ -130,75 +130,74 @@ import * as AOS from 'aos';
         <div class="showcase-line absolute bottom-0 left-0 right-0 h-px"></div>
       </section>
 
-      <section class="rotbot-banner relative">
+      <!-- ═══════════════════════════════════════════════════════════ -->
+      <!-- BANNER ROTBOT VIDEO (ESTILO ULTRALIMPIO APPLE)               -->
+      <!-- ═══════════════════════════════════════════════════════════ -->
+      <section class="rotbot-banner relative overflow-hidden py-16 md:py-24 px-6 sm:px-12 lg:px-20">
         <video #robotVideo autoplay [muted]="true" onvolumechange="this.muted=true; this.volume=0;" volume="0" loop playsinline class="video-bg">
           <source src="assets/videos/video-robot.mp4" type="video/mp4">
         </video>
-        <div class="overlay"></div>
+        <div class="overlay bg-gradient-to-r from-black/90 via-black/70 to-black/85"></div>
         
-        <div class="container mx-auto px-6 relative z-10 w-full h-full flex items-center py-16 md:py-24">
-          <div class="grid grid-cols-1 lg:grid-cols-[45%_55%] gap-12 lg:gap-20 w-full items-center">
+        <div class="max-w-[1500px] mx-auto relative z-10 w-full flex items-center">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 w-full items-center">
             
-            <!-- Left Side: Header -->
-            <div class="text-left max-w-xl">
-              <span class="text-[10px] uppercase tracking-[0.4em] font-bold block mb-4" style="color: var(--text-secondary);">
-                {{ getTranslation().agentLabel }}
-              </span>
-              <h2 class="text-4xl sm:text-5xl md:text-6xl font-headline uppercase leading-[1.05] tracking-tighter mb-4 text-white">
-                {{ getTranslation().title }}<span style="color: var(--accent-color);">Rotbot</span>{{ getTranslation().titleAsistente }}
+            <!-- Encabezado RotBot -->
+            <div class="text-left lg:col-span-6 space-y-4" data-aos="fade-right" data-aos-duration="900">
+              <h2 class="text-4xl sm:text-5xl lg:text-6xl font-headline font-semibold tracking-tight text-white leading-[1.08]">
+                Habla con <span class="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">RotBot</span>, tu asistente inteligente
               </h2>
+
+              <p class="text-base sm:text-lg font-sans font-normal text-neutral-300 max-w-lg leading-relaxed">
+                Interactúa en tiempo real con nuestra inteligencia artificial para consultar servicios, agendar citas o cotizar tu proyecto.
+              </p>
             </div>
             
-            <!-- Right Side: Interaction Grid -->
-            <div class="flex flex-col gap-6 lg:items-end">
-              <div class="w-full lg:max-w-xl flex flex-col gap-4 text-left">
-                
-                <!-- Option Card 1 -->
-                <div (click)="openChatWithMessage(getTranslation().option1Msg)" 
-                     class="glass-option-card border p-6 rounded-[24px] transition-all duration-300 hover:translate-x-2 flex items-center justify-between group cursor-pointer"
-                     style="border-color: var(--card-border); background: rgba(0,0,0,0.45);">
-                  <div class="flex items-center gap-4">
-                    <div class="w-2.5 h-2.5 rounded-full transition-all duration-300 group-hover:scale-150 shadow-[0_0_8px_var(--accent-color)]" style="background-color: var(--accent-color);"></div>
-                    <span class="text-sm sm:text-base font-bold tracking-wide uppercase text-white opacity-85 group-hover:opacity-100 transition-opacity">
-                      {{ getTranslation().option1Label }}
-                    </span>
-                  </div>
-                  <svg class="w-5 h-5 text-white/50 group-hover:text-white transition-all transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
+            <!-- Grid de Opciones de Interacción -->
+            <div class="lg:col-span-6 flex flex-col gap-4" data-aos="fade-left" data-aos-duration="900" data-aos-delay="150">
+              
+              <!-- Opción 1 -->
+              <div (click)="openChatWithMessage(getTranslation().option1Msg)" 
+                   class="glass-option-card border border-white/15 p-5 sm:p-6 rounded-[24px] bg-black/60 backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:bg-black/80 flex items-center justify-between group cursor-pointer shadow-lg">
+                <div class="flex items-center gap-4">
+                  <div class="w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_10px_#00f5ff] transition-transform duration-300 group-hover:scale-125"></div>
+                  <span class="text-sm sm:text-base font-headline font-medium tracking-wide text-white/95 group-hover:text-white transition-colors">
+                    {{ getTranslation().option1Label }}
+                  </span>
                 </div>
-                
-                <!-- Option Card 2 -->
-                <div (click)="openChatWithMessage(getTranslation().option2Msg)" 
-                     class="glass-option-card border p-6 rounded-[24px] transition-all duration-300 hover:translate-x-2 flex items-center justify-between group cursor-pointer"
-                     style="border-color: var(--card-border); background: rgba(0,0,0,0.45);">
-                  <div class="flex items-center gap-4">
-                    <div class="w-2.5 h-2.5 rounded-full transition-all duration-300 group-hover:scale-150 shadow-[0_0_8px_var(--accent-color)]" style="background-color: var(--accent-color);"></div>
-                    <span class="text-sm sm:text-base font-bold tracking-wide uppercase text-white opacity-85 group-hover:opacity-100 transition-opacity">
-                      {{ getTranslation().option2Label }}
-                    </span>
-                  </div>
-                  <svg class="w-5 h-5 text-white/50 group-hover:text-white transition-all transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
-                </div>
-                
-                <!-- Option Card 3 -->
-                <div (click)="openChatWithMessage(getTranslation().option3Msg)" 
-                     class="glass-option-card border p-6 rounded-[24px] transition-all duration-300 hover:translate-x-2 flex items-center justify-between group cursor-pointer"
-                     style="border-color: var(--card-border); background: rgba(0,0,0,0.45);">
-                  <div class="flex items-center gap-4">
-                    <div class="w-2.5 h-2.5 rounded-full transition-all duration-300 group-hover:scale-150 shadow-[0_0_8px_var(--accent-color)]" style="background-color: var(--accent-color);"></div>
-                    <span class="text-sm sm:text-base font-bold tracking-wide uppercase text-white opacity-85 group-hover:opacity-100 transition-opacity">
-                      {{ getTranslation().option3Label }}
-                    </span>
-                  </div>
-                  <svg class="w-5 h-5 text-white/50 group-hover:text-white transition-all transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
-                </div>
-                
+                <svg class="w-5 h-5 text-white/50 group-hover:text-white transition-all transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
               </div>
+              
+              <!-- Opción 2 -->
+              <div (click)="openChatWithMessage(getTranslation().option2Msg)" 
+                   class="glass-option-card border border-white/15 p-5 sm:p-6 rounded-[24px] bg-black/60 backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:bg-black/80 flex items-center justify-between group cursor-pointer shadow-lg">
+                <div class="flex items-center gap-4">
+                  <div class="w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_10px_#00f5ff] transition-transform duration-300 group-hover:scale-125"></div>
+                  <span class="text-sm sm:text-base font-headline font-medium tracking-wide text-white/95 group-hover:text-white transition-colors">
+                    {{ getTranslation().option2Label }}
+                  </span>
+                </div>
+                <svg class="w-5 h-5 text-white/50 group-hover:text-white transition-all transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </div>
+              
+              <!-- Opción 3 -->
+              <div (click)="openChatWithMessage(getTranslation().option3Msg)" 
+                   class="glass-option-card border border-white/15 p-5 sm:p-6 rounded-[24px] bg-black/60 backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:bg-black/80 flex items-center justify-between group cursor-pointer shadow-lg">
+                <div class="flex items-center gap-4">
+                  <div class="w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_10px_#00f5ff] transition-transform duration-300 group-hover:scale-125"></div>
+                  <span class="text-sm sm:text-base font-headline font-medium tracking-wide text-white/95 group-hover:text-white transition-colors">
+                    {{ getTranslation().option3Label }}
+                  </span>
+                </div>
+                <svg class="w-5 h-5 text-white/50 group-hover:text-white transition-all transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </div>
+              
             </div>
             
           </div>
@@ -241,16 +240,6 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       prompt: 'Hola, quiero una tienda E-commerce como CamasCotas con catálogo, carrito de compras y panel de administración para mi negocio.'
     },
     {
-      id: 'sysmicon',
-      code: 'SYS_02', badge: 'PLATAFORMA',
-      tagline: 'Portal directivo para gestión de proyectos de arquitectura y diseño CAD.',
-      title: 'Sysmicon',
-      liveUrl: 'https://sysmicon.com/',
-      image: 'assets/images/proyectos/proyecto-sysmiconarquitectura.png',
-      description: 'Plataforma directiva con dashboard de cotizaciones, diseños CAD, galería visual inmersiva y comunidad de profesionales.',
-      prompt: 'Hola, necesito una plataforma de gestión de proyectos con dashboard ejecutivo y galería visual, similar a Sysmicon.'
-    },
-    {
       id: 'catalogodigital',
       code: 'SYS_03', badge: 'SISTEMA + IA',
       tagline: 'Catálogo digital inteligente con analítica y asistente IA en tiempo real.',
@@ -269,6 +258,16 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       image: 'assets/images/proyectos/proyecto-colchonesdistricol.png',
       description: 'E-commerce de colchones y descanso con catálogo completo, ficha de producto, consulta WhatsApp e integración con inventario en vivo.',
       prompt: 'Hola, quiero una tienda E-commerce de productos premium con catálogo, ficha de producto y WhatsApp, similar a Colchones Districol.'
+    },
+    {
+      id: 'sysmicon',
+      code: 'SYS_02', badge: 'PLATAFORMA',
+      tagline: 'Portal directivo para gestión de proyectos de arquitectura y diseño CAD.',
+      title: 'Sysmicon',
+      liveUrl: 'https://sysmicon.com/',
+      image: 'assets/images/proyectos/proyecto-sysmiconarquitectura.png',
+      description: 'Plataforma directiva con dashboard de cotizaciones, diseños CAD, galería visual inmersiva y comunidad de profesionales.',
+      prompt: 'Hola, necesito una plataforma de gestión de proyectos con dashboard ejecutivo y galería visual, similar a Sysmicon.'
     },
     {
       id: 'espumasyplasticos',
