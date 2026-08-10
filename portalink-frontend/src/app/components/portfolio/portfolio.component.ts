@@ -9,69 +9,56 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
     imports: [CommonModule, RouterModule],
     template: `
     <ng-container *ngIf="!isLoading; else skeleton">
-      <section id="portfolio" class="py-10 md:py-16 overflow-hidden relative">
-      <div class="container mx-auto px-6">
+      <section id="portfolio" class="py-12 md:py-20 overflow-hidden relative bg-white text-neutral-900 transition-colors duration-500">
+      <div class="container mx-auto px-6 max-w-[1500px]">
         <!-- Section Header -->
-        <div class="mb-4 md:mb-6">
-          <h2 class="text-4xl md:text-5xl font-headline uppercase leading-none tracking-tighter">{{ getTranslation().title }}</h2>
+        <div class="mb-8 md:mb-12">
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-headline font-semibold tracking-tight leading-snug" style="color: #0a0a0a !important;">
+            {{ getTranslation().title }}
+          </h2>
         </div>
 
         <!-- Native Smooth Horizontal Scroll Container -->
         <div #carouselTrack
              (scroll)="onTrackScroll()"
-             class="carousel-scroll-track flex items-center gap-4 sm:gap-6 md:gap-8 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar py-6 px-2 -mx-2 select-none overscroll-x-contain">
+             class="carousel-scroll-track flex items-stretch gap-6 md:gap-10 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar py-4 px-2 -mx-2 select-none overscroll-x-contain">
           
           <div *ngFor="let project of projects; let i = index"
                (click)="onProjectClick(project, i)"
                [class.active-card]="i === currentIndex"
                [class.inactive-card]="i !== currentIndex"
-               class="carousel-card snap-center relative flex-shrink-0 w-[88vw] sm:w-[78vw] lg:w-[850px] aspect-[4/3] sm:aspect-[16/9] rounded-[24px] sm:rounded-[36px] overflow-hidden border border-white/10 transition-all duration-500 cursor-pointer">
+               class="carousel-card snap-center relative flex-shrink-0 w-[88vw] sm:w-[75vw] lg:w-[780px] rounded-[28px] sm:rounded-[36px] overflow-hidden border border-neutral-200/80 bg-white shadow-[0_10px_35px_rgba(0,0,0,0.04)] transition-all duration-500 cursor-pointer flex flex-col justify-between">
             
-            <!-- Background Image (Clean & Crisp without dark shadow) -->
-            <img [src]="project.images && project.images.length > 0 ? project.images[0] : 'assets/images/fotos/photo2.jpg'" 
-                 [alt]="getProjectTitle(project)" 
-                 class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 card-bg-img" />
-            
-            <!-- Soft Minimal Bottom Gradient (Only for subtle text contrast) -->
-            <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent transition-opacity duration-500 content-overlay"></div>
-
-            <!-- Active Card Content (Directly over the image without any container box) -->
-            <div class="absolute inset-0 flex flex-col justify-end p-6 sm:p-10 lg:p-12 text-left transition-all duration-500 content-details">
+            <!-- Image Showcase (Aspect ratio 16/10) -->
+            <div class="relative w-full overflow-hidden bg-neutral-50 aspect-[16/10]">
+              <img [src]="project.images && project.images.length > 0 ? project.images[0] : 'assets/images/fotos/photo2.jpg'" 
+                   [alt]="getProjectTitle(project)" 
+                   class="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 hover:scale-105 card-bg-img" />
               
-               <!-- Tag / Category -->
-              <span class="text-[10px] sm:text-[11px] uppercase tracking-[0.4em] font-bold block mb-1.5 sm:mb-3 text-[#00f5ff] drop-shadow-md">
-                {{ getTranslation().defaultTag }}
-              </span>
+              <!-- Badge superior derecho -->
+              <div class="absolute top-4 right-4 z-10">
+                <span class="px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md text-neutral-900 text-[11px] font-headline font-semibold tracking-wider shadow-sm border border-neutral-200/60">
+                  PORTALINK
+                </span>
+              </div>
+            </div>
 
-              <!-- Massive Bold Headline directly over image -->
-              <h3 class="font-headline uppercase leading-[0.95] tracking-tight text-2xl sm:text-4xl lg:text-[48px] text-white mb-4 sm:mb-6 drop-shadow-lg">
+            <!-- Content Details Container Below Image (Pure white, single button, no description) -->
+            <div class="p-6 sm:p-7 flex items-center justify-between gap-4 bg-white border-t border-neutral-100/80">
+              
+              <h3 class="font-headline font-semibold tracking-tight text-2xl sm:text-3xl leading-snug" style="color: #0a0a0a !important;">
                 {{ getProjectTitle(project) }}
               </h3>
 
-              <!-- Description & CTAs -->
-              <div class="flex flex-wrap items-center gap-3">
-                <!-- Ver Detalles Button -->
-                 <a [routerLink]="['/proyecto', getProjectId(project)]"
-                    (click)="$event.stopPropagation()"
-                    class="btn-portfolio-main inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-extrabold text-[10px] sm:text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all w-fit shadow-lg">
-                   <span>Ver Detalles del Proyecto</span>
-                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
-                 </a>
+              <!-- Único Botón: Ver Detalles -->
+              <a [routerLink]="['/proyecto', getProjectId(project)]"
+                 (click)="$event.stopPropagation()"
+                 class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-headline font-medium text-xs shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all no-underline border-none flex-shrink-0"
+                 style="background-color: #09090b !important; color: #ffffff !important;">
+                <span style="color: #ffffff !important;">Ver Detalles</span>
+                <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+              </a>
 
-                <!-- Ver Ahora (Live Site) Button -->
-                <a *ngIf="project.liveUrl" [href]="project.liveUrl" target="_blank"
-                   (click)="$event.stopPropagation()"
-                   class="btn-portfolio-sub inline-flex items-center justify-center px-6 py-3 rounded-full font-bold text-[10px] sm:text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all w-fit shadow-md">
-                  {{ getTranslation().viewNow }}
-                </a>
-              </div>
-
-            </div>
-
-            <!-- Custom Logo Overlay on top right (Aesthetic detail) -->
-            <div class="absolute top-4 right-4 sm:top-6 sm:right-6 opacity-80 text-white flex items-center gap-1 text-[10px] sm:text-xs font-semibold tracking-wider bg-black/30 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
-              <span>PORTALINK</span>
-              <span class="text-cyan-400">+</span>
             </div>
 
           </div>
@@ -82,8 +69,8 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
           <button *ngFor="let dot of projects; let i = index"
                   (click)="goTo(i)"
                   [class.active-dot]="i === currentIndex"
-                  class="w-2 h-2 rounded-full transition-all duration-300 cursor-pointer"
-                  style="background-color: var(--text-primary, #ffffff); opacity: 0.25;"></button>
+                  class="w-2.5 h-2.5 rounded-full transition-all duration-300 cursor-pointer border border-neutral-300 dark:border-white/20"
+                  [ngClass]="i === currentIndex ? 'bg-neutral-900 dark:bg-white w-6' : 'bg-neutral-300 dark:bg-white/20'"></button>
         </div>
       </div>
       </section>

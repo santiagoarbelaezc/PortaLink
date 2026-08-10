@@ -15,6 +15,7 @@ import { Subscription } from 'rxjs';
 import { AnalyticsService } from '../../services/analytics.service';
 
 import { Router, RouterModule } from '@angular/router';
+import * as AOS from 'aos';
 
 @Component({
   selector: 'app-proyectos',
@@ -34,104 +35,73 @@ import { Router, RouterModule } from '@angular/router';
       <app-hero-video></app-hero-video>
       
       <!-- ═══════════════════════════════════════════════════════════ -->
-      <!-- GALERÍA DE PROYECTOS REALIZADOS (THEME ADAPTIVE)             -->
+      <!-- GALERÍA DE PROYECTOS REALIZADOS (ESTILO APPLE ULTRALIMPIO)   -->
       <!-- ═══════════════════════════════════════════════════════════ -->
-      <section class="projects-showcase-section relative py-10 md:py-16 px-6 sm:px-12 lg:px-20 overflow-hidden">
+      <section class="projects-showcase-section relative py-12 md:py-20 px-6 sm:px-12 lg:px-20 overflow-hidden bg-white text-neutral-900 transition-colors duration-500">
 
-        <!-- Línea decorativa superior -->
-        <div class="showcase-line absolute top-0 left-0 right-0 h-px"></div>
-
-        <!-- Encabezado editorial -->
-        <div class="max-w-[1500px] mx-auto mb-16">
+        <!-- Encabezado Editorial -->
+        <div class="max-w-[1500px] mx-auto mb-12 sm:mb-16">
           <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
-            <div>
-              <h2 class="showcase-title text-4xl sm:text-5xl lg:text-6xl font-headline font-black uppercase tracking-tight leading-[1.05]">
+            <div class="space-y-2">
+              <h2 class="text-4xl sm:text-5xl lg:text-6xl font-headline font-semibold tracking-tight leading-[1.08]" style="color: #0a0a0a !important;">
                 Trabajos Realizados
               </h2>
-              <p class="showcase-desc text-base sm:text-lg mt-3 font-light max-w-xl leading-relaxed">
-                Una selección de proyectos construidos a medida: e-commerce, sistemas de gestión y plataformas con inteligencia artificial.
+              <p class="text-base sm:text-lg font-sans font-normal text-neutral-600 max-w-xl leading-relaxed">
+                Una selección de proyectos construidos a medida: e-commerce, sistemas de gestión y plataformas de alto impacto.
               </p>
             </div>
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
-              <a routerLink="/prototipos" class="showcase-btn-gallery inline-flex items-center justify-center gap-2.5 px-6 py-3 rounded-full font-extrabold text-xs uppercase tracking-widest transition-all duration-200 cursor-pointer shadow-sm">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg>
+              <a routerLink="/prototipos" class="inline-flex items-center justify-center gap-2.5 px-6 py-3 rounded-full font-headline font-medium text-xs tracking-wider transition-all duration-300 cursor-pointer shadow-sm border border-neutral-200 bg-neutral-100 hover:bg-neutral-200 text-neutral-900">
+                <svg class="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg>
                 <span>Prototipos de Diseños</span>
               </a>
             </div>
           </div>
         </div>
 
-        <!-- Grid 2 columnas -->
-        <div class="max-w-[1500px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+        <!-- Grid de Proyectos Creativo Asimétrico con AOS (Estilo Apple) -->
+        <div class="max-w-[1500px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12">
 
-          <div *ngFor="let p of showcaseProjects" 
-               class="showcase-card group relative rounded-[28px] overflow-hidden cursor-pointer"
-               [routerLink]="['/proyecto', p.id]">
+          <div *ngFor="let p of showcaseProjects; let i = index" 
+               [ngClass]="getProjectGridClass(p.id)"
+               class="group relative rounded-[28px] sm:rounded-[36px] overflow-hidden border border-neutral-200/80 bg-white shadow-[0_10px_35px_rgba(0,0,0,0.04)] transition-all duration-500 hover:scale-[1.01] hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex flex-col justify-between cursor-pointer"
+               [routerLink]="['/proyecto', p.id]"
+               data-aos="fade-up"
+               data-aos-duration="900"
+               [attr.data-aos-delay]="(i % 2) * 150">
 
-            <!-- Imagen de fondo en proporción 16:9 -->
-            <div class="relative w-full overflow-hidden" style="aspect-ratio: 16/9;">
+            <!-- Imagen del proyecto limpia (aspect-ratio dinámico) -->
+            <div class="relative w-full overflow-hidden bg-neutral-50" [ngClass]="getProjectAspectClass(p.id)">
               <img [src]="p.image" [alt]="p.title"
                    loading="lazy" decoding="async"
                    class="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105">
 
-              <!-- Gradiente sobre imagen -->
-              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent"></div>
-              <div class="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-transparent"></div>
-
               <!-- Badge superior derecho -->
-              <div class="absolute top-4 right-4">
-                <span class="px-3 py-1 rounded-lg bg-white text-black text-[10px] font-extrabold uppercase tracking-widest shadow-md">
+              <div class="absolute top-4 right-4 z-10">
+                <span class="px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md text-neutral-900 text-[11px] font-headline font-semibold tracking-wider shadow-sm border border-neutral-200/60">
                   + {{ p.badge }}
                 </span>
               </div>
-
-              <!-- Contenido inferior sobre la imagen -->
-              <div class="absolute bottom-0 left-0 right-0 p-6">
-                <!-- Tagline -->
-                <div class="flex items-start gap-2.5 mb-2.5">
-                  <div class="w-0.5 h-6 bg-[var(--accent-color)] flex-shrink-0 rounded-full mt-0.5"></div>
-                  <p class="text-sm sm:text-base text-white/90 font-medium leading-snug">{{ p.tagline }}</p>
-                </div>
-                <!-- Título -->
-                <h3 class="text-3xl sm:text-4xl font-headline font-black uppercase tracking-tight text-white group-hover:text-[var(--accent-color)] transition-colors duration-200 leading-none">
-                  {{ p.title }}
-                </h3>
-              </div>
-
-              <!-- Overlay hover central con botón Ver Detalles Monocromático -->
-              <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-20">
-                <div class="px-6 py-3 rounded-full bg-white text-black font-bold text-xs uppercase tracking-widest flex items-center gap-2 shadow-2xl scale-95 group-hover:scale-100 transition-transform duration-300">
-                  <span>Ver Detalles del Proyecto</span>
-                  <svg class="w-4 h-4 ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
-                  </svg>
-                </div>
-              </div>
             </div>
 
-            <!-- Zona inferior: Barra de acciones monocromática, organizada y sutil -->
-            <div class="showcase-card-footer px-5 py-3.5 border-t border-white/10 flex items-center justify-end gap-3 rounded-b-[28px]">
-              <div class="flex items-center gap-2.5">
-                <!-- Botón En Vivo -->
-                <a *ngIf="p.liveUrl" [href]="p.liveUrl" target="_blank" rel="noopener noreferrer"
-                   (click)="$event.stopPropagation()"
-                   class="btn-live-link inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer group/btn">
-                  <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
-                  <span>En Vivo</span>
-                  <svg class="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H18m0 0v4.5M18 6l-7.5 7.5"/>
-                  </svg>
-                </a>
+            <!-- Información Inferior Limpia en Blanco Puro (Sin descripción, sin botón en vivo) -->
+            <div class="p-6 sm:p-7 flex items-center justify-between gap-4 bg-white border-t border-neutral-100/80">
+              
+              <h3 class="text-2xl sm:text-3xl font-headline font-semibold tracking-tight leading-snug" style="color: #0a0a0a !important;">
+                {{ p.title }}
+              </h3>
 
-                <!-- Botón Ver Más -->
-                <a [routerLink]="['/proyecto', p.id]" (click)="$event.stopPropagation()"
-                   class="btn-view-more inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer group/btn">
-                  <span>Ver Más</span>
-                  <svg class="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
-                  </svg>
-                </a>
-              </div>
+              <!-- Único Botón: Ver Detalles -->
+              <a [routerLink]="['/proyecto', p.id]" 
+                 (click)="$event.stopPropagation()"
+                 class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-headline font-medium text-xs transition-all duration-300 cursor-pointer shadow-sm hover:scale-[1.02] active:scale-[0.98] no-underline border-none flex-shrink-0"
+                 style="background-color: #09090b !important; color: #ffffff !important;">
+                <span>Ver Detalles</span>
+                <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+                </svg>
+              </a>
+
             </div>
 
           </div>
@@ -264,67 +234,67 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       id: 'camascotas',
       code: 'ECOM_01', badge: 'E-COMMERCE',
       tagline: 'Tienda de mobiliario premium para mascotas con catálogo interactivo.',
-      title: 'CAMASCOTAS',
+      title: 'CamasCotas',
       liveUrl: 'https://camascotas.com/',
       image: 'assets/images/proyectos/proyecto-camascotas.png',
       description: 'E-commerce completo de muebles y accesorios para mascotas con catálogo, carrito, panel de administración y diseño responsive.',
-      prompt: 'Hola, quiero una tienda E-commerce como CAMASCOTAS con catálogo, carrito de compras y panel de administración para mi negocio.'
+      prompt: 'Hola, quiero una tienda E-commerce como CamasCotas con catálogo, carrito de compras y panel de administración para mi negocio.'
     },
     {
       id: 'sysmicon',
       code: 'SYS_02', badge: 'PLATAFORMA',
       tagline: 'Portal directivo para gestión de proyectos de arquitectura y diseño CAD.',
-      title: 'SYSMICON',
+      title: 'Sysmicon',
       liveUrl: 'https://sysmicon.com/',
       image: 'assets/images/proyectos/proyecto-sysmiconarquitectura.png',
       description: 'Plataforma directiva con dashboard de cotizaciones, diseños CAD, galería visual inmersiva y comunidad de profesionales.',
-      prompt: 'Hola, necesito una plataforma de gestión de proyectos con dashboard ejecutivo y galería visual, similar a SYSMICON.'
+      prompt: 'Hola, necesito una plataforma de gestión de proyectos con dashboard ejecutivo y galería visual, similar a Sysmicon.'
     },
     {
       id: 'catalogodigital',
       code: 'SYS_03', badge: 'SISTEMA + IA',
       tagline: 'Catálogo digital inteligente con analítica y asistente IA en tiempo real.',
-      title: 'CATÁLOGO DIGITAL PLAXTILÍNEAS',
+      title: 'Catálogo Digital Plaxtilíneas',
       liveUrl: 'https://catalogoplaxtilineas.com/catalogo',
       image: 'assets/images/proyectos/proyecto-catalogodigital.png',
       description: 'Plataforma de catálogo digital con IA integrada. Gestión de productos, inventario multi-línea y reportes analíticos automáticos.',
-      prompt: 'Hola, necesito un sistema de catálogo digital con inteligencia artificial para gestionar mis productos, similar a CATÁLOGO DIGITAL.'
+      prompt: 'Hola, necesito un sistema de catálogo digital con inteligencia artificial para gestionar mis productos, similar a Catálogo Digital.'
     },
     {
       id: 'districol',
       code: 'ECOM_04', badge: 'E-COMMERCE',
       tagline: 'Tienda de colchones premium con consulta directa por WhatsApp.',
-      title: 'COLCHONES DISTRICOL',
+      title: 'Colchones Districol',
       liveUrl: 'https://colchonesdistricol.com/',
       image: 'assets/images/proyectos/proyecto-colchonesdistricol.png',
       description: 'E-commerce de colchones y descanso con catálogo completo, ficha de producto, consulta WhatsApp e integración con inventario en vivo.',
-      prompt: 'Hola, quiero una tienda E-commerce de productos premium con catálogo, ficha de producto y WhatsApp, similar a COLCHONES DISTRICOL.'
+      prompt: 'Hola, quiero una tienda E-commerce de productos premium con catálogo, ficha de producto y WhatsApp, similar a Colchones Districol.'
     },
     {
       id: 'espumasyplasticos',
       code: 'ECOM_05', badge: 'E-COMMERCE',
       tagline: 'Plataforma e-commerce e industrial para soluciones de espumas y plásticos.',
-      title: 'ESPUMAS Y PLÁSTICOS',
+      title: 'Espumas y Plásticos',
       liveUrl: 'https://espumasyplasticos.com/',
       image: 'assets/images/proyectos/proyecto-catalogodigital.png',
       description: 'Plataforma de comercio electrónico e industrial para soluciones en espumas, plásticos y materiales sintéticos.',
-      prompt: 'Hola, quiero una tienda e-commerce como ESPUMAS Y PLÁSTICOS con catálogo industrial y cotizador.'
+      prompt: 'Hola, quiero una tienda e-commerce como Espumas y Plásticos con catálogo industrial y cotizador.'
     },
     {
       id: 'plaxtilineas',
       code: 'CORP_06', badge: 'PORTAL CORPORATIVO',
       tagline: 'Portal corporativo e industrial de empaques y soluciones plásticas.',
-      title: 'PLAXTILÍNEAS',
+      title: 'Plaxtilíneas',
       liveUrl: 'https://plaxtilineas.com/',
       image: 'assets/images/proyectos/proyecto-sysmiconarquitectura.png',
       description: 'Portal institucional e industrial para la exhibición de líneas de bolsas, empaques y plásticos biodegradables.',
-      prompt: 'Hola, necesito un portal corporativo como PLAXTILÍNEAS con catálogo industrial y cotización en línea.'
+      prompt: 'Hola, necesito un portal corporativo como Plaxtilíneas con catálogo industrial y cotización en línea.'
     },
     {
       id: 'tiendaintima',
       code: 'ECOM_07', badge: 'TIENDA + IA',
       tagline: 'E-commerce de moda íntima con panel administrativo y asistente inteligente.',
-      title: 'TIENDA ÍNTIMA',
+      title: 'Tienda Íntima',
       liveUrl: 'https://tiendaintima.com/',
       image: 'assets/images/proyectos/proyecto-tiendaintima.png',
       description: 'Comercio electrónico para moda íntima con IA para gestión de productos, análisis de ventas e inventario en tiempo real.',
@@ -398,6 +368,12 @@ export class ProyectosComponent implements OnInit, OnDestroy {
     window.addEventListener('message', this.handleMessage);
 
     if (typeof window !== 'undefined') {
+      AOS.init({
+        duration: 900,
+        once: true,
+        easing: 'ease-out-cubic'
+      });
+
       this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
       window.addEventListener('portfolio-language-change', this.onLanguageChange);
 
@@ -418,6 +394,32 @@ export class ProyectosComponent implements OnInit, OnDestroy {
         }, 200);
       }
     }
+  }
+
+  getProjectGridClass(id: string): string {
+    switch (id) {
+      case 'camascotas':
+      case 'sysmicon':
+      case 'tiendaintima':
+        return 'col-span-12';
+      case 'catalogodigital':
+        return 'col-span-12 lg:col-span-7';
+      case 'districol':
+        return 'col-span-12 lg:col-span-5';
+      case 'espumasyplasticos':
+        return 'col-span-12 lg:col-span-5';
+      case 'plaxtilineas':
+        return 'col-span-12 lg:col-span-7';
+      default:
+        return 'col-span-12 lg:col-span-6';
+    }
+  }
+
+  getProjectAspectClass(id: string): string {
+    if (['camascotas', 'sysmicon', 'tiendaintima'].includes(id)) {
+      return 'aspect-[16/10] sm:aspect-[21/9]';
+    }
+    return 'aspect-[16/10]';
   }
 
   onLanguageChange = (event: any) => {
