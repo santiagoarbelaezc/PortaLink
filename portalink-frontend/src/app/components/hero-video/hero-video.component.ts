@@ -9,7 +9,7 @@ import * as AOS from 'aos';
   imports: [CommonModule, RouterModule],
   template: `
     <section id="hero" 
-             class="relative w-full min-h-screen flex items-center justify-center overflow-hidden transition-colors duration-500 pt-24 pb-16"
+             class="relative w-full flex items-center justify-center overflow-hidden transition-colors duration-500 pt-16 pb-6 md:pt-20 md:pb-8"
              [ngClass]="currentTheme === 'light' ? 'bg-white text-neutral-900' : 'bg-[#0a0a0a] text-white'">
       
       <!-- Subtle Ambient Accent -->
@@ -19,10 +19,10 @@ import * as AOS from 'aos';
       </div>
 
       <!-- Main Container: Apple-Style Split Layout -->
-      <div class="relative z-10 w-full max-w-[1400px] mx-auto px-6 sm:px-12 lg:px-16 flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-14 min-h-[calc(100vh-6rem)]">
+      <div class="relative z-10 w-full max-w-[1500px] mx-auto px-6 sm:px-12 lg:px-16 flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-14 py-2 md:py-4">
         
-        <!-- Left Side: Larger Prominent Video Showcase -->
-        <div class="w-full lg:w-[57%] flex items-center justify-center"
+        <!-- Left Side: Significantly Larger Video Showcase -->
+        <div class="w-full lg:w-[65%] flex items-center justify-center"
              data-aos="fade-right"
              data-aos-duration="1000"
              data-aos-easing="ease-out-cubic">
@@ -47,8 +47,8 @@ import * as AOS from 'aos';
 
         </div>
 
-        <!-- Right Side: Perfectly Aligned Content & High-Contrast Button -->
-        <div class="w-full lg:w-[43%] flex flex-col items-center lg:items-start text-center lg:text-left space-y-5 lg:pl-4"
+        <!-- Right Side: Perfectly Aligned Content & Refined Lighter Button -->
+        <div class="w-full lg:w-[35%] flex flex-col items-center lg:items-start text-center lg:text-left space-y-5 lg:pl-2"
              data-aos="fade-up"
              data-aos-duration="1000"
              data-aos-delay="150"
@@ -66,14 +66,14 @@ import * as AOS from 'aos';
             Explora nuestro catálogo exclusivo de soluciones tecnológicas. Encuentra las últimas novedades en desarrollo web, plataformas e Inteligencia Artificial, todo en un solo lugar.
           </p>
 
-          <!-- High-Contrast Pure White Text Dark Button -->
+          <!-- High-Contrast Lighter Font Weight Button (font-medium) -->
           <div class="pt-2 w-full flex justify-center lg:justify-start">
             <a (click)="scrollTo('#portfolio', $event)"
                routerLink="/prototipos"
-               class="px-8 py-3.5 rounded-xl font-headline font-bold text-sm tracking-wider transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl hover:scale-[1.03] active:scale-[0.98] inline-flex items-center justify-center gap-2.5 no-underline border-none"
+               class="px-8 py-3.5 rounded-xl font-headline font-medium text-sm tracking-wide transition-all duration-300 cursor-pointer shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] inline-flex items-center justify-center gap-2.5 no-underline border-none"
                style="background-color: #09090b !important; color: #ffffff !important;">
-              <span style="color: #ffffff !important; font-weight: 700;">Ver Productos</span>
-              <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
+              <span style="color: #ffffff !important; font-weight: 500;">Ver Productos</span>
+              <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color: #ffffff !important;">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
             </a>
