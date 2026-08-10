@@ -2,7 +2,7 @@ import { Component, inject, signal, OnInit, OnDestroy, effect, ViewChild, Elemen
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 
-import { HeroComponent } from '../../components/hero/hero.component';
+import { HeroVideoComponent } from '../../components/hero-video/hero-video.component';
 import { PortfolioComponent } from '../../components/portfolio/portfolio.component';
 import { AboutComponent } from '../../components/about/about.component';
 import { ContactComponent } from '../../components/contact/contact.component';
@@ -22,7 +22,7 @@ import { Router, RouterModule } from '@angular/router';
   imports: [
     CommonModule,
     RouterModule,
-    HeroComponent,
+    HeroVideoComponent,
     PortfolioComponent,
     AboutComponent,
     ContactComponent,
@@ -31,7 +31,7 @@ import { Router, RouterModule } from '@angular/router';
   template: `
     <div class="dynamic-bg"></div>
     <main class="relative text-white" *ngIf="portfolioData()">
-      <app-hero [data]="portfolioData().hero"></app-hero>
+      <app-hero-video></app-hero-video>
       
       <!-- ═══════════════════════════════════════════════════════════ -->
       <!-- GALERÍA DE PROYECTOS REALIZADOS (THEME ADAPTIVE)             -->

@@ -31,14 +31,14 @@ import { AuthService } from '../../services/auth.service';
           </a>
         </div>
 
-        <!-- Center: Pure Minimalist Nav Links with Active Underline (Increased Spacing & Lighter Font Weight) -->
-        <div class="flex items-center gap-10 lg:gap-16 justify-center">
+        <!-- Center: Pure Minimalist Nav Links with Active Underline -->
+        <div class="flex items-center gap-10 lg:gap-14 justify-center">
           <a *ngFor="let item of desktopItems"
              (click)="scrollTo(item.link, $event)"
-             class="relative py-2 font-headline font-medium text-xs lg:text-[13px] tracking-[0.15em] uppercase cursor-pointer transition-all duration-300 group"
+             class="relative py-2 font-headline font-semibold text-sm tracking-tight cursor-pointer transition-all duration-300 group"
              [ngClass]="activeSection === item.link 
-               ? (currentTheme === 'light' ? 'text-neutral-950 font-semibold' : 'text-white font-semibold') 
-               : (currentTheme === 'light' ? 'text-neutral-500 hover:text-neutral-950' : 'text-neutral-400 hover:text-white')">
+               ? (currentTheme === 'light' ? 'text-neutral-950 font-bold' : 'text-white font-bold') 
+               : (currentTheme === 'light' ? 'text-neutral-600 hover:text-neutral-950' : 'text-neutral-400 hover:text-white')">
             
             <span>{{ item.name }}</span>
 

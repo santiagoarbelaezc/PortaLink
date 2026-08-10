@@ -17,9 +17,9 @@ module.exports = {
         }
       },
       fontFamily: {
-        headline: ['"Inter Tight"', 'sans-serif'],
-        editorial: ['"Inter Tight"', 'sans-serif'],
-        sans: ['"Inter Tight"', 'sans-serif'],
+        headline: ['"Inter"', '"Plus Jakarta Sans"', 'sans-serif'],
+        editorial: ['"Plus Jakarta Sans"', '"Inter"', 'sans-serif'],
+        sans: ['"Inter"', '"Plus Jakarta Sans"', 'sans-serif'],
       },
       animation: {
         'draw-svg': 'draw 2s ease-out forwards',
