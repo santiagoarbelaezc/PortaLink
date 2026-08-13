@@ -247,11 +247,7 @@ import { AuthService } from '../../services/auth.service';
             <ng-container *ngIf="item.icon === 'home'">
               <path d="M3 10.5L12 3l9 7.5v9a2 2 0 0 1-2 2h-4a1 1 0 0 1-1-1v-4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v4a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2v-9z"></path>
             </ng-container>
-            <ng-container *ngIf="item.icon === 'proposal'">
-              <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"></path>
-              <rect x="9" y="3" width="6" height="4" rx="1"></rect>
-              <path d="M9 14l2 2 4-4"></path>
-            </ng-container>
+
             <ng-container *ngIf="item.icon === 'link'">
               <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
               <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
@@ -558,14 +554,12 @@ export class NavbarComponent implements OnInit {
     es: [
       { name: 'Inicio',    link: '#hero',       icon: 'home'     },
       { name: 'Diseños',   link: '/prototipos', icon: 'disenos'  },
-      { name: 'Propuesta', link: '/proposal',   icon: 'proposal' },
       { name: 'Links',     link: '/links',      icon: 'link'     },
       { name: 'RotBot',    link: '/rotbot',     icon: 'chat'     }
     ],
     en: [
       { name: 'Home',      link: '#hero',       icon: 'home'     },
       { name: 'Designs',   link: '/prototipos', icon: 'disenos'  },
-      { name: 'Proposal',  link: '/proposal',   icon: 'proposal' },
       { name: 'Links',     link: '/links',      icon: 'link'     },
       { name: 'RotBot',    link: '/rotbot',     icon: 'chat'     }
     ]
@@ -741,11 +735,7 @@ export class NavbarComponent implements OnInit {
       return;
     }
 
-    if (this.router.url.includes('/proposal')) {
-      this.activeSection = '/proposal';
-      this.updatePillPosition();
-      return;
-    }
+
 
     if (this.router.url.includes('/links')) {
       this.activeSection = '/links';
@@ -964,7 +954,7 @@ export class NavbarComponent implements OnInit {
     const isEs = this.currentLanguage === 'es';
     this.mobileItems = [
       { name: isEs ? 'Inicio' : 'Home',         link: '#hero',          icon: 'home' },
-      { name: isEs ? 'Propuesta' : 'Proposal',  link: '/proposal',      icon: 'proposal' },
+      { name: isEs ? 'Diseños' : 'Designs',     link: '/prototipos',    icon: 'disenos' },
       { name: 'Links',                          link: '/links',         icon: 'link' },
       { name: 'Chat',                           link: '/rotbot',        icon: 'chat' },
       { name: isEs ? 'Cuenta' : 'Account',      link: this.authService.isAuthenticated() ? '/perfil' : '/login', icon: 'user' }

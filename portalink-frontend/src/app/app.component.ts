@@ -169,10 +169,6 @@ export class AppComponent implements OnInit {
     return this.router.url.includes('/login') || this.router.url.includes('/register');
   }
 
-  isProposalRoute(): boolean {
-    return this.router.url.includes('/proposal');
-  }
-
   isLinkRoute(): boolean {
     return this.router.url.includes('/links') || this.router.url.includes('/link');
   }

@@ -50,12 +50,12 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
             <!-- Action CTAs -->
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-4" appReveal [delay]="350">
               
-              <!-- Primary CTA: Propuesta Digital -->
-              <a routerLink="/proposal" 
+              <!-- Primary CTA: Galería de Diseños -->
+              <a routerLink="/prototipos" 
                  class="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl font-headline font-medium text-xs tracking-wide transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] no-underline border-none"
                  style="background-color: #09090b !important; color: #ffffff !important;">
                 <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color: #ffffff !important;">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/>
                 </svg>
                 <span style="color: #ffffff !important; font-weight: 500;">{{ getTranslation().btnProposal }}</span>
               </a>
@@ -95,7 +95,7 @@ export class AboutComponent implements OnInit, OnDestroy {
       headline: 'Ingeniero de Sistemas, desarrollador web & creador digital',
       bioLine1: 'Diseño y desarrollo soluciones digitales a medida con tecnología moderna e inteligencia artificial, impulsando el crecimiento real de tu negocio.',
       bioLine2: 'Me enfoco en construir arquitecturas sólidas, experiencias de usuario fluidas e interfaces visualmente de alto nivel que convierten visitas en clientes.',
-      btnProposal: 'Propuesta Digital',
+      btnProposal: 'Galería de Diseños',
       btnCertificates: 'Certificados'
     },
     en: {
@@ -103,7 +103,7 @@ export class AboutComponent implements OnInit, OnDestroy {
       headline: 'Systems Engineer, web developer & digital creator',
       bioLine1: 'I design and develop custom digital solutions with modern technology and artificial intelligence, driving real business growth.',
       bioLine2: 'I focus on building solid architectures, seamless user experiences, and high-level visual interfaces that turn visitors into clients.',
-      btnProposal: 'Digital Proposal',
+      btnProposal: 'Design Gallery',
       btnCertificates: 'Certificates'
     }
   };

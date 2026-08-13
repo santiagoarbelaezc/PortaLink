@@ -7,7 +7,6 @@ import { PlanesComponent } from './pages/planes/planes.component';
 import { PlanesGaleriaComponent } from './pages/planes-galeria/planes-galeria.component';
 import { AdminComponent } from './pages/admin/admin.component';
 import { LoginComponent } from './pages/login/login.component';
-import { ProposalComponent } from './pages/proposal/proposal.component';
 import { authGuard } from './core/guards/auth.guard';
 import { PerfilComponent } from './pages/perfil/perfil.component';
 import { UserSiteComponent } from './pages/user-site/user-site.component';
@@ -41,11 +40,6 @@ export const routes: Routes = [
     path: 'deslinde-ia',
     component: DeslindeIaComponent,
     data: { animation: 'DeslindeIaPage' }
-  },
-  {
-    path: 'proposal',
-    component: ProposalComponent,
-    data: { animation: 'ProposalPage' }
   },
   {
     path: 'prototipos',

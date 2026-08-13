@@ -7,85 +7,90 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <footer id="footer" class="pt-16 pb-12 sm:pt-20 sm:pb-16 px-6 sm:px-12 lg:px-20 overflow-hidden relative border-t transition-colors duration-500 footer-container" style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--card-border);">
-      <div class="max-w-[1500px] mx-auto relative z-10">
+    <footer id="footer" class="bg-white text-neutral-900 pt-16 pb-12 sm:pt-20 sm:pb-16 px-6 sm:px-12 lg:px-20 border-t border-neutral-100 font-sans selection:bg-neutral-900 selection:text-white">
+      <div class="max-w-[1500px] mx-auto">
         
         <!-- Top Grid: 4 Columns -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-14 pb-12 sm:pb-16 border-b footer-border-grid" style="border-color: var(--card-border);">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-12 pb-12 sm:pb-16 border-b border-neutral-100">
           
-          <!-- Col 1: Brand & Bio -->
-          <div class="space-y-4">
-            <div class="flex items-center gap-2">
-              <span class="text-2xl sm:text-3xl font-headline font-black uppercase tracking-tighter footer-brand-title" style="color: var(--text-primary);">
-                SANTIAGO ARBELAEZ<span style="color: var(--accent-color, #00f5ff);">+</span>
-              </span>
+          <!-- Col 1: Brand & Bio (4 Cols) -->
+          <div class="lg:col-span-4 space-y-4">
+            <div class="space-y-1">
+              <h3 class="text-2xl sm:text-3xl font-headline font-semibold tracking-tight" style="color: #0a0a0a !important;">
+                Santiago Arbeláez
+              </h3>
+              <p class="text-xs font-headline font-medium text-neutral-400 tracking-wider">
+                PORTALINK • SOFTWARE & IA
+              </p>
             </div>
-            <p class="text-sm font-light leading-relaxed max-w-sm" style="color: var(--text-secondary);">
-              Plataforma de ingeniería de software a medida, desarrollo de e-commerce de alto rendimiento e integración de Inteligencia Artificial avanzada.
+            
+            <p class="text-xs font-sans text-neutral-500 leading-relaxed max-w-sm">
+              Plataforma de ingeniería de software a medida, desarrollo e-commerce de alto rendimiento e integración de Inteligencia Artificial avanzada para empresas y marcas.
             </p>
-            <div class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full border text-xs uppercase tracking-widest footer-pill-badge" style="background: var(--card-bg); border-color: var(--card-border); color: var(--text-secondary);">
-              <span class="w-2 h-2 rounded-full animate-pulse" style="background-color: var(--accent-color, #00f5ff);"></span>
-              Sistemas & IA Activos 24/7
+            
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/60 text-emerald-800 text-[11px] font-headline font-medium">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>Sistemas & IA Activos 24/7</span>
             </div>
           </div>
 
-          <!-- Col 2: Navegación & Proyectos -->
-          <div>
-            <h4 class="text-sm font-mono font-bold uppercase tracking-[0.25em] mb-5" style="color: var(--accent-color, #00f5ff);">
+          <!-- Col 2: Navegación (3 Cols) -->
+          <div class="lg:col-span-3">
+            <h4 class="text-sm font-headline font-semibold tracking-tight mb-5" style="color: #0a0a0a !important;">
               {{ getTranslation().navTitle }}
             </h4>
-            <ul class="space-y-3.5 text-sm font-light">
-              <li><a routerLink="/" class="footer-link transition-colors" style="color: var(--text-secondary);">Inicio</a></li>
-              <li><a routerLink="/proposal" class="footer-link transition-colors" style="color: var(--text-secondary);">Propuesta Digital</a></li>
-              <li><a routerLink="/planes-galeria" class="footer-link transition-colors" style="color: var(--text-secondary);">Galería de Proyectos</a></li>
-              <li><a routerLink="/planes" class="footer-link transition-colors" style="color: var(--text-secondary);">Planes & Servicios</a></li>
-              <li><a routerLink="/rotbot" class="footer-link transition-colors" style="color: var(--text-secondary);">Rotbot IA Copilot</a></li>
+            <ul class="space-y-3 text-xs font-headline font-medium text-neutral-500 p-0 m-0 list-none">
+              <li><a routerLink="/" class="hover:text-neutral-900 transition-colors no-underline">Inicio</a></li>
+              <li><a routerLink="/prototipos" class="hover:text-neutral-900 transition-colors no-underline">Galería de Diseños & Prototipos</a></li>
+              <li><a routerLink="/planes" class="hover:text-neutral-900 transition-colors no-underline">Planes & Servicios</a></li>
+              <li><a routerLink="/rotbot" class="hover:text-neutral-900 transition-colors no-underline">RotBot IA Copilot</a></li>
             </ul>
           </div>
 
-          <!-- Col 3: Legal & Cumplimiento -->
-          <div>
-            <h4 class="text-sm font-mono font-bold uppercase tracking-[0.25em] mb-5" style="color: var(--accent-color, #00f5ff);">
+          <!-- Col 3: Legal & Cumplimiento (3 Cols) -->
+          <div class="lg:col-span-3">
+            <h4 class="text-sm font-headline font-semibold tracking-tight mb-5" style="color: #0a0a0a !important;">
               {{ getTranslation().legalTitle }}
             </h4>
-            <ul class="space-y-3.5 text-sm font-light">
-              <li><a routerLink="/terminos" class="footer-link transition-colors" style="color: var(--text-secondary);">Términos y Condiciones</a></li>
-              <li><a routerLink="/privacidad" class="footer-link transition-colors" style="color: var(--text-secondary);">Política de Privacidad</a></li>
-              <li><a routerLink="/tratamiento-datos" class="footer-link transition-colors" style="color: var(--text-secondary);">Tratamiento de Datos (Habeas Data)</a></li>
-              <li><button (click)="openCookieSettings()" class="footer-link transition-colors cursor-pointer text-left" style="color: var(--text-secondary);">Configuración de Cookies</button></li>
-              <li><a routerLink="/deslinde-ia" class="footer-link transition-colors font-medium" style="color: var(--text-primary);">Exención de Responsabilidad IA</a></li>
+            <ul class="space-y-3 text-xs font-headline font-medium text-neutral-500 p-0 m-0 list-none">
+              <li><a routerLink="/terminos" class="hover:text-neutral-900 transition-colors no-underline">Términos y Condiciones</a></li>
+              <li><a routerLink="/privacidad" class="hover:text-neutral-900 transition-colors no-underline">Política de Privacidad</a></li>
+              <li><a routerLink="/tratamiento-datos" class="hover:text-neutral-900 transition-colors no-underline">Tratamiento de Datos (Habeas Data)</a></li>
+              <li><button (click)="openCookieSettings()" class="hover:text-neutral-900 transition-colors cursor-pointer text-left border-none bg-transparent p-0 text-xs font-headline font-medium text-neutral-500">Configuración de Cookies</button></li>
+              <li><a routerLink="/deslinde-ia" class="hover:text-neutral-900 transition-colors no-underline">Exención de Responsabilidad IA</a></li>
             </ul>
           </div>
 
-          <!-- Col 4: Contacto Directo & Redes -->
-          <div class="space-y-4">
-            <h4 class="text-sm font-mono font-bold uppercase tracking-[0.25em] mb-5" style="color: var(--accent-color, #00f5ff);">
+          <!-- Col 4: Contacto & Redes (2 Cols) -->
+          <div class="lg:col-span-2 space-y-4">
+            <h4 class="text-sm font-headline font-semibold tracking-tight mb-5" style="color: #0a0a0a !important;">
               {{ getTranslation().contactTitle }}
             </h4>
-            <p class="text-sm font-light" style="color: var(--text-secondary);">
-              ¿Tienes un proyecto en mente? Desarrollemos tu idea a medida.
-            </p>
-            <a href="https://wa.me/573054078225" target="_blank" class="inline-flex items-center gap-2.5 px-5 py-3 rounded-xl border text-sm font-bold uppercase tracking-wider transition-all footer-btn" style="background: var(--card-bg); border-color: var(--card-border); color: var(--text-primary);">
-              <span>WhatsApp Oficial</span>
-              <span>→</span>
+            
+            <a href="https://wa.me/573054078225" target="_blank" 
+               class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-headline font-semibold text-xs shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all no-underline cursor-pointer border-none"
+               style="background-color: #09090b !important; color: #ffffff !important;">
+              <span style="color: #ffffff !important; font-weight: 600;">WhatsApp Oficial</span>
+              <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
             </a>
-            <div class="pt-2 flex items-center gap-4 text-sm font-medium">
-              <a href="https://www.tiktok.com/@santiarbelaezz" target="_blank" class="footer-link transition-colors" style="color: var(--text-secondary);">TikTok</a>
-              <a href="https://www.instagram.com/santiarbelaezz/" target="_blank" class="footer-link transition-colors" style="color: var(--text-secondary);">Instagram</a>
-              <a href="https://www.linkedin.com/in/santiago-arbelaez-contreras-9830b5290/" target="_blank" class="footer-link transition-colors" style="color: var(--text-secondary);">LinkedIn</a>
+
+            <div class="pt-2 flex items-center gap-2 flex-wrap">
+              <a href="https://www.tiktok.com/@santiarbelaezz" target="_blank" class="px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 text-xs font-headline font-medium transition-all no-underline">TikTok</a>
+              <a href="https://www.instagram.com/santiarbelaezz/" target="_blank" class="px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 text-xs font-headline font-medium transition-all no-underline">Instagram</a>
+              <a href="https://www.linkedin.com/in/santiago-arbelaez-contreras-9830b5290/" target="_blank" class="px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 text-xs font-headline font-medium transition-all no-underline">LinkedIn</a>
             </div>
           </div>
 
         </div>
 
         <!-- Bottom Legal Bar -->
-        <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs sm:text-sm font-light" style="color: var(--text-secondary);">
+        <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-sans text-neutral-400">
           <div>
             &copy; {{ currentYear }} Santiago Arbeláez — PortaLink. Todos los derechos reservados.
           </div>
           
-          <div class="text-center sm:text-right max-w-lg text-xs leading-relaxed opacity-75" style="color: var(--text-secondary);">
-            Rotbot opera mediante modelos de IA generativa (Groq / Llama). Respuestas y cotizaciones son orientativas y no contractuales.
+          <div class="text-center sm:text-right max-w-lg text-[11px] leading-relaxed text-neutral-400">
+            RotBot opera mediante modelos de IA generativa (Groq / Llama). Respuestas y cotizaciones son orientativas.
           </div>
         </div>
 
@@ -93,71 +98,28 @@ import { RouterModule } from '@angular/router';
     </footer>
   `,
   styles: [`
-    .footer-link:hover {
-      color: var(--text-primary) !important;
-    }
-    .footer-btn:hover {
-      background: var(--text-primary) !important;
-      color: var(--bg-primary) !important;
-      border-color: var(--text-primary) !important;
-    }
-    :host-context(.theme-light) #footer {
-      background-color: #ffffff !important;
-      color: #111827 !important;
-      border-color: rgba(0, 0, 0, 0.06) !important;
-    }
-    :host-context(.theme-light) .footer-border-grid {
-      border-color: rgba(0, 0, 0, 0.06) !important;
-    }
-    :host-context(.theme-light) .footer-brand-title {
-      color: #0d0d0d !important;
-    }
-    :host-context(.theme-light) .footer-pill-badge {
-      background: rgba(0, 0, 0, 0.03) !important;
-      border-color: rgba(0, 0, 0, 0.08) !important;
-      color: #4b5563 !important;
-    }
-    :host-context(.theme-light) .footer-link {
-      color: #4b5563 !important;
-    }
-    :host-context(.theme-light) .footer-link:hover {
-      color: #0d0d0d !important;
-    }
-    :host-context(.theme-light) .footer-btn {
-      background: #000000 !important;
-      border-color: #000000 !important;
-      color: #ffffff !important;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.1) !important;
-    }
-    :host-context(.theme-light) .footer-btn:hover {
-      background: #1f2937 !important;
-      color: #ffffff !important;
-      border-color: #1f2937 !important;
-    }
-
-    @media (max-width: 768px) {
-      #footer {
-        padding-bottom: 120px !important;
-      }
+    :host {
+      display: block;
+      width: 100%;
     }
   `]
 })
 export class FooterComponent implements OnInit, OnDestroy {
   currentLanguage = 'es';
-  currentTheme = 'dark';
+  currentTheme = 'light';
   currentYear = new Date().getFullYear();
 
   translations: any = {
     es: {
       navTitle: 'Navegación',
       legalTitle: 'Legal & Protección',
-      contactTitle: 'Contacto Directo',
+      contactTitle: 'Contacto',
       handcrafted: 'Hecho a mano con pasión'
     },
     en: {
       navTitle: 'Navigation',
       legalTitle: 'Legal & Protection',
-      contactTitle: 'Direct Contact',
+      contactTitle: 'Contact',
       handcrafted: 'Handcrafted with passion'
     }
   };

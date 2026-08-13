@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 
 import { HeroVideoComponent } from '../../components/hero-video/hero-video.component';
-import { PortfolioComponent } from '../../components/portfolio/portfolio.component';
 import { AboutComponent } from '../../components/about/about.component';
 import { ContactComponent } from '../../components/contact/contact.component';
 import { FooterComponent } from '../../components/footer/footer.component';
@@ -24,7 +23,6 @@ import * as AOS from 'aos';
     CommonModule,
     RouterModule,
     HeroVideoComponent,
-    PortfolioComponent,
     AboutComponent,
     ContactComponent,
     FooterComponent
@@ -85,9 +83,9 @@ import * as AOS from 'aos';
             </div>
 
             <!-- Información Inferior Limpia en Blanco Puro (Sin descripción, sin botón en vivo) -->
-            <div class="p-6 sm:p-7 flex items-center justify-between gap-4 bg-white border-t border-neutral-100/80">
+            <div class="p-5 sm:p-6 flex items-center justify-between gap-3 bg-white border-t border-neutral-100/80">
               
-              <h3 class="text-2xl sm:text-3xl font-headline font-semibold tracking-tight leading-snug" style="color: #0a0a0a !important;">
+              <h3 class="text-xl sm:text-2xl font-headline font-semibold tracking-tight leading-snug" style="color: #0a0a0a !important;">
                 {{ p.title }}
               </h3>
 
@@ -401,14 +399,6 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       case 'sysmicon':
       case 'tiendaintima':
         return 'col-span-12';
-      case 'catalogodigital':
-        return 'col-span-12 lg:col-span-7';
-      case 'districol':
-        return 'col-span-12 lg:col-span-5';
-      case 'espumasyplasticos':
-        return 'col-span-12 lg:col-span-5';
-      case 'plaxtilineas':
-        return 'col-span-12 lg:col-span-7';
       default:
         return 'col-span-12 lg:col-span-6';
     }
@@ -418,7 +408,7 @@ export class ProyectosComponent implements OnInit, OnDestroy {
     if (['camascotas', 'sysmicon', 'tiendaintima'].includes(id)) {
       return 'aspect-[16/10] sm:aspect-[21/9]';
     }
-    return 'aspect-[16/10]';
+    return 'aspect-[21/10]';
   }
 
   onLanguageChange = (event: any) => {

@@ -17,128 +17,124 @@ import { SiteService } from '../../services/site.service';
   template: `
     <app-chat-limit-modal></app-chat-limit-modal>
     <app-ai-info-modal [isOpen]="isInfoModalOpen" (closeEvent)="isInfoModalOpen = false"></app-ai-info-modal>
-    <div class="fixed inset-0 w-full h-full flex flex-col overflow-hidden font-sans page-container">
-      <!-- Header -->
-      <div class="chat-header flex items-center justify-between border-b px-6 py-5 relative overflow-hidden">
-        <!-- Cyber Scanner Line -->
-        <div class="absolute top-0 left-0 w-full h-[1px] scanner-line"></div>
+    <div class="fixed inset-0 w-full h-full flex flex-col overflow-hidden font-sans bg-white text-neutral-900 selection:bg-neutral-900 selection:text-white page-container">
+      
+      <!-- CLEAN APPLE-STYLE HEADER -->
+      <header class="chat-header bg-white/95 backdrop-blur-xl border-b border-neutral-100 px-6 py-4 flex items-center justify-between z-30 flex-shrink-0">
         
-        <div class="flex items-center gap-3 relative z-10">
-          <div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center p-1.5 border border-white/10 shadow-[inset_0_0_10px_rgba(255,255,255,0.05)]">
-            <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(0,245,255,0.3)]" alt="Rotbot">
+        <div class="flex items-center gap-3.5">
+          <div class="w-10 h-10 rounded-2xl bg-neutral-100 border border-neutral-200/80 flex items-center justify-center p-1.5 shadow-2xs">
+            <img src="assets/icons/logo-link-dark.png" class="w-full h-full object-contain" alt="Rotbot">
           </div>
           <div>
-            <h3 class="font-sans text-[18px] font-bold tracking-wide leading-none" style="color: var(--text-primary);">
+            <h1 class="text-xl sm:text-2xl font-bold tracking-tight leading-none text-neutral-900">
               RotBot IA
-            </h3>
-            <div class="flex items-center gap-1.5 mt-1.5">
-               <span class="w-2 h-2 rounded-full animate-pulse shadow-[0_0_5px_var(--accent-color)]" style="background-color: var(--accent-color);"></span>
-               <p class="text-[11px] uppercase tracking-widest font-sans font-semibold" style="color: var(--text-secondary); opacity: 0.75;">System Active</p>
+            </h1>
+            <div class="flex items-center gap-2 mt-1">
+              <span class="px-3 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-[11px] font-medium inline-flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Copilot Activo</span>
+              </span>
             </div>
           </div>
         </div>
-        
-        <!-- Actions Container -->
-        <div class="flex items-center gap-4 relative z-10">
-          <!-- Nuevo Chat Desactivado -->
-          <button disabled="true"
-                  class="text-sm font-semibold uppercase tracking-wider flex items-center gap-2 transition-all mr-2 opacity-30 cursor-not-allowed pointer-events-none" style="color: var(--text-primary);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-3.08 2.82"/>
-            </svg>
-            <span class="hidden sm:inline">Nuevo Chat</span>
-          </button>
 
-          <!-- Volver al Inicio -->
-          <a routerLink="/" class="text-sm font-semibold uppercase tracking-wider flex items-center gap-2 hover:opacity-100 opacity-60 transition-all mr-2" style="color: var(--text-primary);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-              <polyline points="9 22 9 12 15 12 15 22"></polyline>
-            </svg>
-            <span class="hidden sm:inline">Volver al Inicio</span>
-          </a>
-
+        <div class="flex items-center gap-3">
           <!-- Galería de Diseños -->
-          <a routerLink="/prototipos" class="hidden sm:flex items-center gap-2 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border transition-all" style="color: var(--accent-color); border-color: rgba(0,245,255,0.25); background: rgba(0,245,255,0.06);" title="Ver Galería de Diseños">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+          <a routerLink="/prototipos" 
+             class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-900 font-semibold text-xs tracking-wide transition-all shadow-2xs no-underline border-none cursor-pointer">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
             </svg>
             <span>Galería de Diseños</span>
           </a>
 
-          <!-- Theme Toggle -->
-          <button (click)="toggleTheme()" class="p-2 rounded-lg transition-all icon-btn mr-1" title="Cambiar Tema">
-            <svg *ngIf="currentTheme === 'dark'" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="5"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line>
-              <line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          <!-- Volver al Inicio -->
+          <a routerLink="/" 
+             class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-900 font-semibold text-xs tracking-wide transition-all shadow-2xs no-underline border-none cursor-pointer">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
             </svg>
-            <svg *ngIf="currentTheme !== 'dark'" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-          </button>
- 
-          <!-- Back / Close Button -->
-          <button (click)="goBack()" class="p-2 rounded-lg transition-all icon-btn" title="Cerrar y Volver">
-            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <span class="hidden sm:inline">Inicio</span>
+          </a>
+
+          <!-- Close / Back Button -->
+          <button (click)="goBack()" 
+                  class="w-9 h-9 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 flex items-center justify-center transition-all border-none cursor-pointer" 
+                  title="Cerrar y Volver">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
         </div>
-      </div>
+
+      </header>
  
       <!-- Main Chat Body Split (3 Columns) -->
       <div class="flex flex-row flex-grow w-full overflow-hidden">
         
-        <!-- Sidebar Izquierdo (Accesos Rápidos Desactivados en Lanzamiento) -->
-        <div *ngIf="!activeDesign" 
-             class="chat-sidebar no-scrollbar hidden md:flex flex-col w-72 flex-shrink-0 border-r py-6 px-5 gap-3 overflow-y-auto animate-fade-in transition-all duration-500 opacity-40 pointer-events-none grayscale" style="border-color: var(--card-border);">
-          <h4 class="sidebar-title text-[11px] font-bold uppercase tracking-widest mb-1" style="color: var(--text-secondary); opacity: 0.6;">Principales</h4>
+        <!-- SIDEBAR IZQUIERDO: ACCESOS RÁPIDOS -->
+        <aside *ngIf="!activeDesign" 
+               class="chat-sidebar hidden md:flex flex-col w-72 flex-shrink-0 border-r border-neutral-100 bg-neutral-50/60 p-5 space-y-5 overflow-y-auto custom-scrollbar">
           
-          <button (click)="startDesignFlow()" class="shortcut-btn flex items-center gap-2.5 px-4 py-3 rounded-xl text-left border transition-all duration-300">
-            <i class="fa-solid fa-palette text-cyan-400 text-xs"></i>
-            <span class="text-[13px] sm:text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Quiero un Diseño</span>
-          </button>
-          
-          <button (click)="startConsultingFlow()" class="shortcut-btn flex items-center gap-2.5 px-4 py-3 rounded-xl text-left border transition-all duration-300">
-            <i class="fa-solid fa-lightbulb text-purple-400 text-xs"></i>
-            <span class="text-[13px] sm:text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Quiero Asesoría</span>
-          </button>
+          <div>
+            <h4 class="text-xs font-semibold text-neutral-400 tracking-wider uppercase mb-3">
+              Principales
+            </h4>
+            <div class="space-y-2">
+              <button (click)="startDesignFlow()" 
+                      class="w-full text-left p-3.5 rounded-2xl bg-white border border-neutral-200/80 hover:border-neutral-900 text-xs font-semibold text-neutral-900 shadow-2xs hover:shadow-xs transition-all flex items-center gap-3 cursor-pointer">
+                <i class="fa-solid fa-palette text-neutral-800 text-xs"></i>
+                <span>Quiero un Diseño</span>
+              </button>
+              
+              <button (click)="startConsultingFlow()" 
+                      class="w-full text-left p-3.5 rounded-2xl bg-white border border-neutral-200/80 hover:border-neutral-900 text-xs font-semibold text-neutral-900 shadow-2xs hover:shadow-xs transition-all flex items-center gap-3 cursor-pointer">
+                <i class="fa-solid fa-lightbulb text-neutral-800 text-xs"></i>
+                <span>Quiero Asesoría</span>
+              </button>
+            </div>
+          </div>
 
-          <h4 class="sidebar-title text-[11px] font-bold uppercase tracking-widest mt-3 mb-1" style="color: var(--text-secondary); opacity: 0.6;">Diseños Frecuentes</h4>
+          <div>
+            <h4 class="text-xs font-semibold text-neutral-400 tracking-wider uppercase mb-3">
+              Diseños Frecuentes
+            </h4>
+            <div class="space-y-2">
+              <button (click)="sendShortcutMessage('Quiero un diseño para mi tienda de ropa')" 
+                      class="w-full text-left p-3.5 rounded-2xl bg-white border border-neutral-200/80 hover:border-neutral-900 text-xs font-medium text-neutral-800 shadow-2xs hover:shadow-xs transition-all flex items-center gap-2.5 cursor-pointer">
+                <i class="fa-solid fa-shirt text-neutral-500 text-xs shrink-0"></i>
+                <span class="truncate">Tienda de Ropa</span>
+              </button>
 
-          <button (click)="sendShortcutMessage('Quiero un diseño para mi tienda de ropa')" class="shortcut-btn flex items-center gap-2.5 px-4 py-3 rounded-xl text-left border transition-all duration-300">
-            <i class="fa-solid fa-shirt text-cyan-400 text-xs shrink-0"></i>
-            <span class="text-[13px] sm:text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Diseño Tienda de Ropa</span>
-          </button>
+              <button (click)="sendShortcutMessage('Quiero un diseño para mi gimnasio')" 
+                      class="w-full text-left p-3.5 rounded-2xl bg-white border border-neutral-200/80 hover:border-neutral-900 text-xs font-medium text-neutral-800 shadow-2xs hover:shadow-xs transition-all flex items-center gap-2.5 cursor-pointer">
+                <i class="fa-solid fa-dumbbell text-neutral-500 text-xs shrink-0"></i>
+                <span class="truncate">Gym & Fitness</span>
+              </button>
 
-          <button (click)="sendShortcutMessage('Quiero un diseño para mi gimnasio')" class="shortcut-btn flex items-center gap-2.5 px-4 py-3 rounded-xl text-left border transition-all duration-300">
-            <i class="fa-solid fa-dumbbell text-cyan-400 text-xs shrink-0"></i>
-            <span class="text-[13px] sm:text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Diseño para Gym / Fitness</span>
-          </button>
+              <button (click)="sendShortcutMessage('Quiero un catálogo digital para mis productos')" 
+                      class="w-full text-left p-3.5 rounded-2xl bg-white border border-neutral-200/80 hover:border-neutral-900 text-xs font-medium text-neutral-800 shadow-2xs hover:shadow-xs transition-all flex items-center gap-2.5 cursor-pointer">
+                <i class="fa-solid fa-book-open text-neutral-500 text-xs shrink-0"></i>
+                <span class="truncate">Catálogo Digital</span>
+              </button>
 
-          <button (click)="sendShortcutMessage('Quiero un catálogo digital para mis productos')" class="shortcut-btn flex items-center gap-2.5 px-4 py-3 rounded-xl text-left border transition-all duration-300">
-            <i class="fa-solid fa-book-open text-cyan-400 text-xs shrink-0"></i>
-            <span class="text-[13px] sm:text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Catálogo Digital</span>
-          </button>
+              <button (click)="sendShortcutMessage('Quiero un sistema para agendamiento de citas')" 
+                      class="w-full text-left p-3.5 rounded-2xl bg-white border border-neutral-200/80 hover:border-neutral-900 text-xs font-medium text-neutral-800 shadow-2xs hover:shadow-xs transition-all flex items-center gap-2.5 cursor-pointer">
+                <i class="fa-solid fa-calendar-check text-neutral-500 text-xs shrink-0"></i>
+                <span class="truncate">Agendamiento Citas</span>
+              </button>
 
-          <button (click)="sendShortcutMessage('Quiero un sistema para agendamiento de citas')" class="shortcut-btn flex items-center gap-2.5 px-4 py-3 rounded-xl text-left border transition-all duration-300">
-            <i class="fa-solid fa-calendar-check text-cyan-400 text-xs shrink-0"></i>
-            <span class="text-[13px] sm:text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Sistema de Agendamiento</span>
-          </button>
+              <button (click)="sendShortcutMessage('Quiero un diseño a medida para mi empresa')" 
+                      class="w-full text-left p-3.5 rounded-2xl bg-white border border-neutral-200/80 hover:border-neutral-900 text-xs font-medium text-neutral-800 shadow-2xs hover:shadow-xs transition-all flex items-center gap-2.5 cursor-pointer">
+                <i class="fa-solid fa-wand-magic-sparkles text-neutral-500 text-xs shrink-0"></i>
+                <span class="truncate">Sistema a Medida</span>
+              </button>
+            </div>
+          </div>
 
-          <button (click)="sendShortcutMessage('Quiero un diseño a medida para mi empresa')" class="shortcut-btn flex items-center gap-2.5 px-4 py-3 rounded-xl text-left border transition-all duration-300">
-            <i class="fa-solid fa-wand-magic-sparkles text-cyan-400 text-xs shrink-0"></i>
-            <span class="text-[13px] sm:text-[14px] font-medium leading-snug" style="color: var(--text-primary);">Sistema a Medida</span>
-          </button>
-        </div>
+        </aside>
  
         <!-- Messages + Input Container (Centro o Izquierda en modo diseño) -->
         <div class="flex flex-col h-full overflow-hidden transition-all duration-500 relative"
@@ -153,32 +149,27 @@ import { SiteService } from '../../services/site.service';
               <div class="flex flex-col gap-6 px-6 md:px-16 animate-pulse w-full max-w-5xl mx-auto">
                  <!-- Skeleton Assistant -->
                  <div class="flex w-full justify-start items-end">
-                    <div class="w-9 h-9 rounded-full bg-white/5 mr-2.5 flex-shrink-0"></div>
-                    <div class="bg-white/5 h-20 w-3/4 max-w-sm rounded-2xl rounded-bl-sm"></div>
+                    <div class="w-9 h-9 rounded-full bg-neutral-100 mr-2.5 flex-shrink-0"></div>
+                    <div class="bg-neutral-100 h-20 w-3/4 max-w-sm rounded-2xl rounded-bl-xs"></div>
                  </div>
                  <!-- Skeleton User -->
                  <div class="flex w-full justify-end items-end">
-                    <div class="bg-white/10 h-14 w-2/3 max-w-xs rounded-2xl rounded-tr-sm"></div>
-                 </div>
-                 <!-- Skeleton Assistant -->
-                 <div class="flex w-full justify-start items-end">
-                    <div class="w-9 h-9 rounded-full bg-white/5 mr-2.5 flex-shrink-0"></div>
-                    <div class="bg-white/5 h-32 w-4/5 max-w-md rounded-2xl rounded-bl-sm"></div>
+                    <div class="bg-neutral-900 h-14 w-2/3 max-w-xs rounded-2xl rounded-tr-xs"></div>
                  </div>
               </div>
             </ng-container>
 
             <ng-template #chatContent>
-              <!-- Welcome Intro Section (Shifted higher up) -->
-            <div *ngIf="chatService.messages.length <= 1" class="flex flex-col items-center justify-center text-center pb-4 border-b pt-1 sm:pt-2 mb-2 welcome-border">
-              <div class="w-44 h-44 sm:w-56 sm:h-56 mb-3 relative flex items-center justify-center overflow-visible transition-transform duration-500 hover:scale-105">
-                <img src="assets/images/rotbot4.png" class="w-full h-full object-contain relative z-10" alt="Rotbot Full">
+              <!-- Welcome Intro Section -->
+            <div *ngIf="chatService.messages.length <= 1" class="flex flex-col items-center justify-center text-center p-8 my-6 max-w-xl mx-auto rounded-[28px] sm:rounded-[36px] bg-white border border-neutral-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.04)] space-y-4">
+              <div class="w-32 h-32 sm:w-40 sm:h-40 relative flex items-center justify-center overflow-visible">
+                <img src="assets/images/rotbot4.png" class="w-full h-full object-contain" alt="Rotbot Full">
               </div>
-              <h2 class="text-xl sm:text-2xl font-bold tracking-tight mb-2 font-sans" style="color: var(--text-primary);">
-                Sistemas con Rotbot IA
-              </h2>
-              <div class="text-[14px] sm:text-[15px] font-light leading-relaxed px-4 max-w-lg" style="color: var(--text-secondary);">
-                <p>
+              <div class="space-y-1.5">
+                <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900">
+                  Sistemas con RotBot IA
+                </h2>
+                <p class="text-xs sm:text-sm font-sans text-neutral-500 max-w-md mx-auto leading-relaxed m-0">
                   ¡Hola! Soy RotBot, tu copiloto tecnológico listo para guiarte en el desarrollo de tus proyectos web e Inteligencia Artificial.
                 </p>
               </div>
@@ -397,77 +388,92 @@ import { SiteService } from '../../services/site.service';
               </div>
             </ng-container>
             <ng-template #loginPrompt>
-              <div class="flex flex-col items-center justify-center py-7 px-8 w-full max-w-2xl sm:max-w-3xl mx-auto rounded-2xl border mb-2 relative overflow-hidden backdrop-blur-xl transition-all duration-300 shadow-md login-prompt-card"
-                   style="border-color: var(--card-border, rgba(255, 255, 255, 0.1)); background: var(--card-bg, rgba(255, 255, 255, 0.03));">
+              <div class="flex flex-col items-center justify-center p-8 sm:p-10 w-full max-w-md mx-auto rounded-[28px] sm:rounded-[36px] bg-white border border-neutral-200/80 shadow-[0_15px_45px_rgba(0,0,0,0.06)] my-8 text-center space-y-5">
                 
-                <!-- Subtle Icon Badge -->
-                <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-3 border shadow-sm" style="background: rgba(255,255,255,0.04); border-color: var(--card-border, rgba(255,255,255,0.1));">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-80" style="color: var(--text-primary);">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
+                <!-- User Icon Badge -->
+                <div class="w-12 h-12 rounded-full bg-neutral-100 border border-neutral-200/80 flex items-center justify-center mx-auto text-neutral-800 shadow-2xs">
+                  <svg class="w-5 h-5 text-neutral-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                   </svg>
                 </div>
                 
-                <h3 class="text-base sm:text-lg font-bold tracking-wide mb-1 font-sans text-center" style="color: var(--text-primary);">
-                  Desbloquea RotBot IA
-                </h3>
+                <div class="space-y-1.5">
+                  <h3 class="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900">
+                    Desbloquea RotBot IA
+                  </h3>
+                  <p class="text-xs sm:text-sm font-sans text-neutral-500 max-w-xs mx-auto leading-relaxed">
+                    Inicia sesión o regístrate para conversar sin límites y potenciar tu proyecto.
+                  </p>
+                </div>
                 
-                <p class="text-xs sm:text-[13.5px] font-light mb-5 text-center leading-relaxed max-w-md" style="color: var(--text-secondary);">
-                  Inicia sesión o regístrate para conversar sin límites y potenciar tu proyecto.
-                </p>
-                
-                <div class="flex flex-row gap-3 w-full sm:w-auto items-center justify-center">
-                  <!-- White Button -->
-                  <button routerLink="/register" class="px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all hover:scale-105 hover:bg-neutral-200 active:scale-95 text-center cursor-pointer shadow-md bg-white text-black">
-                    Crear Cuenta Gratis
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3 w-full pt-1">
+                  <!-- Dark Obsidian Button -->
+                  <button routerLink="/register" 
+                          class="w-full sm:w-auto px-6 py-3 rounded-full font-semibold text-xs shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border-none cursor-pointer text-center"
+                          style="background-color: #09090b !important; color: #ffffff !important;">
+                    <span style="color: #ffffff !important; font-weight: 600;">Crear cuenta gratis</span>
                   </button>
-                  <!-- Secondary Glass Button -->
-                  <button routerLink="/login" class="px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all hover:bg-white/10 border border-white/20 text-center cursor-pointer" style="color: var(--text-primary);">
-                    Iniciar Sesión
+
+                  <!-- Light Secondary Button -->
+                  <button routerLink="/login" 
+                          class="w-full sm:w-auto px-6 py-3 rounded-full font-semibold text-xs bg-neutral-100 hover:bg-neutral-200 text-neutral-900 border border-neutral-200/80 shadow-2xs hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer text-center">
+                    <span>Iniciar sesión</span>
                   </button>
                 </div>
+
               </div>
             </ng-template>
             <div class="flex justify-center mt-3">
-               <span class="text-[11px] uppercase tracking-widest font-sans font-medium opacity-40" style="color: var(--text-secondary);">Powered by Portalink IA</span>
+               <span class="text-[11px] font-sans font-medium text-neutral-400">Powered by Portalink IA</span>
             </div>
           </div>
         </div>
  
-        <!-- Sidebar Derecho (Info Rotbot) -->
-        <div class="chat-sidebar no-scrollbar hidden md:flex flex-col w-80 flex-shrink-0 border-l py-8 px-6 gap-6 overflow-y-auto animate-fade-in" style="border-color: var(--card-border);">
-          <h4 class="sidebar-title mb-2">¿Quién es Rotbot?</h4>
-          
-          <div class="flex flex-col items-center text-center gap-4 p-5 rounded-2xl border right-sidebar-card" style="border-color: var(--card-border);">
-            <div class="w-24 h-24 rounded-2xl flex items-center justify-center p-2 border right-sidebar-icon shadow-inner">
-              <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(0,245,255,0.4)]" alt="Rotbot Logo">
+        <!-- SIDEBAR DERECHO (INFO ROTBOT) -->
+        <aside class="chat-sidebar hidden lg:flex flex-col w-80 flex-shrink-0 border-l border-neutral-100 bg-neutral-50/60 p-6 space-y-6 overflow-y-auto custom-scrollbar">
+          <div>
+            <h4 class="text-xs font-semibold text-neutral-400 tracking-wider uppercase mb-3">
+              ¿Quién es RotBot?
+            </h4>
+            
+            <div class="p-5 rounded-[24px] bg-white border border-neutral-200/80 shadow-2xs space-y-3">
+              <div class="w-16 h-16 rounded-2xl bg-neutral-100 border border-neutral-200/80 p-2 flex items-center justify-center mx-auto">
+                <img src="assets/icons/logo-link-dark.png" class="w-full h-full object-contain" alt="Rotbot Logo">
+              </div>
+              <div class="text-center space-y-2">
+                <h5 class="text-sm font-semibold tracking-tight text-neutral-900">
+                  Copiloto Tecnológico
+                </h5>
+                <p class="text-xs font-sans text-neutral-500 leading-relaxed m-0">
+                  RotBot es una Inteligencia Artificial diseñada para asesorar y guiar en el desarrollo de soluciones digitales avanzadas, desarrollo a medida y automatizaciones de procesos comerciales.
+                </p>
+                <button (click)="isInfoModalOpen = true" 
+                        class="w-full py-2.5 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-900 font-semibold text-xs transition-all border-none cursor-pointer mt-2">
+                  <span>Info de la IA</span>
+                </button>
+              </div>
             </div>
-            <div>
-              <h5 class="text-base font-bold tracking-wide" style="color: var(--text-primary);">Copiloto Tecnológico</h5>
-              <p class="text-[14px] font-normal mt-2 leading-relaxed opacity-95" style="color: var(--text-secondary);">
-                Rotbot es una inteligencia artificial diseñada para asesorar y guiar en el desarrollo de soluciones digitales avanzadas, desarrollo a medida y automatizaciones de procesos comerciales.
+          </div>
+ 
+          <div>
+            <h4 class="text-xs font-semibold text-neutral-400 tracking-wider uppercase mb-3">
+              ¿Tienes un Proyecto?
+            </h4>
+ 
+            <button (click)="sendShortcutMessage('Quiero una implementación de IA en mi negocio')" 
+                    class="w-full text-left p-5 rounded-[24px] bg-white border border-neutral-200/80 hover:border-neutral-900 shadow-2xs hover:shadow-xs transition-all space-y-2 cursor-pointer border-none">
+              <span class="text-[10.5px] font-medium uppercase tracking-wider text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full inline-block">
+                Oportunidad
+              </span>
+              <h5 class="text-sm font-semibold tracking-tight m-0 text-neutral-900">
+                Quiero IA para mi negocio
+              </h5>
+              <p class="text-xs font-sans text-neutral-500 leading-relaxed m-0">
+                Empieza hoy la transformación digital y automatiza tu negocio con Inteligencia Artificial.
               </p>
-              <button (click)="isInfoModalOpen = true" class="mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] transition-all group">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-cyan-400 group-hover:scale-110 transition-transform">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <line x1="12" y1="16" x2="12" y2="12"></line>
-                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                </svg>
-                <span class="text-xs sm:text-sm font-bold uppercase tracking-wider" style="color: var(--text-primary);">Info de la IA</span>
-              </button>
-            </div>
+            </button>
           </div>
- 
-          <h4 class="sidebar-title mt-2 mb-2">¿Tienes un Proyecto?</h4>
- 
-          <button (click)="sendShortcutMessage('Quiero una implementación de IA en mi negocio')" class="shortcut-btn flex flex-col gap-2 p-5 rounded-xl text-left border transition-all duration-300 shadow-sm hover:shadow-md">
-            <span class="text-xs font-bold uppercase tracking-widest" style="color: var(--accent-color);">Oportunidad</span>
-            <span class="text-[17px] font-bold leading-snug" style="color: var(--text-primary);">Quiero mi IA para mi negocio</span>
-            <span class="text-[13.5px] font-normal opacity-95 leading-normal block" style="color: var(--text-secondary);">
-              Empieza hoy la transformación digital y automatiza tu negocio con Inteligencia Artificial.
-            </span>
-          </button>
-        </div>
+        </aside>
       </div>
 
       <!-- MODAL DE DESCRIPCIÓN Y ESPECIFICACIÓN DEL PROYECTO -->
@@ -613,111 +619,79 @@ import { SiteService } from '../../services/site.service';
     </div>
   `,
   styles: [`
-    :host {
-      --font-headline: 'Bebas Neue', sans-serif;
-    }
-    .font-headline {
-      font-family: var(--font-headline);
-    }
     .page-container {
-      /* 100% Opacity Background */
-      background: rgb(8, 8, 8);
+      background: #ffffff !important;
+      color: #09090b !important;
       z-index: 9999;
     }
-    :host-context(.theme-light) .page-container {
-      background: rgb(255, 255, 255);
-    }
     .chat-header {
-      border-color: rgba(255, 255, 255, 0.08);
-      background: rgb(8, 8, 8);
-    }
-    :host-context(.theme-light) .chat-header {
-      border-color: rgba(0, 0, 0, 0.06);
-      background: rgb(255, 255, 255);
+      border-color: #f4f4f5 !important;
+      background: #ffffff !important;
     }
     .icon-btn {
-      color: var(--text-secondary);
+      color: #71717a !important;
     }
     .icon-btn:hover {
-      color: var(--text-primary);
-      background: rgba(255, 255, 255, 0.05);
-    }
-    :host-context(.theme-light) .icon-btn:hover {
-      background: rgba(0, 0, 0, 0.05);
-    }
-    .scanner-line {
-      background: linear-gradient(90deg, transparent, var(--accent-color, #00f5ff), transparent);
-      animation: scan 3s linear infinite;
-      opacity: 0.8;
-    }
-    @keyframes scan {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100%); }
+      color: #09090b !important;
+      background: #f4f4f5 !important;
     }
     .welcome-border {
-      border-color: rgba(255, 255, 255, 0.08);
-    }
-    :host-context(.theme-light) .welcome-border {
-      border-color: rgba(0, 0, 0, 0.06);
+      border-color: #f4f4f5 !important;
     }
     .avatar-bg {
-      background: rgba(255, 255, 255, 0.04);
-      border-color: rgba(255, 255, 255, 0.08);
-    }
-    :host-context(.theme-light) .avatar-bg {
-      background: rgba(0, 0, 0, 0.02);
-      border-color: rgba(0, 0, 0, 0.05);
+      background: #f4f4f5 !important;
+      border-color: #e4e4e7 !important;
     }
     .assistant-bubble {
-      background: transparent;
-      border: none !important;
-      box-shadow: none !important;
-      color: var(--text-primary, #ffffff);
-      padding: 8px 0 !important;
+      background: #f4f4f5 !important;
+      border: 1px solid #e4e4e7 !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02) !important;
+      color: #09090b !important;
+      border-radius: 20px 20px 20px 4px !important;
+      padding: 12px 18px !important;
+    }
+    .assistant-bubble * {
+      color: #09090b !important;
     }
     .user-bubble {
-      background: var(--accent-color, #00f5ff);
-      border-color: var(--accent-color, #00f5ff);
-      color: #000000;
-      font-weight: 600;
+      background: #09090b !important;
+      border: 1px solid #09090b !important;
+      color: #ffffff !important;
+      font-weight: 500 !important;
+      border-radius: 20px 20px 4px 20px !important;
+      padding: 12px 18px !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+    }
+    .user-bubble * {
+      color: #ffffff !important;
     }
     .chat-input-area {
-      border-color: rgba(255, 255, 255, 0.08);
-      background: rgb(8, 8, 8);
-    }
-    :host-context(.theme-light) .chat-input-area {
-      border-color: rgba(0, 0, 0, 0.06);
-      background: rgb(255, 255, 255);
+      border-color: #f4f4f5 !important;
+      background: #ffffff !important;
     }
     .chat-input {
-      background: rgba(255, 255, 255, 0.02);
-      border-color: rgba(255, 255, 255, 0.08);
-      color: var(--text-primary, #ffffff);
-    }
-    :host-context(.theme-light) .chat-input {
-      background: rgba(0, 0, 0, 0.01);
-      border-color: rgba(0, 0, 0, 0.06);
+      background: #f4f4f5 !important;
+      border-color: #e4e4e7 !important;
+      color: #09090b !important;
     }
     .chat-input:focus {
-      border-color: var(--accent-color, #00f5ff);
-      background: rgba(255, 255, 255, 0.04);
-      box-shadow: 0 0 15px rgba(0, 245, 255, 0.08);
+      border-color: #09090b !important;
+      background: #ffffff !important;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.05) !important;
     }
     .chat-submit-btn {
-      color: var(--accent-color, #00f5ff);
+      background: #09090b !important;
+      color: #ffffff !important;
     }
     .custom-scrollbar::-webkit-scrollbar {
       width: 4px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
-      background: rgba(0,0,0,0.1);
+      background: rgba(0,0,0,0.02);
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(0,0,0,0.15);
       border-radius: 4px;
-    }
-    :host-context(.theme-light) .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.08);
     }
     .messages-area {
       padding-top: 1rem !important;
@@ -730,11 +704,8 @@ import { SiteService } from '../../services/site.service';
       }
     }
     .chat-sidebar {
-      background: rgba(0, 0, 0, 0.15);
-    }
-    :host-context(.theme-light) .chat-sidebar {
-      background: rgba(0, 0, 0, 0.02);
-      border-color: rgba(0, 0, 0, 0.06) !important;
+      background: #fafafa !important;
+      border-color: #f4f4f5 !important;
     }
     .no-scrollbar::-webkit-scrollbar {
       display: none;
