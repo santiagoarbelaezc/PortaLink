@@ -13,15 +13,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
     <div class="min-h-screen lg:h-screen pt-10 lg:pt-12 overflow-y-auto lg:overflow-hidden bg-white text-neutral-900 font-sans grid grid-cols-1 lg:grid-cols-12">
 
       <!-- Left Side (Showcase Visual Estilo Apple - Ancho Completo Ajustado) -->
-      <div class="relative hidden lg:flex flex-col justify-between overflow-hidden bg-neutral-50/70 border-r border-neutral-200/80 px-10 lg:px-14 xl:px-16 py-5 lg:py-6 lg:col-span-7 xl:col-span-7 h-full">
-        
-        <!-- Top Row Badge -->
-        <div class="flex items-center justify-start z-10 w-full max-w-2xl xl:max-w-3xl mx-auto">
-          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-neutral-200/80 text-xs font-semibold text-neutral-800 shadow-2xs">
-            <span class="w-2 h-2 rounded-full bg-neutral-900"></span>
-            <span>Desarrollo Integral</span>
-          </div>
-        </div>
+      <div class="relative hidden lg:flex flex-col justify-center overflow-hidden bg-neutral-50/70 border-r border-neutral-200/80 px-10 lg:px-14 xl:px-16 py-5 lg:py-6 lg:col-span-7 xl:col-span-7 h-full">
 
         <!-- Center Main Content Showcase (Full Width Spanning) -->
         <div class="my-auto py-2 z-10 space-y-4 w-full max-w-2xl xl:max-w-3xl mx-auto">
