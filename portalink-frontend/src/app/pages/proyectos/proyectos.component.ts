@@ -204,7 +204,7 @@ import * as AOS from 'aos';
         </div>
       </section>
 
-      <app-portfolio [projects]="portfolioData().portfolio"></app-portfolio>
+      <!-- <app-portfolio [projects]="portfolioData().portfolio"></app-portfolio> -->
       <app-about [data]="portfolioData().about"></app-about>
       <app-contact [data]="portfolioData().contact"></app-contact>
       
