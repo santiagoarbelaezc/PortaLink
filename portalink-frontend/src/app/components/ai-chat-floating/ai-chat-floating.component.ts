@@ -6,11 +6,12 @@ import { FormsModule } from '@angular/forms';
 import { ChatStateService } from '../../services/chat-state.service';
 import { AnalyticsService } from '../../services/analytics.service';
 import { AuthService } from '../../services/auth.service';
+import { MarkdownPipe } from '../../pipes/markdown-pipe';
 
 @Component({
   selector: 'app-ai-chat-floating',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MarkdownPipe],
   template: `
     <!-- Floating Container -->
     <div class="fixed bottom-8 -right-8 z-[500]">
@@ -20,59 +21,64 @@ import { AuthService } from '../../services/auth.service';
         *ngIf="!isOpen"
         [@buttonAnimation]
         (click)="toggleChat()"
-        class="group relative flex h-[280px] w-[190px] items-center justify-end bg-transparent border-none overflow-visible shadow-none origin-right"
+        class="group relative flex h-[280px] w-[190px] items-center justify-end bg-transparent border-none overflow-visible shadow-none origin-right cursor-pointer"
       >
         <div class="relative flex items-center justify-end w-full h-full">
-          <img src="assets/images/robot-izquierda.png" class="h-full w-auto object-contain object-right relative z-10 translate-x-8" alt="Rotbot">
+          <img src="assets/images/robot-izquierda.png" class="h-full w-auto object-contain object-right relative z-10 translate-x-8 hover:scale-105 transition-transform" alt="Rotbot">
         </div>
       </button>
 
-      <!-- Chat Panel -->
+      <!-- Chat Panel (Taller & Roomier) -->
       <div 
         *ngIf="isOpen"
         [@chatAnimation]
-        class="chat-panel absolute bottom-0 right-12 md:right-16 w-[90vw] md:w-[440px] overflow-hidden rounded-[24px] border shadow-2xl origin-bottom-right font-sans flex flex-col"
+        class="chat-panel absolute bottom-0 right-6 md:right-12 w-[94vw] md:w-[480px] max-h-[88vh] h-[660px] overflow-hidden rounded-[32px] bg-white border border-neutral-200/90 shadow-[0_30px_70px_rgba(0,0,0,0.16)] origin-bottom-right font-sans flex flex-col z-50 text-neutral-900"
       >
         <!-- Header -->
-        <div class="chat-header flex items-center justify-between border-b px-5 py-4 relative overflow-hidden">
-          <!-- Cyber Scanner Line -->
-          <div class="absolute top-0 left-0 w-full h-[1px] scanner-line"></div>
+        <div class="chat-header flex items-center justify-between border-b border-neutral-100 bg-white/95 backdrop-blur-xl px-6 py-3.5 relative overflow-hidden flex-shrink-0">
           
           <div class="flex items-center gap-3 relative z-10">
-            <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center p-1.5 border border-white/10 shadow-[inset_0_0_10px_rgba(255,255,255,0.05)]">
-              <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain filter drop-shadow-[0_0_5px_rgba(0,245,255,0.3)]" alt="Rotbot">
+            <div class="w-9 h-9 rounded-2xl bg-neutral-100 border border-neutral-200/80 flex items-center justify-center p-1 shadow-2xs">
+              <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
             </div>
             <div>
-              <h3 class="font-sans text-sm font-bold tracking-wide leading-none" style="color: var(--text-primary);">
+              <h3 class="font-sans text-base font-bold tracking-tight text-neutral-900 leading-none">
                 RotBot IA
               </h3>
-              <div class="flex items-center gap-1.5 mt-1">
-                 <span class="w-1.5 h-1.5 rounded-full animate-pulse shadow-[0_0_5px_var(--accent-color)]" style="background-color: var(--accent-color);"></span>
-                 <p class="text-[8px] uppercase tracking-widest font-sans font-medium" style="color: var(--text-secondary); opacity: 0.7;">System Active</p>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-[9.5px] font-medium inline-flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span>Copilot Activo</span>
+                </span>
               </div>
             </div>
           </div>
           
           <!-- Actions Container -->
-          <div class="flex items-center gap-1.5 relative z-10">
+          <div class="flex items-center gap-2 relative z-10">
             <!-- New Chat Button -->
-            <button (click)="chatService.clearHistory()" class="p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition-all" title="Nuevo Chat">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <button (click)="chatService.clearHistory()" 
+                    class="w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-600 flex items-center justify-center transition-all border-none cursor-pointer" 
+                    title="Nuevo Chat">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-3.08 2.82"/>
               </svg>
             </button>
             
             <!-- Fullscreen Toggle Button -->
-            <button (click)="toggleFullScreen()" class="p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition-all" title="Pantalla Completa">
-              <!-- Maximize Icon -->
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <button (click)="toggleFullScreen()" 
+                    class="w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-600 flex items-center justify-center transition-all border-none cursor-pointer" 
+                    title="Pantalla Completa">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
               </svg>
             </button>
             
             <!-- Close Button -->
-            <button (click)="toggleChat()" class="p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-lg transition-all">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <button (click)="toggleChat()" 
+                    class="w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 flex items-center justify-center transition-all border-none cursor-pointer" 
+                    title="Cerrar Chat">
+              <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
@@ -81,107 +87,104 @@ import { AuthService } from '../../services/auth.service';
         </div>
 
         <!-- Messages + Input Container -->
-        <div class="flex flex-col flex-grow h-full overflow-hidden">
+        <div class="flex flex-col flex-grow h-full overflow-hidden bg-white">
+          
           <!-- Messages Area -->
-          <div #scrollContainer class="h-[430px] overflow-y-auto p-5 space-y-6 scroll-smooth custom-scrollbar" style="overscroll-behavior: contain;">
+          <div #scrollContainer class="flex-grow overflow-y-auto p-5 space-y-4 scroll-smooth custom-scrollbar" style="overscroll-behavior: contain;">
             
-            <!-- Welcome Intro Section -->
-            <div class="flex flex-col items-center justify-center text-center pb-6 border-b mt-2 mb-2 welcome-border">
-              <div class="w-60 h-60 mb-2 relative flex items-center justify-center overflow-visible">
-                <img src="assets/images/rotbot4.png" class="w-52 h-52 object-contain relative z-10" alt="Rotbot Full">
+            <!-- Welcome Intro Section (Compact & Centered) -->
+            <div *ngIf="chatService.messages.length <= 1" class="flex flex-col items-center justify-center text-center p-5 my-1 max-w-sm mx-auto rounded-[24px] bg-neutral-50/80 border border-neutral-200/80 shadow-2xs space-y-2">
+              <div class="w-20 h-20 sm:w-24 sm:h-24 relative flex items-center justify-center overflow-visible">
+                <img src="assets/images/rotbot4.png" class="w-full h-full object-contain" alt="Rotbot Full">
               </div>
-              <h2 class="text-base font-bold tracking-tight mb-2" style="color: var(--text-primary);">
-                Sistemas con Rotbot IA
-              </h2>
-              <div class="text-[12px] font-light leading-relaxed px-4 max-w-[95%]" style="color: var(--text-secondary);">
-                <p class="mb-2">
-                  ¡Hola! Soy RotBot, tu copiloto tecnológico. Estoy listo para guiarte en el diseño y desarrollo de sistemas a medida, e-commerce e integración de Inteligencia Artificial para potenciar tu negocio.
+              <div class="space-y-1">
+                <h2 class="text-base sm:text-lg font-bold tracking-tight text-neutral-900">
+                  Sistemas con RotBot IA
+                </h2>
+                <p class="text-xs font-sans text-neutral-500 max-w-xs mx-auto leading-relaxed m-0">
+                  ¡Hola! Soy RotBot, tu copiloto tecnológico listo para guiarte en el desarrollo de tus proyectos web e Inteligencia Artificial.
                 </p>
               </div>
             </div>
 
             <!-- Message List -->
-            <ng-container *ngIf="authService.hasToken()">
-              <div *ngFor="let msg of chatService.messages" class="flex w-full animate-fade-in" [ngClass]="{'justify-end': msg.role === 'user', 'justify-start': msg.role === 'assistant'}">
+            <ng-container>
+              <div *ngFor="let msg of chatService.messages" class="flex w-full animate-fade-in my-1.5" [ngClass]="{'justify-end': msg.role === 'user', 'justify-start': msg.role === 'assistant'}">
                 
                 <!-- Assistant Avatar -->
-                <div *ngIf="msg.role === 'assistant'" class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center mr-2.5 p-1 border avatar-bg">
-                  <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain" alt="Rotbot">
+                <div *ngIf="msg.role === 'assistant'" class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center mr-2.5 p-1 border border-neutral-200/80 bg-neutral-100">
+                  <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
                 </div>
   
                 <!-- Message Bubble -->
                 <div 
                   [ngClass]="{
-                    'assistant-bubble py-2 text-[13.5px] leading-relaxed max-w-[72%]': msg.role === 'assistant',
-                    'user-bubble px-4 py-3 rounded-2xl rounded-tr-sm text-[13.5px] leading-relaxed max-w-[85%] border shadow-sm': msg.role === 'user'
+                    'assistant-bubble px-4 py-3 rounded-2xl rounded-tl-xs text-xs sm:text-sm leading-relaxed max-w-[85%] bg-neutral-100 text-neutral-900 shadow-2xs': msg.role === 'assistant',
+                    'user-bubble px-4 py-3 rounded-2xl rounded-tr-xs text-xs sm:text-sm leading-relaxed max-w-[85%] text-white font-medium shadow-sm border-none': msg.role === 'user'
                   }"
+                  [style.background-color]="msg.role === 'user' ? '#09090b !important' : ''"
+                  [style.color]="msg.role === 'user' ? '#ffffff !important' : ''"
                 >
-                  {{ msg.content }}
+                  <span [innerHTML]="msg.content | markdown"></span>
+
+                  <!-- Action Buttons inside assistant greeting -->
+                  <div *ngIf="msg.role === 'assistant' && msg.showInitialActionButtons" class="mt-3 flex flex-wrap items-center gap-2">
+                    <button 
+                      (click)="startDesignFlow()" 
+                      class="px-3.5 py-1.5 rounded-full bg-white hover:bg-neutral-900 hover:text-white border border-neutral-200/90 text-xs font-semibold text-neutral-900 transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs">
+                      <i class="fa-solid fa-palette text-xs"></i>
+                      <span>Quiero un Diseño</span>
+                    </button>
+                    <button 
+                      (click)="startConsultingFlow()" 
+                      class="px-3.5 py-1.5 rounded-full bg-white hover:bg-neutral-900 hover:text-white border border-neutral-200/90 text-xs font-semibold text-neutral-900 transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs">
+                      <i class="fa-solid fa-lightbulb text-xs"></i>
+                      <span>Quiero Asesoría</span>
+                    </button>
+                  </div>
+
                 </div>
               </div>
             </ng-container>
 
             <!-- Typing Indicator -->
-            <div *ngIf="chatService.isTyping" class="flex items-center gap-3 w-full">
-              <div class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center p-1 border avatar-bg">
-                <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain" alt="Rotbot">
+            <div *ngIf="chatService.isTyping" class="flex items-center gap-2.5 w-full">
+              <div class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center p-1 border border-neutral-200 bg-neutral-100">
+                <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
               </div>
-              <div class="assistant-bubble py-2 flex items-center gap-1.5">
-                <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce"></div>
-                <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce [animation-delay:0.2s]"></div>
-                <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce [animation-delay:0.4s]"></div>
+              <div class="assistant-bubble px-4 py-2.5 rounded-2xl bg-neutral-100 border border-neutral-200/70 text-neutral-900 flex items-center gap-1.5 shadow-2xs">
+                <div class="w-1.5 h-1.5 rounded-full bg-neutral-600 animate-bounce"></div>
+                <div class="w-1.5 h-1.5 rounded-full bg-neutral-600 animate-bounce [animation-delay:0.2s]"></div>
+                <div class="w-1.5 h-1.5 rounded-full bg-neutral-600 animate-bounce [animation-delay:0.4s]"></div>
               </div>
             </div>
           </div>
 
-          <!-- Input Area -->
-          <div class="chat-input-area p-4 pt-3 border-t">
-            <ng-container *ngIf="authService.hasToken(); else floatingLoginPrompt">
-              <!-- Active Input Form (RotBot Activated) -->
-              <form *ngIf="chatService.rotbotActive()" (submit)="sendMessage()" class="relative">
-                <input 
-                  type="text" 
-                  [(ngModel)]="chatService.userInput"
-                  name="userInput"
-                  placeholder="Pregúntale a Rotbot..."
-                  class="chat-input w-full rounded-xl border py-3.5 pl-4 pr-12 text-[14px] font-light tracking-wide transition-all focus:ring-0 focus:outline-none"
-                />
-                <button 
-                  type="submit"
-                  [disabled]="!chatService.userInput.trim()"
-                  class="chat-submit-btn absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-all"
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="22" y1="2" x2="11" y2="13"></line>
-                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                  </svg>
-                </button>
-              </form>
+          <!-- Input Area (Permanently Active) -->
+          <div class="chat-input-area p-4 border-t border-neutral-100 bg-white flex-shrink-0">
+            <form (submit)="sendMessage()" class="relative flex items-center gap-2 bg-neutral-50 border border-neutral-200/80 rounded-2xl p-2 focus-within:border-neutral-900 transition-colors shadow-2xs">
+              <input 
+                type="text" 
+                [(ngModel)]="chatService.userInput"
+                name="userInput"
+                placeholder="Escribe tu mensaje para RotBot IA..."
+                class="w-full bg-transparent border-none px-3 py-1.5 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-0"
+              />
+              <button 
+                type="submit"
+                [disabled]="!chatService.userInput.trim()"
+                class="w-9 h-9 rounded-full flex items-center justify-center transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex-shrink-0 border-none shadow-sm"
+                style="background-color: #09090b !important; color: #ffffff !important;"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #ffffff !important;">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+              </button>
+            </form>
 
-              <!-- Coming Soon Card (RotBot Deactivated) -->
-              <div *ngIf="!chatService.rotbotActive()" class="flex flex-col items-center justify-center p-4 text-center space-y-2 bg-black/60 rounded-xl border border-cyan-500/30">
-                <div class="flex items-center gap-1.5 text-cyan-400 font-bold text-[11px] uppercase tracking-wider">
-                  <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                  <span>Próximamente</span>
-                </div>
-                <p class="text-xs font-bold text-white">
-                  Pronto estaremos en línea, para que hables conmigo
-                </p>
-                <a href="https://wa.me/573054078225?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20mi%20proyecto" target="_blank" rel="noopener noreferrer" class="mt-1 px-4 py-2 rounded-lg bg-emerald-500 text-black font-extrabold text-[11px] uppercase tracking-wider flex items-center gap-1.5 cursor-pointer">
-                  <i class="fa-brands fa-whatsapp text-xs"></i>
-                  <span>Hablar por WhatsApp</span>
-                </a>
-              </div>
-            </ng-container>
-            <ng-template #floatingLoginPrompt>
-              <div class="flex flex-col items-center justify-center text-center">
-                 <button (click)="toggleFullScreen()" class="w-full py-3 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98]" style="background: var(--accent-color, #00f5ff); color: #000; box-shadow: 0 0 15px rgba(0,245,255,0.2);">
-                    Iniciar Sesión para conversar
-                 </button>
-              </div>
-            </ng-template>
-            <div class="flex justify-center mt-3">
-               <span class="text-[8px] uppercase tracking-widest font-sans font-medium opacity-30" style="color: var(--text-secondary);">Powered by Portalink IA</span>
+            <div class="flex justify-center mt-2">
+               <span class="text-[10.5px] font-sans font-medium text-neutral-400">Powered by Portalink IA</span>
             </div>
           </div>
         </div>
@@ -189,112 +192,47 @@ import { AuthService } from '../../services/auth.service';
     </div>
   `,
   styles: [`
-    :host {
-      --font-headline: 'Bebas Neue', sans-serif;
-    }
-    .font-headline {
-      font-family: var(--font-headline);
-    }
     .chat-panel {
-      /* 100% Opacity Solid Background */
-      background: rgb(8, 8, 8);
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
-      border-color: rgba(255, 255, 255, 0.08);
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), inset 0 0 1px rgba(255, 255, 255, 0.1);
-      overscroll-behavior: contain;
-    }
-    :host-context(.theme-light) .chat-panel {
-      background: rgb(255, 255, 255);
-      border-color: rgba(0, 0, 0, 0.06);
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.08), inset 0 0 1px rgba(0, 0, 0, 0.05);
-      overscroll-behavior: contain;
+      background: #ffffff !important;
+      border-color: #e4e4e7 !important;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.14) !important;
     }
     .chat-header {
-      border-color: rgba(255, 255, 255, 0.08);
-    }
-    :host-context(.theme-light) .chat-header {
-      border-color: rgba(0, 0, 0, 0.06);
-    }
-    .scanner-line {
-      background: linear-gradient(90deg, transparent, var(--accent-color, #00f5ff), transparent);
-      animation: scan 3s linear infinite;
-      opacity: 0.8;
-    }
-    @keyframes scan {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100%); }
-    }
-    .welcome-border {
-      border-color: rgba(255, 255, 255, 0.08);
-    }
-    :host-context(.theme-light) .welcome-border {
-      border-color: rgba(0, 0, 0, 0.06);
-    }
-    .avatar-bg {
-      background: rgba(255, 255, 255, 0.04);
-      border-color: rgba(255, 255, 255, 0.08);
-    }
-    :host-context(.theme-light) .avatar-bg {
-      background: rgba(0, 0, 0, 0.02);
-      border-color: rgba(0, 0, 0, 0.05);
+      background: #ffffff !important;
+      border-color: #f4f4f5 !important;
     }
     .assistant-bubble {
-      background: transparent;
+      background: #f4f4f5 !important;
       border: none !important;
-      box-shadow: none !important;
-      color: var(--text-primary, #ffffff);
-      padding: 8px 0 !important;
+      outline: none !important;
+      border-radius: 20px 20px 20px 4px !important;
+      padding: 12px 16px !important;
+      color: #09090b !important;
     }
-    .theme-light .assistant-bubble {
-      background: transparent;
-      border: none !important;
-      box-shadow: none !important;
+    .assistant-bubble * {
+      color: #09090b !important;
     }
     .user-bubble {
-      background: var(--accent-color, #00f5ff);
-      border-color: var(--accent-color, #00f5ff);
-      color: #000000;
-      font-weight: 600;
+      background: #09090b !important;
+      border: none !important;
+      color: #ffffff !important;
     }
-    .theme-light .user-bubble {
-      color: #000000;
+    .user-bubble * {
+      color: #ffffff !important;
     }
     .chat-input-area {
-      border-color: rgba(255, 255, 255, 0.08);
-    }
-    :host-context(.theme-light) .chat-input-area {
-      border-color: rgba(0, 0, 0, 0.06);
-    }
-    .chat-input {
-      background: rgba(255, 255, 255, 0.02);
-      border-color: rgba(255, 255, 255, 0.08);
-      color: var(--text-primary, #ffffff);
-    }
-    :host-context(.theme-light) .chat-input {
-      background: rgba(0, 0, 0, 0.01);
-      border-color: rgba(0, 0, 0, 0.06);
-    }
-    .chat-input:focus {
-      border-color: var(--accent-color, #00f5ff);
-      background: rgba(255, 255, 255, 0.04);
-      box-shadow: 0 0 15px rgba(0, 245, 255, 0.08);
-    }
-    .chat-submit-btn {
-      color: var(--accent-color, #00f5ff);
+      background: #ffffff !important;
+      border-color: #f4f4f5 !important;
     }
     .custom-scrollbar::-webkit-scrollbar {
       width: 4px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
-      background: rgba(0,0,0,0.1);
+      background: rgba(0,0,0,0.02);
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(0, 0, 0, 0.12);
       border-radius: 4px;
-    }
-    :host-context(.theme-light) .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.08);
     }
   `],
   animations: [
@@ -340,7 +278,7 @@ export class AiChatFloatingComponent implements OnInit, OnDestroy {
     'orgánico': 'organic'
   };
 
-  currentTheme = 'dark';
+  currentTheme = 'light';
 
   constructor(
     public chatService: ChatStateService,
@@ -365,6 +303,18 @@ export class AiChatFloatingComponent implements OnInit, OnDestroy {
   onThemeChange = (event: any) => {
     this.currentTheme = event.detail.theme;
   };
+
+  startDesignFlow() {
+    this.chatService.chatMode.set('design');
+    this.isOpen = false;
+    this.router.navigate(['/rotbot']);
+  }
+
+  startConsultingFlow() {
+    this.chatService.chatMode.set('consulting');
+    this.isOpen = false;
+    this.router.navigate(['/rotbot']);
+  }
 
   @HostListener('window:open-ai-chat', ['$event'])
   onOpenAiChat(event: any) {

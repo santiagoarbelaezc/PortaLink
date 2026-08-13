@@ -20,18 +20,18 @@ import { SiteService } from '../../services/site.service';
     <div class="fixed inset-0 w-full h-full flex flex-col overflow-hidden font-sans bg-white text-neutral-900 selection:bg-neutral-900 selection:text-white page-container">
       
       <!-- CLEAN APPLE-STYLE HEADER -->
-      <header class="chat-header bg-white/95 backdrop-blur-xl border-b border-neutral-100 px-6 py-4 flex items-center justify-between z-30 flex-shrink-0">
+      <header class="chat-header bg-white/95 backdrop-blur-xl border-b border-neutral-100 px-6 py-2.5 flex items-center justify-between z-30 flex-shrink-0">
         
-        <div class="flex items-center gap-3.5">
-          <div class="w-10 h-10 rounded-2xl bg-neutral-100 border border-neutral-200/80 flex items-center justify-center p-1.5 shadow-2xs">
-            <img src="assets/icons/logo-link-dark.png" class="w-full h-full object-contain" alt="Rotbot">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-neutral-100 border border-neutral-200/80 flex items-center justify-center p-1 shadow-2xs">
+            <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
           </div>
           <div>
-            <h1 class="text-xl sm:text-2xl font-bold tracking-tight leading-none text-neutral-900">
+            <h1 class="text-base sm:text-lg font-bold tracking-tight leading-none text-neutral-900">
               RotBot IA
             </h1>
-            <div class="flex items-center gap-2 mt-1">
-              <span class="px-3 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-[11px] font-medium inline-flex items-center gap-1.5">
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-[10px] font-medium inline-flex items-center gap-1">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span>Copilot Activo</span>
               </span>
@@ -39,11 +39,11 @@ import { SiteService } from '../../services/site.service';
           </div>
         </div>
 
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2.5">
           <!-- Galería de Diseños -->
           <a routerLink="/prototipos" 
-             class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-900 font-semibold text-xs tracking-wide transition-all shadow-2xs no-underline border-none cursor-pointer">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+             class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-900 font-semibold text-xs tracking-wide transition-all shadow-2xs no-underline border-none cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
             </svg>
             <span>Galería de Diseños</span>
@@ -51,8 +51,8 @@ import { SiteService } from '../../services/site.service';
 
           <!-- Volver al Inicio -->
           <a routerLink="/" 
-             class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-900 font-semibold text-xs tracking-wide transition-all shadow-2xs no-underline border-none cursor-pointer">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+             class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-900 font-semibold text-xs tracking-wide transition-all shadow-2xs no-underline border-none cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
             </svg>
             <span class="hidden sm:inline">Inicio</span>
@@ -60,9 +60,9 @@ import { SiteService } from '../../services/site.service';
 
           <!-- Close / Back Button -->
           <button (click)="goBack()" 
-                  class="w-9 h-9 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 flex items-center justify-center transition-all border-none cursor-pointer" 
+                  class="w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 flex items-center justify-center transition-all border-none cursor-pointer" 
                   title="Cerrar y Volver">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
@@ -141,8 +141,7 @@ import { SiteService } from '../../services/site.service';
              [ngClass]="activeDesign ? 'w-full lg:w-[65%] flex-shrink-0 border-r border-white/5' : 'flex-grow'">
           <!-- Messages Area -->
           <div #scrollContainer 
-               [ngClass]="authService.hasToken() ? 'overflow-y-auto' : 'overflow-hidden'"
-               class="flex-grow scroll-smooth custom-scrollbar messages-area space-y-6" style="overscroll-behavior: contain;">
+               class="flex-grow overflow-y-auto scroll-smooth custom-scrollbar messages-area space-y-6" style="overscroll-behavior: contain;">
             
             <ng-container *ngIf="chatService.isLoadingHistory(); else chatContent">
               <!-- Skeleton Loader -->
@@ -160,54 +159,55 @@ import { SiteService } from '../../services/site.service';
             </ng-container>
 
             <ng-template #chatContent>
-              <!-- Welcome Intro Section -->
-            <div *ngIf="chatService.messages.length <= 1" class="flex flex-col items-center justify-center text-center p-8 my-6 max-w-xl mx-auto rounded-[28px] sm:rounded-[36px] bg-white border border-neutral-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.04)] space-y-4">
-              <div class="w-32 h-32 sm:w-40 sm:h-40 relative flex items-center justify-center overflow-visible">
-                <img src="assets/images/rotbot4.png" class="w-full h-full object-contain" alt="Rotbot Full">
-              </div>
-              <div class="space-y-1.5">
-                <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900">
-                  Sistemas con RotBot IA
-                </h2>
-                <p class="text-xs sm:text-sm font-sans text-neutral-500 max-w-md mx-auto leading-relaxed m-0">
-                  ¡Hola! Soy RotBot, tu copiloto tecnológico listo para guiarte en el desarrollo de tus proyectos web e Inteligencia Artificial.
-                </p>
-              </div>
-            </div>
- 
-            <!-- Messages List -->
-            <ng-container *ngIf="authService.hasToken()">
-              <div *ngFor="let msg of chatService.messages" class="flex w-full px-6 md:px-16 animate-fade-in" [ngClass]="{'justify-end': msg.role === 'user', 'justify-start': msg.role === 'assistant'}">
-                
-                <!-- Assistant Avatar -->
-                <div *ngIf="msg.role === 'assistant'" class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center mr-2.5 p-1 border avatar-bg">
-                  <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain" alt="Rotbot">
-                </div>
-   
-                <!-- Message Bubble -->
-                <div 
-                  [ngClass]="{
-                    'assistant-bubble py-2 text-[14px] sm:text-[15px] leading-relaxed max-w-[80%]': msg.role === 'assistant',
-                    'user-bubble px-4 py-3 rounded-2xl rounded-tr-sm text-[14px] sm:text-[15px] leading-relaxed max-w-[85%] border shadow-sm': msg.role === 'user'
-                  }"
-                >
-                  <span [innerHTML]="msg.content | markdown"></span>
-
-                  <!-- Initial Action Buttons (Ocultos en Lanzamiento) -->
-                  <div *ngIf="msg.role === 'assistant' && msg.showInitialActionButtons && !authService.hasToken()" class="mt-4 flex flex-wrap items-center gap-3">
-                    <button 
-                      (click)="startDesignFlow()" 
-                      class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500/20 to-blue-500/20 hover:from-cyan-500/30 hover:to-blue-500/30 border border-cyan-400/40 hover:border-cyan-400 text-xs sm:text-sm font-bold text-white transition-all flex items-center gap-2 cursor-pointer shadow-lg active:scale-95">
-                      <i class="fa-solid fa-wand-magic-sparkles text-cyan-400 text-sm"></i>
-                      <span>Quiero un Diseño</span>
-                    </button>
-                    <button 
-                      (click)="startConsultingFlow()" 
-                      class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-500/20 to-pink-500/20 hover:from-purple-500/30 hover:to-pink-500/30 border border-purple-400/40 hover:border-purple-400 text-xs sm:text-sm font-bold text-white transition-all flex items-center gap-2 cursor-pointer shadow-lg active:scale-95">
-                      <i class="fa-solid fa-lightbulb text-purple-400 text-sm"></i>
-                      <span>Quiero Asesoría</span>
-                    </button>
+              <div class="flex flex-col min-h-full justify-center py-2" [ngClass]="{'my-auto justify-center': chatService.messages.length <= 1}">
+                <!-- Welcome Intro Section -->
+                <div *ngIf="chatService.messages.length <= 1" class="flex flex-col items-center justify-center text-center p-6 my-2 max-w-lg mx-auto rounded-[28px] bg-white border border-neutral-200/80 shadow-2xs space-y-3">
+                  <div class="w-36 h-36 sm:w-44 sm:h-44 relative flex items-center justify-center overflow-visible">
+                    <img src="assets/images/rotbot4.png" class="w-full h-full object-contain" alt="Rotbot Full">
                   </div>
+                  <div class="space-y-1">
+                    <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900">
+                      Sistemas con RotBot IA
+                    </h2>
+                    <p class="text-xs sm:text-sm font-sans text-neutral-500 max-w-sm mx-auto leading-relaxed m-0">
+                      ¡Hola! Soy RotBot, tu copiloto tecnológico listo para guiarte en el desarrollo de tus proyectos web e Inteligencia Artificial.
+                    </p>
+                  </div>
+                </div>
+     
+                <!-- Messages List (Always Available for Guests & Authenticated Users) -->
+                <ng-container>
+                  <div *ngFor="let msg of chatService.messages" class="flex w-full px-6 md:px-16 animate-fade-in my-1.5" [ngClass]="{'justify-end': msg.role === 'user', 'justify-start': msg.role === 'assistant'}">
+                    
+                    <!-- Assistant Avatar -->
+                    <div *ngIf="msg.role === 'assistant'" class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center mr-2.5 p-1 border avatar-bg">
+                      <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
+                    </div>
+       
+                    <!-- Message Bubble -->
+                    <div 
+                      [ngClass]="{
+                        'assistant-bubble py-2 text-xs sm:text-sm leading-relaxed max-w-[80%]': msg.role === 'assistant',
+                        'user-bubble px-4 py-3 rounded-2xl rounded-tr-xs text-xs sm:text-sm leading-relaxed max-w-[85%] border shadow-sm': msg.role === 'user'
+                      }"
+                    >
+                      <span [innerHTML]="msg.content | markdown"></span>
+
+                      <!-- Initial Action Buttons -->
+                      <div *ngIf="msg.role === 'assistant' && msg.showInitialActionButtons" class="mt-3 flex flex-wrap items-center gap-2.5">
+                        <button 
+                          (click)="startDesignFlow()" 
+                          class="px-4 py-2 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white border border-neutral-200/80 text-xs font-semibold text-neutral-900 transition-all flex items-center gap-2 cursor-pointer shadow-2xs">
+                          <i class="fa-solid fa-palette text-xs"></i>
+                          <span>Quiero un Diseño</span>
+                        </button>
+                        <button 
+                          (click)="startConsultingFlow()" 
+                          class="px-4 py-2 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white border border-neutral-200/80 text-xs font-semibold text-neutral-900 transition-all flex items-center gap-2 cursor-pointer shadow-2xs">
+                          <i class="fa-solid fa-lightbulb text-xs"></i>
+                          <span>Quiero Asesoría</span>
+                        </button>
+                      </div>
 
                   <!-- Category Selector Chips (Ocultos en Lanzamiento) -->
                   <div *ngIf="msg.role === 'assistant' && msg.showCategorySelector && !authService.hasToken()" class="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
@@ -315,115 +315,47 @@ import { SiteService } from '../../services/site.service';
  
             <!-- Typing Indicator -->
             <div *ngIf="chatService.isTyping" class="flex items-center gap-3 w-full px-6 md:px-16">
-              <div class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center p-1 border avatar-bg">
-                <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain" alt="Rotbot">
+              <div class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center p-1 border avatar-bg">
+                <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
               </div>
               <div class="assistant-bubble py-2 flex items-center gap-1.5">
                 <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce"></div>
                 <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce [animation-delay:0.2s]"></div>
                 <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce [animation-delay:0.4s]"></div>
               </div>
-              </div>
-            </ng-template>
+            </div>
           </div>
+        </ng-template>
+      </div>
  
-          <!-- Input Area (Modo Dinámico Activado / Desactivado) -->
-          <div class="chat-input-area p-3 sm:p-6 border-t">
-            <ng-container *ngIf="authService.hasToken(); else loginPrompt">
-              <!-- Active Chat Input (When RotBot is Activated) -->
-              <form *ngIf="chatService.rotbotActive()" (submit)="sendMessage()" class="relative max-w-4xl mx-auto">
-                <textarea 
-                  #chatInputRef
-                  [(ngModel)]="chatService.userInput"
-                  (keydown)="onInputKeydown($event)"
-                  (input)="autoResizeInput($event)"
-                  name="userInput"
-                  rows="1"
-                  placeholder="Pregúntale a Rotbot..."
-                  class="chat-input w-full rounded-xl border py-4 pl-5 pr-14 text-[17px] font-light tracking-wide transition-all focus:ring-0 focus:outline-none resize-none overflow-y-auto leading-normal max-h-36 block"
-                ></textarea>
-                <button 
-                  type="submit"
-                  [disabled]="!chatService.userInput.trim()"
-                  class="chat-submit-btn absolute right-3 bottom-3 p-2 rounded-lg transition-all"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="22" y1="2" x2="11" y2="13"></line>
-                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                  </svg>
-                </button>
-              </form>
+          <!-- Input Area (Permanently Active for Guests & Authenticated Users) -->
+          <div class="chat-input-area p-3 sm:p-5 border-t border-neutral-100 bg-white sticky bottom-0 z-20">
+            <form (submit)="sendMessage()" class="relative max-w-4xl mx-auto flex items-center gap-3 bg-neutral-50 border border-neutral-200/80 rounded-2xl p-2 sm:p-2.5 focus-within:border-neutral-900 transition-colors shadow-2xs">
+              <textarea 
+                #chatInputRef
+                [(ngModel)]="chatService.userInput"
+                (keydown)="onInputKeydown($event)"
+                (input)="autoResizeInput($event)"
+                name="userInput"
+                rows="1"
+                placeholder="Escribe tu mensaje para RotBot IA..."
+                class="w-full bg-transparent border-none px-3 py-1.5 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-0 resize-none max-h-32 leading-relaxed"
+              ></textarea>
 
-              <!-- Coming Soon Card (When RotBot is Deactivated) -->
-              <div *ngIf="!chatService.rotbotActive()" class="flex flex-col items-center justify-center py-7 px-8 w-full max-w-2xl sm:max-w-3xl mx-auto rounded-2xl border relative overflow-hidden backdrop-blur-xl transition-all duration-300 shadow-lg login-prompt-card space-y-4"
-                   style="border-color: var(--card-border, rgba(255, 255, 255, 0.12)); background: var(--card-bg, rgba(255, 255, 255, 0.03));">
-                
-                <!-- Icon Badge with Logo -->
-                <div class="w-12 h-12 rounded-2xl flex items-center justify-center border shadow-sm p-2"
-                     style="background: rgba(0, 245, 255, 0.08); border-color: rgba(0, 245, 255, 0.25);">
-                  <img [src]="currentTheme === 'dark' ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" class="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(0,245,255,0.4)]" alt="Rotbot Logo">
-                </div>
+              <button 
+                type="submit"
+                [disabled]="!chatService.userInput.trim()"
+                class="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex-shrink-0 border-none shadow-sm"
+                style="background-color: #09090b !important; color: #ffffff !important;"
+              >
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+              </button>
+            </form>
 
-                <div class="space-y-1.5 text-center">
-                  <div class="flex items-center justify-center gap-2 mb-1">
-                    <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                    <span class="text-xs font-bold uppercase tracking-widest text-cyan-400">Próximamente en Línea</span>
-                  </div>
-
-                  <h3 class="text-base sm:text-xl font-extrabold tracking-tight font-sans" style="color: var(--text-primary);">
-                    Pronto estaremos en línea, para que hables conmigo
-                  </h3>
-
-                  <p class="text-xs sm:text-[13.5px] font-light max-w-md mx-auto leading-relaxed opacity-90" style="color: var(--text-secondary);">
-                    Estamos afinando los últimos detalles del sistema para brindarte la mejor experiencia con RotBot IA. Mientras tanto, puedes contactarte directamente con Santiago por WhatsApp.
-                  </p>
-                </div>
-
-                <div class="pt-1">
-                  <a href="https://wa.me/573054078225?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20mi%20proyecto" target="_blank" rel="noopener noreferrer" class="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs uppercase tracking-wider flex items-center gap-2.5 shadow-xl transition-all cursor-pointer hover:scale-105 active:scale-95">
-                    <i class="fa-brands fa-whatsapp text-sm"></i>
-                    <span>Hablar por WhatsApp (+57 3054078225)</span>
-                  </a>
-                </div>
-              </div>
-            </ng-container>
-            <ng-template #loginPrompt>
-              <div class="flex flex-col items-center justify-center p-8 sm:p-10 w-full max-w-md mx-auto rounded-[28px] sm:rounded-[36px] bg-white border border-neutral-200/80 shadow-[0_15px_45px_rgba(0,0,0,0.06)] my-8 text-center space-y-5">
-                
-                <!-- User Icon Badge -->
-                <div class="w-12 h-12 rounded-full bg-neutral-100 border border-neutral-200/80 flex items-center justify-center mx-auto text-neutral-800 shadow-2xs">
-                  <svg class="w-5 h-5 text-neutral-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                  </svg>
-                </div>
-                
-                <div class="space-y-1.5">
-                  <h3 class="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900">
-                    Desbloquea RotBot IA
-                  </h3>
-                  <p class="text-xs sm:text-sm font-sans text-neutral-500 max-w-xs mx-auto leading-relaxed">
-                    Inicia sesión o regístrate para conversar sin límites y potenciar tu proyecto.
-                  </p>
-                </div>
-                
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-3 w-full pt-1">
-                  <!-- Dark Obsidian Button -->
-                  <button routerLink="/register" 
-                          class="w-full sm:w-auto px-6 py-3 rounded-full font-semibold text-xs shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border-none cursor-pointer text-center"
-                          style="background-color: #09090b !important; color: #ffffff !important;">
-                    <span style="color: #ffffff !important; font-weight: 600;">Crear cuenta gratis</span>
-                  </button>
-
-                  <!-- Light Secondary Button -->
-                  <button routerLink="/login" 
-                          class="w-full sm:w-auto px-6 py-3 rounded-full font-semibold text-xs bg-neutral-100 hover:bg-neutral-200 text-neutral-900 border border-neutral-200/80 shadow-2xs hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer text-center">
-                    <span>Iniciar sesión</span>
-                  </button>
-                </div>
-
-              </div>
-            </ng-template>
-            <div class="flex justify-center mt-3">
+            <div class="flex justify-center mt-2.5">
                <span class="text-[11px] font-sans font-medium text-neutral-400">Powered by Portalink IA</span>
             </div>
           </div>
