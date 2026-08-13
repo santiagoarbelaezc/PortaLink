@@ -10,10 +10,10 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="min-h-screen lg:h-screen pt-10 lg:pt-12 overflow-y-auto lg:overflow-hidden bg-white text-neutral-900 font-sans grid grid-cols-1 lg:grid-cols-12">
+    <div class="min-h-screen lg:h-screen pt-[68px] overflow-y-auto lg:overflow-hidden bg-white text-neutral-900 font-sans grid grid-cols-1 lg:grid-cols-12">
 
-      <!-- Left Side (Showcase Visual Estilo Apple - Ancho Completo Ajustado) -->
-      <div class="relative hidden lg:flex flex-col justify-center overflow-hidden bg-neutral-50/70 border-r border-neutral-200/80 px-10 lg:px-14 xl:px-16 py-5 lg:py-6 lg:col-span-7 xl:col-span-7 h-full">
+      <!-- Left Side (Showcase Visual Estilo Apple - Alineado Seamless con Navbar) -->
+      <div class="relative hidden lg:flex flex-col justify-center overflow-hidden bg-neutral-50/70 border-r border-neutral-200/80 px-10 lg:px-14 xl:px-16 py-6 lg:py-8 lg:col-span-7 xl:col-span-7 h-[calc(100vh-68px)]">
 
         <!-- Center Main Content Showcase (Full Width Spanning) -->
         <div class="my-auto py-2 z-10 space-y-4 w-full max-w-2xl xl:max-w-3xl mx-auto">
@@ -36,7 +36,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
           <!-- Single Project Showcase Image (proyecto-0.png) -->
           <div class="relative pt-1 pb-1 w-full">
             <div class="relative w-full rounded-2xl border border-neutral-200/90 bg-white p-2.5 shadow-md overflow-hidden">
-              <img src="assets/images/proyecto-0.png" class="w-full h-auto max-h-[380px] xl:max-h-[420px] object-cover object-top rounded-xl border border-neutral-100" alt="Proyecto Showcase">
+              <img src="assets/images/proyecto-0.png" class="w-full h-auto max-h-[340px] xl:max-h-[380px] object-cover object-top rounded-xl border border-neutral-100" alt="Proyecto Showcase">
             </div>
           </div>
 
@@ -44,8 +44,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
       </div>
 
-      <!-- Right Side (Forms Panel) -->
-      <div class="flex flex-col justify-center px-6 sm:px-12 lg:px-14 xl:px-16 relative bg-white lg:col-span-5 xl:col-span-5 h-full overflow-y-auto py-4 lg:py-6">
+      <!-- Right Side (Forms Panel - Seamlessly Touches Navbar Line) -->
+      <div class="flex flex-col justify-start px-6 sm:px-12 lg:px-14 xl:px-16 relative bg-white lg:col-span-5 xl:col-span-5 h-[calc(100vh-68px)] overflow-y-auto py-6 lg:py-8">
         <div class="w-full max-w-sm xl:max-w-md mx-auto">
 
           <!-- Mobile Header Back Link -->
