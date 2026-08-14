@@ -108,17 +108,6 @@ export interface GalleryProject {
                 <div class="absolute inset-0 bg-gradient-to-t from-black/95 sm:from-black/90 via-black/40 to-black/70 pointer-events-none"></div>
                 <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent pointer-events-none"></div>
 
-                <!-- Parte Superior del Card: #CÓDIGO y BADGE -->
-                <div class="relative z-10 flex items-center justify-between w-full">
-                  <span class="font-mono text-xs font-bold uppercase tracking-[0.25em] text-white/70 group-hover:text-[#00f5ff] transition-colors duration-200">
-                    #{{ project.code }}
-                  </span>
-
-                  <div class="px-3 py-1 bg-white text-black font-extrabold text-[10px] sm:text-[11px] uppercase tracking-widest rounded-lg shadow-md flex items-center gap-1">
-                    <span>+ {{ project.badge }}</span>
-                  </div>
-                </div>
-
                 <!-- Parte Inferior del Card: Tagline & Título -->
                 <div class="relative z-10 mt-auto pt-6">
                   <!-- Tagline con línea vertical cyan -->

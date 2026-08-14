@@ -336,15 +336,16 @@ import { SiteService } from '../../services/site.service';
                 [(ngModel)]="chatService.userInput"
                 (keydown)="onInputKeydown($event)"
                 (input)="autoResizeInput($event)"
+                [disabled]="chatService.isBlocked()"
                 name="userInput"
                 rows="1"
-                placeholder="Escribe tu mensaje para RotBot IA..."
-                class="w-full bg-transparent border-none px-3 py-1.5 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-0 resize-none max-h-32 leading-relaxed"
+                [placeholder]="chatService.isBlocked() ? 'Chat suspendido por términos inapropiados (' + chatService.blockRemainingSeconds() + 's)...' : 'Escribe tu mensaje para RotBot IA...'"
+                class="w-full bg-transparent border-none px-3 py-1.5 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-0 resize-none max-h-32 leading-relaxed disabled:opacity-50 disabled:cursor-not-allowed"
               ></textarea>
 
               <button 
                 type="submit"
-                [disabled]="!chatService.userInput.trim()"
+                [disabled]="!chatService.userInput.trim() || chatService.isBlocked()"
                 class="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex-shrink-0 border-none shadow-sm"
                 style="background-color: #09090b !important; color: #ffffff !important;"
               >
@@ -354,6 +355,17 @@ import { SiteService } from '../../services/site.service';
                 </svg>
               </button>
             </form>
+
+            <!-- Block Warning Badge -->
+            <div *ngIf="chatService.isBlocked()" class="max-w-4xl mx-auto mt-2.5 px-4 py-2 rounded-xl bg-red-50 border border-red-200/80 text-red-700 text-xs font-headline font-semibold flex items-center justify-between shadow-2xs animate-pulse">
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-red-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                </svg>
+                <span>Chat suspendido temporalmente por contenido explícito o vulgares</span>
+              </div>
+              <span class="font-mono font-bold bg-red-100 px-2.5 py-0.5 rounded text-red-800">{{ chatService.blockRemainingSeconds() }}s</span>
+            </div>
 
             <div class="flex justify-center mt-2.5">
                <span class="text-[11px] font-sans font-medium text-neutral-400">Powered by Portalink IA</span>

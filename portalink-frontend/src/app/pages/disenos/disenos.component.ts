@@ -171,47 +171,40 @@ export interface DesignItem {
 
       </main>
 
-      <!-- CARD REUSABLE NG-TEMPLATE -->
+      <!-- CARD ITEM TEMPLATE -->
       <ng-template #cardItem let-t="item" let-aspect="aspect">
         <div class="group relative rounded-[24px] sm:rounded-[32px] overflow-hidden border border-neutral-200/80 bg-white shadow-[0_10px_35px_rgba(0,0,0,0.04)] transition-all duration-500 hover:scale-[1.01] hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex flex-col justify-between cursor-pointer h-full"
              (click)="openPreview(t, $event)"
              data-aos="fade-up"
              data-aos-duration="900">
 
-          <!-- Card Image Container -->
-          <div class="relative w-full overflow-hidden bg-neutral-50 flex-1 min-h-[130px]" [ngClass]="aspect || 'aspect-[21/9]'">
+          <!-- Card Image Container (Responsive Aspect for Mobile) -->
+          <div class="relative w-full overflow-hidden bg-neutral-50 flex-1 min-h-[160px] sm:min-h-[130px]" [ngClass]="aspect || 'aspect-[16/10] sm:aspect-[21/9]'">
             <img [src]="t.image" [alt]="t.name" 
                  (error)="onImageError($event)"
                  class="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105" 
                  loading="lazy" />
             
-            <!-- Category Badge -->
-            <div class="absolute top-3.5 right-3.5 z-10">
-              <span class="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-neutral-900 text-[10.5px] font-headline font-semibold tracking-wider shadow-sm border border-neutral-200/60">
-                + {{ t.categoryName }}
-              </span>
-            </div>
-
             <!-- Live Badge (if liveUrl exists) -->
-            <div *ngIf="t.liveUrl" class="absolute top-3.5 left-3.5 z-10">
+            <div *ngIf="t.liveUrl" class="absolute top-3 sm:top-3.5 left-3 sm:left-3.5 z-10">
               <a [href]="t.liveUrl" target="_blank" rel="noopener noreferrer" (click)="$event.stopPropagation()"
-                 class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/90 backdrop-blur-md text-white text-[10.5px] font-headline font-semibold tracking-wider shadow-sm no-underline border-none hover:bg-emerald-600 transition-colors">
+                 class="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1 rounded-full bg-emerald-500/90 backdrop-blur-md text-white text-[10px] sm:text-[10.5px] font-headline font-semibold tracking-wider shadow-sm no-underline border-none hover:bg-emerald-600 transition-colors">
                 <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
                 <span>Prototipo en Vivo</span>
               </a>
             </div>
           </div>
 
-          <!-- Card Details Bar Below Image (Pure white, single button, Title Case heading) -->
-          <div class="p-4 sm:p-5 flex items-center justify-between gap-3 bg-white border-t border-neutral-100/80">
+          <!-- Card Details Bar Below Image (Pure white, single button) -->
+          <div class="p-3.5 sm:p-5 flex items-center justify-between gap-2.5 bg-white border-t border-neutral-100/80">
             
-            <h3 class="text-lg sm:text-xl font-headline font-semibold tracking-tight leading-snug" style="color: #0a0a0a !important;">
+            <h3 class="text-base sm:text-xl font-headline font-semibold tracking-tight leading-snug truncate" style="color: #0a0a0a !important;">
               {{ t.name }}
             </h3>
 
             <!-- Button: Ver Prototipo -->
             <button (click)="openPreview(t, $event)"
-                    class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 sm:px-4 sm:py-2 rounded-xl font-headline font-medium text-xs shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all border-none flex-shrink-0 cursor-pointer"
+                    class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl font-headline font-medium text-xs shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all border-none flex-shrink-0 cursor-pointer"
                     style="background-color: #09090b !important; color: #ffffff !important;">
               <span style="color: #ffffff !important; font-weight: 500;">Ver Prototipo</span>
               <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
@@ -224,43 +217,48 @@ export interface DesignItem {
         </div>
       </ng-template>
 
-      <!-- PREVIEW MODAL APPLE-STYLE CLEAN -->
-      <div class="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4 md:p-5 bg-black/65 backdrop-blur-2xl transition-all duration-300 animate-fadeIn"
+      <!-- PREVIEW MODAL APPLE-STYLE CLEAN (OPTIMIZED FOR MOBILE) -->
+      <div class="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 bg-black/75 backdrop-blur-2xl transition-all duration-300 animate-fadeIn"
            *ngIf="previewTemplate()" (click)="closePreview()">
         
-        <div class="relative w-full max-w-[1340px] bg-white rounded-[24px] sm:rounded-[32px] overflow-hidden border border-neutral-200/80 shadow-[0_25px_70px_rgba(0,0,0,0.18)] flex flex-col max-h-[96vh] animate-scaleUp"
+        <div class="relative w-full max-w-[1340px] bg-white rounded-t-[28px] sm:rounded-[32px] overflow-hidden border border-neutral-200/80 shadow-[0_25px_70px_rgba(0,0,0,0.25)] flex flex-col max-h-[92vh] sm:max-h-[95vh] animate-scaleUp"
              (click)="$event.stopPropagation()">
           
-          <!-- Modal Header -->
-          <div class="px-5 sm:px-7 py-3.5 border-b border-neutral-100/90 flex items-center justify-between gap-4 bg-white/95 backdrop-blur-md sticky top-0 z-20">
+          <!-- Modal Header (Mobile Responsive) -->
+          <div class="px-4 sm:px-7 py-3 sm:py-3.5 border-b border-neutral-100/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/95 backdrop-blur-md sticky top-0 z-20">
             
-            <div class="flex items-center gap-3">
-              <span class="w-2.5 h-2.5 rounded-full bg-neutral-900"></span>
-              <div>
-                <h2 class="text-xl sm:text-2xl md:text-3xl font-headline font-semibold tracking-tight leading-snug" style="color: #0a0a0a !important;">
-                  {{ previewTemplate()?.name }}
-                </h2>
-                <div class="flex items-center gap-2 mt-0.5">
-                  <span class="text-xs font-headline font-medium text-neutral-500">
-                    {{ previewTemplate()?.categoryName }}
-                  </span>
-                  <span class="text-neutral-300 text-xs">•</span>
-                  <span class="text-xs font-sans text-neutral-400">
-                    {{ previewTemplate()?.styleName }}
-                  </span>
+            <div class="flex items-center justify-between w-full sm:w-auto">
+              <div class="flex items-center gap-2.5 sm:gap-3">
+                <span class="w-2.5 h-2.5 rounded-full bg-neutral-900 flex-shrink-0"></span>
+                <div>
+                  <h2 class="text-base sm:text-2xl font-headline font-bold tracking-tight leading-tight" style="color: #0a0a0a !important;">
+                    {{ previewTemplate()?.name }}
+                  </h2>
+                  <div class="flex items-center gap-2 mt-0.5">
+                    <span class="text-[11px] sm:text-xs font-sans text-neutral-500 font-medium">
+                      {{ previewTemplate()?.styleName }}
+                    </span>
+                  </div>
                 </div>
               </div>
+
+              <!-- Mobile Close Button -->
+              <button (click)="closePreview()" 
+                      class="sm:hidden w-8 h-8 rounded-full bg-neutral-100 text-neutral-700 flex items-center justify-center border-none cursor-pointer">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
             </div>
 
-            <div class="flex items-center gap-3">
+            <!-- Action Buttons (Responsive Row) -->
+            <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
               <!-- Live Link Button (if exists) -->
               <a *ngIf="previewTemplate()?.liveUrl" [href]="previewTemplate()?.liveUrl" target="_blank" rel="noopener noreferrer"
-                 class="hidden sm:inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-emerald-50/90 hover:bg-emerald-100/90 text-emerald-800 font-headline font-semibold text-xs border border-emerald-200/90 shadow-sm transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] no-underline group">
+                 class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-xl sm:rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-headline font-semibold text-[11px] sm:text-xs border border-emerald-200/90 shadow-2xs transition-all duration-300 no-underline group">
                 <span class="relative flex h-2 w-2">
                   <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
-                <span>Ver Prototipo en Vivo</span>
+                <span>Prototipo en Vivo</span>
                 <svg class="w-3.5 h-3.5 text-emerald-700 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
                 </svg>
@@ -268,19 +266,17 @@ export interface DesignItem {
 
               <!-- Contact Button -->
               <button (click)="requestCustomProject(previewTemplate()!)"
-                      class="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full font-headline font-semibold text-xs shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] border-none cursor-pointer group"
+                      class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 sm:px-6 sm:py-2.5 rounded-xl sm:rounded-full font-headline font-semibold text-[11px] sm:text-xs shadow-md transition-all duration-300 border-none cursor-pointer"
                       style="background-color: #09090b !important; color: #ffffff !important;">
-                <span style="color: #ffffff !important; font-weight: 600;">Solicitar este Diseño</span>
-                <div class="w-5 h-5 rounded-full bg-white/15 flex items-center justify-center transition-transform duration-300 group-hover:translate-x-0.5">
-                  <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
-                  </svg>
-                </div>
+                <span style="color: #ffffff !important; font-weight: 600;">Solicitar Diseño</span>
+                <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+                </svg>
               </button>
 
-              <!-- Close Button -->
+              <!-- Desktop Close Button -->
               <button (click)="closePreview()" 
-                      class="w-10 h-10 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 flex items-center justify-center transition-all border-none cursor-pointer">
+                      class="hidden sm:flex w-10 h-10 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 items-center justify-center transition-all border-none cursor-pointer">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
               </button>
             </div>
@@ -288,23 +284,23 @@ export interface DesignItem {
           </div>
 
           <!-- Modal Body Image Preview in Browser Frame -->
-          <div class="p-3 sm:p-5 bg-[#f6f7f8] overflow-y-auto flex-1 flex flex-col items-center custom-scrollbar">
+          <div class="p-2 sm:p-5 bg-[#f6f7f8] overflow-y-auto flex-1 flex flex-col items-center custom-scrollbar">
             
             <!-- Browser Mockup Window -->
-            <div class="w-full max-w-[1240px] rounded-[18px] sm:rounded-[24px] overflow-hidden border border-neutral-200/90 shadow-[0_15px_45px_rgba(0,0,0,0.06)] bg-white flex flex-col">
+            <div class="w-full max-w-[1240px] rounded-[16px] sm:rounded-[24px] overflow-hidden border border-neutral-200/90 shadow-[0_15px_45px_rgba(0,0,0,0.06)] bg-white flex flex-col">
               
-              <!-- Browser Mockup Header Bar with Live Project Link -->
-              <div class="px-5 py-3 bg-neutral-100/80 border-b border-neutral-200/70 flex items-center justify-between gap-4">
-                <div class="flex items-center gap-2 flex-shrink-0">
-                  <span class="w-3 h-3 rounded-full bg-red-400/80"></span>
-                  <span class="w-3 h-3 rounded-full bg-amber-400/80"></span>
-                  <span class="w-3 h-3 rounded-full bg-emerald-400/80"></span>
+              <!-- Browser Mockup Header Bar -->
+              <div class="px-3 sm:px-5 py-2 sm:py-3 bg-neutral-100/80 border-b border-neutral-200/70 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-1.5 flex-shrink-0">
+                  <span class="w-2.5 h-2.5 rounded-full bg-red-400/80"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-400/80"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-400/80"></span>
                 </div>
 
                 <!-- LIVE PROJECT LINK PILL ABOVE IMAGE -->
                 <a *ngIf="previewTemplate()?.liveUrl; else defaultUrl" 
                    [href]="previewTemplate()?.liveUrl" target="_blank" rel="noopener noreferrer"
-                   class="px-4 py-1.5 rounded-full bg-white hover:bg-emerald-50/80 border border-neutral-200/80 text-xs font-mono text-neutral-700 hover:text-emerald-700 max-w-md sm:max-w-xl w-full text-center truncate shadow-2xs flex items-center justify-center gap-2 no-underline transition-all group cursor-pointer">
+                   class="px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-white hover:bg-emerald-50/80 border border-neutral-200/80 text-[10.5px] sm:text-xs font-mono text-neutral-700 hover:text-emerald-700 max-w-md w-full text-center truncate shadow-2xs flex items-center justify-center gap-1.5 no-underline transition-all group cursor-pointer">
                   <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse flex-shrink-0"></span>
                   <span class="font-medium truncate">{{ previewTemplate()?.liveUrl }}</span>
                   <svg class="w-3.5 h-3.5 text-neutral-400 group-hover:text-emerald-600 transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -312,19 +308,19 @@ export interface DesignItem {
                   </svg>
                 </a>
                 <ng-template #defaultUrl>
-                  <div class="px-4 py-1.5 rounded-full bg-white/90 border border-neutral-200/60 text-xs font-mono text-neutral-400 max-w-md w-full text-center truncate shadow-2xs">
+                  <div class="px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-white/90 border border-neutral-200/60 text-[10.5px] sm:text-xs font-mono text-neutral-400 max-w-md w-full text-center truncate shadow-2xs">
                     https://portalink.co/prototipos/{{ previewTemplate()?.id }}
                   </div>
                 </ng-template>
 
-                <div class="w-12 flex-shrink-0"></div>
+                <div class="w-4 sm:w-12 flex-shrink-0"></div>
               </div>
 
-              <!-- Image Content (Taller and Larger View) -->
-              <div class="w-full bg-neutral-900/5 flex justify-center items-start p-1.5 sm:p-3 min-h-[350px]">
+              <!-- Image Content (High quality smooth scroll image container) -->
+              <div class="w-full bg-neutral-900/5 flex justify-center items-start p-1 sm:p-3 min-h-[280px] sm:min-h-[400px]">
                 <img [src]="previewTemplate()?.image" [alt]="previewTemplate()?.name"
                      (error)="onImageError($event)"
-                     class="w-full h-auto max-h-[82vh] object-contain object-top rounded-xl shadow-sm border border-neutral-200/40" />
+                     class="w-full h-auto max-h-[68vh] sm:max-h-[82vh] object-contain object-top rounded-lg sm:rounded-xl shadow-sm border border-neutral-200/40" />
               </div>
 
             </div>
@@ -332,13 +328,13 @@ export interface DesignItem {
           </div>
 
           <!-- Modal Footer Details Bar -->
-          <div class="px-5 sm:px-7 py-3 bg-white border-t border-neutral-100 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p class="text-xs font-sans text-neutral-500 m-0 max-w-2xl">
+          <div class="px-4 sm:px-7 py-3 bg-white border-t border-neutral-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p class="text-xs font-sans text-neutral-500 m-0 max-w-2xl text-center sm:text-left leading-relaxed">
               {{ previewTemplate()?.description }}
             </p>
 
-            <div class="flex items-center gap-2 flex-wrap">
-              <span *ngFor="let tag of previewTemplate()?.tags" class="px-3 py-1 rounded-full bg-neutral-100 text-neutral-600 text-[11px] font-headline font-medium">
+            <div class="flex items-center justify-center gap-1.5 flex-wrap">
+              <span *ngFor="let tag of previewTemplate()?.tags" class="px-2.5 py-1 rounded-full bg-neutral-100 text-neutral-600 text-[10.5px] font-headline font-medium">
                 #{{ tag }}
               </span>
             </div>
@@ -445,7 +441,7 @@ export class DisenosComponent implements OnInit {
       id: 'plaxtilineas',
       name: 'Plaxtilíneas',
       category: 'servicios',
-      categoryName: 'PORTAL CORPORATIVO',
+      categoryName: 'PLATAFORMA',
       styleName: 'Empaques & Soluciones Plásticas',
       description: 'Portal institucional e industrial para la exhibición de líneas de bolsas y empaques.',
       iconClass: 'fa-solid fa-building',

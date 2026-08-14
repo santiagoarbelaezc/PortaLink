@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, ViewEncapsulation } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { FooterComponent } from '../../components/footer/footer.component';
@@ -38,27 +38,17 @@ export interface ProjectDetail {
       <app-navbar></app-navbar>
 
       <!-- Main Project Content -->
-      <main class="flex-grow w-full pt-20 sm:pt-24 lg:pt-28 pb-20 relative z-10" *ngIf="project">
+      <main class="flex-grow w-full pt-14 sm:pt-16 lg:pt-20 pb-20 relative z-10" *ngIf="project">
         
-        <!-- Top Breadcrumb & Back Navigation -->
-        <div class="max-w-[1400px] mx-auto px-4 sm:px-10 mb-6 sm:mb-8">
-          <div class="flex items-center justify-between gap-4 flex-wrap">
-            <a (click)="goBack()" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white border border-neutral-200/80 text-xs font-semibold text-neutral-800 transition-all shadow-2xs cursor-pointer">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
-              </svg>
-              <span>Volver a Proyectos</span>
-            </a>
-
-            <div class="flex items-center gap-2.5">
-              <span class="text-xs font-semibold px-3.5 py-1.5 rounded-full bg-neutral-100 border border-neutral-200/80 text-neutral-700 shadow-2xs">
-                #{{ project.code }}
-              </span>
-              <span class="text-xs font-semibold px-3.5 py-1.5 rounded-full bg-neutral-900 text-white shadow-2xs">
-                {{ project.badge }}
-              </span>
-            </div>
-          </div>
+        <!-- Top Breadcrumb & Back Navigation (Aligned higher up) -->
+        <div class="max-w-[1400px] mx-auto px-4 sm:px-10 mb-4 sm:mb-6 flex items-center justify-between">
+          <a (click)="goBack()" 
+             class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white border border-neutral-200/80 text-xs font-semibold text-neutral-800 transition-all shadow-2xs cursor-pointer no-underline group">
+            <svg class="w-4 h-4 text-neutral-600 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+            </svg>
+            <span>Volver a Proyectos</span>
+          </a>
         </div>
 
         <!-- Hero Section Header -->
@@ -295,6 +285,7 @@ export interface ProjectDetail {
 export class DescripcionProyectoComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private location = inject(Location);
 
   project?: ProjectDetail;
   activeImage = '';
@@ -643,7 +634,7 @@ Cuenta con calculadora de volumen y densidad, cotización en lote para distribui
     {
       id: 'plaxtilineas',
       code: 'CORP_06',
-      badge: 'PORTAL CORPORATIVO',
+      badge: 'PLATAFORMA',
       title: 'PLAXTILÍNEAS',
       tagline: 'Portal corporativo e industrial de empaques y soluciones plásticas avanzadas.',
       category: 'Sistemas Corporativos',
@@ -854,7 +845,11 @@ Conectado a la base de datos empresarial, este copiloto comprende instrucciones 
   }
 
   goBack() {
-    this.router.navigate(['/proyectos']);
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      this.location.back();
+    } else {
+      this.router.navigate(['/']);
+    }
   }
 
   openWhatsappQuote() {

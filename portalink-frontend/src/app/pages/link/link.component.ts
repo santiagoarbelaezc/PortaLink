@@ -204,23 +204,11 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                          loading="lazy" 
                          class="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105" />
                     
-                    <!-- Top Index Pill -->
-                    <div class="absolute top-4 right-4 z-10">
-                      <span class="px-3 py-1 rounded-full bg-neutral-900/80 backdrop-blur-md text-white text-[10px] font-mono shadow-sm">
-                        0{{ i + 1 }} / {{ modelingImages.length }}
-                      </span>
-                    </div>
-
                     <!-- Bottom Caption Pill -->
-                    <div class="absolute bottom-4 left-4 right-4 z-10 flex items-center justify-between">
-                      <span class="px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md text-neutral-900 text-xs font-semibold shadow-sm border border-neutral-200/60 truncate max-w-[78%]">
+                    <div class="absolute bottom-4 left-4 z-10">
+                      <span class="px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md text-neutral-900 text-xs font-semibold uppercase tracking-wider shadow-sm border border-neutral-200/60">
                         {{ img.alt }}
                       </span>
-                      <div class="w-9 h-9 rounded-full bg-white/90 backdrop-blur-md text-neutral-900 flex items-center justify-center shadow-sm border border-neutral-200/60 group-hover:bg-neutral-900 group-hover:text-white transition-colors">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                        </svg>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -455,16 +443,16 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   modelingImages = [
-    { src: 'assets/images/fotos/color-1.jpg', alt: 'Editorial Portrait I', isColor: true },
-    { src: 'assets/images/fotos/blanco-negro-1.jpg', alt: 'Editorial Portrait II', isColor: false },
-    { src: 'assets/images/fotos/color-2 (2).jpg', alt: 'Editorial Portrait III', isColor: true },
-    { src: 'assets/images/fotos/blanco-negro-2 (2).jpg', alt: 'Editorial Portrait IV', isColor: false },
-    { src: 'assets/images/fotos/color-3.jpg', alt: 'Editorial Portrait V', isColor: true },
-    { src: 'assets/images/fotos/blanco-negro-3.jpg', alt: 'Editorial Portrait VI', isColor: false },
-    { src: 'assets/images/fotos/color-4.jpg', alt: 'Editorial Portrait VII', isColor: true },
-    { src: 'assets/images/fotos/blanco-negro3.jpg', alt: 'Editorial Portrait VIII', isColor: false },
-    { src: 'assets/images/fotos/color5.JPG', alt: 'Editorial Portrait IX', isColor: true },
-    { src: 'assets/images/fotos/color6.jpg', alt: 'Editorial Portrait X', isColor: true }
+    { src: 'assets/images/fotos/color-1.jpg', alt: 'Color', isColor: true },
+    { src: 'assets/images/fotos/blanco-negro-1.jpg', alt: 'B&N', isColor: false },
+    { src: 'assets/images/fotos/color-2 (2).jpg', alt: 'Color', isColor: true },
+    { src: 'assets/images/fotos/blanco-negro-2 (2).jpg', alt: 'B&N', isColor: false },
+    { src: 'assets/images/fotos/color-3.jpg', alt: 'Color', isColor: true },
+    { src: 'assets/images/fotos/blanco-negro-3.jpg', alt: 'B&N', isColor: false },
+    { src: 'assets/images/fotos/color-4.jpg', alt: 'Color', isColor: true },
+    { src: 'assets/images/fotos/blanco-negro3.jpg', alt: 'B&N', isColor: false },
+    { src: 'assets/images/fotos/color5.JPG', alt: 'Color', isColor: true },
+    { src: 'assets/images/fotos/color6.jpg', alt: 'Color', isColor: true }
   ];
 
   translations: any = {

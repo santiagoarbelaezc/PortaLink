@@ -9,7 +9,7 @@ import * as AOS from 'aos';
   imports: [CommonModule, RouterModule],
   template: `
     <section id="hero" 
-             class="relative w-full flex items-center justify-center overflow-hidden transition-colors duration-500 pt-24 pb-6 md:pt-28 md:pb-10 px-6 sm:px-12 lg:px-20"
+             class="relative w-full flex flex-col items-center justify-center overflow-hidden transition-colors duration-500 pt-20 pb-2 md:pt-28 md:pb-4 px-4 sm:px-12 lg:px-20"
              [ngClass]="currentTheme === 'light' ? 'bg-white text-neutral-900' : 'bg-[#0a0a0a] text-white'">
       
       <!-- Subtle Ambient Accent -->
@@ -19,57 +19,31 @@ import * as AOS from 'aos';
       </div>
 
       <!-- Main Container: 2-Column Layout (Video Left, Text Right) 100% Aligned with Projects Grid -->
-      <div class="relative z-10 w-full max-w-[1500px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-14">
+      <div class="relative z-10 w-full max-w-[1500px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8 lg:gap-14">
         
-        <!-- Left Side: Clean Video Showcase (Aligned to far-left edge of container) -->
-        <div class="w-full lg:w-[65%]"
-             data-aos="fade-right"
-             data-aos-duration="1000"
-             data-aos-easing="ease-out-cubic">
-          
-          <div class="relative w-full rounded-[28px] sm:rounded-[36px] overflow-hidden transition-all duration-700 border"
-               [ngClass]="currentTheme === 'light' 
-                 ? 'bg-white border-neutral-200/90 shadow-[0_15px_45px_rgba(0,0,0,0.06)]' 
-                 : 'bg-neutral-900 border-neutral-800 shadow-[0_20px_50px_rgba(0,0,0,0.6)]'">
-            
-            <!-- Clean Video Element -->
-            <video #heroVideo
-                   src="assets/videos/hero/portalink.mp4"
-                   class="w-full h-auto object-cover rounded-[28px] sm:rounded-[36px] block transition-transform duration-700 hover:scale-[1.01]"
-                   autoplay
-                   muted
-                   loop
-                   playsinline
-                   preload="auto"
-                   (ended)="onVideoEnded()">
-            </video>
-          </div>
-
-        </div>
-
-        <!-- Right Side: Clean Text & Button (35% width) -->
-        <div class="w-full lg:w-[35%] flex flex-col items-center lg:items-start text-center lg:text-left space-y-5"
+        <!-- Text Column (Order 1 in mobile, Order 2 in desktop) -->
+        <div class="w-full lg:w-[35%] order-1 lg:order-2 flex flex-col items-center lg:items-start text-center lg:text-left space-y-4 sm:space-y-5"
              data-aos="fade-up"
              data-aos-duration="1000"
-             data-aos-delay="150"
+             data-aos-delay="100"
              data-aos-easing="ease-out-cubic">
 
           <!-- Main Title -->
-          <h1 class="text-4xl sm:text-5xl lg:text-[52px] font-headline font-semibold tracking-tight leading-[1.08]"
+          <h1 class="text-4xl sm:text-6xl lg:text-[56px] font-headline font-bold tracking-tight leading-[1.05]"
               style="color: #0a0a0a !important;">
             Digitaliza tu negocio
           </h1>
 
           <!-- Subtitle Description -->
-          <p class="text-base sm:text-lg font-sans font-normal text-neutral-600 leading-relaxed max-w-lg">
+          <p class="text-sm sm:text-lg font-sans font-normal text-neutral-600 leading-relaxed max-w-lg">
             Explora nuestro catálogo exclusivo de soluciones tecnológicas. Encuentra las últimas novedades en desarrollo web, plataformas e Inteligencia Artificial, todo en un solo lugar.
           </p>
 
           <!-- Ver Productos Button -->
-          <div class="pt-2 w-full flex justify-center lg:justify-start">
+          <div class="pt-1 sm:pt-2 w-full flex justify-center lg:justify-start">
             <a (click)="scrollTo('#portfolio', $event)"
                routerLink="/prototipos"
-               class="px-8 py-3.5 rounded-xl font-headline font-medium text-xs tracking-wider transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] inline-flex items-center justify-center gap-2.5 no-underline border-none"
+               class="px-7 py-3 sm:px-8 sm:py-3.5 rounded-xl font-headline font-medium text-xs tracking-wider transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] inline-flex items-center justify-center gap-2.5 no-underline border-none"
                style="background-color: #09090b !important; color: #ffffff !important;">
               <span style="color: #ffffff !important; font-weight: 500;">Ver Productos</span>
               <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color: #ffffff !important;">
@@ -80,6 +54,58 @@ import * as AOS from 'aos';
 
         </div>
 
+        <!-- Video Column (Order 2 in mobile, Order 1 in desktop) -->
+        <div class="w-full lg:w-[65%] order-2 lg:order-1 mt-1 sm:mt-0"
+             data-aos="fade-right"
+             data-aos-duration="1000"
+             data-aos-easing="ease-out-cubic">
+          
+          <div class="relative w-full rounded-[24px] sm:rounded-[36px] overflow-hidden transition-all duration-700 border shadow-md"
+               [ngClass]="currentTheme === 'light' 
+                 ? 'bg-white border-neutral-200/90 shadow-[0_15px_45px_rgba(0,0,0,0.06)]' 
+                 : 'bg-neutral-900 border-neutral-800 shadow-[0_20px_50px_rgba(0,0,0,0.6)]'">
+            
+            <!-- Mobile Video Element (portalink-movil.mp4) -->
+            <video #mobileHeroVideo
+                   src="assets/videos/hero/portalink-movil.mp4"
+                   class="block md:hidden w-full h-auto object-cover rounded-[24px] transition-transform duration-700 hover:scale-[1.01]"
+                   autoplay
+                   muted
+                   [muted]="true"
+                   loop
+                   playsinline
+                   webkit-playsinline
+                   preload="auto">
+            </video>
+
+            <!-- Desktop Video Element (portalink.mp4) -->
+            <video #heroVideo
+                   src="assets/videos/hero/portalink.mp4"
+                   class="hidden md:block w-full h-auto object-cover rounded-[36px] transition-transform duration-700 hover:scale-[1.01]"
+                   autoplay
+                   muted
+                   [muted]="true"
+                   loop
+                   playsinline
+                   webkit-playsinline
+                   preload="auto"
+                   (ended)="onVideoEnded()">
+            </video>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Animated Scroll Indicator Pill (Moved higher up) -->
+      <div (click)="scrollTo('#portfolio', $event)" 
+           class="relative z-10 flex flex-col items-center justify-center mt-5 sm:mt-8 pt-3 pb-1 text-neutral-400 animate-bounce cursor-pointer" 
+           data-aos="fade-up" 
+           data-aos-delay="300">
+        <span class="text-[10px] font-headline font-semibold uppercase tracking-[0.2em] text-neutral-400">DESLIZA PARA EXPLORAR</span>
+        <svg class="w-4 h-4 text-neutral-400 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+        </svg>
       </div>
     </section>
   `,
@@ -94,6 +120,7 @@ export class HeroVideoComponent implements OnInit, AfterViewInit, OnDestroy {
   private router = inject(Router);
 
   @ViewChild('heroVideo') videoElement!: ElementRef<HTMLVideoElement>;
+  @ViewChild('mobileHeroVideo') mobileVideoElement!: ElementRef<HTMLVideoElement>;
 
   videoEnded = false;
   currentTheme = 'light';
@@ -120,12 +147,22 @@ export class HeroVideoComponent implements OnInit, AfterViewInit, OnDestroy {
         easing: 'ease-out-cubic'
       });
 
+      // Mute all video elements programmatically
+      const videos = document.querySelectorAll<HTMLVideoElement>('section#hero video');
+      videos.forEach(video => {
+        video.muted = true;
+        video.volume = 0;
+        video.playsInline = true;
+      });
+
       // Auto-pause when user scrolls past video, resume when visible in viewport
       if ('IntersectionObserver' in window && this.videoElement && this.videoElement.nativeElement) {
         const video = this.videoElement.nativeElement;
         this.observer = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
             if (entry.isIntersecting) {
+              video.muted = true;
+              video.volume = 0;
               video.play().catch(() => {});
             } else {
               video.pause();
@@ -137,9 +174,10 @@ export class HeroVideoComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     setTimeout(() => {
-      if (this.videoElement && this.videoElement.nativeElement) {
-        const video = this.videoElement.nativeElement;
+      const videos = document.querySelectorAll<HTMLVideoElement>('section#hero video');
+      videos.forEach(video => {
         video.muted = true;
+        video.volume = 0;
         video.playsInline = true;
         const playPromise = video.play();
         if (playPromise !== undefined) {
@@ -147,8 +185,8 @@ export class HeroVideoComponent implements OnInit, AfterViewInit, OnDestroy {
             console.warn('Autoplay prevented by browser:', err);
           });
         }
-      }
-    }, 200);
+      });
+    }, 150);
   }
 
   ngOnDestroy() {

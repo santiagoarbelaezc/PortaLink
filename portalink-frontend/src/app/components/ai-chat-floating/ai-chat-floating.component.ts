@@ -166,13 +166,14 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
               <input 
                 type="text" 
                 [(ngModel)]="chatService.userInput"
+                [disabled]="chatService.isBlocked()"
                 name="userInput"
-                placeholder="Escribe tu mensaje para RotBot IA..."
-                class="w-full bg-transparent border-none px-3 py-1.5 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-0"
+                [placeholder]="chatService.isBlocked() ? 'Chat suspendido (' + chatService.blockRemainingSeconds() + 's)...' : 'Escribe tu mensaje para RotBot IA...'"
+                class="w-full bg-transparent border-none px-3 py-1.5 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <button 
                 type="submit"
-                [disabled]="!chatService.userInput.trim()"
+                [disabled]="!chatService.userInput.trim() || chatService.isBlocked()"
                 class="w-9 h-9 rounded-full flex items-center justify-center transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex-shrink-0 border-none shadow-sm"
                 style="background-color: #09090b !important; color: #ffffff !important;"
               >
@@ -182,6 +183,12 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
                 </svg>
               </button>
             </form>
+
+            <!-- Block Warning Badge -->
+            <div *ngIf="chatService.isBlocked()" class="mt-2 px-3 py-1.5 rounded-xl bg-red-50 border border-red-200/80 text-red-700 text-[11px] font-headline font-semibold flex items-center justify-between shadow-2xs animate-pulse">
+              <span class="truncate">Chat suspendido por contenido explícito</span>
+              <span class="font-mono font-bold bg-red-100 px-2 py-0.5 rounded text-red-800 flex-shrink-0">{{ chatService.blockRemainingSeconds() }}s</span>
+            </div>
 
             <div class="flex justify-center mt-2">
                <span class="text-[10.5px] font-sans font-medium text-neutral-400">Powered by Portalink IA</span>

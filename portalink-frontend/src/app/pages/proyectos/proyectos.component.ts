@@ -73,13 +73,6 @@ import * as AOS from 'aos';
               <img [src]="p.image" [alt]="p.title"
                    loading="lazy" decoding="async"
                    class="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105">
-
-              <!-- Badge superior derecho -->
-              <div class="absolute top-4 right-4 z-10">
-                <span class="px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md text-neutral-900 text-[11px] font-headline font-semibold tracking-wider shadow-sm border border-neutral-200/60">
-                  + {{ p.badge }}
-                </span>
-              </div>
             </div>
 
             <!-- Información Inferior Limpia en Blanco Puro (Sin descripción, sin botón en vivo) -->
@@ -140,19 +133,19 @@ import * as AOS from 'aos';
         <div class="max-w-[1500px] mx-auto relative z-10 w-full flex items-center">
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 w-full items-center">
             
-            <!-- Encabezado RotBot -->
-            <div class="text-left lg:col-span-6 space-y-4" data-aos="fade-right" data-aos-duration="900">
-              <h2 class="text-4xl sm:text-5xl lg:text-6xl font-headline font-semibold tracking-tight text-white leading-[1.08]">
+            <!-- Encabezado RotBot (Separado Arriba en Móvil) -->
+            <div class="rotbot-header text-left lg:col-span-6 space-y-3 sm:space-y-4" data-aos="fade-right" data-aos-duration="900">
+              <h2 class="text-3xl sm:text-5xl lg:text-6xl font-headline font-semibold tracking-tight text-white leading-[1.08]">
                 Habla con <span class="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">RotBot</span>, tu asistente inteligente
               </h2>
 
-              <p class="text-base sm:text-lg font-sans font-normal text-neutral-300 max-w-lg leading-relaxed">
+              <p class="text-sm sm:text-lg font-sans font-normal text-neutral-300 max-w-lg leading-relaxed">
                 Interactúa en tiempo real con nuestra inteligencia artificial para consultar servicios, agendar citas o cotizar tu proyecto.
               </p>
             </div>
             
-            <!-- Grid de Opciones de Interacción -->
-            <div class="lg:col-span-6 flex flex-col gap-4" data-aos="fade-left" data-aos-duration="900" data-aos-delay="150">
+            <!-- Grid de Opciones de Interacción (Separado Abajo en Móvil) -->
+            <div class="rotbot-options lg:col-span-6 flex flex-col gap-3 sm:gap-4 mt-auto lg:mt-0" data-aos="fade-left" data-aos-duration="900" data-aos-delay="150">
               
               <!-- Opción 1 -->
               <div (click)="openChatWithMessage(getTranslation().option1Msg)" 
@@ -279,7 +272,7 @@ export class ProyectosComponent implements OnInit, OnDestroy {
     },
     {
       id: 'plaxtilineas',
-      code: 'CORP_06', badge: 'PORTAL CORPORATIVO',
+      code: 'CORP_06', badge: 'PLATAFORMA',
       tagline: 'Portal corporativo e industrial de empaques y soluciones plásticas.',
       title: 'Plaxtilíneas',
       liveUrl: 'https://plaxtilineas.com/',

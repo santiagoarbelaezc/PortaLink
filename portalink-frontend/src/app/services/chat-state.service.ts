@@ -65,11 +65,25 @@ export class ChatStateService {
   chatMode = signal<'design' | 'consulting' | null>(null);
   rotbotActive = signal<boolean>(true);
 
+  // Moderation & Block signals
+  isBlocked = signal<boolean>(false);
+  blockRemainingSeconds = signal<number>(0);
+  private blockTimerInterval: any = null;
+
+  // Pattern detection for explicit content, profanity, vulgarity, and self-harm
+  private readonly BLOCKED_PATTERNS: RegExp[] = [
+    /\b(suicid(?:io|iar|iat|arme|arse|ate)|autolesi(?:on|onar)|matarm[ee]|quitarme la vida)\b/i,
+    /\b(gonorrea|gonorreas|pirobo|pirobos|hijueputa|hijaputa|hpta|hp|puto|puta|putas|putos)\b/i,
+    /\b(malparid[oa]s?|maricon|marica|perra|mierda|pendej[oa]s?|cabron|culer[oa]|mamaguev[oa]|sapo)\b/i,
+    /\b(pene|penes|vagina|vaginas|ano|tetas|senos|picha|pico|pinga|chimba|polla|chota|semen|cum|porno|sexo)\b/i
+  ];
+
   private _sessionToken: string | null = null;
 
   constructor() {
     this._sessionToken = this.getOrCreateSessionToken();
     this.loadRotbotStatus().subscribe();
+    this.checkStoredBlock();
 
     if (typeof window !== 'undefined') {
       window.addEventListener('auth-change', () => {
@@ -82,6 +96,87 @@ export class ChatStateService {
         }
       });
     }
+  }
+
+  /**
+   * Verificar si un texto contiene lenguaje explícito o inapropiado.
+   */
+  isProfaneOrExplicit(text: string): boolean {
+    if (!text) return false;
+    
+    // Normalizar texto eliminando tildes y caracteres especiales de leetspeak
+    const normalized = text.toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/@/g, 'a')
+      .replace(/3/g, 'e')
+      .replace(/1/g, 'i')
+      .replace(/!/g, 'i')
+      .replace(/0/g, 'o')
+      .replace(/\$/g, 's')
+      .replace(/5/g, 's')
+      .replace(/4/g, 'a');
+
+    return this.BLOCKED_PATTERNS.some(pattern => pattern.test(normalized) || pattern.test(text));
+  }
+
+  /**
+   * Iniciar bloqueo del chat por 1 minuto (60 segundos).
+   */
+  triggerProfanityBlock(durationSeconds: number = 60): void {
+    const expiresAt = Date.now() + (durationSeconds * 1000);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('rotbot_blocked_until', expiresAt.toString());
+    }
+
+    this.addMessage(
+      'assistant',
+      '⚠️ Tu mensaje contiene términos explícitos, groseros o inapropiados. Por políticas de convivencia y respeto, el chat se ha bloqueado temporalmente durante 1 minuto (60s).'
+    );
+
+    this.startBlockCountdown(durationSeconds);
+  }
+
+  /**
+   * Restaurar estado de bloqueo si existe en localStorage al iniciar.
+   */
+  checkStoredBlock(): void {
+    if (typeof localStorage === 'undefined') return;
+    const stored = localStorage.getItem('rotbot_blocked_until');
+    if (stored) {
+      const expiresAt = parseInt(stored, 10);
+      const remainingMs = expiresAt - Date.now();
+      if (remainingMs > 0) {
+        const seconds = Math.ceil(remainingMs / 1000);
+        this.startBlockCountdown(seconds);
+      } else {
+        localStorage.removeItem('rotbot_blocked_until');
+      }
+    }
+  }
+
+  private startBlockCountdown(seconds: number): void {
+    if (this.blockTimerInterval) {
+      clearInterval(this.blockTimerInterval);
+    }
+
+    this.isBlocked.set(true);
+    this.blockRemainingSeconds.set(seconds);
+
+    this.blockTimerInterval = setInterval(() => {
+      const nextSec = this.blockRemainingSeconds() - 1;
+      if (nextSec <= 0) {
+        clearInterval(this.blockTimerInterval);
+        this.blockTimerInterval = null;
+        this.isBlocked.set(false);
+        this.blockRemainingSeconds.set(0);
+        if (typeof localStorage !== 'undefined') {
+          localStorage.removeItem('rotbot_blocked_until');
+        }
+        this.addMessage('assistant', '✅ El periodo de suspensión ha finalizado. Puedes continuar conversando con RotBot de forma respetuosa.');
+      } else {
+        this.blockRemainingSeconds.set(nextSec);
+      }
+    }, 1000);
   }
 
   loadRotbotStatus(): Observable<any> {
@@ -114,6 +209,14 @@ export class ChatStateService {
    */
   sendMessage(userText: string): void {
     if (!userText.trim()) return;
+
+    if (this.isBlocked()) return;
+
+    if (this.isProfaneOrExplicit(userText)) {
+      this.userInput = '';
+      this.triggerProfanityBlock(60);
+      return;
+    }
 
     this.addMessage('user', userText);
     this.isTyping = true;

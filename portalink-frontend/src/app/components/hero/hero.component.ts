@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, AfterViewInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
@@ -80,12 +80,17 @@ import { RouterModule } from '@angular/router';
         <!-- Single Large Featured Showcase Image Column -->
         <div class="w-full py-4 flex flex-col items-center lg:items-start hero-animate-4">
           <div class="relative w-full aspect-[9/14] sm:aspect-[3/4] md:aspect-[16/10] rounded-[28px] sm:rounded-[36px] overflow-hidden border transition-all duration-500 shadow-2xl group border-white/10 hover:border-[#00f5ff]/40">
-            <!-- Mobile Image (movil-banner.png - Extra Tall aspect ratio) -->
-            <img
-               src="assets/images/proyectos/movil-banner.png"
-               alt="Portalink Mobile Showcase"
-               class="block md:hidden w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
-            />
+            <!-- Mobile Video Showcase (portalink-movil.mp4) -->
+            <video
+               src="assets/videos/hero/portalink-movil.mp4"
+               autoplay
+               loop
+               muted
+               playsinline
+               webkit-playsinline
+               preload="auto"
+               class="block md:hidden w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+            ></video>
             <!-- Desktop / Tablet Image (proyecto-0.png) -->
             <img
                src="assets/images/proyectos/proyecto-0.png"
@@ -386,7 +391,25 @@ export class HeroComponent implements OnInit, OnDestroy {
     // Fake loading delay to mimic the dashboard shimmer experience smoothly
     setTimeout(() => {
       this.isLoading = false;
+      this.muteHeroVideos();
     }, 800);
+  }
+
+  ngAfterViewInit() {
+    this.muteHeroVideos();
+  }
+
+  private muteHeroVideos() {
+    if (typeof window !== 'undefined') {
+      setTimeout(() => {
+        const videos = document.querySelectorAll<HTMLVideoElement>('#hero video');
+        videos.forEach(v => {
+          v.muted = true;
+          v.volume = 0;
+          v.playsInline = true;
+        });
+      }, 100);
+    }
   }
 
   ngOnDestroy() {
