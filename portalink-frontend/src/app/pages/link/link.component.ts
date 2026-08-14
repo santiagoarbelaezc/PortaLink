@@ -43,20 +43,36 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
           <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-14 items-start">
             
             <!-- LEFT COLUMN: PORTRAIT IMAGE CARD (Top in mobile, left sticky in desktop) -->
-            <aside class="lg:col-span-5 lg:sticky lg:top-28 w-full -mt-5 sm:mt-0 mb-2 sm:mb-0" data-aos="fade-up">
-              <div class="group relative rounded-[24px] sm:rounded-[36px] overflow-hidden border border-neutral-200/90 bg-neutral-50 shadow-md transition-all duration-500 hover:scale-[1.01]">
-                <div class="relative w-full aspect-[4/4.5] sm:aspect-[4/5] overflow-hidden bg-neutral-100">
-                  <img [src]="getProfileAvatar()" alt="Santiago Arbeláez" 
-                       class="w-full h-full object-cover [object-position:50%_0%] transition-transform duration-700 ease-out group-hover:scale-105" />
+            <aside class="lg:col-span-5 lg:sticky lg:top-28 w-full -mt-5 sm:mt-0 mb-0.5 sm:mb-0" data-aos="fade-up">
+              <!-- Outer wrapper with glowing spinning border ring on press -->
+              <div class="relative group rounded-[26px] sm:rounded-[38px] p-[3px] transition-all duration-500 overflow-hidden">
+                
+                <!-- Elegant Animated Loading Ring/Lines -->
+                <div *ngIf="isAvatarLoading" class="absolute inset-0 z-0 overflow-hidden rounded-[26px] sm:rounded-[38px]">
+                  <div class="absolute -inset-[100%] bg-[conic-gradient(from_0deg,#09090b_0%,#10b981_35%,#00f5ff_70%,#09090b_100%)] animate-spin-slow"></div>
                 </div>
+
+                <!-- Main Photo Frame -->
+                <div class="relative z-10 w-full aspect-[4/4.5] sm:aspect-[4/5] rounded-[22px] sm:rounded-[34px] overflow-hidden bg-neutral-100 border border-neutral-200/90 shadow-md">
+                  <img [src]="getProfileAvatar()" alt="Santiago Arbeláez" 
+                       class="w-full h-full object-cover origin-top scale-105 -translate-y-2 transition-transform duration-700 ease-out group-hover:scale-110" />
+
+                  <!-- Subtle & Elegant Logo Button (Bottom Left) -->
+                  <button (click)="triggerAvatarLoading($event)" 
+                          title="Activar animación PortaLink"
+                          class="absolute bottom-4 left-4 z-20 w-11 h-11 rounded-full bg-white/85 hover:bg-white backdrop-blur-md p-2 border border-white/80 shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer">
+                    <img [src]="getProfileLogo()" alt="Logo" class="w-full h-full object-contain" />
+                  </button>
+                </div>
+
               </div>
             </aside>
 
             <!-- RIGHT COLUMN: PROFILE INFO & LINKS STACK (7 COLS) -->
-            <section class="lg:col-span-7 space-y-3.5 sm:space-y-8 px-0 sm:px-0">
+            <section class="lg:col-span-7 space-y-2.5 sm:space-y-8 px-0 sm:px-0">
               
               <!-- Header Profile Info: Centered on mobile -->
-              <div class="space-y-2 sm:space-y-3 flex flex-col items-center sm:items-start text-center sm:text-left" data-aos="fade-up" data-aos-delay="100">
+              <div class="-mt-1 sm:mt-0 space-y-1.5 sm:space-y-3 flex flex-col items-center sm:items-start text-center sm:text-left" data-aos="fade-up" data-aos-delay="100">
                 <h1 class="text-3xl sm:text-5xl font-headline font-bold tracking-tight leading-tight m-0 text-center sm:text-left" style="color: #0a0a0a !important;">
                   Santiago Arbeláez
                 </h1>
@@ -334,8 +350,15 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
       from { opacity: 0; }
       to { opacity: 1; }
     }
+    @keyframes spinSlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
     .animate-fadeIn {
       animation: fadeIn 0.3s ease-out forwards;
+    }
+    .animate-spin-slow {
+      animation: spinSlow 3s linear infinite;
     }
   `],
   encapsulation: ViewEncapsulation.None
@@ -346,6 +369,15 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   deferredPrompt: any;
   showInstallModal = false;
   selectedImagePreview: string | null = null;
+  isAvatarLoading = false;
+
+  triggerAvatarLoading(event: Event) {
+    event.stopPropagation();
+    this.isAvatarLoading = true;
+    setTimeout(() => {
+      this.isAvatarLoading = false;
+    }, 3500);
+  }
 
   openImageModal(src: string) {
     this.selectedImagePreview = src;
