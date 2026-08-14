@@ -15,12 +15,12 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
     RouterModule
   ],
   template: `
-    <div class="min-h-screen bg-white text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white pt-24 sm:pt-28 pb-16 px-6 sm:px-12 lg:px-20">
+    <div class="min-h-screen bg-white text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white pt-[28px] sm:pt-28 pb-16 px-2 sm:px-12 lg:px-20 overflow-x-hidden">
       <div class="max-w-[1340px] mx-auto">
         
         <!-- SKELETON LOADER FOR LINKS -->
         <ng-container *ngIf="isLoading">
-          <div class="animate-pulse grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center min-h-[70vh]">
+          <div class="animate-pulse grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center min-h-[70vh] px-0 sm:px-0">
             <div class="lg:col-span-5 h-[500px] rounded-[32px] bg-neutral-100"></div>
             <div class="lg:col-span-7 space-y-6">
               <div class="h-12 w-2/3 bg-neutral-100 rounded-xl"></div>
@@ -40,80 +40,65 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
         <!-- MAIN CONTENT -->
         <div *ngIf="!isLoading" class="animate-fadeIn">
-          <main class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+          <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-14 items-start">
             
-            <!-- LEFT COLUMN: PORTRAIT IMAGE CARD (5 COLS) -->
-            <aside class="lg:col-span-5 lg:sticky lg:top-28">
-              <div class="group relative rounded-[28px] sm:rounded-[36px] overflow-hidden border border-neutral-200/90 bg-neutral-50 shadow-[0_15px_45px_rgba(0,0,0,0.06)] transition-all duration-500 hover:scale-[1.01]">
-                <div class="relative w-full aspect-[4/5] sm:aspect-[4/5] overflow-hidden bg-neutral-100">
+            <!-- LEFT COLUMN: PORTRAIT IMAGE CARD (Top in mobile, left sticky in desktop) -->
+            <aside class="lg:col-span-5 lg:sticky lg:top-28 w-full -mt-5 sm:mt-0 mb-2 sm:mb-0" data-aos="fade-up">
+              <div class="group relative rounded-[24px] sm:rounded-[36px] overflow-hidden border border-neutral-200/90 bg-neutral-50 shadow-md transition-all duration-500 hover:scale-[1.01]">
+                <div class="relative w-full aspect-[4/4.5] sm:aspect-[4/5] overflow-hidden bg-neutral-100">
                   <img [src]="getProfileAvatar()" alt="Santiago Arbeláez" 
-                       class="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105" />
-                  
-                  <!-- Clean Badge Top Right -->
-                  <div class="absolute top-4 right-4 z-10">
-                    <span class="px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md text-neutral-900 text-[11px] font-headline font-semibold tracking-wider shadow-sm border border-neutral-200/60">
-                      PORTALINK
-                    </span>
-                  </div>
-
-                  <!-- Profile Logo Badge Bottom Left -->
-                  <div class="absolute bottom-5 left-5 z-10 flex items-center gap-3">
-                    <div class="w-11 h-11 rounded-full bg-white/95 backdrop-blur-md p-2 border border-neutral-200/80 shadow-md flex items-center justify-center">
-                      <img [src]="getProfileLogo()" alt="Logo" class="w-full h-full object-contain" />
-                    </div>
-                    <div class="bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-neutral-200/60 shadow-sm">
-                      <span class="text-xs font-headline font-semibold text-neutral-900">Santiago Arbeláez</span>
-                    </div>
-                  </div>
+                       class="w-full h-full object-cover [object-position:50%_0%] transition-transform duration-700 ease-out group-hover:scale-105" />
                 </div>
               </div>
             </aside>
 
             <!-- RIGHT COLUMN: PROFILE INFO & LINKS STACK (7 COLS) -->
-            <section class="lg:col-span-7 space-y-8">
+            <section class="lg:col-span-7 space-y-3.5 sm:space-y-8 px-0 sm:px-0">
               
-              <!-- Header Profile Info -->
-              <div class="space-y-3">
-                <h1 class="text-3xl sm:text-5xl font-headline font-semibold tracking-tight leading-none" style="color: #0a0a0a !important;">
+              <!-- Header Profile Info: Centered on mobile -->
+              <div class="space-y-2 sm:space-y-3 flex flex-col items-center sm:items-start text-center sm:text-left" data-aos="fade-up" data-aos-delay="100">
+                <h1 class="text-3xl sm:text-5xl font-headline font-bold tracking-tight leading-tight m-0 text-center sm:text-left" style="color: #0a0a0a !important;">
                   Santiago Arbeláez
                 </h1>
-                <div class="flex items-center gap-2">
-                  <span class="px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-headline font-medium inline-flex items-center gap-2">
+                <div class="flex items-center justify-center sm:justify-start gap-2 pt-0.5 w-full">
+                  <span class="px-3.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-headline font-medium inline-flex items-center gap-2">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span>{{ getProfileTitle() }}</span>
                   </span>
                 </div>
-                <p class="text-xs sm:text-sm font-sans text-neutral-500 leading-relaxed max-w-xl">
+                <!-- Bio Description: Hidden on mobile per request -->
+                <p class="hidden sm:block text-xs sm:text-sm font-sans text-neutral-500 leading-relaxed max-w-xl text-left">
                   {{ getTranslation().bioDesc }}
                 </p>
               </div>
 
               <!-- Links Grid Container -->
-              <div class="space-y-4">
+              <div class="space-y-3.5 sm:space-y-4">
                 
                 <!-- Main CTA Link (Obsidian Dark) -->
                 <a routerLink="/" (click)="trackLinkClick('proyectos')" 
-                   class="group relative rounded-2xl sm:rounded-3xl p-6 sm:p-7 flex items-center justify-between gap-4 transition-all duration-300 hover:scale-[1.01] shadow-md hover:shadow-lg no-underline cursor-pointer border-none"
+                   data-aos="fade-up" data-aos-delay="150"
+                   class="group relative rounded-2xl sm:rounded-3xl p-5 sm:p-7 flex items-center justify-between gap-4 transition-all duration-300 hover:scale-[1.01] shadow-md hover:shadow-lg no-underline cursor-pointer border-none"
                    style="background-color: #09090b !important; color: #ffffff !important;">
                   
-                  <div class="flex items-center gap-4 sm:gap-5">
-                    <div class="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center flex-shrink-0">
-                      <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color: #ffffff !important;">
+                  <div class="flex items-center gap-3.5 sm:gap-5">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                      <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color: #ffffff !important;">
                         <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
                         <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
                       </svg>
                     </div>
                     <div>
-                      <h3 class="text-xl sm:text-2xl font-headline font-semibold tracking-tight text-white m-0" style="color: #ffffff !important;">
+                      <h3 class="text-lg sm:text-2xl font-headline font-semibold tracking-tight text-white m-0" style="color: #ffffff !important;">
                         {{ getTranslation().descubre }}
                       </h3>
-                      <p class="text-xs font-sans text-neutral-400 m-0 mt-1">
+                      <p class="text-[11px] sm:text-xs font-sans text-neutral-400 m-0 mt-0.5 sm:mt-1">
                         {{ getTranslation().ingenieria }}
                       </p>
                     </div>
                   </div>
 
-                  <div class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center transition-transform duration-300 group-hover:translate-x-1 flex-shrink-0">
+                  <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/15 flex items-center justify-center transition-transform duration-300 group-hover:translate-x-1 flex-shrink-0">
                     <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
                     </svg>
@@ -121,46 +106,47 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
                 </a>
 
-                <!-- Social Links Grid (2-columns on desktop) -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Social Links Grid (2-by-2 on mobile and desktop) -->
+                <div class="grid grid-cols-2 gap-3.5 sm:gap-4">
                   
-                  <a *ngFor="let link of getLinks()" [href]="link.url" target="_blank" (click)="trackLinkClick(link)"
-                     class="group rounded-2xl p-5 bg-white border border-neutral-200/80 shadow-sm hover:shadow-md hover:border-neutral-900 hover:scale-[1.01] transition-all duration-300 flex flex-col justify-between gap-4 no-underline cursor-pointer">
+                  <a *ngFor="let link of getLinks(); let idx = index" [href]="link.url" target="_blank" (click)="trackLinkClick(link)"
+                     data-aos="fade-up" [attr.data-aos-delay]="200 + (idx * 50)"
+                     class="group rounded-2xl p-4 sm:p-5 bg-white border border-neutral-200/80 shadow-sm hover:shadow-md hover:border-neutral-900 hover:scale-[1.01] transition-all duration-300 flex flex-col justify-between gap-3.5 sm:gap-4 no-underline cursor-pointer">
                     
                     <div class="flex items-center justify-between">
-                      <div class="w-10 h-10 rounded-xl bg-neutral-100 flex items-center justify-center text-neutral-900 transition-colors group-hover:bg-neutral-900 group-hover:text-white">
-                        <svg *ngIf="link.icon === 'tiktok'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-neutral-100 flex items-center justify-center text-neutral-900 transition-colors group-hover:bg-neutral-900 group-hover:text-white">
+                        <svg *ngIf="link.icon === 'tiktok'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                           <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
                         </svg>
-                        <svg *ngIf="link.icon === 'instagram'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg *ngIf="link.icon === 'instagram'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                           <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                           <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
                           <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
                         </svg>
-                        <svg *ngIf="link.icon === 'whatsapp'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg *ngIf="link.icon === 'whatsapp'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                           <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
                         </svg>
-                        <svg *ngIf="link.icon === 'linkedin'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg *ngIf="link.icon === 'linkedin'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                           <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
                           <rect x="2" y="9" width="4" height="12"></rect>
                           <circle cx="4" cy="4" r="2"></circle>
                         </svg>
-                        <svg *ngIf="link.icon !== 'tiktok' && link.icon !== 'instagram' && link.icon !== 'whatsapp' && link.icon !== 'linkedin'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg *ngIf="link.icon !== 'tiktok' && link.icon !== 'instagram' && link.icon !== 'whatsapp' && link.icon !== 'linkedin'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                           <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                           <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
                         </svg>
                       </div>
 
-                      <svg class="w-4 h-4 text-neutral-400 group-hover:text-neutral-900 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                      <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-neutral-400 group-hover:text-neutral-900 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
                       </svg>
                     </div>
 
                     <div>
-                      <h4 class="text-base font-headline font-semibold tracking-tight text-neutral-900 m-0" style="color: #0a0a0a !important;">
+                      <h4 class="text-sm sm:text-base font-headline font-semibold tracking-tight text-neutral-900 m-0 truncate" style="color: #0a0a0a !important;">
                         {{ link.title }}
                       </h4>
-                      <p class="text-xs font-sans text-neutral-500 m-0 mt-0.5">
+                      <p class="text-[10px] sm:text-xs font-sans text-neutral-500 m-0 mt-0.5 truncate">
                         {{ link.subtitle }}
                       </p>
                     </div>
@@ -171,26 +157,55 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
               </div>
 
-              <!-- Mobile Modeling Book Gallery -->
-              <div class="block md:hidden pt-8 border-t border-neutral-100">
-                <div class="flex items-center justify-between mb-4">
-                  <div class="flex items-center gap-2">
+              <!-- Animated Scroll Indicator Pill -->
+              <div class="flex flex-col items-center justify-center pt-4 pb-2 text-neutral-400 animate-bounce cursor-pointer" data-aos="fade-up">
+                <span class="text-[10px] font-headline font-semibold uppercase tracking-[0.2em] text-neutral-400">Desliza para explorar</span>
+                <svg class="w-4 h-4 text-neutral-400 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                </svg>
+              </div>
+
+              <!-- Mobile Modeling Book Gallery (One by One, Ultra Elegant with AOS) -->
+              <div class="block md:hidden pt-10 border-t border-neutral-200/80 space-y-6">
+                <div class="flex items-center justify-between mb-2">
+                  <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-semibold">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <h3 class="text-xs font-headline font-semibold text-neutral-900 tracking-wider m-0">
-                      {{ getTranslation().retratos }}
-                    </h3>
+                    <span>{{ getTranslation().retratos }}</span>
                   </div>
-                  <span class="text-xs font-sans text-neutral-400">{{ modelingImages.length }} Fotos</span>
+                  <span class="text-xs font-medium text-neutral-500">{{ modelingImages.length }} Fotografías</span>
                 </div>
                 
-                <div class="grid grid-cols-2 gap-3">
+                <!-- One-by-One Full Width Vertical Gallery Sequence -->
+                <div class="space-y-6">
                   <div *ngFor="let img of modelingImages; let i = index" 
-                       (click)="trackSectionView('retratos'); trackLinkClick('foto_' + (i + 1))"
-                       class="relative rounded-xl overflow-hidden border border-neutral-200/80 bg-neutral-50 aspect-[3/4] shadow-xs cursor-pointer group">
+                       (click)="openImageModal(img.src); trackSectionView('retratos'); trackLinkClick('foto_' + (i + 1))"
+                       data-aos="fade-up"
+                       [attr.data-aos-delay]="(i % 3) * 100"
+                       class="group relative rounded-[28px] overflow-hidden border border-neutral-200/90 bg-neutral-50 aspect-[3/4] shadow-md cursor-pointer transition-all duration-500 hover:scale-[1.01]">
+                    
                     <img [src]="getLowQualityImage(img.src)" 
                          [alt]="img.alt" 
                          loading="lazy" 
-                         class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105" />
+                         class="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105" />
+                    
+                    <!-- Top Index Pill -->
+                    <div class="absolute top-4 right-4 z-10">
+                      <span class="px-3 py-1 rounded-full bg-neutral-900/80 backdrop-blur-md text-white text-[10px] font-mono shadow-sm">
+                        0{{ i + 1 }} / {{ modelingImages.length }}
+                      </span>
+                    </div>
+
+                    <!-- Bottom Caption Pill -->
+                    <div class="absolute bottom-4 left-4 right-4 z-10 flex items-center justify-between">
+                      <span class="px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md text-neutral-900 text-xs font-semibold shadow-sm border border-neutral-200/60 truncate max-w-[78%]">
+                        {{ img.alt }}
+                      </span>
+                      <div class="w-9 h-9 rounded-full bg-white/90 backdrop-blur-md text-neutral-900 flex items-center justify-center shadow-sm border border-neutral-200/60 group-hover:bg-neutral-900 group-hover:text-white transition-colors">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -289,6 +304,26 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
       </div>
     </div>
+
+    <!-- Full-Screen Image Lightbox Modal -->
+    <div *ngIf="selectedImagePreview" 
+         (click)="closeImageModal()" 
+         class="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-fadeIn cursor-pointer">
+      <div class="relative max-w-2xl w-full max-h-[90vh] flex flex-col items-center justify-center" (click)="$event.stopPropagation()">
+        
+        <!-- Close Button -->
+        <button (click)="closeImageModal()" 
+                class="absolute -top-12 right-0 w-10 h-10 rounded-full bg-white/20 hover:bg-white text-white hover:text-neutral-900 backdrop-blur-md flex items-center justify-center transition-all border-none cursor-pointer">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        <!-- High-Res Image -->
+        <img [src]="selectedImagePreview" alt="Editorial Preview" 
+             class="w-full h-auto max-h-[85vh] object-contain rounded-2xl border border-white/20 shadow-2xl" />
+      </div>
+    </div>
   `,
   styles: [`
     :host {
@@ -310,6 +345,21 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   currentYear = new Date().getFullYear();
   deferredPrompt: any;
   showInstallModal = false;
+  selectedImagePreview: string | null = null;
+
+  openImageModal(src: string) {
+    this.selectedImagePreview = src;
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  closeImageModal() {
+    this.selectedImagePreview = null;
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = 'auto';
+    }
+  }
   isIOS = false;
   isStandalone = false;
   currentLanguage = 'es';

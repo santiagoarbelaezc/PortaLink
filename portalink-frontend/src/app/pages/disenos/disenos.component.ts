@@ -653,7 +653,10 @@ export class DisenosComponent implements OnInit {
 
   requestCustomProject(item: DesignItem) {
     this.closePreview();
-    this.router.navigate(['/'], { fragment: 'contacto' });
+    const designName = item?.name || 'Personalizado';
+    const messageText = `Hola, me interesa solicitar el diseño: ${designName}`;
+    const whatsappUrl = `https://wa.me/573054078225?text=${encodeURIComponent(messageText)}`;
+    window.open(whatsappUrl, '_blank');
   }
 
   goBack() {

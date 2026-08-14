@@ -50,27 +50,8 @@ import { AuthService } from '../../services/auth.service';
           </a>
         </div>
 
-        <!-- Right Side: Theme Switcher, Ingresar & Registrarse Button / User Dropdown -->
+        <!-- Right Side: Ingresar & Registrarse Button / User Dropdown -->
         <div class="flex items-center justify-end flex-1 gap-6 sm:gap-8">
-          <!-- Monochromatic Minimalist Theme Switcher -->
-          <button (click)="toggleTheme()" 
-                  class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer group hover:scale-105 active:scale-95 opacity-70 hover:opacity-100"
-                  [title]="currentTheme === 'light' ? 'Cambiar a Tema Oscuro' : 'Cambiar a Tema Claro'">
-            
-            <!-- Crescent Moon (Light Mode -> switch to Dark) -->
-            <div *ngIf="currentTheme === 'light'" class="flex items-center justify-center text-neutral-900 transition-transform duration-300 group-hover:-rotate-12">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-              </svg>
-            </div>
-
-            <!-- Sun (Dark Mode -> switch to Light) -->
-            <div *ngIf="currentTheme === 'dark'" class="flex items-center justify-center text-white transition-transform duration-300 group-hover:rotate-45">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-            </div>
-          </button>
 
           <!-- Ingresar Text Link (When not authenticated) -->
           <button *ngIf="!authService.isAuthenticated()" 
@@ -167,35 +148,6 @@ import { AuthService } from '../../services/auth.service';
         </div>
       </div>
     </nav>
-
-
-
-    <!-- Mobile floating Switcher Group (top right) -->
-    <div class="md:hidden fixed right-6 z-[9000] flex gap-2" [style.top]="'calc(1.75rem + env(safe-area-inset-top, 0px))'">
-
-      <!-- Monochromatic Mobile Theme Switcher -->
-      <button (click)="toggleTheme()" 
-              class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer border group relative overflow-hidden active:scale-95 shadow-md backdrop-blur-md"
-              [ngClass]="currentTheme === 'light' 
-                ? 'bg-neutral-100/90 border-neutral-300 text-neutral-900' 
-                : 'bg-white/10 border-white/20 text-white'"
-              [title]="currentTheme === 'light' ? 'Cambiar a Tema Oscuro' : 'Cambiar a Tema Claro'">
-        
-        <!-- Crescent Moon (Light Mode -> switch to Dark) -->
-        <div *ngIf="currentTheme === 'light'" class="flex items-center justify-center text-neutral-900">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-          </svg>
-        </div>
-
-        <!-- Sun (Dark Mode -> switch to Light) -->
-        <div *ngIf="currentTheme === 'dark'" class="flex items-center justify-center text-white">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-          </svg>
-        </div>
-      </button>
-    </div>
 
     <!-- ═══════════════════════════════════════════ -->
     <!-- MOBILE: Bottom app-style tab bar           -->

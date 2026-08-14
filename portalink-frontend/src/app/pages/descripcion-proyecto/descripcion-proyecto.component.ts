@@ -33,28 +33,28 @@ export interface ProjectDetail {
   imports: [CommonModule, RouterModule, NavbarComponent, FooterComponent],
   encapsulation: ViewEncapsulation.None,
   template: `
-    <div class="min-h-screen w-full flex flex-col font-sans page-wrapper project-detail-wrapper">
+    <div class="min-h-screen w-full flex flex-col font-sans bg-white text-neutral-900">
       <!-- Standard Navigation Bar -->
       <app-navbar></app-navbar>
 
       <!-- Main Project Content -->
-      <main class="flex-grow w-full pt-14 sm:pt-24 md:pt-28 pb-20 relative z-10" *ngIf="project">
+      <main class="flex-grow w-full pt-20 sm:pt-24 lg:pt-28 pb-20 relative z-10" *ngIf="project">
         
         <!-- Top Breadcrumb & Back Navigation -->
-        <div class="max-w-[1400px] mx-auto px-4 sm:px-10 mb-4 sm:mb-8">
+        <div class="max-w-[1400px] mx-auto px-4 sm:px-10 mb-6 sm:mb-8">
           <div class="flex items-center justify-between gap-4 flex-wrap">
-            <a (click)="goBack()" class="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-[0.2em] cursor-pointer nav-back-btn transition-colors">
+            <a (click)="goBack()" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white border border-neutral-200/80 text-xs font-semibold text-neutral-800 transition-all shadow-2xs cursor-pointer">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
               </svg>
               <span>Volver a Proyectos</span>
             </a>
 
-            <div class="flex items-center gap-3">
-              <span class="text-[10px] font-mono font-bold uppercase tracking-[0.25em] px-3 py-1 rounded-full badge-code border">
+            <div class="flex items-center gap-2.5">
+              <span class="text-xs font-semibold px-3.5 py-1.5 rounded-full bg-neutral-100 border border-neutral-200/80 text-neutral-700 shadow-2xs">
                 #{{ project.code }}
               </span>
-              <span class="text-[10px] font-mono font-bold uppercase tracking-[0.25em] px-3 py-1 rounded-full badge-category border">
+              <span class="text-xs font-semibold px-3.5 py-1.5 rounded-full bg-neutral-900 text-white shadow-2xs">
                 {{ project.badge }}
               </span>
             </div>
@@ -62,38 +62,37 @@ export interface ProjectDetail {
         </div>
 
         <!-- Hero Section Header -->
-        <section class="max-w-[1400px] mx-auto px-4 sm:px-10 mb-6 sm:mb-12">
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-end">
-            <div class="lg:col-span-8">
-              <div class="inline-flex items-center gap-2 mb-2 sm:mb-3">
-                <span class="w-2 h-2 rounded-full bg-[var(--accent-color,#00f5ff)] animate-pulse"></span>
-                <span class="text-xs uppercase tracking-[0.3em] font-mono font-bold text-[var(--accent-color,#00f5ff)]">
-                  {{ project.category }} — {{ project.year }}
-                </span>
+        <section class="max-w-[1400px] mx-auto px-4 sm:px-10 mb-8 sm:mb-12">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+            <div class="lg:col-span-8 space-y-3">
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/60 text-xs font-semibold text-emerald-800">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>{{ project.category }} — {{ project.year }}</span>
               </div>
               
-              <h1 class="text-3xl sm:text-6xl lg:text-7xl font-headline font-black uppercase tracking-tight leading-[0.95] mb-3 sm:mb-4 project-title">
+              <h1 class="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-neutral-900 leading-[1.12]">
                 {{ project.title }}
               </h1>
 
-              <p class="text-sm sm:text-xl font-light leading-relaxed max-w-2xl project-tagline">
+              <p class="text-base sm:text-xl font-semibold tracking-tight text-neutral-600 leading-relaxed max-w-2xl">
                 {{ project.tagline }}
               </p>
             </div>
 
             <!-- Client & Live Domain Action Card -->
             <div class="lg:col-span-4 flex flex-col gap-4">
-              <div class="p-5 sm:p-6 rounded-2xl border client-card backdrop-blur-md">
-                <div class="flex items-center justify-between mb-3 text-xs font-mono uppercase tracking-wider text-muted">
+              <div class="p-6 rounded-2xl border border-neutral-200/80 bg-neutral-50/70 shadow-2xs">
+                <div class="flex items-center justify-between mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-400">
                   <span>Cliente</span>
                   <span>Dominio en Vivo</span>
                 </div>
-                <div class="text-base sm:text-lg font-bold font-headline mb-4">{{ project.client }}</div>
+                <div class="text-lg font-bold text-neutral-900 mb-4">{{ project.client }}</div>
 
                 <a [href]="project.liveUrl" target="_blank" rel="noopener noreferrer"
-                   class="w-full inline-flex items-center justify-center gap-2.5 px-5 py-3 sm:px-6 sm:py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest live-domain-btn transition-all duration-300 shadow-lg group">
-                  <span>Visitar Proyecto en Vivo</span>
-                  <svg class="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                   class="w-full inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-full font-semibold text-xs text-white bg-[#09090b] shadow-md hover:scale-[1.01] active:scale-[0.99] transition-all no-underline cursor-pointer"
+                   style="background-color: #09090b !important; color: #ffffff !important;">
+                  <span style="color: #ffffff !important; font-weight: 600;">Visitar Sitio en Vivo</span>
+                  <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" style="stroke: #ffffff !important;">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H18m0 0v4.5M18 6l-7.5 7.5M6 18h12"/>
                   </svg>
                 </a>
@@ -106,14 +105,14 @@ export interface ProjectDetail {
         <section class="max-w-[1400px] mx-auto px-4 sm:px-10 mb-12 sm:mb-16">
           
           <!-- Main Display Container (Image or Video with Fixed Uniform Height) -->
-          <div class="main-image-container relative rounded-[20px] sm:rounded-[36px] overflow-hidden border border-white/15 bg-black shadow-2xl group h-[240px] sm:h-[560px] lg:h-[650px] flex items-center justify-center">
+          <div class="relative rounded-[28px] sm:rounded-[36px] overflow-hidden border border-neutral-200/90 bg-neutral-950 shadow-xl group h-[260px] sm:h-[560px] lg:h-[640px] flex items-center justify-center">
             
             <!-- Minimalist Left Navigation Arrow -->
             <button *ngIf="project.images && project.images.length > 1"
                     (click)="prevMedia()"
                     aria-label="Imagen anterior"
-                    class="absolute left-3 sm:left-6 z-30 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-black/40 hover:bg-black/80 border border-white/20 hover:border-white/50 text-white backdrop-blur-md flex items-center justify-center transition-all duration-300 shadow-xl hover:scale-110 active:scale-95 group/navbtn cursor-pointer">
-              <svg class="w-4 h-4 sm:w-6 sm:h-6 -ml-0.5 transition-transform group-hover/navbtn:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    class="absolute left-3 sm:left-6 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/90 hover:bg-white text-neutral-900 border border-neutral-200/80 backdrop-blur-md flex items-center justify-center transition-all duration-300 shadow-md hover:scale-105 active:scale-95 cursor-pointer">
+              <svg class="w-5 h-5 -ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
               </svg>
             </button>
@@ -129,11 +128,11 @@ export interface ProjectDetail {
               </div>
             </ng-container>
 
-            <!-- Main Image (Uniform Height across all desktop slides) -->
+            <!-- Main Image -->
             <ng-template #mainImageBlock>
               <img [src]="activeImage" (error)="onImgError($event)" [alt]="project.title"
                    class="w-full h-full object-contain sm:object-cover sm:object-top transition-all duration-500">
-              <div class="absolute bottom-3 right-3 sm:bottom-6 sm:right-6 backdrop-blur-md bg-black/60 border border-white/10 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-white text-[10px] sm:text-xs font-mono z-20 pointer-events-none">
+              <div class="absolute bottom-4 right-4 backdrop-blur-md bg-black/60 border border-white/10 px-4 py-2 rounded-xl text-white text-xs font-sans z-20 pointer-events-none">
                 Visualización de Alta Calidad
               </div>
             </ng-template>
@@ -142,8 +141,8 @@ export interface ProjectDetail {
             <button *ngIf="project.images && project.images.length > 1"
                     (click)="nextMedia()"
                     aria-label="Siguiente imagen"
-                    class="absolute right-3 sm:right-6 z-30 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-black/40 hover:bg-black/80 border border-white/20 hover:border-white/50 text-white backdrop-blur-md flex items-center justify-center transition-all duration-300 shadow-xl hover:scale-110 active:scale-95 group/navbtn cursor-pointer">
-              <svg class="w-4 h-4 sm:w-6 sm:h-6 ml-0.5 transition-transform group-hover/navbtn:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    class="absolute right-3 sm:right-6 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/90 hover:bg-white text-neutral-900 border border-neutral-200/80 backdrop-blur-md flex items-center justify-center transition-all duration-300 shadow-md hover:scale-105 active:scale-95 cursor-pointer">
+              <svg class="w-5 h-5 ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
               </svg>
             </button>
@@ -152,46 +151,43 @@ export interface ProjectDetail {
           <!-- Thumbnail Gallery & Video Switcher -->
           <div class="flex items-center gap-4 mt-6 overflow-x-auto pb-2 no-scrollbar">
             
-            <!-- 1. Main Cover Image Thumbnail -->
+            <!-- Cover Image Thumbnail -->
             <button (click)="selectMedia('image', project.images[0])"
-                    class="relative flex-shrink-0 w-32 sm:w-44 aspect-[16/10] rounded-2xl overflow-hidden border transition-all duration-300 cursor-pointer group/thumb"
-                    [class.border-[var(--accent-color,#00f5ff)]]="activeMediaType === 'image' && activeImage === project.images[0]"
+                    class="relative flex-shrink-0 w-32 sm:w-44 aspect-[16/10] rounded-2xl overflow-hidden border transition-all duration-300 cursor-pointer shadow-2xs"
+                    [class.border-neutral-900]="activeMediaType === 'image' && activeImage === project.images[0]"
                     [class.ring-2]="activeMediaType === 'image' && activeImage === project.images[0]"
-                    [class.ring-[var(--accent-color,#00f5ff)]]="activeMediaType === 'image' && activeImage === project.images[0]"
-                    [class.scale-105]="activeMediaType === 'image' && activeImage === project.images[0]"
+                    [class.ring-neutral-900]="activeMediaType === 'image' && activeImage === project.images[0]"
                     [class.opacity-50]="activeMediaType !== 'image' || activeImage !== project.images[0]">
               <img [src]="project.images[0]" (error)="onImgError($event)" [alt]="project.title + ' Cover'" class="w-full h-full object-cover object-top">
-              <span class="absolute bottom-1.5 left-1.5 text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-black/70 text-white border border-white/10">Portada</span>
+              <span class="absolute bottom-1.5 left-1.5 text-[9px] font-sans font-bold uppercase px-2 py-0.5 rounded-full bg-neutral-900/80 text-white backdrop-blur-sm">Portada</span>
             </button>
 
-            <!-- 2. Video Thumbnail (2nd Position if video exists) -->
+            <!-- Video Thumbnail -->
             <button *ngIf="project.video"
                     (click)="selectMedia('video')"
-                    class="relative flex-shrink-0 w-32 sm:w-44 aspect-[16/10] rounded-2xl overflow-hidden border bg-neutral-950 transition-all duration-300 cursor-pointer flex items-center justify-center group/vthumb"
-                    [class.border-emerald-400]="activeMediaType === 'video'"
+                    class="relative flex-shrink-0 w-32 sm:w-44 aspect-[16/10] rounded-2xl overflow-hidden border bg-neutral-950 transition-all duration-300 cursor-pointer flex items-center justify-center shadow-2xs"
+                    [class.border-emerald-500]="activeMediaType === 'video'"
                     [class.ring-2]="activeMediaType === 'video'"
-                    [class.ring-emerald-400]="activeMediaType === 'video'"
-                    [class.scale-105]="activeMediaType === 'video'"
+                    [class.ring-emerald-500]="activeMediaType === 'video'"
                     [class.opacity-50]="activeMediaType !== 'video'">
               <img [src]="project.images[0]" (error)="onImgError($event)" [alt]="project.title + ' Video'" class="w-full h-full object-cover opacity-40 blur-[1px]">
               <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col items-center justify-center gap-1">
-                <div class="w-10 h-10 rounded-full bg-emerald-400 text-black flex items-center justify-center shadow-lg group-hover/vthumb:scale-110 transition-transform">
-                  <svg class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                <div class="w-9 h-9 rounded-full bg-white text-neutral-900 flex items-center justify-center shadow-md">
+                  <svg class="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z"/>
                   </svg>
                 </div>
-                <span class="text-[10px] font-mono font-extrabold uppercase text-emerald-300 tracking-wider">Video Demo</span>
+                <span class="text-[10px] font-bold text-white tracking-wider">Video Demo</span>
               </div>
             </button>
 
-            <!-- 3+. Other Screenshots -->
+            <!-- Other Screenshots -->
             <ng-container *ngFor="let img of project.images.slice(1); let i = index">
               <button (click)="selectMedia('image', img)"
-                      class="relative flex-shrink-0 w-32 sm:w-44 aspect-[16/10] rounded-2xl overflow-hidden border transition-all duration-300 cursor-pointer"
-                      [class.border-[var(--accent-color,#00f5ff)]]="activeMediaType === 'image' && activeImage === img"
+                      class="relative flex-shrink-0 w-32 sm:w-44 aspect-[16/10] rounded-2xl overflow-hidden border transition-all duration-300 cursor-pointer shadow-2xs"
+                      [class.border-neutral-900]="activeMediaType === 'image' && activeImage === img"
                       [class.ring-2]="activeMediaType === 'image' && activeImage === img"
-                      [class.ring-[var(--accent-color,#00f5ff)]]="activeMediaType === 'image' && activeImage === img"
-                      [class.scale-105]="activeMediaType === 'image' && activeImage === img"
+                      [class.ring-neutral-900]="activeMediaType === 'image' && activeImage === img"
                       [class.opacity-50]="activeMediaType !== 'image' || activeImage !== img">
                 <img [src]="img" (error)="onImgError($event)" [alt]="'Captura ' + (i + 2)" class="w-full h-full object-cover object-top">
               </button>
@@ -205,27 +201,29 @@ export interface ProjectDetail {
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <!-- Left: Detailed Narrative -->
             <div class="lg:col-span-7 space-y-6">
-              <h2 class="text-2xl sm:text-3xl font-headline font-bold uppercase tracking-tight section-h2">
+              <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900">
                 Descripción Detallada del Desarrollo
               </h2>
-              <p class="text-base sm:text-lg font-light leading-relaxed body-text whitespace-pre-line">
+              <p class="text-base sm:text-lg font-sans text-neutral-600 leading-relaxed whitespace-pre-line">
                 {{ project.longDescription }}
               </p>
             </div>
 
             <!-- Right: Project Highlights Checklist -->
             <div class="lg:col-span-5">
-              <div class="p-8 rounded-3xl border highlights-card">
-                <h3 class="text-xl font-headline font-bold uppercase tracking-wider mb-6 text-[var(--accent-color,#00f5ff)] flex items-center gap-2">
-                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                  </svg>
-                  <span>Aspectos Clave</span>
+              <div class="p-8 rounded-[28px] border border-neutral-200/80 bg-neutral-50/70 shadow-2xs">
+                <h3 class="text-xl font-bold tracking-tight text-neutral-900 mb-6 flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-xl bg-neutral-900 text-white flex items-center justify-center shrink-0">
+                    <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="#ffffff" stroke-width="2.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                  </div>
+                  <span class="text-neutral-900 font-bold">Aspectos Clave</span>
                 </h3>
 
                 <ul class="space-y-4">
-                  <li *ngFor="let h of project.highlights" class="flex items-start gap-3 text-sm font-light leading-relaxed highlight-item">
-                    <div class="w-2 h-2 rounded-full bg-[var(--accent-color,#00f5ff)] flex-shrink-0 mt-2"></div>
+                  <li *ngFor="let h of project.highlights" class="flex items-start gap-3 text-sm font-medium text-neutral-700 leading-relaxed">
+                    <span class="w-2 h-2 rounded-full bg-neutral-900 flex-shrink-0 mt-2"></span>
                     <span>{{ h }}</span>
                   </li>
                 </ul>
@@ -236,41 +234,39 @@ export interface ProjectDetail {
 
         <!-- "LO QUE INCLUYE EL PROYECTO" (Features Grid) -->
         <section class="max-w-[1400px] mx-auto px-6 sm:px-10 mb-20">
-          <div class="text-center max-w-2xl mx-auto mb-12">
-            <span class="text-xs uppercase tracking-[0.3em] font-mono font-bold text-[var(--accent-color,#00f5ff)] block mb-2">
+          <div class="text-center max-w-2xl mx-auto mb-12 space-y-2">
+            <span class="text-xs uppercase font-semibold text-neutral-400 tracking-widest block">
               ARQUITECTURA & MÓDULOS
             </span>
-            <h2 class="text-3xl sm:text-4xl font-headline font-black uppercase tracking-tight section-h2">
+            <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900">
               Lo que Incluye este Proyecto
             </h2>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div *ngFor="let f of project.features" class="p-6 rounded-2xl border feature-card hover:border-[var(--accent-color,#00f5ff)]/40 transition-all duration-300">
-              <div class="w-12 h-12 rounded-xl bg-[var(--accent-color,#00f5ff)]/10 text-[var(--accent-color,#00f5ff)] flex items-center justify-center mb-4">
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div *ngFor="let f of project.features" class="p-6 rounded-2xl border border-neutral-200/80 bg-white shadow-2xs hover:shadow-md transition-all duration-300">
+              <div class="w-11 h-11 rounded-xl bg-neutral-100 text-neutral-900 flex items-center justify-center mb-4 border border-neutral-200/70">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="f.icon"/>
                 </svg>
               </div>
-              <h4 class="text-lg font-headline font-bold uppercase mb-2 feature-title">{{ f.title }}</h4>
-              <p class="text-xs font-light leading-relaxed feature-desc">{{ f.desc }}</p>
+              <h4 class="text-base font-bold text-neutral-900 mb-1.5">{{ f.title }}</h4>
+              <p class="text-xs text-neutral-600 leading-relaxed">{{ f.desc }}</p>
             </div>
           </div>
         </section>
 
-        <!-- Mobile Devices Showcase Section (for tall mobile screenshots) -->
-        <section class="max-w-[1400px] mx-auto px-6 sm:px-10 mb-24" *ngIf="project.mobileImages && project.mobileImages.length > 0">
-          <div class="text-center max-w-2xl mx-auto mb-12">
-            <div class="inline-flex items-center gap-2 mb-2">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span class="text-xs uppercase tracking-[0.3em] font-mono font-bold text-emerald-400">
-                DISEÑO RESPONSIVO MÓVIL
-              </span>
+        <!-- Mobile Devices Showcase Section -->
+        <section class="max-w-[1400px] mx-auto px-6 sm:px-10 mb-16" *ngIf="project.mobileImages && project.mobileImages.length > 0">
+          <div class="text-center max-w-2xl mx-auto mb-12 space-y-2">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-semibold">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>DISEÑO RESPONSIVO MÓVIL</span>
             </div>
-            <h2 class="text-3xl sm:text-4xl font-headline font-black uppercase tracking-tight section-h2">
+            <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900">
               Experiencia en Dispositivos Móviles
             </h2>
-            <p class="text-sm sm:text-base font-light text-muted mt-2">
+            <p class="text-sm font-sans text-neutral-500 m-0">
               Vistas en formato teléfono inteligente optimizadas para navegación táctil y conversión inmediata.
             </p>
           </div>
@@ -278,37 +274,9 @@ export interface ProjectDetail {
           <!-- Mobile Images Grid -->
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 items-start justify-center">
             <div *ngFor="let mImg of project.mobileImages; let idx = index"
-                 class="relative mx-auto w-full max-w-[320px] rounded-2xl overflow-hidden shadow-xl border border-white/10 group hover:-translate-y-1 transition-all duration-300">
+                 class="relative mx-auto w-full max-w-[320px] rounded-[28px] overflow-hidden shadow-lg border border-neutral-200/90 bg-white p-2 group hover:-translate-y-1 transition-all duration-300">
               <img [src]="mImg" (error)="onImgError($event)" [alt]="'Vista Móvil ' + (idx + 1)"
-                   class="w-full h-auto object-cover rounded-2xl shadow-md transition-transform duration-500 group-hover:scale-[1.02]">
-            </div>
-          </div>
-        </section>
-
-        <!-- Bottom Call-To-Action Banner -->
-        <section class="max-w-[1400px] mx-auto px-6 sm:px-10 mb-12">
-          <div class="p-8 sm:p-12 rounded-3xl border cta-banner relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
-            <div>
-              <h3 class="text-2xl sm:text-4xl font-headline font-black uppercase mb-3 cta-title">
-                ¿Quieres un Proyecto Similar a {{ project.title }}?
-              </h3>
-              <p class="text-sm font-light max-w-xl cta-desc">
-                Diseñamos y desarrollamos plataformas web exclusivas adaptadas a los objetivos de tu empresa.
-              </p>
-            </div>
-
-            <div class="flex items-center gap-4 flex-wrap flex-shrink-0">
-              <button (click)="openWhatsappQuote()"
-                      class="px-6 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-lg flex items-center gap-2 cursor-pointer">
-                <i class="fa-brands fa-whatsapp text-sm"></i>
-                <span>Cotiza tu proyecto</span>
-              </button>
-
-              <a [href]="project.liveUrl" target="_blank" rel="noopener noreferrer"
-                 class="px-6 py-4 rounded-xl border font-bold text-xs uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2">
-                <span>Ver Sitio Web</span>
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
-              </a>
+                   class="w-full h-auto object-cover rounded-2xl shadow-sm transition-transform duration-500 group-hover:scale-[1.02]">
             </div>
           </div>
         </section>
@@ -320,103 +288,8 @@ export interface ProjectDetail {
     </div>
   `,
   styles: [`
-    .project-detail-wrapper {
-      background: var(--bg-primary, #080808);
-      color: var(--text-primary, #ffffff);
-      transition: background 0.4s ease, color 0.4s ease;
-    }
-
-    .nav-back-btn {
-      color: var(--text-secondary, rgba(255, 255, 255, 0.7));
-    }
-    .nav-back-btn:hover {
-      color: var(--accent-color, #00f5ff);
-    }
-
-    .badge-code, .badge-category {
-      background: var(--card-bg, rgba(255, 255, 255, 0.04));
-      border-color: var(--card-border, rgba(255, 255, 255, 0.12));
-      color: var(--text-primary, #ffffff);
-    }
-
-    .project-title {
-      color: var(--text-primary, #ffffff);
-    }
-
-    .project-tagline {
-      color: var(--text-secondary, rgba(255, 255, 255, 0.7));
-    }
-
-    .client-card, .stat-card, .highlights-card, .feature-card, .cta-banner {
-      background: var(--card-bg, rgba(255, 255, 255, 0.03));
-      border-color: var(--card-border, rgba(255, 255, 255, 0.1));
-    }
-
-    .text-muted {
-      color: var(--text-secondary, rgba(255, 255, 255, 0.5));
-    }
-
-    .live-domain-btn {
-      background: var(--accent-color, #00f5ff);
-      color: #000000;
-    }
-    .live-domain-btn:hover {
-      filter: brightness(1.1);
-      transform: translateY(-2px);
-    }
-
-    .main-image-container {
-      border-color: var(--card-border, rgba(255, 255, 255, 0.12));
-    }
-
-    .section-h2, .feature-title, .cta-title {
-      color: var(--text-primary, #ffffff);
-    }
-
-    .body-text, .feature-desc, .cta-desc, .highlight-item {
-      color: var(--text-secondary, rgba(255, 255, 255, 0.75));
-    }
-
-    .tech-pill {
-      background: var(--card-bg, rgba(255, 255, 255, 0.04));
-      border-color: var(--card-border, rgba(255, 255, 255, 0.12));
-      color: var(--text-primary, #ffffff);
-    }
-
-    /* Light Theme Overrides */
-    .theme-light .project-detail-wrapper {
-      background: #f4f5f7;
-      color: #111111;
-    }
-
-    .theme-light .project-title,
-    .theme-light .section-h2,
-    .theme-light .feature-title,
-    .theme-light .cta-title {
-      color: #111111;
-    }
-
-    .theme-light .project-tagline,
-    .theme-light .body-text,
-    .theme-light .feature-desc,
-    .theme-light .cta-desc,
-    .theme-light .highlight-item,
-    .theme-light .text-muted {
-      color: #4b5563;
-    }
-
-    .theme-light .client-card,
-    .theme-light .stat-card,
-    .theme-light .highlights-card,
-    .theme-light .feature-card,
-    .theme-light .cta-banner,
-    .theme-light .badge-code,
-    .theme-light .badge-category,
-    .theme-light .tech-pill {
-      background: #ffffff;
-      border-color: rgba(0, 0, 0, 0.08);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   `]
 })
 export class DescripcionProyectoComponent implements OnInit {

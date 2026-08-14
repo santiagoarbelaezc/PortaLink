@@ -459,15 +459,10 @@ export class PlanesGalleryComponent implements OnInit, OnChanges {
 
   selectDesign(project: GalleryProject) {
     this.closePreview();
-    if (project.category === 'E-commerce') {
-      this.router.navigate(['/personalizar']);
-    } else {
-      this.router.navigate(['/rotbot']).then(() => {
-        setTimeout(() => {
-          window.dispatchEvent(new CustomEvent('open-ai-chat', { detail: { message: project.rotbotPrompt } }));
-        }, 500);
-      });
-    }
+    const designName = project?.title || 'Personalizado';
+    const messageText = `Hola, me interesa solicitar el diseño: ${designName}`;
+    const whatsappUrl = `https://wa.me/573054078225?text=${encodeURIComponent(messageText)}`;
+    window.open(whatsappUrl, '_blank');
   }
 
   onImgError(event: Event) {
