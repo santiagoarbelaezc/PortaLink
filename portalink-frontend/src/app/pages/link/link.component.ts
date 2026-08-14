@@ -71,17 +71,22 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
             <!-- RIGHT COLUMN: PROFILE INFO & LINKS STACK (7 COLS) -->
             <section class="lg:col-span-7 space-y-2.5 sm:space-y-8 px-0 sm:px-0">
               
-              <!-- Header Profile Info: Centered on mobile -->
-              <div class="-mt-1 sm:mt-0 space-y-1.5 sm:space-y-3 flex flex-col items-center sm:items-start text-center sm:text-left" data-aos="fade-up" data-aos-delay="100">
-                <h1 class="text-3xl sm:text-5xl font-headline font-bold tracking-tight leading-tight m-0 text-center sm:text-left" style="color: #0a0a0a !important;">
-                  Santiago Arbeláez
-                </h1>
-                <div class="flex items-center justify-center sm:justify-start gap-2 pt-0.5 w-full">
-                  <span class="px-3.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-headline font-medium inline-flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <!-- Header Profile Info: Centered on mobile (Closer to image card) -->
+              <div class="-mt-3 sm:-mt-1 space-y-1 sm:space-y-1.5 flex flex-col items-center sm:items-start text-center sm:text-left" data-aos="fade-up" data-aos-delay="100">
+                
+                <!-- Badge (Between Profile Image and Name, Closer to Image) -->
+                <div class="flex items-center justify-center sm:justify-start gap-2 pt-0 w-full">
+                  <span class="px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full bg-neutral-100 text-neutral-800 border border-neutral-200/90 text-xs font-headline font-semibold inline-flex items-center gap-2 shadow-2xs">
+                    <span class="w-1.5 h-1.5 rounded-full bg-neutral-900 animate-pulse"></span>
                     <span>{{ getProfileTitle() }}</span>
                   </span>
                 </div>
+
+                <!-- Main Name -->
+                <h1 class="text-3xl sm:text-5xl font-headline font-bold tracking-tight leading-tight m-0 text-center sm:text-left" style="color: #0a0a0a !important;">
+                  Santiago Arbeláez
+                </h1>
+
                 <!-- Bio Description: Hidden on mobile per request -->
                 <p class="hidden sm:block text-xs sm:text-sm font-sans text-neutral-500 leading-relaxed max-w-xl text-left">
                   {{ getTranslation().bioDesc }}

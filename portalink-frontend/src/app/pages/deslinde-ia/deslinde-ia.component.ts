@@ -11,116 +11,86 @@ import { FooterComponent } from '../../components/footer/footer.component';
   template: `
     <app-navbar></app-navbar>
     
-    <main class="min-h-screen bg-[#050505] text-white pt-32 pb-20 px-6 sm:px-12 lg:px-24">
+    <main class="min-h-screen bg-white text-neutral-900 pt-24 sm:pt-32 pb-20 px-4 sm:px-12 lg:px-24">
       <div class="max-w-4xl mx-auto">
         <!-- Header -->
-        <div class="mb-12 border-b border-white/10 pb-8">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[var(--accent-color,rgba(0,245,255,0.1))]/10 border border-[var(--accent-color,#00f5ff)]/30 text-[10px] uppercase tracking-[0.25em] font-mono font-bold text-[var(--accent-color,#00f5ff)] mb-4">
+        <div class="mb-10 sm:mb-14 border-b border-neutral-100 pb-8 text-center sm:text-left">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-neutral-900 text-white text-[11px] font-headline font-semibold tracking-wider shadow-2xs mb-4" style="color: #ffffff !important;">
             DESLINDE Y AVISO LEGAL DE IA
           </div>
-          <h1 class="text-4xl sm:text-5xl font-headline font-black uppercase tracking-tight text-white mb-4">
-            Exención de Responsabilidad sobre IA (Rotbot / Groq / Llama)
+          <h1 class="text-3xl sm:text-5xl font-headline font-bold tracking-tight text-neutral-900 leading-tight mb-3" style="color: #0a0a0a !important;">
+            Exención de Responsabilidad sobre IA (RotBot)
           </h1>
-          <p class="text-sm text-white/50 font-light leading-relaxed">
-            Aviso legal regulatorio sobre el uso de tecnologías de Inteligencia Artificial generativa y modelos de lenguaje en PortaLink.
+          <p class="text-sm sm:text-base font-sans font-normal text-neutral-500 max-w-2xl leading-relaxed">
+            Aviso legal regulatorio sobre el uso de Inteligencia Artificial generativa y modelos de lenguaje en PortaLink.
           </p>
         </div>
 
-        <!-- Warning Alert Banner -->
-        <div class="bg-[var(--accent-color,rgba(0,245,255,0.05))]/10 border border-[var(--accent-color,#00f5ff)]/20 rounded-2xl p-6 mb-10 flex items-start gap-4">
-          <div class="w-8 h-8 rounded-full bg-[var(--accent-color,#00f5ff)]/20 text-[var(--accent-color,#00f5ff)] flex items-center justify-center font-bold text-lg flex-shrink-0 mt-1">
+        <!-- Warning Alert Banner (Apple Style Clean Alert) -->
+        <div class="bg-amber-50/80 border border-amber-200/80 rounded-[24px] p-6 mb-8 flex items-start gap-4 shadow-2xs">
+          <div class="w-9 h-9 rounded-2xl bg-amber-100 border border-amber-200 text-amber-800 flex items-center justify-center font-headline font-bold text-base flex-shrink-0 mt-0.5">
             🤖
           </div>
           <div>
-            <h3 class="text-base font-bold text-white uppercase tracking-wider mb-1">Aviso Importante sobre Inteligencia Artificial</h3>
-            <p class="text-xs sm:text-sm text-white/70 leading-relaxed font-light">
-              El asistente virtual <strong>Rotbot</strong> utiliza modelos probabilísticos avanzados a través de la infraestructura de <strong>Groq API</strong> y arquitecturas de lenguaje de código abierto <strong>Llama 3</strong>. Las respuestas son automatizadas y no deben tomarse como asesoría legal, financiera o comercial vinculante.
+            <h3 class="text-base font-headline font-bold text-amber-950 tracking-tight mb-1">Aviso Importante sobre Inteligencia Artificial</h3>
+            <p class="text-xs sm:text-sm text-amber-900/90 leading-relaxed font-sans m-0">
+              El asistente virtual <strong>RotBot</strong> utiliza modelos probabilísticos avanzados a través de la infraestructura de <strong>Groq API</strong> y arquitecturas de lenguaje de código abierto <strong>Llama 3</strong>. Las respuestas son automatizadas y no deben tomarse como asesoría legal, financiera o comercial vinculante.
             </p>
           </div>
         </div>
 
-        <!-- Content -->
-        <div class="space-y-10 text-white/80 font-light leading-relaxed text-sm sm:text-base">
+        <!-- Content Cards -->
+        <div class="space-y-6 text-neutral-600 font-sans text-sm sm:text-base leading-relaxed">
           
-          <section class="bg-white/[0.02] border border-white/5 rounded-2xl p-6 sm:p-8">
-            <h2 class="text-xl font-bold uppercase tracking-wide text-white mb-4 flex items-center gap-3">
-              <span class="w-2 h-2 rounded-full bg-[var(--accent-color,#00f5ff)]"></span>
+          <section class="bg-neutral-50/80 border border-neutral-200/80 rounded-[24px] sm:rounded-[32px] p-6 sm:p-9 shadow-[0_10px_35px_rgba(0,0,0,0.03)] space-y-3">
+            <h2 class="text-xl sm:text-2xl font-headline font-bold tracking-tight text-neutral-900 flex items-center gap-3" style="color: #0a0a0a !important;">
+              <span class="w-2.5 h-2.5 rounded-full bg-neutral-900 flex-shrink-0"></span>
               1. Naturaleza de las Respuestas Generadas por IA
             </h2>
-            <p class="mb-4">
-              Rotbot es un copropósito automatizado diseñado para orientar, responder dudas generales sobre los servicios de desarrollo web y facilitar interacciones iniciales. Los modelos de lenguaje generativos operan mediante patrones estadísticos y pueden incurrir involuntariamente en imprecisiones, inconsistencias o la denominada "alucinación de IA".
+            <p>
+              RotBot es un copropósito automatizado diseñado para orientar, responder dudas generales sobre los servicios de desarrollo web y facilitar interacciones iniciales. Los modelos de lenguaje generativos operan mediante patrones estadísticos y pueden incurrir involuntariamente en imprecisiones o inconsistencias.
             </p>
             <p>
-              Por ende, ninguna respuesta, texto o recomendación generada por Rotbot constituye una promesa de servicio, garantía explícita o compromiso contractual vinculante por parte de PortaLink o de su desarrollador **Santiago Arbeláez**.
+              Ninguna respuesta generada por RotBot constituye una promesa de servicio, garantía explícita o compromiso contractual vinculante por parte de PortaLink o de su desarrollador <strong>Santiago Arbeláez</strong>.
             </p>
           </section>
 
-          <section class="bg-white/[0.02] border border-white/5 rounded-2xl p-6 sm:p-8">
-            <h2 class="text-xl font-bold uppercase tracking-wide text-white mb-4 flex items-center gap-3">
-              <span class="w-2 h-2 rounded-full bg-[var(--accent-color,#00f5ff)]"></span>
-              2. Cotizaciones, Tarifas y Estimaciones de Tiempo
-            </h2>
-            <ul class="list-disc list-inside space-y-3 text-white/70">
-              <li>Cualquier cifra de precios, estimado económico o plazo de entrega mencionado por el chat flotante o la interfaz de Rotbot es puramente **estimativo y orientativo**.</li>
-              <li>Las ofertas comerciales formales y los presupuestos oficiales solo serán válidos una vez emitidos por escrito y firmados por el desarrollador a través de canales directos institucionales.</li>
-              <li>PortaLink se reserva el derecho de ajustar cualquier cifra sugerida automáticamente por la Inteligencia Artificial.</li>
-            </ul>
-          </section>
-
-          <section class="bg-white/[0.02] border border-white/5 rounded-2xl p-6 sm:p-8">
-            <h2 class="text-xl font-bold uppercase tracking-wide text-white mb-4 flex items-center gap-3">
-              <span class="w-2 h-2 rounded-full bg-[var(--accent-color,#00f5ff)]"></span>
-              3. Deslinde de Responsabilidad Técnica y Legal
-            </h2>
-            <p class="mb-4">
-              En la máxima extensión permitida por la ley:
-            </p>
-            <ul class="list-disc list-inside space-y-2 text-white/70">
-              <li>PortaLink y su creador quedan eximidos de cualquier responsabilidad directa, indirecta, incidental, punitiva o emergente derivada de decisiones de negocio, compras o estrategias adoptadas por los usuarios con base en la información provista por la IA.</li>
-              <li>No nos hacemos responsables por fallas, caídas del servicio de la API de Groq, latencias en los servidores de Llama o interrupciones de red de terceros.</li>
-              <li>El usuario reconoce que interactúa con un agente artificial y que tiene la facultad de solicitar atención humana directa en cualquier momento.</li>
-            </ul>
-          </section>
-
-          <section class="bg-white/[0.02] border border-white/5 rounded-2xl p-6 sm:p-8">
-            <h2 class="text-xl font-bold uppercase tracking-wide text-white mb-4 flex items-center gap-3">
-              <span class="w-2 h-2 rounded-full bg-[var(--accent-color,#00f5ff)]"></span>
-              4. Propiedad Intelectual de Proveedores de IA
+          <section class="bg-neutral-50/80 border border-neutral-200/80 rounded-[24px] sm:rounded-[32px] p-6 sm:p-9 shadow-[0_10px_35px_rgba(0,0,0,0.03)] space-y-3">
+            <h2 class="text-xl sm:text-2xl font-headline font-bold tracking-tight text-neutral-900 flex items-center gap-3" style="color: #0a0a0a !important;">
+              <span class="w-2.5 h-2.5 rounded-full bg-neutral-900 flex-shrink-0"></span>
+              2. Uso Responsable e Interacción Humana
             </h2>
             <p>
-              Groq y Llama (Meta Platforms, Inc.) son marcas comerciales registradas de sus respectivos propietarios. PortaLink utiliza sus APIs y modelos de lenguaje de conformidad con sus respectivas licencias de uso comercial y términos de servicio de desarrollador.
-            </p>
-          </section>
-
-          <section class="bg-white/[0.02] border border-white/5 rounded-2xl p-6 sm:p-8">
-            <h2 class="text-xl font-bold uppercase tracking-wide text-white mb-4 flex items-center gap-3">
-              <span class="w-2 h-2 rounded-full bg-[var(--accent-color,#00f5ff)]"></span>
-              5. Atención y Verificación Humana
-            </h2>
-            <p>
-              Para validar formalmente cualquier requerimiento o recibir asesoramiento profesional humano directo sin intervención de IA, puede escribirnos a <strong>arbelaezz.c11&#64;gmail.com</strong> o comunicarse al WhatsApp oficial de soporte.
+              Recomendamos a todos los usuarios validar los detalles técnicos, alcances y cotizaciones directamente con nuestro equipo técnico antes de tomar decisiones comerciales o de contratación.
             </p>
           </section>
 
         </div>
 
         <!-- Action Button -->
-        <div class="mt-16 text-center">
-          <a routerLink="/" class="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-white text-black font-bold text-xs uppercase tracking-widest hover:scale-105 transition-all">
-            ← Volver al Inicio
+        <div class="mt-14 text-center">
+          <a routerLink="/" 
+             class="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full font-headline font-semibold text-xs transition-all duration-300 shadow-md hover:scale-[1.02] active:scale-[0.98] cursor-pointer no-underline border-none"
+             style="background-color: #09090b !important; color: #ffffff !important;">
+            <span style="color: #ffffff !important; font-weight: 600;">← Volver al Inicio</span>
           </a>
         </div>
       </div>
     </main>
 
     <app-footer></app-footer>
-  `
+  `,
+  styles: [`
+    :host {
+      display: block;
+      width: 100%;
+    }
+  `]
 })
 export class DeslindeIaComponent implements OnInit, OnDestroy {
-
   ngOnInit() {
     if (typeof window !== 'undefined') {
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
 
