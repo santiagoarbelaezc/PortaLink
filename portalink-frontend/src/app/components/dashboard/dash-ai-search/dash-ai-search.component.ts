@@ -12,7 +12,6 @@ const TAB_LABELS: Record<string, string> = {
   analytics: 'Analíticas',
   stats: 'Estadísticas',
   messages: 'Mensajes',
-  leads: 'Solicitudes',
   users: 'Usuarios',
   reports: 'Reportes',
   config: 'Configuración',

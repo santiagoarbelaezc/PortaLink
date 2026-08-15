@@ -347,18 +347,46 @@ import { PdfReportService } from '../../../services/pdf-report.service';
       </div>
 
       <!-- Row 4: Rotbot Stats (Monochromatic Cards) -->
-      <div class="rounded-2xl border p-6 space-y-4"
-           [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
-        <h4 class="text-sm font-semibold uppercase tracking-wider"
-            [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Actividad de Rotbot IA</h4>
+      <!-- Rotbot Activity Section -->
+      <div class="rounded-[28px] border p-6 sm:p-7 space-y-5 transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+           [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800' : 'bg-white border-neutral-200/80'">
+        <div class="flex items-center justify-between border-b pb-4" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center border"
+                 [ngClass]="isDark ? 'bg-white text-black border-white' : 'bg-black text-white border-black'">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/>
+              </svg>
+            </div>
+            <div>
+              <h4 class="text-sm font-headline font-bold uppercase tracking-wider" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                Actividad de Rotbot IA
+              </h4>
+              <p class="text-xs font-sans font-normal opacity-60">Rendimiento de interacciones inteligentes</p>
+            </div>
+          </div>
+          <span class="text-[10px] font-headline font-semibold uppercase tracking-wider px-3 py-1 rounded-full border border-blue-500/30 text-blue-400 bg-blue-500/10">
+            IA Activa
+          </span>
+        </div>
+
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div *ngFor="let stat of rotbotStats"
-               class="rounded-xl p-4 flex flex-col items-center justify-center text-center transition-all duration-300"
-               [ngClass]="isDark ? 'bg-neutral-800/40 border border-neutral-800' : 'bg-neutral-50 border border-neutral-200'">
-            <div class="w-8 h-8 mb-2 flex items-center justify-center rounded-xl bg-white/10 text-white"
-                 [innerHTML]="stat.icon"></div>
-            <p class="text-2xl font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ stat.value }}</p>
-            <p class="text-[10px] uppercase tracking-wider font-medium mt-1 opacity-60">{{ stat.label }}</p>
+               class="rounded-[24px] border p-5 flex flex-col justify-between transition-all duration-300 hover:scale-[1.02] shadow-sm"
+               [ngClass]="isDark ? 'bg-neutral-950/70 border-neutral-800/80 hover:border-neutral-700' : 'bg-neutral-50/80 border-neutral-200/80 hover:border-neutral-300'">
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-sans font-normal opacity-70" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">
+                {{ stat.label }}
+              </span>
+              <div class="w-10 h-10 rounded-2xl flex items-center justify-center border shadow-xs transition-colors shrink-0"
+                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700/80 text-white' : 'bg-white border-neutral-200 text-neutral-900'"
+                   [innerHTML]="stat.icon"></div>
+            </div>
+            <div>
+              <p class="text-2xl sm:text-3xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                {{ stat.value }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -714,10 +742,10 @@ export class DashAnalyticsComponent implements OnInit {
       ? (this.metrics.rotbotMessagesSent / this.metrics.rotbotOpens).toFixed(1)
       : '0';
 
-    const iconSession = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>';
-    const iconMessages = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>';
-    const iconAvg = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>';
-    const iconRate = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>';
+    const iconSession = '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" /></svg>';
+    const iconMessages = '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" /></svg>';
+    const iconAvg = '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>';
+    const iconRate = '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z" /><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg>';
 
     this.rotbotStats = [
       { label: 'Sesiones iniciadas', value: this.metrics.rotbotOpens, icon: this.sanitizer.bypassSecurityTrustHtml(iconSession) },

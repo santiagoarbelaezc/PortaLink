@@ -50,11 +50,6 @@ import { Router } from '@angular/router';
               {{ unreadMessages }} Mensajes nuevos
             </span>
             <span class="text-xs font-headline font-semibold px-3.5 py-1.5 rounded-full border flex items-center gap-1.5 tracking-wider"
-                  [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80'">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-              {{ pendingLeads }} Solicitudes
-            </span>
-            <span class="text-xs font-headline font-semibold px-3.5 py-1.5 rounded-full border flex items-center gap-1.5 tracking-wider"
                   [ngClass]="isDark ? 'border-blue-500/30 text-blue-400 bg-blue-500/10' : 'border-blue-200 text-blue-700 bg-blue-50'">
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
               Servidor Online
@@ -155,11 +150,6 @@ import { Router } from '@angular/router';
                         [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-700 bg-neutral-50 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
                   <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-blue-500' : 'text-blue-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                   Mensajes nuevos
-                </button>
-                <button (click)="aiQuery = 'solicitudes'; onSearch()" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-headline font-semibold tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
-                        [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-700 bg-neutral-50 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
-                  <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-blue-500' : 'text-blue-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                  Solicitudes pendientes
                 </button>
                 <button (click)="aiQuery = 'usuarios'; onSearch()" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-headline font-semibold tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
                         [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-700 bg-neutral-50 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
@@ -299,11 +289,11 @@ import { Router } from '@angular/router';
               </span>
             </div>
 
-            <div class="space-y-4">
-              <div *ngFor="let sec of paginatedSectionViews" class="space-y-2">
-                <div class="flex justify-between items-center text-xs font-headline">
-                  <span class="font-semibold tracking-wide uppercase" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ sec.name }}</span>
-                  <span class="font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ sec.views }} visitas</span>
+            <div class="space-y-3">
+              <div *ngFor="let sec of paginatedSectionViews" class="space-y-1">
+                <div class="flex justify-between items-center text-xs sm:text-sm font-sans font-normal">
+                  <span [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">{{ sec.name }}</span>
+                  <span [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">{{ sec.views }} visitas</span>
                 </div>
                 <div class="h-1.5 rounded-full overflow-hidden p-0"
                      [ngClass]="isDark ? 'bg-neutral-800/80' : 'bg-neutral-200/60'">
@@ -316,21 +306,21 @@ import { Router } from '@angular/router';
           </div>
 
           <!-- Pagination Bar -->
-          <div *ngIf="totalSectionPages > 1" class="flex items-center justify-between pt-4 mt-4 border-t"
+          <div *ngIf="totalSectionPages > 1" class="flex items-center justify-between pt-3 mt-3 border-t"
                [ngClass]="isDark ? 'border-neutral-800/80 text-white' : 'border-neutral-100 text-neutral-700'">
-            <span class="text-[11px] font-headline font-semibold uppercase tracking-wider opacity-80"
-                  [ngClass]="isDark ? 'text-white' : 'text-neutral-700'">
+            <span class="text-xs font-sans font-normal"
+                  [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">
               Página {{ sectionPage }} de {{ totalSectionPages }}
             </span>
             <div class="flex items-center gap-1.5">
               <button (click)="prevSectionPage()" [disabled]="sectionPage === 1"
-                      class="w-7 h-7 rounded-full flex items-center justify-center border text-xs font-headline font-bold transition-all duration-200 disabled:opacity-30 cursor-pointer shadow-xs"
-                      [ngClass]="isDark ? 'border-neutral-700 text-white hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-800 hover:bg-neutral-100'">
+                      class="w-6 h-6 rounded-full flex items-center justify-center border text-xs font-sans font-normal transition-all duration-200 disabled:opacity-30 cursor-pointer shadow-xs"
+                      [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-700 hover:bg-neutral-100'">
                 ‹
               </button>
               <button (click)="nextSectionPage()" [disabled]="sectionPage === totalSectionPages"
-                      class="w-7 h-7 rounded-full flex items-center justify-center border text-xs font-headline font-bold transition-all duration-200 disabled:opacity-30 cursor-pointer shadow-xs"
-                      [ngClass]="isDark ? 'border-neutral-700 text-white hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-800 hover:bg-neutral-100'">
+                      class="w-6 h-6 rounded-full flex items-center justify-center border text-xs font-sans font-normal transition-all duration-200 disabled:opacity-30 cursor-pointer shadow-xs"
+                      [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-700 hover:bg-neutral-100'">
                 ›
               </button>
             </div>
@@ -353,11 +343,11 @@ import { Router } from '@angular/router';
               </span>
             </div>
 
-            <div class="space-y-4">
-              <div *ngFor="let link of paginatedLinkClicks" class="space-y-2">
-                <div class="flex justify-between items-center text-xs font-headline">
-                  <span class="font-semibold tracking-wide uppercase" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ link.name }}</span>
-                  <span class="font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ link.count }} clics</span>
+            <div class="space-y-3">
+              <div *ngFor="let link of paginatedLinkClicks" class="space-y-1">
+                <div class="flex justify-between items-center text-xs sm:text-sm font-sans font-normal">
+                  <span [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">{{ link.name }}</span>
+                  <span [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">{{ link.count }} clics</span>
                 </div>
                 <div class="h-1.5 rounded-full overflow-hidden p-0"
                      [ngClass]="isDark ? 'bg-neutral-800/80' : 'bg-neutral-200/60'">
@@ -370,21 +360,21 @@ import { Router } from '@angular/router';
           </div>
 
           <!-- Pagination Bar -->
-          <div *ngIf="totalLinkPages > 1" class="flex items-center justify-between pt-4 mt-4 border-t"
+          <div *ngIf="totalLinkPages > 1" class="flex items-center justify-between pt-3 mt-3 border-t"
                [ngClass]="isDark ? 'border-neutral-800/80 text-white' : 'border-neutral-100 text-neutral-700'">
-            <span class="text-[11px] font-headline font-semibold uppercase tracking-wider opacity-80"
-                  [ngClass]="isDark ? 'text-white' : 'text-neutral-700'">
+            <span class="text-xs font-sans font-normal"
+                  [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">
               Página {{ linkPage }} de {{ totalLinkPages }}
             </span>
             <div class="flex items-center gap-1.5">
               <button (click)="prevLinkPage()" [disabled]="linkPage === 1"
-                      class="w-7 h-7 rounded-full flex items-center justify-center border text-xs font-headline font-bold transition-all duration-200 disabled:opacity-30 cursor-pointer shadow-xs"
-                      [ngClass]="isDark ? 'border-neutral-700 text-white hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-800 hover:bg-neutral-100'">
+                      class="w-6 h-6 rounded-full flex items-center justify-center border text-xs font-sans font-normal transition-all duration-200 disabled:opacity-30 cursor-pointer shadow-xs"
+                      [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-700 hover:bg-neutral-100'">
                 ‹
               </button>
               <button (click)="nextLinkPage()" [disabled]="linkPage === totalLinkPages"
-                      class="w-7 h-7 rounded-full flex items-center justify-center border text-xs font-headline font-bold transition-all duration-200 disabled:opacity-30 cursor-pointer shadow-xs"
-                      [ngClass]="isDark ? 'border-neutral-700 text-white hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-800 hover:bg-neutral-100'">
+                      class="w-6 h-6 rounded-full flex items-center justify-center border text-xs font-sans font-normal transition-all duration-200 disabled:opacity-30 cursor-pointer shadow-xs"
+                      [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-700 hover:bg-neutral-100'">
                 ›
               </button>
             </div>
@@ -445,16 +435,16 @@ import { Router } from '@angular/router';
               Operacional
             </span>
           </div>
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-2 gap-3">
             <div *ngFor="let stat of serverStats"
-                 class="rounded-2xl p-5 border transition-all duration-300 hover:scale-[1.02] shadow-xs"
+                 class="rounded-2xl p-3.5 sm:p-4 border transition-all duration-300 hover:scale-[1.01] shadow-xs"
                  [ngClass]="isDark ? 'bg-neutral-950/80 border-neutral-800/90' : 'bg-neutral-50 border-neutral-200/80'">
-              <p class="text-xs font-headline font-semibold uppercase tracking-wider mb-2"
-                 [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ stat.label }}</p>
-              <div class="flex items-center gap-2">
-                <span *ngIf="stat.dot" class="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse flex-shrink-0"></span>
-                <p class="text-base sm:text-lg font-headline font-bold tracking-tight"
-                   [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ stat.value }}</p>
+              <p class="text-xs font-sans font-normal mb-1"
+                 [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">{{ stat.label }}</p>
+              <div class="flex items-center gap-1.5">
+                <span *ngIf="stat.dot" class="w-2 h-2 rounded-full bg-blue-500 animate-pulse flex-shrink-0"></span>
+                <p class="text-xs sm:text-sm font-sans font-normal"
+                   [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">{{ stat.value }}</p>
               </div>
             </div>
           </div>
