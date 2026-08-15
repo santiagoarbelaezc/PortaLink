@@ -250,48 +250,63 @@ interface Tab {
       </div>
 
       <!-- ══════════════════════════════════════
-           MOBILE BOTTOM NAVIGATION BAR
+           MOBILE APP DOCK (NATIVE BOTTOM NAV)
       ══════════════════════════════════════ -->
-      <nav class="fixed bottom-0 left-0 right-0 z-30 md:hidden border-t backdrop-blur-xl px-2 py-1.5 flex items-center justify-around shadow-lg"
-           [ngClass]="isDark ? 'bg-[#07070a]/90 border-neutral-800 text-neutral-400' : 'bg-white/90 border-neutral-200 text-neutral-500'">
+      <nav class="fixed bottom-3 left-3 right-3 z-30 md:hidden border backdrop-blur-2xl px-2 py-2 flex items-center justify-around rounded-2xl shadow-2xl transition-all duration-300 active:scale-[0.99]"
+           [ngClass]="isDark ? 'bg-[#0a0a0e]/85 border-neutral-800/90 text-neutral-400 shadow-black/80' : 'bg-white/90 border-neutral-200 text-neutral-500 shadow-black/10'">
         
         <!-- Inicio -->
         <button (click)="setTab('dashboard')"
-                class="flex flex-col items-center gap-0.5 p-1.5 rounded-xl text-[10px] font-bold uppercase transition-all"
-                [ngClass]="activeTab === 'dashboard' ? (isDark ? 'text-white' : 'text-neutral-900') : 'opacity-60'">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                class="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl text-[9px] font-bold uppercase tracking-wider transition-all active:scale-95 cursor-pointer relative"
+                [ngClass]="activeTab === 'dashboard' ? (isDark ? 'text-white bg-neutral-800/80 font-extrabold' : 'text-neutral-900 bg-neutral-100 font-extrabold') : 'opacity-70'">
+          <svg class="w-5 h-5 transition-transform duration-200" [ngClass]="activeTab === 'dashboard' ? 'scale-110' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
           </svg>
           <span>Inicio</span>
+          <span *ngIf="activeTab === 'dashboard'" class="w-1 h-1 rounded-full bg-emerald-400 absolute bottom-0.5"></span>
         </button>
 
-        <!-- Analíticas -->
-        <button (click)="setTab('analytics')"
-                class="flex flex-col items-center gap-0.5 p-1.5 rounded-xl text-[10px] font-bold uppercase transition-all"
-                [ngClass]="activeTab === 'analytics' ? (isDark ? 'text-white' : 'text-neutral-900') : 'opacity-60'">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+        <!-- Finanzas -->
+        <button (click)="setTab('finances')"
+                class="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl text-[9px] font-bold uppercase tracking-wider transition-all active:scale-95 cursor-pointer relative"
+                [ngClass]="activeTab === 'finances' ? (isDark ? 'text-white bg-neutral-800/80 font-extrabold' : 'text-neutral-900 bg-neutral-100 font-extrabold') : 'opacity-70'">
+          <svg class="w-5 h-5 transition-transform duration-200" [ngClass]="activeTab === 'finances' ? 'scale-110' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
           </svg>
-          <span>Métricas</span>
+          <span>Finanzas</span>
+          <span *ngIf="activeTab === 'finances'" class="w-1 h-1 rounded-full bg-emerald-400 absolute bottom-0.5"></span>
+        </button>
+
+        <!-- Leads / CRM -->
+        <button (click)="setTab('leads')"
+                class="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl text-[9px] font-bold uppercase tracking-wider transition-all active:scale-95 cursor-pointer relative"
+                [ngClass]="activeTab === 'leads' ? (isDark ? 'text-white bg-neutral-800/80 font-extrabold' : 'text-neutral-900 bg-neutral-100 font-extrabold') : 'opacity-70'">
+          <span *ngIf="pendingLeads > 0 && activeTab !== 'leads'" class="absolute top-1 right-2 w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+          <svg class="w-5 h-5 transition-transform duration-200" [ngClass]="activeTab === 'leads' ? 'scale-110' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0" />
+          </svg>
+          <span>Leads</span>
+          <span *ngIf="activeTab === 'leads'" class="w-1 h-1 rounded-full bg-emerald-400 absolute bottom-0.5"></span>
         </button>
 
         <!-- Mensajes -->
         <button (click)="setTab('messages')"
-                class="flex flex-col items-center gap-0.5 p-1.5 rounded-xl text-[10px] font-bold uppercase transition-all relative"
-                [ngClass]="activeTab === 'messages' ? (isDark ? 'text-white' : 'text-neutral-900') : 'opacity-60'">
+                class="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl text-[9px] font-bold uppercase tracking-wider transition-all active:scale-95 cursor-pointer relative"
+                [ngClass]="activeTab === 'messages' ? (isDark ? 'text-white bg-neutral-800/80 font-extrabold' : 'text-neutral-900 bg-neutral-100 font-extrabold') : 'opacity-70'">
           <span *ngIf="unreadMessages > 0" class="absolute top-1 right-2 w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
           <span *ngIf="unreadMessages > 0" class="absolute top-1 right-2 w-2 h-2 rounded-full bg-emerald-500"></span>
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <svg class="w-5 h-5 transition-transform duration-200" [ngClass]="activeTab === 'messages' ? 'scale-110' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
           </svg>
           <span>Mensajes</span>
+          <span *ngIf="activeTab === 'messages'" class="w-1 h-1 rounded-full bg-emerald-400 absolute bottom-0.5"></span>
         </button>
 
-        <!-- Más (Abrir Drawer) -->
+        <!-- Menú Drawer -->
         <button (click)="isMobileDrawerOpen = !isMobileDrawerOpen"
-                class="flex flex-col items-center gap-0.5 p-1.5 rounded-xl text-[10px] font-bold uppercase transition-all"
-                [ngClass]="isMobileDrawerOpen ? (isDark ? 'text-white' : 'text-neutral-900') : 'opacity-60'">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                class="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl text-[9px] font-bold uppercase tracking-wider transition-all active:scale-95 cursor-pointer relative"
+                [ngClass]="isMobileDrawerOpen ? (isDark ? 'text-white bg-neutral-800/80 font-extrabold' : 'text-neutral-900 bg-neutral-100 font-extrabold') : 'opacity-70'">
+          <svg class="w-5 h-5 transition-transform duration-200" [ngClass]="isMobileDrawerOpen ? 'rotate-90 scale-110' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
           </svg>
           <span>Menú</span>

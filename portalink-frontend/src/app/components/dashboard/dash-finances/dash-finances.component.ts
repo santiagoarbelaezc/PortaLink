@@ -135,7 +135,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
         ══════════════════════════════════════ -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-6">
 
-          <!-- Chart 1: Histórico de Facturación & Cobros (2 Cols) -->
+          <!-- Chart 1: Histórico de Cobros & Facturación (2 Cols) -->
           <div class="lg:col-span-2 rounded-2xl border p-6 space-y-6 flex flex-col justify-between transition-all duration-300 hover:border-neutral-600"
                [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -143,16 +143,16 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                 <h3 class="text-base font-semibold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
                   Histórico de Cobros & Facturación
                 </h3>
-                <p class="text-xs mt-0.5 opacity-60">Tendencia mensual de recaudos y flujo financiero en COP</p>
+                <p class="text-xs mt-0.5 opacity-60">Flujo de caja organizado por fecha de vencimiento</p>
               </div>
               <div class="flex items-center gap-4 text-xs font-normal opacity-80">
                 <span class="flex items-center gap-1.5">
-                  <span class="w-2.5 h-2.5 rounded-full bg-white"></span>
-                  <span>Facturado</span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                  <span>Recaudado / Abonado</span>
                 </span>
-                <span class="flex items-center gap-1.5 opacity-50">
+                <span class="flex items-center gap-1.5 opacity-60">
                   <span class="w-2.5 h-2.5 rounded-full border border-dashed border-neutral-400"></span>
-                  <span>Proyección</span>
+                  <span>Facturado / Proyectado</span>
                 </span>
               </div>
             </div>
@@ -167,15 +167,32 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                 <div class="border-b border-white w-full"></div>
               </div>
 
-              <!-- Real Monthly Income Bars -->
+              <!-- Real Monthly Income Bars Organized by Due Date -->
               <div *ngFor="let m of monthlyIncome; let last = last" class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
-                <div class="text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity px-2.5 py-1 rounded absolute -top-8 shadow-md whitespace-nowrap z-20 pointer-events-none"
-                     [ngClass]="isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white'">
-                  {{ formatCOP(m.amount) }}{{ last && m.amount > 0 ? ' 🔥' : '' }}
+                
+                <!-- Tooltip on Hover -->
+                <div class="text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity px-3 py-1.5 rounded-lg absolute -top-12 shadow-lg whitespace-nowrap z-30 pointer-events-none flex flex-col gap-0.5 items-center"
+                     [ngClass]="isDark ? 'bg-neutral-800 text-white border border-neutral-700' : 'bg-neutral-900 text-white shadow-black/20'">
+                  <span>{{ m.month }} {{ m.year }}</span>
+                  <span class="text-emerald-400">Recaudado: {{ formatCOP(m.collected) }} ({{ m.pctCollected }}%)</span>
+                  <span class="opacity-70">Facturado: {{ formatCOP(m.billed) }}</span>
                 </div>
-                <div class="w-full max-w-[34px] rounded-t-xl transition-all duration-300 shadow-sm"
-                     [ngStyle]="{'height': (m.height || 6) + '%'}"
-                     [ngClass]="last ? (isDark ? 'bg-white text-black shadow-white/20' : 'bg-neutral-900 text-white') : (isDark ? 'bg-neutral-700/60 group-hover:bg-neutral-400' : 'bg-neutral-300 group-hover:bg-neutral-500')"></div>
+
+                <!-- Dual Bar Container -->
+                <div class="w-full max-w-[34px] h-full flex items-end justify-center relative">
+                  <!-- Outer Bar: Total Facturado/Vencimiento -->
+                  <div class="w-full rounded-t-xl transition-all duration-300 border border-dashed"
+                       [ngStyle]="{'height': (m.billedHeight || 6) + '%'}"
+                       [ngClass]="isDark ? 'border-neutral-600 bg-neutral-800/40' : 'border-neutral-400 bg-neutral-200/60'">
+                  </div>
+
+                  <!-- Inner Bar: Recaudado/Abonado -->
+                  <div class="w-full rounded-t-xl transition-all duration-300 absolute bottom-0 shadow-sm"
+                       [ngStyle]="{'height': (m.height || 0) + '%'}"
+                       [ngClass]="m.collected > 0 ? (isDark ? 'bg-emerald-400 text-black shadow-emerald-400/20' : 'bg-emerald-500 text-white shadow-emerald-500/20') : 'bg-transparent'">
+                  </div>
+                </div>
+
                 <span class="text-xs font-semibold" [ngClass]="last ? (isDark ? 'text-emerald-400 font-bold' : 'text-neutral-900 font-bold') : 'opacity-60'">{{ m.month }}</span>
               </div>
 
@@ -189,7 +206,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                 <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-3l3 3 3-3"/>
                 </svg>
-                <span>Tasa de Recaudo Efectivo: <strong class="font-semibold">{{ keyMetrics.collectionRate || 0 }}%</strong></span>
+                <span>Tasa de Recaudo Efectivo: <strong class="font-semibold" [ngClass]="isDark ? 'text-emerald-400' : 'text-emerald-600'">{{ effectiveRecaudoRate }}%</strong></span>
               </span>
               <span class="font-mono text-[11px] opacity-60">Auditoría en vivo</span>
             </div>
@@ -1612,7 +1629,8 @@ export class DashFinancesComponent implements OnInit, OnChanges {
     return Math.round((overdue / total) * 100);
   }
 
-  monthlyIncome: { month: string; amount: number; height: number }[] = [];
+  effectiveRecaudoRate = 0;
+  monthlyIncome: { monthKey: string; month: string; year: string; amount: number; billed: number; collected: number; height: number; billedHeight: number; pctCollected: number }[] = [];
   serviceIncome: { name: string; amount: number; percent: number }[] = [];
   statusIncome: { status: string; count: number; amount: number; colorClass: string; width: number }[] = [];
   keyMetrics = {
@@ -1819,42 +1837,60 @@ export class DashFinancesComponent implements OnInit, OnChanges {
 
   buildReports() {
     const paidInvoices = this.invoices.filter(i => (i.status === 'Pagada' || i.status === 'PAGADA') && i.paidAt);
-    
-    // Monthly Income (Inclusión de Abonos Parciales + Facturas Pagadas)
-    const months: Record<string, number> = {};
     const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-    
-    // Initialize last 6 months
+    const monthsData: Record<string, { billed: number; collected: number }> = {};
+
+    // 1. Baseline 6-month window (5 months prior up to current month)
     const d = new Date();
     for (let i = 5; i >= 0; i--) {
       const past = new Date(d.getFullYear(), d.getMonth() - i, 1);
-      months[`${past.getFullYear()}-${String(past.getMonth() + 1).padStart(2, '0')}`] = 0;
+      const mKey = `${past.getFullYear()}-${String(past.getMonth() + 1).padStart(2, '0')}`;
+      monthsData[mKey] = { billed: 0, collected: 0 };
     }
 
+    // 2. Group strictly by INVOICE DUE DATE (dueAt / due_date)
     this.invoices.forEach(inv => {
-      if (inv.payments && inv.payments.length > 0) {
-        inv.payments.forEach((pay: any) => {
-          const payDate = pay.payment_date || inv.paidAt || inv.issuedAt;
-          if (payDate) {
-            const m = payDate.substring(0, 7); // YYYY-MM
-            if (months[m] !== undefined) months[m] += Number(pay.amount || 0);
-          }
-        });
-      } else if ((inv.status === 'Pagada' || inv.status === 'PAGADA') && inv.paidAt) {
-        const m = inv.paidAt.substring(0, 7);
-        if (months[m] !== undefined) months[m] += (inv.total || 0);
+      const rawDueDate = inv.dueAt || inv.due_date || inv.issuedAt || inv.issue_date;
+      if (rawDueDate) {
+        const mKey = rawDueDate.substring(0, 7); // "YYYY-MM"
+        if (!monthsData[mKey]) {
+          monthsData[mKey] = { billed: 0, collected: 0 };
+        }
+        const total = Number(inv.total || inv.total_amount || 0);
+        const paid = Number(inv.paid_amount || 0);
+        monthsData[mKey].billed += total;
+        monthsData[mKey].collected += paid;
       }
     });
 
-    const maxIncome = Math.max(...Object.values(months), 1);
-    this.monthlyIncome = Object.keys(months).sort().map(k => {
-      const [, m] = k.split('-');
+    const sortedKeys = Object.keys(monthsData).sort();
+    const maxVal = Math.max(
+      ...sortedKeys.map(k => Math.max(monthsData[k].billed, monthsData[k].collected)),
+      1
+    );
+
+    this.monthlyIncome = sortedKeys.map(k => {
+      const [y, m] = k.split('-');
+      const billed = monthsData[k].billed;
+      const collected = monthsData[k].collected;
+      const pct = billed > 0 ? Math.round((collected / billed) * 100) : (collected > 0 ? 100 : 0);
+
       return {
+        monthKey: k,
         month: monthNames[parseInt(m, 10) - 1],
-        amount: months[k],
-        height: (months[k] / maxIncome) * 100
+        year: y,
+        amount: collected,
+        billed: billed,
+        collected: collected,
+        height: Math.min(100, Math.max(0, (collected / maxVal) * 100)),
+        billedHeight: Math.min(100, Math.max(0, (billed / maxVal) * 100)),
+        pctCollected: pct
       };
     });
+
+    const totalBilledPeriod = Object.values(monthsData).reduce((sum, item) => sum + item.billed, 0);
+    const totalCollectedPeriod = Object.values(monthsData).reduce((sum, item) => sum + item.collected, 0);
+    this.effectiveRecaudoRate = totalBilledPeriod > 0 ? Math.round((totalCollectedPeriod / totalBilledPeriod) * 100) : 0;
 
     // Service Income
     const srvMap: Record<string, number> = {};
