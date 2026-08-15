@@ -157,6 +157,7 @@ export class FinanceService {
     const payload = {
       client_id: invoice.clientId,
       invoice_number: invoice.id || `PL-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000)}`, // temporary auto-gen for backend if new
+      title: invoice.title || null,
       issue_date: invoice.issuedAt,
       due_date: invoice.dueAt,
       notes: invoice.notes,

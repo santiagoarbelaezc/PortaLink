@@ -993,18 +993,18 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
         <!-- Invoice list -->
         <div class="rounded-2xl border overflow-hidden"
              [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
-          <div class="grid grid-cols-12 px-5 py-3 text-[10px] font-bold uppercase tracking-widest border-b"
+          <div class="grid grid-cols-12 px-5 py-3 text-[10px] font-bold uppercase tracking-widest border-b gap-2"
                [ngClass]="isDark ? 'border-neutral-800 text-neutral-500' : 'border-neutral-200 text-neutral-400'">
             <span class="col-span-2">ID</span>
-            <span class="col-span-3">Cliente</span>
-            <span class="col-span-2 text-right">Total</span>
-            <span class="col-span-2 text-center">Estado</span>
-            <span class="col-span-2">Vencimiento</span>
+            <span class="col-span-3">Cliente / Etiqueta</span>
+            <span class="col-span-2 text-right">Monto Total</span>
+            <span class="col-span-2 text-right">Falta por Pagar</span>
+            <span class="col-span-2 text-center">Estado / Vencimiento</span>
             <span class="col-span-1"></span>
           </div>
           <div class="divide-y" [ngClass]="isDark ? 'divide-neutral-800' : 'divide-neutral-100'">
             <ng-container *ngFor="let inv of displayedInvoices">
-              <div class="grid grid-cols-12 px-5 py-4 items-center transition-colors"
+              <div class="grid grid-cols-12 px-5 py-4 items-center transition-colors gap-2"
                    [ngClass]="isDark ? 'hover:bg-neutral-800/30' : 'hover:bg-neutral-50'">
                 
                 <div class="col-span-2 flex items-center gap-2">
@@ -1021,23 +1021,31 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                   <p class="text-[11px] truncate opacity-60" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ inv.clientCompany }}</p>
                 </div>
 
+                <!-- Monto Total -->
                 <div class="col-span-2 text-right">
                   <span class="text-sm font-bold font-sans block" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(inv.total || inv.total_amount || 0) }}</span>
-                  
-                  <!-- Abono breakdown -->
                   <div *ngIf="inv.paid_amount && inv.paid_amount > 0 && inv.status !== 'Pagada' && inv.status !== 'PAGADA'" class="text-[10px] font-sans mt-0.5">
                     <span class="text-emerald-400 font-semibold">Abonado: {{ formatCOP(inv.paid_amount) }}</span>
                   </div>
                 </div>
 
-                <div class="col-span-2 flex justify-center">
-                  <span class="text-[10px] font-bold uppercase px-3 py-1 rounded-full border" [ngClass]="getStatusClass(inv.status)">
-                    {{ inv.status === 'Parcial' || inv.status === 'PARCIAL' ? 'Abonada (' + getInvoicePaidPct(inv) + '%)' : inv.status }}
+                <!-- Falta por Pagar (Saldo Pendiente) -->
+                <div class="col-span-2 text-right">
+                  <span class="text-sm font-bold font-sans block"
+                        [ngClass]="getPendingAmount(inv) > 0 ? (isDark ? 'text-amber-400' : 'text-amber-600') : (isDark ? 'text-emerald-400' : 'text-emerald-600')">
+                    {{ formatCOP(getPendingAmount(inv)) }}
+                  </span>
+                  <span class="text-[10px] block opacity-50 uppercase tracking-wider font-medium">
+                    {{ getPendingAmount(inv) > 0 ? 'Por cobrar' : 'Al día' }}
                   </span>
                 </div>
 
-                <div class="col-span-2">
-                  <span class="text-xs font-sans" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ inv.dueAt | date:'dd MMM yyyy' }}</span>
+                <!-- Estado & Vencimiento -->
+                <div class="col-span-2 flex flex-col items-center justify-center gap-1">
+                  <span class="text-[10px] font-bold uppercase px-3 py-1 rounded-full border" [ngClass]="getStatusClass(inv.status)">
+                    {{ inv.status === 'Parcial' || inv.status === 'PARCIAL' ? 'Abonada (' + getInvoicePaidPct(inv) + '%)' : inv.status }}
+                  </span>
+                  <span class="text-[10px] font-sans opacity-60" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Vence: {{ inv.dueAt | date:'dd MMM yyyy' }}</span>
                 </div>
 
                 <div class="col-span-1 flex justify-end gap-1">
