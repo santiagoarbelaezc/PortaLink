@@ -1754,9 +1754,9 @@ export class DashFinancesComponent implements OnInit, OnChanges {
   }
 
   buildReports() {
-    const paidInvoices = this.invoices.filter(i => i.status === 'Pagada' && i.paidAt);
+    const paidInvoices = this.invoices.filter(i => (i.status === 'Pagada' || i.status === 'PAGADA') && i.paidAt);
     
-    // Monthly Income
+    // Monthly Income (Inclusión de Abonos Parciales + Facturas Pagadas)
     const months: Record<string, number> = {};
     const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
     
@@ -1767,9 +1767,19 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       months[`${past.getFullYear()}-${String(past.getMonth() + 1).padStart(2, '0')}`] = 0;
     }
 
-    paidInvoices.forEach(inv => {
-      const m = inv.paidAt!.substring(0, 7); // YYYY-MM
-      if (months[m] !== undefined) months[m] += (inv.total || 0);
+    this.invoices.forEach(inv => {
+      if (inv.payments && inv.payments.length > 0) {
+        inv.payments.forEach((pay: any) => {
+          const payDate = pay.payment_date || inv.paidAt || inv.issuedAt;
+          if (payDate) {
+            const m = payDate.substring(0, 7); // YYYY-MM
+            if (months[m] !== undefined) months[m] += Number(pay.amount || 0);
+          }
+        });
+      } else if ((inv.status === 'Pagada' || inv.status === 'PAGADA') && inv.paidAt) {
+        const m = inv.paidAt.substring(0, 7);
+        if (months[m] !== undefined) months[m] += (inv.total || 0);
+      }
     });
 
     const maxIncome = Math.max(...Object.values(months), 1);
@@ -1801,21 +1811,24 @@ export class DashFinancesComponent implements OnInit, OnChanges {
     let totalAll = 0;
     const statusMap: Record<string, { count: number; amount: number }> = {
       'Pagada': { count: 0, amount: 0 },
+      'Parcial': { count: 0, amount: 0 },
       'Enviada': { count: 0, amount: 0 },
       'Vencida': { count: 0, amount: 0 },
       'Borrador': { count: 0, amount: 0 },
     };
     
     this.invoices.forEach(inv => {
-      if (statusMap[inv.status]) {
-        statusMap[inv.status].count++;
-        statusMap[inv.status].amount += (inv.total || 0);
+      const stKey = statusMap[inv.status] ? inv.status : (inv.status === 'PARCIAL' ? 'Parcial' : (inv.status === 'PAGADA' ? 'Pagada' : (inv.status === 'ENVIADA' ? 'Enviada' : 'Borrador')));
+      if (statusMap[stKey]) {
+        statusMap[stKey].count++;
+        statusMap[stKey].amount += (inv.total || 0);
         totalAll += (inv.total || 0);
       }
     });
 
     const colors: Record<string, string> = {
       'Pagada': 'bg-green-500',
+      'Parcial': 'bg-emerald-400',
       'Enviada': 'bg-blue-500',
       'Vencida': 'bg-red-500',
       'Borrador': 'bg-neutral-500'
@@ -1829,14 +1842,18 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       width: totalAll ? (statusMap[k].amount / totalAll) * 100 : 0
     })).filter(s => s.count > 0);
 
-    // Key Metrics
-    const paidAmount = statusMap['Pagada'].amount;
-    const expectedTotal = statusMap['Pagada'].amount + statusMap['Enviada'].amount + statusMap['Vencida'].amount;
+    // Key Metrics (Recaudo Real con Abonos Incluidos)
+    const totalBilled = (this.invoices || []).reduce((sum, inv) => sum + (inv.total || inv.total_amount || 0), 0);
+    const totalRecaudado = (this.invoices || []).reduce((sum, inv) => {
+      if (inv.status === 'Pagada' || inv.status === 'PAGADA') return sum + (inv.total || inv.total_amount || 0);
+      return sum + (inv.paid_amount || 0);
+    }, 0);
+
     this.keyMetrics = {
-      collectionRate: expectedTotal ? Math.round((paidAmount / expectedTotal) * 100) : 0,
-      overdueCount: statusMap['Vencida'].count,
-      overdueAmount: statusMap['Vencida'].amount,
-      avgInvoiceValue: this.invoices.length ? Math.round(totalAll / this.invoices.length) : 0
+      collectionRate: totalBilled ? Math.min(100, Math.round((totalRecaudado / totalBilled) * 100)) : 0,
+      overdueCount: statusMap['Vencida'] ? statusMap['Vencida'].count : 0,
+      overdueAmount: statusMap['Vencida'] ? statusMap['Vencida'].amount : 0,
+      avgInvoiceValue: this.invoices.length ? Math.round(totalBilled / this.invoices.length) : 0
     };
   }
 
