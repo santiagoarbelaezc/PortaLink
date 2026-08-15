@@ -1097,7 +1097,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                   <span class="font-extrabold text-emerald-400 block">{{ formatCOP(p.amount) }}</span>
                   <span class="text-[10px] opacity-60 block">{{ p.payment_date | date:'dd MMM yyyy' }} · {{ p.payment_method }}</span>
                 </div>
-                <button (click)="deletePayment(inv.id || '', p.id)" class="text-neutral-500 hover:text-red-400 p-1">
+                <button (click)="deletePayment(p.id!)" class="text-neutral-500 hover:text-red-400 p-1">
                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
               </div>
