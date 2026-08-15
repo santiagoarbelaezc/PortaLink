@@ -9,7 +9,6 @@ import { DashHomeComponent } from '../../components/dashboard/dash-home/dash-hom
 import { DashAnalyticsComponent } from '../../components/dashboard/dash-analytics/dash-analytics.component';
 import { DashStatsComponent } from '../../components/dashboard/dash-stats/dash-stats.component';
 import { DashMessagesComponent } from '../../components/dashboard/dash-messages/dash-messages.component';
-import { DashLeadsComponent } from '../../components/dashboard/dash-leads/dash-leads.component';
 import { DashUsersComponent } from '../../components/dashboard/dash-users/dash-users.component';
 import { DashConfigComponent } from '../../components/dashboard/dash-config/dash-config.component';
 import { DashReportsComponent } from '../../components/dashboard/dash-reports/dash-reports.component';

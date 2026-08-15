@@ -14,7 +14,6 @@ const TAB_LABELS: Record<string, string> = {
   messages: 'Mensajes',
   leads: 'Solicitudes',
   users: 'Usuarios',
-  home: 'Personalizar',
   reports: 'Reportes',
   config: 'Configuración',
 };
