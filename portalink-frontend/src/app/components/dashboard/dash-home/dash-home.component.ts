@@ -164,7 +164,7 @@ import { Router } from '@angular/router';
       </div>
 
       <!-- ═══════════════════════ METRIC CARDS ═══════════════════════ -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div class="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
 
         <div *ngFor="let card of metricCards"
              class="rounded-[24px] border p-6 transition-all duration-300 hover:scale-[1.01]"
