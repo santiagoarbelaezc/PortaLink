@@ -47,7 +47,7 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
             <div class="flex items-center gap-4 flex-wrap">
               <h2 class="text-3xl sm:text-4xl font-headline font-bold uppercase tracking-tight"
                   [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                Itinerario Semanal
+                Calendario Semanal
               </h2>
               <div class="flex items-center gap-2 px-4 py-2 rounded-full border"
                    [ngClass]="isDark ? 'border-neutral-800 bg-[#0f0f13]' : 'border-neutral-200 bg-neutral-50'">

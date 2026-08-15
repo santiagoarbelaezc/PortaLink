@@ -7,8 +7,8 @@ import { AnalyticsService } from '../../../services/analytics.service';
 const TAB_LABELS: Record<string, string> = {
   dashboard: 'Inicio',
   'financial-control': 'Control Financiero',
-  itinerary: 'Itinerario',
   finances: 'Finanzas',
+  itinerary: 'Calendario',
   analytics: 'Analíticas',
   stats: 'Estadísticas',
   messages: 'Mensajes',
