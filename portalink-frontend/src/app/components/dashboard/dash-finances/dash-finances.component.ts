@@ -482,6 +482,19 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
               <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Precio Unitario (COP) *</label>
               <input type="number" [(ngModel)]="editingService!.unitPrice" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="0"
                      class="w-full px-3.5 py-2.5 rounded-xl text-sm border outline-none transition-colors font-mono font-bold" [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500 focus:border-white' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+              
+              <!-- Indicador Dinámico de Precio COP -->
+              <div class="mt-1.5 p-3 rounded-xl border flex items-center justify-between transition-all duration-300 shadow-xs"
+                   [ngClass]="isDark ? 'bg-neutral-950/90 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span class="text-[10px] font-extrabold uppercase tracking-widest opacity-60">Valor Formateado</span>
+                </div>
+                <span class="text-base sm:text-lg font-black font-mono tracking-tight"
+                      [ngClass]="isDark ? 'text-emerald-400' : 'text-emerald-600'">
+                  {{ formatCOPDisplay(editingService!.unitPrice) }}
+                </span>
+              </div>
             </div>
             <div class="flex flex-col gap-1.5 md:col-span-2">
               <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Descripción Corta</label>
@@ -2272,6 +2285,12 @@ export class DashFinancesComponent implements OnInit, OnChanges {
 
   // ─── HELPERS ───────────────────────────────
   formatCOP(v: number) { return this.financeService.formatCOP(v || 0); }
+
+  formatCOPDisplay(v: number | null | undefined): string {
+    const val = Math.max(0, Math.round(Number(v || 0)));
+    const formatted = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(val);
+    return `COP ${formatted}`;
+  }
 
   getStatusClass(status: string) {
     const map: Record<string, string> = {
