@@ -802,7 +802,16 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
         <!-- Invoice list -->
         <div class="rounded-2xl border overflow-hidden"
              [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
-          <div class="grid grid-cols-12 px-5 py-3 text-[10px] font-bold          <div class="divide-y" [ngClass]="isDark ? 'divide-neutral-800' : 'divide-neutral-100'">
+          <div class="grid grid-cols-12 px-5 py-3 text-[10px] font-bold uppercase tracking-widest border-b"
+               [ngClass]="isDark ? 'border-neutral-800 text-neutral-500' : 'border-neutral-200 text-neutral-400'">
+            <span class="col-span-2">ID</span>
+            <span class="col-span-3">Cliente</span>
+            <span class="col-span-2 text-right">Total</span>
+            <span class="col-span-2 text-center">Estado</span>
+            <span class="col-span-2">Vencimiento</span>
+            <span class="col-span-1"></span>
+          </div>
+          <div class="divide-y" [ngClass]="isDark ? 'divide-neutral-800' : 'divide-neutral-100'">
             <ng-container *ngFor="let inv of displayedInvoices">
               <div class="grid grid-cols-12 px-5 py-4 items-center transition-colors"
                    [ngClass]="isDark ? 'hover:bg-neutral-800/30' : 'hover:bg-neutral-50'">
@@ -892,7 +901,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                   </div>
                   <div>
                     <span class="text-[10px] font-bold uppercase tracking-widest block opacity-60">Saldo Pendiente</span>
-                    <span class="font-bold text-amber-400 font-mono">{{ formatCOP(inv.pending_amount !== undefined ? inv.pending_amount : Math.max(0, (inv.total || 0) - (inv.paid_amount || 0))) }}</span>
+                    <span class="font-bold text-amber-400 font-mono">{{ formatCOP(getPendingAmount(inv)) }}</span>
                   </div>
                 </div>
 
@@ -930,14 +939,6 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
               </div>
             </ng-container>
 
-            <div *ngIf="invoices.length === 0" class="px-5 py-10 text-center text-sm"
-                 [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-400'">
-              No hay cuentas de cobro aún.
-            </div>
-          </div>stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                </button>
-              </div>
-            </div>
             <div *ngIf="invoices.length === 0" class="px-5 py-10 text-center text-sm"
                  [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-400'">
               No hay cuentas de cobro aún.
@@ -1059,6 +1060,10 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                 Descargar PDF
               </button>
               <button (click)="printPreviewPdf()" class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest border transition-all cursor-pointer flex items-center gap-1.5"
+                      [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:text-white hover:bg-neutral-800' : 'border-neutral-300 text-neutral-700 hover:text-black hover:bg-neutral-100'">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                Imprimir
+              </button>
               <button (click)="closePreview()" class="p-2 rounded-xl transition-all duration-200 cursor-pointer border ml-1"
                       [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:text-white hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-500 hover:text-black hover:bg-neutral-100'">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -1211,6 +1216,12 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
               Cancelar
             </button>
             <button (click)="confirmPayment()" [disabled]="isLoading"
+                    class="px-6 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-widest transition-all cursor-pointer border shadow-lg flex items-center gap-2"
+                    [ngClass]="isDark ? 'bg-white text-black border-white hover:bg-neutral-200' : 'bg-black text-white border-black hover:bg-neutral-800'">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              <span>{{ isLoading ? 'Registrando...' : 'Confirmar Abono' }}</span>
+            </button>
+          </div>
 
         </div>
       </div>
@@ -1279,6 +1290,15 @@ export class DashFinancesComponent implements OnInit, OnChanges {
   private cdr = inject(ChangeDetectorRef);
 
   get isDark() { return this.theme === 'dark'; }
+  Math = Math;
+
+  getPendingAmount(inv: any): number {
+    if (!inv) return 0;
+    if (inv.pending_amount !== undefined && inv.pending_amount !== null) return Number(inv.pending_amount);
+    const total = Number(inv.total || inv.total_amount || 0);
+    const paid = Number(inv.paid_amount || 0);
+    return Math.max(0, total - paid);
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['theme']) {
