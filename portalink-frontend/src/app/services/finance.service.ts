@@ -38,6 +38,17 @@ export interface InvoiceItem {
   subtotal?: number; // UI alias
 }
 
+export interface InvoicePayment {
+  id?: number;
+  invoice_id?: number | string;
+  amount: number;
+  payment_date: string;
+  payment_method: string;
+  notes?: string;
+  transaction_id?: number;
+  created_at?: string;
+}
+
 export interface Invoice {
   id?: string;
   client_id?: string;
@@ -56,15 +67,20 @@ export interface Invoice {
   payment_method?: string;
   paymentNotes?: string;
   payment_notes?: string;
-  status: 'DRAFT' | 'ENVIADA' | 'PAGADA' | 'VENCIDA' | 'ANULADA' | 'Borrador' | 'Enviada' | 'Pagada' | 'Vencida';
+  status: 'DRAFT' | 'ENVIADA' | 'PARCIAL' | 'PAGADA' | 'VENCIDA' | 'ANULADA' | 'Borrador' | 'Enviada' | 'Parcial' | 'Pagada' | 'Vencida';
   subtotal: number;
   tax_amount?: number;
   taxRate?: number; // UI alias
   taxAmount?: number; // UI alias
   total_amount?: number;
   total?: number; // UI alias
+  paid_amount?: number;
+  paidAmount?: number;
+  pending_amount?: number;
+  pendingAmount?: number;
   notes?: string;
   items?: InvoiceItem[];
+  payments?: InvoicePayment[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -175,6 +191,19 @@ export class FinanceService {
       payment_method: paymentData?.payment_method,
       payment_notes: paymentData?.payment_notes
     });
+  }
+
+  // ─── ABONOS PARCIALES ──────────────────────────────────────
+  addInvoicePayment(invoiceId: string, paymentData: { amount: number; payment_date?: string; payment_method?: string; notes?: string }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/invoices/${invoiceId}/payments`, paymentData);
+  }
+
+  getInvoicePayments(invoiceId: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/invoices/${invoiceId}/payments`);
+  }
+
+  deleteInvoicePayment(paymentId: number | string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/invoices/payments/${paymentId}`);
   }
 
   // ─── CONTROL FINANCIERO ──────────────────────────────────
