@@ -167,67 +167,20 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                 <div class="border-b border-white w-full"></div>
               </div>
 
-              <!-- Bar 1 -->
-              <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
-                <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
-                  $ 2.400.000 COP
+              <!-- Real Monthly Income Bars -->
+              <div *ngFor="let m of monthlyIncome; let last = last" class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
+                <div class="text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity px-2.5 py-1 rounded absolute -top-8 shadow-md whitespace-nowrap z-20 pointer-events-none"
+                     [ngClass]="isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white'">
+                  {{ formatCOP(m.amount) }}{{ last && m.amount > 0 ? ' 🔥' : '' }}
                 </div>
-                <div class="w-full max-w-[32px] bg-neutral-700/40 group-hover:bg-neutral-600 rounded-t-xl transition-all duration-300" style="height: 52%;"></div>
-                <span class="text-xs font-normal opacity-60">Ene</span>
+                <div class="w-full max-w-[34px] rounded-t-xl transition-all duration-300 shadow-sm"
+                     [ngStyle]="{'height': (m.height || 6) + '%'}"
+                     [ngClass]="last ? (isDark ? 'bg-white text-black shadow-white/20' : 'bg-neutral-900 text-white') : (isDark ? 'bg-neutral-700/60 group-hover:bg-neutral-400' : 'bg-neutral-300 group-hover:bg-neutral-500')"></div>
+                <span class="text-xs font-semibold" [ngClass]="last ? (isDark ? 'text-emerald-400 font-bold' : 'text-neutral-900 font-bold') : 'opacity-60'">{{ m.month }}</span>
               </div>
 
-              <!-- Bar 2 -->
-              <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
-                <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
-                  $ 2.800.000 COP
-                </div>
-                <div class="w-full max-w-[32px] bg-neutral-700/50 group-hover:bg-neutral-600 rounded-t-xl transition-all duration-300" style="height: 60%;"></div>
-                <span class="text-xs font-normal opacity-60">Feb</span>
-              </div>
-
-              <!-- Bar 3 -->
-              <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
-                <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
-                  $ 3.100.000 COP
-                </div>
-                <div class="w-full max-w-[32px] bg-neutral-700/60 group-hover:bg-neutral-500 rounded-t-xl transition-all duration-300" style="height: 68%;"></div>
-                <span class="text-xs font-normal opacity-60">Mar</span>
-              </div>
-
-              <!-- Bar 4 -->
-              <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
-                <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
-                  $ 3.400.000 COP
-                </div>
-                <div class="w-full max-w-[32px] bg-neutral-600/70 group-hover:bg-neutral-400 rounded-t-xl transition-all duration-300" style="height: 74%;"></div>
-                <span class="text-xs font-normal opacity-60">Abr</span>
-              </div>
-
-              <!-- Bar 5 -->
-              <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
-                <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
-                  $ 3.700.000 COP
-                </div>
-                <div class="w-full max-w-[32px] bg-neutral-500/80 group-hover:bg-neutral-300 rounded-t-xl transition-all duration-300" style="height: 80%;"></div>
-                <span class="text-xs font-normal opacity-60">May</span>
-              </div>
-
-              <!-- Bar 6 -->
-              <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
-                <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
-                  $ 4.000.000 COP
-                </div>
-                <div class="w-full max-w-[32px] bg-neutral-300 group-hover:bg-white rounded-t-xl transition-all duration-300 shadow-lg" style="height: 86%;"></div>
-                <span class="text-xs font-normal opacity-60">Jun</span>
-              </div>
-
-              <!-- Bar 7 -->
-              <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
-                <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-white text-black px-2 py-1 rounded absolute -top-8 shadow-xl whitespace-nowrap">
-                  $ 4.500.000 COP 🔥
-                </div>
-                <div class="w-full max-w-[32px] bg-white rounded-t-xl transition-all duration-300 shadow-xl" style="height: 95%;"></div>
-                <span class="text-xs font-bold text-emerald-400">Jul</span>
+              <div *ngIf="monthlyIncome.length === 0" class="absolute inset-0 flex items-center justify-center text-xs opacity-50">
+                Sin movimientos registrados aún.
               </div>
             </div>
 
@@ -236,13 +189,13 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                 <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-3l3 3 3-3"/>
                 </svg>
-                <span>Tasa de Recaudo Efectivo: <strong class="font-semibold">96.8%</strong></span>
+                <span>Tasa de Recaudo Efectivo: <strong class="font-semibold">{{ keyMetrics.collectionRate || 0 }}%</strong></span>
               </span>
               <span class="font-mono text-[11px] opacity-60">Auditoría en vivo</span>
             </div>
           </div>
 
-          <!-- Chart 2: Estado de Cuentas por Cobrar (1 Col) -->
+          <!-- Chart 2: Estado de Cuentas por Cobrar (1 Col Real Dynamic) -->
           <div class="rounded-2xl border p-6 space-y-6 flex flex-col justify-between transition-all duration-300 hover:border-neutral-600"
                [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
             <div>
@@ -254,9 +207,9 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
 
             <!-- Monochromatic Donut Simulation -->
             <div class="flex items-center justify-center py-2 relative">
-              <div class="w-32 h-32 rounded-full border-8 border-neutral-700 border-t-white border-r-neutral-300 border-b-neutral-500 flex items-center justify-center relative shadow-inner">
+              <div class="w-32 h-32 rounded-full border-8 border-neutral-700 border-t-white flex items-center justify-center relative shadow-inner">
                 <div class="text-center">
-                  <span class="text-xl font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">82%</span>
+                  <span class="text-xl font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ paidPercentage }}%</span>
                   <p class="text-[9px] uppercase tracking-wider opacity-50 font-normal">Cobrado</p>
                 </div>
               </div>
@@ -268,21 +221,21 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                   <span class="w-2.5 h-2.5 rounded-full bg-white"></span>
                   <span class="font-medium">Pagadas</span>
                 </div>
-                <span class="font-semibold">82%</span>
+                <span class="font-semibold">{{ paidPercentage }}%</span>
               </div>
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                   <span class="w-2.5 h-2.5 rounded-full bg-neutral-300"></span>
                   <span class="font-medium">Enviadas / Pendientes</span>
                 </div>
-                <span class="font-semibold">12%</span>
+                <span class="font-semibold">{{ pendingPercentage }}%</span>
               </div>
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                   <span class="w-2.5 h-2.5 rounded-full bg-neutral-600"></span>
                   <span class="font-medium">Vencidas</span>
                 </div>
-                <span class="font-semibold">6%</span>
+                <span class="font-semibold">{{ overduePercentage }}%</span>
               </div>
             </div>
           </div>
@@ -1325,6 +1278,28 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       if (this.invFilterEndDate && (i.issuedAt || '') > this.invFilterEndDate) match = false;
       return match;
     });
+  }
+
+  get paidPercentage(): number {
+    const total = (this.invoices || []).reduce((sum, inv) => sum + (inv.total || 0), 0);
+    if (!total) return 0;
+    const paid = this.invoices.filter(i => i.status === 'Pagada' || i.status === 'PAGADA')
+                              .reduce((sum, inv) => sum + (inv.total || 0), 0);
+    return Math.round((paid / total) * 100);
+  }
+
+  get pendingPercentage(): number {
+    const total = (this.invoices || []).reduce((sum, inv) => sum + (inv.total || 0), 0);
+    if (!total) return 0;
+    const pending = this.invoices.filter(i => i.status === 'Enviada' || i.status === 'Borrador' || i.status === 'DRAFT' || i.status === 'ENVIADA')
+                                 .reduce((sum, inv) => sum + (inv.total || 0), 0);
+    return Math.round((pending / total) * 100);
+  }
+
+  get overduePercentage(): number {
+    const total = (this.invoices || []).reduce((sum, inv) => sum + (inv.total || 0), 0);
+    if (!total) return 0;
+    return Math.max(0, 100 - this.paidPercentage - this.pendingPercentage);
   }
 
   monthlyIncome: { month: string; amount: number; height: number }[] = [];

@@ -11,7 +11,6 @@ import { DashStatsComponent } from '../../components/dashboard/dash-stats/dash-s
 import { DashMessagesComponent } from '../../components/dashboard/dash-messages/dash-messages.component';
 import { DashLeadsComponent } from '../../components/dashboard/dash-leads/dash-leads.component';
 import { DashUsersComponent } from '../../components/dashboard/dash-users/dash-users.component';
-import { DashCustomizeComponent } from '../../components/dashboard/dash-customize/dash-customize.component';
 import { DashConfigComponent } from '../../components/dashboard/dash-config/dash-config.component';
 import { DashReportsComponent } from '../../components/dashboard/dash-reports/dash-reports.component';
 import { DashFinancesComponent } from '../../components/dashboard/dash-finances/dash-finances.component';
@@ -36,7 +35,6 @@ interface Tab {
     DashMessagesComponent,
     DashLeadsComponent,
     DashUsersComponent,
-    DashCustomizeComponent,
     DashConfigComponent,
     DashReportsComponent,
     DashFinancesComponent,
@@ -234,11 +232,6 @@ interface Tab {
               [theme]="currentTheme">
             </app-dash-users>
 
-            <app-dash-customize
-              *ngIf="activeTab === 'home'"
-              [theme]="currentTheme">
-            </app-dash-customize>
-
             <app-dash-config
               *ngIf="activeTab === 'config'"
               [theme]="currentTheme">
@@ -369,7 +362,6 @@ export class AdminComponent implements OnInit, OnDestroy {
     { id: 'messages',  name: 'Mensajes' },
     { id: 'leads',     name: 'Solicitudes' },
     { id: 'users',     name: 'Usuarios' },
-    { id: 'home',      name: 'Personalizar' },
     { id: 'reports',   name: 'Reportes' },
     { id: 'config',    name: 'Configuración' },
   ];
