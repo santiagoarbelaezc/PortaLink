@@ -437,7 +437,8 @@ export class PdfReportService {
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     doc.setCharSpace(1.5);
-    doc.text('CUENTA DE COBRO / ACUERDO DE PAGO', 14, 18);
+    const headerTitle = invoice.title ? `CUENTA DE COBRO: ${invoice.title.toUpperCase()}` : 'CUENTA DE COBRO / ACUERDO DE PAGO';
+    doc.text(headerTitle, 14, 18);
     doc.setCharSpace(0);
 
     // Invoice number on right

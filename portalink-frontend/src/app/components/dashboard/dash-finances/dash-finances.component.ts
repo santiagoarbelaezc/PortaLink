@@ -591,15 +591,22 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
       <!-- ══════════════════ FACTURAS ══════════════════ -->
       <ng-container *ngIf="subTab === 'facturas'">
 
-        <!-- New Invoice Form -->
-        <div *ngIf="showInvoiceForm" class="rounded-2xl border p-6 space-y-5"
+        <!-- New / Edit Invoice Form -->
+        <div *ngIf="showInvoiceForm && editingInvoice" class="rounded-2xl border p-6 space-y-5"
              [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700' : 'bg-neutral-50 border-neutral-300'">
           <h3 class="text-sm font-bold uppercase tracking-wide" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-            {{ editingInvoice?.id ? 'Editar Cuenta #' + editingInvoice?.id : 'Nueva Cuenta de Cobro' }}
+            {{ editingInvoice.id ? 'Editar Cuenta #' + editingInvoice.id : 'Nueva Cuenta de Cobro' }}
           </h3>
 
-          <!-- Client + dates -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Client + title + dates -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1.5 md:col-span-2">
+              <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Nombre / Etiqueta de la Cuenta de Cobro</label>
+              <input type="text" [(ngModel)]="editingInvoice.title" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                     placeholder="Ej: Desarrollo de Plataforma Web Enterprise, Mantenimiento Mensual, etc."
+                     class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none transition-colors font-semibold"
+                     [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500 focus:border-white focus:ring-1 focus:ring-white' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black focus:ring-1 focus:ring-black'">
+            </div>
             <div class="flex flex-col gap-1.5">
               <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Cliente *</label>
               <select [(ngModel)]="selectedClientId" (change)="onClientSelect()" [style.color-scheme]="isDark ? 'dark' : 'light'" class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none cursor-pointer transition-colors"
@@ -610,12 +617,12 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
             </div>
             <div class="flex flex-col gap-1.5">
               <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Fecha de emisión</label>
-              <input type="date" [(ngModel)]="editingInvoice!.issuedAt" [style.color-scheme]="isDark ? 'dark' : 'light'" class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none cursor-pointer transition-colors"
+              <input type="date" [(ngModel)]="editingInvoice.issuedAt" [style.color-scheme]="isDark ? 'dark' : 'light'" class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none cursor-pointer transition-colors"
                      [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white focus:border-white focus:ring-1 focus:ring-white' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black focus:ring-1 focus:ring-black'">
             </div>
-            <div class="flex flex-col gap-1.5">
+            <div class="flex flex-col gap-1.5 md:col-span-2">
               <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Fecha de vencimiento</label>
-              <input type="date" [(ngModel)]="editingInvoice!.dueAt" [style.color-scheme]="isDark ? 'dark' : 'light'" class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none cursor-pointer transition-colors"
+              <input type="date" [(ngModel)]="editingInvoice.dueAt" [style.color-scheme]="isDark ? 'dark' : 'light'" class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none cursor-pointer transition-colors"
                      [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white focus:border-white focus:ring-1 focus:ring-white' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black focus:ring-1 focus:ring-black'">
             </div>
           </div>
@@ -637,7 +644,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
           </div>
 
           <!-- Invoice items table -->
-          <div *ngIf="editingInvoice!.items?.length" class="rounded-xl border overflow-hidden"
+          <div *ngIf="editingInvoice.items?.length" class="rounded-xl border overflow-hidden"
                [ngClass]="isDark ? 'border-neutral-700' : 'border-neutral-200'">
             <div class="grid grid-cols-12 px-4 py-2 text-[10px] font-bold uppercase tracking-widest"
                  [ngClass]="isDark ? 'bg-neutral-800 text-neutral-400' : 'bg-neutral-100 text-neutral-400'">
@@ -647,7 +654,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
               <span class="col-span-2 text-right">Subtotal</span>
               <span class="col-span-1"></span>
             </div>
-            <div *ngFor="let item of editingInvoice!.items; let i = index" class="grid grid-cols-12 px-4 py-3 items-center border-t"
+            <div *ngFor="let item of editingInvoice.items; let i = index" class="grid grid-cols-12 px-4 py-3 items-center border-t"
                  [ngClass]="isDark ? 'border-neutral-700' : 'border-neutral-200'">
               <div class="col-span-5">
                 <p class="text-sm font-semibold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ item.serviceName }}</p>
@@ -681,7 +688,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex flex-col gap-1.5">
               <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Notas / Términos de pago</label>
-              <textarea [(ngModel)]="editingInvoice!.notes" rows="3" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="Ej: Pago a 15 días, transferencia bancaria..."
+              <textarea [(ngModel)]="editingInvoice.notes" rows="3" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="Ej: Pago a 15 días, transferencia bancaria..."
                         class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none resize-none transition-colors"
                         [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500 focus:border-white focus:ring-1 focus:ring-white' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black focus:ring-1 focus:ring-black'"></textarea>
             </div>
@@ -689,22 +696,22 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                  [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700' : 'bg-white border-neutral-200'">
               <div class="flex justify-between text-sm">
                 <span [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Subtotal</span>
-                <span class="font-semibold" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ formatCOP(editingInvoice!.subtotal || 0) }}</span>
+                <span class="font-semibold" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ formatCOP(editingInvoice.subtotal || 0) }}</span>
               </div>
               <div class="flex items-center justify-between text-sm">
                 <div class="flex items-center gap-2">
                   <span [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">IVA</span>
-                  <input type="number" [(ngModel)]="editingInvoice!.taxRate" min="0" max="100" (change)="recalcInvoice()" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                  <input type="number" [(ngModel)]="editingInvoice.taxRate" min="0" max="100" (change)="recalcInvoice()" [style.color-scheme]="isDark ? 'dark' : 'light'"
                          class="w-14 text-center px-2 py-0.5 rounded-lg text-xs border outline-none transition-colors"
                          [ngClass]="isDark ? 'bg-neutral-700 border-neutral-600 text-white focus:border-white focus:ring-1 focus:ring-white' : 'bg-neutral-100 border-neutral-300 text-neutral-900 focus:border-black focus:ring-1 focus:ring-black'">
                   <span [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">%</span>
                 </div>
-                <span class="font-semibold" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ formatCOP(editingInvoice!.taxAmount || 0) }}</span>
+                <span class="font-semibold" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ formatCOP(editingInvoice.taxAmount || 0) }}</span>
               </div>
               <div class="border-t pt-3 flex justify-between"
                    [ngClass]="isDark ? 'border-neutral-700' : 'border-neutral-200'">
                 <span class="text-sm font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Total</span>
-                <span class="text-lg font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(editingInvoice!.total || 0) }}</span>
+                <span class="text-lg font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(editingInvoice.total || 0) }}</span>
               </div>
             </div>
           </div>
@@ -720,12 +727,24 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
             </button>
             <button (click)="showInvoiceForm = false" class="px-4 py-2 rounded-xl text-sm font-bold uppercase tracking-widest border cursor-pointer"
                     [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:text-white' : 'border-neutral-300 text-neutral-500 hover:text-neutral-900'">Cancelar</button>
-            <button (click)="saveInvoice('Borrador')" class="px-5 py-2 rounded-xl text-sm font-bold uppercase tracking-widest border cursor-pointer"
-                    [ngClass]="isDark ? 'border-neutral-600 text-neutral-300 hover:bg-neutral-800' : 'border-neutral-300 text-neutral-600 hover:bg-neutral-100'">Guardar Borrador</button>
-            <button (click)="saveInvoice('Enviada')" class="px-5 py-2 rounded-xl text-sm font-bold uppercase tracking-widest cursor-pointer border transition-all shadow-lg"
-                    [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200 border-white shadow-white/10' : 'bg-black text-white hover:bg-neutral-800 border-black shadow-black/10'">Guardar como Enviada</button>
-            <button (click)="saveInvoice('Pagada')" class="px-5 py-2 rounded-xl text-sm font-bold uppercase tracking-widest cursor-pointer border"
-                    [ngClass]="isDark ? 'border-neutral-600 bg-neutral-900 text-white hover:bg-neutral-800' : 'border-neutral-300 bg-neutral-100 text-neutral-900 hover:bg-neutral-200'">Guardar y Registrar Pago</button>
+            <!-- Modo Edición: Botón de Actualizar -->
+            <ng-container *ngIf="editingInvoice.id">
+              <button (click)="saveInvoice(editingInvoice.status || 'Borrador')"
+                      class="px-6 py-2 rounded-xl text-sm font-bold uppercase tracking-widest cursor-pointer border transition-all shadow-lg"
+                      [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200 border-white shadow-white/10' : 'bg-black text-white hover:bg-neutral-800 border-black shadow-black/10'">
+                Actualizar Cuenta
+              </button>
+            </ng-container>
+
+            <!-- Modo Creación: Botones de Guardar -->
+            <ng-container *ngIf="!editingInvoice.id">
+              <button (click)="saveInvoice('Borrador')" class="px-5 py-2 rounded-xl text-sm font-bold uppercase tracking-widest border cursor-pointer"
+                      [ngClass]="isDark ? 'border-neutral-600 text-neutral-300 hover:bg-neutral-800' : 'border-neutral-300 text-neutral-600 hover:bg-neutral-100'">Guardar Borrador</button>
+              <button (click)="saveInvoice('Enviada')" class="px-5 py-2 rounded-xl text-sm font-bold uppercase tracking-widest cursor-pointer border transition-all shadow-lg"
+                      [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200 border-white shadow-white/10' : 'bg-black text-white hover:bg-neutral-800 border-black shadow-black/10'">Guardar como Enviada</button>
+              <button (click)="saveInvoice('Pagada')" class="px-5 py-2 rounded-xl text-sm font-bold uppercase tracking-widest cursor-pointer border"
+                      [ngClass]="isDark ? 'border-neutral-600 bg-neutral-900 text-white hover:bg-neutral-800' : 'border-neutral-300 bg-neutral-100 text-neutral-900 hover:bg-neutral-200'">Guardar y Registrar Pago</button>
+            </ng-container>
           </div>
         </div>
 
@@ -997,8 +1016,9 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                 </div>
 
                 <div class="col-span-3">
-                  <p class="text-sm font-semibold truncate" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ inv.clientName }}</p>
-                  <p class="text-xs truncate" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ inv.clientCompany }}</p>
+                  <p *ngIf="inv.title" class="text-sm font-extrabold truncate" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ inv.title }}</p>
+                  <p class="text-xs truncate" [ngClass]="inv.title ? (isDark ? 'text-neutral-400 font-medium' : 'text-neutral-600 font-medium') : (isDark ? 'text-white font-bold text-sm' : 'text-neutral-900 font-bold text-sm')">{{ inv.clientName }}</p>
+                  <p class="text-[11px] truncate opacity-60" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ inv.clientCompany }}</p>
                 </div>
 
                 <div class="col-span-2 text-right">
@@ -1332,6 +1352,25 @@ export class DashFinancesComponent implements OnInit, OnChanges {
     return Math.max(0, total - paid);
   }
 
+  formatStatus(rawStatus: string, dueAt?: string, paidAmount?: number, totalAmount?: number): Invoice['status'] {
+    if (!rawStatus) return 'Enviada';
+    const s = String(rawStatus).toUpperCase();
+    if (s === 'PAGADA' || s === 'PAGADO') return 'Pagada';
+    if (s === 'PARCIAL' || (paidAmount && paidAmount > 0 && totalAmount && paidAmount < totalAmount)) return 'Parcial';
+    if (s === 'DRAFT' || s === 'BORRADOR') return 'Borrador';
+    
+    if (dueAt) {
+      const today = new Date().toISOString().split('T')[0];
+      if (dueAt < today) {
+        return 'Vencida';
+      }
+    }
+
+    if (s === 'VENCIDA' || s === 'VENCIDO') return 'Vencida';
+    if (s === 'ENVIADA' || s === 'ENVIADO') return 'Enviada';
+    return 'Enviada';
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes['theme']) {
       this.cdr.detectChanges();
@@ -1524,7 +1563,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       let match = true;
       if (this.invFilterCompany) {
          const term = this.invFilterCompany.toLowerCase();
-         if (!i.clientCompany?.toLowerCase().includes(term) && !(i.clientName || '').toLowerCase().includes(term)) {
+         if (!i.clientCompany?.toLowerCase().includes(term) && !(i.clientName || '').toLowerCase().includes(term) && !(i.title || '').toLowerCase().includes(term)) {
            match = false;
          }
       }
@@ -1625,26 +1664,32 @@ export class DashFinancesComponent implements OnInit, OnChanges {
 
       this.clients = clientsRes.clients.map((c: any) => ({ ...c, createdAt: c.created_at })) || [];
       this.allServices = servicesRes.services.map((s: any) => ({ ...s, unitPrice: Number(s.price) })) || [];
-      this.invoices = invoicesRes.invoices.map((i: any) => ({
-        id: i.id,
-        invoice_number: i.invoice_number || i.id,
-        clientId: i.client_id,
-        clientName: i.client_name,
-        clientCompany: i.company || '',
-        total: Number(i.total_amount),
-        total_amount: Number(i.total_amount),
-        subtotal: Number(i.subtotal),
-        paid_amount: Number(i.paid_amount || 0),
-        pending_amount: Number(i.pending_amount !== undefined ? i.pending_amount : Math.max(0, Number(i.total_amount) - Number(i.paid_amount || 0))),
-        status: i.status === 'DRAFT' ? 'Borrador' : (i.status === 'ENVIADA' ? 'Enviada' : (i.status === 'PAGADA' ? 'Pagada' : (i.status === 'PARCIAL' ? 'Parcial' : 'Vencida'))),
-        issuedAt: i.issue_date ? i.issue_date.split('T')[0] : '',
-        dueAt: i.due_date ? i.due_date.split('T')[0] : '',
-        paidAt: i.paid_at ? i.paid_at.split('T')[0] : (i.updated_at ? i.updated_at.split('T')[0] : ''),
-        paymentMethod: i.payment_method || '',
-        paymentNotes: i.payment_notes || '',
-        payments: i.payments || [],
-        items: []
-      })) || [];
+      this.invoices = invoicesRes.invoices.map((i: any) => {
+        const total = Number(i.total_amount || i.total || 0);
+        const paid = Number(i.paid_amount || 0);
+        const dueAt = i.due_date ? i.due_date.split('T')[0] : '';
+        return {
+          id: i.id,
+          invoice_number: i.invoice_number || i.id,
+          title: i.title || '',
+          clientId: i.client_id,
+          clientName: i.client_name,
+          clientCompany: i.company || '',
+          total: total,
+          total_amount: total,
+          subtotal: Number(i.subtotal),
+          paid_amount: paid,
+          pending_amount: Number(i.pending_amount !== undefined ? i.pending_amount : Math.max(0, total - paid)),
+          status: this.formatStatus(i.status, dueAt, paid, total),
+          issuedAt: i.issue_date ? i.issue_date.split('T')[0] : '',
+          dueAt: dueAt,
+          paidAt: i.paid_at ? i.paid_at.split('T')[0] : (i.updated_at ? i.updated_at.split('T')[0] : ''),
+          paymentMethod: i.payment_method || '',
+          paymentNotes: i.payment_notes || '',
+          payments: i.payments || [],
+          items: []
+        };
+      }) || [];
 
       await this.buildKpis();
       this.buildReports();
@@ -1736,16 +1781,27 @@ export class DashFinancesComponent implements OnInit, OnChanges {
         { label: 'Clientes Facturados', value: String(kpi.clientes_facturados || 0) },
       ];
 
-      this.recentInvoices = (dashboardRes?.ledger || []).map((i: any) => ({
-        id: i.id,
-        clientId: i.client_id,
-        clientName: i.client_name,
-        total: Number(i.total_amount),
-        status: i.status === 'DRAFT' ? 'Borrador' : (i.status === 'ENVIADA' ? 'Enviada' : (i.status === 'PAGADA' ? 'Pagada' : 'Vencida')),
-        paidAt: i.paid_at ? i.paid_at.split('T')[0] : (i.updated_at ? i.updated_at.split('T')[0] : ''),
-        paymentMethod: i.payment_method || '',
-        paymentNotes: i.payment_notes || ''
-      }));
+      this.recentInvoices = (dashboardRes?.ledger || []).map((i: any) => {
+        const total = Number(i.total_amount || i.total || 0);
+        const paid = Number(i.paid_amount || 0);
+        const dueAt = i.due_date ? i.due_date.split('T')[0] : '';
+        return {
+          id: i.id,
+          invoice_number: i.invoice_number || i.id,
+          title: i.title || '',
+          clientId: i.client_id,
+          clientName: i.client_name,
+          clientCompany: i.company || '',
+          total: total,
+          total_amount: total,
+          paid_amount: paid,
+          pending_amount: Math.max(0, total - paid),
+          status: this.formatStatus(i.status, dueAt, paid, total),
+          paidAt: i.paid_at ? i.paid_at.split('T')[0] : (i.updated_at ? i.updated_at.split('T')[0] : ''),
+          paymentMethod: i.payment_method || '',
+          paymentNotes: i.payment_notes || ''
+        };
+      });
     } catch (e) {
       console.error('Error building KPIs:', e);
     } finally {
@@ -1972,7 +2028,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
   openNewInvoice() {
     const today = new Date().toISOString().split('T')[0];
     const due = new Date(Date.now() + 15 * 24 * 3600 * 1000).toISOString().split('T')[0];
-    this.editingInvoice = { id: '', clientId: '', clientName: '', clientEmail: '', items: [], subtotal: 0, taxRate: 0, taxAmount: 0, total: 0, status: 'Borrador', notes: '', issuedAt: today, dueAt: due };
+    this.editingInvoice = { id: '', title: '', clientId: '', clientName: '', clientEmail: '', items: [], subtotal: 0, taxRate: 0, taxAmount: 0, total: 0, status: 'Borrador', notes: '', issuedAt: today, dueAt: due };
     this.selectedClientId = '';
     this.serviceToAdd = '';
     this.showInvoiceForm = true;
@@ -1980,6 +2036,15 @@ export class DashFinancesComponent implements OnInit, OnChanges {
     this.cdr.detectChanges();
   }
   async editInvoice(inv: Invoice) {
+    this.subTab = 'facturas';
+    this.editingInvoice = {
+      ...inv,
+      id: String(inv.id),
+      title: inv.title || '',
+      clientId: inv.clientId || inv.client_id || '',
+      items: (inv.items || []).map(i => ({ ...i }))
+    };
+    this.selectedClientId = String(this.editingInvoice.clientId || '');
     this.showInvoiceForm = true;
     this.isLoading = true;
     this.cdr.detectChanges();
@@ -1994,6 +2059,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
         this.editingInvoice = {
           ...inv,
           id: String(rawInv.id),
+          title: rawInv.title !== null && rawInv.title !== undefined ? rawInv.title : (inv.title || ''),
           clientId: rawInv.client_id || inv.clientId,
           clientName: rawInv.client_name || inv.clientName,
           clientCompany: rawInv.company || inv.clientCompany,
@@ -2021,15 +2087,11 @@ export class DashFinancesComponent implements OnInit, OnChanges {
              };
           })
         };
-      } else {
-        this.editingInvoice = { ...inv, items: (inv.items || []).map(i => ({ ...i })) };
+        this.selectedClientId = String(this.editingInvoice.clientId || '');
+        this.recalcInvoice();
       }
-      this.selectedClientId = this.editingInvoice.clientId || inv.clientId || '';
-      this.recalcInvoice();
     } catch (e) {
       console.error('Error loading invoice details:', e);
-      this.editingInvoice = { ...inv, items: (inv.items || []).map(i => ({ ...i })) };
-      this.selectedClientId = inv.clientId || '';
     } finally {
       this.isLoading = false;
       this.serviceToAdd = '';
@@ -2091,9 +2153,11 @@ export class DashFinancesComponent implements OnInit, OnChanges {
         }
     }
 
-    const initialStatus = status === 'Pagada' ? 'Enviada' : status;
-    this.editingInvoice.status = initialStatus;
     const isEdit = !!(this.editingInvoice?.id && this.editingInvoice.id !== '');
+    if (!isEdit) {
+      const initialStatus = status === 'Pagada' ? 'Enviada' : status;
+      this.editingInvoice.status = initialStatus;
+    }
     try {
       const res = await firstValueFrom(this.financeService.saveInvoice(this.editingInvoice as Invoice));
       this.showInvoiceForm = false;
@@ -2335,16 +2399,21 @@ export class DashFinancesComponent implements OnInit, OnChanges {
     return `COP ${formatted}`;
   }
 
-  getStatusClass(status: string) {
-    const map: Record<string, string> = {
-      'Borrador': 'bg-neutral-500/20 text-neutral-400 border border-neutral-500/30',
-      'Enviada': 'bg-blue-500/20 text-blue-400 border border-blue-500/30',
-      'Parcial': 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
-      'PARCIAL': 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
-      'Pagada': 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
-      'Vencida': 'bg-red-500/20 text-red-400 border border-red-500/30',
-    };
-    return map[status] || 'bg-neutral-500/20 text-neutral-400';
+  getStatusClass(status: string): string {
+    const st = String(status || '').toUpperCase();
+    if (st === 'PAGADA' || st === 'PAGADO') {
+      return this.isDark ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400' : 'border-emerald-200 bg-emerald-50 text-emerald-700';
+    }
+    if (st === 'PARCIAL' || st === 'ABONADA') {
+      return this.isDark ? 'border-emerald-400/30 bg-emerald-500/15 text-emerald-300' : 'border-emerald-300 bg-emerald-100/60 text-emerald-800';
+    }
+    if (st === 'ENVIADA' || st === 'ENVIADO') {
+      return this.isDark ? 'border-blue-500/30 bg-blue-500/10 text-blue-400' : 'border-blue-200 bg-blue-50 text-blue-700';
+    }
+    if (st === 'VENCIDA' || st === 'VENCIDO') {
+      return this.isDark ? 'border-rose-500/30 bg-rose-500/10 text-rose-400' : 'border-rose-200 bg-rose-50 text-rose-700';
+    }
+    return this.isDark ? 'border-neutral-700 bg-neutral-800 text-neutral-300' : 'border-neutral-200 bg-neutral-100 text-neutral-700';
   }
 
   getCategoryClass(cat?: string) {

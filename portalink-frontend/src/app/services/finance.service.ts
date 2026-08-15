@@ -51,6 +51,7 @@ export interface InvoicePayment {
 
 export interface Invoice {
   id?: string;
+  title?: string;
   client_id?: string;
   clientId?: string; // UI alias
   clientName?: string; // UI alias
