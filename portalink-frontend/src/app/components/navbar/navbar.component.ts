@@ -518,7 +518,7 @@ export class NavbarComponent implements OnInit {
   };
 
   currentLanguage = 'es';
-  currentTheme = 'dark';
+  currentTheme = 'light';
   activeSection = '#hero';
 
   showLoginModal = false;
@@ -640,11 +640,7 @@ export class NavbarComponent implements OnInit {
 
   constructor() {
     if (typeof window !== 'undefined') {
-      let savedTheme = localStorage.getItem('portfolio-theme') || 'light';
-      if (savedTheme === 'red') {
-        savedTheme = 'dark';
-      }
-      this.setTheme(savedTheme);
+      this.setTheme('light');
       this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
 
       // Listen to auth changes to update navigation links (especially mobile profile link)
@@ -868,23 +864,19 @@ export class NavbarComponent implements OnInit {
     this.updatePillPosition();
   }
 
-  setTheme(theme: string) {
-    this.currentTheme = theme;
+  setTheme(theme: string = 'light') {
+    this.currentTheme = 'light';
     if (typeof document !== 'undefined') {
       const root = document.documentElement;
-      root.classList.remove('theme-dark', 'theme-light', 'theme-red');
-      if (theme !== 'dark') {
-        root.classList.add(`theme-${theme}`);
-      }
-      localStorage.setItem('portfolio-theme', theme);
-      window.dispatchEvent(new CustomEvent('portfolio-theme-change', { detail: { theme: theme } }));
+      root.classList.remove('theme-dark', 'theme-red');
+      root.classList.add('theme-light');
+      localStorage.setItem('portfolio-theme', 'light');
+      window.dispatchEvent(new CustomEvent('portfolio-theme-change', { detail: { theme: 'light' } }));
     }
   }
 
   toggleTheme() {
-    const nextTheme = this.currentTheme === 'light' ? 'dark' : 'light';
-    this.setTheme(nextTheme);
-    this.analyticsService.recordThemeSelection(nextTheme);
+    this.setTheme('light');
   }
 
   toggleLanguage() {

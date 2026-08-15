@@ -23,19 +23,20 @@ interface Lead {
     <div class="space-y-6 tab-enter">
 
       <!-- Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4"
+           [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
         <div>
-          <p class="text-xs font-bold uppercase tracking-[0.3em]"
+          <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em]"
              [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Clientes Interesados</p>
-          <h2 class="text-4xl font-bold uppercase tracking-tight mt-0.5"
+          <h2 class="text-3xl sm:text-4xl font-headline font-bold uppercase tracking-tight mt-0.5"
               [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Solicitudes</h2>
         </div>
 
         <!-- Summary chips -->
         <div class="flex gap-2 flex-wrap">
           <span *ngFor="let s of statusSummary"
-                class="text-xs font-bold px-3 py-1.5 rounded-full border"
-                [ngClass]="isDark ? 'border-neutral-700 text-neutral-400' : 'border-neutral-200 text-neutral-500'">
+                class="text-xs font-headline font-semibold tracking-wider px-3.5 py-1.5 rounded-full border shadow-xs"
+                [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-900/60' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80'">
             {{ s.label }}: {{ s.count }}
           </span>
         </div>
@@ -133,7 +134,7 @@ interface Lead {
   `]
 })
 export class DashLeadsComponent implements OnInit {
-  @Input() theme = 'dark';
+  @Input() theme = 'light';
   @Output() dataChange = new EventEmitter<void>();
 
   leadsList: Lead[] = [

@@ -761,7 +761,7 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     'orgánico': 'organic'
   };
 
-  currentTheme = 'dark';
+  currentTheme = 'light';
   isInfoModalOpen = false;
   activeDesign: string | null = null;
   isDesigning: boolean = false;
@@ -828,9 +828,7 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     if (typeof document !== 'undefined') {
       const root = document.documentElement;
       root.classList.remove('theme-dark', 'theme-light', 'theme-red');
-      if (nextTheme !== 'dark') {
-        root.classList.add(`theme-${nextTheme}`);
-      }
+      root.classList.add(`theme-${nextTheme}`);
       localStorage.setItem('portfolio-theme', nextTheme);
       window.dispatchEvent(new CustomEvent('portfolio-theme-change', { detail: { theme: nextTheme } }));
     }

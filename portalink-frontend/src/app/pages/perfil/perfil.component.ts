@@ -469,9 +469,9 @@ export class PerfilComponent implements OnInit, OnDestroy {
 
   get isDark(): boolean {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('portfolio-theme') !== 'light';
+      return localStorage.getItem('portfolio-theme') === 'dark';
     }
-    return true;
+    return false;
   }
 
   ngOnInit() {

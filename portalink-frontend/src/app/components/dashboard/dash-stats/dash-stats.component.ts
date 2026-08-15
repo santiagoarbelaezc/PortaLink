@@ -16,27 +16,27 @@ interface SectionRow {
     <div class="space-y-6 tab-enter">
 
       <!-- Header -->
-      <div>
-        <p class="text-xs font-bold uppercase tracking-[0.3em]"
+      <div class="border-b pb-4" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+        <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em]"
            [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Vista Detallada</p>
-        <h2 class="text-4xl font-bold uppercase tracking-tight mt-0.5"
+        <h2 class="text-3xl sm:text-4xl font-headline font-bold uppercase tracking-tight mt-0.5"
             [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Estadísticas</h2>
       </div>
 
       <!-- Summary bar -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5">
         <div *ngFor="let s of summaryCards"
-             class="rounded-xl border p-4"
-             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
-          <p class="text-[10px] uppercase tracking-widest font-bold"
+             class="rounded-[24px] border p-5 transition-all duration-300 hover:scale-[1.01] shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
+          <p class="text-[10px] font-headline font-semibold uppercase tracking-wider opacity-60"
              [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ s.label }}</p>
-          <p class="text-3xl font-bold mt-1" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ s.value }}</p>
+          <p class="text-3xl sm:text-4xl font-headline font-bold mt-1 tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ s.value }}</p>
         </div>
       </div>
 
       <!-- Table -->
-      <div class="rounded-2xl border overflow-hidden"
-           [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
+      <div class="rounded-[28px] border overflow-hidden shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+           [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
 
         <!-- Table header -->
         <div class="grid grid-cols-12 px-5 py-3 text-[10px] font-bold uppercase tracking-widest border-b"
@@ -191,7 +191,7 @@ interface SectionRow {
   `]
 })
 export class DashStatsComponent implements OnInit {
-  @Input() theme = 'dark';
+  @Input() theme = 'light';
   private analyticsService = inject(AnalyticsService);
 
   metrics: SystemMetrics = {

@@ -23,22 +23,23 @@ interface User {
     <div class="space-y-6 tab-enter">
 
       <!-- Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4"
+           [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
         <div>
-          <p class="text-xs font-bold uppercase tracking-[0.3em]"
+          <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em]"
              [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Gestión de Cuentas</p>
-          <h2 class="text-4xl font-bold uppercase tracking-tight mt-0.5"
+          <h2 class="text-3xl sm:text-4xl font-headline font-bold uppercase tracking-tight mt-0.5"
               [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Usuarios</h2>
         </div>
           <div class="flex gap-3 items-center">
             <button (click)="downloadPdf()"
                     [disabled]="pdfLoading"
-                    class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest border transition-all duration-200 cursor-pointer"
-                    [ngClass]="isDark ? 'border-red-900/60 text-red-400 hover:bg-red-950/40 hover:border-red-700' : 'border-red-200 text-red-600 hover:bg-red-50'">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider border transition-all duration-300 cursor-pointer hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+                    [ngClass]="isDark ? 'border-neutral-700 text-white bg-white/10 hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-800 bg-neutral-100 hover:bg-neutral-200'">
+              <svg class="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              {{ pdfLoading ? 'Generando...' : 'PDF' }}
+              {{ pdfLoading ? 'Generando...' : 'Exportar PDF' }}
             </button>
             <div class="text-center px-4 py-2 rounded-xl border"
                  [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900/60' : 'border-neutral-200 bg-white'">
@@ -167,7 +168,7 @@ interface User {
   `]
 })
 export class DashUsersComponent implements OnInit {
-  @Input() theme = 'dark';
+  @Input() theme = 'light';
   private pdfService = inject(PdfReportService);
   private authService = inject(AuthService);
   pdfLoading = false;

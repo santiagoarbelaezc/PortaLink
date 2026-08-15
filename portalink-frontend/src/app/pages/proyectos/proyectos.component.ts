@@ -29,7 +29,7 @@ import * as AOS from 'aos';
   ],
   template: `
     <div class="dynamic-bg"></div>
-    <main class="relative text-white" *ngIf="portfolioData()">
+    <main class="relative text-neutral-900" *ngIf="portfolioData()">
       <app-hero-video></app-hero-video>
       
       <!-- ═══════════════════════════════════════════════════════════ -->

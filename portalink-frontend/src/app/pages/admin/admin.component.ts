@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { MessagesService } from '../../services/messages.service';
@@ -350,12 +350,12 @@ interface Tab {
     ::ng-deep .admin-shell .bg-black { background-color: #000000 !important; }
   `]
 })
-export class AdminComponent implements OnInit {
+export class AdminComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private messagesService = inject(MessagesService);
 
   activeTab = 'dashboard';
-  currentTheme = 'dark';
+  currentTheme = 'light';
   isSidebarCollapsed = false;
   isMobileDrawerOpen = false;
   unreadMessages = 0;
@@ -383,7 +383,16 @@ export class AdminComponent implements OnInit {
     if (saved) this.currentTheme = saved;
     const savedTab = localStorage.getItem('portalink_admin_tab');
     if (savedTab) this.activeTab = savedTab;
+    this.applyAdminTheme();
     this.refreshBadges();
+  }
+
+  applyAdminTheme() {
+    if (typeof document !== 'undefined') {
+      const root = document.documentElement;
+      root.classList.remove('theme-dark', 'theme-light', 'theme-red');
+      root.classList.add(`theme-${this.currentTheme}`);
+    }
   }
 
   handleToggleSidebar() {
@@ -410,6 +419,15 @@ export class AdminComponent implements OnInit {
   toggleTheme() {
     this.currentTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
     localStorage.setItem('portalink_admin_theme', this.currentTheme);
+    this.applyAdminTheme();
+  }
+
+  ngOnDestroy() {
+    if (typeof document !== 'undefined') {
+      const root = document.documentElement;
+      root.classList.remove('theme-dark', 'theme-red');
+      root.classList.add('theme-light');
+    }
   }
 
   refreshBadges() {
@@ -437,12 +455,12 @@ export class AdminComponent implements OnInit {
     const isActive = this.activeTab === tabId;
     if (this.isDark) {
       return isActive
-        ? 'bg-white text-black'
-        : 'text-neutral-500 hover:text-neutral-200 hover:bg-neutral-800/60';
+        ? 'bg-white text-black font-headline font-semibold shadow-sm rounded-xl'
+        : 'text-neutral-400 font-headline font-medium hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200';
     } else {
       return isActive
-        ? 'bg-neutral-900 text-white'
-        : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100';
+        ? 'bg-[#09090b] text-white font-headline font-semibold shadow-sm rounded-xl'
+        : 'text-neutral-600 font-headline font-medium hover:text-neutral-900 hover:bg-neutral-100 rounded-xl transition-all duration-200';
     }
   }
 }

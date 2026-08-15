@@ -27,10 +27,10 @@ export interface Transaction {
         <div>
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <p class="text-xs font-medium uppercase tracking-widest opacity-60"
-               [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Módulo Ejecutivo</p>
+            <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em]"
+               [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Módulo Ejecutivo</p>
           </div>
-          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight mt-1"
+          <h2 class="text-2xl sm:text-3xl font-headline font-bold tracking-tight mt-1"
               [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
             Control Financiero
           </h2>
@@ -39,24 +39,24 @@ export interface Transaction {
         <!-- Controls: Currency & Period -->
         <div class="flex flex-wrap items-center gap-3">
           <!-- Currency Toggle -->
-          <div class="flex items-center rounded-xl p-1 border"
-               [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800' : 'bg-neutral-100 border-neutral-200'">
+          <div class="flex items-center rounded-full p-1 border"
+               [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800' : 'bg-neutral-100/80 border-neutral-200'">
             <button (click)="currency = 'COP'"
-                    class="px-3.5 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer"
-                    [ngClass]="currency === 'COP' ? (isDark ? 'bg-white text-black shadow' : 'bg-neutral-900 text-white shadow') : 'opacity-50'">
+                    class="px-4 py-1.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider transition-all duration-300 cursor-pointer"
+                    [ngClass]="currency === 'COP' ? (isDark ? 'bg-white text-black shadow-sm' : 'bg-[#09090b] text-white shadow-sm') : 'opacity-50'">
               COP ($)
             </button>
             <button (click)="currency = 'USD'"
-                    class="px-3.5 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer"
-                    [ngClass]="currency === 'USD' ? (isDark ? 'bg-white text-black shadow' : 'bg-neutral-900 text-white shadow') : 'opacity-50'">
+                    class="px-4 py-1.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider transition-all duration-300 cursor-pointer"
+                    [ngClass]="currency === 'USD' ? (isDark ? 'bg-white text-black shadow-sm' : 'bg-[#09090b] text-white shadow-sm') : 'opacity-50'">
               USD ($)
             </button>
           </div>
 
           <!-- Period Filter -->
           <select [(ngModel)]="period"
-                  class="px-4 py-2 rounded-xl text-xs font-medium uppercase tracking-wider border outline-none cursor-pointer"
-                  [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-neutral-50 border-neutral-200 text-neutral-900'">
+                  class="px-4 py-2 rounded-full text-xs font-headline font-semibold uppercase tracking-wider border outline-none cursor-pointer"
+                  [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
             <option value="2026-YTD">Año 2026 (YTD)</option>
             <option value="Q2-2026">Trimestre Q2 2026</option>
             <option value="MES-ACTUAL">Mes Actual</option>
@@ -64,8 +64,8 @@ export interface Transaction {
 
           <!-- Export Report Button -->
           <button (click)="exportReport()"
-                  class="px-4 py-2 rounded-xl text-xs font-medium uppercase tracking-wider border transition-all duration-200 cursor-pointer flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
-                  [ngClass]="isDark ? 'border-neutral-700 text-neutral-200 hover:bg-neutral-800' : 'border-neutral-300 text-neutral-700 hover:bg-neutral-100'">
+                  class="px-5 py-2 rounded-full text-xs font-headline font-semibold uppercase tracking-wider border transition-all duration-300 cursor-pointer flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
+                  [ngClass]="isDark ? 'border-neutral-700 text-neutral-200 hover:bg-neutral-800' : 'border-neutral-200 text-neutral-800 bg-neutral-100 hover:bg-neutral-200'">
             <svg class="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
             </svg>
@@ -80,23 +80,23 @@ export interface Transaction {
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
 
         <!-- 1. Total Ingresos Anuales (ARR) -->
-        <div class="rounded-2xl border p-5 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-neutral-600"
-             [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
+        <div class="rounded-[24px] border p-6 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-medium uppercase tracking-wider opacity-60">Ingresos Anuales (ARR)</span>
-            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full border border-emerald-500/30 text-emerald-400 bg-emerald-500/10">
+            <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Ingresos Anuales (ARR)</span>
+            <span class="text-[10px] font-headline font-semibold px-2.5 py-0.5 rounded-full border border-emerald-500/30 text-emerald-500 bg-emerald-500/10 tracking-wider">
               +18.5% vs 2025
             </span>
           </div>
           <div class="space-y-1">
-            <p class="text-xl sm:text-2xl font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+            <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
               {{ formatValue(48000000) }}
             </p>
             <p class="text-xs opacity-50 font-normal">Facturación anual proyectada</p>
           </div>
           <!-- Sparkline Wave SVG -->
           <div class="pt-2">
-            <svg class="w-full h-7 stroke-current text-white/40 opacity-70 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 100 25">
+            <svg class="w-full h-7 stroke-current text-emerald-500/40 opacity-70 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 100 25">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M0 20 Q 20 18, 40 12 T 80 5 T 100 2" />
             </svg>
           </div>
@@ -554,7 +554,7 @@ export interface Transaction {
   `]
 })
 export class DashFinancialControlComponent {
-  @Input() theme = 'dark';
+  @Input() theme = 'light';
 
   currency: 'COP' | 'USD' = 'COP';
   period = '2026-YTD';

@@ -16,32 +16,33 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
     <div class="space-y-5 tab-enter">
 
       <!-- Header -->
-      <div class="flex items-start justify-between">
+      <div class="flex items-start justify-between border-b pb-4"
+           [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
         <div>
-          <p class="text-xs font-bold uppercase tracking-[0.3em]"
+          <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em]"
              [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Gestión Financiera</p>
-          <h2 class="text-4xl font-bold uppercase tracking-tight mt-0.5"
+          <h2 class="text-3xl sm:text-4xl font-headline font-bold uppercase tracking-tight mt-0.5"
               [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Finanzas</h2>
         </div>
         <button *ngIf="subTab === 'facturas'" (click)="openNewInvoice()"
-                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold uppercase tracking-widest transition-all duration-200 cursor-pointer"
-                [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-neutral-700'">
+                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider transition-all duration-300 cursor-pointer hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+                [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
           </svg>
           Nueva Cuenta de Cobro
         </button>
         <button *ngIf="subTab === 'clientes'" (click)="openNewClient()"
-                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold uppercase tracking-widest transition-all duration-200 cursor-pointer"
-                [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-neutral-700'">
+                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider transition-all duration-300 cursor-pointer hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+                [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
           </svg>
           Nuevo Cliente
         </button>
         <button *ngIf="subTab === 'servicios'" (click)="openNewService()"
-                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold uppercase tracking-widest transition-all duration-200 cursor-pointer"
-                [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-neutral-700'">
+                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider transition-all duration-300 cursor-pointer hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+                [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
           </svg>
@@ -50,13 +51,13 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
       </div>
 
       <!-- Sub-tabs -->
-      <div class="flex gap-1 rounded-xl p-1 border"
-           [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-neutral-100 border-neutral-200'">
+      <div class="flex gap-1.5 rounded-full p-1.5 border"
+           [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800' : 'bg-neutral-100/80 border-neutral-200/80'">
         <button *ngFor="let t of subTabs" (click)="subTab = t.id"
-                class="flex-1 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all duration-200 cursor-pointer"
+                class="flex-1 py-2 text-xs font-headline font-semibold uppercase tracking-wider rounded-full transition-all duration-300 cursor-pointer shadow-xs"
                 [ngClass]="subTab === t.id
-                  ? (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white')
-                  : (isDark ? 'text-neutral-500 hover:text-neutral-200' : 'text-neutral-400 hover:text-neutral-700')">
+                  ? (isDark ? 'bg-white text-black' : 'bg-[#09090b] text-white')
+                  : (isDark ? 'text-neutral-400 hover:text-white hover:bg-white/10' : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200/60')">
           {{ t.label }}
         </button>
       </div>
@@ -1151,7 +1152,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
   `]
 })
 export class DashFinancesComponent implements OnInit, OnChanges {
-  @Input() theme = 'dark';
+  @Input() theme = 'light';
 
   private financeService = inject(FinanceService);
   private pdfService = inject(PdfReportService);

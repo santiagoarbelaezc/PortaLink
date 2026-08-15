@@ -12,22 +12,23 @@ import { MessagesService, ContactMessage } from '../../../services/messages.serv
     <div class="space-y-6 tab-enter">
 
       <!-- Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4"
+           [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
         <div>
-          <p class="text-xs font-bold uppercase tracking-[0.3em]"
+          <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em]"
              [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Bandeja de Entrada</p>
-          <h2 class="text-4xl font-bold uppercase tracking-tight mt-0.5"
+          <h2 class="text-3xl sm:text-4xl font-headline font-bold uppercase tracking-tight mt-0.5"
               [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Mensajes</h2>
         </div>
 
         <!-- Filter tabs -->
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2">
           <button *ngFor="let f of filterOptions"
                   (click)="activeFilter = f.id"
-                  class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide transition-all duration-200 cursor-pointer"
+                  class="px-4.5 py-2 rounded-full text-xs font-headline font-semibold uppercase tracking-wider transition-all duration-300 cursor-pointer shadow-xs"
                   [ngClass]="activeFilter === f.id
-                    ? (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white')
-                    : (isDark ? 'border border-neutral-800 text-neutral-500 hover:text-neutral-300' : 'border border-neutral-200 text-neutral-400 hover:text-neutral-700')">
+                    ? (isDark ? 'bg-white text-black' : 'bg-[#09090b] text-white')
+                    : (isDark ? 'border border-neutral-800 text-neutral-400 hover:text-white hover:bg-white/10' : 'border border-neutral-200 text-neutral-600 bg-neutral-100 hover:bg-neutral-200')">
             {{ f.label }}
             <span *ngIf="getCount(f.id) > 0" class="ml-1 opacity-60">({{ getCount(f.id) }})</span>
           </button>
@@ -37,16 +38,16 @@ import { MessagesService, ContactMessage } from '../../../services/messages.serv
       <!-- Messages list -->
       <div class="space-y-3">
         <div *ngIf="filtered.length === 0"
-             class="py-16 text-center rounded-2xl border"
-             [ngClass]="isDark ? 'border-neutral-800 text-neutral-600' : 'border-neutral-200 text-neutral-400'">
+             class="py-16 text-center rounded-[24px] border"
+             [ngClass]="isDark ? 'border-neutral-800 text-neutral-500' : 'border-neutral-200 text-neutral-400'">
           <svg class="w-10 h-10 mx-auto mb-3 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
           </svg>
-          <p class="text-sm">No hay mensajes en esta vista</p>
+          <p class="text-sm font-headline font-medium">No hay mensajes en esta vista</p>
         </div>
 
         <div *ngFor="let msg of filtered"
-             class="rounded-2xl border p-5 transition-all duration-200"
+             class="rounded-[24px] border p-5 transition-all duration-300 hover:scale-[1.005] shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
              [ngClass]="[
                isDark ? 'bg-neutral-900/60 border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200 hover:border-neutral-300',
                msg.status === 'unread' ? (isDark ? 'border-l-2 border-l-blue-500' : 'border-l-2 border-l-blue-500') : '',
@@ -149,7 +150,7 @@ import { MessagesService, ContactMessage } from '../../../services/messages.serv
   `]
 })
 export class DashMessagesComponent implements OnInit {
-  @Input() theme = 'dark';
+  @Input() theme = 'light';
   @Output() dataChange = new EventEmitter<void>();
 
   activeFilter = 'all';

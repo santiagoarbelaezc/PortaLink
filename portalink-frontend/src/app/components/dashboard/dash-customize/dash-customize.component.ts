@@ -11,26 +11,27 @@ import { PortfolioConfigService } from '../../../services/portfolio-config.servi
     <div class="space-y-6 tab-enter">
 
       <!-- Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4"
+           [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
         <div>
-          <p class="text-xs font-bold uppercase tracking-[0.3em]"
+          <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em]"
              [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Editor del Sitio</p>
-          <h2 class="text-4xl font-bold uppercase tracking-tight mt-0.5"
+          <h2 class="text-3xl sm:text-4xl font-headline font-bold uppercase tracking-tight mt-0.5"
               [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Personalizar</h2>
         </div>
         <div class="flex items-center gap-3">
           <a [href]="getLiveUrl()" target="_blank"
-             class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold uppercase tracking-widest transition-all duration-200 border"
-             [ngClass]="isDark ? 'border-neutral-700 text-white hover:bg-white/10' : 'border-neutral-300 text-neutral-900 hover:bg-black/5'">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+             class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider transition-all duration-300 border cursor-pointer hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+             [ngClass]="isDark ? 'border-neutral-700 text-white bg-white/10 hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-800 bg-neutral-100 hover:bg-neutral-200'">
+            <svg class="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
             </svg>
             Ver en vivo
           </a>
           <a href="/personalizar" target="_blank"
-             class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold uppercase tracking-widest transition-all duration-200"
-             [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-100' : 'bg-neutral-900 text-white hover:bg-neutral-800'">
+             class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider transition-all duration-300 shadow-sm hover:scale-[1.02] active:scale-[0.98]"
+             [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
             </svg>
@@ -172,7 +173,7 @@ import { PortfolioConfigService } from '../../../services/portfolio-config.servi
   `]
 })
 export class DashCustomizeComponent implements OnInit {
-  @Input() theme = 'dark';
+  @Input() theme = 'light';
   private configService = inject(PortfolioConfigService);
 
   configDraft: any = null;

@@ -16,18 +16,18 @@ import { firstValueFrom } from 'rxjs';
     <div class="space-y-6 tab-enter">
 
       <!-- Header -->
-      <div>
-        <p class="text-xs font-bold uppercase tracking-[0.3em]"
+      <div class="border-b pb-4" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+        <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em]"
            [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Resumen y Exportación</p>
-        <h2 class="text-4xl font-bold uppercase tracking-tight mt-0.5"
+        <h2 class="text-3xl sm:text-4xl font-headline font-bold uppercase tracking-tight mt-0.5"
             [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Reportes</h2>
       </div>
 
       <!-- ══════════════════════════════════════
            PDF EXPORT SECTION (MOVED TO TOP)
       ══════════════════════════════════════ -->
-      <div class="rounded-2xl border p-6"
-           [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
+      <div class="rounded-[28px] border p-6 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+           [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
         <div class="mb-5 flex justify-between items-end">
           <div>
             <h3 class="text-sm font-bold uppercase tracking-wide"
@@ -246,7 +246,7 @@ import { firstValueFrom } from 'rxjs';
   `]
 })
 export class DashReportsComponent implements OnInit {
-  @Input() theme = 'dark';
+  @Input() theme = 'light';
   private analyticsService = inject(AnalyticsService);
   private configService = inject(PortfolioConfigService);
   private pdfService = inject(PdfReportService);

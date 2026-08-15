@@ -17,15 +17,15 @@ import { PdfReportService } from '../../../services/pdf-report.service';
       <div class="flex items-start justify-between border-b pb-4"
            [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
         <div>
-          <p class="text-xs font-medium uppercase tracking-widest opacity-60"
-             [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Métricas Avanzadas</p>
-          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight mt-1"
+          <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em]"
+             [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Métricas Avanzadas</p>
+          <h2 class="text-2xl sm:text-3xl font-headline font-bold tracking-tight mt-1"
               [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Analíticas</h2>
         </div>
         <button (click)="downloadPdf()"
                 [disabled]="pdfLoading"
-                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium uppercase tracking-wider border transition-all duration-200 cursor-pointer"
-                [ngClass]="isDark ? 'border-neutral-700 text-white hover:bg-white hover:text-black' : 'border-neutral-300 text-neutral-800 hover:bg-black hover:text-white'">
+                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider border transition-all duration-300 cursor-pointer hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+                [ngClass]="isDark ? 'border-neutral-700 text-white bg-white/10 hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-800 bg-neutral-100 hover:bg-neutral-200'">
           <svg class="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
@@ -34,18 +34,18 @@ import { PdfReportService } from '../../../services/pdf-report.service';
       </div>
 
       <!-- Link KPIs Summary (Monochromatic Executive Cards) -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" *ngIf="metrics">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5" *ngIf="metrics">
         <!-- Card 1: Visitas al Link -->
-        <div class="rounded-2xl border p-5 flex flex-col justify-between transition-all duration-300 hover:border-neutral-600"
-             [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
+        <div class="rounded-[24px] border p-6 flex flex-col justify-between transition-all duration-300 hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
           <div class="flex items-center justify-between mb-3">
-            <span class="text-xs font-medium uppercase tracking-wider opacity-60">Visitas al Link</span>
+            <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Visitas al Link</span>
             <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-white/10 text-white">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
             </div>
           </div>
           <div>
-            <h3 class="text-2xl sm:text-3xl font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ metrics.linktreeViews || 0 }}</h3>
+            <h3 class="text-2xl sm:text-3xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ metrics.linktreeViews || 0 }}</h3>
             <p class="text-xs mt-1 opacity-50 flex items-center gap-1.5 font-normal">
               <span>Home: {{ metrics.homeViews || 0 }} visitas</span>
             </p>
@@ -382,7 +382,7 @@ import { PdfReportService } from '../../../services/pdf-report.service';
   `]
 })
 export class DashAnalyticsComponent implements OnInit {
-  @Input() theme = 'dark';
+  @Input() theme = 'light';
   private analyticsService = inject(AnalyticsService);
   private pdfService = inject(PdfReportService);
   private sanitizer = inject(DomSanitizer);

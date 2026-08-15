@@ -14,18 +14,18 @@ import { ChatStateService } from '../../../services/chat-state.service';
     <div class="space-y-6 tab-enter">
 
       <!-- Header -->
-      <div>
-        <p class="text-xs font-bold uppercase tracking-[0.3em]"
+      <div class="border-b pb-4" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+        <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em]"
            [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Ajustes del Sistema</p>
-        <h2 class="text-2xl sm:text-4xl font-bold uppercase tracking-tight mt-0.5"
+        <h2 class="text-3xl sm:text-4xl font-headline font-bold uppercase tracking-tight mt-0.5"
             [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Configuración</h2>
       </div>
 
       <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-5">
 
         <!-- 1. Preferencias Regionales -->
-        <div class="rounded-2xl border p-4 sm:p-6 space-y-4 sm:space-y-6 flex flex-col"
-             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
+        <div class="rounded-[28px] border p-4 sm:p-6 space-y-4 sm:space-y-6 flex flex-col shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
           <div>
             <h3 class="text-sm font-bold uppercase tracking-wide" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">Preferencias Regionales</h3>
             <p class="text-xs mt-1" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-500'">Configura la moneda, el idioma y el formato de fecha del sistema.</p>
@@ -238,7 +238,7 @@ import { ChatStateService } from '../../../services/chat-state.service';
   `]
 })
 export class DashConfigComponent {
-  @Input() theme = 'dark';
+  @Input() theme = 'light';
   private configService = inject(PortfolioConfigService);
   private systemConfig = inject(SystemConfigService);
   private authService = inject(AuthService);

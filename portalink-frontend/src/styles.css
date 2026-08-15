@@ -6,14 +6,14 @@
 @tailwind utilities;
 
 :root {
-  --bg-primary: #000000;
-  --bg-secondary: #0a0a0a;
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.6);
-  --accent-color: #00F5FF;
-  --card-bg: rgba(255, 255, 255, 0.02);
-  --card-border: rgba(255, 255, 255, 0.15);
-  --nav-bg: rgba(0, 0, 0, 0.8);
+  --bg-primary: #fcfcfc;
+  --bg-secondary: #f3f4f6;
+  --text-primary: #0a0a0a;
+  --text-secondary: rgba(10, 10, 10, 0.6);
+  --accent-color: #2563eb;
+  --card-bg: rgba(0, 0, 0, 0.02);
+  --card-border: rgba(0, 0, 0, 0.08);
+  --nav-bg: rgba(255, 255, 255, 0.8);
 }
 
 .theme-light {
@@ -25,6 +25,17 @@
   --card-bg: rgba(0, 0, 0, 0.02);
   --card-border: rgba(0, 0, 0, 0.08);
   --nav-bg: rgba(255, 255, 255, 0.8);
+}
+
+.theme-dark {
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  --accent-color: #00F5FF;
+  --card-bg: rgba(255, 255, 255, 0.02);
+  --card-border: rgba(255, 255, 255, 0.15);
+  --nav-bg: rgba(0, 0, 0, 0.8);
 }
 
 .theme-red {
@@ -120,6 +131,23 @@
 
   .glass-card:hover {
     border-color: var(--accent-color);
+  }
+
+  /* Dashboard Unified Theme Classes (Apple Style) */
+  .dash-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .dash-card:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.05);
+  }
+
+  .dash-pill {
+    @apply inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-headline font-semibold text-xs tracking-wider transition-all duration-300;
   }
 
   .magnetic-area {

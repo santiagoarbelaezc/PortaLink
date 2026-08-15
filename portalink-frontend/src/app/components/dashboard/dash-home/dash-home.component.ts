@@ -16,8 +16,8 @@ import { Router } from '@angular/router';
       <div class="space-y-6 tab-enter">
 
         <!-- ═══════════════════════ WELCOME BANNER ═══════════════════════ -->
-      <div class="relative overflow-hidden rounded-2xl border p-6 md:p-10 min-h-[280px] flex flex-col justify-center"
-           [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+      <div class="relative overflow-hidden rounded-[28px] border p-6 md:p-10 min-h-[260px] flex flex-col justify-center transition-all duration-400"
+           [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800 shadow-[0_10px_35px_rgba(0,0,0,0.4)]' : 'bg-white border-neutral-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.04)]'">
 
         <!-- Rotbot flotando -->
         <div class="absolute right-0 md:right-8 top-0 bottom-0 hidden sm:flex items-center justify-center pointer-events-none select-none py-6 w-[220px] md:w-[350px]">
@@ -25,45 +25,45 @@ import { Router } from '@angular/router';
         </div>
 
         <div class="relative z-10 max-w-full sm:max-w-[75%] md:max-w-[60%]">
-          <p class="text-xs font-bold uppercase tracking-[0.3em] mb-1"
+          <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em] mb-1.5"
              [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Panel de Control</p>
-          <h2 class="text-3xl font-bold leading-tight"
+          <h2 class="text-3xl sm:text-4xl font-headline font-bold leading-tight tracking-tight"
               [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
             Bienvenido, Santiago
           </h2>
-          <p class="text-sm mt-1 mb-5 flex items-baseline gap-2"
-             [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">
+          <p class="text-xs sm:text-sm mt-1.5 mb-5 flex items-baseline gap-2 font-headline"
+             [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
              <span>{{ currentDate }}</span>
-             <span class="text-base md:text-lg font-medium" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-600'">{{ currentTime }}</span>
+             <span class="text-sm md:text-base font-semibold" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-700'">{{ currentTime }}</span>
           </p>
 
           <!-- Quick chips -->
           <div class="flex flex-wrap gap-2 relative z-10">
-            <span class="text-xs font-semibold px-3 py-1.5 rounded-full border flex items-center gap-1.5"
-                  [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-300 text-neutral-600 bg-white/80'">
+            <span class="text-xs font-headline font-semibold px-3.5 py-1.5 rounded-full border flex items-center gap-1.5 tracking-wider"
+                  [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80'">
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
               {{ metrics.homeViews }} Vistas
             </span>
-            <span class="text-xs font-semibold px-3 py-1.5 rounded-full border flex items-center gap-1.5"
-                  [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-300 text-neutral-600 bg-white/80'">
+            <span class="text-xs font-headline font-semibold px-3.5 py-1.5 rounded-full border flex items-center gap-1.5 tracking-wider"
+                  [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80'">
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
               {{ unreadMessages }} Mensajes nuevos
             </span>
-            <span class="text-xs font-semibold px-3 py-1.5 rounded-full border flex items-center gap-1.5"
-                  [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-300 text-neutral-600 bg-white/80'">
+            <span class="text-xs font-headline font-semibold px-3.5 py-1.5 rounded-full border flex items-center gap-1.5 tracking-wider"
+                  [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80'">
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
               {{ pendingLeads }} Solicitudes
             </span>
-            <span class="text-xs font-semibold px-3 py-1.5 rounded-full border flex items-center gap-1.5"
+            <span class="text-xs font-headline font-semibold px-3.5 py-1.5 rounded-full border flex items-center gap-1.5 tracking-wider"
                   [ngClass]="isDark ? 'border-blue-500/30 text-blue-400 bg-blue-500/10' : 'border-blue-200 text-blue-700 bg-blue-50'">
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
               Servidor Online
             </span>
             <!-- Expiration Countdown Chip -->
-            <span class="text-xs font-semibold px-3 py-1.5 rounded-full border flex items-center gap-1.5 transition-all duration-300"
+            <span class="text-xs font-headline font-semibold px-3.5 py-1.5 rounded-full border flex items-center gap-1.5 tracking-wider transition-all duration-300"
                   [ngClass]="sessionIsWarning ? 
                     (isDark ? 'border-amber-500/40 text-amber-400 bg-amber-500/10 animate-pulse' : 'border-amber-300 text-amber-800 bg-amber-50/80 animate-pulse') : 
-                    (isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-300 text-neutral-600 bg-white/80')">
+                    (isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80')">
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               Sesión: {{ sessionTimeFormatted }}
             </span>
@@ -72,8 +72,8 @@ import { Router } from '@angular/router';
       </div>
 
       <!-- ═══════════════════════ AI COMMAND CENTER ═══════════════════════ -->
-      <div class="rounded-2xl border p-6 transition-all duration-300 relative overflow-hidden"
-           [ngClass]="isDark ? 'bg-neutral-900/40 border-blue-500/20' : 'bg-white border-blue-200/60 shadow-sm'">
+      <div class="rounded-[28px] border p-6 transition-all duration-300 relative overflow-hidden"
+           [ngClass]="isDark ? 'bg-neutral-900/50 border-blue-500/20' : 'bg-white border-blue-200/60 shadow-[0_10px_35px_rgba(0,0,0,0.03)]'">
         <!-- Background subtle glow -->
         <div class="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
         
@@ -82,12 +82,12 @@ import { Router } from '@angular/router';
             
             <div class="flex items-center gap-3">
               <img [src]="isDark ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" alt="AI Icon" class="w-7 h-7 object-contain">
-              <h3 class="text-xl font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              <h3 class="text-xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
                 Centro de Comando IA
               </h3>
             </div>
             
-            <p class="text-sm font-medium" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+            <p class="text-xs sm:text-sm font-sans font-normal" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">
               Pregúntale a nuestro motor inteligente para analizar o navegar el dashboard
             </p>
             
@@ -106,7 +106,7 @@ import { Router } from '@angular/router';
                          (focus)="searchFocused = true"
                          (blur)="onBlur()"
                          [placeholder]="displayPlaceholder"
-                         class="w-full py-3.5 pl-12 pr-10 rounded-xl border text-sm focus:outline-none transition-all duration-300 font-medium"
+                         class="w-full py-3.5 pl-12 pr-10 rounded-2xl border text-sm focus:outline-none transition-all duration-300 font-medium"
                          [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800 text-white placeholder-neutral-600 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 hover:border-neutral-700' : 'bg-neutral-50/80 border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-neutral-300'">
                   
                   <!-- Clear button -->
@@ -120,18 +120,18 @@ import { Router } from '@angular/router';
 
                   <!-- Results Dropdown -->
                   <div *ngIf="aiOpen && aiResults.length > 0"
-                       class="absolute top-full left-0 right-0 mt-2 rounded-xl border shadow-2xl z-50 overflow-hidden animate-dropdown"
+                       class="absolute top-full left-0 right-0 mt-2 rounded-2xl border shadow-2xl z-50 overflow-hidden animate-dropdown"
                        [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700' : 'bg-white border-neutral-200'">
                     <div class="p-2">
-                      <p class="text-[10px] font-bold uppercase tracking-widest px-2 py-1.5"
+                      <p class="text-[10px] font-headline font-semibold uppercase tracking-widest px-2 py-1.5"
                          [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-400'">Resultados del sistema</p>
                       <button *ngFor="let result of aiResults"
                               (click)="selectResult(result)"
-                              class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-150 cursor-pointer group"
+                              class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-150 cursor-pointer group"
                               [ngClass]="isDark ? 'hover:bg-neutral-800' : 'hover:bg-neutral-50'">
                         <span class="text-base flex-shrink-0">{{ result.emoji }}</span>
                         <div class="flex-grow min-w-0">
-                          <p class="text-sm font-semibold truncate"
+                          <p class="text-sm font-headline font-semibold truncate"
                              [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ result.title }}</p>
                           <p class="text-xs truncate"
                              [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-500'">{{ result.value }}</p>
@@ -141,28 +141,28 @@ import { Router } from '@angular/router';
                   </div>
                 </div>
                 
-                <button class="px-6 py-3.5 rounded-xl font-bold text-sm transition-all duration-300 hover:opacity-90 whitespace-nowrap shadow-md hover:shadow-lg active:scale-95"
-                        [ngClass]="isDark ? 'bg-white hover:bg-neutral-200 text-black' : 'bg-neutral-900 hover:bg-black text-white'">
+                <button class="px-7 py-3.5 rounded-full font-headline font-semibold text-xs uppercase tracking-wider transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-sm hover:shadow-md border-none"
+                        [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'">
                   Consultar IA
                 </button>
               </div>
               
               <div class="flex flex-wrap items-center gap-2.5 pt-2">
-                <span class="text-[11px] uppercase tracking-widest font-bold" [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-500'">
+                <span class="text-[10px] font-headline font-semibold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-500'">
                   Sugerencias rápidas:
                 </span>
-                <button (click)="aiQuery = 'mensajes'; onSearch()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
-                        [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-600 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
+                <button (click)="aiQuery = 'mensajes'; onSearch()" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-headline font-semibold tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+                        [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-700 bg-neutral-50 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
                   <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-blue-500' : 'text-blue-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                   Mensajes nuevos
                 </button>
-                <button (click)="aiQuery = 'solicitudes'; onSearch()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
-                        [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-600 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
+                <button (click)="aiQuery = 'solicitudes'; onSearch()" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-headline font-semibold tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+                        [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-700 bg-neutral-50 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
                   <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-blue-500' : 'text-blue-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                   Solicitudes pendientes
                 </button>
-                <button (click)="aiQuery = 'usuarios'; onSearch()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
-                        [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-600 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
+                <button (click)="aiQuery = 'usuarios'; onSearch()" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-headline font-semibold tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+                        [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-700 bg-neutral-50 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
                   <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-blue-500' : 'text-blue-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                   Usuarios registrados
                 </button>
@@ -177,13 +177,13 @@ import { Router } from '@angular/router';
       <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
 
         <div *ngFor="let card of metricCards"
-             class="rounded-2xl border p-5 transition-all duration-200 hover:translate-y-[-2px]"
-             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200 hover:border-neutral-300'">
-          <div class="flex justify-between items-start mb-3">
-            <p class="text-xs font-bold uppercase tracking-widest"
+             class="rounded-[24px] border p-6 transition-all duration-300 hover:scale-[1.01]"
+             [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800 hover:border-neutral-700 shadow-[0_10px_30px_rgba(0,0,0,0.3)]' : 'bg-white border-neutral-200/80 hover:border-neutral-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)]'">
+          <div class="flex justify-between items-start mb-4">
+            <p class="text-xs font-headline font-semibold uppercase tracking-wider"
                [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ card.label }}</p>
-            <span class="p-2 rounded-xl border flex items-center justify-center"
-                  [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-neutral-300' : 'bg-neutral-50 border-neutral-200 text-neutral-600'">
+            <span class="p-2.5 rounded-2xl border flex items-center justify-center shadow-xs"
+                  [ngClass]="isDark ? 'bg-neutral-800/80 border-neutral-700 text-neutral-200' : 'bg-neutral-100/80 border-neutral-200/80 text-neutral-800'">
               <!-- Eye icon — Vistas Home -->
               <svg *ngIf="card.iconPath === 'eye'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
@@ -203,28 +203,28 @@ import { Router } from '@angular/router';
               </svg>
             </span>
           </div>
-          <p class="text-5xl font-bold tracking-tight leading-none"
+          <p class="text-4xl sm:text-5xl font-headline font-bold tracking-tight leading-none"
              [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ card.value }}</p>
-          <p class="text-xs mt-2.5 font-semibold"
-             [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-400'">{{ card.sublabel }}</p>
+          <p class="text-xs mt-2.5 font-headline font-semibold"
+             [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ card.sublabel }}</p>
         </div>
 
       </div>
 
       <!-- ═══════════════════════ NOTIFICACIONES ITINERARIO ═══════════════════════ -->
       <div *ngIf="itineraryNotifs.current.length || itineraryNotifs.upcoming.length || itineraryNotifs.overdue.length || itineraryNotifs.no_time.length"
-           class="rounded-2xl border p-6 transition-all duration-300"
-           [ngClass]="isDark ? 'bg-[#111116] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+           class="rounded-[28px] border p-6 transition-all duration-300"
+           [ngClass]="isDark ? 'bg-[#111116] border-neutral-800 shadow-[0_10px_35px_rgba(0,0,0,0.3)]' : 'bg-white border-neutral-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.03)]'">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
           <div class="flex items-center gap-3">
             <div class="w-2.5 h-2.5 rounded-full animate-pulse" [ngClass]="itineraryNotifs.unseen > 0 ? 'bg-red-500' : 'bg-blue-500'"></div>
-            <h3 class="text-lg font-bold tracking-tight uppercase" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Tareas de Hoy</h3>
-            <span *ngIf="itineraryNotifs.unseen > 0" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/10 text-red-500 border border-red-500/20">
+            <h3 class="text-lg font-headline font-bold tracking-tight uppercase" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Tareas de Hoy</h3>
+            <span *ngIf="itineraryNotifs.unseen > 0" class="px-2.5 py-0.5 rounded-full text-[10px] font-headline font-semibold bg-red-500/10 text-red-500 border border-red-500/20 tracking-wider">
               {{ itineraryNotifs.unseen }} SIN VER
             </span>
           </div>
-          <button (click)="goToItinerary()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all hover:scale-105 active:scale-95"
-                  [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800 text-neutral-300 hover:border-neutral-600 hover:bg-neutral-700' : 'border-neutral-300 bg-white text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50'">
+          <button (click)="goToItinerary()" class="flex items-center gap-1.5 px-4 py-2 rounded-full border text-xs font-headline font-semibold tracking-wider transition-all hover:scale-[1.02] active:scale-95 cursor-pointer"
+                  [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800 text-neutral-300 hover:border-neutral-600 hover:bg-neutral-700' : 'border-neutral-200 bg-neutral-100 text-neutral-800 hover:border-neutral-300 hover:bg-neutral-200'">
             Ver Itinerario Completo
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
           </button>
@@ -233,96 +233,160 @@ import { Router } from '@angular/router';
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Current Tasks -->
           <div *ngFor="let task of itineraryNotifs.current"
-               class="rounded-xl border p-4 relative overflow-hidden transition-all duration-200 hover:shadow-lg"
-               [ngClass]="isDark ? 'bg-neutral-900/80 border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.1)]' : 'bg-white border-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.15)]'">
-            <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
-            <div class="flex justify-between items-start mb-2">
-              <span class="text-[9px] font-bold uppercase tracking-widest text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-full">En Progreso</span>
-              <span class="text-[10px] font-bold text-blue-500 border border-blue-500/30 px-1.5 rounded">{{ task.task_time?.substring(0,5) }}</span>
+               class="rounded-2xl border p-4 relative overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:shadow-lg"
+               [ngClass]="isDark ? 'bg-neutral-900/80 border-blue-500/40 shadow-[0_0_20px_rgba(59,130,246,0.15)]' : 'bg-white border-blue-300 shadow-[0_4px_20px_rgba(59,130,246,0.12)]'">
+            <div class="absolute top-0 left-0 w-1.5 h-full bg-blue-500"></div>
+            <div class="flex justify-between items-start mb-2.5">
+              <span class="text-[9px] font-headline font-semibold uppercase tracking-widest text-blue-500 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20">En Progreso</span>
+              <span class="text-[10px] font-headline font-bold text-blue-500 bg-blue-500/10 border border-blue-500/30 px-2 py-0.5 rounded-full">{{ task.task_time?.substring(0,5) }}</span>
             </div>
-            <h4 class="font-bold text-sm leading-tight mb-1" [ngClass]="isDark ? 'text-neutral-100' : 'text-neutral-900'">{{ task.title }}</h4>
-            <p *ngIf="task.description" class="text-xs truncate" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ task.description }}</p>
+            <h4 class="font-headline font-bold text-sm leading-tight mb-1" [ngClass]="isDark ? 'text-neutral-100' : 'text-neutral-900'">{{ task.title }}</h4>
+            <p *ngIf="task.description" class="text-xs truncate font-sans" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ task.description }}</p>
           </div>
 
           <!-- Overdue Tasks -->
           <div *ngFor="let task of itineraryNotifs.overdue"
-               class="rounded-xl border p-4 relative overflow-hidden transition-all duration-200 hover:-translate-y-0.5"
-               [ngClass]="isDark ? 'bg-neutral-900 border-red-500/30' : 'bg-red-50/50 border-red-200'">
-            <div class="absolute top-0 left-0 w-1 h-full bg-red-500"></div>
-            <div class="flex justify-between items-start mb-2">
-              <span class="text-[9px] font-bold uppercase tracking-widest text-red-500 bg-red-500/10 px-2 py-0.5 rounded-full">Atrasada</span>
-              <span class="text-[10px] font-bold text-red-500 border border-red-500/30 px-1.5 rounded">{{ task.task_time?.substring(0,5) }}</span>
+               class="rounded-2xl border p-4 relative overflow-hidden transition-all duration-300 hover:scale-[1.01]"
+               [ngClass]="isDark ? 'bg-neutral-900/90 border-red-500/40 shadow-[0_0_20px_rgba(239,68,68,0.1)]' : 'bg-red-50/60 border-red-200 shadow-sm'">
+            <div class="absolute top-0 left-0 w-1.5 h-full bg-red-500"></div>
+            <div class="flex justify-between items-start mb-2.5">
+              <span class="text-[9px] font-headline font-semibold uppercase tracking-widest text-red-500 bg-red-500/10 px-2.5 py-0.5 rounded-full border border-red-500/20">Atrasada</span>
+              <span class="text-[10px] font-headline font-bold text-red-500 bg-red-500/10 border border-red-500/30 px-2 py-0.5 rounded-full">{{ task.task_time?.substring(0,5) }}</span>
             </div>
-            <h4 class="font-bold text-sm leading-tight mb-1" [ngClass]="isDark ? 'text-neutral-100' : 'text-neutral-900'">{{ task.title }}</h4>
+            <h4 class="font-headline font-bold text-sm leading-tight mb-1" [ngClass]="isDark ? 'text-neutral-100' : 'text-neutral-900'">{{ task.title }}</h4>
           </div>
 
           <!-- Upcoming Tasks -->
           <div *ngFor="let task of itineraryNotifs.upcoming"
-               class="rounded-xl border p-4 relative overflow-hidden transition-all duration-200 hover:-translate-y-0.5"
-               [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-700' : 'bg-white border-neutral-200'">
-            <div class="absolute top-0 left-0 w-1 h-full" [ngClass]="isDark ? 'bg-neutral-600' : 'bg-neutral-300'"></div>
-            <div class="flex justify-between items-start mb-2">
-              <span class="text-[9px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Próxima</span>
-              <span class="text-[10px] font-bold border px-1.5 rounded" [ngClass]="isDark ? 'text-neutral-400 border-neutral-700' : 'text-neutral-500 border-neutral-300'">{{ task.task_time?.substring(0,5) }}</span>
+               class="rounded-2xl border p-4 relative overflow-hidden transition-all duration-300 hover:scale-[1.01]"
+               [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-700/80 shadow-sm' : 'bg-white border-neutral-200/80 shadow-sm'">
+            <div class="absolute top-0 left-0 w-1.5 h-full" [ngClass]="isDark ? 'bg-neutral-600' : 'bg-neutral-400'"></div>
+            <div class="flex justify-between items-start mb-2.5">
+              <span class="text-[9px] font-headline font-semibold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Próxima</span>
+              <span class="text-[10px] font-headline font-bold border px-2 py-0.5 rounded-full" [ngClass]="isDark ? 'text-neutral-300 border-neutral-700 bg-neutral-800' : 'text-neutral-700 border-neutral-200 bg-neutral-100'">{{ task.task_time?.substring(0,5) }}</span>
             </div>
-            <h4 class="font-bold text-sm leading-tight mb-1" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ task.title }}</h4>
+            <h4 class="font-headline font-bold text-sm leading-tight mb-1" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ task.title }}</h4>
           </div>
 
           <!-- No Time Tasks -->
           <div *ngFor="let task of itineraryNotifs.no_time"
-               class="rounded-xl border p-4 relative overflow-hidden transition-all duration-200 hover:-translate-y-0.5 border-dashed"
-               [ngClass]="isDark ? 'bg-transparent border-neutral-700' : 'bg-transparent border-neutral-300'">
-            <div class="flex justify-between items-start mb-2">
-              <span class="text-[9px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Durante el día</span>
+               class="rounded-2xl border p-4 relative overflow-hidden transition-all duration-300 hover:scale-[1.01] border-dashed"
+               [ngClass]="isDark ? 'bg-neutral-900/30 border-neutral-800' : 'bg-neutral-50/50 border-neutral-300'">
+            <div class="flex justify-between items-start mb-2.5">
+              <span class="text-[9px] font-headline font-semibold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Durante el día</span>
             </div>
-            <h4 class="font-bold text-sm leading-tight" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">{{ task.title }}</h4>
+            <h4 class="font-headline font-bold text-sm leading-tight" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">{{ task.title }}</h4>
           </div>
         </div>
       </div>
 
       <!-- ═══════════════════════ CHARTS ROW 1 ═══════════════════════ -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
         <!-- Section Traffic -->
-        <div class="rounded-2xl border p-6"
-             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
-          <h4 class="text-sm font-bold uppercase tracking-wide mb-5"
-              [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">Tráfico por Sección</h4>
-          <div class="space-y-3.5">
-            <div *ngFor="let sec of sectionViewsArray" class="space-y-1.5">
-              <div class="flex justify-between text-xs font-semibold uppercase tracking-wide"
-                   [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
-                <span>{{ sec.name }}</span>
-                <span [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-700'">{{ sec.views }}</span>
+        <div class="rounded-[28px] border p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)] min-h-[300px]"
+             [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200/80'">
+          <div>
+            <div class="flex items-center justify-between mb-6">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                <h4 class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider"
+                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Tráfico por Sección</h4>
               </div>
-              <div class="h-1.5 rounded-full overflow-hidden"
-                   [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-100'">
-                <div class="h-full rounded-full transition-all duration-1000 ease-out"
-                     [style.width.%]="getSectionPct(sec.views)"
-                     [ngClass]="isDark ? 'bg-white' : 'bg-neutral-900'"></div>
+              <span class="text-[10px] font-headline font-semibold uppercase tracking-wider px-3 py-1 rounded-full border"
+                    [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 bg-neutral-950/80' : 'border-neutral-200 text-neutral-600 bg-neutral-100/80'">
+                En Tiempo Real
+              </span>
+            </div>
+
+            <div class="space-y-4">
+              <div *ngFor="let sec of paginatedSectionViews" class="space-y-2">
+                <div class="flex justify-between items-center text-xs font-headline">
+                  <span class="font-semibold tracking-wide uppercase" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ sec.name }}</span>
+                  <span class="font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ sec.views }} visitas</span>
+                </div>
+                <div class="h-1.5 rounded-full overflow-hidden p-0"
+                     [ngClass]="isDark ? 'bg-neutral-800/80' : 'bg-neutral-200/60'">
+                  <div class="h-full rounded-full transition-all duration-800 ease-out"
+                       [style.width.%]="getSectionPct(sec.views)"
+                       [ngClass]="isDark ? 'bg-white shadow-[0_0_12px_rgba(255,255,255,0.7)]' : 'bg-neutral-900'"></div>
+                </div>
               </div>
+            </div>
+          </div>
+
+          <!-- Pagination Bar -->
+          <div *ngIf="totalSectionPages > 1" class="flex items-center justify-between pt-4 mt-4 border-t"
+               [ngClass]="isDark ? 'border-neutral-800/80 text-white' : 'border-neutral-100 text-neutral-700'">
+            <span class="text-[11px] font-headline font-semibold uppercase tracking-wider opacity-80"
+                  [ngClass]="isDark ? 'text-white' : 'text-neutral-700'">
+              Página {{ sectionPage }} de {{ totalSectionPages }}
+            </span>
+            <div class="flex items-center gap-1.5">
+              <button (click)="prevSectionPage()" [disabled]="sectionPage === 1"
+                      class="w-7 h-7 rounded-full flex items-center justify-center border text-xs font-headline font-bold transition-all duration-200 disabled:opacity-30 cursor-pointer shadow-xs"
+                      [ngClass]="isDark ? 'border-neutral-700 text-white hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-800 hover:bg-neutral-100'">
+                ‹
+              </button>
+              <button (click)="nextSectionPage()" [disabled]="sectionPage === totalSectionPages"
+                      class="w-7 h-7 rounded-full flex items-center justify-center border text-xs font-headline font-bold transition-all duration-200 disabled:opacity-30 cursor-pointer shadow-xs"
+                      [ngClass]="isDark ? 'border-neutral-700 text-white hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-800 hover:bg-neutral-100'">
+                ›
+              </button>
             </div>
           </div>
         </div>
 
         <!-- Linktree Clicks -->
-        <div class="rounded-2xl border p-6"
-             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
-          <h4 class="text-sm font-bold uppercase tracking-wide mb-5"
-              [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">Clics en Linktree</h4>
-          <div class="space-y-3.5">
-            <div *ngFor="let link of linkClicksArray" class="space-y-1.5">
-              <div class="flex justify-between text-xs font-semibold uppercase tracking-wide"
-                   [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
-                <span>{{ link.name }}</span>
-                <span [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-700'">{{ link.count }}</span>
+        <div class="rounded-[28px] border p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)] min-h-[300px]"
+             [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200/80'">
+          <div>
+            <div class="flex items-center justify-between mb-6">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                <h4 class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider"
+                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Clics en Linktree</h4>
               </div>
-              <div class="h-1.5 rounded-full overflow-hidden"
-                   [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-100'">
-                <div class="h-full rounded-full transition-all duration-1000 ease-out"
-                     [style.width.%]="getLinkPct(link.count)"
-                     [ngClass]="isDark ? 'bg-neutral-400' : 'bg-neutral-500'"></div>
+              <span class="text-[10px] font-headline font-semibold uppercase tracking-wider px-3 py-1 rounded-full border"
+                    [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 bg-neutral-950/80' : 'border-neutral-200 text-neutral-600 bg-neutral-100/80'">
+                Enlaces Activos
+              </span>
+            </div>
+
+            <div class="space-y-4">
+              <div *ngFor="let link of paginatedLinkClicks" class="space-y-2">
+                <div class="flex justify-between items-center text-xs font-headline">
+                  <span class="font-semibold tracking-wide uppercase" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ link.name }}</span>
+                  <span class="font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ link.count }} clics</span>
+                </div>
+                <div class="h-1.5 rounded-full overflow-hidden p-0"
+                     [ngClass]="isDark ? 'bg-neutral-800/80' : 'bg-neutral-200/60'">
+                  <div class="h-full rounded-full transition-all duration-800 ease-out"
+                       [style.width.%]="getLinkPct(link.count)"
+                       [ngClass]="isDark ? 'bg-white shadow-[0_0_12px_rgba(255,255,255,0.7)]' : 'bg-neutral-900'"></div>
+                </div>
               </div>
+            </div>
+          </div>
+
+          <!-- Pagination Bar -->
+          <div *ngIf="totalLinkPages > 1" class="flex items-center justify-between pt-4 mt-4 border-t"
+               [ngClass]="isDark ? 'border-neutral-800/80 text-white' : 'border-neutral-100 text-neutral-700'">
+            <span class="text-[11px] font-headline font-semibold uppercase tracking-wider opacity-80"
+                  [ngClass]="isDark ? 'text-white' : 'text-neutral-700'">
+              Página {{ linkPage }} de {{ totalLinkPages }}
+            </span>
+            <div class="flex items-center gap-1.5">
+              <button (click)="prevLinkPage()" [disabled]="linkPage === 1"
+                      class="w-7 h-7 rounded-full flex items-center justify-center border text-xs font-headline font-bold transition-all duration-200 disabled:opacity-30 cursor-pointer shadow-xs"
+                      [ngClass]="isDark ? 'border-neutral-700 text-white hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-800 hover:bg-neutral-100'">
+                ‹
+              </button>
+              <button (click)="nextLinkPage()" [disabled]="linkPage === totalLinkPages"
+                      class="w-7 h-7 rounded-full flex items-center justify-center border text-xs font-headline font-bold transition-all duration-200 disabled:opacity-30 cursor-pointer shadow-xs"
+                      [ngClass]="isDark ? 'border-neutral-700 text-white hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-800 hover:bg-neutral-100'">
+                ›
+              </button>
             </div>
           </div>
         </div>
@@ -330,53 +394,67 @@ import { Router } from '@angular/router';
       </div>
 
       <!-- ═══════════════════════ CHARTS ROW 2 ═══════════════════════ -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
         <!-- Weekly Sparkline -->
-        <div class="rounded-2xl border p-6"
-             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
-          <div class="flex justify-between items-center mb-5">
-            <h4 class="text-sm font-bold uppercase tracking-wide"
-                [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">Tendencia Semanal</h4>
-            <span class="text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full"
-                  [ngClass]="isDark ? 'bg-neutral-800 text-neutral-400' : 'bg-neutral-100 text-neutral-500'">En vivo</span>
-          </div>
-          <div class="w-full h-32 relative">
-            <svg class="w-full h-full" viewBox="0 0 600 120" preserveAspectRatio="none">
-              <!-- Grid lines -->
-              <line x1="0" y1="20" x2="600" y2="20" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)'"></line>
-              <line x1="0" y1="60" x2="600" y2="60" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)'"></line>
-              <line x1="0" y1="100" x2="600" y2="100" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)'"></line>
-              <!-- Area fill -->
-              <path d="M0,90 C80,55 140,35 200,70 C260,105 320,20 390,20 C450,20 510,80 600,50 L600,120 L0,120 Z"
-                    [attr.fill]="isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)'"></path>
-              <!-- Line -->
-              <path d="M0,90 C80,55 140,35 200,70 C260,105 320,20 390,20 C450,20 510,80 600,50"
-                    fill="none" stroke-width="2.5" stroke-linecap="round"
-                    [attr.stroke]="isDark ? '#ffffff' : '#111827'"></path>
-            </svg>
-          </div>
-          <div class="flex justify-between text-[9px] uppercase tracking-widest mt-3 px-1"
-               [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-400'">
-            <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span>
+        <div class="rounded-[28px] border p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+             [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200/80'">
+          <div>
+            <div class="flex justify-between items-center mb-6">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                <h4 class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider"
+                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Tendencia Semanal</h4>
+              </div>
+              <span class="text-[10px] font-headline font-semibold uppercase tracking-wider px-3 py-1 rounded-full border border-blue-500/30 text-blue-400 bg-blue-500/10">
+                Actividad Reciente
+              </span>
+            </div>
+            <div class="w-full h-36 relative">
+              <svg class="w-full h-full" viewBox="0 0 600 120" preserveAspectRatio="none">
+                <!-- Grid lines -->
+                <line x1="0" y1="20" x2="600" y2="20" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'"></line>
+                <line x1="0" y1="60" x2="600" y2="60" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'"></line>
+                <line x1="0" y1="100" x2="600" y2="100" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'"></line>
+                <!-- Area fill -->
+                <path d="M0,90 C80,55 140,35 200,70 C260,105 320,20 390,20 C450,20 510,80 600,50 L600,120 L0,120 Z"
+                      [attr.fill]="isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'"></path>
+                <!-- Line -->
+                <path d="M0,90 C80,55 140,35 200,70 C260,105 320,20 390,20 C450,20 510,80 600,50"
+                      fill="none" stroke-width="3" stroke-linecap="round"
+                      [attr.stroke]="isDark ? '#ffffff' : '#09090b'"></path>
+              </svg>
+            </div>
+            <div class="flex justify-between text-[10px] font-headline font-semibold uppercase tracking-wider mt-3 px-2"
+                 [ngClass]="isDark ? 'text-white/80' : 'text-neutral-500'">
+              <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span>
+            </div>
           </div>
         </div>
 
         <!-- Server Status -->
-        <div class="rounded-2xl border p-6"
-             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
-          <h4 class="text-sm font-bold uppercase tracking-wide mb-5"
-              [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">Estado del Servidor</h4>
+        <div class="rounded-[28px] border p-6 sm:p-7 transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+             [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200/80'">
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-2.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <h4 class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider"
+                  [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Estado del Servidor</h4>
+            </div>
+            <span class="text-[10px] font-headline font-semibold uppercase tracking-wider px-3 py-1 rounded-full border border-emerald-500/30 text-emerald-400 bg-emerald-500/10">
+              Operacional
+            </span>
+          </div>
           <div class="grid grid-cols-2 gap-4">
             <div *ngFor="let stat of serverStats"
-                 class="rounded-xl p-4"
-                 [ngClass]="isDark ? 'bg-neutral-800/60' : 'bg-neutral-50'">
-              <p class="text-[10px] uppercase tracking-widest font-bold mb-1.5"
-                 [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ stat.label }}</p>
+                 class="rounded-2xl p-5 border transition-all duration-300 hover:scale-[1.02] shadow-xs"
+                 [ngClass]="isDark ? 'bg-neutral-950/80 border-neutral-800/90' : 'bg-neutral-50 border-neutral-200/80'">
+              <p class="text-xs font-headline font-semibold uppercase tracking-wider mb-2"
+                 [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ stat.label }}</p>
               <div class="flex items-center gap-2">
-                <span *ngIf="stat.dot" class="w-2 h-2 rounded-full bg-blue-500 animate-pulse flex-shrink-0"></span>
-                <p class="text-sm font-bold"
-                   [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-700'">{{ stat.value }}</p>
+                <span *ngIf="stat.dot" class="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse flex-shrink-0"></span>
+                <p class="text-base sm:text-lg font-headline font-bold tracking-tight"
+                   [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ stat.value }}</p>
               </div>
             </div>
           </div>
@@ -387,8 +465,8 @@ import { Router } from '@angular/router';
       <!-- Actions -->
       <div class="flex justify-end pt-2">
         <button (click)="resetMetrics()"
-                class="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest border transition-all duration-200 cursor-pointer hover:border-red-500/30 hover:text-red-400 hover:bg-red-500/5"
-                [ngClass]="isDark ? 'border-neutral-800 text-neutral-500' : 'border-neutral-200 text-neutral-500'">
+                class="px-6 py-2.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider border transition-all duration-300 cursor-pointer hover:scale-105 active:scale-95 shadow-sm"
+                [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:border-red-500/40 hover:text-red-400 hover:bg-red-500/10' : 'border-neutral-200 text-neutral-600 hover:border-red-300 hover:text-red-600 hover:bg-red-50'">
           Reiniciar Métricas
         </button>
       </div>
@@ -489,7 +567,7 @@ import { Router } from '@angular/router';
   `]
 })
 export class DashHomeComponent implements OnInit, OnDestroy {
-  @Input() theme = 'dark';
+  @Input() theme = 'light';
   @Output() tabChange = new EventEmitter<string>();
 
   private analyticsService = inject(AnalyticsService);
@@ -540,6 +618,45 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   metricCards: any[] = [];
   sectionViewsArray: { name: string; views: number }[] = [];
   linkClicksArray: { name: string; count: number }[] = [];
+
+  // Paginación Sobria
+  sectionPage = 1;
+  linkPage = 1;
+  itemsPerPage = 4;
+
+  get totalSectionPages(): number {
+    return Math.max(1, Math.ceil((this.sectionViewsArray.length || 0) / this.itemsPerPage));
+  }
+
+  get paginatedSectionViews() {
+    const start = (this.sectionPage - 1) * this.itemsPerPage;
+    return this.sectionViewsArray.slice(start, start + this.itemsPerPage);
+  }
+
+  get totalLinkPages(): number {
+    return Math.max(1, Math.ceil((this.linkClicksArray.length || 0) / this.itemsPerPage));
+  }
+
+  get paginatedLinkClicks() {
+    const start = (this.linkPage - 1) * this.itemsPerPage;
+    return this.linkClicksArray.slice(start, start + this.itemsPerPage);
+  }
+
+  nextSectionPage() {
+    if (this.sectionPage < this.totalSectionPages) this.sectionPage++;
+  }
+
+  prevSectionPage() {
+    if (this.sectionPage > 1) this.sectionPage--;
+  }
+
+  nextLinkPage() {
+    if (this.linkPage < this.totalLinkPages) this.linkPage++;
+  }
+
+  prevLinkPage() {
+    if (this.linkPage > 1) this.linkPage--;
+  }
 
   serverStats = [
     { label: 'Estado de API', value: '99.98% ONLINE', dot: true },

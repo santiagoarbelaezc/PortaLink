@@ -52,7 +52,7 @@ import { CommonModule } from '@angular/common';
 export class SkillsComponent implements OnInit, OnDestroy {
   @Input() skills: any[] = [];
   currentLanguage = 'es';
-  currentTheme = 'dark';
+  currentTheme = 'light';
   
   repeatItems = Array(12).fill(0);
 
@@ -78,7 +78,7 @@ export class SkillsComponent implements OnInit, OnDestroy {
       this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
       window.addEventListener('portfolio-language-change', this.onLanguageChange);
 
-      this.currentTheme = localStorage.getItem('portfolio-theme') || 'dark';
+      this.currentTheme = localStorage.getItem('portfolio-theme') || 'light';
       window.addEventListener('portfolio-theme-change', this.onThemeChange);
     }
   }

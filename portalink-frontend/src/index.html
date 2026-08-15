@@ -11,7 +11,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Santiago Arbelaez">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#080808">
+  <meta name="theme-color" content="#fcfcfc">
   
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="assets/icons/logo-movil-install.png">
@@ -59,14 +59,11 @@
       }, false);
     }
 
-    // 4. Default Theme Initialization (Light Theme by Default)
+    // 4. Default Theme Initialization (Always Light Theme for Public App)
     (function() {
-      var saved = localStorage.getItem('portfolio-theme');
-      var theme = saved ? saved : 'light';
-      document.documentElement.classList.remove('theme-dark', 'theme-light', 'theme-red');
-      if (theme !== 'dark') {
-        document.documentElement.classList.add('theme-' + theme);
-      }
+      localStorage.setItem('portfolio-theme', 'light');
+      document.documentElement.classList.remove('theme-dark', 'theme-red');
+      document.documentElement.classList.add('theme-light');
     })();
   </script>
 </head>

@@ -45,18 +45,18 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
           <div class="flex flex-col gap-3">
             <!-- Title + Clock -->
             <div class="flex items-center gap-4 flex-wrap">
-              <h2 class="text-3xl font-bold uppercase tracking-tight"
+              <h2 class="text-3xl sm:text-4xl font-headline font-bold uppercase tracking-tight"
                   [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
                 Itinerario Semanal
               </h2>
-              <div class="flex items-center gap-2 px-4 py-2 rounded-xl border"
+              <div class="flex items-center gap-2 px-4 py-2 rounded-full border"
                    [ngClass]="isDark ? 'border-neutral-800 bg-[#0f0f13]' : 'border-neutral-200 bg-neutral-50'">
                 <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span class="text-xs font-bold tabular-nums tracking-wider"
+                <span class="text-xs font-headline font-bold tabular-nums tracking-wider"
                       [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-700'">{{ currentTime }}</span>
-                <span class="text-[10px] font-semibold uppercase tracking-widest"
+                <span class="text-[10px] font-headline font-semibold uppercase tracking-widest"
                       [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">— {{ currentDateStr }}</span>
               </div>
             </div>
@@ -64,21 +64,21 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
             <!-- Current Task Banner -->
             <div>
               <div *ngIf="currentTask; else noCurrentTask"
-                   class="inline-flex items-center gap-3 px-4 py-2.5 rounded-xl border"
-                   [ngClass]="isDark ? 'border-neutral-700 bg-neutral-900/60' : 'border-neutral-300 bg-white'">
+                   class="inline-flex items-center gap-3 px-4.5 py-2.5 rounded-full border"
+                   [ngClass]="isDark ? 'border-neutral-700 bg-neutral-900/60' : 'border-neutral-200 bg-neutral-50'">
                 <div class="w-2 h-2 rounded-full animate-pulse" [ngClass]="isDark ? 'bg-white' : 'bg-neutral-900'"></div>
-                <span class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Ahora:</span>
-                <span class="text-xs font-bold" [ngClass]="isDark ? 'text-neutral-100' : 'text-neutral-800'">{{ currentTask.title }}</span>
-                <span class="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border"
-                      [ngClass]="isDark ? 'border-neutral-700 text-neutral-400' : 'border-neutral-300 text-neutral-500'">{{ currentTask.time }}</span>
+                <span class="text-[10px] font-headline font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Ahora:</span>
+                <span class="text-xs font-headline font-bold" [ngClass]="isDark ? 'text-neutral-100' : 'text-neutral-800'">{{ currentTask.title }}</span>
+                <span class="text-[9px] font-headline font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full border"
+                      [ngClass]="isDark ? 'border-neutral-700 text-neutral-400' : 'border-neutral-200 text-neutral-600 bg-white'">{{ currentTask.time }}</span>
               </div>
               <ng-template #noCurrentTask>
-                <div class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed"
+                <div class="inline-flex items-center gap-2 px-4.5 py-2.5 rounded-full border border-dashed"
                      [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-300'">
                   <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                   </svg>
-                  <span class="text-[10px] font-semibold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-400'">Sin tarea programada ahora</span>
+                  <span class="text-[10px] font-headline font-semibold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-500'">Sin tarea programada ahora</span>
                 </div>
               </ng-template>
             </div>
@@ -89,8 +89,8 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
             <!-- Calendar Picker Button -->
             <div class="relative">
               <button (click)="toggleCalendar($event)"
-                      class="flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-bold tracking-wide transition-all"
-                      [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:bg-neutral-800' : 'border-neutral-200 text-neutral-600 hover:bg-neutral-100'">
+                      class="flex items-center gap-2 px-4.5 py-2.5 rounded-full border text-xs font-headline font-semibold tracking-wider uppercase transition-all duration-300 hover:scale-[1.02] cursor-pointer"
+                      [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:bg-neutral-800' : 'border-neutral-200 text-neutral-800 bg-neutral-100 hover:bg-neutral-200'">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                 </svg>
@@ -631,7 +631,7 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
   `]
 })
 export class DashItineraryComponent implements OnInit, OnDestroy {
-  @Input() theme: string = 'dark';
+  @Input() theme: string = 'light';
   get isDark() { return this.theme === 'dark'; }
 
   // ── Clock ──
