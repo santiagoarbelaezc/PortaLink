@@ -1537,25 +1537,32 @@ export class DashFinancesComponent implements OnInit, OnChanges {
   }
 
   get paidPercentage(): number {
-    const total = (this.invoices || []).reduce((sum, inv) => sum + (inv.total || 0), 0);
+    const total = (this.invoices || []).reduce((sum, inv) => sum + (inv.total || inv.total_amount || 0), 0);
     if (!total) return 0;
-    const paid = this.invoices.filter(i => i.status === 'Pagada' || i.status === 'PAGADA')
-                              .reduce((sum, inv) => sum + (inv.total || 0), 0);
-    return Math.round((paid / total) * 100);
+    const paid = (this.invoices || []).reduce((sum, inv) => {
+      if (inv.status === 'Pagada' || inv.status === 'PAGADA') return sum + (inv.total || inv.total_amount || 0);
+      return sum + (inv.paid_amount || 0);
+    }, 0);
+    return Math.min(100, Math.round((paid / total) * 100));
   }
 
   get pendingPercentage(): number {
-    const total = (this.invoices || []).reduce((sum, inv) => sum + (inv.total || 0), 0);
-    if (!total) return 0;
-    const pending = this.invoices.filter(i => i.status === 'Enviada' || i.status === 'Borrador' || i.status === 'DRAFT' || i.status === 'ENVIADA')
-                                 .reduce((sum, inv) => sum + (inv.total || 0), 0);
-    return Math.round((pending / total) * 100);
+    const paidPct = this.paidPercentage;
+    const overduePct = this.overduePercentage;
+    return Math.max(0, 100 - paidPct - overduePct);
   }
 
   get overduePercentage(): number {
-    const total = (this.invoices || []).reduce((sum, inv) => sum + (inv.total || 0), 0);
+    const total = (this.invoices || []).reduce((sum, inv) => sum + (inv.total || inv.total_amount || 0), 0);
     if (!total) return 0;
-    return Math.max(0, 100 - this.paidPercentage - this.pendingPercentage);
+    const overdue = (this.invoices || []).reduce((sum, inv) => {
+      if (inv.status === 'Vencida' || inv.status === 'VENCIDA') {
+        const pending = inv.pending_amount !== undefined ? inv.pending_amount : Math.max(0, (inv.total || 0) - (inv.paid_amount || 0));
+        return sum + pending;
+      }
+      return sum;
+    }, 0);
+    return Math.round((overdue / total) * 100);
   }
 
   monthlyIncome: { month: string; amount: number; height: number }[] = [];
