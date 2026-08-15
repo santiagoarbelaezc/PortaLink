@@ -177,6 +177,29 @@ export class FinanceService {
     });
   }
 
+  // ─── CONTROL FINANCIERO ──────────────────────────────────
+  getControlSummary(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/control-summary`);
+  }
+
+  getTransactions(search?: string, type?: string): Observable<any> {
+    let params = new HttpParams();
+    if (search) params = params.set('search', search);
+    if (type) params = params.set('type', type);
+    return this.http.get<any>(`${this.apiUrl}/transactions`, { params });
+  }
+
+  saveTransaction(tx: any): Observable<any> {
+    if (tx.id) {
+      return this.http.put<any>(`${this.apiUrl}/transactions/${tx.id}`, tx);
+    }
+    return this.http.post<any>(`${this.apiUrl}/transactions`, tx);
+  }
+
+  deleteTransaction(id: number | string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/transactions/${id}`);
+  }
+
   // ─── HELPERS ──────────────────────────────────────────────
   formatCOP(value: number): string {
     return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(value);

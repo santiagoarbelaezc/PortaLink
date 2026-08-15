@@ -407,7 +407,6 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.activeTab = id;
     this.isMobileDrawerOpen = false;
     localStorage.setItem('portalink_admin_tab', id);
-    this.refreshBadges();
     setTimeout(() => {
       const mainEl = document.querySelector('main');
       if (mainEl) {

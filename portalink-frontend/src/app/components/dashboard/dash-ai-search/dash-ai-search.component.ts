@@ -6,14 +6,17 @@ import { AnalyticsService } from '../../../services/analytics.service';
 
 const TAB_LABELS: Record<string, string> = {
   dashboard: 'Inicio',
+  'financial-control': 'Control Financiero',
+  itinerary: 'Itinerario',
+  finances: 'Finanzas',
   analytics: 'Analíticas',
   stats: 'Estadísticas',
   messages: 'Mensajes',
   leads: 'Solicitudes',
   users: 'Usuarios',
   home: 'Personalizar',
-  config: 'Configuración',
   reports: 'Reportes',
+  config: 'Configuración',
 };
 
 @Component({
