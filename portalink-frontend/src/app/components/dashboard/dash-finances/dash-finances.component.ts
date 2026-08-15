@@ -488,7 +488,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                    [ngClass]="isDark ? 'bg-neutral-950/90 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
                 <div class="flex items-center gap-2">
                   <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  <span class="text-[10px] font-extrabold uppercase tracking-widest opacity-60">Valor Formateado</span>
+                  <span class="text-[10px] font-extrabold uppercase tracking-widest opacity-60">Precio servicio</span>
                 </div>
                 <span class="text-base sm:text-lg font-black font-mono tracking-tight"
                       [ngClass]="isDark ? 'text-emerald-400' : 'text-emerald-600'">
@@ -812,6 +812,166 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
           </div>
         </div>
 
+        <!-- Inline Payment / Abono Panel (Estilo Registro de Servicio - Monocromático) -->
+        <div *ngIf="showPaymentModal && paymentInvoiceTarget" class="rounded-[28px] border p-6 space-y-5 shadow-xl transition-all mb-6 animate-fadeIn"
+             [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-white' : 'bg-neutral-50 border-neutral-300 text-black'">
+          
+          <!-- Header Bar -->
+          <div class="flex items-center justify-between border-b pb-4 transition-colors"
+               [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+            <div class="flex items-center gap-3">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border transition-colors"
+                    [ngClass]="isDark ? 'bg-black text-white border-neutral-700' : 'bg-white text-black border-neutral-300'">
+                <span>REGISTRO DE RECAUDO / ABONO</span>
+              </span>
+              <h3 class="text-sm sm:text-base font-black uppercase tracking-wider truncate" [ngClass]="isDark ? 'text-white' : 'text-black'">
+                Abono a Cuenta #{{ paymentInvoiceTarget.invoice_number || paymentInvoiceTarget.id }}
+              </h3>
+            </div>
+            <button (click)="closePaymentModal()" class="p-1.5 rounded-xl border transition-all cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-200 text-neutral-500 hover:text-black hover:bg-neutral-100'">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          <!-- Body Grid (2 Cols) -->
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+            
+            <!-- Left Col: Client & Invoice Financial State (Purely Monochromatic) -->
+            <div class="md:col-span-5 rounded-[22px] border p-5 flex flex-col justify-between transition-colors"
+                 [ngClass]="isDark ? 'bg-black/60 border-neutral-800' : 'bg-white border-neutral-200'">
+              <div class="space-y-4">
+                <div>
+                  <span class="text-[10px] font-black uppercase tracking-widest block mb-1 opacity-50">Total Cuenta de Cobro</span>
+                  <p class="text-xl font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-black'">
+                    {{ formatCOP(paymentInvoiceTarget.total_amount || paymentInvoiceTarget.total || 0) }}
+                  </p>
+                </div>
+
+                <div class="space-y-2 border-t pt-3" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+                  <div class="flex justify-between items-center text-xs">
+                    <span class="opacity-50 font-medium">Recaudado hasta hoy:</span>
+                    <span class="font-bold font-sans text-sm" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">{{ formatCOP(paymentInvoiceTarget.paid_amount || 0) }}</span>
+                  </div>
+
+                  <div class="flex justify-between items-center text-xs pt-1">
+                    <span class="font-extrabold opacity-70">Saldo Pendiente:</span>
+                    <span class="font-bold font-sans text-sm" [ngClass]="isDark ? 'text-white' : 'text-black'">
+                      {{ formatCOP(getPendingAmount(paymentInvoiceTarget)) }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Recaudo Progress Bar (Monocromático) -->
+                <div class="space-y-1.5 pt-1">
+                  <div class="h-2 rounded-full overflow-hidden border" [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800' : 'bg-neutral-200 border-neutral-300'">
+                    <div class="h-full rounded-full transition-all duration-500" [ngClass]="isDark ? 'bg-white' : 'bg-black'"
+                         [style.width.%]="getInvoicePaidPct(paymentInvoiceTarget)"></div>
+                  </div>
+                  <div class="flex justify-between items-center text-[10px] font-sans font-bold opacity-60">
+                    <span>Progreso Recaudo</span>
+                    <span>{{ getInvoicePaidPct(paymentInvoiceTarget) }}%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="border-t my-3 transition-colors" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'"></div>
+
+              <div>
+                <span class="text-[10px] font-black uppercase tracking-widest block mb-1 opacity-50">TITULAR DE LA CUENTA</span>
+                <p class="text-sm font-extrabold truncate" [ngClass]="isDark ? 'text-white' : 'text-black'">{{ paymentInvoiceTarget.clientName || 'Cliente' }}</p>
+                <p class="text-xs opacity-50 truncate mt-0.5">{{ paymentInvoiceTarget.clientCompany || 'Sin empresa' }}</p>
+              </div>
+            </div>
+
+            <!-- Right Col: Form & Formatted Price Preview (Color only on the Price Preview Badge!) -->
+            <div class="md:col-span-7 flex flex-col justify-between space-y-4">
+              
+              <!-- Amount Input + Live Price Preview Badge -->
+              <div class="space-y-2">
+                <label class="text-[10px] font-black uppercase tracking-widest block" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
+                  MONTO A ABONAR (COP) *
+                </label>
+                
+                <input type="number" [(ngModel)]="paymentForm.amount" min="1" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                       placeholder="Ej: 500000"
+                       class="w-full px-4 py-2.5 rounded-xl text-base font-sans font-bold border outline-none transition-colors"
+                       [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white focus:border-white' : 'bg-white border-neutral-300 text-black focus:border-black'">
+
+                <!-- Indicador del Precio en Color Verde (El único elemento en color de la sección derecha) -->
+                <div class="mt-2 p-3.5 rounded-xl border flex items-center justify-between transition-all duration-300 shadow-xs"
+                     [ngClass]="isDark ? 'bg-black border-neutral-800' : 'bg-white border-neutral-200'">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest opacity-60">Precio abono</span>
+                  </div>
+                  <span class="text-lg sm:text-xl font-bold font-sans"
+                        [ngClass]="isDark ? 'text-emerald-400' : 'text-emerald-600'">
+                    {{ formatCOPDisplay(paymentForm.amount) }}
+                  </span>
+                </div>
+
+                <!-- Quick Presets (Monocromáticos) -->
+                <div class="flex gap-2 pt-1 flex-wrap">
+                  <button (click)="setPaymentPreset(0.5)" type="button"
+                          class="px-3 py-1.5 rounded-xl text-[10px] font-extrabold uppercase tracking-wider border cursor-pointer transition-colors"
+                          [ngClass]="isDark ? 'border-neutral-800 bg-black text-neutral-300 hover:text-white hover:bg-neutral-800' : 'border-neutral-200 bg-white text-neutral-700 hover:text-black hover:bg-neutral-100'">
+                    50% del Saldo
+                  </button>
+                  <button (click)="setPaymentPreset(1.0)" type="button"
+                          class="px-3 py-1.5 rounded-xl text-[10px] font-extrabold uppercase tracking-wider border cursor-pointer transition-colors"
+                          [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800 text-white hover:bg-neutral-700' : 'border-neutral-300 bg-neutral-100 text-black hover:bg-neutral-200'">
+                    Liquidar Saldo Total
+                  </button>
+                </div>
+              </div>
+
+              <!-- Date & Method Fields -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1.5">
+                  <label class="text-[10px] font-black uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">FECHA DE ABONO *</label>
+                  <input type="date" [(ngModel)]="paymentForm.paidAt" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                         class="w-full px-3.5 py-2.5 rounded-xl text-sm font-semibold border outline-none cursor-pointer transition-colors"
+                         [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white focus:border-white' : 'bg-white border-neutral-300 text-black focus:border-black'">
+                </div>
+                <div class="flex flex-col gap-1.5">
+                  <label class="text-[10px] font-black uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">MÉTODO DE PAGO *</label>
+                  <select [(ngModel)]="paymentForm.paymentMethod" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                          class="w-full px-3.5 py-2.5 rounded-xl text-sm font-semibold border outline-none cursor-pointer transition-colors"
+                          [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white focus:border-white' : 'bg-white border-neutral-300 text-black focus:border-black'">
+                    <option *ngFor="let m of paymentMethodsList" [value]="m">{{ m }}</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Notes -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-[10px] font-black uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">COMPROBANTE / REFERENCIA / NOTAS</label>
+                <textarea [(ngModel)]="paymentForm.paymentNotes" rows="2" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                          placeholder="Ej: Abono 1 de 2 · Ref Bancolombia #982341..."
+                          class="w-full px-3.5 py-2.5 rounded-xl text-sm border outline-none resize-none transition-colors font-medium"
+                          [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500 focus:border-white' : 'bg-white border-neutral-300 text-black placeholder-neutral-400 focus:border-black'"></textarea>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Bottom Actions -->
+          <div class="flex gap-3 justify-end pt-3 border-t transition-colors" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+            <button (click)="closePaymentModal()"
+                    class="px-4 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border cursor-pointer transition-colors"
+                    [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:text-white' : 'border-neutral-300 text-neutral-600 hover:text-black'">
+              Cancelar
+            </button>
+            <button (click)="confirmPayment()" [disabled]="isLoading"
+                    class="px-6 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider transition-all cursor-pointer shadow-md flex items-center gap-2"
+                    [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              <span>{{ isLoading ? 'Guardando Abono...' : 'Guardar Abono' }}</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Invoice list -->
         <div class="rounded-2xl border overflow-hidden"
              [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
@@ -834,7 +994,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                           [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:text-white' : 'border-neutral-200 text-neutral-600 hover:text-black'" title="Ver historial de abonos">
                     <svg class="w-3.5 h-3.5 transition-transform duration-200" [ngClass]="expandedInvoiceId === inv.id ? 'rotate-90' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                   </button>
-                  <span class="text-xs font-bold font-mono" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">#{{ inv.invoice_number || inv.id }}</span>
+                  <span class="text-xs font-semibold font-sans" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">#{{ inv.invoice_number || inv.id }}</span>
                 </div>
 
                 <div class="col-span-3">
@@ -843,10 +1003,10 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                 </div>
 
                 <div class="col-span-2 text-right">
-                  <span class="text-sm font-bold block" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(inv.total || inv.total_amount || 0) }}</span>
+                  <span class="text-sm font-bold font-sans block" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(inv.total || inv.total_amount || 0) }}</span>
                   
                   <!-- Abono breakdown -->
-                  <div *ngIf="inv.paid_amount && inv.paid_amount > 0 && inv.status !== 'Pagada' && inv.status !== 'PAGADA'" class="text-[10px] font-mono mt-0.5">
+                  <div *ngIf="inv.paid_amount && inv.paid_amount > 0 && inv.status !== 'Pagada' && inv.status !== 'PAGADA'" class="text-[10px] font-sans mt-0.5">
                     <span class="text-emerald-400 font-semibold">Abonado: {{ formatCOP(inv.paid_amount) }}</span>
                   </div>
                 </div>
@@ -858,7 +1018,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                 </div>
 
                 <div class="col-span-2">
-                  <span class="text-xs" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ inv.dueAt | date:'dd MMM yyyy' }}</span>
+                  <span class="text-xs font-sans" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ inv.dueAt | date:'dd MMM yyyy' }}</span>
                 </div>
 
                 <div class="col-span-1 flex justify-end gap-1">
@@ -901,20 +1061,30 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                   </button>
                 </div>
 
-                <!-- Recaudo Status Bar -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 rounded-xl border text-xs"
-                     [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800' : 'bg-white border-neutral-200'">
-                  <div>
-                    <span class="text-[10px] font-bold uppercase tracking-widest block opacity-60">Monto Total</span>
-                    <span class="font-bold font-mono">{{ formatCOP(inv.total || inv.total_amount || 0) }}</span>
+                <!-- Recaudo Status Bar (Estilo Texto Proporcional de Servicios) -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                  <div class="rounded-2xl border p-3.5 flex flex-col justify-between transition-colors shadow-2xs"
+                       [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200'">
+                    <span class="text-[10px] font-bold uppercase tracking-widest block opacity-60 mb-1">Monto Total</span>
+                    <p class="text-sm sm:text-base font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                      {{ formatCOP(inv.total || inv.total_amount || 0) }}
+                    </p>
                   </div>
-                  <div>
-                    <span class="text-[10px] font-bold uppercase tracking-widest block opacity-60">Recaudado hasta hoy</span>
-                    <span class="font-bold text-emerald-400 font-mono">{{ formatCOP(inv.paid_amount || 0) }}</span>
+
+                  <div class="rounded-2xl border p-3.5 flex flex-col justify-between transition-colors shadow-2xs"
+                       [ngClass]="isDark ? 'bg-emerald-950/20 border-emerald-500/30' : 'bg-emerald-50/50 border-emerald-200'">
+                    <span class="text-[10px] font-bold uppercase tracking-widest block text-emerald-400/80 mb-1">Recaudado hasta hoy</span>
+                    <p class="text-sm sm:text-base font-bold font-sans text-emerald-400">
+                      {{ formatCOP(inv.paid_amount || 0) }}
+                    </p>
                   </div>
-                  <div>
-                    <span class="text-[10px] font-bold uppercase tracking-widest block opacity-60">Saldo Pendiente</span>
-                    <span class="font-bold text-amber-400 font-mono">{{ formatCOP(getPendingAmount(inv)) }}</span>
+
+                  <div class="rounded-2xl border p-3.5 flex flex-col justify-between transition-colors shadow-2xs"
+                       [ngClass]="isDark ? 'bg-amber-950/20 border-amber-500/30' : 'bg-amber-50/50 border-amber-200'">
+                    <span class="text-[10px] font-bold uppercase tracking-widest block text-amber-400/80 mb-1">Saldo Pendiente</span>
+                    <p class="text-sm sm:text-base font-bold font-sans text-amber-400">
+                      {{ formatCOP(getPendingAmount(inv)) }}
+                    </p>
                   </div>
                 </div>
 
@@ -932,9 +1102,9 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                     </thead>
                     <tbody class="divide-y" [ngClass]="isDark ? 'divide-neutral-800' : 'divide-neutral-200'">
                       <tr *ngFor="let pay of inv.payments" [ngClass]="isDark ? 'hover:bg-neutral-900/50' : 'hover:bg-neutral-100/50'">
-                        <td class="px-3.5 py-2 font-mono opacity-80">{{ pay.payment_date | date:'dd MMM yyyy' }}</td>
+                        <td class="px-3.5 py-2 font-sans opacity-80">{{ pay.payment_date | date:'dd MMM yyyy' }}</td>
                         <td class="px-3.5 py-2 font-semibold">{{ pay.payment_method }}</td>
-                        <td class="px-3.5 py-2 font-mono font-bold text-right text-emerald-400">{{ formatCOP(pay.amount) }}</td>
+                        <td class="px-3.5 py-2 font-sans font-bold text-right text-emerald-400">{{ formatCOP(pay.amount) }}</td>
                         <td class="px-3.5 py-2 opacity-70 truncate max-w-[200px]">{{ pay.notes || '—' }}</td>
                         <td class="px-3.5 py-2 text-right">
                           <button (click)="deletePayment(pay.id!)" class="p-1 rounded text-neutral-400 hover:text-red-400 hover:bg-red-500/10 cursor-pointer" title="Anular / Eliminar Abono">
@@ -1086,156 +1256,6 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
           <div class="flex-grow bg-neutral-800/20 relative">
             <iframe *ngIf="previewPdfUrl" [src]="previewPdfUrl" class="w-full h-full border-0"></iframe>
           </div>
-        </div>
-      </div>
-
-      <!-- Payment Modal (Abonos Parciales por Cuotas / Plazos) -->
-      <div *ngIf="showPaymentModal && paymentInvoiceTarget" class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md animate-fadeIn">
-        <div class="w-full max-w-3xl rounded-3xl border shadow-2xl overflow-hidden transition-all modal-enter my-auto flex flex-col"
-             [ngClass]="isDark ? 'bg-black border-neutral-800 text-white shadow-white/5' : 'bg-white border-neutral-300 text-black shadow-black/10'">
-          
-          <!-- Cabecera -->
-          <div class="px-6 py-4 border-b flex items-center justify-between gap-4 shrink-0 transition-colors"
-               [ngClass]="isDark ? 'border-neutral-800 bg-black' : 'border-neutral-300 bg-white'">
-            <div class="flex items-center gap-3 min-w-0">
-              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest border shrink-0 transition-colors"
-                    [ngClass]="isDark ? 'bg-neutral-900 text-white border-neutral-700' : 'bg-neutral-100 text-black border-neutral-300'">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>ABONO / RECAUDO</span>
-              </span>
-              <h3 class="text-base sm:text-lg font-extrabold tracking-tight truncate">
-                Registrar Abono · Cuenta #{{ paymentInvoiceTarget.invoice_number || paymentInvoiceTarget.id }}
-              </h3>
-            </div>
-            <button (click)="closePaymentModal()"
-                    class="p-2 rounded-xl border transition-all cursor-pointer shrink-0 flex items-center justify-center"
-                    [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:text-white hover:bg-neutral-900 hover:border-neutral-700' : 'border-neutral-300 text-neutral-600 hover:text-black hover:bg-neutral-100 hover:border-neutral-400'">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
-          </div>
-
-          <!-- Cuerpo -->
-          <div class="p-6 grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-            
-            <!-- Columna Izquierda: Resumen de Saldos -->
-            <div class="md:col-span-5 rounded-2xl border p-5 flex flex-col justify-between transition-colors"
-                 [ngClass]="isDark ? 'bg-neutral-950/80 border-neutral-800' : 'bg-neutral-50/80 border-neutral-300'">
-              <div class="space-y-4">
-                <div>
-                  <span class="text-[10px] font-bold uppercase tracking-widest block mb-1 opacity-60">Total Cuenta</span>
-                  <p class="text-xl font-bold tracking-tight" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
-                    {{ formatCOP(paymentInvoiceTarget.total_amount || paymentInvoiceTarget.total || 0) }}
-                  </p>
-                </div>
-
-                <div class="flex justify-between items-center text-xs">
-                  <span class="opacity-60">Abonado hasta hoy:</span>
-                  <span class="font-bold text-emerald-400 font-mono">{{ formatCOP(paymentInvoiceTarget.paid_amount || 0) }}</span>
-                </div>
-
-                <div class="flex justify-between items-center text-xs border-t pt-2" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-                  <span class="font-bold opacity-80">Saldo Pendiente:</span>
-                  <span class="font-extrabold text-amber-400 font-mono text-sm">
-                    {{ formatCOP(paymentInvoiceTarget.pending_amount !== undefined ? paymentInvoiceTarget.pending_amount : ((paymentInvoiceTarget.total || 0) - (paymentInvoiceTarget.paid_amount || 0))) }}
-                  </span>
-                </div>
-
-                <!-- Recaudo Progress Bar -->
-                <div class="space-y-1 pt-1">
-                  <div class="h-2 rounded-full overflow-hidden" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'">
-                    <div class="h-full bg-emerald-400 transition-all duration-500"
-                         [style.width.%]="getInvoicePaidPct(paymentInvoiceTarget)"></div>
-                  </div>
-                  <p class="text-[10px] text-right opacity-60 font-mono font-semibold">
-                    {{ getInvoicePaidPct(paymentInvoiceTarget) }}% Recaudado
-                  </p>
-                </div>
-              </div>
-
-              <div class="border-t my-3 transition-colors" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-300'"></div>
-
-              <div>
-                <span class="text-[10px] font-bold uppercase tracking-widest block mb-2 opacity-60">CLIENTE</span>
-                <p class="text-sm font-bold truncate" [ngClass]="isDark ? 'text-white' : 'text-black'">{{ paymentInvoiceTarget.clientName || 'Cliente' }}</p>
-                <p class="text-xs opacity-60 truncate">{{ paymentInvoiceTarget.clientCompany || '' }}</p>
-              </div>
-            </div>
-
-            <!-- Columna Derecha: Formulario de Abono -->
-            <div class="md:col-span-7 flex flex-col justify-between space-y-4">
-              
-              <!-- Presets rápidas de abono -->
-              <div class="space-y-1.5">
-                <label class="text-[10px] font-bold uppercase tracking-widest block" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
-                  MONTO DEL ABONO (COP) *
-                </label>
-                
-                <div class="relative">
-                  <input type="number" [(ngModel)]="paymentForm.amount" min="1" [style.color-scheme]="isDark ? 'dark' : 'light'"
-                         placeholder="Ej: 500000"
-                         class="w-full px-3.5 py-2.5 rounded-xl text-base font-mono font-bold border outline-none transition-colors"
-                         [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white focus:border-white' : 'bg-neutral-100 border-neutral-300 text-black focus:border-black'">
-                </div>
-
-                <!-- Quick Presets -->
-                <div class="flex gap-2 pt-1 flex-wrap">
-                  <button (click)="setPaymentPreset(0.5)" type="button"
-                          class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border cursor-pointer transition-colors"
-                          [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900 text-neutral-300 hover:text-white hover:bg-neutral-800' : 'border-neutral-200 bg-neutral-100 text-neutral-700 hover:text-black'">
-                    50% del Saldo
-                  </button>
-                  <button (click)="setPaymentPreset(1.0)" type="button"
-                          class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border cursor-pointer transition-colors"
-                          [ngClass]="isDark ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20' : 'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'">
-                    Liquidar Saldo Total
-                  </button>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="flex flex-col gap-1.5">
-                  <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">FECHA DE ABONO *</label>
-                  <input type="date" [(ngModel)]="paymentForm.paidAt" [style.color-scheme]="isDark ? 'dark' : 'light'"
-                         class="w-full px-3.5 py-2.5 rounded-xl text-sm font-semibold border outline-none cursor-pointer transition-colors"
-                         [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white focus:border-white' : 'bg-neutral-100 border-neutral-300 text-black focus:border-black'">
-                </div>
-                <div class="flex flex-col gap-1.5">
-                  <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">MÉTODO DE PAGO *</label>
-                  <select [(ngModel)]="paymentForm.paymentMethod" [style.color-scheme]="isDark ? 'dark' : 'light'"
-                          class="w-full px-3.5 py-2.5 rounded-xl text-sm font-semibold border outline-none cursor-pointer transition-colors"
-                          [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white focus:border-white' : 'bg-neutral-100 border-neutral-300 text-black focus:border-black'">
-                    <option *ngFor="let m of paymentMethodsList" [value]="m">{{ m }}</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="flex flex-col gap-1.5">
-                <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">COMPROBANTE / REFERENCIA / NOTAS</label>
-                <textarea [(ngModel)]="paymentForm.paymentNotes" rows="2" [style.color-scheme]="isDark ? 'dark' : 'light'"
-                          placeholder="Ej: Abono 1 de 2 · Ref Bancolombia #982341..."
-                          class="w-full px-3.5 py-2 rounded-xl text-sm border outline-none resize-none transition-colors font-medium"
-                          [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white placeholder-neutral-600 focus:border-white' : 'bg-neutral-100 border-neutral-300 text-black placeholder-neutral-400 focus:border-black'"></textarea>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- Pie Monocromático -->
-          <div class="px-6 py-4 border-t flex items-center justify-end gap-3 shrink-0 transition-colors"
-               [ngClass]="isDark ? 'border-neutral-800 bg-black' : 'border-neutral-300 bg-white'">
-            <button (click)="closePaymentModal()"
-                    class="px-5 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-widest border transition-colors cursor-pointer"
-                    [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:text-white hover:bg-neutral-900' : 'border-neutral-300 text-neutral-600 hover:text-black hover:bg-neutral-100'">
-              Cancelar
-            </button>
-            <button (click)="confirmPayment()" [disabled]="isLoading"
-                    class="px-6 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-widest transition-all cursor-pointer border shadow-lg flex items-center gap-2"
-                    [ngClass]="isDark ? 'bg-white text-black border-white hover:bg-neutral-200' : 'bg-black text-white border-black hover:bg-neutral-800'">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-              <span>{{ isLoading ? 'Registrando...' : 'Confirmar Abono' }}</span>
-            </button>
-          </div>
-
         </div>
       </div>
 
