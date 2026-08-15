@@ -1,7 +1,8 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FinanceService, Client } from '../../../services/finance.service';
+import { Subject, takeUntil } from 'rxjs';
 
 export interface FinancialTransaction {
   id?: number | string;
@@ -169,7 +170,7 @@ export interface ControlSummary {
           </div>
           <div class="pt-2">
             <div class="w-full bg-neutral-800 rounded-full h-1.5 overflow-hidden">
-              <div class="bg-emerald-400 h-1.5 rounded-full transition-all duration-700" [style.width.%]="summary.margen_neto_pct"></div>
+              <div class="bg-emerald-400 h-1.5 rounded-full transition-all duration-700" [style.width.%]="summary.margen_neto_pct || 0"></div>
             </div>
           </div>
         </div>
@@ -191,7 +192,7 @@ export interface ControlSummary {
           </div>
           <div class="pt-2 flex items-center justify-between text-xs font-medium opacity-70">
             <span>Clientes Activos: {{ summary.clientes_activos }}</span>
-            <span>Facturas Pagadas: {{ formatValue(summary.facturas_pagadas_total) }}</span>
+            <span>Facturas: {{ formatValue(summary.facturas_pagadas_total) }}</span>
           </div>
         </div>
 
@@ -443,9 +444,10 @@ export interface ControlSummary {
     }
   `]
 })
-export class DashFinancialControlComponent implements OnInit {
+export class DashFinancialControlComponent implements OnInit, OnDestroy {
   @Input() theme = 'light';
   private financeService = inject(FinanceService);
+  private destroy$ = new Subject<void>();
 
   currency: 'COP' | 'USD' = 'COP';
   period = '2026-YTD';
@@ -489,44 +491,58 @@ export class DashFinancialControlComponent implements OnInit {
     this.loadClients();
   }
 
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   loadControlData() {
     this.isLoading = true;
-    this.financeService.getControlSummary().subscribe({
-      next: (res) => {
-        if (res.ok && res.summary) {
-          this.summary = res.summary;
+    this.financeService.getControlSummary()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          if (res && res.ok && res.summary) {
+            this.summary = res.summary;
+          }
+          this.loadTransactions();
+        },
+        error: () => {
+          this.loadTransactions();
         }
-        this.loadTransactions();
-      },
-      error: () => {
-        this.loadTransactions();
-      }
-    });
+      });
   }
 
   loadTransactions() {
-    this.financeService.getTransactions(this.searchTerm, this.typeFilter).subscribe({
-      next: (res) => {
-        if (res.ok && res.transactions) {
-          this.transactions = res.transactions;
+    this.financeService.getTransactions(this.searchTerm, this.typeFilter)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          if (res && res.ok && Array.isArray(res.transactions)) {
+            this.transactions = res.transactions;
+          } else {
+            this.transactions = [];
+          }
+          this.isLoading = false;
+        },
+        error: () => {
+          this.transactions = [];
+          this.isLoading = false;
         }
-        this.isLoading = false;
-      },
-      error: () => {
-        this.isLoading = false;
-      }
-    });
+      });
   }
 
   loadClients() {
-    this.financeService.getClients().subscribe({
-      next: (res) => {
-        if (res.ok && res.clients) {
-          this.clients = res.clients;
-        }
-      },
-      error: () => {}
-    });
+    this.financeService.getClients()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          if (res && res.ok && res.clients) {
+            this.clients = res.clients;
+          }
+        },
+        error: () => {}
+      });
   }
 
   openNewModal() {
@@ -552,56 +568,61 @@ export class DashFinancialControlComponent implements OnInit {
       this.showToast('El concepto es obligatorio', 'error');
       return;
     }
-    if (!this.editingTx.amount_cop || this.editingTx.amount_cop <= 0) {
+    if (!this.editingTx.amount_cop || Number(this.editingTx.amount_cop) <= 0) {
       this.showToast('El monto en COP debe ser mayor a cero', 'error');
       return;
     }
 
     this.isSaving = true;
-    this.financeService.saveTransaction(this.editingTx).subscribe({
-      next: (res) => {
-        this.isSaving = false;
-        if (res.ok) {
-          this.showToast(res.message || 'Transacción guardada exitosamente', 'success');
-          this.showModal = false;
-          this.loadControlData();
-        } else {
-          this.showToast(res.message || 'Error al guardar la transacción', 'error');
+    this.financeService.saveTransaction(this.editingTx)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          this.isSaving = false;
+          if (res && res.ok) {
+            this.showToast(res.message || 'Transacción guardada exitosamente', 'success');
+            this.showModal = false;
+            this.loadControlData();
+          } else {
+            this.showToast(res?.message || 'Error al guardar la transacción', 'error');
+          }
+        },
+        error: (err) => {
+          this.isSaving = false;
+          const msg = err?.error?.message || 'Error de conexión al guardar transacción';
+          this.showToast(msg, 'error');
         }
-      },
-      error: (err) => {
-        this.isSaving = false;
-        const msg = err.error?.message || 'Error de conexión al guardar transacción';
-        this.showToast(msg, 'error');
-      }
-    });
+      });
   }
 
   deleteTransaction(tx: FinancialTransaction) {
     if (!tx.id) return;
     if (!confirm(`¿Eliminar la transacción "${tx.concept}"?`)) return;
 
-    this.financeService.deleteTransaction(tx.id).subscribe({
-      next: (res) => {
-        if (res.ok) {
-          this.showToast('Transacción eliminada exitosamente', 'success');
-          this.loadControlData();
-        } else {
-          this.showToast(res.message || 'Error al eliminar', 'error');
+    this.financeService.deleteTransaction(tx.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          if (res && res.ok) {
+            this.showToast('Transacción eliminada exitosamente', 'success');
+            this.loadControlData();
+          } else {
+            this.showToast(res?.message || 'Error al eliminar', 'error');
+          }
+        },
+        error: () => {
+          this.showToast('Error de conexión al eliminar', 'error');
         }
-      },
-      error: () => {
-        this.showToast('Error de conexión al eliminar', 'error');
-      }
-    });
+      });
   }
 
-  formatValue(copValue: number): string {
+  formatValue(copValue: any): string {
+    const val = Number(copValue) || 0;
     if (this.currency === 'USD') {
-      const usdValue = copValue / 4000;
+      const usdValue = val / 4000;
       return '$' + Math.round(usdValue).toLocaleString('en-US') + ' USD';
     }
-    return '$ ' + Math.round(copValue).toLocaleString('es-CO') + ' COP';
+    return '$ ' + Math.round(val).toLocaleString('es-CO') + ' COP';
   }
 
   showToast(msg: string, type: 'success' | 'error') {

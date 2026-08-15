@@ -666,12 +666,20 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   ];
 
   ngOnInit() {
-    this.analyticsService.getMetrics().subscribe(m => {
-      this.metrics = m;
-      this.buildCards();
-      this.buildArrays();
-      this.metricsLoaded = true;
-      this.checkLoading();
+    this.analyticsService.getMetrics().subscribe({
+      next: (m) => {
+        if (m) {
+          this.metrics = m;
+          this.buildCards();
+          this.buildArrays();
+        }
+        this.metricsLoaded = true;
+        this.checkLoading();
+      },
+      error: () => {
+        this.metricsLoaded = true;
+        this.checkLoading();
+      }
     });
     this.loadBadges();
     this.loadItineraryToday();
@@ -725,22 +733,26 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   }
 
   private buildCards() {
+    if (!this.metrics) return;
     const avgLoad = this.getAvgLoad();
     this.metricCards = [
-      { label: 'Vistas del Home', value: this.metrics.homeViews, sublabel: 'Página Principal', iconPath: 'eye' },
-      { label: 'Vistas Linktree', value: this.metrics.linktreeViews, sublabel: 'Sección /links', iconPath: 'link' },
-      { label: 'Consultas Rotbot', value: this.metrics.rotbotOpens, sublabel: `${this.metrics.rotbotMessagesSent} mensajes`, iconPath: 'chat' },
+      { label: 'Vistas del Home', value: this.metrics.homeViews || 0, sublabel: 'Página Principal', iconPath: 'eye' },
+      { label: 'Vistas Linktree', value: this.metrics.linktreeViews || 0, sublabel: 'Sección /links', iconPath: 'link' },
+      { label: 'Consultas Rotbot', value: this.metrics.rotbotOpens || 0, sublabel: `${this.metrics.rotbotMessagesSent || 0} mensajes`, iconPath: 'chat' },
       { label: 'Carga Promedio', value: `${avgLoad}ms`, sublabel: 'Tiempo de respuesta', iconPath: 'bolt' },
     ];
   }
 
   private buildArrays() {
-    this.sectionViewsArray = Object.entries(this.metrics.sectionViews)
-      .map(([name, views]) => ({ name, views }))
+    if (!this.metrics) return;
+    const secViews = this.metrics.sectionViews || {};
+    this.sectionViewsArray = Object.entries(secViews)
+      .map(([name, views]) => ({ name, views: Number(views) || 0 }))
       .sort((a, b) => b.views - a.views);
 
-    this.linkClicksArray = Object.entries(this.metrics.linktreeClicks)
-      .map(([name, count]) => ({ name, count }))
+    const linkClicks = this.metrics.linktreeClicks || {};
+    this.linkClicksArray = Object.entries(linkClicks)
+      .map(([name, count]) => ({ name, count: Number(count) || 0 }))
       .sort((a, b) => b.count - a.count);
   }
 

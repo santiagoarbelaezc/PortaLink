@@ -69,12 +69,10 @@ interface Tab {
         <div class="py-4 md:py-5 border-b flex items-center shrink-0 transition-all duration-300 px-5 justify-between md:justify-start gap-3"
              [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
           <div class="flex items-center gap-3">
-            <img [src]="isDark ? 'assets/icons/navbar-logodark.png' : 'assets/icons/navbar-logolight.png'" class="w-9 h-9 md:w-10 md:h-10 object-contain flex-shrink-0" alt="PortaLink">
+            <img [src]="isDark ? 'assets/icons/navbar-logodark.png' : 'assets/icons/navbar-logolight.png'" class="w-8 h-8 md:w-9 md:h-9 object-contain flex-shrink-0" alt="Admin Panel">
             <div class="min-w-0" *ngIf="!isSidebarCollapsed || isMobileDrawerOpen">
-              <h1 class="text-sm font-bold tracking-widest uppercase truncate"
-                  [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">PortaLink</h1>
-              <span class="text-[9px] uppercase tracking-[0.25em] font-bold"
-                    [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-400'">Admin Panel</span>
+              <h1 class="text-xs font-headline font-bold tracking-[0.25em] uppercase truncate"
+                  [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Admin Panel</h1>
             </div>
           </div>
           <!-- Close button on Mobile Drawer -->
@@ -364,8 +362,8 @@ export class AdminComponent implements OnInit, OnDestroy {
   tabs: Tab[] = [
     { id: 'dashboard', name: 'Inicio' },
     { id: 'financial-control', name: 'Control Financiero' },
-    { id: 'itinerary', name: 'Itinerario' },
     { id: 'finances',  name: 'Finanzas' },
+    { id: 'itinerary', name: 'Calendario' },
     { id: 'analytics', name: 'Analíticas' },
     { id: 'stats',     name: 'Estadísticas' },
     { id: 'messages',  name: 'Mensajes' },
