@@ -10,11 +10,11 @@ export const authGuard: CanActivateFn = (route, state) => {
     return router.parseUrl('/login');
   }
 
-  // Si el destino es el panel de administración (/admin), exigir rol de 'admin'
+  // Si el destino es el panel de administración (/admin) y hay token válido, permitir acceso
   if (state.url.includes('/admin')) {
     const user = authService.currentUser();
-    if (!user || user.rol?.toLowerCase() !== 'admin') {
-      // Redirigir a personalizar si no tiene privilegios de administrador
+    if (user && user.rol && user.rol.toLowerCase() !== 'admin' && user.rol.toLowerCase() !== 'administrador') {
+      // Solo redirigir si el rol es explícitamente cliente normal sin permisos
       return router.parseUrl('/personalizar');
     }
   }

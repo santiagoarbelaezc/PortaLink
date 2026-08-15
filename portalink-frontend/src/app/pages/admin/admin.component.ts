@@ -382,9 +382,17 @@ export class AdminComponent implements OnInit, OnDestroy {
     const saved = localStorage.getItem('portalink_admin_theme');
     if (saved) this.currentTheme = saved;
     const savedTab = localStorage.getItem('portalink_admin_tab');
-    if (savedTab) this.activeTab = savedTab;
+    if (savedTab && this.tabs.some(t => t.id === savedTab)) {
+      this.activeTab = savedTab;
+    } else {
+      this.activeTab = 'dashboard';
+    }
     this.applyAdminTheme();
-    this.refreshBadges();
+    try {
+      this.refreshBadges();
+    } catch (e) {
+      console.warn('[Admin] Error refreshing badges on init:', e);
+    }
   }
 
   applyAdminTheme() {

@@ -1,15 +1,33 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { FinanceService, Client } from '../../../services/finance.service';
 
-export interface Transaction {
-  id: string;
-  date: string;
-  client: string;
+export interface FinancialTransaction {
+  id?: number | string;
+  type: 'INGRESO' | 'EGRESO';
   concept: string;
-  category: 'Enterprise IA' | 'Desarrollo Web' | 'Retainer SaaS' | 'Consultoría';
-  amountCop: number;
-  status: 'COMPLETADO' | 'VERIFICADO' | 'EN PROCESO';
+  category: string;
+  client_id?: number | null;
+  client_name?: string;
+  amount_cop: number;
+  amount_usd?: number;
+  currency?: string;
+  transaction_date: string;
+  status?: string;
+  payment_method?: string;
+  notes?: string;
+}
+
+export interface ControlSummary {
+  arr_total: number;
+  mrr_promedio: number;
+  utilidad_neta: number;
+  margen_neto_pct: number;
+  egresos_total: number;
+  facturas_pagadas_total: number;
+  ingresos_manuales_total: number;
+  clientes_activos: number;
 }
 
 @Component({
@@ -36,7 +54,7 @@ export interface Transaction {
           </h2>
         </div>
 
-        <!-- Controls: Currency & Period -->
+        <!-- Controls: Currency, Period & Actions -->
         <div class="flex flex-wrap items-center gap-3">
           <!-- Currency Toggle -->
           <div class="flex items-center rounded-full p-1 border"
@@ -53,29 +71,40 @@ export interface Transaction {
             </button>
           </div>
 
-          <!-- Period Filter -->
-          <select [(ngModel)]="period"
-                  class="px-4 py-2 rounded-full text-xs font-headline font-semibold uppercase tracking-wider border outline-none cursor-pointer"
-                  [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
-            <option value="2026-YTD">Año 2026 (YTD)</option>
-            <option value="Q2-2026">Trimestre Q2 2026</option>
-            <option value="MES-ACTUAL">Mes Actual</option>
-          </select>
+          <!-- + Nueva Transacción Button -->
+          <button (click)="openNewModal()"
+                  class="px-5 py-2.5 rounded-full text-xs font-headline font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center gap-2 shadow-sm hover:scale-[1.02] active:scale-[0.98]"
+                  [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            <span>+ Nueva Transacción</span>
+          </button>
 
           <!-- Export Report Button -->
           <button (click)="exportReport()"
-                  class="px-5 py-2 rounded-full text-xs font-headline font-semibold uppercase tracking-wider border transition-all duration-300 cursor-pointer flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
+                  class="px-4 py-2 rounded-full text-xs font-headline font-semibold uppercase tracking-wider border transition-all duration-300 cursor-pointer flex items-center gap-2 hover:scale-[1.02]"
                   [ngClass]="isDark ? 'border-neutral-700 text-neutral-200 hover:bg-neutral-800' : 'border-neutral-200 text-neutral-800 bg-neutral-100 hover:bg-neutral-200'">
             <svg class="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
             </svg>
-            <span class="hidden sm:inline">Exportar Informe</span>
+            <span class="hidden sm:inline">Exportar</span>
           </button>
         </div>
       </div>
 
+      <!-- Feedback Toast Notification -->
+      <div *ngIf="toastMessage" class="p-4 rounded-2xl border flex items-center justify-between shadow-lg transition-all"
+           [ngClass]="toastType === 'error' ? 'bg-red-500/10 border-red-500/30 text-red-400' : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'">
+        <div class="flex items-center gap-3">
+          <span class="w-2 h-2 rounded-full" [ngClass]="toastType === 'error' ? 'bg-red-400' : 'bg-emerald-400'"></span>
+          <span class="text-xs font-headline font-bold uppercase tracking-wider">{{ toastMessage }}</span>
+        </div>
+        <button (click)="toastMessage = ''" class="text-xs opacity-70 hover:opacity-100">✕</button>
+      </div>
+
       <!-- ══════════════════════════════════════
-           MODEST REVENUE KPI METRICS GRID (COP)
+           REAL DYNAMIC REVENUE KPI GRID
       ══════════════════════════════════════ -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
 
@@ -84,17 +113,16 @@ export interface Transaction {
              [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
           <div class="flex items-center justify-between">
             <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Ingresos Anuales (ARR)</span>
-            <span class="text-[10px] font-headline font-semibold px-2.5 py-0.5 rounded-full border border-emerald-500/30 text-emerald-500 bg-emerald-500/10 tracking-wider">
-              +18.5% vs 2025
+            <span class="text-[10px] font-headline font-semibold px-2.5 py-0.5 rounded-full border border-emerald-500/30 text-emerald-400 bg-emerald-500/10 tracking-wider">
+              Real Sincronizado
             </span>
           </div>
           <div class="space-y-1">
             <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              {{ formatValue(48000000) }}
+              {{ formatValue(summary.arr_total) }}
             </p>
-            <p class="text-xs opacity-50 font-normal">Facturación anual proyectada</p>
+            <p class="text-xs opacity-50 font-normal">Facturas pagadas + entradas directas</p>
           </div>
-          <!-- Sparkline Wave SVG -->
           <div class="pt-2">
             <svg class="w-full h-7 stroke-current text-emerald-500/40 opacity-70 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 100 25">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M0 20 Q 20 18, 40 12 T 80 5 T 100 2" />
@@ -103,421 +131,276 @@ export interface Transaction {
         </div>
 
         <!-- 2. Facturación Mensual (MRR) -->
-        <div class="rounded-2xl border p-5 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-neutral-600"
-             [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
+        <div class="rounded-[24px] border p-6 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-medium uppercase tracking-wider opacity-60">Facturación Mensual (MRR)</span>
-            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full border border-emerald-500/30 text-emerald-400 bg-emerald-500/10">
-              +12.0% este mes
+            <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Promedio Mensual (MRR)</span>
+            <span class="text-[10px] font-headline font-semibold px-2.5 py-0.5 rounded-full border border-blue-500/30 text-blue-400 bg-blue-500/10 tracking-wider">
+              En Tiempo Real
             </span>
           </div>
           <div class="space-y-1">
-            <p class="text-xl sm:text-2xl font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              {{ formatValue(4000000) }}
+            <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              {{ formatValue(summary.mrr_promedio) }}
             </p>
-            <p class="text-xs opacity-50 font-normal">Promedio mensual de entradas libres</p>
+            <p class="text-xs opacity-50 font-normal">Promedio de ingresos mensuales</p>
           </div>
           <div class="pt-2">
-            <svg class="w-full h-7 stroke-current text-white/40 opacity-70 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 100 25">
+            <svg class="w-full h-7 stroke-current text-blue-400/40 opacity-70 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 100 25">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M0 22 L 20 18 L 40 14 L 60 8 L 80 5 L 100 2" />
             </svg>
           </div>
         </div>
 
-        <!-- 3. Margen Neto Operativo -->
-        <div class="rounded-2xl border p-5 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-neutral-600"
-             [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
+        <!-- 3. Utilidad Neta & Margen -->
+        <div class="rounded-[24px] border p-6 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-medium uppercase tracking-wider opacity-60">Utilidad Neta</span>
-            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full border border-neutral-700 text-neutral-300 bg-neutral-800/50">
-              76.0% Margen
+            <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Utilidad Neta</span>
+            <span class="text-[10px] font-headline font-semibold px-2.5 py-0.5 rounded-full border border-emerald-500/30 text-emerald-400 bg-emerald-500/10 tracking-wider">
+              {{ summary.margen_neto_pct }}% Margen
             </span>
           </div>
           <div class="space-y-1">
-            <p class="text-xl sm:text-2xl font-bold tracking-tight text-emerald-400">
-              {{ formatValue(3040000) }}
+            <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight text-emerald-400">
+              {{ formatValue(summary.utilidad_neta) }}
             </p>
-            <p class="text-xs opacity-50 font-normal">Ganancia neta libre de costos</p>
+            <p class="text-xs opacity-50 font-normal">Deducción de egresos acumulados</p>
           </div>
           <div class="pt-2">
             <div class="w-full bg-neutral-800 rounded-full h-1.5 overflow-hidden">
-              <div class="bg-white h-1.5 rounded-full" style="width: 76%;"></div>
+              <div class="bg-emerald-400 h-1.5 rounded-full transition-all duration-700" [style.width.%]="summary.margen_neto_pct"></div>
             </div>
           </div>
         </div>
 
-        <!-- 4. Contratos Activos -->
-        <div class="rounded-2xl border p-5 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-neutral-600"
-             [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
+        <!-- 4. Egresos y Gastos -->
+        <div class="rounded-[24px] border p-6 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-medium uppercase tracking-wider opacity-60">Contratos Activos</span>
-            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full border border-blue-500/30 text-blue-400 bg-blue-500/10">
-              5 Clientes
+            <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Egresos Totales</span>
+            <span class="text-[10px] font-headline font-semibold px-2.5 py-0.5 rounded-full border border-red-500/30 text-red-400 bg-red-500/10 tracking-wider">
+              Gastos
             </span>
           </div>
           <div class="space-y-1">
-            <p class="text-xl sm:text-2xl font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              {{ formatValue(800000) }} <span class="text-xs font-normal opacity-60">/mes</span>
+            <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight text-red-400">
+              -{{ formatValue(summary.egresos_total) }}
             </p>
-            <p class="text-xs opacity-50 font-normal">Valor promedio por contrato mensual</p>
+            <p class="text-xs opacity-50 font-normal">Licencias, hosting y operaciones</p>
           </div>
           <div class="pt-2 flex items-center justify-between text-xs font-medium opacity-70">
-            <span>Retención: 98.2%</span>
-            <span>Churn: 0.0%</span>
+            <span>Clientes Activos: {{ summary.clientes_activos }}</span>
+            <span>Facturas Pagadas: {{ formatValue(summary.facturas_pagadas_total) }}</span>
           </div>
         </div>
 
       </div>
 
       <!-- ══════════════════════════════════════
-           MONOCHROMATIC CHARTS ROW 1
+           MODAL DE CREACIÓN / EDICIÓN DE TRANSACCIÓN
       ══════════════════════════════════════ -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-
-        <!-- GRAFICA 1: Trayectoria de Ingresos Mensuales (2 Cols) -->
-        <div class="lg:col-span-2 rounded-2xl border p-6 space-y-6 flex flex-col justify-between"
-             [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
+      <div *ngIf="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
+        <div class="w-full max-w-xl rounded-[28px] border p-6 sm:p-7 space-y-5 shadow-2xl transition-all"
+             [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
           
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h3 class="text-base font-semibold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                Trayectoria de Ingresos Mensuales
+          <div class="flex items-center justify-between border-b pb-4" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full" [ngClass]="editingTx.type === 'INGRESO' ? 'bg-emerald-400' : 'bg-red-400'"></span>
+              <h3 class="text-lg font-headline font-bold uppercase tracking-wider">
+                {{ editingTx.id ? 'Editar Transacción #' + editingTx.id : 'Registrar Transacción Real' }}
               </h3>
-              <p class="text-xs mt-0.5 opacity-60">
-                Evolución de entradas en Pesos Colombianos (COP) durante 2026
-              </p>
             </div>
-            <div class="flex items-center gap-4 text-xs font-normal opacity-80">
-              <span class="flex items-center gap-1.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-white"></span>
-                <span>Ingresos Reales</span>
-              </span>
-              <span class="flex items-center gap-1.5 opacity-50">
-                <span class="w-2.5 h-2.5 rounded-full border border-dashed border-neutral-400"></span>
-                <span>Proyección Q3</span>
-              </span>
-            </div>
+            <button (click)="showModal = false" class="p-1.5 rounded-full hover:bg-neutral-800 text-neutral-400 hover:text-white">✕</button>
           </div>
 
-          <!-- SVG Monochromatic Bar & Wave Graph -->
-          <div class="relative h-60 w-full flex items-end justify-between gap-2 pt-8 pb-2 px-2 border-b"
-               [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+          <!-- Form Fields -->
+          <div class="space-y-4 text-xs font-headline">
             
-            <!-- Background Grid Lines -->
-            <div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-10">
-              <div class="border-b border-white w-full"></div>
-              <div class="border-b border-white w-full"></div>
-              <div class="border-b border-white w-full"></div>
-              <div class="border-b border-white w-full"></div>
+            <!-- Type Toggle -->
+            <div class="grid grid-cols-2 gap-3">
+              <button type="button" (click)="editingTx.type = 'INGRESO'"
+                      class="py-2.5 rounded-xl font-bold uppercase tracking-wider border transition-all cursor-pointer flex items-center justify-center gap-2"
+                      [ngClass]="editingTx.type === 'INGRESO' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'border-neutral-700 opacity-50'">
+                ▲ Ingreso (+)
+              </button>
+              <button type="button" (click)="editingTx.type = 'EGRESO'"
+                      class="py-2.5 rounded-xl font-bold uppercase tracking-wider border transition-all cursor-pointer flex items-center justify-center gap-2"
+                      [ngClass]="editingTx.type === 'EGRESO' ? 'bg-red-500/20 border-red-500 text-red-400' : 'border-neutral-700 opacity-50'">
+                ▼ Egreso (-)
+              </button>
             </div>
 
-            <!-- Month 1: Ene ($2.4M COP) -->
-            <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
-              <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
-                {{ formatValue(2400000) }}
-              </div>
-              <div class="w-full max-w-[36px] bg-neutral-700/40 group-hover:bg-neutral-600 rounded-t-xl transition-all duration-300" style="height: 52%;"></div>
-              <span class="text-xs font-normal opacity-60">Ene</span>
+            <!-- Concept -->
+            <div class="space-y-1.5">
+              <label class="font-semibold uppercase tracking-wider opacity-70">Concepto de la Transacción *</label>
+              <input type="text" [(ngModel)]="editingTx.concept" placeholder="Ej: Pago de Licencia Rotbot Enterprise"
+                     class="w-full px-4 py-3 rounded-xl border outline-none font-medium bg-transparent"
+                     [ngClass]="isDark ? 'border-neutral-800 text-white focus:border-white' : 'border-neutral-300 text-neutral-900 focus:border-black'">
             </div>
 
-            <!-- Month 2: Feb ($2.8M COP) -->
-            <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
-              <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
-                {{ formatValue(2800000) }}
+            <!-- Category & Client -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="space-y-1.5">
+                <label class="font-semibold uppercase tracking-wider opacity-70">Categoría *</label>
+                <select [(ngModel)]="editingTx.category"
+                        class="w-full px-4 py-3 rounded-xl border outline-none font-medium cursor-pointer"
+                        [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800 text-white' : 'bg-neutral-50 border-neutral-300 text-neutral-900'">
+                  <option value="Enterprise IA">Enterprise IA</option>
+                  <option value="Desarrollo Web">Desarrollo Web</option>
+                  <option value="Retainer SaaS">Retainer SaaS</option>
+                  <option value="Consultoría">Consultoría</option>
+                  <option value="Infraestructura">Infraestructura & Cloud</option>
+                  <option value="Licencias">Licencias & Herramientas</option>
+                  <option value="Gastos Operativos">Gastos Operativos</option>
+                </select>
               </div>
-              <div class="w-full max-w-[36px] bg-neutral-700/50 group-hover:bg-neutral-600 rounded-t-xl transition-all duration-300" style="height: 60%;"></div>
-              <span class="text-xs font-normal opacity-60">Feb</span>
+
+              <div class="space-y-1.5">
+                <label class="font-semibold uppercase tracking-wider opacity-70">Cliente Asociado (Opcional)</label>
+                <select [(ngModel)]="editingTx.client_id"
+                        class="w-full px-4 py-3 rounded-xl border outline-none font-medium cursor-pointer"
+                        [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800 text-white' : 'bg-neutral-50 border-neutral-300 text-neutral-900'">
+                  <option [ngValue]="null">— Seleccionar cliente —</option>
+                  <option *ngFor="let c of clients" [value]="c.id">{{ c.name }}{{ c.company ? ' (' + c.company + ')' : '' }}</option>
+                </select>
+              </div>
             </div>
 
-            <!-- Month 3: Mar ($3.1M COP) -->
-            <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
-              <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
-                {{ formatValue(3100000) }}
+            <!-- Amount COP & Date -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="space-y-1.5">
+                <label class="font-semibold uppercase tracking-wider opacity-70">Monto en COP ($) *</label>
+                <input type="number" [(ngModel)]="editingTx.amount_cop" placeholder="1500000"
+                       class="w-full px-4 py-3 rounded-xl border outline-none font-bold text-sm bg-transparent"
+                       [ngClass]="isDark ? 'border-neutral-800 text-white focus:border-white' : 'border-neutral-300 text-neutral-900 focus:border-black'">
               </div>
-              <div class="w-full max-w-[36px] bg-neutral-700/60 group-hover:bg-neutral-500 rounded-t-xl transition-all duration-300" style="height: 68%;"></div>
-              <span class="text-xs font-normal opacity-60">Mar</span>
+
+              <div class="space-y-1.5">
+                <label class="font-semibold uppercase tracking-wider opacity-70">Fecha de Transacción *</label>
+                <input type="date" [(ngModel)]="editingTx.transaction_date"
+                       class="w-full px-4 py-3 rounded-xl border outline-none font-medium bg-transparent cursor-pointer"
+                       [ngClass]="isDark ? 'border-neutral-800 text-white focus:border-white' : 'border-neutral-300 text-neutral-900 focus:border-black'">
+              </div>
             </div>
 
-            <!-- Month 4: Abr ($3.4M COP) -->
-            <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
-              <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
-                {{ formatValue(3400000) }}
+            <!-- Payment Method & Notes -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="space-y-1.5">
+                <label class="font-semibold uppercase tracking-wider opacity-70">Método de Pago</label>
+                <select [(ngModel)]="editingTx.payment_method"
+                        class="w-full px-4 py-3 rounded-xl border outline-none font-medium cursor-pointer"
+                        [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800 text-white' : 'bg-neutral-50 border-neutral-300 text-neutral-900'">
+                  <option value="Transferencia Bancaria">Transferencia Bancaria</option>
+                  <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
+                  <option value="Efectivo / Caja">Efectivo / Caja</option>
+                  <option value="Crypto / USDT">Crypto / USDT</option>
+                </select>
               </div>
-              <div class="w-full max-w-[36px] bg-neutral-600/70 group-hover:bg-neutral-400 rounded-t-xl transition-all duration-300" style="height: 74%;"></div>
-              <span class="text-xs font-normal opacity-60">Abr</span>
-            </div>
 
-            <!-- Month 5: May ($3.7M COP) -->
-            <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
-              <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
-                {{ formatValue(3700000) }}
+              <div class="space-y-1.5">
+                <label class="font-semibold uppercase tracking-wider opacity-70">Notas Adicionales</label>
+                <input type="text" [(ngModel)]="editingTx.notes" placeholder="Ej: Factura de referencia #1024"
+                       class="w-full px-4 py-3 rounded-xl border outline-none font-medium bg-transparent"
+                       [ngClass]="isDark ? 'border-neutral-800 text-white focus:border-white' : 'border-neutral-300 text-neutral-900 focus:border-black'">
               </div>
-              <div class="w-full max-w-[36px] bg-neutral-500/80 group-hover:bg-neutral-300 rounded-t-xl transition-all duration-300" style="height: 80%;"></div>
-              <span class="text-xs font-normal opacity-60">May</span>
-            </div>
-
-            <!-- Month 6: Jun ($4.0M COP) -->
-            <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
-              <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800 text-white px-2 py-1 rounded absolute -top-8 shadow whitespace-nowrap">
-                {{ formatValue(4000000) }}
-              </div>
-              <div class="w-full max-w-[36px] bg-neutral-300 group-hover:bg-white rounded-t-xl transition-all duration-300 shadow-lg" style="height: 86%;"></div>
-              <span class="text-xs font-normal opacity-60">Jun</span>
-            </div>
-
-            <!-- Month 7: Jul ($4.5M COP - Récord) -->
-            <div class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
-              <div class="text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity bg-white text-black px-2 py-1 rounded absolute -top-8 shadow-xl whitespace-nowrap">
-                {{ formatValue(4500000) }} 🔥
-              </div>
-              <div class="w-full max-w-[36px] bg-white rounded-t-xl transition-all duration-300 shadow-xl" style="height: 95%;"></div>
-              <span class="text-xs font-bold text-emerald-400">Jul</span>
             </div>
 
           </div>
 
-          <!-- Bottom Summary Badge -->
-          <div class="flex flex-wrap items-center justify-between text-xs pt-1 opacity-80 gap-3">
-            <span class="flex items-center gap-2 font-normal">
-              <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-3l3 3 3-3"/>
-              </svg>
-              <span>Promedio de Crecimiento Compuesto: <strong class="font-semibold">+9.8% Mensual</strong></span>
-            </span>
-            <span class="font-mono text-[11px] opacity-60">Auditoría en vivo</span>
-          </div>
-
-        </div>
-
-        <!-- GRAFICA 2: Distribución de Ingresos Donut (1 Col) -->
-        <div class="rounded-2xl border p-6 space-y-6 flex flex-col justify-between"
-             [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
-          <div>
-            <h3 class="text-base font-semibold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              Distribución de Ingresos
-            </h3>
-            <p class="text-xs mt-0.5 opacity-60">Por líneas de negocio</p>
-          </div>
-
-          <!-- Circular Donut Graphic Simulation -->
-          <div class="flex items-center justify-center py-4 relative">
-            <div class="w-36 h-36 rounded-full border-8 border-neutral-700 border-t-white border-r-neutral-300 border-b-neutral-500 flex items-center justify-center relative shadow-inner">
-              <div class="text-center">
-                <span class="text-2xl font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">45%</span>
-                <p class="text-[10px] uppercase tracking-wider opacity-50 font-normal">Licencias IA</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Breakdown legend -->
-          <div class="space-y-3 text-xs">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-white"></span>
-                <span class="font-medium">RotBot IA Enterprise</span>
-              </div>
-              <span class="font-semibold">{{ formatValue(1800000) }} (45%)</span>
-            </div>
-
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-neutral-300"></span>
-                <span class="font-medium">Desarrollo Web SaaS</span>
-              </div>
-              <span class="font-semibold">{{ formatValue(1400000) }} (35%)</span>
-            </div>
-
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-neutral-600"></span>
-                <span class="font-medium">Retainers & Soporte</span>
-              </div>
-              <span class="font-semibold">{{ formatValue(800000) }} (20%)</span>
-            </div>
+          <!-- Buttons -->
+          <div class="flex items-center justify-end gap-3 pt-4 border-t" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+            <button (click)="showModal = false"
+                    class="px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider border opacity-70 hover:opacity-100 transition-all">
+              Cancelar
+            </button>
+            <button (click)="saveTransaction()" [disabled]="isSaving"
+                    class="px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer disabled:opacity-40"
+                    [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'">
+              {{ isSaving ? 'Guardando...' : (editingTx.id ? 'Guardar Cambios' : 'Registrar Transacción') }}
+            </button>
           </div>
 
         </div>
-
       </div>
 
       <!-- ══════════════════════════════════════
-           MONOCHROMATIC CHARTS ROW 2
+           BALANCED TRANSACTIONS LEDGER TABLE
       ══════════════════════════════════════ -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-
-        <!-- GRAFICA 3: Canales de Captación de Clientes -->
-        <div class="rounded-2xl border p-6 space-y-5"
-             [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
-          <div>
-            <h3 class="text-base font-semibold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              Canales de Captación
-            </h3>
-            <p class="text-xs mt-0.5 opacity-60">Origen del volumen de ingresos</p>
-          </div>
-
-          <div class="space-y-4 pt-2">
-            <!-- Directas -->
-            <div class="space-y-1.5">
-              <div class="flex justify-between text-xs font-medium">
-                <span>Ventas Directas</span>
-                <span class="font-semibold">52% ({{ formatValue(2080000) }})</span>
-              </div>
-              <div class="w-full bg-neutral-800 rounded-full h-2 overflow-hidden">
-                <div class="bg-white h-2 rounded-full" style="width: 52%;"></div>
-              </div>
-            </div>
-
-            <!-- Inbound RotBot IA -->
-            <div class="space-y-1.5">
-              <div class="flex justify-between text-xs font-medium">
-                <span>Leads Inbound RotBot IA</span>
-                <span class="font-semibold">32% ({{ formatValue(1280000) }})</span>
-              </div>
-              <div class="w-full bg-neutral-800 rounded-full h-2 overflow-hidden">
-                <div class="bg-neutral-300 h-2 rounded-full" style="width: 32%;"></div>
-              </div>
-            </div>
-
-            <!-- Referidos -->
-            <div class="space-y-1.5">
-              <div class="flex justify-between text-xs font-medium">
-                <span>Referidos & Alianzas</span>
-                <span class="font-semibold">16% ({{ formatValue(640000) }})</span>
-              </div>
-              <div class="w-full bg-neutral-800 rounded-full h-2 overflow-hidden">
-                <div class="bg-neutral-500 h-2 rounded-full" style="width: 16%;"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- GRAFICA 4: Proyección Flujo de Caja Q3 / Q4 2026 -->
-        <div class="rounded-2xl border p-6 space-y-5"
-             [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
-          <div>
-            <h3 class="text-base font-semibold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              Flujo de Caja Proyectado
-            </h3>
-            <p class="text-xs mt-0.5 opacity-60">Comparativa Entradas vs Costos Operativos</p>
-          </div>
-
-          <div class="h-40 flex items-end justify-between gap-3 pt-4 border-b pb-2"
-               [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-            <!-- Q1 -->
-            <div class="flex-1 flex items-end justify-center gap-1.5 h-full">
-              <div class="w-4 bg-neutral-300 rounded-t-md" style="height: 65%;" title="Ingresos Q1"></div>
-              <div class="w-4 bg-neutral-700 rounded-t-md" style="height: 25%;" title="Costos Q1"></div>
-            </div>
-            <!-- Q2 -->
-            <div class="flex-1 flex items-end justify-center gap-1.5 h-full">
-              <div class="w-4 bg-white rounded-t-md shadow" style="height: 85%;" title="Ingresos Q2"></div>
-              <div class="w-4 bg-neutral-600 rounded-t-md" style="height: 28%;" title="Costos Q2"></div>
-            </div>
-            <!-- Q3 (Est) -->
-            <div class="flex-1 flex items-end justify-center gap-1.5 h-full">
-              <div class="w-4 bg-neutral-400/80 rounded-t-md" style="height: 92%;" title="Ingresos Q3 Proyectados"></div>
-              <div class="w-4 bg-neutral-700/80 rounded-t-md" style="height: 30%;" title="Costos Q3 Proyectados"></div>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between text-xs opacity-70">
-            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded bg-white"></span> Entradas</span>
-            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded bg-neutral-600"></span> Egresos</span>
-            <span class="font-semibold text-emerald-400">+76% Margen Libre</span>
-          </div>
-        </div>
-
-        <!-- GRAFICA 5: Margen de Rentabilidad EBITDA por Trimestre -->
-        <div class="rounded-2xl border p-6 space-y-5"
-             [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
-          <div>
-            <h3 class="text-base font-semibold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              Rentabilidad EBITDA
-            </h3>
-            <p class="text-xs mt-0.5 opacity-60">Margen porcentual acumulado</p>
-          </div>
-
-          <!-- Circular Gauge & Progress -->
-          <div class="space-y-4 pt-2">
-            <div class="flex items-center justify-between">
-              <span class="text-3xl font-bold text-emerald-400">76.0%</span>
-              <span class="text-xs font-medium opacity-60">Eficiencia Máxima</span>
-            </div>
-
-            <!-- Quarter Progression Bars -->
-            <div class="space-y-2 text-xs">
-              <div class="flex justify-between opacity-80">
-                <span>Q3 2025</span>
-                <span>68.5%</span>
-              </div>
-              <div class="w-full bg-neutral-800 rounded-full h-1.5">
-                <div class="bg-neutral-500 h-1.5 rounded-full" style="width: 68.5%;"></div>
-              </div>
-
-              <div class="flex justify-between opacity-80">
-                <span>Q4 2025</span>
-                <span>72.0%</span>
-              </div>
-              <div class="w-full bg-neutral-800 rounded-full h-1.5">
-                <div class="bg-neutral-400 h-1.5 rounded-full" style="width: 72%;"></div>
-              </div>
-
-              <div class="flex justify-between font-semibold">
-                <span>Q2 2026 (Actual)</span>
-                <span class="text-emerald-400">76.0%</span>
-              </div>
-              <div class="w-full bg-neutral-800 rounded-full h-1.5">
-                <div class="bg-emerald-400 h-1.5 rounded-full" style="width: 76%;"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- ══════════════════════════════════════
-           BALANCED EXECUTIVE LEDGER / TRANSACTIONS
-      ══════════════════════════════════════ -->
-      <div class="rounded-2xl border p-5 sm:p-6 space-y-5"
-           [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
+      <div class="rounded-[28px] border p-5 sm:p-6 space-y-5 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+           [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800' : 'bg-white border-neutral-200'">
         
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-4"
              [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
           <div>
-            <h3 class="text-base font-semibold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              Libro de Entradas & Depósitos Recientes
-            </h3>
-            <p class="text-xs mt-0.5 opacity-60">Últimos pagos de clientes procesados con éxito</p>
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+              <h3 class="text-base font-headline font-bold uppercase tracking-wider" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                Libro de Transacciones Reales
+              </h3>
+            </div>
+            <p class="text-xs mt-0.5 opacity-60">Movimientos de ingresos y egresos registrados en base de datos</p>
           </div>
-          <span class="text-xs font-medium px-3 py-1 rounded-full border border-emerald-500/30 text-emerald-400 bg-emerald-500/10 self-start sm:self-center">
-            Auditoría en tiempo real
-          </span>
+
+          <!-- Search & Filter Controls -->
+          <div class="flex items-center gap-2">
+            <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="loadTransactions()" placeholder="Buscar concepto o cliente..."
+                   class="px-3.5 py-1.5 rounded-full text-xs border outline-none bg-transparent"
+                   [ngClass]="isDark ? 'border-neutral-800 text-white placeholder-neutral-500' : 'border-neutral-200 text-neutral-900'">
+
+            <select [(ngModel)]="typeFilter" (change)="loadTransactions()"
+                    class="px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider border outline-none cursor-pointer"
+                    [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800 text-white' : 'bg-neutral-50 border-neutral-200 text-neutral-900'">
+              <option value="">Todos los Tipos</option>
+              <option value="INGRESO">Ingresos (+)</option>
+              <option value="EGRESO">Egresos (-)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="isLoading" class="py-12 text-center text-xs font-headline font-semibold uppercase tracking-widest opacity-60">
+          Cargando datos financieros reales...
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!isLoading && transactions.length === 0" class="py-12 text-center space-y-3">
+          <p class="text-xs font-headline font-medium opacity-60">No se encontraron transacciones registradas.</p>
+          <button (click)="openNewModal()" class="px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-white text-black hover:bg-neutral-200 transition-all">
+            + Crear Primera Transacción
+          </button>
         </div>
 
         <!-- Table Container -->
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
+        <div *ngIf="!isLoading && transactions.length > 0" class="overflow-x-auto">
+          <table class="w-full text-left text-xs font-headline">
             <thead>
-              <tr class="border-b uppercase tracking-wider text-[10px] font-semibold opacity-50"
-                  [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+              <tr class="border-b uppercase tracking-wider text-[10px] font-bold opacity-60"
+                  [ngClass]="isDark ? 'border-neutral-800 text-neutral-400' : 'border-neutral-200 text-neutral-500'">
                 <th class="py-3 px-3">Fecha</th>
-                <th class="py-3 px-3">Cliente / Empresa</th>
-                <th class="py-3 px-3">Concepto del Pago</th>
+                <th class="py-3 px-3">Tipo</th>
+                <th class="py-3 px-3">Concepto</th>
                 <th class="py-3 px-3">Categoría</th>
-                <th class="py-3 px-3 text-right">Monto Recibido</th>
-                <th class="py-3 px-3 text-center">Estado</th>
+                <th class="py-3 px-3">Cliente</th>
+                <th class="py-3 px-3 text-right">Monto</th>
+                <th class="py-3 px-3 text-center">Acciones</th>
               </tr>
             </thead>
             <tbody class="divide-y" [ngClass]="isDark ? 'divide-neutral-800/60' : 'divide-neutral-100'">
               <tr *ngFor="let tx of transactions" class="hover:bg-white/5 transition-colors">
                 <!-- Fecha -->
-                <td class="py-3.5 px-3 font-mono opacity-70 whitespace-nowrap">{{ tx.date }}</td>
-                <!-- Cliente -->
-                <td class="py-3.5 px-3 font-semibold whitespace-nowrap" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                  {{ tx.client }}
+                <td class="py-3.5 px-3 font-mono opacity-80 whitespace-nowrap">{{ tx.transaction_date }}</td>
+                <!-- Tipo Badge -->
+                <td class="py-3.5 px-3 whitespace-nowrap">
+                  <span class="px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider border"
+                        [ngClass]="tx.type === 'INGRESO' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-red-500/10 border-red-500/30 text-red-400'">
+                    {{ tx.type }}
+                  </span>
                 </td>
                 <!-- Concepto -->
-                <td class="py-3.5 px-3 opacity-80 whitespace-nowrap">{{ tx.concept }}</td>
+                <td class="py-3.5 px-3 font-medium whitespace-nowrap" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                  {{ tx.concept }}
+                </td>
                 <!-- Categoría -->
                 <td class="py-3.5 px-3 whitespace-nowrap">
                   <span class="px-2.5 py-1 rounded-full text-[10px] font-medium uppercase tracking-wider border"
@@ -525,16 +408,23 @@ export interface Transaction {
                     {{ tx.category }}
                   </span>
                 </td>
-                <!-- Monto -->
-                <td class="py-3.5 px-3 text-right font-bold text-sm text-emerald-400 whitespace-nowrap">
-                  +{{ formatValue(tx.amountCop) }}
+                <!-- Cliente -->
+                <td class="py-3.5 px-3 opacity-80 whitespace-nowrap">
+                  {{ tx.client_name || 'General' }}
                 </td>
-                <!-- Estado -->
-                <td class="py-3.5 px-3 text-center whitespace-nowrap">
-                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-semibold uppercase tracking-wider bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                    {{ tx.status }}
-                  </span>
+                <!-- Monto -->
+                <td class="py-3.5 px-3 text-right font-bold text-sm whitespace-nowrap"
+                    [ngClass]="tx.type === 'INGRESO' ? 'text-emerald-400' : 'text-red-400'">
+                  {{ tx.type === 'INGRESO' ? '+' : '-' }}{{ formatValue(tx.amount_cop) }}
+                </td>
+                <!-- Acciones -->
+                <td class="py-3.5 px-3 text-center whitespace-nowrap flex items-center justify-center gap-2">
+                  <button (click)="openEditModal(tx)" class="p-1.5 rounded-full hover:bg-neutral-800 text-neutral-400 hover:text-white" title="Editar">
+                    ✎
+                  </button>
+                  <button (click)="deleteTransaction(tx)" class="p-1.5 rounded-full hover:bg-red-500/20 text-neutral-400 hover:text-red-400" title="Eliminar">
+                    ✕
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -553,69 +443,173 @@ export interface Transaction {
     }
   `]
 })
-export class DashFinancialControlComponent {
+export class DashFinancialControlComponent implements OnInit {
   @Input() theme = 'light';
+  private financeService = inject(FinanceService);
 
   currency: 'COP' | 'USD' = 'COP';
   period = '2026-YTD';
+  isLoading = true;
+  isSaving = false;
+  showModal = false;
+  searchTerm = '';
+  typeFilter = '';
+
+  toastMessage = '';
+  toastType: 'success' | 'error' = 'success';
+
+  summary: ControlSummary = {
+    arr_total: 0,
+    mrr_promedio: 0,
+    utilidad_neta: 0,
+    margen_neto_pct: 0,
+    egresos_total: 0,
+    facturas_pagadas_total: 0,
+    ingresos_manuales_total: 0,
+    clientes_activos: 0
+  };
+
+  transactions: FinancialTransaction[] = [];
+  clients: Client[] = [];
+
+  editingTx: FinancialTransaction = {
+    type: 'INGRESO',
+    concept: '',
+    category: 'Enterprise IA',
+    client_id: null,
+    amount_cop: 0,
+    transaction_date: new Date().toISOString().substring(0, 10),
+    payment_method: 'Transferencia Bancaria'
+  };
 
   get isDark() { return this.theme === 'dark'; }
 
-  // Datos quemados moderados en Pesos Colombianos (COP)
-  transactions: Transaction[] = [
-    {
-      id: 'TX-901',
-      date: '01 Ago 2026',
-      client: 'Global Banking Corp LatAm',
-      concept: 'Licencia Anual IA Rotbot Enterprise Multi-Node',
+  ngOnInit() {
+    this.loadControlData();
+    this.loadClients();
+  }
+
+  loadControlData() {
+    this.isLoading = true;
+    this.financeService.getControlSummary().subscribe({
+      next: (res) => {
+        if (res.ok && res.summary) {
+          this.summary = res.summary;
+        }
+        this.loadTransactions();
+      },
+      error: () => {
+        this.loadTransactions();
+      }
+    });
+  }
+
+  loadTransactions() {
+    this.financeService.getTransactions(this.searchTerm, this.typeFilter).subscribe({
+      next: (res) => {
+        if (res.ok && res.transactions) {
+          this.transactions = res.transactions;
+        }
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    });
+  }
+
+  loadClients() {
+    this.financeService.getClients().subscribe({
+      next: (res) => {
+        if (res.ok && res.clients) {
+          this.clients = res.clients;
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  openNewModal() {
+    this.editingTx = {
+      type: 'INGRESO',
+      concept: '',
       category: 'Enterprise IA',
-      amountCop: 1500000,
-      status: 'VERIFICADO'
-    },
-    {
-      id: 'TX-902',
-      date: '30 Jul 2026',
-      client: 'Inmobiliaria Capital Group',
-      concept: 'Plataforma Web Custom + Integración CRM',
-      category: 'Desarrollo Web',
-      amountCop: 1200000,
-      status: 'COMPLETADO'
-    },
-    {
-      id: 'TX-903',
-      date: '28 Jul 2026',
-      client: 'TechVentures Holdings',
-      concept: 'Consultoría Especializada Arquitectura IA',
-      category: 'Consultoría',
-      amountCop: 650000,
-      status: 'COMPLETADO'
-    },
-    {
-      id: 'TX-904',
-      date: '25 Jul 2026',
-      client: 'Consorcio Logístico LatAm',
-      concept: 'Contrato de Mantenimiento Retainer Q3',
-      category: 'Retainer SaaS',
-      amountCop: 800000,
-      status: 'COMPLETADO'
-    },
-    {
-      id: 'TX-905',
-      date: '22 Jul 2026',
-      client: 'Fintech Solutions Inc',
-      concept: 'Despliegue Multi-Cloud & Seguridad Web',
-      category: 'Enterprise IA',
-      amountCop: 950000,
-      status: 'VERIFICADO'
+      client_id: null,
+      amount_cop: 0,
+      transaction_date: new Date().toISOString().substring(0, 10),
+      payment_method: 'Transferencia Bancaria'
+    };
+    this.showModal = true;
+  }
+
+  openEditModal(tx: FinancialTransaction) {
+    this.editingTx = { ...tx };
+    this.showModal = true;
+  }
+
+  saveTransaction() {
+    if (!this.editingTx.concept || !this.editingTx.concept.trim()) {
+      this.showToast('El concepto es obligatorio', 'error');
+      return;
     }
-  ];
+    if (!this.editingTx.amount_cop || this.editingTx.amount_cop <= 0) {
+      this.showToast('El monto en COP debe ser mayor a cero', 'error');
+      return;
+    }
+
+    this.isSaving = true;
+    this.financeService.saveTransaction(this.editingTx).subscribe({
+      next: (res) => {
+        this.isSaving = false;
+        if (res.ok) {
+          this.showToast(res.message || 'Transacción guardada exitosamente', 'success');
+          this.showModal = false;
+          this.loadControlData();
+        } else {
+          this.showToast(res.message || 'Error al guardar la transacción', 'error');
+        }
+      },
+      error: (err) => {
+        this.isSaving = false;
+        const msg = err.error?.message || 'Error de conexión al guardar transacción';
+        this.showToast(msg, 'error');
+      }
+    });
+  }
+
+  deleteTransaction(tx: FinancialTransaction) {
+    if (!tx.id) return;
+    if (!confirm(`¿Eliminar la transacción "${tx.concept}"?`)) return;
+
+    this.financeService.deleteTransaction(tx.id).subscribe({
+      next: (res) => {
+        if (res.ok) {
+          this.showToast('Transacción eliminada exitosamente', 'success');
+          this.loadControlData();
+        } else {
+          this.showToast(res.message || 'Error al eliminar', 'error');
+        }
+      },
+      error: () => {
+        this.showToast('Error de conexión al eliminar', 'error');
+      }
+    });
+  }
 
   formatValue(copValue: number): string {
     if (this.currency === 'USD') {
       const usdValue = copValue / 4000;
       return '$' + Math.round(usdValue).toLocaleString('en-US') + ' USD';
     }
-    return '$ ' + copValue.toLocaleString('es-CO') + ' COP';
+    return '$ ' + Math.round(copValue).toLocaleString('es-CO') + ' COP';
+  }
+
+  showToast(msg: string, type: 'success' | 'error') {
+    this.toastMessage = msg;
+    this.toastType = type;
+    setTimeout(() => {
+      this.toastMessage = '';
+    }, 4000);
   }
 
   exportReport() {
