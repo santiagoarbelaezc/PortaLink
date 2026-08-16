@@ -637,4 +637,227 @@ export class PdfReportService {
       doc.save(`Cuenta_de_Cobro_${sanitizedName}_No_${invNum}.pdf`);
     }
   }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // REPORT 5: FINANCIAL (CONTROL FINANCIERO & FACTURACIÓN)
+  // ─────────────────────────────────────────────────────────────────────────
+  async downloadFinancialReport(summary: any, transactions: any[], invoices: any[], action: 'save' | 'bloburl' = 'save'): Promise<string | void> {
+    const { jsPDF, autoTable } = await this.getJsPDF();
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+    const fmtCOP = (v: number) =>
+      new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v || 0);
+
+    this.addHeader(doc, 'INFORME FINANCIERO', 'Balance General de Ingresos, Egresos y Facturación');
+
+    // Calculate totals
+    const totalIngresos = summary?.arr_total || 0;
+    const totalPagado = summary?.facturas_pagadas_total || 0;
+    const totalEgresos = summary?.egresos_total || 0;
+    const utilidadNeta = summary?.utilidad_neta !== undefined ? summary.utilidad_neta : (totalIngresos - totalEgresos);
+
+    const totalPendiente = (invoices || []).reduce((acc: number, inv: any) => {
+      const status = String(inv.status || '').toUpperCase();
+      if (status !== 'PAGADA' && status !== 'ANULADA' && status !== 'BORRADOR') {
+        const total = Number(inv.total || inv.total_amount || 0);
+        const paid = Number(inv.paid_amount || inv.paidAmount || 0);
+        const pending = Number(inv.pending_amount || inv.pendingAmount || (total > paid ? total - paid : 0));
+        return acc + (pending > 0 ? pending : total);
+      }
+      return acc;
+    }, 0);
+
+    // Summary Cards (4 Cards)
+    const cards = [
+      { label: 'Total Ingresos', value: fmtCOP(totalIngresos) },
+      { label: 'Recaudado (Pagado)', value: fmtCOP(totalPagado) },
+      { label: 'Por Cobrar (Pendiente)', value: fmtCOP(totalPendiente) },
+      { label: 'Utilidad Neta', value: fmtCOP(utilidadNeta) },
+    ];
+    let y = this.addSummaryCards(doc, cards, 50);
+
+    // Section 1: Consolidated Summary Table
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(40, 40, 40);
+    doc.text('Resumen General de Consolidado Financiero', 14, y + 2);
+
+    autoTable(doc, {
+      startY: y + 6,
+      head: [['Métrica / Concepto Financiero', 'Monto Total (COP)', 'Estado / Detalle']],
+      body: [
+        ['Total Ingresos (Facturas + Transacciones)', fmtCOP(totalIngresos), 'Ingresos Totales'],
+        ['Total Recaudado (Facturas Pagadas)', fmtCOP(totalPagado), 'Efectivo Confirmado'],
+        ['Total Pendiente por Cobrar (Por Cobrar / Lo que se Debe)', fmtCOP(totalPendiente), totalPendiente > 0 ? '⚠ Pendiente de Cobro' : '✓ Al Día'],
+        ['Total Egresos & Gastos Operativos', fmtCOP(totalEgresos), 'Gastos Registrados'],
+        ['Utilidad Neta del Período', fmtCOP(utilidadNeta), utilidadNeta >= 0 ? '✓ Utilidad Positiva' : '⚠ Déficit'],
+      ],
+      headStyles: { fillColor: [20, 20, 20], textColor: 255, fontStyle: 'bold', fontSize: 8 },
+      bodyStyles: { fontSize: 8, textColor: [50, 50, 50] },
+      alternateRowStyles: { fillColor: [248, 248, 248] },
+      columnStyles: {
+        1: { halign: 'right', fontStyle: 'bold' },
+        2: { halign: 'center', fontStyle: 'bold' }
+      },
+      didParseCell: (data: any) => {
+        if (data.section === 'body') {
+          if (data.row.index === 2 && totalPendiente > 0) {
+            data.cell.styles.textColor = [239, 68, 68];
+          } else if (data.row.index === 4) {
+            data.cell.styles.textColor = utilidadNeta >= 0 ? [34, 197, 94] : [239, 68, 68];
+          }
+        }
+      },
+      margin: { left: 14, right: 14 },
+      tableLineColor: [220, 220, 220],
+      tableLineWidth: 0.1,
+    });
+
+    y = (doc as any).lastAutoTable.finalY + 10;
+    if (y > 230) { doc.addPage(); y = 40; }
+
+    // Section 2: Invoices Table
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(40, 40, 40);
+    doc.text('Facturas Emitidas y Cuentas de Cobro', 14, y + 2);
+
+    const invoiceRows = (invoices || []).slice(0, 15).map(inv => [
+      inv.invoice_number || inv.id || 'N/A',
+      inv.clientName || inv.clientCompany || 'Cliente',
+      inv.issuedAt || inv.issue_date || 'N/A',
+      inv.status || 'DRAFT',
+      fmtCOP(inv.total || inv.total_amount || 0)
+    ]);
+
+    autoTable(doc, {
+      startY: y + 6,
+      head: [['Factura #', 'Cliente / Empresa', 'Fecha', 'Estado', 'Total']],
+      body: invoiceRows.length ? invoiceRows : [['-', 'No hay facturas registradas', '-', '-', '$0']],
+      headStyles: { fillColor: [20, 20, 20], textColor: 255, fontStyle: 'bold', fontSize: 8 },
+      bodyStyles: { fontSize: 8, textColor: [50, 50, 50] },
+      alternateRowStyles: { fillColor: [248, 248, 248] },
+      columnStyles: { 3: { halign: 'center', fontStyle: 'bold' }, 4: { halign: 'right', fontStyle: 'bold' } },
+      didParseCell: (data: any) => {
+        if (data.section === 'body' && data.column.index === 3) {
+          const status = String(data.cell.raw).toUpperCase();
+          if (status.includes('PAGADA')) data.cell.styles.textColor = [34, 197, 94];
+          else if (status.includes('ENVIADA')) data.cell.styles.textColor = [59, 130, 246];
+          else if (status.includes('VENCIDA')) data.cell.styles.textColor = [239, 68, 68];
+        }
+      },
+      margin: { left: 14, right: 14 },
+      tableLineColor: [220, 220, 220],
+      tableLineWidth: 0.1,
+    });
+
+    y = (doc as any).lastAutoTable.finalY + 10;
+    if (y > 230) { doc.addPage(); y = 40; }
+
+    // Section 2: Recent Transactions Table
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(40, 40, 40);
+    doc.text('Últimas Transacciones Registradas', 14, y + 2);
+
+    const txRows = (transactions || []).slice(0, 15).map(tx => [
+      tx.transaction_date || tx.created_at || 'N/A',
+      tx.concept || 'Sin concepto',
+      tx.category || 'General',
+      tx.type || 'INGRESO',
+      fmtCOP(tx.amount_cop || 0)
+    ]);
+
+    autoTable(doc, {
+      startY: y + 6,
+      head: [['Fecha', 'Concepto', 'Categoría', 'Tipo', 'Monto (COP)']],
+      body: txRows.length ? txRows : [['-', 'No hay transacciones recientes', '-', '-', '$0']],
+      headStyles: { fillColor: [20, 20, 20], textColor: 255, fontStyle: 'bold', fontSize: 8 },
+      bodyStyles: { fontSize: 8, textColor: [50, 50, 50] },
+      alternateRowStyles: { fillColor: [248, 248, 248] },
+      columnStyles: { 3: { halign: 'center', fontStyle: 'bold' }, 4: { halign: 'right', fontStyle: 'bold' } },
+      didParseCell: (data: any) => {
+        if (data.section === 'body' && data.column.index === 3) {
+          const type = String(data.cell.raw).toUpperCase();
+          if (type.includes('INGRESO')) data.cell.styles.textColor = [34, 197, 94];
+          else data.cell.styles.textColor = [239, 68, 68];
+        }
+      },
+      margin: { left: 14, right: 14 },
+      tableLineColor: [220, 220, 220],
+      tableLineWidth: 0.1,
+    });
+
+    this.addFooter(doc);
+    if (action === 'bloburl') {
+      return doc.output('bloburl').toString();
+    } else {
+      doc.save(`portalink_reporte_financiero_${this.getDateSlug()}.pdf`);
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // REPORT 6: CONTACTS & MESSAGES
+  // ─────────────────────────────────────────────────────────────────────────
+  async downloadContactsReport(messages: any[], action: 'save' | 'bloburl' = 'save'): Promise<string | void> {
+    const { jsPDF, autoTable } = await this.getJsPDF();
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+    this.addHeader(doc, 'MENSAJES & CONTACTOS', 'Informe Oficial de Solicitudes Recibidas');
+
+    const total = messages.length;
+    const unread = messages.filter(m => m.status === 'unread').length;
+    const replied = messages.filter(m => m.status === 'replied').length;
+    const rate = total > 0 ? Math.round((replied / total) * 100) : 100;
+
+    const cards = [
+      { label: 'Total Recibidos', value: total },
+      { label: 'Nuevos (Sin Leer)', value: unread },
+      { label: 'Respondidos', value: replied },
+      { label: 'Tasa de Respuesta', value: `${rate}%` },
+    ];
+    let y = this.addSummaryCards(doc, cards, 50);
+
+    // Messages Table
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(40, 40, 40);
+    doc.text('Registro de Mensajes de Contacto', 14, y + 2);
+
+    const msgRows = messages.map(m => [
+      m.nombre || 'Anónimo',
+      m.correo || '-',
+      (m.mensaje || '').length > 45 ? (m.mensaje || '').substring(0, 45) + '...' : (m.mensaje || ''),
+      m.status === 'unread' ? 'NUEVO' : (m.status === 'replied' ? 'RESPONDIDO' : 'LEÍDO'),
+      m.created_at ? new Date(m.created_at).toLocaleDateString('es-CO') : '-'
+    ]);
+
+    autoTable(doc, {
+      startY: y + 6,
+      head: [['Remitente', 'Correo Electrónico', 'Contenido Sintético', 'Estado', 'Fecha']],
+      body: msgRows.length ? msgRows : [['-', 'Sin mensajes en sistema', '-', '-', '-']],
+      headStyles: { fillColor: [20, 20, 20], textColor: 255, fontStyle: 'bold', fontSize: 8 },
+      bodyStyles: { fontSize: 8, textColor: [50, 50, 50] },
+      alternateRowStyles: { fillColor: [248, 248, 248] },
+      columnStyles: { 3: { halign: 'center', fontStyle: 'bold' } },
+      didParseCell: (data: any) => {
+        if (data.section === 'body' && data.column.index === 3) {
+          const status = String(data.cell.raw).toUpperCase();
+          if (status.includes('NUEVO')) data.cell.styles.textColor = [59, 130, 246];
+          else if (status.includes('RESPONDIDO')) data.cell.styles.textColor = [34, 197, 94];
+          else data.cell.styles.textColor = [107, 114, 128];
+        }
+      },
+      margin: { left: 14, right: 14 },
+      tableLineColor: [220, 220, 220],
+      tableLineWidth: 0.1,
+    });
+
+    this.addFooter(doc);
+    if (action === 'bloburl') {
+      return doc.output('bloburl').toString();
+    } else {
+      doc.save(`portalink_reporte_contactos_${this.getDateSlug()}.pdf`);
+    }
+  }
 }
