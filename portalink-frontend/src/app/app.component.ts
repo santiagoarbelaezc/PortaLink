@@ -21,9 +21,9 @@ import { CookieConsentComponent } from './components/cookie-consent/cookie-conse
       <div class="pulse-ring"></div>
     </div>
 
-    <!-- Persistent Header & Chatbot (hidden on admin, login, and link page) -->
+    <!-- Persistent Header & Chatbot (hidden on admin, login, link page, and perfil page) -->
     <app-navbar *ngIf="showNavbar()"></app-navbar>
-    <app-ai-chat-floating *ngIf="!isAdminRoute() && !isLoginRoute() && !isLinkRoute()"></app-ai-chat-floating>
+    <app-ai-chat-floating *ngIf="!isAdminRoute() && !isLoginRoute() && !isLinkRoute() && !isPerfilRoute()"></app-ai-chat-floating>
 
     <!-- Cookie Consent Banner & Legal Preferences Modal -->
     <app-cookie-consent></app-cookie-consent>
@@ -171,6 +171,10 @@ export class AppComponent implements OnInit {
 
   isLinkRoute(): boolean {
     return this.router.url.includes('/links') || this.router.url.includes('/link');
+  }
+
+  isPerfilRoute(): boolean {
+    return this.router.url.includes('/perfil');
   }
 
   showNavbar(): boolean {

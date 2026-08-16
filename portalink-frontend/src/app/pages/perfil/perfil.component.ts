@@ -52,13 +52,13 @@ import { Subscription } from 'rxjs';
 
         <!-- User Profile Info Card in Sidebar -->
         <div class="p-5 border-b flex flex-col items-center text-center shrink-0"
-             [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-          <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-xl font-extrabold text-white shadow-md mb-3">
+             [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200/80'">
+          <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-xl font-headline font-bold text-white shadow-md mb-3">
             {{ getUserInitials() }}
           </div>
-          <h2 class="text-sm font-bold truncate w-full">{{ authService.currentUser()?.nombre }}</h2>
-          <span class="text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full border mt-1.5"
-                [ngClass]="isDark ? 'border-neutral-800 bg-neutral-950/60 text-neutral-500' : 'border-neutral-200 bg-neutral-100 text-neutral-600'">
+          <h2 class="text-sm font-headline font-bold truncate w-full" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ authService.currentUser()?.nombre }}</h2>
+          <span class="text-[9px] uppercase tracking-widest font-bold px-3 py-1 rounded-full border mt-1.5"
+                [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900 text-neutral-400' : 'border-neutral-200/80 bg-neutral-100 text-neutral-700'">
             {{ authService.currentUser()?.rol }}
           </span>
         </div>
@@ -67,44 +67,46 @@ import { Subscription } from 'rxjs';
         <nav class="flex-grow p-3 space-y-1 overflow-y-auto sidebar-nav overflow-x-hidden">
           <!-- Mi Perfil tab -->
           <button (click)="setTab('profile')"
-                  class="flex items-center rounded-xl text-sm font-semibold tracking-wide transition-all duration-200 cursor-pointer w-full px-3 py-2.5 gap-3"
+                  class="flex items-center rounded-2xl text-sm font-semibold tracking-wide transition-all duration-200 cursor-pointer w-full px-3.5 py-2.5 gap-3 border-none"
                   [ngClass]="getTabClass('profile')">
-            <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+            <svg class="w-[18px] h-[18px] flex-shrink-0" [style.color]="activeTab === 'profile' ? '#ffffff' : (isDark ? '#a3a3a3' : '#374151')" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
               <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
-            <span class="text-left text-[13px]">Mi Perfil</span>
+            <span class="text-left text-[13px] font-headline font-semibold"
+                  [style.color]="activeTab === 'profile' ? '#ffffff' : (isDark ? '#a3a3a3' : '#374151')">Mi Perfil</span>
           </button>
 
           <!-- Cambiar contraseña tab -->
           <button (click)="setTab('password')"
-                  class="flex items-center rounded-xl text-sm font-semibold tracking-wide transition-all duration-200 cursor-pointer w-full px-3 py-2.5 gap-3"
+                  class="flex items-center rounded-2xl text-sm font-semibold tracking-wide transition-all duration-200 cursor-pointer w-full px-3.5 py-2.5 gap-3 border-none"
                   [ngClass]="getTabClass('password')">
-            <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+            <svg class="w-[18px] h-[18px] flex-shrink-0" [style.color]="activeTab === 'password' ? '#ffffff' : (isDark ? '#a3a3a3' : '#374151')" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
-            <span class="text-left text-[13px]">Cambiar Contraseña</span>
+            <span class="text-left text-[13px] font-headline font-semibold"
+                  [style.color]="activeTab === 'password' ? '#ffffff' : (isDark ? '#a3a3a3' : '#374151')">Cambiar Contraseña</span>
           </button>
 
           <!-- Personalizar mi sitio link -->
           <button (click)="goToPersonalizar()"
-                  class="flex items-center rounded-xl text-sm font-semibold tracking-wide transition-all duration-200 cursor-pointer w-full px-3 py-2.5 gap-3"
-                  [ngClass]="isDark ? 'text-neutral-500 hover:text-neutral-200 hover:bg-neutral-800/60' : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100'">
-            <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                  class="flex items-center rounded-2xl text-sm font-semibold tracking-wide transition-all duration-200 cursor-pointer w-full px-3.5 py-2.5 gap-3 border-none"
+                  [ngClass]="isDark ? 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/60' : 'text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100'">
+            <svg class="w-[18px] h-[18px] flex-shrink-0" [style.color]="isDark ? '#a3a3a3' : '#374151'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
               <path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
             </svg>
-            <span class="text-left text-[13px]">Personalizar mi sitio</span>
+            <span class="text-left text-[13px] font-headline font-semibold" [style.color]="isDark ? '#a3a3a3' : '#374151'">Personalizar mi sitio</span>
           </button>
         </nav>
 
         <!-- Bottom: Logout -->
-        <div class="p-3 border-t shrink-0 mb-14 md:mb-0" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+        <div class="p-3 border-t shrink-0 mb-14 md:mb-0" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200/80'">
           <button (click)="logout()"
-                  class="flex items-center rounded-xl text-[13px] font-semibold transition-all duration-200 cursor-pointer w-full px-3 py-2.5 gap-3"
-                  [ngClass]="isDark ? 'text-neutral-600 hover:text-red-400 hover:bg-red-500/5' : 'text-neutral-400 hover:text-red-500 hover:bg-red-50'">
+                  class="flex items-center rounded-2xl text-[13px] font-semibold transition-all duration-200 cursor-pointer w-full px-3.5 py-2.5 gap-3 border-none"
+                  [ngClass]="isDark ? 'text-neutral-500 hover:text-red-400 hover:bg-red-500/10' : 'text-neutral-500 hover:text-red-600 hover:bg-red-50'">
             <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
             </svg>
-            <span>Salir</span>
+            <span class="font-headline font-semibold">Salir</span>
           </button>
         </div>
       </aside>
@@ -116,56 +118,51 @@ import { Subscription } from 'rxjs';
         
         <!-- Top Bar (Title & Back Options) -->
         <header class="h-16 sm:h-20 shrink-0 border-b flex items-center justify-between px-4 sm:px-6 md:px-8 z-20 transition-all duration-300"
-                [ngClass]="isDark ? 'bg-[#07070a] border-neutral-800' : 'bg-white border-neutral-200'">
+                [ngClass]="isDark ? 'bg-[#07070a] border-neutral-800' : 'bg-white border-neutral-200/80'">
           
           <div class="flex items-center gap-3 sm:gap-4 min-w-0">
             <!-- Mobile Menu Toggle -->
             <button (click)="isMobileDrawerOpen = !isMobileDrawerOpen"
-                    class="md:hidden p-2.5 -ml-2 rounded-xl transition-colors cursor-pointer"
+                    class="md:hidden p-2.5 -ml-2 rounded-xl transition-colors cursor-pointer border-none bg-transparent"
                     [ngClass]="isDark ? 'hover:bg-white/10 text-neutral-300 hover:text-white' : 'hover:bg-black/5 text-neutral-600 hover:text-black'">
               <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
 
-
-
             <!-- Breadcrumb (hidden on mobile for clean header spacing) -->
-            <div class="hidden sm:flex items-center gap-2 text-xs sm:text-sm font-bold uppercase tracking-wider truncate">
+            <div class="hidden sm:flex items-center gap-2 text-xs sm:text-sm font-headline font-bold uppercase tracking-wider truncate">
               <span [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Ajustes</span>
               <span class="opacity-40">/</span>
-              <span class="text-blue-500 font-extrabold truncate tracking-widest">{{ activeTab === 'profile' ? 'Mi Perfil' : 'Seguridad' }}</span>
+              <span class="text-neutral-900 font-extrabold truncate tracking-widest">{{ activeTab === 'profile' ? 'Mi Perfil' : 'Seguridad' }}</span>
             </div>
           </div>
 
-          <!-- Quick Navigation Buttons -->
-          <div class="flex items-center gap-2 sm:gap-4 shrink-0">
+          <!-- Quick Navigation Buttons (Apple Style) -->
+          <div class="flex items-center gap-2 sm:gap-3 shrink-0">
             
             <!-- Dashboard Button -->
             <a *ngIf="authService.currentUser()?.rol?.toLowerCase() === 'admin'"
                [routerLink]="['/admin']"
-               class="px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider border transition-all duration-200 flex items-center gap-1.5 sm:gap-2 cursor-pointer shadow-sm hover:scale-[1.02] active:scale-[0.98]"
-               [ngClass]="isDark ? 'bg-blue-600/10 border-blue-500/30 text-blue-400 hover:bg-blue-600/20 hover:border-blue-400' : 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100'">
-              <svg class="w-4 h-4 sm:w-4.5 sm:h-4.5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+               class="px-4 py-2 sm:py-2.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider border border-neutral-200/90 bg-neutral-100 hover:bg-neutral-200 text-neutral-900 transition-all duration-200 flex items-center gap-2 cursor-pointer shadow-2xs no-underline hover:scale-[1.01] active:scale-[0.99]">
+              <svg class="w-4 h-4 text-neutral-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25-2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
               </svg>
               <span class="hidden sm:inline">Volver al Dashboard</span>
               <span class="sm:hidden">Dashboard</span>
             </a>
 
-            <!-- Back to live website home -->
+            <!-- Back to live website home (Obsidian Button) -->
             <a [routerLink]="['/']"
-               class="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all duration-200 border cursor-pointer hover:scale-[1.02] active:scale-[0.98] shadow-sm"
-               [ngClass]="isDark
-                 ? 'bg-white/10 hover:bg-white text-white hover:text-black border-white/20 hover:border-white'
-                 : 'bg-black/5 hover:bg-black text-neutral-800 hover:text-white border-black/15 hover:border-black'">
-              <span class="relative flex h-2 sm:h-2.5 w-2 sm:w-2.5">
+               class="inline-flex items-center gap-2 px-4 py-2 sm:py-2.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider transition-all duration-200 border-none bg-neutral-900 hover:bg-black text-white cursor-pointer shadow-sm no-underline hover:scale-[1.01] active:scale-[0.99]"
+               style="background-color: #09090b !important; color: #ffffff !important;">
+              <span class="relative flex h-2.5 w-2.5">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 sm:h-2.5 w-2 sm:w-2.5 bg-emerald-500"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
               </span>
-              <span class="hidden sm:inline">Ver sitio en vivo</span>
-              <span class="sm:hidden">Sitio</span>
-              <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <span class="hidden sm:inline" style="color: #ffffff !important;">Ver sitio en vivo</span>
+              <span class="sm:hidden" style="color: #ffffff !important;">Sitio</span>
+              <svg class="w-3.5 h-3.5 opacity-80 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color: #ffffff !important;">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H18m0 0v4.5M18 6l-7.5 7.5M6 18h12"/>
               </svg>
             </a>
@@ -174,75 +171,66 @@ import { Subscription } from 'rxjs';
 
         <!-- Scrollable content area -->
         <main class="flex-grow overflow-y-auto overflow-x-hidden p-4 sm:p-6 md:p-8 pb-20 md:pb-8"
-              [ngClass]="isDark ? 'bg-[#020204]' : 'bg-white'">
+              [ngClass]="isDark ? 'bg-[#020204]' : 'bg-neutral-50/50'">
           <div class="max-w-screen-2xl mx-auto w-full">
 
-            <!-- Decorative lights in main section -->
-            <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
-              <div class="absolute -top-40 -left-40 w-96 h-96 bg-blue-500/5 rounded-full blur-[120px]"></div>
-            </div>
-
             <!-- Tab Content: Profile -->
-            <div *ngIf="activeTab === 'profile'" class="tab-enter space-y-5 sm:space-y-6 relative z-10">
+            <div *ngIf="activeTab === 'profile'" class="tab-enter space-y-6 relative z-10">
               <!-- Header -->
               <div>
-                <p class="text-xs font-bold uppercase tracking-[0.3em]"
-                   [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Resumen</p>
-                <h2 class="text-2xl sm:text-3xl font-bold uppercase tracking-tight mt-0.5">Información Personal</h2>
+                <p class="text-xs font-headline font-bold uppercase tracking-[0.2em] text-neutral-400">Resumen</p>
+                <h2 class="text-2xl sm:text-3xl font-headline font-bold tracking-tight text-neutral-900 mt-0.5">Información Personal</h2>
               </div>
 
               <!-- Landing Page Status Card -->
-              <div class="rounded-2xl border p-4 sm:p-6 md:p-8 shadow-sm transition-all duration-300 relative overflow-hidden"
-                   [ngClass]="isDark ? 'bg-gradient-to-r from-neutral-900/80 to-cyan-950/20 border-cyan-500/30' : 'bg-gradient-to-r from-white to-cyan-50 border-cyan-200'">
-                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                  <div>
-                    <span class="text-[10px] font-bold uppercase tracking-widest text-cyan-400">RotBot IA Landing Page</span>
-                    <h3 class="text-lg sm:text-xl font-bold mt-1">Tu Página Web Personal</h3>
-                    <p *ngIf="mySite" class="text-xs opacity-75 mt-1">
-                      Tu sitio está publicado y disponible en tu dirección personalizada: <span class="font-mono text-cyan-400">/site/{{ mySite.slug }}</span>
+              <div class="rounded-[28px] border p-6 sm:p-8 transition-all duration-300 relative overflow-hidden"
+                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white shadow-xl' : 'bg-white border-neutral-200/80 text-neutral-900 shadow-sm'">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative z-10">
+                  <div class="space-y-1.5">
+                    <span class="px-3 py-1 rounded-full text-[10px] font-headline font-bold uppercase tracking-widest inline-block border"
+                          [ngClass]="isDark ? 'bg-white/10 text-cyan-400 border-white/10' : 'bg-neutral-100 text-neutral-600 border-neutral-200'">
+                      RotBot IA Landing Page
+                    </span>
+                    <h3 class="text-xl sm:text-2xl font-headline font-bold tracking-tight m-0"
+                        [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                      Tu Página Web Personal
+                    </h3>
+                    <p *ngIf="mySite" class="text-xs m-0" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">
+                      Tu sitio está publicado y disponible en tu dirección personalizada: <span class="font-mono font-semibold text-cyan-600 dark:text-cyan-400">/site/{{ mySite.slug }}</span>
                     </p>
-                    <p *ngIf="!mySite" class="text-xs opacity-75 mt-1">
+                    <p *ngIf="!mySite" class="text-xs m-0" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">
                       Crea tu landing page en segundos hablando con RotBot, el asistente de inteligencia artificial.
                     </p>
                   </div>
 
-                  <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 shrink-0 w-full sm:w-auto">
-                    <a *ngIf="mySite" [routerLink]="['/site', mySite.slug]" target="_blank"
-                       class="px-5 py-2.5 rounded-xl bg-cyan-400 text-black font-bold text-xs uppercase tracking-wider hover:bg-cyan-300 transition-all shadow-md flex items-center justify-center gap-2">
+                  <div *ngIf="mySite" class="flex items-center gap-3 shrink-0 w-full sm:w-auto">
+                    <a [routerLink]="['/site', mySite.slug]" target="_blank"
+                       class="px-6 py-3 rounded-full bg-cyan-400 text-black font-headline font-bold text-xs uppercase tracking-wider hover:bg-cyan-300 transition-all shadow-md flex items-center justify-center gap-2 no-underline">
                       <span>Ver página pública</span>
                       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                    </a>
-
-                    <a routerLink="/rotbot"
-                       class="px-5 py-2.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2"
-                       [ngClass]="isDark ? 'border-white/10 hover:bg-white/5 text-white' : 'border-neutral-300 hover:bg-neutral-100 text-neutral-900'">
-                      <span>{{ mySite ? 'Modificar con RotBot' : 'Crear Landing con RotBot' }}</span>
-                      <span>🤖</span>
                     </a>
                   </div>
                 </div>
               </div>
 
-              <!-- Content Card -->
-              <div class="rounded-2xl border p-6 md:p-8 shadow-sm transition-all duration-300"
-                   [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800' : 'bg-white border-neutral-200'">
+              <!-- Content Card (Ultra-Clean Apple Style) -->
+              <div class="rounded-[28px] border border-neutral-200/80 bg-white p-6 sm:p-8 shadow-sm">
                 
                 <!-- Profile Alert Messages -->
                 <div *ngIf="profileSuccess" 
-                     class="mb-6 p-4 rounded-xl border text-xs font-semibold bg-green-500/10 border-green-500/20 text-green-400 flex items-center gap-2">
+                     class="mb-6 p-4 rounded-2xl border text-xs font-semibold bg-emerald-50 border-emerald-200 text-emerald-800 flex items-center gap-2">
                   <span>✅</span> {{ profileSuccess }}
                 </div>
                 <div *ngIf="profileError" 
-                     class="mb-6 p-4 rounded-xl border text-xs font-semibold bg-red-500/10 border-red-500/20 text-red-400 flex items-center gap-2">
+                     class="mb-6 p-4 rounded-2xl border text-xs font-semibold bg-red-50 border-red-200 text-red-800 flex items-center gap-2">
                   <span>⚠️</span> {{ profileError }}
                 </div>
 
                 <form (submit)="onProfileSubmit($event)">
                   <div class="flex flex-col md:flex-row gap-8 items-center md:items-start">
-                    <!-- Gigantic Avatar with dynamic initials -->
+                    <!-- Gigantic Avatar with dynamic initials and vibrant gradient -->
                     <div class="shrink-0 relative group">
-                      <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-600 via-purple-600 to-indigo-600 blur-[6px] opacity-60"></div>
-                      <div class="relative w-28 h-28 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-4xl font-extrabold text-white shadow-lg">
+                      <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 border-4 border-white text-white flex items-center justify-center text-3xl sm:text-4xl font-headline font-extrabold shadow-xl">
                         {{ getUserInitials() }}
                       </div>
                     </div>
@@ -251,42 +239,39 @@ import { Subscription } from 'rxjs';
                     <div class="flex-grow space-y-5 w-full">
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                          <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1.5">Nombre Completo</label>
+                          <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1.5">Nombre Completo</label>
                           <input type="text" [(ngModel)]="nombre" name="nombre"
-                                 class="w-full text-sm font-semibold p-3.5 rounded-xl border focus:outline-none transition-all duration-300"
-                                 [ngClass]="isDark ? 'bg-neutral-950/40 border-neutral-800/80 text-white focus:border-blue-500/50' : 'bg-neutral-50 border-neutral-100 text-neutral-900 focus:border-blue-500'">
+                                 class="w-full text-xs sm:text-sm font-semibold px-4 py-3.5 rounded-xl border border-neutral-200/80 bg-neutral-50/80 focus:bg-white focus:border-neutral-900 focus:outline-none transition-all text-neutral-900 shadow-2xs">
                         </div>
 
                         <div>
-                          <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1.5">Correo Electrónico</label>
+                          <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1.5">Correo Electrónico</label>
                           <input type="email" [(ngModel)]="email" name="email"
-                                 class="w-full text-sm font-semibold p-3.5 rounded-xl border focus:outline-none transition-all duration-300"
-                                 [ngClass]="isDark ? 'bg-neutral-950/40 border-neutral-800/80 text-white focus:border-blue-500/50' : 'bg-neutral-50 border-neutral-100 text-neutral-900 focus:border-blue-500'">
+                                 class="w-full text-xs sm:text-sm font-semibold px-4 py-3.5 rounded-xl border border-neutral-200/80 bg-neutral-50/80 focus:bg-white focus:border-neutral-900 focus:outline-none transition-all text-neutral-900 shadow-2xs">
                         </div>
                       </div>
 
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                          <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1.5">Número de Teléfono</label>
+                          <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1.5">Número de Teléfono</label>
                           <input type="text" [(ngModel)]="telefono" name="telefono"
-                                 class="w-full text-sm font-semibold p-3.5 rounded-xl border focus:outline-none transition-all duration-300"
-                                 [ngClass]="isDark ? 'bg-neutral-950/40 border-neutral-800/80 text-white focus:border-blue-500/50' : 'bg-neutral-50 border-neutral-100 text-neutral-900 focus:border-blue-500'">
+                                 class="w-full text-xs sm:text-sm font-semibold px-4 py-3.5 rounded-xl border border-neutral-200/80 bg-neutral-50/80 focus:bg-white focus:border-neutral-900 focus:outline-none transition-all text-neutral-900 shadow-2xs">
                         </div>
 
                         <div>
-                          <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1.5">Rol de Cuenta</label>
-                          <p class="text-sm font-semibold p-3.5 rounded-xl border capitalize opacity-70 cursor-not-allowed select-none"
-                             [ngClass]="isDark ? 'bg-neutral-950/40 border-neutral-800/80' : 'bg-neutral-50 border-neutral-100'">
+                          <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1.5">Rol de Cuenta</label>
+                          <div class="w-full text-xs sm:text-sm font-semibold px-4 py-3.5 rounded-xl border border-neutral-200/80 bg-neutral-100/70 text-neutral-700 select-none">
                             {{ authService.currentUser()?.rol?.toLowerCase() === 'admin' ? 'Administrador' : 'Usuario General' }}
-                          </p>
+                          </div>
                         </div>
                       </div>
 
-                      <!-- Save Profile Button -->
+                      <!-- Save Profile Button (Sleek Obsidian Button) -->
                       <div class="pt-4 flex justify-end">
                         <button type="submit" [disabled]="submittingProfile"
-                                class="px-6 py-3.5 rounded-xl text-xs font-bold uppercase tracking-widest text-white bg-blue-600 hover:bg-blue-500 transition-colors duration-200 cursor-pointer shadow-lg shadow-blue-500/20 disabled:opacity-50 flex items-center gap-2">
-                          {{ submittingProfile ? 'Guardando...' : 'Guardar Cambios' }}
+                                class="px-8 py-3.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider shadow-md hover:scale-[1.01] active:scale-[0.99] transition-all border-none cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+                                style="background-color: #09090b !important; color: #ffffff !important;">
+                          <span style="color: #ffffff !important; font-weight: 600;">{{ submittingProfile ? 'Guardando...' : 'Guardar Cambios' }}</span>
                         </button>
                       </div>
 
@@ -300,68 +285,65 @@ import { Subscription } from 'rxjs';
             <div *ngIf="activeTab === 'password'" class="tab-enter space-y-6 relative z-10">
               <!-- Header -->
               <div>
-                <p class="text-xs font-bold uppercase tracking-[0.3em]"
-                   [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Seguridad</p>
-                <h2 class="text-3xl font-bold uppercase tracking-tight mt-0.5">Cambiar Contraseña</h2>
+                <p class="text-xs font-headline font-bold uppercase tracking-[0.2em] text-neutral-400">Seguridad</p>
+                <h2 class="text-2xl sm:text-3xl font-headline font-bold tracking-tight text-neutral-900 mt-0.5">Cambiar Contraseña</h2>
               </div>
 
-              <!-- Form Card -->
-              <div class="rounded-2xl border p-6 md:p-8 max-w-xl shadow-sm transition-all duration-300"
-                   [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800' : 'bg-white border-neutral-200'">
+              <!-- Form Card (Ultra-Clean Apple Style) -->
+              <div class="rounded-[28px] border border-neutral-200/80 bg-white p-6 sm:p-8 max-w-xl shadow-sm">
 
                 <!-- Alert Messages -->
                 <div *ngIf="successMessage" 
-                     class="mb-6 p-4 rounded-xl border text-xs font-semibold bg-green-500/10 border-green-500/20 text-green-400 flex items-center gap-2">
+                     class="mb-6 p-4 rounded-2xl border text-xs font-semibold bg-emerald-50 border-emerald-200 text-emerald-800 flex items-center gap-2">
                   <span>✅</span> {{ successMessage }}
                 </div>
                 <div *ngIf="errorMessage" 
-                     class="mb-6 p-4 rounded-xl border text-xs font-semibold bg-red-500/10 border-red-500/20 text-red-400 flex items-center gap-2">
+                     class="mb-6 p-4 rounded-2xl border text-xs font-semibold bg-red-50 border-red-200 text-red-800 flex items-center gap-2">
                   <span>⚠️</span> {{ errorMessage }}
                 </div>
 
                 <form (submit)="onPasswordSubmit()" class="space-y-5">
                   <!-- Current Password -->
                   <div>
-                    <label class="block text-[10px] font-bold uppercase tracking-widest mb-2 opacity-70">Contraseña Actual</label>
+                    <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1.5">Contraseña Actual</label>
                     <input type="password" 
                            name="currentPassword" 
                            [(ngModel)]="currentPassword"
                            required
                            placeholder="••••••••"
-                           class="w-full py-3.5 px-4 rounded-xl border text-sm focus:outline-none transition-all duration-300 font-medium"
-                           [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800 text-white placeholder-neutral-700 focus:border-blue-500/50 hover:border-neutral-700' : 'bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-blue-500 hover:border-neutral-300'">
+                           class="w-full text-xs sm:text-sm font-semibold px-4 py-3 rounded-xl border border-neutral-200/80 bg-neutral-50/80 focus:bg-white focus:border-neutral-900 focus:outline-none transition-all text-neutral-900">
                   </div>
 
                   <!-- New Password -->
                   <div>
-                    <label class="block text-[10px] font-bold uppercase tracking-widest mb-2 opacity-70">Nueva Contraseña</label>
+                    <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1.5">Nueva Contraseña</label>
                     <input type="password" 
                            name="newPassword" 
                            [(ngModel)]="newPassword"
                            required
                            placeholder="Mínimo 6 caracteres"
-                           class="w-full py-3.5 px-4 rounded-xl border text-sm focus:outline-none transition-all duration-300 font-medium"
-                           [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800 text-white placeholder-neutral-700 focus:border-blue-500/50 hover:border-neutral-700' : 'bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-blue-500 hover:border-neutral-300'">
+                           class="w-full text-xs sm:text-sm font-semibold px-4 py-3 rounded-xl border border-neutral-200/80 bg-neutral-50/80 focus:bg-white focus:border-neutral-900 focus:outline-none transition-all text-neutral-900">
                   </div>
 
                   <!-- Confirm Password -->
                   <div>
-                    <label class="block text-[10px] font-bold uppercase tracking-widest mb-2 opacity-70">Confirmar Nueva Contraseña</label>
+                    <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1.5">Confirmar Nueva Contraseña</label>
                     <input type="password" 
                            name="confirmPassword" 
                            [(ngModel)]="confirmPassword"
                            required
                            placeholder="Confirmar contraseña"
-                           class="w-full py-3.5 px-4 rounded-xl border text-sm focus:outline-none transition-all duration-300 font-medium"
-                           [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800 text-white placeholder-neutral-700 focus:border-blue-500/50 hover:border-neutral-700' : 'bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-blue-500 hover:border-neutral-300'">
+                           class="w-full text-xs sm:text-sm font-semibold px-4 py-3 rounded-xl border border-neutral-200/80 bg-neutral-50/80 focus:bg-white focus:border-neutral-900 focus:outline-none transition-all text-neutral-900">
                   </div>
 
-                  <!-- Submit Button -->
-                  <button type="submit" 
-                          [disabled]="submittingPassword"
-                          class="w-full py-3.5 px-4 rounded-2xl text-xs font-bold uppercase tracking-widest text-white bg-blue-600 hover:bg-blue-500 transition-colors duration-200 cursor-pointer shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 disabled:opacity-50">
-                    {{ submittingPassword ? 'Guardando...' : 'Actualizar Contraseña' }}
-                  </button>
+                  <!-- Submit Button (Sleek Obsidian Button) -->
+                  <div class="pt-2">
+                    <button type="submit" [disabled]="submittingPassword"
+                            class="w-full py-3.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider shadow-md hover:scale-[1.01] active:scale-[0.99] transition-all border-none cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+                            style="background-color: #09090b !important; color: #ffffff !important;">
+                      <span style="color: #ffffff !important; font-weight: 600;">{{ submittingPassword ? 'Guardando...' : 'Actualizar Contraseña' }}</span>
+                    </button>
+                  </div>
                 </form>
               </div>
             </div>
@@ -524,12 +506,12 @@ export class PerfilComponent implements OnInit, OnDestroy {
     const isActive = this.activeTab === tabId;
     if (this.isDark) {
       return isActive
-        ? 'bg-white text-black'
-        : 'text-neutral-500 hover:text-neutral-200 hover:bg-neutral-800/60';
+        ? 'bg-white text-black font-bold shadow-sm'
+        : 'text-neutral-500 hover:text-neutral-200 hover:bg-neutral-800/60 font-semibold';
     } else {
       return isActive
-        ? 'bg-neutral-900 text-white'
-        : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100';
+        ? 'bg-neutral-900 text-white font-bold shadow-sm'
+        : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 font-semibold';
     }
   }
 
