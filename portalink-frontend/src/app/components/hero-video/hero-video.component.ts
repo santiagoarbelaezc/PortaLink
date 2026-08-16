@@ -67,7 +67,6 @@ import * as AOS from 'aos';
             
             <!-- Mobile Video Element (portalink-movil.mp4) -->
             <video #mobileHeroVideo
-                   src="assets/videos/hero/portalink-movil.mp4"
                    class="block md:hidden w-full h-auto object-cover rounded-[24px] transition-transform duration-700 hover:scale-[1.01]"
                    autoplay
                    muted
@@ -76,11 +75,11 @@ import * as AOS from 'aos';
                    playsinline
                    webkit-playsinline
                    preload="auto">
+              <source src="assets/videos/hero/portalink-movil.mp4" type="video/mp4">
             </video>
 
             <!-- Desktop Video Element (portalink.mp4) -->
             <video #heroVideo
-                   src="assets/videos/hero/portalink.mp4"
                    class="hidden md:block w-full h-auto object-cover rounded-[36px] transition-transform duration-700 hover:scale-[1.01]"
                    autoplay
                    muted
@@ -90,6 +89,7 @@ import * as AOS from 'aos';
                    webkit-playsinline
                    preload="auto"
                    (ended)="onVideoEnded()">
+              <source src="assets/videos/hero/portalink.mp4" type="video/mp4">
             </video>
           </div>
 
@@ -148,35 +148,47 @@ export class HeroVideoComponent implements OnInit, AfterViewInit, OnDestroy {
       });
 
       // Mute all video elements programmatically
-      const videos = document.querySelectorAll<HTMLVideoElement>('section#hero video');
+      const videos = document.querySelectorAll<HTMLVideoElement>('section#hero video, video');
       videos.forEach(video => {
         video.muted = true;
+        video.defaultMuted = true;
         video.volume = 0;
         video.playsInline = true;
+        video.setAttribute('playsinline', 'true');
+        video.setAttribute('webkit-playsinline', 'true');
+        video.setAttribute('muted', 'true');
       });
 
-      // Auto-pause when user scrolls past video, resume when visible in viewport
-      if ('IntersectionObserver' in window && this.videoElement && this.videoElement.nativeElement) {
-        const video = this.videoElement.nativeElement;
+      // Observe both mobile and desktop videos
+      if ('IntersectionObserver' in window) {
+        const targetVideos = [
+          this.videoElement?.nativeElement,
+          this.mobileVideoElement?.nativeElement
+        ].filter((v): v is HTMLVideoElement => !!v);
+
         this.observer = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
+            const v = entry.target as HTMLVideoElement;
             if (entry.isIntersecting) {
-              video.muted = true;
-              video.volume = 0;
-              video.play().catch(() => {});
+              v.muted = true;
+              v.defaultMuted = true;
+              v.volume = 0;
+              v.play().catch(() => {});
             } else {
-              video.pause();
+              v.pause();
             }
           });
         }, { threshold: 0.1 });
-        this.observer.observe(video);
+
+        targetVideos.forEach(v => this.observer?.observe(v));
       }
     }
 
     setTimeout(() => {
-      const videos = document.querySelectorAll<HTMLVideoElement>('section#hero video');
+      const videos = document.querySelectorAll<HTMLVideoElement>('section#hero video, video');
       videos.forEach(video => {
         video.muted = true;
+        video.defaultMuted = true;
         video.volume = 0;
         video.playsInline = true;
         const playPromise = video.play();
@@ -195,6 +207,9 @@ export class HeroVideoComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     if (this.videoElement && this.videoElement.nativeElement) {
       this.videoElement.nativeElement.pause();
+    }
+    if (this.mobileVideoElement && this.mobileVideoElement.nativeElement) {
+      this.mobileVideoElement.nativeElement.pause();
     }
   }
 

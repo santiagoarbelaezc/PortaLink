@@ -82,15 +82,17 @@ import { RouterModule } from '@angular/router';
           <div class="relative w-full aspect-[9/14] sm:aspect-[3/4] md:aspect-[16/10] rounded-[28px] sm:rounded-[36px] overflow-hidden border transition-all duration-500 shadow-2xl group border-white/10 hover:border-[#00f5ff]/40">
             <!-- Mobile Video Showcase (portalink-movil.mp4) -->
             <video
-               src="assets/videos/hero/portalink-movil.mp4"
                autoplay
                loop
                muted
+               [muted]="true"
                playsinline
                webkit-playsinline
                preload="auto"
                class="block md:hidden w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-            ></video>
+            >
+              <source src="assets/videos/hero/portalink-movil.mp4" type="video/mp4">
+            </video>
             <!-- Desktop / Tablet Image (proyecto-0.png) -->
             <img
                src="assets/images/proyectos/proyecto-0.png"
