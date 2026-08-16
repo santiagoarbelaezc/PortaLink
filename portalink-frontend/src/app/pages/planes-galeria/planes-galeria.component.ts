@@ -442,7 +442,7 @@ export class PlanesGaleriaComponent implements OnInit {
       category: 'Sistemas',
       client: 'Plaxtilíneas Colombia',
       liveUrl: 'https://plaxtilineas.com/',
-      image: 'assets/images/proyectos/proyecto-sysmiconarquitectura.png',
+      image: 'assets/images/proyectos/plaxtilineas.png',
       gradient: 'linear-gradient(135deg, #0d1a1f 0%, #1a303a 100%)',
       description: 'Portal institucional e industrial para la exhibición de líneas de bolsas, empaques y plásticos biodegradables.',
       highlights: [

@@ -528,7 +528,9 @@ Integra modelos de Inteligencia Artificial (Groq / Llama 3) para automatizar la 
       image: 'assets/images/proyectos/proyecto-colchonesdistricol.png',
       images: [
         'assets/images/proyectos/proyecto-colchonesdistricol.png',
-        'assets/images/proyectos/card2.png'
+        'assets/images/proyectos/districol/districol-1.png',
+        'assets/images/proyectos/districol/districol-2.png',
+        'assets/images/proyectos/districol/districol-3.png'
       ],
       description: 'E-commerce de colchones premium con catálogo, ficha de producto y WhatsApp API.',
       longDescription: `COLCHONES DISTRICOL es una tienda virtual de alto nivel enfocada en productos de descanso y confort.
@@ -641,8 +643,9 @@ Cuenta con calculadora de volumen y densidad, cotización en lote para distribui
       client: 'Plaxtilíneas Colombia',
       year: '2026',
       liveUrl: 'https://plaxtilineas.com/',
-      image: 'assets/images/proyectos/plaxtilineas/plaxti-1.png',
+      image: 'assets/images/proyectos/plaxtilineas.png',
       images: [
+        'assets/images/proyectos/plaxtilineas.png',
         'assets/images/proyectos/plaxtilineas/plaxti-1.png',
         'assets/images/proyectos/plaxtilineas/plaxti-2.png',
         'assets/images/proyectos/plaxtilineas/plaxti-3.png',

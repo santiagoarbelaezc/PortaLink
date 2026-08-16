@@ -276,7 +276,7 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       tagline: 'Portal corporativo e industrial de empaques y soluciones plásticas.',
       title: 'Plaxtilíneas',
       liveUrl: 'https://plaxtilineas.com/',
-      image: 'assets/images/proyectos/proyecto-sysmiconarquitectura.png',
+      image: 'assets/images/proyectos/plaxtilineas.png',
       description: 'Portal institucional e industrial para la exhibición de líneas de bolsas, empaques y plásticos biodegradables.',
       prompt: 'Hola, necesito un portal corporativo como Plaxtilíneas con catálogo industrial y cotización en línea.'
     },

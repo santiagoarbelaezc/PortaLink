@@ -445,7 +445,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Empaques & Soluciones Plásticas',
       description: 'Portal institucional e industrial para la exhibición de líneas de bolsas y empaques.',
       iconClass: 'fa-solid fa-building',
-      image: 'assets/images/proyectos/proyecto-sysmiconarquitectura.png',
+      image: 'assets/images/proyectos/plaxtilineas.png',
       tags: ['Corporativo', 'Plásticos', 'En Vivo'],
       liveUrl: 'https://plaxtilineas.com/'
     },
