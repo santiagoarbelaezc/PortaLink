@@ -144,51 +144,20 @@ import * as AOS from 'aos';
               </p>
             </div>
             
-            <!-- Grid de Opciones de Interacción (Separado Abajo en Móvil) -->
+            <!-- Botón Único: Habla con RotBot IA (Estilo glass-option-card Original) -->
             <div class="rotbot-options lg:col-span-6 flex flex-col gap-3 sm:gap-4 mt-auto lg:mt-0" data-aos="fade-left" data-aos-duration="900" data-aos-delay="150">
-              
-              <!-- Opción 1 -->
-              <div (click)="openChatWithMessage(getTranslation().option1Msg)" 
-                   class="glass-option-card border border-white/15 p-5 sm:p-6 rounded-[24px] bg-black/60 backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:bg-black/80 flex items-center justify-between group cursor-pointer shadow-lg">
+              <a routerLink="/rotbot" 
+                 class="glass-option-card border border-white/15 p-5 sm:p-6 rounded-[24px] bg-black/60 backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:bg-black/80 flex items-center justify-between group cursor-pointer shadow-lg no-underline">
                 <div class="flex items-center gap-4">
                   <div class="w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_10px_#00f5ff] transition-transform duration-300 group-hover:scale-125"></div>
                   <span class="text-sm sm:text-base font-headline font-medium tracking-wide text-white/95 group-hover:text-white transition-colors">
-                    {{ getTranslation().option1Label }}
+                    Habla con RotBot IA
                   </span>
                 </div>
                 <svg class="w-5 h-5 text-white/50 group-hover:text-white transition-all transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
-              </div>
-              
-              <!-- Opción 2 -->
-              <div (click)="openChatWithMessage(getTranslation().option2Msg)" 
-                   class="glass-option-card border border-white/15 p-5 sm:p-6 rounded-[24px] bg-black/60 backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:bg-black/80 flex items-center justify-between group cursor-pointer shadow-lg">
-                <div class="flex items-center gap-4">
-                  <div class="w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_10px_#00f5ff] transition-transform duration-300 group-hover:scale-125"></div>
-                  <span class="text-sm sm:text-base font-headline font-medium tracking-wide text-white/95 group-hover:text-white transition-colors">
-                    {{ getTranslation().option2Label }}
-                  </span>
-                </div>
-                <svg class="w-5 h-5 text-white/50 group-hover:text-white transition-all transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </div>
-              
-              <!-- Opción 3 -->
-              <div (click)="openChatWithMessage(getTranslation().option3Msg)" 
-                   class="glass-option-card border border-white/15 p-5 sm:p-6 rounded-[24px] bg-black/60 backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:bg-black/80 flex items-center justify-between group cursor-pointer shadow-lg">
-                <div class="flex items-center gap-4">
-                  <div class="w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_10px_#00f5ff] transition-transform duration-300 group-hover:scale-125"></div>
-                  <span class="text-sm sm:text-base font-headline font-medium tracking-wide text-white/95 group-hover:text-white transition-colors">
-                    {{ getTranslation().option3Label }}
-                  </span>
-                </div>
-                <svg class="w-5 h-5 text-white/50 group-hover:text-white transition-all transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </div>
-              
+              </a>
             </div>
             
           </div>
