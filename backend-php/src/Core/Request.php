@@ -30,6 +30,13 @@ class Request
             $this->path = rtrim($this->path, '/');
         }
 
+        // Normalize subfolder deployment (e.g. /api2 -> /api)
+        if (str_starts_with($this->path, '/api2/')) {
+            $this->path = '/api/' . substr($this->path, 6);
+        } elseif ($this->path === '/api2') {
+            $this->path = '/api';
+        }
+
         // Strip subfolder prefix if deployed in a subfolder like /api2
         $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
         $baseDir = rtrim(dirname($scriptName), '/\\');
@@ -38,6 +45,11 @@ class Request
             if (empty($this->path)) {
                 $this->path = '/';
             }
+        }
+
+        // If path stripped prefix and does not start with /api, prepend /api
+        if ($this->path !== '/' && !str_starts_with($this->path, '/api/')) {
+            $this->path = '/api' . (str_starts_with($this->path, '/') ? '' : '/') . $this->path;
         }
 
         // Parse query string ($_GET)
