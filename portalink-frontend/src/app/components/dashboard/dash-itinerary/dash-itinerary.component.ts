@@ -1,4 +1,4 @@
-import { Component, Input, HostListener, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, Input, HostListener, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ItineraryService, Task as ApiTask } from '../../../services/itinerary.service';
@@ -128,7 +128,7 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
 
                 <!-- Day Grid -->
                 <div class="grid grid-cols-7 gap-0.5 px-3 pb-4">
-                  <button *ngFor="let day of calendarDays"
+                  <button *ngFor="let day of calendarDays; trackBy: trackByCalendarDay"
                           (click)="day.dateKey && jumpToDate(day.dateKey)"
                           [disabled]="!day.dateKey"
                           class="relative aspect-square flex flex-col items-center justify-center rounded-lg text-xs font-semibold transition-all"
@@ -178,7 +178,7 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
       <div class="flex items-center gap-2 flex-wrap">
         <span class="text-[10px] font-bold uppercase tracking-widest mr-1"
               [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-400'">Filtrar:</span>
-        <button *ngFor="let f of filters" (click)="activeFilter = f.key"
+        <button *ngFor="let f of filters; trackBy: trackByFilter" (click)="activeFilter = f.key"
                 class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-all"
                 [ngClass]="activeFilter === f.key
                   ? (isDark ? 'bg-white text-black border-white' : 'bg-neutral-900 text-white border-neutral-900')
@@ -215,7 +215,7 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
         <!-- Mini Stats + Progress -->
         <div class="flex items-center gap-4">
           <div class="flex items-center gap-3">
-            <div *ngFor="let stat of miniStats" class="flex items-center gap-1.5">
+            <div *ngFor="let stat of miniStats; trackBy: trackByFilter" class="flex items-center gap-1.5">
               <div class="w-1.5 h-1.5 rounded-full" [ngClass]="isDark ? 'bg-neutral-400' : 'bg-neutral-500'"></div>
               <span class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ stat.label }}</span>
               <span class="text-xs font-black" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-700'">{{ stat.value }}</span>
@@ -234,7 +234,7 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
 
       <!-- ══════════ KANBAN BOARD ══════════ -->
       <div class="flex gap-4 overflow-x-auto pb-4 kanban-scroll" style="min-height: 55vh;">
-        <div *ngFor="let day of weekPlan"
+        <div *ngFor="let day of weekPlan; trackBy: trackByDay"
              class="flex-shrink-0 w-72 flex flex-col rounded-2xl border overflow-hidden transition-all duration-300"
              [class.today-col]="day.isToday"
              [ngClass]="isDark ? 'bg-[#0a0a0d] border-neutral-800/60' : 'bg-neutral-50/50 border-neutral-200'">
@@ -261,7 +261,7 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
 
           <!-- Tasks -->
           <div class="p-3 flex-grow overflow-y-auto space-y-3">
-            <div *ngFor="let task of day.tasks"
+            <div *ngFor="let task of day.tasks; trackBy: trackByTask"
                  class="group p-4 rounded-xl border relative transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
                  [ngClass]="[
                    isDark ? 'bg-[#15151a] border-neutral-800/80 hover:border-neutral-600' : 'bg-white border-neutral-200 hover:border-neutral-400',
@@ -449,7 +449,7 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
                        [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Fecha *</label>
                 <!-- Quick Dates Pills -->
                 <div class="flex gap-2 mb-3 flex-wrap">
-                  <button *ngFor="let qd of quickDates" type="button" (click)="selectModalDate(qd.dateKey)"
+                  <button *ngFor="let qd of quickDates; trackBy: trackByDay" type="button" (click)="selectModalDate(qd.dateKey)"
                           class="px-3 py-1.5 rounded-lg border text-[10px] font-bold uppercase tracking-widest transition-all animate-fade-in"
                           [ngClass]="form.date === qd.dateKey
                             ? (isDark ? 'bg-white text-black border-white' : 'bg-neutral-900 text-white border-neutral-900')
@@ -493,7 +493,7 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
 
                     <!-- Day Grid -->
                     <div class="grid grid-cols-7 gap-0.5 px-2 pb-3">
-                      <button *ngFor="let day of modalCalendarDays" type="button"
+                      <button *ngFor="let day of modalCalendarDays; trackBy: trackByCalendarDay" type="button"
                               [disabled]="!day.dateKey || isDateDisabled(day.dateKey)"
                               (click)="selectModalDate(day.dateKey)"
                               class="relative aspect-square flex items-center justify-center rounded-lg text-xs font-semibold transition-all disabled:opacity-20 disabled:cursor-not-allowed"
@@ -679,6 +679,7 @@ export class DashItineraryComponent implements OnInit, OnDestroy {
   allTasks: Task[] = [];
   isLoading = true;
   private itineraryService = inject(ItineraryService);
+  private cdr = inject(ChangeDetectorRef);
 
   // ── Lifecycle ──
   ngOnInit() {
@@ -789,17 +790,22 @@ export class DashItineraryComponent implements OnInit, OnDestroy {
 
   formatDisplayDate(dateKey: string): string {
     if (!dateKey) return 'Seleccionar fecha';
-    const [y, m, d] = dateKey.split('-').map(Number);
+    const parts = dateKey.split('-').map(Number);
+    if (parts.length !== 3 || parts.some(n => isNaN(n))) return 'Seleccionar fecha';
+    const [y, m, d] = parts;
     const date = new Date(y, m - 1, d);
+    if (isNaN(date.getTime())) return 'Seleccionar fecha';
     const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
     const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
     return `${days[date.getDay()]}, ${date.getDate()} de ${months[date.getMonth()]}`;
   }
 
   isDateDisabled(dateKey: string): boolean {
+    if (!dateKey) return true;
     const today = new Date(); today.setHours(0,0,0,0);
     const max = new Date(today); max.setDate(today.getDate() + 65);
     const d = new Date(dateKey + 'T00:00:00');
+    if (isNaN(d.getTime())) return true;
     return d < today || d > max;
   }
 
@@ -880,8 +886,9 @@ export class DashItineraryComponent implements OnInit, OnDestroy {
     const today = new Date();
     const dow = today.getDay();
     const diff = dow === 0 ? -6 : 1 - dow;
+    const offset = isNaN(this.weekOffset) ? 0 : this.weekOffset;
     const mon = new Date(today);
-    mon.setDate(today.getDate() + diff + this.weekOffset * 7);
+    mon.setDate(today.getDate() + diff + offset * 7);
     mon.setHours(0, 0, 0, 0);
     return mon;
   }
@@ -926,7 +933,9 @@ export class DashItineraryComponent implements OnInit, OnDestroy {
         return t.type === this.activeFilter;
       })
       .sort((a, b) => {
-        if (!a.time) return 1; if (!b.time) return -1;
+        if (!a.time && !b.time) return 0;
+        if (!a.time) return 1;
+        if (!b.time) return -1;
         return a.time.localeCompare(b.time);
       });
   }
@@ -1006,8 +1015,11 @@ export class DashItineraryComponent implements OnInit, OnDestroy {
 
   jumpToDate(dateKey: string) {
     if (!dateKey) return;
-    const [y, m, d] = dateKey.split('-').map(Number);
+    const parts = dateKey.split('-').map(Number);
+    if (parts.length !== 3 || parts.some(n => isNaN(n))) return;
+    const [y, m, d] = parts;
     const target = new Date(y, m - 1, d);
+    if (isNaN(target.getTime())) return;
     const today = new Date();
     const todayDow = today.getDay();
     const todayMondayDiff = todayDow === 0 ? -6 : 1 - todayDow;
@@ -1020,7 +1032,8 @@ export class DashItineraryComponent implements OnInit, OnDestroy {
     targetMonday.setDate(target.getDate() + targetMondayDiff);
     targetMonday.setHours(0, 0, 0, 0);
     const diffMs = targetMonday.getTime() - thisMonday.getTime();
-    this.weekOffset = Math.round(diffMs / (7 * 24 * 60 * 60 * 1000));
+    const calculatedOffset = Math.round(diffMs / (7 * 24 * 60 * 60 * 1000));
+    this.weekOffset = isNaN(calculatedOffset) ? 0 : calculatedOffset;
     this.showCalendar = false;
     this.loadWeekTasks();
   }
@@ -1176,6 +1189,23 @@ export class DashItineraryComponent implements OnInit, OnDestroy {
     this.showDatePicker = false;
   }
 
+  // ── TrackBy Functions ──
+  trackByDay(index: number, day: any): string {
+    return day?.dateKey || index.toString();
+  }
+
+  trackByTask(index: number, task: Task): number {
+    return task.id;
+  }
+
+  trackByFilter(index: number, f: any): string {
+    return f.key || index.toString();
+  }
+
+  trackByCalendarDay(index: number, day: CalendarDay): string {
+    return day.dateKey || index.toString();
+  }
+
   // ── API Loading ──
   private loadWeekTasks() {
     this.isLoading = true;
@@ -1183,24 +1213,27 @@ export class DashItineraryComponent implements OnInit, OnDestroy {
     
     this.itineraryService.getWeek(weekStart).subscribe({
       next: (res) => {
-        if (res.ok) {
+        if (res && res.ok && Array.isArray(res.tasks)) {
           this.allTasks = res.tasks.map((apiTask: ApiTask) => ({
             id: apiTask.id,
-            title: apiTask.title,
+            title: apiTask.title || 'Sin título',
             description: apiTask.description,
-            type: apiTask.type,
+            type: apiTask.type || 'work',
             date: apiTask.task_date,
-            time: apiTask.task_time ? apiTask.task_time.substring(0,5) : undefined, // Convert HH:MM:SS to HH:MM
-            completed: apiTask.completed
+            time: apiTask.task_time ? apiTask.task_time.substring(0,5) : undefined,
+            completed: Boolean(apiTask.completed)
           }));
+        } else {
+          this.allTasks = [];
         }
         this.isLoading = false;
+        try { this.cdr.markForCheck(); } catch {}
       },
       error: (err) => {
         console.error('Error loading week tasks', err);
         this.isLoading = false;
-        // Fallback to empty state on error so it doesn't break the UI
         this.allTasks = [];
+        try { this.cdr.markForCheck(); } catch {}
       }
     });
   }

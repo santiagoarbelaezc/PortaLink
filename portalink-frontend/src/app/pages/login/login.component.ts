@@ -426,7 +426,8 @@ export class LoginComponent implements OnInit {
       next: () => {
         this.isLoading.set(false);
         const user = this.authService.currentUser();
-        if (user && user.rol?.toLowerCase() === 'admin') {
+        if (user && (user.rol?.toLowerCase() === 'admin' || user.rol?.toLowerCase() === 'administrador')) {
+          localStorage.setItem('portalink_admin_tab', 'dashboard');
           this.router.navigate(['/admin']);
         } else {
           this.router.navigate(['/personalizar']);

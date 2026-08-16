@@ -1,7 +1,8 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { MessagesService } from '../../services/messages.service';
+import { AuthService } from '../../services/auth.service';
 
 // Dashboard Components
 import { DashAiSearchComponent } from '../../components/dashboard/dash-ai-search/dash-ai-search.component';
@@ -277,16 +278,15 @@ interface Tab {
           <span *ngIf="activeTab === 'finances'" class="w-1 h-1 rounded-full bg-emerald-400 absolute bottom-0.5"></span>
         </button>
 
-        <!-- Leads / CRM -->
-        <button (click)="setTab('leads')"
+        <!-- Control Financiero / CRM -->
+        <button (click)="setTab('financial-control')"
                 class="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl text-[9px] font-bold uppercase tracking-wider transition-all active:scale-95 cursor-pointer relative"
-                [ngClass]="activeTab === 'leads' ? (isDark ? 'text-white bg-neutral-800/80 font-extrabold' : 'text-neutral-900 bg-neutral-100 font-extrabold') : 'opacity-70'">
-          <span *ngIf="pendingLeads > 0 && activeTab !== 'leads'" class="absolute top-1 right-2 w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-          <svg class="w-5 h-5 transition-transform duration-200" [ngClass]="activeTab === 'leads' ? 'scale-110' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0" />
+                [ngClass]="activeTab === 'financial-control' ? (isDark ? 'text-white bg-neutral-800/80 font-extrabold' : 'text-neutral-900 bg-neutral-100 font-extrabold') : 'opacity-70'">
+          <svg class="w-5 h-5 transition-transform duration-200" [ngClass]="activeTab === 'financial-control' ? 'scale-110' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-3l3 3 3-3M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22" />
           </svg>
-          <span>Leads</span>
-          <span *ngIf="activeTab === 'leads'" class="w-1 h-1 rounded-full bg-emerald-400 absolute bottom-0.5"></span>
+          <span>Control</span>
+          <span *ngIf="activeTab === 'financial-control'" class="w-1 h-1 rounded-full bg-emerald-400 absolute bottom-0.5"></span>
         </button>
 
         <!-- Mensajes -->
@@ -340,6 +340,8 @@ interface Tab {
 export class AdminComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private messagesService = inject(MessagesService);
+  private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
 
   activeTab = 'dashboard';
   currentTheme = 'light';
@@ -397,13 +399,26 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   setTab(id: string) {
+    if (id === 'leads') id = 'messages';
+    if (this.activeTab === id) return;
+    
     this.activeTab = id;
     this.isMobileDrawerOpen = false;
-    localStorage.setItem('portalink_admin_tab', id);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('portalink_admin_tab', id);
+    }
+    
+    try {
+      this.cdr.markForCheck();
+    } catch {}
+
     setTimeout(() => {
+      try {
+        this.cdr.detectChanges();
+      } catch {}
       const mainEl = document.querySelector('main');
       if (mainEl) {
-        mainEl.scrollTo({ top: 0, behavior: 'smooth' });
+        mainEl.scrollTo({ top: 0, behavior: 'auto' });
       }
     }, 0);
   }
@@ -439,8 +454,8 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    localStorage.removeItem('portalink_admin_auth');
-    this.router.navigate(['/']);
+    localStorage.removeItem('portalink_admin_tab');
+    this.authService.logout();
   }
 
   getNavClass(tabId: string): string {

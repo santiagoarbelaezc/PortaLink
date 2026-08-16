@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, OnDestroy, SimpleChanges, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -1462,7 +1462,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
     .gadget-progress-bar { animation: gadgetProgress 4.2s linear forwards; }
   `]
 })
-export class DashFinancesComponent implements OnInit, OnChanges {
+export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
   @Input() theme = 'light';
 
   private financeService = inject(FinanceService);
@@ -1470,8 +1470,27 @@ export class DashFinancesComponent implements OnInit, OnChanges {
   private sanitizer = inject(DomSanitizer);
   private cdr = inject(ChangeDetectorRef);
 
+  private isDestroyed = false;
+
   get isDark() { return this.theme === 'dark'; }
   Math = Math;
+
+  ngOnDestroy() {
+    this.isDestroyed = true;
+    if (this.gadgetToast) {
+      this.gadgetToast = null;
+    }
+  }
+
+  safeDetectChanges() {
+    if (!this.isDestroyed && this.cdr) {
+      try {
+        this.cdr.detectChanges();
+      } catch (e) {
+        // Ignore change detection on destroyed views safely
+      }
+    }
+  }
 
   getPendingAmount(inv: any): number {
     if (!inv) return 0;
@@ -1502,7 +1521,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['theme']) {
-      this.cdr.detectChanges();
+      this.safeDetectChanges();
     }
   }
 
@@ -1567,7 +1586,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       paymentNotes: ''
     };
     this.showPaymentModal = true;
-    this.cdr.detectChanges();
+    this.safeDetectChanges();
   }
 
   setPaymentPreset(ratio: number) {
@@ -1590,13 +1609,13 @@ export class DashFinancesComponent implements OnInit, OnChanges {
 
   toggleInvoiceExpand(id: string) {
     this.expandedInvoiceId = this.expandedInvoiceId === id ? null : id;
-    this.cdr.detectChanges();
+    this.safeDetectChanges();
   }
 
   closePaymentModal() {
     this.showPaymentModal = false;
     this.paymentInvoiceTarget = null;
-    this.cdr.detectChanges();
+    this.safeDetectChanges();
   }
 
   async confirmPayment() {
@@ -1610,7 +1629,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
     }
 
     this.isLoading = true;
-    this.cdr.detectChanges();
+    this.safeDetectChanges();
     try {
       const res = await firstValueFrom(this.financeService.addInvoicePayment(
         targetId,
@@ -1631,14 +1650,14 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       alert(e?.error?.message || 'Error al registrar el abono.');
     } finally {
       this.isLoading = false;
-      this.cdr.detectChanges();
+      this.safeDetectChanges();
     }
   }
 
   async deletePayment(paymentId: number) {
     if (!confirm('¿Estás seguro de anular/eliminar este abono registrado?')) return;
     this.isLoading = true;
-    this.cdr.detectChanges();
+    this.safeDetectChanges();
     try {
       const res = await firstValueFrom(this.financeService.deleteInvoicePayment(paymentId));
       await this.refresh();
@@ -1648,17 +1667,17 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       alert(e?.error?.message || 'Error al eliminar el abono.');
     } finally {
       this.isLoading = false;
-      this.cdr.detectChanges();
+      this.safeDetectChanges();
     }
   }
 
   showGadget(message: string, type: 'create' | 'edit' | 'delete' | 'success' = 'success') {
     this.gadgetToast = { show: true, message, type };
-    this.cdr.detectChanges();
+    this.safeDetectChanges();
     setTimeout(() => {
       if (this.gadgetToast && this.gadgetToast.message === message) {
         this.gadgetToast = null;
-        this.cdr.detectChanges();
+        this.safeDetectChanges();
       }
     }, 4200);
   }
@@ -1783,14 +1802,17 @@ export class DashFinancesComponent implements OnInit, OnChanges {
   ngOnInit() { this.refresh(); }
 
   async refresh() {
+    if (this.isDestroyed) return;
     this.isLoading = true;
-    this.cdr.detectChanges();
+    this.safeDetectChanges();
     try {
       const [clientsRes, servicesRes, invoicesRes] = await Promise.all([
         firstValueFrom(this.financeService.getClients()),
         firstValueFrom(this.financeService.getServices()),
         firstValueFrom(this.financeService.getInvoices())
       ]);
+
+      if (this.isDestroyed) return;
 
       this.clients = clientsRes.clients.map((c: any) => ({ ...c, createdAt: c.created_at })) || [];
       this.allServices = servicesRes.services.map((s: any) => ({ ...s, unitPrice: Number(s.price) })) || [];
@@ -1821,26 +1843,29 @@ export class DashFinancesComponent implements OnInit, OnChanges {
         };
       }) || [];
 
+      if (this.isDestroyed) return;
       await this.buildKpis();
+      if (this.isDestroyed) return;
       this.buildReports();
     } catch (e) {
       console.error('Error fetching finance data:', e);
     } finally {
       this.isLoading = false;
-      this.cdr.detectChanges();
+      this.safeDetectChanges();
     }
   }
 
   async toggleInvoice(id?: string) {
-    if (!id) return;
+    if (!id || this.isDestroyed) return;
     if (this.expandedInvoiceId === id) {
       this.expandedInvoiceId = null;
-      this.cdr.detectChanges();
+      this.safeDetectChanges();
     } else {
       this.expandedInvoiceId = id;
-      this.cdr.detectChanges();
+      this.safeDetectChanges();
       try {
         const res = await firstValueFrom(this.financeService.getInvoiceDetails(id));
+        if (this.isDestroyed) return;
         const invIndex = this.invoices.findIndex(i => i.id === id);
         if (invIndex >= 0 && res?.invoice) {
            this.invoices[invIndex].items = res.invoice.items?.map((it: any) => {
@@ -1859,7 +1884,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       } catch (e) {
         console.error('Error fetching invoice details:', e);
       } finally {
-        this.cdr.detectChanges();
+        this.safeDetectChanges();
       }
     }
   }
@@ -1889,10 +1914,11 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       this.invFilterEndDate = `${end.getFullYear()}-${String(end.getMonth()+1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`;
     }
     this.buildKpis();
-    this.cdr.detectChanges();
+    this.safeDetectChanges();
   }
 
   async buildKpis() {
+    if (this.isDestroyed) return;
     try {
       const filters = {
         search: this.invFilterCompany,
@@ -1902,6 +1928,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
         date_to: this.invFilterEndDate
       };
       const dashboardRes = await firstValueFrom(this.financeService.getDashboard(filters));
+      if (this.isDestroyed) return;
       const kpi = dashboardRes?.kpis || {};
       
       this.kpis = [
@@ -1935,7 +1962,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
     } catch (e) {
       console.error('Error building KPIs:', e);
     } finally {
-      this.cdr.detectChanges();
+      this.safeDetectChanges();
     }
   }
 
@@ -2062,8 +2089,8 @@ export class DashFinancesComponent implements OnInit, OnChanges {
   }
 
   // ─── CLIENTS ───────────────────────────────
-  openNewClient() { this.editingClient = { id: '', name: '', email: '', phone: '', company: '', notes: '', createdAt: new Date().toISOString().split('T')[0] }; this.showClientForm = true; this.cdr.detectChanges(); }
-  editClient(c: Client) { this.editingClient = { ...c }; this.showClientForm = true; this.cdr.detectChanges(); }
+  openNewClient() { this.editingClient = { id: '', name: '', email: '', phone: '', company: '', notes: '', createdAt: new Date().toISOString().split('T')[0] }; this.showClientForm = true; this.safeDetectChanges(); }
+  editClient(c: Client) { this.editingClient = { ...c }; this.showClientForm = true; this.safeDetectChanges(); }
   async saveClient() {
     if (!this.editingClient?.name || !this.editingClient?.email) {
       alert('Por favor completa los campos obligatorios (Nombre, Email).');
@@ -2104,7 +2131,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       console.error(e);
       alert('Error al guardar cliente');
     } finally {
-      this.cdr.detectChanges();
+      this.safeDetectChanges();
     }
   }
   async deleteClient(id: string) {
@@ -2116,7 +2143,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       } catch (e) {
         alert('Error al eliminar cliente. Puede tener facturas asociadas.');
       } finally {
-        this.cdr.detectChanges();
+        this.safeDetectChanges();
       }
     }
   }
@@ -2126,8 +2153,8 @@ export class DashFinancesComponent implements OnInit, OnChanges {
   }
 
   // ─── SERVICES ──────────────────────────────
-  openNewService() { this.editingService = { id: '', name: '', description: '', unitPrice: 0, category: 'desarrollo' }; this.showServiceForm = true; this.cdr.detectChanges(); }
-  editService(s: Service) { this.editingService = { ...s }; this.showServiceForm = true; this.cdr.detectChanges(); }
+  openNewService() { this.editingService = { id: '', name: '', description: '', unitPrice: 0, category: 'desarrollo' }; this.showServiceForm = true; this.safeDetectChanges(); }
+  editService(s: Service) { this.editingService = { ...s }; this.showServiceForm = true; this.safeDetectChanges(); }
   async saveService() {
     if (!this.editingService?.name) {
       alert('El nombre del servicio es obligatorio.');
@@ -2155,7 +2182,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       console.error(e);
       alert('Error al guardar servicio');
     } finally {
-      this.cdr.detectChanges();
+      this.safeDetectChanges();
     }
   }
   async deleteService(id: string) {
@@ -2167,7 +2194,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       } catch (e) {
         alert('Error al eliminar servicio');
       } finally {
-        this.cdr.detectChanges();
+        this.safeDetectChanges();
       }
     }
   }
@@ -2181,7 +2208,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
     this.serviceToAdd = '';
     this.showInvoiceForm = true;
     this.subTab = 'facturas';
-    this.cdr.detectChanges();
+    this.safeDetectChanges();
   }
   async editInvoice(inv: Invoice) {
     this.subTab = 'facturas';
@@ -2195,7 +2222,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
     this.selectedClientId = String(this.editingInvoice.clientId || '');
     this.showInvoiceForm = true;
     this.isLoading = true;
-    this.cdr.detectChanges();
+    this.safeDetectChanges();
     try {
       const res = await firstValueFrom(this.financeService.getInvoiceDetails(inv.id!));
       if (res && res.invoice) {
@@ -2243,7 +2270,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
     } finally {
       this.isLoading = false;
       this.serviceToAdd = '';
-      this.cdr.detectChanges();
+      this.safeDetectChanges();
     }
   }
   onClientSelect() {
@@ -2319,7 +2346,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       console.error(e);
       alert('Error al crear cuenta de cobro');
     } finally {
-      this.cdr.detectChanges();
+      this.safeDetectChanges();
     }
   }
   async deleteInvoice(id: string) {
@@ -2332,7 +2359,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
         console.error(e);
         alert('Error al eliminar la cuenta de cobro.');
       } finally {
-        this.cdr.detectChanges();
+        this.safeDetectChanges();
       }
     }
   }
@@ -2348,13 +2375,13 @@ export class DashFinancesComponent implements OnInit, OnChanges {
     } catch (e) {
       alert('Error al actualizar estado');
     } finally {
-      this.cdr.detectChanges();
+      this.safeDetectChanges();
     }
   }
 
   async downloadInvoicePdf(inv: Invoice) {
     this.pdfLoading = true;
-    this.cdr.detectChanges();
+    this.safeDetectChanges();
     try {
       const res = await firstValueFrom(this.financeService.getInvoiceDetails(inv.id!));
       let fullInv = inv;
@@ -2397,7 +2424,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       alert('Error descargando PDF');
     } finally { 
       this.pdfLoading = false; 
-      this.cdr.detectChanges();
+      this.safeDetectChanges();
     }
   }
 
@@ -2413,13 +2440,13 @@ export class DashFinancesComponent implements OnInit, OnChanges {
     }
     this.batchLoading = true;
     this.batchLoadingStatus = statuses.length > 1 ? 'Ambas' : statuses[0];
-    this.cdr.detectChanges();
+    this.safeDetectChanges();
 
     try {
       for (let i = 0; i < toDownload.length; i++) {
         const inv = toDownload[i];
         this.batchProgressText = `Descargando (${i + 1}/${toDownload.length})...`;
-        this.cdr.detectChanges();
+        this.safeDetectChanges();
 
         try {
           const res = await firstValueFrom(this.financeService.getInvoiceDetails(inv.id!));
@@ -2467,14 +2494,14 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       this.batchLoading = false;
       this.batchLoadingStatus = '';
       this.batchProgressText = '';
-      this.cdr.detectChanges();
+      this.safeDetectChanges();
     }
   }
 
   async generatePreview() {
     if (!this.editingInvoice) return;
     this.pdfLoading = true;
-    this.cdr.detectChanges();
+    this.safeDetectChanges();
     try {
       this.previewInvoiceTarget = this.editingInvoice as Invoice;
       const url = await this.pdfService.downloadInvoicePdf(this.editingInvoice as Invoice, 'bloburl');
@@ -2484,7 +2511,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       console.error(err);
     } finally {
       this.pdfLoading = false;
-      this.cdr.detectChanges();
+      this.safeDetectChanges();
     }
   }
 
@@ -2492,7 +2519,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
     if (!this.previewInvoiceTarget && !this.editingInvoice) return;
     const inv = this.previewInvoiceTarget || (this.editingInvoice as Invoice);
     this.pdfLoading = true;
-    this.cdr.detectChanges();
+    this.safeDetectChanges();
     try {
       await this.pdfService.downloadInvoicePdf(inv, 'save');
     } catch (err) {
@@ -2500,7 +2527,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
       alert('Error descargando PDF');
     } finally {
       this.pdfLoading = false;
-      this.cdr.detectChanges();
+      this.safeDetectChanges();
     }
   }
 
@@ -2535,7 +2562,7 @@ export class DashFinancesComponent implements OnInit, OnChanges {
     this.showPdfPreview = false;
     this.previewPdfUrl = null;
     this.previewInvoiceTarget = null;
-    this.cdr.detectChanges();
+    this.safeDetectChanges();
   }
 
   // ─── HELPERS ───────────────────────────────
