@@ -775,14 +775,14 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.scrollToBottom();
     }, 300);
 
-    // Desvanecer el overlay después de 2.5s
+    // Desvanecer el overlay después de 3.5s
     setTimeout(() => {
       this.overlayOpacity = '0';
       setTimeout(() => {
         this.showOverlay = false;
         this.isResetting = false;
       }, 600);
-    }, 2000);
+    }, 2900);
   }
 
   private previousMessageCount = 0;

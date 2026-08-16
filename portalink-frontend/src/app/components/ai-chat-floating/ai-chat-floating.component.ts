@@ -115,7 +115,7 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
             
             <!-- Welcome Intro Section (Compact & Centered) -->
             <div *ngIf="chatService.messages.length <= 1" class="flex flex-col items-center justify-center text-center p-5 my-1 max-w-sm mx-auto rounded-[24px] bg-neutral-50/80 border border-neutral-200/80 shadow-2xs space-y-2">
-              <div class="w-20 h-20 sm:w-24 sm:h-24 relative flex items-center justify-center overflow-visible">
+              <div class="w-28 h-28 sm:w-32 sm:h-32 relative flex items-center justify-center overflow-visible">
                 <img src="assets/images/rotbot4.png" class="w-full h-full object-contain" alt="Rotbot Full">
               </div>
               <div class="space-y-1">
@@ -308,14 +308,14 @@ export class AiChatFloatingComponent implements OnInit, OnDestroy {
       this.scrollToBottom();
     }, 300);
 
-    // Desvanecer el overlay después de 2.5s
+    // Desvanecer el overlay después de 3.5s
     setTimeout(() => {
       this.overlayOpacity = '0';
       setTimeout(() => {
         this.showOverlay = false;
         this.isResetting = false;
       }, 600);
-    }, 2000);
+    }, 2900);
   }
 
   constructor(
