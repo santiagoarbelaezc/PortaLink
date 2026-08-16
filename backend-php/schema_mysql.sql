@@ -142,6 +142,7 @@ CREATE TABLE IF NOT EXISTS `finance_invoices` (
   `user_id` INT NOT NULL,
   `client_id` INT NULL,
   `invoice_number` VARCHAR(100) NOT NULL,
+  `title` VARCHAR(255) NULL,
   `issue_date` DATE NULL,
   `due_date` DATE NULL,
   `status` VARCHAR(50) DEFAULT 'DRAFT',
@@ -169,9 +170,51 @@ CREATE TABLE IF NOT EXISTS `finance_invoice_items` (
   `description` TEXT NULL,
   `quantity` DECIMAL(10, 2) DEFAULT 1.00,
   `unit_price` DECIMAL(15, 2) DEFAULT 0.00,
-  `total_price` DECIMAL(15, 2) DEFAULT 0.00,
+  `total_price` DECIMAL(15, 2) DEFAULT 0.00
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------------------------------------------------------
+-- 10.1 Tabla: finance_invoice_payments (Abonos Parciales)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `finance_invoice_payments` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `invoice_id` INT NOT NULL,
+  `user_id` INT NOT NULL,
+  `amount` DECIMAL(15, 2) NOT NULL,
+  `payment_date` DATE NOT NULL,
+  `payment_method` VARCHAR(100) NOT NULL,
+  `notes` TEXT NULL,
+  `transaction_id` INT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   INDEX (`invoice_id`),
-  CONSTRAINT `fk_finance_items_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `finance_invoices` (`id`) ON DELETE CASCADE
+  INDEX (`user_id`),
+  CONSTRAINT `fk_inv_payments_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `finance_invoices` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_inv_payments_usuario` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------------------------------------------------------
+-- 10.1 Tabla: finance_transactions (Control Financiero)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `finance_transactions` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NOT NULL,
+  `type` VARCHAR(20) NOT NULL DEFAULT 'INGRESO',
+  `concept` VARCHAR(255) NOT NULL,
+  `category` VARCHAR(100) NOT NULL,
+  `client_id` INT NULL,
+  `amount_cop` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+  `amount_usd` DECIMAL(15, 2) NULL DEFAULT 0.00,
+  `currency` VARCHAR(10) DEFAULT 'COP',
+  `transaction_date` DATE NOT NULL,
+  `status` VARCHAR(50) DEFAULT 'COMPLETADO',
+  `payment_method` VARCHAR(100) NULL,
+  `notes` TEXT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX (`user_id`),
+  INDEX (`transaction_date`),
+  INDEX (`type`),
+  CONSTRAINT `fk_finance_tx_usuario` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_finance_tx_client` FOREIGN KEY (`client_id`) REFERENCES `finance_clients` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------

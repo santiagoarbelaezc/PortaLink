@@ -29,8 +29,10 @@ import * as AOS from 'aos';
   ],
   template: `
     <div class="dynamic-bg"></div>
-    <main class="relative text-neutral-900" *ngIf="portfolioData()">
+    <main class="relative text-neutral-900">
       <app-hero-video></app-hero-video>
+      
+      <ng-container *ngIf="portfolioData(); else homeSkeleton">
       
       <!-- ═══════════════════════════════════════════════════════════ -->
       <!-- GALERÍA DE PROYECTOS REALIZADOS (ESTILO APPLE ULTRALIMPIO)   -->
@@ -167,8 +169,19 @@ import * as AOS from 'aos';
       <!-- <app-portfolio [projects]="portfolioData().portfolio"></app-portfolio> -->
       <app-about [data]="portfolioData().about"></app-about>
       <app-contact [data]="portfolioData().contact"></app-contact>
-      
+      </ng-container>
 
+      <ng-template #homeSkeleton>
+        <section class="py-12 md:py-20 px-6 sm:px-12 lg:px-20 bg-white">
+          <div class="max-w-[1500px] mx-auto animate-pulse space-y-8">
+            <div class="h-12 w-64 bg-neutral-100 rounded-2xl"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div class="h-72 sm:h-96 bg-neutral-100 rounded-3xl"></div>
+              <div class="h-72 sm:h-96 bg-neutral-100 rounded-3xl"></div>
+            </div>
+          </div>
+        </section>
+      </ng-template>
 
       <app-footer></app-footer>
     </main>

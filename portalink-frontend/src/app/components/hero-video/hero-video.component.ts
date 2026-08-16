@@ -65,16 +65,17 @@ import * as AOS from 'aos';
                  ? 'bg-white border-neutral-200/90 shadow-[0_15px_45px_rgba(0,0,0,0.06)]' 
                  : 'bg-neutral-900 border-neutral-800 shadow-[0_20px_50px_rgba(0,0,0,0.6)]'">
             
-            <!-- Mobile Video Element (portalink-movil.mp4) -->
+            <!-- Mobile Video Element (portalink-movil.mp4 con poster de precarga instantánea) -->
             <video #mobileHeroVideo
-                   class="block md:hidden w-full h-auto object-cover rounded-[20px] transition-transform duration-700 hover:scale-[1.01]"
+                   class="block md:hidden w-full h-auto object-cover rounded-[20px] transition-transform duration-700 hover:scale-[1.01] bg-neutral-100 min-h-[220px]"
                    autoplay
                    muted
                    [muted]="true"
                    loop
                    playsinline
                    webkit-playsinline
-                   preload="auto">
+                   preload="auto"
+                   poster="assets/images/proyectos/proyecto-0.png">
               <source src="assets/videos/hero/portalink-movil.mp4" type="video/mp4">
             </video>
 

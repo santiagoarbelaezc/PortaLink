@@ -1,14 +1,14 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   template: `
     <div class="min-h-screen lg:h-screen pt-[68px] overflow-y-auto lg:overflow-hidden bg-white text-neutral-900 font-sans grid grid-cols-1 lg:grid-cols-12">
 
@@ -48,9 +48,9 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
       <div class="flex flex-col justify-start px-5 sm:px-12 lg:px-14 xl:px-16 relative bg-white lg:col-span-5 xl:col-span-5 min-h-[calc(100vh-68px)] lg:h-[calc(100vh-68px)] overflow-y-auto py-6 lg:py-8 pb-32 sm:pb-8">
         <div class="w-full max-w-sm xl:max-w-md mx-auto">
 
-          <!-- Mobile Header Back Link -->
-          <div class="lg:hidden flex items-center justify-between mb-8">
-            <a routerLink="/" class="inline-flex items-center gap-2 text-xs font-semibold text-neutral-800 no-underline">
+          <!-- Header Back Link -->
+          <div class="flex items-center justify-between mb-6">
+            <a (click)="goHome($event)" routerLink="/" class="inline-flex items-center gap-2 text-xs font-semibold text-neutral-800 hover:text-black no-underline cursor-pointer">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
               </svg>
@@ -324,6 +324,11 @@ export class LoginComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
   private sanitizer = inject(DomSanitizer);
+
+  goHome(event?: Event) {
+    if (event) event.preventDefault();
+    this.router.navigate(['/']);
+  }
 
   activeTab: 'login' | 'register' = 'login';
 

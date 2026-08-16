@@ -5,9 +5,11 @@
     RewriteRule ^(.*)$ index.php [QSA,L]
 </IfModule>
 
-# Handle CORS headers for Apache if needed (PHP also handles them dynamically)
+# Handle CORS headers dynamically for Apache
 <IfModule mod_headers.c>
-    Header always set Access-Control-Allow-Origin "*"
+    SetEnvIf Origin "^(.*)$" ORIGIN_SUBDOMAIN=$1
+    Header always set Access-Control-Allow-Origin "%{ORIGIN_SUBDOMAIN}e" env=ORIGIN_SUBDOMAIN
+    Header always set Access-Control-Allow-Credentials "true"
     Header always set Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
     Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
 </IfModule>

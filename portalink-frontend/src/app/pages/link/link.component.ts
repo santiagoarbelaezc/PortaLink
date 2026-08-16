@@ -56,13 +56,6 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                 <div class="relative z-10 w-full aspect-[4/4.5] sm:aspect-[4/5] rounded-[22px] sm:rounded-[34px] overflow-hidden bg-neutral-100 border border-neutral-200/90 shadow-md">
                   <img [src]="getProfileAvatar()" alt="Santiago Arbeláez" 
                        class="w-full h-full object-cover origin-top scale-105 -translate-y-2 transition-transform duration-700 ease-out group-hover:scale-110" />
-
-                  <!-- Subtle & Elegant Logo Button (Bottom Left) -->
-                  <button (click)="triggerAvatarLoading($event)" 
-                          title="Activar animación PortaLink"
-                          class="absolute bottom-4 left-4 z-20 w-11 h-11 rounded-full bg-white/85 hover:bg-white backdrop-blur-md p-2 border border-white/80 shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer">
-                    <img [src]="getProfileLogo()" alt="Logo" class="w-full h-full object-contain" />
-                  </button>
                 </div>
 
               </div>
@@ -552,7 +545,7 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   getProfileLogo() {
-    const rawUrl = 'assets/icons/navbar-logolight.png';
+    const rawUrl = 'assets/icons/navbar-logodark.png';
     return this.imageOptimizer.getCachedOrOriginal(rawUrl, 250, 0.8);
   }
 

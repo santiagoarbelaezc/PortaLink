@@ -14,7 +14,24 @@ class AnalyticsController
 
     private function ensureAnalyticsTable(): void
     {
-        // Ya creado por schema_mysql.sql
+        if (self::$tableEnsured) return;
+        try {
+            Database::query("
+                CREATE TABLE IF NOT EXISTS `analytics_events` (
+                  `id` INT AUTO_INCREMENT PRIMARY KEY,
+                  `session_id` VARCHAR(100) NULL,
+                  `event_category` VARCHAR(100) NOT NULL,
+                  `event_label` VARCHAR(255) NULL,
+                  `event_value` VARCHAR(255) NULL,
+                  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                  INDEX (`session_id`),
+                  INDEX (`event_category`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            ");
+            self::$tableEnsured = true;
+        } catch (\Throwable $e) {
+            error_log('[Analytics] ensureAnalyticsTable error: ' . $e->getMessage());
+        }
     }
 
     // 1. Recibir eventos desde el frontend (público) - soporta batch en array o individual

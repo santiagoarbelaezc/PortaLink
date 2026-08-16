@@ -10,10 +10,17 @@ if (PHP_SAPI === 'cli-server') {
     }
 }
 
-// Enviar cabeceras CORS siempre al inicio para evitar que errores bloqueen la respuesta en el navegador
-header('Access-Control-Allow-Origin: *');
+// Enviar cabeceras CORS dinámicas permitiendo cualquier origen de petición (Localhost o Firebase)
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
+header("Access-Control-Allow-Origin: {$origin}");
+header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
+    http_response_code(204);
+    exit;
+}
 
 // Autoloader de Composer (o fallback simple si aún no se ha ejecutado composer install)
 if (file_exists(__DIR__ . '/vendor/autoload.php')) {
@@ -284,7 +291,15 @@ $router->get('/api/finance/invoices/:id', [FinanceController::class, 'getInvoice
 $router->post('/api/finance/invoices', [FinanceController::class, 'createInvoice'], [AuthMiddleware::class]);
 $router->put('/api/finance/invoices/:id', [FinanceController::class, 'updateInvoice'], [AuthMiddleware::class]);
 $router->patch('/api/finance/invoices/:id/status', [FinanceController::class, 'updateInvoiceStatus'], [AuthMiddleware::class]);
+$router->post('/api/finance/invoices/:id/payments', [FinanceController::class, 'addInvoicePayment'], [AuthMiddleware::class]);
+$router->get('/api/finance/invoices/:id/payments', [FinanceController::class, 'getInvoicePayments'], [AuthMiddleware::class]);
+$router->delete('/api/finance/invoices/payments/:paymentId', [FinanceController::class, 'deleteInvoicePayment'], [AuthMiddleware::class]);
 $router->delete('/api/finance/invoices/:id', [FinanceController::class, 'deleteInvoice'], [AuthMiddleware::class]);
+$router->get('/api/finance/control-summary', [FinanceController::class, 'getControlSummary'], [AuthMiddleware::class]);
+$router->get('/api/finance/transactions', [FinanceController::class, 'getTransactions'], [AuthMiddleware::class]);
+$router->post('/api/finance/transactions', [FinanceController::class, 'createTransaction'], [AuthMiddleware::class]);
+$router->put('/api/finance/transactions/:id', [FinanceController::class, 'updateTransaction'], [AuthMiddleware::class]);
+$router->delete('/api/finance/transactions/:id', [FinanceController::class, 'deleteTransaction'], [AuthMiddleware::class]);
 
 // ──────────────────────────────────────────────────────────────
 //  RUTAS DE ANALYTICS (/api/analytics)
@@ -297,6 +312,8 @@ $router->get('/api/analytics/metrics', [AnalyticsController::class, 'getDashboar
 // ──────────────────────────────────────────────────────────────
 $router->get('/api/reports/activity', [ReportsController::class, 'getActivityLogs'], [AuthMiddleware::class]);
 $router->post('/api/reports/activity', [ReportsController::class, 'logActivity'], [AuthMiddleware::class]);
+$router->get('/api/reports/logs', [ReportsController::class, 'getActivityLogs'], [AuthMiddleware::class]);
+$router->post('/api/reports/logs', [ReportsController::class, 'logActivity'], [AuthMiddleware::class]);
 
 // ──────────────────────────────────────────────────────────────
 //  RUTAS DE CONFIGURACIÓN DEL SISTEMA (/api/config)
