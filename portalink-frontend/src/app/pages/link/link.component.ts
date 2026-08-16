@@ -179,7 +179,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                 </svg>
               </div>
 
-              <!-- Mobile Modeling Book Gallery (One by One, Ultra Elegant with AOS) -->
+              <!-- Mobile Photo Gallery (One by One, Ultra Elegant with AOS) -->
               <div class="block md:hidden pt-10 border-t border-neutral-200/80 space-y-6">
                 <div class="flex items-center justify-between mb-2">
                   <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-semibold">
@@ -466,7 +466,7 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
       fotos: 'Fotos',
       chat: 'Chat',
       empleo: 'Profesional',
-      retratos: 'EDITORIAL / BOOK',
+      retratos: 'FOTOS',
       instalarTitulo: 'Instalar PortaLink',
       instalarDescIOS: 'Añade esta aplicación a tu pantalla de inicio para acceder rápidamente a mi portafolio y redes.',
       instalarDescOther: 'Instala la aplicación para una experiencia más rápida y sin distracciones.',
@@ -488,7 +488,7 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
       fotos: 'Photos',
       chat: 'Chat',
       empleo: 'Work',
-      retratos: 'EDITORIAL / PORTRAITS',
+      retratos: 'PHOTOS',
       instalarTitulo: 'Install PortaLink',
       instalarDescIOS: 'Add this application to your home screen to quickly access my portfolio and networks.',
       instalarDescOther: 'Install the application for a faster experience without distractions.',
