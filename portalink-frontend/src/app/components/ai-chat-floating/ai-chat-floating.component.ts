@@ -14,7 +14,7 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
   imports: [CommonModule, FormsModule, MarkdownPipe],
   template: `
     <!-- Floating Container -->
-    <div class="fixed bottom-8 -right-8 z-[500]">
+    <div class="fixed bottom-3 -right-8 z-[500]">
       
       <!-- Open Chat Button -->
       <button 
@@ -57,10 +57,10 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
           <!-- Actions Container -->
           <div class="flex items-center gap-2 relative z-10">
             <!-- New Chat Button -->
-            <button (click)="chatService.clearHistory()" 
+            <button (click)="resetChatWithEffect()" 
                     class="w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-600 flex items-center justify-center transition-all border-none cursor-pointer" 
                     title="Nuevo Chat">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" [class.animate-spin]="isResetting">
                 <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-3.08 2.82"/>
               </svg>
             </button>
@@ -87,10 +87,31 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
         </div>
 
         <!-- Messages + Input Container -->
-        <div class="flex flex-col flex-grow h-full overflow-hidden bg-white">
+        <div class="flex flex-col flex-grow h-full overflow-hidden bg-white relative">
           
+          <!-- Overlay de Reseteo (cubre todo el chat mientras limpia) -->
+          <div *ngIf="showOverlay" 
+               class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white"
+               [style]="'opacity: ' + overlayOpacity + '; transition: opacity 600ms ease-in-out;'">
+            <div class="flex flex-col items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-neutral-100 border border-neutral-200/80 flex items-center justify-center p-2">
+                <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
+              </div>
+              <div class="flex flex-col items-center gap-1">
+                <span class="text-xs font-semibold text-neutral-700" style="letter-spacing: 0.02em;">Nueva conversación</span>
+                <div class="flex gap-1 mt-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-neutral-300 animate-bounce" style="animation-delay: 0ms"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-bounce" style="animation-delay: 150ms"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-neutral-500 animate-bounce" style="animation-delay: 300ms"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Messages Area -->
-          <div #scrollContainer class="flex-grow overflow-y-auto p-5 space-y-4 scroll-smooth custom-scrollbar" style="overscroll-behavior: contain;">
+          <div #scrollContainer 
+               class="flex-grow overflow-y-auto p-5 space-y-4 scroll-smooth custom-scrollbar" 
+               style="overscroll-behavior: contain;">
             
             <!-- Welcome Intro Section (Compact & Centered) -->
             <div *ngIf="chatService.messages.length <= 1" class="flex flex-col items-center justify-center text-center p-5 my-1 max-w-sm mx-auto rounded-[24px] bg-neutral-50/80 border border-neutral-200/80 shadow-2xs space-y-2">
@@ -126,23 +147,6 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
                   [style.color]="msg.role === 'user' ? '#ffffff !important' : ''"
                 >
                   <span [innerHTML]="msg.content | markdown"></span>
-
-                  <!-- Action Buttons inside assistant greeting -->
-                  <div *ngIf="msg.role === 'assistant' && msg.showInitialActionButtons" class="mt-3 flex flex-wrap items-center gap-2">
-                    <button 
-                      (click)="startDesignFlow()" 
-                      class="px-3.5 py-1.5 rounded-full bg-white hover:bg-neutral-900 hover:text-white border border-neutral-200/90 text-xs font-semibold text-neutral-900 transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs">
-                      <i class="fa-solid fa-palette text-xs"></i>
-                      <span>Quiero un Diseño</span>
-                    </button>
-                    <button 
-                      (click)="startConsultingFlow()" 
-                      class="px-3.5 py-1.5 rounded-full bg-white hover:bg-neutral-900 hover:text-white border border-neutral-200/90 text-xs font-semibold text-neutral-900 transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs">
-                      <i class="fa-solid fa-lightbulb text-xs"></i>
-                      <span>Quiero Asesoría</span>
-                    </button>
-                  </div>
-
                 </div>
               </div>
             </ng-container>
@@ -216,8 +220,9 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
       padding: 12px 16px !important;
       color: #09090b !important;
     }
-    .assistant-bubble * {
-      color: #09090b !important;
+    .assistant-bubble a,
+    .assistant-bubble a * {
+      color: #ffffff !important;
     }
     .user-bubble {
       background: #09090b !important;
@@ -286,6 +291,32 @@ export class AiChatFloatingComponent implements OnInit, OnDestroy {
   };
 
   currentTheme = 'light';
+  isResetting = false;
+  showResetBadge = false;
+  showOverlay = false;
+  overlayOpacity = '1';
+
+  resetChatWithEffect() {
+    if (this.isResetting) return;
+    this.isResetting = true;
+    this.showOverlay = true;
+    this.overlayOpacity = '1';
+
+    // Limpiar el chat mientras el overlay lo tapa
+    setTimeout(() => {
+      this.chatService.clearHistory();
+      this.scrollToBottom();
+    }, 300);
+
+    // Desvanecer el overlay después de 2.5s
+    setTimeout(() => {
+      this.overlayOpacity = '0';
+      setTimeout(() => {
+        this.showOverlay = false;
+        this.isResetting = false;
+      }, 600);
+    }, 2000);
+  }
 
   constructor(
     public chatService: ChatStateService,

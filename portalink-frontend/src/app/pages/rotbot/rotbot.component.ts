@@ -40,6 +40,16 @@ import { SiteService } from '../../services/site.service';
         </div>
 
         <div class="flex items-center gap-2.5">
+          <!-- Nuevo Chat -->
+          <button (click)="resetChatWithEffect()" 
+                  class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-900 font-semibold text-xs tracking-wide transition-all shadow-2xs border-none cursor-pointer" 
+                  title="Nuevo Chat">
+            <svg class="w-3.5 h-3.5 transition-transform" [class.animate-spin]="isResetting" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-3.08 2.82"/>
+            </svg>
+            <span>Nuevo Chat</span>
+          </button>
+
           <!-- Galería de Diseños -->
           <a routerLink="/prototipos" 
              class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-900 font-semibold text-xs tracking-wide transition-all shadow-2xs no-underline border-none cursor-pointer">
@@ -80,25 +90,6 @@ import { SiteService } from '../../services/site.service';
           
           <div>
             <h4 class="text-xs font-semibold text-neutral-400 tracking-wider uppercase mb-3">
-              Principales
-            </h4>
-            <div class="space-y-2">
-              <button (click)="startDesignFlow()" 
-                      class="w-full text-left p-3.5 rounded-2xl bg-white border border-neutral-200/80 hover:border-neutral-900 text-xs font-semibold text-neutral-900 shadow-2xs hover:shadow-xs transition-all flex items-center gap-3 cursor-pointer">
-                <i class="fa-solid fa-palette text-neutral-800 text-xs"></i>
-                <span>Quiero un Diseño</span>
-              </button>
-              
-              <button (click)="startConsultingFlow()" 
-                      class="w-full text-left p-3.5 rounded-2xl bg-white border border-neutral-200/80 hover:border-neutral-900 text-xs font-semibold text-neutral-900 shadow-2xs hover:shadow-xs transition-all flex items-center gap-3 cursor-pointer">
-                <i class="fa-solid fa-lightbulb text-neutral-800 text-xs"></i>
-                <span>Quiero Asesoría</span>
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <h4 class="text-xs font-semibold text-neutral-400 tracking-wider uppercase mb-3">
               Diseños Frecuentes
             </h4>
             <div class="space-y-2">
@@ -111,37 +102,50 @@ import { SiteService } from '../../services/site.service';
               <button (click)="sendShortcutMessage('Quiero un diseño para mi gimnasio')" 
                       class="w-full text-left p-3.5 rounded-2xl bg-white border border-neutral-200/80 hover:border-neutral-900 text-xs font-medium text-neutral-800 shadow-2xs hover:shadow-xs transition-all flex items-center gap-2.5 cursor-pointer">
                 <i class="fa-solid fa-dumbbell text-neutral-500 text-xs shrink-0"></i>
-                <span class="truncate">Gym & Fitness</span>
+                <span class="truncate">Gimnasio & Fitness</span>
               </button>
 
-              <button (click)="sendShortcutMessage('Quiero un catálogo digital para mis productos')" 
+              <button (click)="sendShortcutMessage('Quiero un diseño para mi restaurante')" 
                       class="w-full text-left p-3.5 rounded-2xl bg-white border border-neutral-200/80 hover:border-neutral-900 text-xs font-medium text-neutral-800 shadow-2xs hover:shadow-xs transition-all flex items-center gap-2.5 cursor-pointer">
-                <i class="fa-solid fa-book-open text-neutral-500 text-xs shrink-0"></i>
-                <span class="truncate">Catálogo Digital</span>
-              </button>
-
-              <button (click)="sendShortcutMessage('Quiero un sistema para agendamiento de citas')" 
-                      class="w-full text-left p-3.5 rounded-2xl bg-white border border-neutral-200/80 hover:border-neutral-900 text-xs font-medium text-neutral-800 shadow-2xs hover:shadow-xs transition-all flex items-center gap-2.5 cursor-pointer">
-                <i class="fa-solid fa-calendar-check text-neutral-500 text-xs shrink-0"></i>
-                <span class="truncate">Agendamiento Citas</span>
+                <i class="fa-solid fa-utensils text-neutral-500 text-xs shrink-0"></i>
+                <span class="truncate">Restaurante / Comida</span>
               </button>
 
               <button (click)="sendShortcutMessage('Quiero un diseño a medida para mi empresa')" 
                       class="w-full text-left p-3.5 rounded-2xl bg-white border border-neutral-200/80 hover:border-neutral-900 text-xs font-medium text-neutral-800 shadow-2xs hover:shadow-xs transition-all flex items-center gap-2.5 cursor-pointer">
-                <i class="fa-solid fa-wand-magic-sparkles text-neutral-500 text-xs shrink-0"></i>
-                <span class="truncate">Sistema a Medida</span>
+                <i class="fa-solid fa-briefcase text-neutral-500 text-xs shrink-0"></i>
+                <span class="truncate">Corporativo / Empresa</span>
               </button>
             </div>
           </div>
 
         </aside>
  
-        <!-- Messages + Input Container (Centro o Izquierda en modo diseño) -->
-        <div class="flex flex-col h-full overflow-hidden transition-all duration-500 relative"
-             [ngClass]="activeDesign ? 'w-full lg:w-[65%] flex-shrink-0 border-r border-white/5' : 'flex-grow'">
-          <!-- Messages Area -->
+        <!-- CENTRO: CHAT PRINCIPAL -->
+        <main class="flex-grow flex flex-col h-full overflow-hidden bg-white relative">
+          
+          <!-- Overlay de Reseteo (cubre todo el chat mientras limpia) -->
+          <div *ngIf="showOverlay" 
+               class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white"
+               [style]="'opacity: ' + overlayOpacity + '; transition: opacity 600ms ease-in-out;'">
+            <div class="flex flex-col items-center gap-4">
+              <div class="w-14 h-14 rounded-2xl bg-neutral-100 border border-neutral-200/80 flex items-center justify-center p-2.5">
+                <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
+              </div>
+              <div class="flex flex-col items-center gap-1.5">
+                <span class="text-sm font-semibold text-neutral-700" style="letter-spacing: 0.02em;">Nueva conversación</span>
+                <div class="flex gap-1.5 mt-1">
+                  <span class="w-2 h-2 rounded-full bg-neutral-300 animate-bounce" style="animation-delay: 0ms"></span>
+                  <span class="w-2 h-2 rounded-full bg-neutral-400 animate-bounce" style="animation-delay: 150ms"></span>
+                  <span class="w-2 h-2 rounded-full bg-neutral-500 animate-bounce" style="animation-delay: 300ms"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Message Scroll Area -->
           <div #scrollContainer 
-               class="flex-grow overflow-y-auto scroll-smooth custom-scrollbar messages-area space-y-6" style="overscroll-behavior: contain;">
+               class="flex-grow overflow-y-auto p-4 sm:p-6 custom-scrollbar scroll-smooth">
             
             <ng-container *ngIf="chatService.isLoadingHistory(); else chatContent">
               <!-- Skeleton Loader -->
@@ -192,22 +196,7 @@ import { SiteService } from '../../services/site.service';
                       }"
                     >
                       <span [innerHTML]="msg.content | markdown"></span>
-
-                      <!-- Initial Action Buttons -->
-                      <div *ngIf="msg.role === 'assistant' && msg.showInitialActionButtons" class="mt-3 flex flex-wrap items-center gap-2.5">
-                        <button 
-                          (click)="startDesignFlow()" 
-                          class="px-4 py-2 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white border border-neutral-200/80 text-xs font-semibold text-neutral-900 transition-all flex items-center gap-2 cursor-pointer shadow-2xs">
-                          <i class="fa-solid fa-palette text-xs"></i>
-                          <span>Quiero un Diseño</span>
-                        </button>
-                        <button 
-                          (click)="startConsultingFlow()" 
-                          class="px-4 py-2 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white border border-neutral-200/80 text-xs font-semibold text-neutral-900 transition-all flex items-center gap-2 cursor-pointer shadow-2xs">
-                          <i class="fa-solid fa-lightbulb text-xs"></i>
-                          <span>Quiero Asesoría</span>
-                        </button>
-                      </div>
+                    </div>
 
                   <!-- Category Selector Chips (Ocultos en Lanzamiento) -->
                   <div *ngIf="msg.role === 'assistant' && msg.showCategorySelector && !authService.hasToken()" class="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
@@ -310,7 +299,6 @@ import { SiteService } from '../../services/site.service';
                     </button>
                   </div>
                 </div>
-              </div>
             </ng-container>
  
             <!-- Typing Indicator -->
@@ -371,7 +359,7 @@ import { SiteService } from '../../services/site.service';
                <span class="text-[11px] font-sans font-medium text-neutral-400">Powered by Portalink IA</span>
             </div>
           </div>
-        </div>
+        </main>
  
         <!-- SIDEBAR DERECHO (INFO ROTBOT) -->
         <aside class="chat-sidebar hidden lg:flex flex-col w-80 flex-shrink-0 border-l border-neutral-100 bg-neutral-50/60 p-6 space-y-6 overflow-y-auto custom-scrollbar">
@@ -560,7 +548,6 @@ import { SiteService } from '../../services/site.service';
 
         </div>
       </div>
-    </div>
   `,
   styles: [`
     .page-container {
@@ -708,6 +695,10 @@ import { SiteService } from '../../services/site.service';
       border-color: rgba(0, 0, 0, 0.08) !important;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
     }
+    .assistant-bubble a,
+    .assistant-bubble a * {
+      color: #ffffff !important;
+    }
   `]
 })
 export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
@@ -767,6 +758,32 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
   isDesigning: boolean = false;
   generatedSiteData: any = null;
   generatedSlug: string = '';
+  isResetting = false;
+  showResetBadge = false;
+  showOverlay = false;
+  overlayOpacity = '1';
+
+  resetChatWithEffect() {
+    if (this.isResetting) return;
+    this.isResetting = true;
+    this.showOverlay = true;
+    this.overlayOpacity = '1';
+
+    // Limpiar el chat mientras el overlay lo tapa
+    setTimeout(() => {
+      this.chatService.clearHistory();
+      this.scrollToBottom();
+    }, 300);
+
+    // Desvanecer el overlay después de 2.5s
+    setTimeout(() => {
+      this.overlayOpacity = '0';
+      setTimeout(() => {
+        this.showOverlay = false;
+        this.isResetting = false;
+      }, 600);
+    }, 2000);
+  }
 
   private previousMessageCount = 0;
   private wasTyping = false;

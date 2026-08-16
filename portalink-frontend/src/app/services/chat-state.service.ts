@@ -38,8 +38,7 @@ export interface ChatUsageResponse {
 
 const INITIAL_MESSAGE: ChatMessage = {
   role: 'assistant',
-  content: '¡Hola! Soy RotBot IA, tu copiloto en PortaLink. ¿En qué puedo ayudarte hoy? Puedo recomendarte nuestros proyectos web destacados, orientarte en soluciones a medida o compartirte nuestros canales oficiales.',
-  showInitialActionButtons: true
+  content: '¡Hola! Soy RotBot IA, tu copiloto en PortaLink. ¿En qué puedo ayudarte hoy? Puedo recomendarte nuestros proyectos web destacados, orientarte en soluciones a medida o compartirte nuestros canales oficiales.'
 };
 
 const SESSION_TOKEN_KEY = 'rotbot_session_token';
@@ -82,6 +81,7 @@ export class ChatStateService {
 
   constructor() {
     this._sessionToken = this.getOrCreateSessionToken();
+    this.loadFromLocalStorage();
     this.loadRotbotStatus().subscribe();
     this.checkStoredBlock();
 
@@ -280,6 +280,7 @@ export class ChatStateService {
       tap(res => {
         if (res.messages && res.messages.length > 0) {
           this.messages = [{ ...INITIAL_MESSAGE }, ...res.messages];
+          this.saveToLocalStorage();
         }
         this.isLoadingHistory.set(false);
       }),
@@ -348,6 +349,7 @@ export class ChatStateService {
 
   addMessage(role: 'assistant' | 'user', content: string) {
     this.messages.push({ role, content });
+    this.saveToLocalStorage();
   }
 
   clear() {
@@ -357,10 +359,33 @@ export class ChatStateService {
     this.limitExceeded.set(false);
     this.lastGeneratedSite.set(null);
     this.chatMode.set(null);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('rotbot_chat_history');
+    }
   }
 
   dismissLimitModal() {
     this.limitExceeded.set(false);
+  }
+
+  private saveToLocalStorage(): void {
+    if (typeof localStorage === 'undefined') return;
+    try {
+      localStorage.setItem('rotbot_chat_history', JSON.stringify(this.messages));
+    } catch (e) { }
+  }
+
+  private loadFromLocalStorage(): void {
+    if (typeof localStorage === 'undefined') return;
+    try {
+      const stored = localStorage.getItem('rotbot_chat_history');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this.messages = parsed;
+        }
+      }
+    } catch (e) { }
   }
 
   private buildHeaders(): HttpHeaders {
