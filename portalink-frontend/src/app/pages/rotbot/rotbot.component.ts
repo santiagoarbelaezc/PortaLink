@@ -86,35 +86,18 @@ import { SiteService } from '../../services/site.service';
         
         <!-- SIDEBAR IZQUIERDO: ACCESOS RÁPIDOS -->
         <aside *ngIf="!activeDesign" 
-               class="chat-sidebar hidden md:flex flex-col w-72 flex-shrink-0 border-r border-neutral-100 bg-neutral-50/60 p-5 space-y-5 overflow-y-auto custom-scrollbar">
+               class="chat-sidebar hidden md:flex flex-col w-72 flex-shrink-0 border-r border-neutral-100 bg-neutral-50/60 p-5 space-y-4 overflow-y-auto custom-scrollbar">
           
           <div>
-            <h4 class="text-xs font-semibold text-neutral-400 tracking-wider uppercase mb-3">
+            <h4 class="text-xs font-headline font-bold text-neutral-400 tracking-wider uppercase mb-3">
               Diseños Frecuentes
             </h4>
             <div class="space-y-2">
-              <button (click)="sendShortcutMessage('Quiero un diseño para mi tienda de ropa')" 
-                      class="w-full text-left p-3.5 rounded-2xl bg-white border border-neutral-200/80 hover:border-neutral-900 text-xs font-medium text-neutral-800 shadow-2xs hover:shadow-xs transition-all flex items-center gap-2.5 cursor-pointer">
-                <i class="fa-solid fa-shirt text-neutral-500 text-xs shrink-0"></i>
-                <span class="truncate">Tienda de Ropa</span>
-              </button>
-
-              <button (click)="sendShortcutMessage('Quiero un diseño para mi gimnasio')" 
-                      class="w-full text-left p-3.5 rounded-2xl bg-white border border-neutral-200/80 hover:border-neutral-900 text-xs font-medium text-neutral-800 shadow-2xs hover:shadow-xs transition-all flex items-center gap-2.5 cursor-pointer">
-                <i class="fa-solid fa-dumbbell text-neutral-500 text-xs shrink-0"></i>
-                <span class="truncate">Gimnasio & Fitness</span>
-              </button>
-
-              <button (click)="sendShortcutMessage('Quiero un diseño para mi restaurante')" 
-                      class="w-full text-left p-3.5 rounded-2xl bg-white border border-neutral-200/80 hover:border-neutral-900 text-xs font-medium text-neutral-800 shadow-2xs hover:shadow-xs transition-all flex items-center gap-2.5 cursor-pointer">
-                <i class="fa-solid fa-utensils text-neutral-500 text-xs shrink-0"></i>
-                <span class="truncate">Restaurante / Comida</span>
-              </button>
-
-              <button (click)="sendShortcutMessage('Quiero un diseño a medida para mi empresa')" 
-                      class="w-full text-left p-3.5 rounded-2xl bg-white border border-neutral-200/80 hover:border-neutral-900 text-xs font-medium text-neutral-800 shadow-2xs hover:shadow-xs transition-all flex items-center gap-2.5 cursor-pointer">
-                <i class="fa-solid fa-briefcase text-neutral-500 text-xs shrink-0"></i>
-                <span class="truncate">Corporativo / Empresa</span>
+              <button *ngFor="let item of frequentDesigns"
+                      (click)="selectCategoryByItem(item)" 
+                      class="w-full text-left p-3 rounded-2xl bg-white border border-neutral-200/80 hover:border-neutral-900 text-xs font-headline font-medium text-neutral-800 shadow-2xs hover:shadow-xs transition-all flex items-center gap-2.5 cursor-pointer hover:bg-neutral-50">
+                <i [class]="item.iconClass + ' text-cyan-600 dark:text-cyan-400 text-xs shrink-0'"></i>
+                <span class="truncate">{{ item.label }}</span>
               </button>
             </div>
           </div>
@@ -497,11 +480,15 @@ import { SiteService } from '../../services/site.service';
             </div>
           </div>
 
-          <!-- Contenedor del Formulario Inferior -->
+          <!-- Contenedor del Formulario Inferior (Único Input) -->
           <div class="pt-4 border-t space-y-4" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
-            <div class="text-sm font-headline font-bold uppercase tracking-wider flex items-center gap-2"
+            <div class="text-sm font-headline font-bold uppercase tracking-wider flex items-center gap-2.5"
                  [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              <span>📝 Especifica cómo quieres tu Sistema a Medida:</span>
+              <div class="w-7 h-7 rounded-xl flex items-center justify-center text-xs shrink-0 border"
+                   [ngClass]="isDark ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400' : 'bg-cyan-50 border-cyan-200/80 text-cyan-700'">
+                <i class="fa-solid fa-sliders"></i>
+              </div>
+              <span>Especifica el nombre de tu negocio</span>
             </div>
 
             <div *ngIf="!selectedModalDesign()?.msg?.formSubmitted" 
@@ -512,62 +499,32 @@ import { SiteService } from '../../services/site.service';
                        [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
                   Nombre de tu Negocio / Proyecto
                 </label>
-                <input type="text" [(ngModel)]="designFormState.businessName" placeholder="Ej: Sparta Gym / Mi Marca"
-                       class="w-full px-4 py-3 rounded-2xl text-xs sm:text-sm font-sans focus:outline-none transition-all duration-200"
+                <input type="text" 
+                       [(ngModel)]="designFormState.businessName" 
+                       (keyup.enter)="submitDesignFormFromModal()"
+                       placeholder="Ingresa el nombre de tu negocio..." 
+                       class="w-full px-4 py-3.5 rounded-2xl text-xs sm:text-sm font-sans focus:outline-none transition-all duration-200"
                        [ngClass]="isDark
                          ? 'bg-neutral-950 border border-neutral-800 text-white placeholder:text-neutral-500 focus:border-cyan-400'
                          : 'bg-white border border-neutral-200/90 text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-900 shadow-2xs'" />
               </div>
 
-              <div>
-                <label class="block text-[11px] font-headline font-bold uppercase tracking-wider mb-1.5"
-                       [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
-                  Diseño y Estilo del Sitio
-                </label>
-                <select [(ngModel)]="designFormState.style"
-                        class="w-full px-4 py-3 rounded-2xl text-xs sm:text-sm font-sans focus:outline-none transition-all duration-200"
-                        [ngClass]="isDark
-                          ? 'bg-neutral-950 border border-neutral-800 text-white focus:border-cyan-400'
-                          : 'bg-white border border-neutral-200/90 text-neutral-900 focus:border-neutral-900 shadow-2xs'">
-                  <option value="Minimalista y Elegante">Minimalista & Elegante</option>
-                  <option value="Moderno y Dinámico">Moderno & Dinámico</option>
-                  <option value="Futurista / Dark Cyber">Futurista / Dark Cyber</option>
-                  <option value="Limpio y Profesional">Limpio & Profesional</option>
-                  <option value="Editorial / Creativo">Editorial / Creativo</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block text-[11px] font-headline font-bold uppercase tracking-wider mb-1.5"
-                       [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
-                  Descripción de tu Sistema a Medida
-                </label>
-                <textarea [(ngModel)]="designFormState.description" rows="4"
-                          placeholder="Escribe un mensaje especificando cómo debe ser tu proyecto, qué funcionalidades o secciones necesitas..."
-                          class="w-full px-4 py-3 rounded-2xl text-xs sm:text-sm font-sans focus:outline-none transition-all duration-200 resize-none leading-relaxed"
-                          [ngClass]="isDark
-                            ? 'bg-neutral-950 border border-neutral-800 text-white placeholder:text-neutral-500 focus:border-cyan-400'
-                            : 'bg-white border border-neutral-200/90 text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-900 shadow-2xs'"></textarea>
-              </div>
-
               <button (click)="submitDesignFormFromModal()" 
-                      [disabled]="!designFormState.description.trim()" 
+                      [disabled]="!designFormState.businessName.trim()" 
                       class="w-full py-3.5 rounded-full font-headline font-semibold uppercase text-xs tracking-wider flex items-center justify-center gap-2.5 transition-all duration-200 shadow-md cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.01] active:scale-[0.99] border-none"
                       [style.background-color]="isDark ? '#ffffff' : '#09090b'"
                       [style.color]="isDark ? '#09090b' : '#ffffff'">
-                <span [style.color]="isDark ? '#09090b' : '#ffffff'">Enviar Mensaje de Mi Proyecto</span>
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" [style.color]="isDark ? '#09090b' : '#ffffff'">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3 21l18-9L3 3l3 9zm0 0h7.5"/>
-                </svg>
+                <i class="fa-brands fa-whatsapp text-base"></i>
+                <span [style.color]="isDark ? '#09090b' : '#ffffff'">Enviar Mensaje por WhatsApp</span>
               </button>
             </div>
 
             <div *ngIf="selectedModalDesign()?.msg?.formSubmitted" class="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 space-y-2">
               <div class="flex items-center gap-2 text-xs font-headline font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
                 <svg class="w-4.5 h-4.5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                <span>¡Mensaje de Proyecto Registrado!</span>
+                <span>¡Proyecto Registrado y Redirigido a WhatsApp!</span>
               </div>
-              <p class="text-xs text-neutral-600 dark:text-neutral-300 m-0">Se enviaron las especificaciones de tu proyecto. Santiago te contactará pronto para coordinar los detalles.</p>
+              <p class="text-xs text-neutral-600 dark:text-neutral-300 m-0">Se enviaron las especificaciones del proyecto **{{ selectedModalDesign()?.msg?.formData?.businessName }}**. Santiago te responderá de inmediato.</p>
             </div>
           </div>
 
@@ -1016,6 +973,47 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     { id: 'otro', label: 'Sistema a Medida (Otro)', iconClass: 'fa-solid fa-wand-magic-sparkles', keywords: ['otro', 'personalizado', 'medida', 'sistema'], image: 'assets/images/diseños/personaliza.png' }
   ];
 
+  frequentDesigns = [
+    { id: 'tiendaropa', label: 'Tienda de Ropa / Moda', iconClass: 'fa-solid fa-shirt' },
+    { id: 'gym', label: 'Gym & Fitness', iconClass: 'fa-solid fa-dumbbell' },
+    { id: 'restaurante', label: 'Restaurante / Comida', iconClass: 'fa-solid fa-utensils' },
+    { id: 'ecommerce', label: 'E-Commerce / Tienda', iconClass: 'fa-solid fa-store' },
+    { id: 'abogado', label: 'Firma Legal & Abogados', iconClass: 'fa-solid fa-scale-balanced' },
+    { id: 'arquitectura', label: 'Arquitectura & Diseño CAD', iconClass: 'fa-solid fa-compass-drafting' },
+    { id: 'medico', label: 'Centro Médico & Salud', iconClass: 'fa-solid fa-stethoscope' },
+    { id: 'mascotas', label: 'Mascotas & Pet Care', iconClass: 'fa-solid fa-paw' },
+    { id: 'catalogodigital', label: 'Catálogo Digital Interactivo', iconClass: 'fa-solid fa-book-open' },
+    { id: 'agendamiento', label: 'Sistema de Citas & Agenda', iconClass: 'fa-solid fa-calendar-check' },
+    { id: 'construccion', label: 'Constructora & Obras Civiles', iconClass: 'fa-solid fa-hard-hat' },
+    { id: 'emprendimiento', label: 'Startup & Emprendimiento', iconClass: 'fa-solid fa-rocket' },
+    { id: 'influencer', label: 'Marca Personal / Influencer', iconClass: 'fa-solid fa-star' },
+    { id: 'colchones', label: 'Colchones & Descanso', iconClass: 'fa-solid fa-couch' },
+    { id: 'otro', label: 'Proyecto A Medida', iconClass: 'fa-solid fa-wand-magic-sparkles' }
+  ];
+
+  selectCategoryByItem(item: any) {
+    if (!this.authService.hasToken()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    const foundCat = this.designCategories.find(c =>
+      c.id === item.id ||
+      c.label.toLowerCase() === item.label.toLowerCase() ||
+      item.label.toLowerCase().includes(c.id) ||
+      c.keywords?.some(k => item.label.toLowerCase().includes(k))
+    );
+
+    if (foundCat) {
+      this.selectCategory(foundCat);
+    } else {
+      this.selectCategory({
+        id: item.id || 'personalizado',
+        label: item.label,
+        image: 'assets/images/diseños/personaliza.png'
+      });
+    }
+  }
+
   designFormState = {
     categoryName: '',
     businessName: '',
@@ -1091,28 +1089,28 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   submitDesignForm(msg: any) {
-    if (!this.designFormState.description.trim()) return;
+    if (!this.designFormState.businessName.trim()) return;
 
     msg.formSubmitted = true;
     msg.formData = { ...this.designFormState };
 
-    const summaryText = `*Solicitud de Proyecto a Medida*\n` +
-      `📌 *Categoría:* ${this.designFormState.categoryName || 'General'}\n` +
-      `🏢 *Negocio:* ${this.designFormState.businessName || 'No especificado'}\n` +
-      `🎨 *Estilo:* ${this.designFormState.style}\n` +
-      `📝 *Descripción del sistema:* ${this.designFormState.description}`;
+    const businessName = this.designFormState.businessName.trim();
+    const categoryName = this.designFormState.categoryName || msg.formData?.categoryName || 'Proyecto Sugerido';
 
+    const summaryText = `Hola Santiago! Me interesa el diseño a medida para mi negocio: *${businessName}* (Prototipo sugerido: ${categoryName}).`;
     const whatsappUrl = `https://wa.me/573054078225?text=${encodeURIComponent(summaryText)}`;
+
+    this.closeDesignDetailModal();
+
+    if (typeof window !== 'undefined') {
+      window.open(whatsappUrl, '_blank');
+    }
 
     setTimeout(() => {
       this.chatService.messages.push({
         role: 'assistant',
-        content: `¡Perfecto! He recibido la especificación de tu proyecto **${this.designFormState.businessName || 'a medida'}**.\n\n` +
-          `📋 **Resumen registrado:**\n` +
-          `- **Categoría:** ${this.designFormState.categoryName || 'General'}\n` +
-          `- **Estilo:** ${this.designFormState.style}\n` +
-          `- **Requerimiento:** ${this.designFormState.description}\n\n` +
-          `[👉 Enviar mensaje por WhatsApp a Santiago](${whatsappUrl})`
+        content: `¡Perfecto! Te he redirigido a WhatsApp para coordinar los detalles del proyecto a medida para **${businessName}**.\n\n` +
+          `[👉 Haz clic aquí si no abrió automáticamente tu WhatsApp](${whatsappUrl})`
       });
       this.scrollToBottom();
     }, 400);
