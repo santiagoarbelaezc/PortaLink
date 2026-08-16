@@ -191,118 +191,58 @@ import { SiteService } from '../../services/site.service';
                     <!-- Message Bubble -->
                     <div 
                       [ngClass]="{
-                        'assistant-bubble py-2 text-xs sm:text-sm leading-relaxed max-w-[80%]': msg.role === 'assistant',
-                        'user-bubble px-4 py-3 rounded-2xl rounded-tr-xs text-xs sm:text-sm leading-relaxed max-w-[85%] border shadow-sm': msg.role === 'user'
+                        'assistant-bubble py-3 px-4 sm:px-5 rounded-[22px] text-xs sm:text-sm leading-relaxed max-w-[85%] border shadow-2xs': msg.role === 'assistant',
+                        'user-bubble px-4 py-3 rounded-[22px] rounded-tr-xs text-xs sm:text-sm leading-relaxed max-w-[85%] border shadow-sm': msg.role === 'user'
                       }"
                     >
-                      <span [innerHTML]="msg.content | markdown"></span>
-                    </div>
+                      <div [innerHTML]="msg.content | markdown"></div>
 
-                  <!-- Category Selector Chips (Ocultos en Lanzamiento) -->
-                  <div *ngIf="msg.role === 'assistant' && msg.showCategorySelector && !authService.hasToken()" class="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
-                    <button *ngFor="let cat of designCategories" 
-                            (click)="selectCategory(cat)" 
-                            class="px-3.5 py-2.5 rounded-xl bg-white/[0.04] hover:bg-cyan-400/20 border border-white/10 hover:border-cyan-400/50 text-xs font-semibold text-white transition-all text-left flex items-center gap-2.5 cursor-pointer shadow-sm active:scale-95">
-                      <i [class]="cat.iconClass + ' text-cyan-400 text-xs shrink-0'"></i>
-                      <span class="leading-tight">{{ cat.label }}</span>
-                    </button>
-                  </div>
-
-                  <!-- Design Card Preview & Interactive System Form (Ultra-Clean Obsidian Glass) -->
-                  <div *ngIf="msg.role === 'assistant' && msg.designImage" class="design-card-container mt-4 rounded-[26px] border border-neutral-800 bg-[#0c0c0f] p-5 sm:p-6 space-y-5 shadow-2xl transition-all duration-300 relative overflow-hidden">
-                    
-                    <!-- Ambient subtle glow behind card -->
-                    <div class="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-                    <!-- Header Badge -->
-                    <div class="flex items-center justify-between pb-3 border-b border-neutral-800/80 relative z-10">
-                      <div class="flex items-center gap-2.5">
-                        <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                        <span class="text-xs font-headline font-bold uppercase tracking-wider text-cyan-400">
-                          Diseño Sugerido
-                        </span>
-                      </div>
-                      <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-neutral-400">
-                        RotBot Engine
-                      </span>
-                    </div>
-
-                    <!-- Preview Image Card -->
-                    <div (click)="openDesignDetailModal(msg)" class="relative rounded-[20px] overflow-hidden border border-neutral-800 group shadow-xl max-h-[360px] bg-neutral-950 flex items-center justify-center cursor-pointer relative z-10">
-                      <img [src]="msg.designImage" alt="Vista previa de diseño" class="w-full h-auto object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105" />
-                      
-                      <!-- Floating Action Pills Overlay -->
-                      <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex items-end justify-between p-4">
-                        <span class="text-xs font-headline font-bold text-white bg-cyan-500/20 backdrop-blur-xl border border-cyan-400/40 px-4 py-2 rounded-full flex items-center gap-2 shadow-lg group-hover:bg-cyan-500/30 transition-all">
-                          <i class="fa-solid fa-magnifying-glass-plus text-cyan-400"></i>
-                          <span class="text-white">Ampliar y Especificar</span>
-                        </span>
+                      <!-- Design Preview Card inside Assistant Message Bubble -->
+                      <div *ngIf="msg.role === 'assistant' && msg.designImage" 
+                           class="mt-3.5 pt-3.5 border-t space-y-3"
+                           [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200/80'">
                         
-                        <a routerLink="/prototipos" (click)="$event.stopPropagation()" class="text-xs font-headline font-bold text-white bg-white/10 backdrop-blur-xl border border-white/20 px-4 py-2 rounded-full hover:bg-white/25 transition-all flex items-center gap-2 no-underline">
-                          <span class="text-white">Galería</span>
-                          <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                        </a>
+                        <!-- Header Badge -->
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
+                            <span class="text-[11px] font-headline font-bold uppercase tracking-wider"
+                                  [ngClass]="isDark ? 'text-cyan-400' : 'text-cyan-800'">
+                              Diseño Sugerido
+                            </span>
+                          </div>
+                          <span class="text-[10px] font-headline font-bold uppercase tracking-widest text-neutral-400">
+                            RotBot Engine
+                          </span>
+                        </div>
+
+                        <!-- Preview Image Card with Floating Action Buttons -->
+                        <div (click)="openDesignDetailModal(msg)" 
+                             class="relative rounded-2xl overflow-hidden border group shadow-md max-h-[300px] flex items-center justify-center cursor-pointer transition-all duration-300 hover:shadow-xl"
+                             [ngClass]="isDark ? 'border-neutral-800 bg-neutral-950' : 'border-neutral-200/90 bg-neutral-100'">
+                          <img [src]="msg.designImage" alt="Vista previa de diseño" class="w-full h-auto object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105" />
+                          
+                          <!-- Overlay Action Buttons -->
+                          <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent flex items-end justify-between p-3.5 z-10">
+                            <button (click)="openDesignDetailModal(msg); $event.stopPropagation()"
+                                    class="px-4 py-2 rounded-full text-xs font-headline font-bold text-white backdrop-blur-md border border-white/20 transition-all flex items-center gap-2 shadow-md cursor-pointer border-none hover:scale-[1.02] active:scale-[0.98]"
+                                    style="background-color: rgba(9,9,11,0.85) !important; color: #ffffff !important;">
+                              <svg class="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color: #38bdf8 !important;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12c.077-.133.152-.27.228-.404a11.58 11.58 0 0119.736 0c.076.134.151.27.228.404a11.58 11.58 0 01-19.736 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              </svg>
+                              <span style="color: #ffffff !important;">Ver y Especificar Diseño</span>
+                            </button>
+
+                            <a routerLink="/prototipos" (click)="$event.stopPropagation()" class="px-3.5 py-2 rounded-full text-xs font-headline font-bold text-white bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/20 transition-all flex items-center gap-1.5 no-underline">
+                              <span style="color: #ffffff !important;">Galería</span>
+                              <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #ffffff !important;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            </a>
+                          </div>
+                        </div>
+
                       </div>
                     </div>
-
-                    <!-- Interactive Form Component -->
-                    <div *ngIf="msg.showDesignForm" class="pt-2 space-y-4 relative z-10">
-                      <div class="text-xs font-headline font-bold uppercase tracking-wider text-white flex items-center gap-2">
-                        <span class="text-cyan-400">📝</span>
-                        <span class="text-white">Especifica cómo quieres tu Sistema a Medida:</span>
-                      </div>
-
-                      <div *ngIf="!msg.formSubmitted" class="space-y-4">
-                        <div>
-                          <label class="block text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-300 mb-1.5">
-                            Nombre de tu Negocio / Proyecto
-                          </label>
-                          <input type="text" [(ngModel)]="designFormState.businessName" placeholder="Ej: Sparta Gym / Mi Marca"
-                                 class="w-full px-4 py-3 rounded-2xl bg-neutral-950 border border-neutral-800 text-white placeholder:text-neutral-500 text-xs sm:text-sm font-sans focus:outline-none focus:border-cyan-400 transition-all shadow-inner" />
-                        </div>
-
-                        <div>
-                          <label class="block text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-300 mb-1.5">
-                            Diseño y Estilo del Sitio
-                          </label>
-                          <select [(ngModel)]="designFormState.style"
-                                  class="w-full px-4 py-3 rounded-2xl bg-neutral-950 border border-neutral-800 text-white text-xs sm:text-sm font-sans focus:outline-none focus:border-cyan-400 transition-all shadow-inner">
-                            <option value="Minimalista y Elegante">Minimalista & Elegante</option>
-                            <option value="Moderno y Dinámico">Moderno & Dinámico</option>
-                            <option value="Futurista / Dark Cyber">Futurista / Dark Cyber</option>
-                            <option value="Limpio y Profesional">Limpio & Profesional</option>
-                            <option value="Editorial / Creativo">Editorial / Creativo</option>
-                          </select>
-                        </div>
-
-                        <div>
-                          <label class="block text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-300 mb-1.5">
-                            Descripción de tu Sistema a Medida
-                          </label>
-                          <textarea [(ngModel)]="designFormState.description" rows="3"
-                                    placeholder="Escribe un mensaje especificando cómo debe ser tu proyecto, qué funcionalidades o secciones necesitas..."
-                                    class="w-full px-4 py-3 rounded-2xl bg-neutral-950 border border-neutral-800 text-white placeholder:text-neutral-500 text-xs sm:text-sm font-sans focus:outline-none focus:border-cyan-400 transition-all resize-none leading-relaxed shadow-inner"></textarea>
-                        </div>
-
-                        <button (click)="submitDesignForm(msg)" 
-                                [disabled]="!designFormState.description.trim()" 
-                                class="w-full py-3.5 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-neutral-950 font-headline font-extrabold uppercase text-xs tracking-wider flex items-center justify-center gap-2.5 transition-all duration-200 shadow-lg cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.01] active:scale-[0.99] border-none">
-                          <span>Enviar Mensaje de Mi Proyecto</span>
-                          <svg class="w-4 h-4 text-neutral-950" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3 21l18-9L3 3l3 9zm0 0h7.5"/>
-                          </svg>
-                        </button>
-                      </div>
-
-                      <div *ngIf="msg.formSubmitted" class="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 space-y-2">
-                        <div class="flex items-center gap-2 text-xs font-headline font-bold uppercase tracking-wider text-emerald-400">
-                          <svg class="w-4.5 h-4.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                          <span class="text-emerald-400">¡Mensaje de Proyecto Registrado!</span>
-                        </div>
-                        <p class="text-xs text-neutral-200 m-0">Se enviaron las especificaciones de tu proyecto. Santiago te contactará pronto para coordinar los detalles.</p>
-                      </div>
-                    </div>
-                  </div>
 
                   <!-- Tarjeta interactiva para ir a personalizar con el JSON devuelto -->
                   <div *ngIf="msg.role === 'assistant' && hasGeneratedSite(msg.content)" 
@@ -432,33 +372,47 @@ import { SiteService } from '../../services/site.service';
         </aside>
       </div>
 
-      <!-- MODAL DE DESCRIPCIÓN Y ESPECIFICACIÓN DEL PROYECTO -->
-      <div *ngIf="selectedModalDesign()" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md animate-fade-in" (click)="closeDesignDetailModal()">
-        <div class="relative w-full max-w-4xl max-h-[90vh] bg-neutral-900 border border-white/15 rounded-3xl overflow-y-auto custom-scrollbar p-6 sm:p-8 space-y-6 shadow-2xl" (click)="$event.stopPropagation()">
+      <!-- MODAL DE DESCRIPCIÓN Y ESPECIFICACIÓN DEL PROYECTO (Ultra-Clean Apple Glass) -->
+      <div *ngIf="selectedModalDesign()" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-xl animate-fade-in" (click)="closeDesignDetailModal()">
+        <div class="relative w-full max-w-4xl max-h-[90vh] border rounded-[32px] overflow-y-auto custom-scrollbar p-6 sm:p-8 space-y-6 shadow-2xl transition-all duration-300"
+             [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-white border-neutral-200/90 text-neutral-900'"
+             (click)="$event.stopPropagation()">
           
           <!-- Modal Header -->
-          <div class="flex items-center justify-between border-b border-white/10 pb-4">
+          <div class="flex items-center justify-between border-b pb-4"
+               [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center text-cyan-400">
+              <div class="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 border"
+                   [ngClass]="isDark ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400' : 'bg-cyan-50 border-cyan-200/80 text-cyan-700'">
                 <i class="fa-solid fa-layer-group text-lg"></i>
               </div>
               <div>
-                <h3 class="text-lg font-bold text-white tracking-tight">Descripción y Especificaciones del Proyecto</h3>
-                <div class="flex items-center gap-3 mt-0.5">
-                  <p class="text-xs text-neutral-400">Prototipo sugerido: <span class="text-cyan-400 font-semibold">{{ selectedModalDesign()?.categoryName }}</span></p>
+                <h3 class="text-lg sm:text-xl font-headline font-bold tracking-tight m-0"
+                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                  Descripción y Especificaciones del Proyecto
+                </h3>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="text-xs" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Prototipo sugerido:</span>
+                  <span class="text-xs font-headline font-bold px-2.5 py-0.5 rounded-full border"
+                        [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-cyan-400' : 'bg-neutral-100 border-neutral-200 text-neutral-900'">
+                    {{ selectedModalDesign()?.categoryName }}
+                  </span>
                 </div>
               </div>
             </div>
-            <button (click)="closeDesignDetailModal()" class="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-neutral-400 hover:text-white flex items-center justify-center transition-all cursor-pointer">
+            <button (click)="closeDesignDetailModal()"
+                    class="w-9 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer border-none"
+                    [ngClass]="isDark ? 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300' : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-600'">
               <i class="fa-solid fa-xmark text-base"></i>
             </button>
           </div>
 
           <!-- Visor de Imagen Ampliada -->
-          <div class="space-y-2">
+          <div class="space-y-3">
             <div class="flex items-center justify-between flex-wrap gap-2">
-              <div class="text-xs font-bold uppercase tracking-wider text-neutral-300 flex items-center gap-2">
-                <i class="fa-solid fa-image text-cyan-400"></i>
+              <div class="text-xs font-headline font-bold uppercase tracking-wider flex items-center gap-2"
+                   [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-800'">
+                <i class="fa-solid fa-image text-cyan-500"></i>
                 <span>Previsualización Ampliada del Prototipo</span>
               </div>
 
@@ -467,79 +421,114 @@ import { SiteService } from '../../services/site.service';
                  [href]="selectedModalDesign()?.liveUrl" 
                  target="_blank" 
                  rel="noopener noreferrer" 
-                 class="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg transition-all cursor-pointer">
+                 class="px-4 py-2 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-headline font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-md transition-all cursor-pointer no-underline">
                 <i class="fa-solid fa-globe text-sm"></i>
-                <span>Ver Sitio en Vivo: {{ selectedModalDesign()?.liveUrl }}</span>
+                <span>Ver Sitio en Vivo</span>
                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
               </a>
             </div>
 
-            <div class="relative w-full max-h-[500px] rounded-2xl overflow-hidden border border-white/15 bg-black shadow-2xl flex items-center justify-center">
+            <div class="relative w-full max-h-[480px] rounded-[24px] overflow-hidden border shadow-lg flex items-center justify-center"
+                 [ngClass]="isDark ? 'border-neutral-800 bg-neutral-950' : 'border-neutral-200/90 bg-neutral-100'">
               <img 
                 [src]="selectedModalDesign()?.designImage" 
                 alt="Vista previa ampliada de diseño" 
-                class="w-full h-auto max-h-[500px] object-contain object-top"
+                class="w-full h-auto max-h-[480px] object-contain object-top"
               />
             </div>
           </div>
 
           <!-- Especificaciones por Defecto del Proyecto -->
           <div class="space-y-3 pt-2">
-            <div class="text-xs font-bold uppercase tracking-wider text-neutral-300 flex items-center gap-2">
-              <i class="fa-solid fa-circle-check text-cyan-400"></i>
+            <div class="text-xs font-headline font-bold uppercase tracking-wider flex items-center gap-2"
+                 [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-800'">
+              <i class="fa-solid fa-circle-check text-cyan-500"></i>
               <span>Especificaciones y Características por Defecto:</span>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/10 flex items-start gap-3">
-                <i class="fa-solid fa-mobile-screen text-cyan-400 text-base mt-0.5 shrink-0"></i>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div class="p-4 rounded-2xl border flex items-start gap-3.5 transition-all duration-200"
+                   [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800/80' : 'bg-neutral-50/80 border-neutral-200/80'">
+                <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-sm"
+                     [ngClass]="isDark ? 'bg-cyan-500/10 text-cyan-400' : 'bg-cyan-50 text-cyan-600'">
+                  <i class="fa-solid fa-mobile-screen"></i>
+                </div>
                 <div>
-                  <h4 class="text-xs font-bold text-white">Diseño 100% Adaptativo</h4>
-                  <p class="text-[11px] text-neutral-400 leading-normal">Optimizado para celulares, tablets y computadoras de escritorio.</p>
+                  <h4 class="text-xs font-headline font-bold m-0" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Diseño 100% Adaptativo</h4>
+                  <p class="text-[11px] leading-relaxed m-0 mt-0.5" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">Optimizado para celulares, tablets y computadoras de escritorio.</p>
                 </div>
               </div>
 
-              <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/10 flex items-start gap-3">
-                <i class="fa-solid fa-bullseye text-cyan-400 text-base mt-0.5 shrink-0"></i>
+              <div class="p-4 rounded-2xl border flex items-start gap-3.5 transition-all duration-200"
+                   [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800/80' : 'bg-neutral-50/80 border-neutral-200/80'">
+                <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-sm"
+                     [ngClass]="isDark ? 'bg-cyan-500/10 text-cyan-400' : 'bg-cyan-50 text-cyan-600'">
+                  <i class="fa-solid fa-bullseye"></i>
+                </div>
                 <div>
-                  <h4 class="text-xs font-bold text-white">Estructura para Conversiones</h4>
-                  <p class="text-[11px] text-neutral-400 leading-normal">Secciones estratégicas con botones de llamada a la acción (CTA).</p>
+                  <h4 class="text-xs font-headline font-bold m-0" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Estructura para Conversiones</h4>
+                  <p class="text-[11px] leading-relaxed m-0 mt-0.5" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">Secciones estratégicas con botones de llamada a la acción (CTA).</p>
                 </div>
               </div>
 
-              <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/10 flex items-start gap-3">
-                <i class="fa-brands fa-whatsapp text-emerald-400 text-base mt-0.5 shrink-0"></i>
+              <div class="p-4 rounded-2xl border flex items-start gap-3.5 transition-all duration-200"
+                   [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800/80' : 'bg-neutral-50/80 border-neutral-200/80'">
+                <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-sm"
+                     [ngClass]="isDark ? 'bg-emerald-500/10 text-emerald-400' : 'bg-emerald-50 text-emerald-600'">
+                  <i class="fa-brands fa-whatsapp"></i>
+                </div>
                 <div>
-                  <h4 class="text-xs font-bold text-white">Conexión Directa a WhatsApp</h4>
-                  <p class="text-[11px] text-neutral-400 leading-normal">Botones y formularios con redirección instantánea a tu chat.</p>
+                  <h4 class="text-xs font-headline font-bold m-0" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Conexión Directa a WhatsApp</h4>
+                  <p class="text-[11px] leading-relaxed m-0 mt-0.5" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">Botones y formularios con redirección instantánea a tu chat.</p>
                 </div>
               </div>
 
-              <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/10 flex items-start gap-3">
-                <i class="fa-solid fa-gauge-high text-cyan-400 text-base mt-0.5 shrink-0"></i>
+              <div class="p-4 rounded-2xl border flex items-start gap-3.5 transition-all duration-200"
+                   [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800/80' : 'bg-neutral-50/80 border-neutral-200/80'">
+                <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-sm"
+                     [ngClass]="isDark ? 'bg-cyan-500/10 text-cyan-400' : 'bg-cyan-50 text-cyan-600'">
+                  <i class="fa-solid fa-gauge-high"></i>
+                </div>
                 <div>
-                  <h4 class="text-xs font-bold text-white">Carga Ultrarrápida & SEO</h4>
-                  <p class="text-[11px] text-neutral-400 leading-normal">Código optimizado para posicionar en Google y cargar en milisegundos.</p>
+                  <h4 class="text-xs font-headline font-bold m-0" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Carga Ultrarrápida & SEO</h4>
+                  <p class="text-[11px] leading-relaxed m-0 mt-0.5" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">Código optimizado para posicionar en Google y cargar en milisegundos.</p>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- Contenedor del Formulario Inferior -->
-          <div class="pt-4 border-t border-white/10 space-y-4">
-            <div class="text-sm font-extrabold uppercase tracking-wider text-cyan-300 flex items-center gap-2">
+          <div class="pt-4 border-t space-y-4" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+            <div class="text-sm font-headline font-bold uppercase tracking-wider flex items-center gap-2"
+                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
               <span>📝 Especifica cómo quieres tu Sistema a Medida:</span>
             </div>
 
-            <div *ngIf="!selectedModalDesign()?.msg?.formSubmitted" class="space-y-4 bg-white/[0.02] border border-white/10 p-5 rounded-2xl">
+            <div *ngIf="!selectedModalDesign()?.msg?.formSubmitted" 
+                 class="space-y-4 p-5 sm:p-6 rounded-[24px] border"
+                 [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800' : 'bg-neutral-50/60 border-neutral-200/80'">
               <div>
-                <label class="block text-[11px] font-bold text-neutral-300 uppercase tracking-wider mb-1.5">Nombre de tu Negocio / Proyecto</label>
-                <input type="text" [(ngModel)]="designFormState.businessName" placeholder="Ej: Sparta Gym / Mi Marca" class="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/15 text-sm text-white focus:outline-none focus:border-cyan-400 transition-all placeholder:text-neutral-500" />
+                <label class="block text-[11px] font-headline font-bold uppercase tracking-wider mb-1.5"
+                       [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
+                  Nombre de tu Negocio / Proyecto
+                </label>
+                <input type="text" [(ngModel)]="designFormState.businessName" placeholder="Ej: Sparta Gym / Mi Marca"
+                       class="w-full px-4 py-3 rounded-2xl text-xs sm:text-sm font-sans focus:outline-none transition-all duration-200"
+                       [ngClass]="isDark
+                         ? 'bg-neutral-950 border border-neutral-800 text-white placeholder:text-neutral-500 focus:border-cyan-400'
+                         : 'bg-white border border-neutral-200/90 text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-900 shadow-2xs'" />
               </div>
 
               <div>
-                <label class="block text-[11px] font-bold text-neutral-300 uppercase tracking-wider mb-1.5">Diseño y Estilo del Sitio</label>
-                <select [(ngModel)]="designFormState.style" class="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-white/15 text-sm text-white focus:outline-none focus:border-cyan-400 transition-all">
+                <label class="block text-[11px] font-headline font-bold uppercase tracking-wider mb-1.5"
+                       [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
+                  Diseño y Estilo del Sitio
+                </label>
+                <select [(ngModel)]="designFormState.style"
+                        class="w-full px-4 py-3 rounded-2xl text-xs sm:text-sm font-sans focus:outline-none transition-all duration-200"
+                        [ngClass]="isDark
+                          ? 'bg-neutral-950 border border-neutral-800 text-white focus:border-cyan-400'
+                          : 'bg-white border border-neutral-200/90 text-neutral-900 focus:border-neutral-900 shadow-2xs'">
                   <option value="Minimalista y Elegante">Minimalista & Elegante</option>
                   <option value="Moderno y Dinámico">Moderno & Dinámico</option>
                   <option value="Futurista / Dark Cyber">Futurista / Dark Cyber</option>
@@ -549,24 +538,36 @@ import { SiteService } from '../../services/site.service';
               </div>
 
               <div>
-                <label class="block text-[11px] font-bold text-neutral-300 uppercase tracking-wider mb-1.5">Descripción de tu Sistema a Medida</label>
-                <textarea [(ngModel)]="designFormState.description" rows="4" placeholder="Escribe un mensaje especificando cómo debe ser tu proyecto, qué funcionalidades o secciones necesitas..." class="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/15 text-sm text-white focus:outline-none focus:border-cyan-400 transition-all resize-none placeholder:text-neutral-500"></textarea>
+                <label class="block text-[11px] font-headline font-bold uppercase tracking-wider mb-1.5"
+                       [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
+                  Descripción de tu Sistema a Medida
+                </label>
+                <textarea [(ngModel)]="designFormState.description" rows="4"
+                          placeholder="Escribe un mensaje especificando cómo debe ser tu proyecto, qué funcionalidades o secciones necesitas..."
+                          class="w-full px-4 py-3 rounded-2xl text-xs sm:text-sm font-sans focus:outline-none transition-all duration-200 resize-none leading-relaxed"
+                          [ngClass]="isDark
+                            ? 'bg-neutral-950 border border-neutral-800 text-white placeholder:text-neutral-500 focus:border-cyan-400'
+                            : 'bg-white border border-neutral-200/90 text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-900 shadow-2xs'"></textarea>
               </div>
 
               <button (click)="submitDesignFormFromModal()" 
                       [disabled]="!designFormState.description.trim()" 
-                      class="w-full py-3.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-extrabold uppercase text-xs tracking-wider flex items-center justify-center gap-2 transition-all shadow-xl cursor-pointer disabled:opacity-50 active:scale-95">
-                <span>Enviar Mensaje de Mi Proyecto</span>
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3 21l18-9L3 3l3 9zm0 0h7.5"/></svg>
+                      class="w-full py-3.5 rounded-full font-headline font-semibold uppercase text-xs tracking-wider flex items-center justify-center gap-2.5 transition-all duration-200 shadow-md cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.01] active:scale-[0.99] border-none"
+                      [style.background-color]="isDark ? '#ffffff' : '#09090b'"
+                      [style.color]="isDark ? '#09090b' : '#ffffff'">
+                <span [style.color]="isDark ? '#09090b' : '#ffffff'">Enviar Mensaje de Mi Proyecto</span>
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" [style.color]="isDark ? '#09090b' : '#ffffff'">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3 21l18-9L3 3l3 9zm0 0h7.5"/>
+                </svg>
               </button>
             </div>
 
-            <div *ngIf="selectedModalDesign()?.msg?.formSubmitted" class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 space-y-2">
-              <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider">
-                <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+            <div *ngIf="selectedModalDesign()?.msg?.formSubmitted" class="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 space-y-2">
+              <div class="flex items-center gap-2 text-xs font-headline font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                <svg class="w-4.5 h-4.5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
                 <span>¡Mensaje de Proyecto Registrado!</span>
               </div>
-              <p class="text-xs text-neutral-200">Se enviaron las especificaciones de tu proyecto. Santiago te contactará pronto para coordinar los detalles.</p>
+              <p class="text-xs text-neutral-600 dark:text-neutral-300 m-0">Se enviaron las especificaciones de tu proyecto. Santiago te contactará pronto para coordinar los detalles.</p>
             </div>
           </div>
 
@@ -814,6 +815,13 @@ import { SiteService } from '../../services/site.service';
   `]
 })
 export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
+  get isDark(): boolean {
+    if (typeof document !== 'undefined') {
+      return document.documentElement.classList.contains('dark') || document.body.classList.contains('theme-dark');
+    }
+    return false;
+  }
+
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
   @ViewChild('chatInputRef') private chatInputRef?: ElementRef<HTMLTextAreaElement>;
 
