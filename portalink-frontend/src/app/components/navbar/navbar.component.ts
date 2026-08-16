@@ -683,6 +683,12 @@ export class NavbarComponent implements OnInit {
       return;
     }
 
+    if (this.router.url.includes('/prototipos') || this.router.url.includes('/disenos') || this.router.url.includes('/descripcion-proyecto') || this.router.url.includes('/proyecto')) {
+      this.activeSection = '/prototipos';
+      this.updatePillPosition();
+      return;
+    }
+
 
 
     if (this.router.url.includes('/links')) {
@@ -705,6 +711,12 @@ export class NavbarComponent implements OnInit {
 
     if (this.router.url.includes('/personalizar')) {
       this.activeSection = '/personalizar';
+      this.updatePillPosition();
+      return;
+    }
+
+    if (this.router.url.includes('/perfil')) {
+      this.activeSection = '/perfil';
       this.updatePillPosition();
       return;
     }

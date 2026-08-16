@@ -56,6 +56,17 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
           
           <!-- Actions Container -->
           <div class="flex items-center gap-2 relative z-10">
+            <!-- Info IA Button -->
+            <button (click)="isInfoModalOpen = true" 
+                    class="w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-600 flex items-center justify-center transition-all border-none cursor-pointer" 
+                    title="Info de la IA">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+            </button>
+
             <!-- New Chat Button -->
             <button (click)="resetChatWithEffect()" 
                     class="w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-600 flex items-center justify-center transition-all border-none cursor-pointer" 
@@ -89,6 +100,89 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
         <!-- Messages + Input Container -->
         <div class="flex flex-col flex-grow h-full overflow-hidden bg-white relative">
           
+          <!-- Modal de Info de la IA (Especificaciones Técnicas y Legales) -->
+          <div *ngIf="isInfoModalOpen" 
+               class="absolute inset-0 z-[100] flex flex-col bg-white animate-fade-in p-5 overflow-y-auto custom-scrollbar">
+            
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between pb-3.5 border-b border-neutral-100 flex-shrink-0">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-neutral-100 border border-neutral-200/80 flex items-center justify-center p-1.5 shrink-0">
+                  <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-neutral-900 leading-none m-0">Acerca de Rotbot IA</h4>
+                  <span class="text-[10px] text-neutral-400 font-medium">Especificaciones Técnicas y Legales</span>
+                </div>
+              </div>
+              <button (click)="isInfoModalOpen = false" class="w-7 h-7 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-600 flex items-center justify-center transition-all border-none cursor-pointer">
+                <svg width="12" height="12" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="space-y-3.5 pt-3.5 text-xs leading-relaxed text-neutral-600">
+              
+              <!-- Motor IA -->
+              <div class="p-3.5 rounded-2xl bg-neutral-50 border border-neutral-200/80 space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <span class="text-[9.5px] uppercase font-bold tracking-wider text-neutral-400">Modelo de IA</span>
+                  <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[9px] font-semibold border border-blue-200/60">Llama 3.3 70B</span>
+                </div>
+                <h5 class="text-xs font-bold text-neutral-900 m-0">Motor de Inteligencia Artificial</h5>
+                <p class="text-[11px] m-0 text-neutral-500 leading-normal">
+                  Rotbot es impulsado por <strong>Llama 3.3 70B Versatile</strong>, uno de los modelos de lenguaje de código abierto más avanzados del mundo desarrollados por Meta. Este modelo está altamente optimizado para razonamiento lógico complejo, generación de código estructurado y asesoramiento técnico profesional en diversas áreas del desarrollo de software.
+                </p>
+              </div>
+
+              <!-- Inferencia GROQ -->
+              <div class="p-3.5 rounded-2xl bg-neutral-50 border border-neutral-200/80 space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <span class="text-[9.5px] uppercase font-bold tracking-wider text-neutral-400">Procesamiento LPU</span>
+                  <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[9px] font-semibold border border-emerald-200/60">Groq Speed</span>
+                </div>
+                <h5 class="text-xs font-bold text-neutral-900 m-0">Infraestructura de Inferencia</h5>
+                <p class="text-[11px] m-0 text-neutral-500 leading-normal">
+                  Para garantizar tiempos de respuesta en tiempo real y una latencia ultra baja, utilizamos la revolucionaria infraestructura <strong>LPU (Language Processing Unit)</strong> proporcionada por Groq. Esta tecnología de hardware especializada permite que Rotbot infiera y genere respuestas complejas a velocidades sin precedentes en la industria.
+                </p>
+              </div>
+
+              <!-- Aviso Legal y Privacidad -->
+              <div class="p-3.5 rounded-2xl bg-amber-50/60 border border-amber-200/70 space-y-2.5">
+                <h5 class="text-xs font-bold text-amber-900 m-0 flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                  </svg>
+                  Aviso Legal y Privacidad
+                </h5>
+
+                <div class="space-y-2 text-[10.5px] text-amber-950/80 leading-normal">
+                  <p class="m-0">
+                    <strong>1. Naturaleza de la Asesoría:</strong> Rotbot es un asistente de IA conversacional diseñado para proporcionar orientación general sobre desarrollo web, e-commerce, integración de sistemas y diseño UI/UX. Las respuestas generadas son sugerencias algorítmicas y no constituyen consultoría técnica definitiva. Siempre valida las decisiones críticas de arquitectura con un ingeniero humano.
+                  </p>
+
+                  <p class="m-0">
+                    <strong>2. Manejo de Datos y Privacidad:</strong> Las interacciones con Rotbot son procesadas a través de APIs externas para generar respuestas en tiempo real. Aunque se guarda un registro de contexto en nuestra base de datos para mantener la coherencia de la conversación (solo si estás logueado), no compartas contraseñas, tokens JWT, claves API de producción, ni información confidencial personal o empresarial en este chat.
+                  </p>
+
+                  <p class="m-0">
+                    <strong>3. Limitación de Responsabilidad y Alucinaciones:</strong> Como cualquier modelo de lenguaje grande (LLM), la IA puede experimentar "alucinaciones" y generar información inexacta o falsa con tono de seguridad. PortaLink no se hace responsable de posibles imprecisiones, errores de código, vulnerabilidades o pérdidas financieras derivadas de decisiones tomadas basadas exclusivamente en la información proporcionada por Rotbot.
+                  </p>
+                </div>
+              </div>
+
+              <div class="pt-1 pb-2">
+                <button (click)="isInfoModalOpen = false" class="w-full py-2.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white font-semibold text-xs transition-all border-none cursor-pointer text-center">
+                  Entendido
+                </button>
+              </div>
+
+            </div>
+          </div>
+
           <!-- Overlay de Reseteo (cubre todo el chat mientras limpia) -->
           <div *ngIf="showOverlay" 
                class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white"
@@ -295,6 +389,7 @@ export class AiChatFloatingComponent implements OnInit, OnDestroy {
   showResetBadge = false;
   showOverlay = false;
   overlayOpacity = '1';
+  isInfoModalOpen = false;
 
   resetChatWithEffect() {
     if (this.isResetting) return;

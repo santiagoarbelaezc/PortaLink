@@ -546,7 +546,85 @@ import { SiteService } from '../../services/site.service';
             </div>
           </div>
 
+      <!-- MODAL DE INFO DE LA IA (ESPECIFICACIONES TÉCNICAS Y LEGALES) -->
+      <div *ngIf="isInfoModalOpen" class="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md animate-fade-in" (click)="isInfoModalOpen = false">
+        <div class="relative w-full max-w-2xl max-h-[85vh] bg-white border border-neutral-200/90 rounded-3xl overflow-y-auto custom-scrollbar p-6 sm:p-8 space-y-5 shadow-2xl text-neutral-900" (click)="$event.stopPropagation()">
+          
+          <!-- Header -->
+          <div class="flex items-center justify-between border-b border-neutral-100 pb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl bg-neutral-100 border border-neutral-200/80 p-2 flex items-center justify-center shrink-0">
+                <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
+              </div>
+              <div>
+                <h3 class="text-base sm:text-lg font-bold tracking-tight text-neutral-900 m-0 leading-tight">Acerca de Rotbot IA</h3>
+                <p class="text-xs text-neutral-400 font-medium m-0">Especificaciones Técnicas y Legales</p>
+              </div>
+            </div>
+            <button (click)="isInfoModalOpen = false" class="w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-600 flex items-center justify-center transition-all border-none cursor-pointer">
+              <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
+
+          <!-- Content -->
+          <div class="space-y-4 text-xs leading-relaxed text-neutral-600">
+            <!-- Motor IA -->
+            <div class="p-4 rounded-2xl bg-neutral-50 border border-neutral-200/80 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] uppercase font-bold tracking-wider text-neutral-400">Modelo de IA</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200/60">Llama 3.3 70B</span>
+              </div>
+              <h5 class="text-sm font-bold text-neutral-900 m-0">Motor de Inteligencia Artificial</h5>
+              <p class="text-xs m-0 text-neutral-500 leading-relaxed">
+                Rotbot es impulsado por <strong>Llama 3.3 70B Versatile</strong>, uno de los modelos de lenguaje de código abierto más avanzados del mundo desarrollados por Meta. Este modelo está altamente optimizado para razonamiento lógico complejo, generación de código estructurado y asesoramiento técnico profesional en diversas áreas del desarrollo de software.
+              </p>
+            </div>
+
+            <!-- Inferencia GROQ -->
+            <div class="p-4 rounded-2xl bg-neutral-50 border border-neutral-200/80 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] uppercase font-bold tracking-wider text-neutral-400">Procesamiento LPU</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200/60">Groq Speed</span>
+              </div>
+              <h5 class="text-sm font-bold text-neutral-900 m-0">Infraestructura de Inferencia (GROQ)</h5>
+              <p class="text-xs m-0 text-neutral-500 leading-relaxed">
+                Para garantizar tiempos de respuesta en tiempo real y una latencia ultra baja, utilizamos la revolucionaria infraestructura <strong>LPU (Language Processing Unit)</strong> proporcionada por Groq. Esta tecnología de hardware especializada permite que Rotbot infiera y genere respuestas complejas a velocidades sin precedentes en la industria.
+              </p>
+            </div>
+
+            <!-- Aviso Legal -->
+            <div class="p-4 rounded-2xl bg-amber-50/60 border border-amber-200/70 space-y-3">
+              <h5 class="text-xs font-bold text-amber-900 m-0 flex items-center gap-2">
+                <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                </svg>
+                Aviso Legal y Privacidad
+              </h5>
+
+              <div class="space-y-2.5 text-xs text-amber-950/85 leading-relaxed">
+                <p class="m-0">
+                  <strong>1. Naturaleza de la Asesoría:</strong> Rotbot es un asistente de IA conversacional diseñado para proporcionar orientación general sobre desarrollo web, e-commerce, integración de sistemas y diseño UI/UX. Las respuestas generadas son sugerencias algorítmicas y no constituyen consultoría técnica definitiva. Siempre valida las decisiones críticas de arquitectura con un ingeniero humano.
+                </p>
+
+                <p class="m-0">
+                  <strong>2. Manejo de Datos y Privacidad:</strong> Las interacciones con Rotbot son procesadas a través de APIs externas para generar respuestas en tiempo real. Aunque se guarda un registro de contexto en nuestra base de datos para mantener la coherencia de la conversación (solo si estás logueado), no compartas contraseñas, tokens JWT, claves API de producción, ni información confidencial personal o empresarial en este chat.
+                </p>
+
+                <p class="m-0">
+                  <strong>3. Limitación de Responsabilidad y Alucinaciones:</strong> Como cualquier modelo de lenguaje grande (LLM), la IA puede experimentar "alucinaciones" y generar información inexacta o falsa con tono de seguridad. PortaLink no se hace responsable de posibles imprecisiones, errores de código, vulnerabilidades o pérdidas financieras derivadas de decisiones tomadas basadas exclusivamente en la información proporcionada por Rotbot.
+                </p>
+              </div>
+            </div>
+
+            <div class="pt-2">
+              <button (click)="isInfoModalOpen = false" class="w-full py-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs transition-all border-none cursor-pointer text-center shadow-md">
+                Entendido
+              </button>
+            </div>
+          </div>
+
         </div>
+      </div>
       </div>
   `,
   styles: [`
