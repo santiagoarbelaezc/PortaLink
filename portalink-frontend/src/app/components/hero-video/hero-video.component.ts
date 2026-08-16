@@ -9,7 +9,7 @@ import * as AOS from 'aos';
   imports: [CommonModule, RouterModule],
   template: `
     <section id="hero" 
-             class="relative w-full flex flex-col items-center justify-center overflow-hidden transition-colors duration-500 pt-20 pb-2 md:pt-28 md:pb-4 px-4 sm:px-12 lg:px-20"
+             class="relative w-full flex flex-col items-center justify-center overflow-hidden transition-colors duration-500 pt-12 pb-2 sm:pt-20 md:pt-28 md:pb-4 px-4 sm:px-12 lg:px-20"
              [ngClass]="currentTheme === 'light' ? 'bg-white text-neutral-900' : 'bg-[#0a0a0a] text-white'">
       
       <!-- Subtle Ambient Accent -->
@@ -19,10 +19,10 @@ import * as AOS from 'aos';
       </div>
 
       <!-- Main Container: 2-Column Layout (Video Left, Text Right) 100% Aligned with Projects Grid -->
-      <div class="relative z-10 w-full max-w-[1500px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8 lg:gap-14">
+      <div class="relative z-10 w-full max-w-[1500px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-3.5 sm:gap-8 lg:gap-14">
         
         <!-- Text Column (Order 1 in mobile, Order 2 in desktop) -->
-        <div class="w-full lg:w-[35%] order-1 lg:order-2 flex flex-col items-center lg:items-start text-center lg:text-left space-y-4 sm:space-y-5"
+        <div class="w-full lg:w-[35%] order-1 lg:order-2 flex flex-col items-center lg:items-start text-center lg:text-left space-y-2.5 sm:space-y-5"
              data-aos="fade-up"
              data-aos-duration="1000"
              data-aos-delay="100"
@@ -55,19 +55,19 @@ import * as AOS from 'aos';
         </div>
 
         <!-- Video Column (Order 2 in mobile, Order 1 in desktop) -->
-        <div class="w-full lg:w-[65%] order-2 lg:order-1 mt-1 sm:mt-0"
+        <div class="w-full lg:w-[65%] order-2 lg:order-1 mt-0 sm:mt-0"
              data-aos="fade-right"
              data-aos-duration="1000"
              data-aos-easing="ease-out-cubic">
           
-          <div class="relative w-full rounded-[24px] sm:rounded-[36px] overflow-hidden transition-all duration-700 border shadow-md"
+          <div class="relative w-full rounded-[20px] sm:rounded-[36px] overflow-hidden transition-all duration-700 border shadow-md"
                [ngClass]="currentTheme === 'light' 
                  ? 'bg-white border-neutral-200/90 shadow-[0_15px_45px_rgba(0,0,0,0.06)]' 
                  : 'bg-neutral-900 border-neutral-800 shadow-[0_20px_50px_rgba(0,0,0,0.6)]'">
             
             <!-- Mobile Video Element (portalink-movil.mp4) -->
             <video #mobileHeroVideo
-                   class="block md:hidden w-full h-auto object-cover rounded-[24px] transition-transform duration-700 hover:scale-[1.01]"
+                   class="block md:hidden w-full h-auto object-cover rounded-[20px] transition-transform duration-700 hover:scale-[1.01]"
                    autoplay
                    muted
                    [muted]="true"
@@ -99,7 +99,7 @@ import * as AOS from 'aos';
 
       <!-- Animated Scroll Indicator Pill (Moved higher up) -->
       <div (click)="scrollTo('#portfolio', $event)" 
-           class="relative z-10 flex flex-col items-center justify-center mt-5 sm:mt-8 pt-3 pb-1 text-neutral-400 animate-bounce cursor-pointer" 
+           class="relative z-10 flex flex-col items-center justify-center mt-3 sm:mt-8 pt-1 pb-1 text-neutral-400 animate-bounce cursor-pointer" 
            data-aos="fade-up" 
            data-aos-delay="300">
         <span class="text-[10px] font-headline font-semibold uppercase tracking-[0.2em] text-neutral-400">DESLIZA PARA EXPLORAR</span>

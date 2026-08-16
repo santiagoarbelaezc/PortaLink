@@ -13,8 +13,8 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
   standalone: true,
   imports: [CommonModule, FormsModule, MarkdownPipe],
   template: `
-    <!-- Floating Container -->
-    <div class="fixed bottom-3 -right-8 z-[500]">
+    <!-- Floating Container (Solo visible en Desktop md+) -->
+    <div class="hidden md:block fixed bottom-3 -right-8 z-[500]">
       
       <!-- Open Chat Button -->
       <button 

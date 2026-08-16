@@ -45,7 +45,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
       </div>
 
       <!-- Right Side (Forms Panel - Seamlessly Touches Navbar Line) -->
-      <div class="flex flex-col justify-start px-6 sm:px-12 lg:px-14 xl:px-16 relative bg-white lg:col-span-5 xl:col-span-5 h-[calc(100vh-68px)] overflow-y-auto py-6 lg:py-8">
+      <div class="flex flex-col justify-start px-5 sm:px-12 lg:px-14 xl:px-16 relative bg-white lg:col-span-5 xl:col-span-5 min-h-[calc(100vh-68px)] lg:h-[calc(100vh-68px)] overflow-y-auto py-6 lg:py-8 pb-32 sm:pb-8">
         <div class="w-full max-w-sm xl:max-w-md mx-auto">
 
           <!-- Mobile Header Back Link -->
@@ -102,7 +102,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
           <!-- Login / Register Slider Container -->
           <div class="relative overflow-hidden w-full transition-[height] duration-300 ease-out"
-               [style.height]="activeTab === 'login' ? '280px' : '520px'">
+               [style.min-height]="activeTab === 'login' ? '280px' : '580px'">
             <div class="flex w-[200%] transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"
                  [style.transform]="activeTab === 'login' ? 'translateX(0)' : 'translateX(-50%)'">
               
@@ -187,8 +187,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                            class="w-full bg-neutral-50 border border-neutral-200/80 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all disabled:opacity-50">
                   </div>
 
-                  <!-- Passwords Grid -->
-                  <div class="grid grid-cols-2 gap-2.5">
+                  <!-- Passwords Grid (Stacked on Mobile, 2 Cols on SM+) -->
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                     <div class="space-y-1.5">
                       <label class="text-xs font-semibold text-neutral-700">Contraseña</label>
                       <div class="relative">
@@ -225,7 +225,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                     <label class="text-xs font-semibold text-neutral-700">Código de Seguridad</label>
                     <div class="flex items-center gap-2">
                       <div class="h-10 border border-neutral-200/80 bg-neutral-50 rounded-xl overflow-hidden flex items-center justify-center select-none shrink-0" 
-                           [innerHTML]="captchaSvg" style="width: 120px;">
+                           [innerHTML]="captchaSvg" style="width: 100px;">
                       </div>
                       <button type="button" (click)="loadCaptcha()" class="p-2 rounded-xl border border-neutral-200/80 bg-white hover:bg-neutral-100 transition-colors text-neutral-700 cursor-pointer flex items-center justify-center h-10 w-10 shrink-0" title="Regenerar Captcha">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -238,7 +238,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                              autocomplete="off"
                              [disabled]="isLoading()"
                              maxlength="5"
-                             class="flex-grow h-10 bg-neutral-50 border border-neutral-200/80 rounded-xl px-2 text-xs font-bold text-neutral-900 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all disabled:opacity-50 text-center uppercase tracking-widest">
+                             class="flex-grow min-w-0 h-10 bg-neutral-50 border border-neutral-200/80 rounded-xl px-3 text-xs font-bold text-neutral-900 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all disabled:opacity-50 text-center uppercase tracking-widest">
                     </div>
                   </div>
 
@@ -259,7 +259,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
             </div>
           </div>
 
-          <p class="text-center text-[11px] font-sans text-neutral-400 mt-6">
+          <p class="text-center text-[11px] font-sans text-neutral-400 mt-6 pb-12 sm:pb-0">
             &copy; 2026 PortaLink. Todos los derechos reservados.
           </p>
 
