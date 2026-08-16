@@ -313,14 +313,20 @@ export class AiChatFloatingComponent implements OnInit, OnDestroy {
 
   startDesignFlow() {
     this.chatService.chatMode.set('design');
-    this.isOpen = false;
-    this.router.navigate(['/rotbot']);
+    const prompt = 'Quiero un diseño web a medida para mi proyecto.';
+    this.chatService.userInput = '';
+    this.chatService.sendMessage(prompt);
+    this.analyticsService.incrementMetric('rotbotMessagesSent');
+    this.scrollToBottom();
   }
 
   startConsultingFlow() {
     this.chatService.chatMode.set('consulting');
-    this.isOpen = false;
-    this.router.navigate(['/rotbot']);
+    const prompt = 'Quiero asesoría estratégica para mi proyecto.';
+    this.chatService.userInput = '';
+    this.chatService.sendMessage(prompt);
+    this.analyticsService.incrementMetric('rotbotMessagesSent');
+    this.scrollToBottom();
   }
 
   @HostListener('window:open-ai-chat', ['$event'])
@@ -331,26 +337,14 @@ export class AiChatFloatingComponent implements OnInit, OnDestroy {
       this.chatService.userInput = event.detail.message;
       this.sendMessage();
     }
-    setTimeout(() => {
-      try {
-        this.scrollContainer.nativeElement.scrollTop = 0;
-      } catch (err) { }
-    }, 100);
+    this.scrollToBottom();
   }
 
   toggleChat() {
-    if (typeof window !== 'undefined' && window.innerWidth < 768) {
-      this.router.navigate(['/rotbot']);
-      return;
-    }
     this.isOpen = !this.isOpen;
     if (this.isOpen) {
       this.analyticsService.incrementMetric('rotbotOpens');
-      setTimeout(() => {
-        try {
-          this.scrollContainer.nativeElement.scrollTop = 0;
-        } catch (err) { }
-      }, 100);
+      this.scrollToBottom();
     }
   }
 
@@ -360,12 +354,28 @@ export class AiChatFloatingComponent implements OnInit, OnDestroy {
   }
 
   sendMessage() {
-    if (!this.chatService.userInput.trim()) return;
+    const text = this.chatService.userInput.trim();
+    if (!text) return;
     if (this.chatService.isTyping) return;
 
-    // Redirigir siempre al chat completo con el mensaje precargado
-    this.isOpen = false;
-    this.router.navigate(['/rotbot']);
+    this.chatService.userInput = '';
+    this.chatService.sendMessage(text);
+    this.analyticsService.incrementMetric('rotbotMessagesSent');
+    this.scrollToBottom();
+  }
+
+  @HostListener('click', ['$event'])
+  onChatClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const anchor = target.closest('a') as HTMLAnchorElement;
+    if (anchor) {
+      const href = anchor.getAttribute('href');
+      if (href && href.startsWith('/')) {
+        event.preventDefault();
+        this.isOpen = false;
+        this.router.navigateByUrl(href);
+      }
+    }
   }
 
   private detectStyle(text: string): string | null {
@@ -377,8 +387,12 @@ export class AiChatFloatingComponent implements OnInit, OnDestroy {
   }
 
   private scrollToBottom(): void {
-    try {
-      this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
-    } catch (err) { }
+    setTimeout(() => {
+      try {
+        if (this.scrollContainer?.nativeElement) {
+          this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+        }
+      } catch (err) { }
+    }, 100);
   }
 }

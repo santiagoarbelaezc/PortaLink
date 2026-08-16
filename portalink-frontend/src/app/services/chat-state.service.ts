@@ -38,7 +38,7 @@ export interface ChatUsageResponse {
 
 const INITIAL_MESSAGE: ChatMessage = {
   role: 'assistant',
-  content: '¡Hola! Soy RotBot IA. ¿Necesitas ayuda para crear tu diseño web a medida, o prefieres que te brinde asesoramiento estratégico para tu proyecto?',
+  content: '¡Hola! Soy RotBot IA, tu copiloto en PortaLink. ¿En qué puedo ayudarte hoy? Puedo recomendarte nuestros proyectos web destacados, orientarte en soluciones a medida o compartirte nuestros canales oficiales.',
   showInitialActionButtons: true
 };
 

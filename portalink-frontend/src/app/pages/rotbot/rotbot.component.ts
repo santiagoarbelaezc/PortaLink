@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, OnInit, AfterViewChecked, OnDestroy, effect, signal } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, AfterViewChecked, OnDestroy, HostListener, effect, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -847,6 +847,19 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   goBack() {
     this.location.back();
+  }
+
+  @HostListener('click', ['$event'])
+  onChatClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const anchor = target.closest('a') as HTMLAnchorElement;
+    if (anchor) {
+      const href = anchor.getAttribute('href');
+      if (href && href.startsWith('/')) {
+        event.preventDefault();
+        this.router.navigateByUrl(href);
+      }
+    }
   }
 
   designCategories = [
