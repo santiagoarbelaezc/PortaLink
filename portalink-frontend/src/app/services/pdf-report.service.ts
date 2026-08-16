@@ -650,26 +650,51 @@ export class PdfReportService {
 
     this.addHeader(doc, 'INFORME FINANCIERO', 'Balance General de Ingresos, Egresos y Facturación');
 
-    // Calculate totals
-    const totalIngresos = summary?.arr_total || 0;
-    const totalPagado = summary?.facturas_pagadas_total || 0;
-    const totalEgresos = summary?.egresos_total || 0;
-    const utilidadNeta = summary?.utilidad_neta !== undefined ? summary.utilidad_neta : (totalIngresos - totalEgresos);
+    // Calculate exact totals from invoices and transactions
+    let totalFacturado = 0;
+    let totalPagado = 0;
+    let totalPendiente = 0;
 
-    const totalPendiente = (invoices || []).reduce((acc: number, inv: any) => {
+    (invoices || []).forEach((inv: any) => {
       const status = String(inv.status || '').toUpperCase();
-      if (status !== 'PAGADA' && status !== 'ANULADA' && status !== 'BORRADOR') {
-        const total = Number(inv.total || inv.total_amount || 0);
-        const paid = Number(inv.paid_amount || inv.paidAmount || 0);
-        const pending = Number(inv.pending_amount || inv.pendingAmount || (total > paid ? total - paid : 0));
-        return acc + (pending > 0 ? pending : total);
+      const total = Number(inv.total || inv.total_amount || 0);
+      const paid = Number(inv.paid_amount || inv.paidAmount || (status === 'PAGADA' ? total : 0));
+      const pending = Number(inv.pending_amount || inv.pendingAmount || (status !== 'PAGADA' && status !== 'ANULADA' ? (total > paid ? total - paid : total) : 0));
+
+      if (status !== 'ANULADA') {
+        totalFacturado += total;
       }
-      return acc;
-    }, 0);
+
+      if (status === 'PAGADA') {
+        totalPagado += total;
+      } else if (paid > 0) {
+        totalPagado += paid;
+      }
+
+      if (status !== 'PAGADA' && status !== 'ANULADA' && status !== 'BORRADOR') {
+        totalPendiente += (pending > 0 ? pending : (total > paid ? total - paid : total));
+      }
+    });
+
+    let manualIngresos = 0;
+    let totalEgresos = Number(summary?.egresos_total || 0);
+
+    (transactions || []).forEach((tx: any) => {
+      const type = String(tx.type || '').toUpperCase();
+      const amount = Number(tx.amount_cop || tx.amount || 0);
+      if (type === 'INGRESO') {
+        manualIngresos += amount;
+      } else if (type === 'EGRESO') {
+        totalEgresos = Math.max(totalEgresos, amount);
+      }
+    });
+
+    const totalIngresos = summary?.arr_total || (totalPagado + manualIngresos);
+    const utilidadNeta = summary?.utilidad_neta !== undefined ? summary.utilidad_neta : (totalIngresos - totalEgresos);
 
     // Summary Cards (4 Cards)
     const cards = [
-      { label: 'Total Ingresos', value: fmtCOP(totalIngresos) },
+      { label: 'Total Facturado', value: fmtCOP(totalFacturado) },
       { label: 'Recaudado (Pagado)', value: fmtCOP(totalPagado) },
       { label: 'Por Cobrar (Pendiente)', value: fmtCOP(totalPendiente) },
       { label: 'Utilidad Neta', value: fmtCOP(utilidadNeta) },
@@ -684,26 +709,28 @@ export class PdfReportService {
 
     autoTable(doc, {
       startY: y + 6,
-      head: [['Métrica / Concepto Financiero', 'Monto Total (COP)', 'Estado / Detalle']],
+      head: [['Concepto Financiero', 'Monto Total (COP)', 'Estado / Detalle']],
       body: [
-        ['Total Ingresos (Facturas + Transacciones)', fmtCOP(totalIngresos), 'Ingresos Totales'],
-        ['Total Recaudado (Facturas Pagadas)', fmtCOP(totalPagado), 'Efectivo Confirmado'],
-        ['Total Pendiente por Cobrar (Por Cobrar / Lo que se Debe)', fmtCOP(totalPendiente), totalPendiente > 0 ? '⚠ Pendiente de Cobro' : '✓ Al Día'],
-        ['Total Egresos & Gastos Operativos', fmtCOP(totalEgresos), 'Gastos Registrados'],
-        ['Utilidad Neta del Período', fmtCOP(utilidadNeta), utilidadNeta >= 0 ? '✓ Utilidad Positiva' : '⚠ Déficit'],
+        ['Total Facturado (Emitido)', fmtCOP(totalFacturado), 'Monto Facturado'],
+        ['Total Recaudado (Pagado)', fmtCOP(totalPagado), 'Efectivo Confirmado'],
+        ['Cuentas por Cobrar (Pendiente)', fmtCOP(totalPendiente), totalPendiente > 0 ? 'Pendiente de Cobro' : 'Al Día'],
+        ['Ingresos Brutos Consolidados', fmtCOP(totalIngresos), 'Ingresos Totales'],
+        ['Egresos & Gastos Operativos', fmtCOP(totalEgresos), 'Gastos Registrados'],
+        ['Utilidad Neta del Período', fmtCOP(utilidadNeta), utilidadNeta >= 0 ? 'Balance Positivo' : 'Déficit Operativo'],
       ],
       headStyles: { fillColor: [20, 20, 20], textColor: 255, fontStyle: 'bold', fontSize: 8 },
       bodyStyles: { fontSize: 8, textColor: [50, 50, 50] },
       alternateRowStyles: { fillColor: [248, 248, 248] },
       columnStyles: {
-        1: { halign: 'right', fontStyle: 'bold' },
-        2: { halign: 'center', fontStyle: 'bold' }
+        0: { cellWidth: 80 },
+        1: { cellWidth: 50, halign: 'right', fontStyle: 'bold' },
+        2: { cellWidth: 52, halign: 'center', fontStyle: 'bold' }
       },
       didParseCell: (data: any) => {
         if (data.section === 'body') {
           if (data.row.index === 2 && totalPendiente > 0) {
             data.cell.styles.textColor = [239, 68, 68];
-          } else if (data.row.index === 4) {
+          } else if (data.row.index === 5) {
             data.cell.styles.textColor = utilidadNeta >= 0 ? [34, 197, 94] : [239, 68, 68];
           }
         }
