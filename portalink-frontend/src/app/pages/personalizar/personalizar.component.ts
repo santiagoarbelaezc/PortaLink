@@ -9,22 +9,13 @@ import { RouterModule } from '@angular/router';
   template: `
     <div class="personalizar-page min-h-screen w-full flex items-center justify-center pt-24 pb-16 px-6 sm:px-12 lg:px-20 relative overflow-hidden transition-colors duration-500"
          [ngClass]="isDark ? 'bg-[#020204] text-white' : 'bg-neutral-50/50 text-neutral-900'">
-      
-      <!-- Ambient Glow in Background -->
-      <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
-        <div class="absolute top-1/2 left-1/4 -translate-y-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full blur-[140px]"
-             [ngClass]="isDark ? 'bg-cyan-500/10' : 'bg-cyan-500/15'"></div>
-      </div>
-
       <div class="max-w-[1300px] w-full mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center relative z-10">
 
         <!-- Left Column: Enlarged RotBot Feature Image -->
         <div class="md:col-span-6 relative flex justify-center items-center">
-          <div class="absolute inset-0 rounded-full blur-3xl scale-95 pointer-events-none"
-               [ngClass]="isDark ? 'bg-cyan-500/15' : 'bg-cyan-400/20'"></div>
           <img src="assets/images/rotbot-señalandoderecha.png"
                alt="RotBot IA Mantenimiento"
-               class="relative z-10 w-full max-w-[280px] sm:max-w-[380px] md:max-w-[460px] lg:max-w-[500px] max-h-[70vh] object-contain hover:scale-[1.02] transition-transform duration-500 drop-shadow-2xl" />
+               class="relative z-10 w-full max-w-[280px] sm:max-w-[380px] md:max-w-[460px] lg:max-w-[500px] max-h-[70vh] object-contain hover:scale-[1.02] transition-transform duration-500" />
         </div>
 
         <!-- Right Column: Text & Actions (Ultra-Clean Apple Style) -->

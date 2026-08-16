@@ -86,16 +86,6 @@ import { Subscription } from 'rxjs';
             <span class="text-left text-[13px] font-headline font-semibold"
                   [style.color]="activeTab === 'password' ? '#ffffff' : (isDark ? '#a3a3a3' : '#374151')">Cambiar Contraseña</span>
           </button>
-
-          <!-- Personalizar mi sitio link -->
-          <button (click)="goToPersonalizar()"
-                  class="flex items-center rounded-2xl text-sm font-semibold tracking-wide transition-all duration-200 cursor-pointer w-full px-3.5 py-2.5 gap-3 border-none"
-                  [ngClass]="isDark ? 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/60' : 'text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100'">
-            <svg class="w-[18px] h-[18px] flex-shrink-0" [style.color]="isDark ? '#a3a3a3' : '#374151'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-            </svg>
-            <span class="text-left text-[13px] font-headline font-semibold" [style.color]="isDark ? '#a3a3a3' : '#374151'">Personalizar mi sitio</span>
-          </button>
         </nav>
 
         <!-- Bottom: Logout -->
@@ -376,15 +366,6 @@ import { Subscription } from 'rxjs';
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
           <span>Seguridad</span>
-        </button>
-
-        <!-- Personalizar -->
-        <button (click)="goToPersonalizar()"
-                class="flex flex-col items-center gap-0.5 p-1.5 rounded-xl text-[10px] font-bold uppercase transition-all opacity-60">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-          </svg>
-          <span>Diseño</span>
         </button>
 
         <!-- Dashboard (Admin) -->

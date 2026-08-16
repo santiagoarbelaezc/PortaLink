@@ -112,12 +112,6 @@ import { AuthService } from '../../services/auth.service';
                   </svg>
                   <span>{{ currentLanguage === 'es' ? 'Hablar con Rotbot' : 'Talk to Rotbot' }}</span>
                 </a>
-                <a (click)="goToPage('/personalizar')" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold cursor-pointer hover:bg-neutral-500/10 transition-colors">
-                  <svg class="w-4 h-4 text-purple-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-                  </svg>
-                  <span>{{ currentLanguage === 'es' ? 'Personalizar Perfil' : 'Customize Profile' }}</span>
-                </a>
                 <a (click)="goToPage('/perfil')" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold cursor-pointer hover:bg-neutral-500/10 transition-colors">
                   <svg class="w-4 h-4 text-indigo-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />

@@ -208,47 +208,65 @@ import { SiteService } from '../../services/site.service';
                     </button>
                   </div>
 
-                  <!-- Design Card Preview & Interactive System Form -->
-                  <div *ngIf="msg.role === 'assistant' && msg.designImage" class="mt-4 rounded-2xl border border-white/15 bg-black/70 p-4 sm:p-5 space-y-4 shadow-2xl backdrop-blur-md">
+                  <!-- Design Card Preview & Interactive System Form (Ultra-Clean Obsidian Glass) -->
+                  <div *ngIf="msg.role === 'assistant' && msg.designImage" class="design-card-container mt-4 rounded-[26px] border border-neutral-800 bg-[#0c0c0f] p-5 sm:p-6 space-y-5 shadow-2xl transition-all duration-300 relative overflow-hidden">
+                    
+                    <!-- Ambient subtle glow behind card -->
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
                     <!-- Header Badge -->
-                    <div class="flex items-center justify-between pb-2 border-b border-white/10">
-                      <div class="flex items-center gap-2">
+                    <div class="flex items-center justify-between pb-3 border-b border-neutral-800/80 relative z-10">
+                      <div class="flex items-center gap-2.5">
                         <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                        <span class="text-xs font-bold uppercase tracking-wider text-cyan-300">Diseño Sugerido</span>
+                        <span class="text-xs font-headline font-bold uppercase tracking-wider text-cyan-400">
+                          Diseño Sugerido
+                        </span>
                       </div>
-                      <span class="text-[10px] text-neutral-400 font-mono">RotBot Design Engine</span>
+                      <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-neutral-400">
+                        RotBot Engine
+                      </span>
                     </div>
 
-                    <!-- Preview Image -->
-                    <div (click)="openDesignDetailModal(msg)" class="relative rounded-xl overflow-hidden border border-white/10 group shadow-lg max-h-[350px] bg-neutral-950 flex items-center justify-center cursor-pointer">
-                      <img [src]="msg.designImage" alt="Vista previa de diseño" class="w-full h-auto object-cover object-top transition-transform duration-500 group-hover:scale-105" />
-                      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end justify-between p-3">
-                        <span class="text-xs font-bold text-white bg-cyan-500/20 backdrop-blur-md border border-cyan-400/40 px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-md">
+                    <!-- Preview Image Card -->
+                    <div (click)="openDesignDetailModal(msg)" class="relative rounded-[20px] overflow-hidden border border-neutral-800 group shadow-xl max-h-[360px] bg-neutral-950 flex items-center justify-center cursor-pointer relative z-10">
+                      <img [src]="msg.designImage" alt="Vista previa de diseño" class="w-full h-auto object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105" />
+                      
+                      <!-- Floating Action Pills Overlay -->
+                      <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex items-end justify-between p-4">
+                        <span class="text-xs font-headline font-bold text-white bg-cyan-500/20 backdrop-blur-xl border border-cyan-400/40 px-4 py-2 rounded-full flex items-center gap-2 shadow-lg group-hover:bg-cyan-500/30 transition-all">
                           <i class="fa-solid fa-magnifying-glass-plus text-cyan-400"></i>
-                          <span>Ampliar y Especificar Proyecto</span>
+                          <span class="text-white">Ampliar y Especificar</span>
                         </span>
-                        <a routerLink="/prototipos" (click)="$event.stopPropagation()" class="text-xs font-bold text-white bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1.5 rounded-lg hover:bg-white/20 transition-all flex items-center gap-1.5">
-                          <span>Galería</span>
-                          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        
+                        <a routerLink="/prototipos" (click)="$event.stopPropagation()" class="text-xs font-headline font-bold text-white bg-white/10 backdrop-blur-xl border border-white/20 px-4 py-2 rounded-full hover:bg-white/25 transition-all flex items-center gap-2 no-underline">
+                          <span class="text-white">Galería</span>
+                          <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                         </a>
                       </div>
                     </div>
 
                     <!-- Interactive Form Component -->
-                    <div *ngIf="msg.showDesignForm" class="pt-2 space-y-3.5">
-                      <div class="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
-                        <span>📝 Especifica cómo quieres tu Sistema a Medida:</span>
+                    <div *ngIf="msg.showDesignForm" class="pt-2 space-y-4 relative z-10">
+                      <div class="text-xs font-headline font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                        <span class="text-cyan-400">📝</span>
+                        <span class="text-white">Especifica cómo quieres tu Sistema a Medida:</span>
                       </div>
 
-                      <div *ngIf="!msg.formSubmitted" class="space-y-3">
+                      <div *ngIf="!msg.formSubmitted" class="space-y-4">
                         <div>
-                          <label class="block text-[11px] font-bold text-neutral-300 uppercase tracking-wider mb-1">Nombre de tu Negocio / Proyecto</label>
-                          <input type="text" [(ngModel)]="designFormState.businessName" placeholder="Ej: Sparta Gym / Mi Marca" class="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/15 text-sm text-white focus:outline-none focus:border-cyan-400 transition-all placeholder:text-neutral-500" />
+                          <label class="block text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-300 mb-1.5">
+                            Nombre de tu Negocio / Proyecto
+                          </label>
+                          <input type="text" [(ngModel)]="designFormState.businessName" placeholder="Ej: Sparta Gym / Mi Marca"
+                                 class="w-full px-4 py-3 rounded-2xl bg-neutral-950 border border-neutral-800 text-white placeholder:text-neutral-500 text-xs sm:text-sm font-sans focus:outline-none focus:border-cyan-400 transition-all shadow-inner" />
                         </div>
 
                         <div>
-                          <label class="block text-[11px] font-bold text-neutral-300 uppercase tracking-wider mb-1">Diseño y Estilo del Sitio</label>
-                          <select [(ngModel)]="designFormState.style" class="w-full px-3.5 py-2.5 rounded-xl bg-neutral-900 border border-white/15 text-sm text-white focus:outline-none focus:border-cyan-400 transition-all">
+                          <label class="block text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-300 mb-1.5">
+                            Diseño y Estilo del Sitio
+                          </label>
+                          <select [(ngModel)]="designFormState.style"
+                                  class="w-full px-4 py-3 rounded-2xl bg-neutral-950 border border-neutral-800 text-white text-xs sm:text-sm font-sans focus:outline-none focus:border-cyan-400 transition-all shadow-inner">
                             <option value="Minimalista y Elegante">Minimalista & Elegante</option>
                             <option value="Moderno y Dinámico">Moderno & Dinámico</option>
                             <option value="Futurista / Dark Cyber">Futurista / Dark Cyber</option>
@@ -258,24 +276,30 @@ import { SiteService } from '../../services/site.service';
                         </div>
 
                         <div>
-                          <label class="block text-[11px] font-bold text-neutral-300 uppercase tracking-wider mb-1">Descripción de tu Sistema a Medida</label>
-                          <textarea [(ngModel)]="designFormState.description" rows="3" placeholder="Escribe un mensaje especificando cómo debe ser tu proyecto, qué funcionalidades o secciones necesitas..." class="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/15 text-sm text-white focus:outline-none focus:border-cyan-400 transition-all resize-none placeholder:text-neutral-500"></textarea>
+                          <label class="block text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-300 mb-1.5">
+                            Descripción de tu Sistema a Medida
+                          </label>
+                          <textarea [(ngModel)]="designFormState.description" rows="3"
+                                    placeholder="Escribe un mensaje especificando cómo debe ser tu proyecto, qué funcionalidades o secciones necesitas..."
+                                    class="w-full px-4 py-3 rounded-2xl bg-neutral-950 border border-neutral-800 text-white placeholder:text-neutral-500 text-xs sm:text-sm font-sans focus:outline-none focus:border-cyan-400 transition-all resize-none leading-relaxed shadow-inner"></textarea>
                         </div>
 
                         <button (click)="submitDesignForm(msg)" 
                                 [disabled]="!designFormState.description.trim()" 
-                                class="w-full py-3 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-extrabold uppercase text-xs tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg cursor-pointer disabled:opacity-50 active:scale-95">
+                                class="w-full py-3.5 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-neutral-950 font-headline font-extrabold uppercase text-xs tracking-wider flex items-center justify-center gap-2.5 transition-all duration-200 shadow-lg cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.01] active:scale-[0.99] border-none">
                           <span>Enviar Mensaje de Mi Proyecto</span>
-                          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3 21l18-9L3 3l3 9zm0 0h7.5"/></svg>
+                          <svg class="w-4 h-4 text-neutral-950" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3 21l18-9L3 3l3 9zm0 0h7.5"/>
+                          </svg>
                         </button>
                       </div>
 
-                      <div *ngIf="msg.formSubmitted" class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 space-y-2">
-                        <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider">
-                          <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                          <span>¡Mensaje de Proyecto Registrado!</span>
+                      <div *ngIf="msg.formSubmitted" class="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 space-y-2">
+                        <div class="flex items-center gap-2 text-xs font-headline font-bold uppercase tracking-wider text-emerald-400">
+                          <svg class="w-4.5 h-4.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                          <span class="text-emerald-400">¡Mensaje de Proyecto Registrado!</span>
                         </div>
-                        <p class="text-xs text-neutral-200">Se enviaron las especificaciones de tu proyecto. Santiago te contactará pronto para coordinar los detalles.</p>
+                        <p class="text-xs text-neutral-200 m-0">Se enviaron las especificaciones de tu proyecto. Santiago te contactará pronto para coordinar los detalles.</p>
                       </div>
                     </div>
                   </div>
@@ -659,8 +683,18 @@ import { SiteService } from '../../services/site.service';
       border-radius: 20px 20px 20px 4px !important;
       padding: 12px 18px !important;
     }
-    .assistant-bubble * {
-      color: #09090b !important;
+    .assistant-bubble > span,
+    .assistant-bubble > p {
+      color: #09090b;
+    }
+    .design-card-container label {
+      color: #d4d4d8 !important;
+    }
+    .design-card-container input,
+    .design-card-container select,
+    .design-card-container textarea {
+      color: #ffffff !important;
+      background-color: #09090b !important;
     }
     .user-bubble {
       background: #09090b !important;
