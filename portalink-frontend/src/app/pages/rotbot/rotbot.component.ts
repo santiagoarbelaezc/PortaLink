@@ -19,8 +19,8 @@ import { SiteService } from '../../services/site.service';
     <app-ai-info-modal [isOpen]="isInfoModalOpen" (closeEvent)="isInfoModalOpen = false"></app-ai-info-modal>
     <div class="fixed inset-0 w-full h-full flex flex-col overflow-hidden font-sans bg-white text-neutral-900 selection:bg-neutral-900 selection:text-white page-container">
       
-      <!-- CLEAN HEADER (Mas alta y comoda con 20px margin-top e iconos mas grandes) -->
-      <header class="chat-header bg-white/95 backdrop-blur-xl border-b border-neutral-100 px-4 sm:px-6 pt-4 sm:pt-3.5 pb-3 mt-[20px] flex items-center justify-between z-30 flex-shrink-0 shadow-2xs">
+      <!-- CLEAN HEADER (Margen superior optimizado) -->
+      <header class="chat-header bg-white/95 backdrop-blur-xl border-b border-neutral-100 px-4 sm:px-6 pt-3.5 sm:pt-3 pb-2.5 mt-[6px] flex items-center justify-between z-30 flex-shrink-0 shadow-2xs">
         
         <div class="flex items-center gap-3">
           <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-neutral-100 border border-neutral-200/80 flex items-center justify-center p-1 shadow-2xs shrink-0">
@@ -285,12 +285,14 @@ import { SiteService } from '../../services/site.service';
               <button 
                 type="submit"
                 [disabled]="!chatService.userInput.trim() || chatService.isBlocked()"
-                class="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer flex-shrink-0 border-none shadow-xs"
-                style="background-color: #09090b !important; color: #ffffff !important;"
+                class="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all cursor-pointer flex-shrink-0 border-none shadow-sm disabled:cursor-not-allowed"
+                [ngClass]="{
+                  'bg-neutral-900 text-white opacity-100 shadow-md': chatService.userInput.trim() && !chatService.isBlocked(),
+                  'bg-neutral-200 text-neutral-400 opacity-70': !chatService.userInput.trim() || chatService.isBlocked()
+                }"
               >
-                <svg class="w-4.5 h-4.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
-                  <line x1="12" y1="19" x2="12" y2="5"></line>
-                  <polyline points="5 12 12 5 19 12"></polyline>
+                <svg class="w-5 h-5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18"/>
                 </svg>
               </button>
             </form>
@@ -622,6 +624,20 @@ import { SiteService } from '../../services/site.service';
     .chat-header {
       border-color: #f4f4f5 !important;
       background: #ffffff !important;
+    }
+    /* PWA & Standalone Mode Safe Area Margins */
+    @media all and (display-mode: standalone), (display-mode: fullscreen), (display-mode: minimal-ui) {
+      .chat-header {
+        margin-top: calc(6px + env(safe-area-inset-top, 0px)) !important;
+        padding-top: calc(8px + env(safe-area-inset-top, 0px)) !important;
+      }
+    }
+    @supports (-webkit-touch-callout: none) {
+      @media all and (display-mode: standalone) {
+        .chat-header {
+          margin-top: calc(8px + env(safe-area-inset-top, 0px)) !important;
+        }
+      }
     }
     .icon-btn {
       color: #71717a !important;

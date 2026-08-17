@@ -25,9 +25,9 @@ class Groq
             $fallbackKey = $_ENV['GROQ_API_KEY_FALLBACK'] ?? getenv('GROQ_API_KEY_FALLBACK');
         }
 
-        $model = $_ENV['GROQ_MODEL'] ?? getenv('GROQ_MODEL') ?: 'llama-3.3-70b-versatile';
-        $maxTokens = (int)($options['max_tokens'] ?? $_ENV['GROQ_MAX_TOKENS'] ?? getenv('GROQ_MAX_TOKENS') ?: 500);
-        $temperature = (float)($options['temperature'] ?? $_ENV['GROQ_TEMPERATURE'] ?? getenv('GROQ_TEMPERATURE') ?: 0.7);
+        $model = $_ENV['GROQ_MODEL'] ?? getenv('GROQ_MODEL') ?: 'openai/gpt-oss-120b';
+        $maxTokens = (int)($options['max_tokens'] ?? $_ENV['GROQ_MAX_TOKENS'] ?? getenv('GROQ_MAX_TOKENS') ?: 2048);
+        $temperature = (float)($options['temperature'] ?? $_ENV['GROQ_TEMPERATURE'] ?? getenv('GROQ_TEMPERATURE') ?: 1.0);
 
         $keys = array_filter([$primaryKey, $fallbackKey]);
         if (empty($keys)) {
@@ -62,12 +62,16 @@ class Groq
     {
         $ch = curl_init('https://api.groq.com/openai/v1/chat/completions');
 
-        $payload = json_encode([
+        $payloadData = [
             'model' => $options['model'],
             'messages' => $messages,
             'temperature' => $options['temperature'],
+            'max_completion_tokens' => $options['max_tokens'],
             'max_tokens' => $options['max_tokens'],
-        ], JSON_UNESCAPED_UNICODE);
+            'top_p' => 1
+        ];
+
+        $payload = json_encode($payloadData, JSON_UNESCAPED_UNICODE);
 
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
