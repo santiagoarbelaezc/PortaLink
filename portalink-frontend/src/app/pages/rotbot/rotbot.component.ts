@@ -19,8 +19,8 @@ import { SiteService } from '../../services/site.service';
     <app-ai-info-modal [isOpen]="isInfoModalOpen" (closeEvent)="isInfoModalOpen = false"></app-ai-info-modal>
     <div class="fixed inset-0 w-full h-full flex flex-col overflow-hidden font-sans bg-white text-neutral-900 selection:bg-neutral-900 selection:text-white page-container">
       
-      <!-- CLEAN HEADER (Margen superior optimizado) -->
-      <header class="chat-header bg-white/95 backdrop-blur-xl border-b border-neutral-100 px-4 sm:px-6 pt-3.5 sm:pt-3 pb-2.5 mt-[6px] flex items-center justify-between z-30 flex-shrink-0 shadow-2xs">
+      <!-- CLEAN HEADER (Alineado arriba para PWA y Móvil) -->
+      <header class="chat-header bg-white/95 backdrop-blur-xl border-b border-neutral-100 px-4 sm:px-6 pt-2.5 pb-2.5 flex items-center justify-between z-30 flex-shrink-0 shadow-2xs">
         
         <div class="flex items-center gap-3">
           <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-neutral-100 border border-neutral-200/80 flex items-center justify-center p-1 shadow-2xs shrink-0">
@@ -624,18 +624,20 @@ import { SiteService } from '../../services/site.service';
     .chat-header {
       border-color: #f4f4f5 !important;
       background: #ffffff !important;
+      margin-top: 0 !important;
     }
-    /* PWA & Standalone Mode Safe Area Margins */
+    /* PWA & Standalone Mode - Ajuste lo más arriba posible */
     @media all and (display-mode: standalone), (display-mode: fullscreen), (display-mode: minimal-ui) {
       .chat-header {
-        margin-top: calc(6px + env(safe-area-inset-top, 0px)) !important;
-        padding-top: calc(8px + env(safe-area-inset-top, 0px)) !important;
+        margin-top: 0 !important;
+        padding-top: max(6px, env(safe-area-inset-top, 0px)) !important;
       }
     }
     @supports (-webkit-touch-callout: none) {
       @media all and (display-mode: standalone) {
         .chat-header {
-          margin-top: calc(8px + env(safe-area-inset-top, 0px)) !important;
+          margin-top: 0 !important;
+          padding-top: max(6px, env(safe-area-inset-top, 0px)) !important;
         }
       }
     }
