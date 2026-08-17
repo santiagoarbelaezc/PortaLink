@@ -15,8 +15,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
     RouterModule
   ],
   template: `
-    <div class="min-h-screen bg-white text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white pt-[28px] sm:pt-28 pb-16 px-2 sm:px-12 lg:px-20 overflow-x-hidden">
-      <div class="max-w-[1340px] mx-auto">
+    <div class="min-h-screen bg-white text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white pt-[28px] sm:pt-24 pb-16 px-4 sm:px-8 lg:px-12">
+      <div class="max-w-[1500px] mx-auto">
         
         <!-- SKELETON LOADER FOR LINKS -->
         <ng-container *ngIf="isLoading">
@@ -42,8 +42,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
         <div *ngIf="!isLoading" class="animate-fadeIn">
           <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-14 items-start">
             
-            <!-- LEFT COLUMN: PORTRAIT IMAGE CARD (Top in mobile, left sticky in desktop) -->
-            <aside class="lg:col-span-5 lg:sticky lg:top-28 w-full -mt-5 sm:mt-0 mb-0.5 sm:mb-0" data-aos="fade-up">
+            <!-- LEFT COLUMN: PORTRAIT IMAGE CARD (Top in mobile, left in desktop) -->
+            <aside class="lg:col-span-5 w-full -mt-5 sm:mt-0 mb-0.5 sm:mb-0" data-aos="fade-up">
               <!-- Outer wrapper with glowing spinning border ring on press -->
               <div class="relative group rounded-[26px] sm:rounded-[38px] p-[3px] transition-all duration-500 overflow-hidden">
                 
@@ -182,11 +182,11 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
             </section>
           </main>
 
-          <!-- High-End Details Gallery Mosaic (Matching Reference Design, Maximum Desktop Width) -->
-          <div id="photos-section" class="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] px-2 sm:px-5 lg:px-8 xl:px-10 pt-14 sm:pt-20 mt-14 sm:mt-20 border-t border-neutral-200/80 space-y-6" data-aos="fade-up" data-aos-duration="850">
+          <!-- High-End Details Gallery Mosaic (Standard Native Scroll Flow) -->
+          <div id="photos-section" class="w-full pt-12 sm:pt-16 mt-12 sm:mt-16 border-t border-neutral-200/80 space-y-6">
             
             <!-- Sleek Mosaic Header (Reference Design matching image) -->
-            <div class="flex items-center justify-between text-[11px] sm:text-xs font-headline font-semibold tracking-[0.2em] text-neutral-400 uppercase pt-2 pb-3 border-b border-neutral-200/80 mb-6">
+            <div class="flex items-center justify-between text-[11px] sm:text-xs font-headline font-semibold tracking-[0.2em] text-neutral-400 uppercase pt-2 pb-3 border-b border-neutral-200/80 mb-6" data-aos="fade-up">
               <span class="flex items-center gap-3 text-neutral-800">
                 GALERÍA DE FOTOS
                 <span class="hidden sm:inline-block h-px w-10 bg-neutral-300"></span>
@@ -194,14 +194,15 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
               <span class="text-neutral-500 font-mono">{{ modelingImages.length }} FOTOGRAFÍAS</span>
             </div>
             
-            <!-- Mosaic 12-Column Grid with Strictly Uniform Equal Gap -->
+            <!-- Mosaic 12-Column Grid with Strictly Uniform Equal Gap & Staggered AOS -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 sm:gap-5 lg:gap-6 items-stretch">
               <div *ngFor="let img of modelingImages; let i = index" 
                    (click)="openImageModal(img.src); trackSectionView('retratos'); trackLinkClick('foto_' + (i + 1))"
                    data-aos="fade-up"
-                   [attr.data-aos-delay]="(i % 3) * 100"
-                   data-aos-duration="750"
-                   class="group relative rounded-xl sm:rounded-2xl overflow-hidden border border-neutral-200/80 bg-neutral-100 shadow-xs hover:shadow-xl cursor-pointer transition-all duration-500 hover:scale-[1.01]"
+                   [attr.data-aos-delay]="(i % 3) * 120"
+                   data-aos-duration="850"
+                   data-aos-easing="ease-out-cubic"
+                   class="group relative rounded-xl sm:rounded-2xl overflow-hidden border border-neutral-200/80 bg-neutral-100 shadow-xs hover:shadow-2xl cursor-pointer transition-all duration-700 hover:scale-[1.012]"
                    [ngClass]="getImageSpanClass(i)">
                 
                 <img [src]="getLowQualityImage(img.src)" 
@@ -517,6 +518,16 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     setTimeout(() => {
       this.isLoading = false;
+      if (isPlatformBrowser(this.platformId)) {
+        setTimeout(() => {
+          AOS.init({
+            duration: 600,
+            once: true,
+            offset: 40
+          });
+          AOS.refresh();
+        }, 100);
+      }
     }, 400);
     this.initInstallSteps();
     if (isPlatformBrowser(this.platformId)) {
@@ -566,18 +577,18 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
 
   getImageSpanClass(index: number): string {
     const patterns = [
-      'lg:col-span-6 h-[440px] sm:h-[540px] lg:h-[640px]',  // Fila 1: 6 cols
-      'lg:col-span-3 h-[440px] sm:h-[540px] lg:h-[640px]',  // Fila 1: 3 cols
-      'lg:col-span-3 h-[440px] sm:h-[540px] lg:h-[640px]',  // Fila 1: 3 cols
-      'lg:col-span-3 h-[440px] sm:h-[540px] lg:h-[640px]',  // Fila 2: 3 cols
-      'lg:col-span-6 h-[440px] sm:h-[540px] lg:h-[640px]',  // Fila 2: 6 cols
-      'lg:col-span-3 h-[440px] sm:h-[540px] lg:h-[640px]',  // Fila 2: 3 cols
-      'lg:col-span-3 h-[440px] sm:h-[540px] lg:h-[640px]',  // Fila 3: 3 cols
-      'lg:col-span-3 h-[440px] sm:h-[540px] lg:h-[640px]',  // Fila 3: 3 cols
-      'lg:col-span-6 h-[440px] sm:h-[540px] lg:h-[640px]',  // Fila 3: 6 cols
-      'lg:col-span-4 h-[440px] sm:h-[540px] lg:h-[640px]',  // Fila 4 (Últimas 3 imágenes): 4 cols
-      'lg:col-span-4 h-[440px] sm:h-[540px] lg:h-[640px]',  // Fila 4 (Últimas 3 imágenes): 4 cols
-      'lg:col-span-4 h-[440px] sm:h-[540px] lg:h-[640px]'   // Fila 4 (Últimas 3 imágenes): 4 cols
+      'lg:col-span-6 h-[540px] sm:h-[580px] lg:h-[640px]',  // Fila 1: 6 cols
+      'lg:col-span-3 h-[540px] sm:h-[580px] lg:h-[640px]',  // Fila 1: 3 cols
+      'lg:col-span-3 h-[540px] sm:h-[580px] lg:h-[640px]',  // Fila 1: 3 cols
+      'lg:col-span-3 h-[540px] sm:h-[580px] lg:h-[640px]',  // Fila 2: 3 cols
+      'lg:col-span-6 h-[540px] sm:h-[580px] lg:h-[640px]',  // Fila 2: 6 cols
+      'lg:col-span-3 h-[540px] sm:h-[580px] lg:h-[640px]',  // Fila 2: 3 cols
+      'lg:col-span-3 h-[540px] sm:h-[580px] lg:h-[640px]',  // Fila 3: 3 cols
+      'lg:col-span-3 h-[540px] sm:h-[580px] lg:h-[640px]',  // Fila 3: 3 cols
+      'lg:col-span-6 h-[540px] sm:h-[580px] lg:h-[640px]',  // Fila 3: 6 cols
+      'lg:col-span-4 h-[540px] sm:h-[580px] lg:h-[640px]',  // Fila 4 (Últimas 3 imágenes): 4 cols
+      'lg:col-span-4 h-[540px] sm:h-[580px] lg:h-[640px]',  // Fila 4 (Últimas 3 imágenes): 4 cols
+      'lg:col-span-4 h-[540px] sm:h-[580px] lg:h-[640px]'   // Fila 4 (Últimas 3 imágenes): 4 cols
     ];
     return patterns[index % patterns.length];
   }
