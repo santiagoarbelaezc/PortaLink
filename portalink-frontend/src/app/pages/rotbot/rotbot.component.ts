@@ -19,8 +19,8 @@ import { SiteService } from '../../services/site.service';
     <app-ai-info-modal [isOpen]="isInfoModalOpen" (closeEvent)="isInfoModalOpen = false"></app-ai-info-modal>
     <div class="fixed inset-0 w-full h-full flex flex-col overflow-hidden font-sans bg-white text-neutral-900 selection:bg-neutral-900 selection:text-white page-container">
       
-      <!-- CLEAN HEADER (Mas alta y comoda con 10px margin-top e iconos mas grandes) -->
-      <header class="chat-header bg-white/95 backdrop-blur-xl border-b border-neutral-100 px-4 sm:px-6 pt-4 sm:pt-3.5 pb-3 mt-[10px] flex items-center justify-between z-30 flex-shrink-0 shadow-2xs">
+      <!-- CLEAN HEADER (Mas alta y comoda con 20px margin-top e iconos mas grandes) -->
+      <header class="chat-header bg-white/95 backdrop-blur-xl border-b border-neutral-100 px-4 sm:px-6 pt-4 sm:pt-3.5 pb-3 mt-[20px] flex items-center justify-between z-30 flex-shrink-0 shadow-2xs">
         
         <div class="flex items-center gap-3">
           <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-neutral-100 border border-neutral-200/80 flex items-center justify-center p-1 shadow-2xs shrink-0">
