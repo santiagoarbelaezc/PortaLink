@@ -172,49 +172,53 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
               </div>
 
               <!-- Animated Scroll Indicator Pill -->
-              <div class="flex flex-col items-center justify-center pt-4 pb-2 text-neutral-400 animate-bounce cursor-pointer" data-aos="fade-up">
-                <span class="text-[10px] font-headline font-semibold uppercase tracking-[0.2em] text-neutral-400">Desliza para explorar</span>
-                <svg class="w-4 h-4 text-neutral-400 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <div (click)="scrollToPhotos()" class="flex flex-col items-center justify-center pt-6 pb-2 text-neutral-400 animate-bounce cursor-pointer group" data-aos="fade-up">
+                <span class="text-[10px] font-headline font-semibold uppercase tracking-[0.2em] text-neutral-400 group-hover:text-neutral-900 transition-colors">Desliza para explorar</span>
+                <svg class="w-4 h-4 text-neutral-400 group-hover:text-neutral-900 mt-1 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                 </svg>
               </div>
 
-              <!-- Mobile Photo Gallery (One by One, Ultra Elegant with AOS) -->
-              <div class="block md:hidden pt-10 border-t border-neutral-200/80 space-y-6">
-                <div class="flex items-center justify-between mb-2">
-                  <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-semibold">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>{{ getTranslation().retratos }}</span>
-                  </div>
-                  <span class="text-xs font-medium text-neutral-500">{{ modelingImages.length }} Fotografías</span>
-                </div>
+            </section>
+          </main>
+
+          <!-- High-End Details Gallery Mosaic (Matching Reference Design, Maximum Desktop Width) -->
+          <div id="photos-section" class="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] px-2 sm:px-5 lg:px-8 xl:px-10 pt-14 sm:pt-20 mt-14 sm:mt-20 border-t border-neutral-200/80 space-y-6" data-aos="fade-up" data-aos-duration="850">
+            
+            <!-- Sleek Mosaic Header (Reference Design matching image) -->
+            <div class="flex items-center justify-between text-[11px] sm:text-xs font-headline font-semibold tracking-[0.2em] text-neutral-400 uppercase pt-2 pb-3 border-b border-neutral-200/80 mb-6">
+              <span class="flex items-center gap-3 text-neutral-800">
+                GALERÍA DE FOTOS
+                <span class="hidden sm:inline-block h-px w-10 bg-neutral-300"></span>
+              </span>
+              <span class="text-neutral-500 font-mono">{{ modelingImages.length }} FOTOGRAFÍAS</span>
+            </div>
+            
+            <!-- Mosaic 12-Column Grid with Strictly Uniform Equal Gap -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 sm:gap-5 lg:gap-6 items-stretch">
+              <div *ngFor="let img of modelingImages; let i = index" 
+                   (click)="openImageModal(img.src); trackSectionView('retratos'); trackLinkClick('foto_' + (i + 1))"
+                   data-aos="fade-up"
+                   [attr.data-aos-delay]="(i % 3) * 100"
+                   data-aos-duration="750"
+                   class="group relative rounded-xl sm:rounded-2xl overflow-hidden border border-neutral-200/80 bg-neutral-100 shadow-xs hover:shadow-xl cursor-pointer transition-all duration-500 hover:scale-[1.01]"
+                   [ngClass]="getImageSpanClass(i)">
                 
-                <!-- One-by-One Full Width Vertical Gallery Sequence -->
-                <div class="space-y-6">
-                  <div *ngFor="let img of modelingImages; let i = index" 
-                       (click)="openImageModal(img.src); trackSectionView('retratos'); trackLinkClick('foto_' + (i + 1))"
-                       data-aos="fade-up"
-                       [attr.data-aos-delay]="(i % 3) * 100"
-                       class="group relative rounded-[28px] overflow-hidden border border-neutral-200/90 bg-neutral-50 aspect-[3/4] shadow-md cursor-pointer transition-all duration-500 hover:scale-[1.01]">
-                    
-                    <img [src]="getLowQualityImage(img.src)" 
-                         [alt]="img.alt" 
-                         loading="lazy" 
-                         class="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105" />
-                    
-                    <!-- Bottom Caption Pill -->
-                    <div class="absolute bottom-4 left-4 z-10">
-                      <span class="px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md text-neutral-900 text-xs font-semibold uppercase tracking-wider shadow-sm border border-neutral-200/60">
-                        {{ img.alt }}
-                      </span>
-                    </div>
-                  </div>
+                <img [src]="getLowQualityImage(img.src)" 
+                     [alt]="img.alt" 
+                     loading="lazy" 
+                     class="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105" />
+                
+                <!-- Bottom Caption Pill -->
+                <div class="absolute bottom-3.5 left-3.5 z-10">
+                  <span class="px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md text-neutral-900 text-xs font-headline font-semibold uppercase tracking-wider shadow-sm border border-neutral-200/70">
+                    {{ img.alt }}
+                  </span>
                 </div>
               </div>
+            </div>
 
-            </section>
-
-          </main>
+          </div>
 
           <!-- Clean Footer -->
           <footer class="mt-16 pt-8 border-t border-neutral-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-sans text-neutral-500">
@@ -450,7 +454,9 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
     { src: 'assets/images/fotos/color-4.jpg', alt: 'Color', isColor: true },
     { src: 'assets/images/fotos/blanco-negro3.jpg', alt: 'B&N', isColor: false },
     { src: 'assets/images/fotos/color5.JPG', alt: 'Color', isColor: true },
-    { src: 'assets/images/fotos/color6.jpg', alt: 'Color', isColor: true }
+    { src: 'assets/images/fotos/color6.jpg', alt: 'Color', isColor: true },
+    { src: 'assets/images/fotos/color-7.jpg', alt: 'Color', isColor: true },
+    { src: 'assets/images/fotos/blanco-negro7.jpg', alt: 'B&N', isColor: false }
   ];
 
   translations: any = {
@@ -547,6 +553,33 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   getProfileLogo() {
     const rawUrl = 'assets/icons/navbar-logodark.png';
     return this.imageOptimizer.getCachedOrOriginal(rawUrl, 250, 0.8);
+  }
+
+  scrollToPhotos() {
+    if (isPlatformBrowser(this.platformId)) {
+      const el = document.getElementById('photos-section');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }
+
+  getImageSpanClass(index: number): string {
+    const patterns = [
+      'lg:col-span-6 h-[440px] sm:h-[540px] lg:h-[640px]',  // Fila 1: 6 cols
+      'lg:col-span-3 h-[440px] sm:h-[540px] lg:h-[640px]',  // Fila 1: 3 cols
+      'lg:col-span-3 h-[440px] sm:h-[540px] lg:h-[640px]',  // Fila 1: 3 cols
+      'lg:col-span-3 h-[440px] sm:h-[540px] lg:h-[640px]',  // Fila 2: 3 cols
+      'lg:col-span-6 h-[440px] sm:h-[540px] lg:h-[640px]',  // Fila 2: 6 cols
+      'lg:col-span-3 h-[440px] sm:h-[540px] lg:h-[640px]',  // Fila 2: 3 cols
+      'lg:col-span-3 h-[440px] sm:h-[540px] lg:h-[640px]',  // Fila 3: 3 cols
+      'lg:col-span-3 h-[440px] sm:h-[540px] lg:h-[640px]',  // Fila 3: 3 cols
+      'lg:col-span-6 h-[440px] sm:h-[540px] lg:h-[640px]',  // Fila 3: 6 cols
+      'lg:col-span-4 h-[440px] sm:h-[540px] lg:h-[640px]',  // Fila 4 (Últimas 3 imágenes): 4 cols
+      'lg:col-span-4 h-[440px] sm:h-[540px] lg:h-[640px]',  // Fila 4 (Últimas 3 imágenes): 4 cols
+      'lg:col-span-4 h-[440px] sm:h-[540px] lg:h-[640px]'   // Fila 4 (Últimas 3 imágenes): 4 cols
+    ];
+    return patterns[index % patterns.length];
   }
 
   getLowQualityImage(src: string): string {
