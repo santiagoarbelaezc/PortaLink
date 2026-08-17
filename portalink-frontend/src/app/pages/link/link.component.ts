@@ -244,13 +244,32 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
     </div>
 
     <!-- PWA Install Modal -->
-    <div *ngIf="showInstallModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-6 bg-black/60 backdrop-blur-2xl animate-fadeIn" (click)="closeModal(); $event.stopPropagation()">
-      <div class="bg-white border border-neutral-200/90 rounded-[28px] w-full max-w-sm p-6 shadow-2xl relative overflow-hidden backdrop-blur-xl" (click)="$event.stopPropagation()">
+    <div *ngIf="showInstallModal" 
+         class="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-4 sm:p-6 bg-black/75 backdrop-blur-md animate-fadeIn transition-all duration-300" 
+         (click)="closeModal(); $event.stopPropagation()">
+      <div (touchstart)="onTouchStart($event)" 
+           (touchend)="onTouchEnd($event)"
+           (click)="$event.stopPropagation()"
+           [ngClass]="currentTheme === 'dark' ? 'bg-neutral-900 border-neutral-800 text-white shadow-2xl' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-2xl'"
+           class="border rounded-[28px] w-full max-w-sm p-6 relative overflow-hidden transition-all duration-300 transform scale-100 mb-2 sm:mb-0">
         
         <!-- Header -->
         <div class="flex items-center justify-between mb-4">
-          <span class="text-xs font-headline font-semibold text-emerald-700 tracking-wider">{{ getTranslation().instalarTitulo }}</span>
-          <button type="button" (click)="trackLinkClick('pwa_cerrar'); closeModal(); $event.stopPropagation()" class="text-neutral-400 hover:text-neutral-900 transition-colors cursor-pointer p-1 border-none bg-transparent">
+          <div class="flex items-center gap-2.5">
+            <img [src]="getProfileAvatar()" alt="PortaLink" class="w-8 h-8 rounded-xl object-cover border border-emerald-500/30 shadow-sm" />
+            <div class="flex flex-col text-left">
+              <span class="text-xs font-headline font-bold tracking-wide" [ngClass]="currentTheme === 'dark' ? 'text-white' : 'text-neutral-900'">
+                PortaLink App
+              </span>
+              <span class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                PWA Mobile
+              </span>
+            </div>
+          </div>
+          <button type="button" (click)="trackLinkClick('pwa_cerrar'); closeModal(); $event.stopPropagation()" 
+                  [ngClass]="currentTheme === 'dark' ? 'text-neutral-400 hover:text-white bg-neutral-800' : 'text-neutral-500 hover:text-neutral-900 bg-neutral-100'"
+                  class="transition-colors cursor-pointer p-1.5 rounded-full border-none flex items-center justify-center">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -258,15 +277,18 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
         </div>
 
         <!-- Carousel Step Content -->
-        <div class="min-h-[170px] flex flex-col items-center text-center justify-center py-2 relative z-10">
-          <div class="w-12 h-12 rounded-2xl bg-neutral-100 border border-neutral-200/80 flex items-center justify-center mb-4 text-neutral-900" 
+        <div class="min-h-[175px] flex flex-col items-center text-center justify-center py-2 relative z-10 select-none">
+          <div [ngClass]="currentTheme === 'dark' ? 'bg-neutral-800/80 border-neutral-700/80 text-white' : 'bg-neutral-100/90 border-neutral-200/80 text-neutral-900'"
+               class="w-12 h-12 rounded-2xl border flex items-center justify-center mb-3.5 shadow-sm transition-transform hover:scale-105 duration-300" 
                [innerHTML]="installSteps[currentInstallStep]?.icon">
           </div>
           
-          <h3 class="text-sm font-headline font-semibold text-neutral-900 tracking-wide mb-1" style="color: #0a0a0a !important;">
+          <h3 class="text-sm font-headline font-bold tracking-wide mb-1.5"
+              [ngClass]="currentTheme === 'dark' ? 'text-white' : 'text-neutral-950'">
             {{ installSteps[currentInstallStep]?.title }}
           </h3>
-          <p class="text-neutral-500 text-xs leading-relaxed px-2" 
+          <p class="text-xs leading-relaxed px-2 transition-opacity duration-300 font-medium" 
+             [ngClass]="currentTheme === 'dark' ? 'text-neutral-300' : 'text-neutral-600'"
              [innerHTML]="installSteps[currentInstallStep]?.desc">
           </p>
         </div>
@@ -275,36 +297,45 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
         <div class="flex justify-center gap-1.5 mt-3">
           <span *ngFor="let step of installSteps; let idx = index" 
                 (click)="trackLinkClick('pwa_paso_' + (idx + 1)); currentInstallStep = idx; $event.stopPropagation()"
-                class="h-1 rounded-full cursor-pointer transition-all duration-300"
-                [ngClass]="currentInstallStep === idx ? 'bg-neutral-900 w-5' : 'bg-neutral-200 hover:bg-neutral-300 w-1.5'">
+                class="h-1.5 rounded-full cursor-pointer transition-all duration-300"
+                [ngClass]="[
+                  currentInstallStep === idx 
+                    ? (currentTheme === 'dark' ? 'bg-white w-6' : 'bg-neutral-900 w-6') 
+                    : (currentTheme === 'dark' ? 'bg-neutral-700 hover:bg-neutral-600 w-1.5' : 'bg-neutral-200 hover:bg-neutral-300 w-1.5')
+                ]">
           </span>
         </div>
 
         <!-- Footer Actions -->
-        <div class="flex items-center justify-between mt-5 border-t border-neutral-100 pt-3">
+        <div class="flex items-center justify-between mt-5 pt-3 border-t"
+             [ngClass]="currentTheme === 'dark' ? 'border-neutral-800' : 'border-neutral-100'">
           <button type="button" (click)="trackLinkClick(currentInstallStep === 0 ? 'pwa_cerrar' : 'pwa_atras'); currentInstallStep === 0 ? closeModal() : prevStep(); $event.stopPropagation()" 
-                  class="px-3 py-1.5 text-xs font-headline font-medium text-neutral-400 hover:text-neutral-900 cursor-pointer transition-all border-none bg-transparent">
+                  [ngClass]="currentTheme === 'dark' ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-950'"
+                  class="px-3 py-2 text-xs font-headline font-bold cursor-pointer transition-all border-none bg-transparent">
             {{ currentInstallStep === 0 ? (currentLanguage === 'es' ? 'Cerrar' : 'Close') : (currentLanguage === 'es' ? 'Atrás' : 'Back') }}
           </button>
           
           <button type="button" *ngIf="currentInstallStep < installSteps.length - 1"
                   (click)="trackLinkClick('pwa_siguiente'); nextStep(); $event.stopPropagation()" 
-                  class="px-4 py-2 rounded-xl font-headline font-medium text-xs shadow-sm hover:scale-[1.02] cursor-pointer transition-all border-none"
-                  style="background-color: #09090b !important; color: #ffffff !important;">
+                  [style.color]="currentTheme === 'dark' ? '#09090b !important' : '#ffffff !important'"
+                  [style.backgroundColor]="currentTheme === 'dark' ? '#ffffff !important' : '#09090b !important'"
+                  class="px-4 py-2 rounded-xl font-headline font-bold text-xs shadow-md hover:scale-[1.02] active:scale-95 cursor-pointer transition-all border-none">
             {{ currentLanguage === 'es' ? 'Siguiente' : 'Next' }}
           </button>
           
           <button type="button" *ngIf="currentInstallStep === installSteps.length - 1 && !isIOS"
                   (click)="trackLinkClick('pwa_instalar_btn'); installPWA(); $event.stopPropagation()" 
-                  class="px-4 py-2 rounded-xl font-headline font-medium text-xs shadow-sm hover:scale-[1.02] cursor-pointer transition-all border-none"
-                  style="background-color: #09090b !important; color: #ffffff !important;">
+                  [style.color]="currentTheme === 'dark' ? '#09090b !important' : '#ffffff !important'"
+                  [style.backgroundColor]="currentTheme === 'dark' ? '#ffffff !important' : '#09090b !important'"
+                  class="px-4 py-2 rounded-xl font-headline font-bold text-xs shadow-md hover:scale-[1.02] active:scale-95 cursor-pointer transition-all border-none">
             {{ getTranslation().instalarBtn }}
           </button>
           
           <button type="button" *ngIf="currentInstallStep === installSteps.length - 1 && isIOS"
                   (click)="trackLinkClick('pwa_entendido'); closeModal(); $event.stopPropagation()" 
-                  class="px-4 py-2 rounded-xl font-headline font-medium text-xs shadow-sm hover:scale-[1.02] cursor-pointer transition-all border-none"
-                  style="background-color: #09090b !important; color: #ffffff !important;">
+                  [style.color]="currentTheme === 'dark' ? '#09090b !important' : '#ffffff !important'"
+                  [style.backgroundColor]="currentTheme === 'dark' ? '#ffffff !important' : '#09090b !important'"
+                  class="px-4 py-2 rounded-xl font-headline font-bold text-xs shadow-md hover:scale-[1.02] active:scale-95 cursor-pointer transition-all border-none">
             {{ getTranslation().entendido }}
           </button>
         </div>
@@ -388,6 +419,31 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   currentLanguage = 'es';
   currentTheme = 'light';
 
+  touchStartX = 0;
+  touchEndX = 0;
+
+  onTouchStart(e: TouchEvent) {
+    if (e.changedTouches && e.changedTouches.length > 0) {
+      this.touchStartX = e.changedTouches[0].screenX;
+    }
+  }
+
+  onTouchEnd(e: TouchEvent) {
+    if (e.changedTouches && e.changedTouches.length > 0) {
+      this.touchEndX = e.changedTouches[0].screenX;
+      this.handleSwipe();
+    }
+  }
+
+  handleSwipe() {
+    const diff = this.touchStartX - this.touchEndX;
+    if (diff > 45) {
+      this.nextStep();
+    } else if (diff < -45) {
+      this.prevStep();
+    }
+  }
+
   currentInstallStep = 0;
   private sanitizer = inject(DomSanitizer);
   installSteps: any[] = [];
@@ -399,17 +455,17 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
         {
           title: isEs ? 'Paso 1: Abrir Compartir' : 'Step 1: Open Share',
           desc: isEs ? 'Pulsa el botón <b>Compartir</b> (el ícono con una flecha hacia arriba) en la barra inferior de tu navegador Safari.' : 'Press the <b>Share</b> button (arrow pointing up) in the bottom bar of your Safari browser.',
-          icon: this.sanitizer.bypassSecurityTrustHtml(`<svg class="w-6 h-6 text-neutral-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>`)
+          icon: this.sanitizer.bypassSecurityTrustHtml(`<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>`)
         },
         {
           title: isEs ? 'Paso 2: Añadir a Inicio' : 'Step 2: Add to Home',
           desc: isEs ? 'Desplázate hacia abajo en el menú de opciones de Safari y selecciona <b>Añadir a la pantalla de inicio</b>.' : 'Scroll down the options menu and select <b>Add to Home Screen</b>.',
-          icon: this.sanitizer.bypassSecurityTrustHtml(`<svg class="w-6 h-6 text-neutral-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4" /><line x1="12" y1="8" x2="12" y2="16" /><line x1="8" y1="12" x2="16" y2="12" /></svg>`)
+          icon: this.sanitizer.bypassSecurityTrustHtml(`<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4" /><line x1="12" y1="8" x2="12" y2="16" /><line x1="8" y1="12" x2="16" y2="12" /></svg>`)
         },
         {
           title: isEs ? 'Paso 3: Confirmar' : 'Step 3: Confirm',
           desc: isEs ? 'Haz clic en <b>Añadir</b> en la esquina superior derecha para completar la instalación en tu dispositivo.' : 'Click <b>Add</b> in the top right corner to complete the installation on your device.',
-          icon: this.sanitizer.bypassSecurityTrustHtml(`<svg class="w-6 h-6 text-neutral-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`)
+          icon: this.sanitizer.bypassSecurityTrustHtml(`<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`)
         }
       ];
     } else {
@@ -417,17 +473,17 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
         {
           title: isEs ? 'Paso 1: Abrir Menú' : 'Step 1: Open Menu',
           desc: isEs ? 'Haz clic en el botón de instalar al final de este carrusel, o abre las opciones de tu navegador (los tres puntos verticales).' : 'Click the install button at the end of this carousel, or open your browser options menu (three vertical dots).',
-          icon: this.sanitizer.bypassSecurityTrustHtml(`<svg class="w-6 h-6 text-neutral-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" /></svg>`)
+          icon: this.sanitizer.bypassSecurityTrustHtml(`<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" /></svg>`)
         },
         {
           title: isEs ? 'Paso 2: Seleccionar Instalar' : 'Step 2: Select Install',
           desc: isEs ? 'Presiona en <b>Instalar aplicación</b> o <b>Añadir a la pantalla de inicio</b> dentro del menú desplegado.' : 'Press <b>Install app</b> or <b>Add to Home Screen</b> in the dropdown menu.',
-          icon: this.sanitizer.bypassSecurityTrustHtml(`<svg class="w-6 h-6 text-neutral-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4" /><line x1="12" y1="8" x2="12" y2="16" /><line x1="8" y1="12" x2="16" y2="12" /></svg>`)
+          icon: this.sanitizer.bypassSecurityTrustHtml(`<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4" /><line x1="12" y1="8" x2="12" y2="16" /><line x1="8" y1="12" x2="16" y2="12" /></svg>`)
         },
         {
           title: isEs ? 'Paso 3: Disfrutar' : 'Step 3: Enjoy',
           desc: isEs ? 'Confirma la instalación y disfruta de PortaLink en pantalla completa, acceso directo en tu escritorio y soporte offline.' : 'Confirm the installation and enjoy PortaLink in full screen, desktop shortcut, and offline support.',
-          icon: this.sanitizer.bypassSecurityTrustHtml(`<svg class="w-6 h-6 text-neutral-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L11 3z" /></svg>`)
+          icon: this.sanitizer.bypassSecurityTrustHtml(`<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L11 3z" /></svg>`)
         }
       ];
     }
@@ -535,9 +591,10 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
       this.initInstallSteps();
       
       window.addEventListener('beforeinstallprompt', (e) => {
-        if (!this.isStandalone && !localStorage.getItem('pwa_dismissed')) {
-          e.preventDefault();
-          this.deferredPrompt = e;
+        e.preventDefault();
+        this.deferredPrompt = e;
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(navigator.userAgent) || window.innerWidth <= 768;
+        if (isMobile && !this.isStandalone) {
           this.showInstallModal = true;
         }
       });
@@ -651,6 +708,8 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   checkPWAStatus() {
+    if (!isPlatformBrowser(this.platformId)) return;
+
     this.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     this.isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
                         (navigator as any).standalone === true;
@@ -660,10 +719,13 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     
-    if (this.isIOS && !this.isStandalone && !localStorage.getItem('pwa_dismissed')) {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(navigator.userAgent) || window.innerWidth <= 768;
+    if (isMobile) {
       setTimeout(() => {
-        if (!this.isStandalone) this.showInstallModal = true;
-      }, 4000);
+        if (!this.isStandalone) {
+          this.showInstallModal = true;
+        }
+      }, 600);
     }
   }
 
@@ -681,6 +743,5 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
 
   closeModal() {
     this.showInstallModal = false;
-    localStorage.setItem('pwa_dismissed', 'true');
   }
 }

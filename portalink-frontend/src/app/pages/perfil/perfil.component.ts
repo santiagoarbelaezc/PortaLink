@@ -160,7 +160,7 @@ import { Subscription } from 'rxjs';
         </header>
 
         <!-- Scrollable content area -->
-        <main class="flex-grow overflow-y-auto overflow-x-hidden p-4 sm:p-6 md:p-8 pb-20 md:pb-8"
+        <main class="flex-grow overflow-y-auto overflow-x-hidden p-4 sm:p-6 md:p-8 pb-28 md:pb-8 no-scrollbar"
               [ngClass]="isDark ? 'bg-[#020204]' : 'bg-neutral-50/50'">
           <div class="max-w-screen-2xl mx-auto w-full">
 
@@ -343,50 +343,52 @@ import { Subscription } from 'rxjs';
       </div>
 
       <!-- ══════════════════════════════════════
-           MOBILE BOTTOM NAVIGATION BAR
+           MATERIAL DESIGN 3 MOBILE BOTTOM NAV BAR
       ══════════════════════════════════════ -->
-      <nav class="fixed bottom-0 left-0 right-0 z-30 md:hidden border-t backdrop-blur-xl px-2 py-1.5 flex items-center justify-around shadow-lg"
-           [ngClass]="isDark ? 'bg-[#07070a]/90 border-neutral-800 text-neutral-400' : 'bg-white/90 border-neutral-200 text-neutral-500'">
-        
-        <!-- Mi Perfil -->
-        <button (click)="setTab('profile')"
-                class="flex flex-col items-center gap-0.5 p-1.5 rounded-xl text-[10px] font-bold uppercase transition-all"
-                [ngClass]="activeTab === 'profile' ? (isDark ? 'text-white' : 'text-neutral-900') : 'opacity-60'">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
-          <span>Perfil</span>
-        </button>
+      <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur-2xl select-none px-2 pt-2.5 transition-all duration-300 shadow-[0_-4px_25px_rgba(0,0,0,0.08)]"
+           [ngClass]="isDark ? 'bg-[#09090d]/95 border-neutral-800/80 text-neutral-400' : 'bg-white/95 border-neutral-200/90 text-neutral-600'"
+           style="padding-bottom: calc(0.7rem + env(safe-area-inset-bottom, 0px));">
+        <div class="flex items-center justify-around max-w-md mx-auto">
+          
+          <!-- Mi Perfil -->
+          <button (click)="setTab('profile')"
+                  class="flex flex-col items-center justify-center py-1 px-4 transition-all duration-200 active:scale-90 cursor-pointer group">
+            <div class="w-[60px] h-9 rounded-full flex items-center justify-center transition-all duration-300 relative"
+                 [ngClass]="activeTab === 'profile' ? (isDark ? 'bg-emerald-500/20 text-emerald-400 font-bold scale-105' : 'bg-emerald-500/15 text-emerald-600 font-bold scale-105') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">
+              <svg class="w-[22px] h-[22px] transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+            <span class="text-[10.5px] font-bold tracking-tight transition-colors mt-1"
+                  [ngClass]="activeTab === 'profile' ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-neutral-400' : 'text-neutral-500')">Perfil</span>
+          </button>
 
-        <!-- Cambiar Contraseña -->
-        <button (click)="setTab('password')"
-                class="flex flex-col items-center gap-0.5 p-1.5 rounded-xl text-[10px] font-bold uppercase transition-all"
-                [ngClass]="activeTab === 'password' ? (isDark ? 'text-white' : 'text-neutral-900') : 'opacity-60'">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
-          <span>Seguridad</span>
-        </button>
+          <!-- Cambiar Contraseña -->
+          <button (click)="setTab('password')"
+                  class="flex flex-col items-center justify-center py-1 px-4 transition-all duration-200 active:scale-90 cursor-pointer group">
+            <div class="w-[60px] h-9 rounded-full flex items-center justify-center transition-all duration-300 relative"
+                 [ngClass]="activeTab === 'password' ? (isDark ? 'bg-emerald-500/20 text-emerald-400 font-bold scale-105' : 'bg-emerald-500/15 text-emerald-600 font-bold scale-105') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">
+              <svg class="w-[22px] h-[22px] transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <span class="text-[10.5px] font-bold tracking-tight transition-colors mt-1"
+                  [ngClass]="activeTab === 'password' ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-neutral-400' : 'text-neutral-500')">Seguridad</span>
+          </button>
 
-        <!-- Dashboard (Admin) -->
-        <a *ngIf="authService.currentUser()?.rol?.toLowerCase() === 'admin'"
-           [routerLink]="['/admin']"
-           class="flex flex-col items-center gap-0.5 p-1.5 rounded-xl text-[10px] font-bold uppercase transition-all opacity-60">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z" />
-          </svg>
-          <span>Admin</span>
-        </a>
+          <!-- Dashboard (Admin) -->
+          <a *ngIf="authService.currentUser()?.rol?.toLowerCase() === 'admin'"
+             [routerLink]="['/admin']"
+             class="flex flex-col items-center justify-center py-1 px-4 transition-all duration-200 active:scale-90 cursor-pointer group">
+            <div class="w-[60px] h-9 rounded-full flex items-center justify-center transition-all duration-300 relative text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white">
+              <svg class="w-[22px] h-[22px] transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z" />
+              </svg>
+            </div>
+            <span class="text-[10.5px] font-bold tracking-tight transition-colors mt-1 text-neutral-500 dark:text-neutral-400">Admin</span>
+          </a>
 
-        <!-- Menú Drawer -->
-        <button (click)="isMobileDrawerOpen = !isMobileDrawerOpen"
-                class="flex flex-col items-center gap-0.5 p-1.5 rounded-xl text-[10px] font-bold uppercase transition-all"
-                [ngClass]="isMobileDrawerOpen ? (isDark ? 'text-white' : 'text-neutral-900') : 'opacity-60'">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-          </svg>
-          <span>Menú</span>
-        </button>
+        </div>
       </nav>
 
     </div>
