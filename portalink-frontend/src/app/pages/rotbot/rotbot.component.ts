@@ -19,16 +19,16 @@ import { SiteService } from '../../services/site.service';
     <app-ai-info-modal [isOpen]="isInfoModalOpen" (closeEvent)="isInfoModalOpen = false"></app-ai-info-modal>
     <div class="fixed inset-0 w-full h-full flex flex-col overflow-hidden font-sans bg-white text-neutral-900 selection:bg-neutral-900 selection:text-white page-container">
       
-      <!-- CLEAN HEADER (Mas alta y comoda) -->
-      <header class="chat-header bg-white/95 backdrop-blur-xl border-b border-neutral-100 px-4 sm:px-6 pt-4 sm:pt-3.5 pb-3 flex items-center justify-between z-30 flex-shrink-0 shadow-2xs">
+      <!-- CLEAN HEADER (Mas alta y comoda con 10px margin-top e iconos mas grandes) -->
+      <header class="chat-header bg-white/95 backdrop-blur-xl border-b border-neutral-100 px-4 sm:px-6 pt-4 sm:pt-3.5 pb-3 mt-[10px] flex items-center justify-between z-30 flex-shrink-0 shadow-2xs">
         
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-neutral-100 border border-neutral-200/80 flex items-center justify-center p-1 shadow-2xs shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-neutral-100 border border-neutral-200/80 flex items-center justify-center p-1 shadow-2xs shrink-0">
             <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
           </div>
           <div>
             <div class="flex items-center gap-1.5">
-              <h1 class="text-sm sm:text-lg font-bold tracking-tight leading-none text-neutral-900 m-0">
+              <h1 class="text-base sm:text-lg font-bold tracking-tight leading-none text-neutral-900 m-0">
                 RotBot IA
               </h1>
               <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="En línea"></span>
@@ -41,12 +41,12 @@ import { SiteService } from '../../services/site.service';
           </div>
         </div>
 
-        <div class="flex items-center gap-1.5 sm:gap-2.5">
+        <div class="flex items-center gap-2 sm:gap-3">
           <!-- Nuevo Chat -->
           <button (click)="resetChatWithEffect()" 
-                  class="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-1.5 sm:px-3.5 sm:py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-900 font-semibold text-[11px] sm:text-xs tracking-wide transition-all shadow-2xs border-none cursor-pointer" 
+                  class="inline-flex items-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-900 font-semibold text-xs sm:text-xs tracking-wide transition-all shadow-2xs border-none cursor-pointer" 
                   title="Nuevo Chat">
-            <svg class="w-3.5 h-3.5 transition-transform" [class.animate-spin]="isResetting" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="w-4 h-4 transition-transform" [class.animate-spin]="isResetting" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-3.08 2.82"/>
             </svg>
             <span class="hidden xs:inline">Nuevo Chat</span>
@@ -55,8 +55,8 @@ import { SiteService } from '../../services/site.service';
 
           <!-- Galería de Diseños -->
           <a routerLink="/prototipos" 
-             class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-900 font-semibold text-xs tracking-wide transition-all shadow-2xs no-underline border-none cursor-pointer">
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+             class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-900 font-semibold text-xs tracking-wide transition-all shadow-2xs no-underline border-none cursor-pointer">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
             </svg>
             <span>Galería</span>
@@ -64,9 +64,9 @@ import { SiteService } from '../../services/site.service';
 
           <!-- Volver al Inicio -->
           <a routerLink="/" 
-             class="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-1.5 sm:px-3.5 sm:py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-900 font-semibold text-[11px] sm:text-xs tracking-wide transition-all shadow-2xs no-underline border-none cursor-pointer"
+             class="inline-flex items-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-900 font-semibold text-xs sm:text-xs tracking-wide transition-all shadow-2xs no-underline border-none cursor-pointer"
              title="Volver al Inicio">
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
             </svg>
             <span class="hidden sm:inline">Inicio</span>
@@ -74,9 +74,9 @@ import { SiteService } from '../../services/site.service';
 
           <!-- Close / Back Button -->
           <button (click)="goBack()" 
-                  class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 flex items-center justify-center transition-all border-none cursor-pointer shrink-0" 
+                  class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 flex items-center justify-center transition-all border-none cursor-pointer shrink-0" 
                   title="Cerrar y Volver">
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
