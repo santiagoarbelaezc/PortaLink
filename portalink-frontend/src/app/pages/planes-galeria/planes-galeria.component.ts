@@ -332,7 +332,7 @@ export class PlanesGaleriaComponent implements OnInit {
       category: 'E-commerce',
       client: 'Camascotas Pet Premium',
       liveUrl: 'https://camascotas.com/',
-      image: 'assets/images/proyectos/proyecto-camascotas.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973369/proyecto-camascotas_qcmstp.png',
       gradient: 'linear-gradient(135deg, #0a2e1a 0%, #1a4a2e 100%)',
       description: 'E-commerce de muebles y accesorios para mascotas con catálogo de productos, carrito de compras, panel de administración y diseño responsive. Desarrollado con Angular + PHP/MySQL.',
       highlights: [
@@ -354,7 +354,7 @@ export class PlanesGaleriaComponent implements OnInit {
       category: 'Sistemas',
       client: 'Sysmicon / Plataforma de Arquitectura',
       liveUrl: 'https://sysmicon.com/',
-      image: 'assets/images/proyectos/proyecto-sysmiconarquitectura.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973770/proyecto-sysmiconarquitectura_jxfoju.png',
       gradient: 'linear-gradient(135deg, #0d1f0d 0%, #1a3a1a 100%)',
       description: 'Plataforma directiva para estudios de arquitectura con dashboard de cotizaciones, diseños CAD 2D, galería de proyectos visual y módulo de mensajería.',
       highlights: [
@@ -376,7 +376,7 @@ export class PlanesGaleriaComponent implements OnInit {
       category: 'Sistemas + IA',
       client: 'Plastilíneas / Districol',
       liveUrl: 'https://catalogoplaxtilineas.com/catalogo',
-      image: 'assets/images/proyectos/proyecto-catalogodigital.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974186/proyecto-catalogodigital_obh8fu.png',
       gradient: 'linear-gradient(135deg, #0d1f0d 0%, #1a3a1a 100%)',
       description: 'Plataforma de catálogo digital con inteligencia artificial integrada. Gestiona productos, categorías e inventario para múltiples líneas de negocio con reportes analíticos y asistente IA.',
       highlights: [
@@ -398,7 +398,7 @@ export class PlanesGaleriaComponent implements OnInit {
       category: 'E-commerce',
       client: 'Districol / Colchones Armenia',
       liveUrl: 'https://colchonesdistricol.com/',
-      image: 'assets/images/proyectos/proyecto-colchonesdistricol.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973662/proyecto-colchonesdistricol_wlk93j.png',
       gradient: 'linear-gradient(135deg, #0a1a2a 0%, #1a3a4a 100%)',
       description: 'E-commerce de colchones y muebles de descanso premium para Armenia con catálogo completo, detalle de productos, consulta por WhatsApp e integración con el sistema administrativo de inventario.',
       highlights: [
@@ -420,7 +420,7 @@ export class PlanesGaleriaComponent implements OnInit {
       category: 'E-commerce',
       client: 'Espumas y Plásticos S.A.S.',
       liveUrl: 'https://espumasyplasticos.com/',
-      image: 'assets/images/proyectos/proyecto-catalogodigital.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974630/espumas-principal_dzeur0.jpg',
       gradient: 'linear-gradient(135deg, #1f1f0d 0%, #3a3a1a 100%)',
       description: 'Plataforma de comercio electrónico e industrial para soluciones en espumas, plásticos y materiales sintéticos con cotización en vivo.',
       highlights: [
@@ -442,7 +442,7 @@ export class PlanesGaleriaComponent implements OnInit {
       category: 'Sistemas',
       client: 'Plaxtilíneas Colombia',
       liveUrl: 'https://plaxtilineas.com/',
-      image: 'assets/images/proyectos/plaxtilineas.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974786/plaxtilineas_lh6eaz.png',
       gradient: 'linear-gradient(135deg, #0d1a1f 0%, #1a303a 100%)',
       description: 'Portal institucional e industrial para la exhibición de líneas de bolsas, empaques y plásticos biodegradables.',
       highlights: [
@@ -464,7 +464,7 @@ export class PlanesGaleriaComponent implements OnInit {
       category: 'E-commerce + IA',
       client: 'Tiendaíntima / Moda & Descanso',
       liveUrl: 'https://tiendaintima.com/',
-      image: 'assets/images/proyectos/proyecto-tiendaintima.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973903/proyecto-tiendaintima_oahugr.png',
       gradient: 'linear-gradient(135deg, #2a0a1a 0%, #4a1a30 100%)',
       description: 'Plataforma de comercio electrónico para moda íntima y descanso con IA integrada para gestión de productos, análisis de ventas, inventario y experiencia de compra personalizada.',
       highlights: [

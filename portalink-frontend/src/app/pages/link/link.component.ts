@@ -502,18 +502,18 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   modelingImages = [
-    { src: 'assets/images/fotos/color-1.jpg', alt: 'Color', isColor: true },
-    { src: 'assets/images/fotos/blanco-negro-1.jpg', alt: 'B&N', isColor: false },
-    { src: 'assets/images/fotos/color-2 (2).jpg', alt: 'Color', isColor: true },
-    { src: 'assets/images/fotos/blanco-negro-2 (2).jpg', alt: 'B&N', isColor: false },
-    { src: 'assets/images/fotos/color-3.jpg', alt: 'Color', isColor: true },
-    { src: 'assets/images/fotos/blanco-negro-3.jpg', alt: 'B&N', isColor: false },
-    { src: 'assets/images/fotos/color-4.jpg', alt: 'Color', isColor: true },
-    { src: 'assets/images/fotos/blanco-negro3.jpg', alt: 'B&N', isColor: false },
-    { src: 'assets/images/fotos/color5.JPG', alt: 'Color', isColor: true },
-    { src: 'assets/images/fotos/color6.jpg', alt: 'Color', isColor: true },
-    { src: 'assets/images/fotos/color-7.jpg', alt: 'Color', isColor: true },
-    { src: 'assets/images/fotos/blanco-negro7.jpg', alt: 'B&N', isColor: false }
+    { src: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975157/color-1_tujkot.jpg', alt: 'Color 1', isColor: true },
+    { src: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975079/blanco-negro-1_jmk4sm.jpg', alt: 'B&N 1', isColor: false },
+    { src: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975215/color-2_2_ngk2sj.jpg', alt: 'Color 2', isColor: true },
+    { src: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975082/blanco-negro-2_2_e7ngsh.jpg', alt: 'B&N 2', isColor: false },
+    { src: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975212/color-3_ej1grx.jpg', alt: 'Color 3', isColor: true },
+    { src: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975153/blanco-negro-3_tlzix3.jpg', alt: 'B&N 3', isColor: false },
+    { src: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975217/color-4_sm7fym.jpg', alt: 'Color 4', isColor: true },
+    { src: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975205/blanco-negro3_farea0.jpg', alt: 'B&N 4', isColor: false },
+    { src: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975255/color5_cw1gza.jpg', alt: 'Color 5', isColor: true },
+    { src: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975257/color6_tnqlqa.jpg', alt: 'Color 6', isColor: true },
+    { src: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975160/color-7_olknzj.jpg', alt: 'Color 7', isColor: true },
+    { src: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975209/blanco-negro7_ocdlmi.jpg', alt: 'B&N 7', isColor: false }
   ];
 
   translations: any = {
@@ -614,7 +614,7 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   getProfileAvatar() {
-    const rawUrl = this.configService.data()?.links?.avatarImage || 'assets/images/fotos/main-link.jpg';
+    const rawUrl = this.configService.data()?.links?.avatarImage || 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975015/principal_bunphx.jpg';
     return this.imageOptimizer.getCachedOrOriginal(rawUrl, 950, 0.75);
   }
 

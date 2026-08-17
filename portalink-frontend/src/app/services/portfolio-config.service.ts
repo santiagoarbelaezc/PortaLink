@@ -55,28 +55,28 @@ export class PortfolioConfigService {
     try {
       const parsed = JSON.parse(str);
       if (parsed?.hero) {
-        parsed.hero.backgroundImage = 'assets/images/fotos/link-principal.jpg';
+        parsed.hero.backgroundImage = 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975015/principal_bunphx.jpg';
       }
       if (parsed?.about) {
-        parsed.about.avatarImage = 'assets/images/fotos/main-link.jpg';
+        parsed.about.avatarImage = 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975015/principal_bunphx.jpg';
       }
       if (parsed?.links) {
-        parsed.links.avatarImage = 'assets/images/fotos/main-link.jpg';
+        parsed.links.avatarImage = 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975015/principal_bunphx.jpg';
       }
       if (parsed?.pages?.home?.sections) {
         parsed.pages.home.sections.forEach((sec: any) => {
           if (sec.id === 'home-hero' && sec.config) {
-            sec.config.backgroundImage = 'assets/images/fotos/link-principal.jpg';
+            sec.config.backgroundImage = 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975015/principal_bunphx.jpg';
           }
           if (sec.id === 'home-about' && sec.config) {
-            sec.config.avatarImage = 'assets/images/fotos/main-link.jpg';
+            sec.config.avatarImage = 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975015/principal_bunphx.jpg';
           }
         });
       }
       if (parsed?.pages?.link?.sections) {
         parsed.pages.link.sections.forEach((sec: any) => {
           if (sec.id === 'links-main' && sec.config) {
-            sec.config.avatarImage = 'assets/images/fotos/main-link.jpg';
+            sec.config.avatarImage = 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975015/principal_bunphx.jpg';
           }
         });
       }

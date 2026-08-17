@@ -91,7 +91,7 @@ import { RouterModule } from '@angular/router';
                preload="auto"
                class="block md:hidden w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
             >
-              <source src="assets/videos/hero/portalink-movil.mp4" type="video/mp4">
+              <source src="https://res.cloudinary.com/doxdjiyvi/video/upload/v1786974908/portalink-movil_thu5si.mp4" type="video/mp4">
             </video>
             <!-- Desktop / Tablet Image (proyecto-0.png) -->
             <img

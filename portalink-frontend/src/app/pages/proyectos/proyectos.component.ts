@@ -208,7 +208,7 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       tagline: 'Tienda de mobiliario premium para mascotas con catálogo interactivo.',
       title: 'CamasCotas',
       liveUrl: 'https://camascotas.com/',
-      image: 'assets/images/proyectos/proyecto-camascotas.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973369/proyecto-camascotas_qcmstp.png',
       description: 'E-commerce completo de muebles y accesorios para mascotas con catálogo, carrito, panel de administración y diseño responsive.',
       prompt: 'Hola, quiero una tienda E-commerce como CamasCotas con catálogo, carrito de compras y panel de administración para mi negocio.'
     },
@@ -218,7 +218,7 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       tagline: 'Catálogo digital inteligente con analítica y asistente IA en tiempo real.',
       title: 'Catálogo Digital Plaxtilíneas',
       liveUrl: 'https://catalogoplaxtilineas.com/catalogo',
-      image: 'assets/images/proyectos/proyecto-catalogodigital.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974186/proyecto-catalogodigital_obh8fu.png',
       description: 'Plataforma de catálogo digital con IA integrada. Gestión de productos, inventario multi-línea y reportes analíticos automáticos.',
       prompt: 'Hola, necesito un sistema de catálogo digital con inteligencia artificial para gestionar mis productos, similar a Catálogo Digital.'
     },
@@ -228,7 +228,7 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       tagline: 'Tienda de colchones premium con consulta directa por WhatsApp.',
       title: 'Colchones Districol',
       liveUrl: 'https://colchonesdistricol.com/',
-      image: 'assets/images/proyectos/proyecto-colchonesdistricol.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973662/proyecto-colchonesdistricol_wlk93j.png',
       description: 'E-commerce de colchones y descanso con catálogo completo, ficha de producto, consulta WhatsApp e integración con inventario en vivo.',
       prompt: 'Hola, quiero una tienda E-commerce de productos premium con catálogo, ficha de producto y WhatsApp, similar a Colchones Districol.'
     },
@@ -238,7 +238,7 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       tagline: 'Portal directivo para gestión de proyectos de arquitectura y diseño CAD.',
       title: 'Sysmicon',
       liveUrl: 'https://sysmicon.com/',
-      image: 'assets/images/proyectos/proyecto-sysmiconarquitectura.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973770/proyecto-sysmiconarquitectura_jxfoju.png',
       description: 'Plataforma directiva con dashboard de cotizaciones, diseños CAD, galería visual inmersiva y comunidad de profesionales.',
       prompt: 'Hola, necesito una plataforma de gestión de proyectos con dashboard ejecutivo y galería visual, similar a Sysmicon.'
     },
@@ -248,7 +248,7 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       tagline: 'Plataforma e-commerce e industrial para soluciones de espumas y plásticos.',
       title: 'Espumas y Plásticos',
       liveUrl: 'https://espumasyplasticos.com/',
-      image: 'assets/images/proyectos/proyecto-catalogodigital.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974630/espumas-principal_dzeur0.jpg',
       description: 'Plataforma de comercio electrónico e industrial para soluciones en espumas, plásticos y materiales sintéticos.',
       prompt: 'Hola, quiero una tienda e-commerce como Espumas y Plásticos con catálogo industrial y cotizador.'
     },
@@ -258,7 +258,7 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       tagline: 'Portal corporativo e industrial de empaques y soluciones plásticas.',
       title: 'Plaxtilíneas',
       liveUrl: 'https://plaxtilineas.com/',
-      image: 'assets/images/proyectos/plaxtilineas.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974786/plaxtilineas_lh6eaz.png',
       description: 'Portal institucional e industrial para la exhibición de líneas de bolsas, empaques y plásticos biodegradables.',
       prompt: 'Hola, necesito un portal corporativo como Plaxtilíneas con catálogo industrial y cotización en línea.'
     },
@@ -268,7 +268,7 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       tagline: 'E-commerce de moda íntima con panel administrativo y asistente inteligente.',
       title: 'Tienda Íntima',
       liveUrl: 'https://tiendaintima.com/',
-      image: 'assets/images/proyectos/proyecto-tiendaintima.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973903/proyecto-tiendaintima_oahugr.png',
       description: 'Comercio electrónico para moda íntima con IA para gestión de productos, análisis de ventas e inventario en tiempo real.',
       prompt: 'Hola, quiero una tienda E-commerce con panel de administración e inteligencia artificial integrada, similar a TIENDA ÍNTIMA.'
     }

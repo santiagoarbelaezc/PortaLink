@@ -300,8 +300,8 @@ export class DescripcionProyectoComponent implements OnInit {
 
   onImgError(event: Event) {
     const target = event.target as HTMLImageElement;
-    if (target && !target.src.includes('proyecto-sysmiconarquitectura.png')) {
-      target.src = 'assets/images/proyectos/proyecto-sysmiconarquitectura.png';
+    if (target && !target.src.includes('proyecto-sysmiconarquitectura')) {
+      target.src = 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973770/proyecto-sysmiconarquitectura_jxfoju.png';
     }
   }
 
@@ -337,18 +337,18 @@ export class DescripcionProyectoComponent implements OnInit {
       client: 'Camascotas Colombia',
       year: '2026',
       liveUrl: 'https://camascotas.com/',
-      image: 'assets/images/proyectos/proyecto-camascotas.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973369/proyecto-camascotas_qcmstp.png',
       images: [
-        'assets/images/proyectos/proyecto-camascotas.png',
-        'assets/images/proyectos/camascotas/camascotas-home.png',
-        'assets/images/proyectos/camascotas/camascotas-detalle.png',
-        'assets/images/proyectos/camascotas/camascotas-contacto.png',
-        'assets/images/proyectos/camascotas/login-camascotas.png'
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973369/proyecto-camascotas_qcmstp.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973274/camascotas-home_mww43z.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973244/camascotas-detalle_cgwomi.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973241/camascotas-contacto_sydyb6.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973240/login-camascotas_wjsudr.png'
       ],
       mobileImages: [
-        'assets/images/proyectos/camascotas/camascotas-movil.png',
-        'assets/images/proyectos/camascotas/camascotas-movil2.png',
-        'assets/images/proyectos/camascotas/analiticas-movil.png'
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973239/camascotas-movil_z1awlf.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973239/camascotas-movil2_xhewzt.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973240/analiticas-movil_qr3dcw.png'
       ],
       description: 'E-commerce completo de muebles y accesorios para mascotas con catálogo interactivo y atención por WhatsApp.',
       longDescription: `Camascotas es una plataforma E-commerce de vanguardia concebida para la comercialización de mobiliario exclusivo para mascotas.
@@ -403,17 +403,17 @@ Incluye además un completo panel administrativo donde la marca puede gestionar 
       client: 'Sysmicon Constructora',
       year: '2026',
       liveUrl: 'https://sysmicon.com/',
-      image: 'assets/images/proyectos/proyecto-sysmiconarquitectura.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973770/proyecto-sysmiconarquitectura_jxfoju.png',
       images: [
-        'assets/images/proyectos/proyecto-sysmiconarquitectura.png',
-        'assets/images/proyectos/sysmicon/sysmi-1.png',
-        'assets/images/proyectos/sysmicon/sysmi2.png',
-        'assets/images/proyectos/sysmicon/sysmi-3.png'
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973770/proyecto-sysmiconarquitectura_jxfoju.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973762/sysmi-1_p481uc.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973763/sysmi2_yyicct.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973764/sysmi-3_okjhzu.png'
       ],
       mobileImages: [
-        'assets/images/proyectos/sysmicon/movil-sysmicon.jpeg',
-        'assets/images/proyectos/sysmicon/movil-sysmicon2.jpeg',
-        'assets/images/proyectos/sysmicon/movil-sysmicon4.jpeg'
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973766/movil-sysmicon_c5iqoc.jpg',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973767/movil-sysmicon2_dhbysi.jpg',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973748/movil-sysmicon4_rcwhzt.jpg'
       ],
       description: 'Plataforma directiva con dashboard de estadísticas, exposición de proyectos y registro de usuarios.',
       longDescription: `SYSMICON ARQUITECTURA es un portal ejecutivo y operativo desarrollado para firmas constructoras y estudios de diseño arquitectónico.
@@ -465,13 +465,13 @@ Integra una suite de herramientas avanzadas: exposición interactiva de proyecto
       client: 'Plastilíneas & Districol Group',
       year: '2026',
       liveUrl: 'https://catalogoplaxtilineas.com/catalogo',
-      image: 'assets/images/proyectos/proyecto-catalogodigital.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974186/proyecto-catalogodigital_obh8fu.png',
       images: [
-        'assets/images/proyectos/proyecto-catalogodigital.png',
-        'assets/images/proyectos/catalogo/catalogo-1.png',
-        'assets/images/proyectos/catalogo/catalogo-2.png',
-        'assets/images/proyectos/catalogo/catalogo-3.png',
-        'assets/images/proyectos/catalogo/catalogo-4.png'
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974186/proyecto-catalogodigital_obh8fu.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974113/catalogo-2_zu01gw.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974118/catalogo-1_ajm6wi.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974116/catalogo-4_gppf0q.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974114/catalogo-3_uhwr0d.png'
       ],
 
       description: 'Plataforma de catálogo digital con IA para gestión de productos, inventario y analítica.',
@@ -525,12 +525,12 @@ Integra modelos de Inteligencia Artificial (Groq / Llama 3) para automatizar la 
       client: 'Districol Armenia',
       year: '2026',
       liveUrl: 'https://colchonesdistricol.com/',
-      image: 'assets/images/proyectos/proyecto-colchonesdistricol.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973662/proyecto-colchonesdistricol_wlk93j.png',
       images: [
-        'assets/images/proyectos/proyecto-colchonesdistricol.png',
-        'assets/images/proyectos/districol/districol-1.png',
-        'assets/images/proyectos/districol/districol-2.png',
-        'assets/images/proyectos/districol/districol-3.png'
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973662/proyecto-colchonesdistricol_wlk93j.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973660/districol-1_qonsxx.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973647/districol-2_v7ntis.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973658/districol-3_iy4qro.png'
       ],
       description: 'E-commerce de colchones premium con catálogo, ficha de producto y WhatsApp API.',
       longDescription: `COLCHONES DISTRICOL es una tienda virtual de alto nivel enfocada en productos de descanso y confort.
@@ -583,13 +583,14 @@ Diseñada con un estándar visual premium, ofrece fichas fisiológicas de produc
       client: 'Espumas y Plásticos S.A.S.',
       year: '2026',
       liveUrl: 'https://espumasyplasticos.com/',
-      image: 'assets/images/proyectos/espumasyplasticos/espuma-1.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974630/espumas-principal_dzeur0.jpg',
       images: [
-        'assets/images/proyectos/espumasyplasticos/espuma-1.png',
-        'assets/images/proyectos/espumasyplasticos/espuma-2.png',
-        'assets/images/proyectos/espumasyplasticos/espuma-3.png',
-        'assets/images/proyectos/espumasyplasticos/espuma-4.png',
-        'assets/images/proyectos/espumasyplasticos/espuma-5.png'
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974630/espumas-principal_dzeur0.jpg',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974290/espuma-2_hyusub.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974286/espuma-1_mi8tzi.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974288/espuma-3_ulqive.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974284/espuma-5_py2rsy.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974269/espuma-4_scmwgh.png'
       ],
 
       description: 'Plataforma de comercio electrónico e industrial para soluciones en espumas, plásticos y materiales sintéticos.',
@@ -643,19 +644,19 @@ Cuenta con calculadora de volumen y densidad, cotización en lote para distribui
       client: 'Plaxtilíneas Colombia',
       year: '2026',
       liveUrl: 'https://plaxtilineas.com/',
-      image: 'assets/images/proyectos/plaxtilineas.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974786/plaxtilineas_lh6eaz.png',
       images: [
-        'assets/images/proyectos/plaxtilineas.png',
-        'assets/images/proyectos/plaxtilineas/plaxti-1.png',
-        'assets/images/proyectos/plaxtilineas/plaxti-2.png',
-        'assets/images/proyectos/plaxtilineas/plaxti-3.png',
-        'assets/images/proyectos/plaxtilineas/plaxti-4.png',
-        'assets/images/proyectos/plaxtilineas/plaxti-5.png'
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974786/plaxtilineas_lh6eaz.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974783/plaxti-1_thi5mx.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974765/plaxti-2_zvmqkg.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974773/plaxti-3_ooypok.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974777/plaxti-4_btbxts.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974781/plaxti-5_vkoek5.png'
       ],
       mobileImages: [
-        'assets/images/proyectos/plaxtilineas/plaxti-1movil.jpeg',
-        'assets/images/proyectos/plaxtilineas/plaxti-2movil.jpeg',
-        'assets/images/proyectos/plaxtilineas/plaxti-3movil.jpeg'
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974767/plaxti-2movil_zus2gt.jpg',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974748/plaxti-1movil_z2jrvn.jpg',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974775/plaxti-3movil_jpozln.jpg'
       ],
       description: 'Portal institucional e industrial para la exhibición de líneas de bolsas, empaques y plásticos biodegradables.',
       longDescription: `PLAXTILÍNEAS es el portal corporativo maestro para una firma líder en fabricación y distribución de empaques sintéticos e industriales.
@@ -708,20 +709,19 @@ Destaca por su presentación visual de alto impacto, catálogo interactivo de l�
       client: 'Boutique Íntima Boutique',
       year: '2026',
       liveUrl: 'https://tiendaintima.com/',
-      image: 'assets/images/proyectos/proyecto-tiendaintima.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973903/proyecto-tiendaintima_oahugr.png',
       images: [
-        'assets/images/proyectos/proyecto-tiendaintima.png',
-        'assets/images/proyectos/tiendaintima/tienda-1.png',
-        'assets/images/proyectos/tiendaintima/tienda2.png',
-        'assets/images/proyectos/tiendaintima/tienda3.png',
-        'assets/images/proyectos/tiendaintima/tienda4.png',
-        'assets/images/proyectos/tiendaintima/tienda5.png',
-        'assets/images/proyectos/tiendaintima/tienda-5.png'
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973903/proyecto-tiendaintima_oahugr.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973882/tienda-1_erztpk.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973883/tienda3_ttwtpa.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973886/tienda4_sdycjy.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973879/tienda2_u9fxcd.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973872/tienda-5_uosbmf.png'
       ],
       mobileImages: [
-        'assets/images/proyectos/tiendaintima/tienda-movil.jpeg',
-        'assets/images/proyectos/tiendaintima/tienda-movil2.jpeg',
-        'assets/images/proyectos/tiendaintima/tienda-movil3.jpeg'
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973878/tienda-movil_smpeu0.jpg',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973874/tienda-movil2_fm2u9k.jpg',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973876/tienda-movil3_ktzvno.jpg'
       ],
       description: 'E-commerce para moda íntima con IA para gestión de productos y recomendaciones.',
       longDescription: `TIENDA ÍNTIMA combina elegancia, privacidad y tecnología de personalización avanzada.

@@ -385,7 +385,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Mobiliario Pets & Catálogo',
       description: 'E-commerce completo de muebles y accesorios para mascotas con catálogo, carrito y panel de administración.',
       iconClass: 'fa-solid fa-paw',
-      image: 'assets/images/proyectos/proyecto-camascotas.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973369/proyecto-camascotas_qcmstp.png',
       tags: ['Mascotas', 'E-Commerce', 'En Vivo'],
       liveUrl: 'https://camascotas.com/'
     },
@@ -397,7 +397,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Catálogo Digital Inteligente',
       description: 'Plataforma de catálogo digital con IA integrada, analítica en tiempo real e inventario multi-línea.',
       iconClass: 'fa-solid fa-book-open',
-      image: 'assets/images/proyectos/proyecto-catalogodigital.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974186/proyecto-catalogodigital_obh8fu.png',
       tags: ['Catálogo', 'IA', 'En Vivo'],
       liveUrl: 'https://catalogoplaxtilineas.com/catalogo'
     },
@@ -409,7 +409,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Descanso Premium & WhatsApp',
       description: 'Tienda e-commerce de colchones con catálogo completo, ficha de producto y consulta directa por WhatsApp.',
       iconClass: 'fa-solid fa-store',
-      image: 'assets/images/proyectos/proyecto-colchonesdistricol.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973662/proyecto-colchonesdistricol_wlk93j.png',
       tags: ['Colchones', 'E-Commerce', 'En Vivo'],
       liveUrl: 'https://colchonesdistricol.com/'
     },
@@ -421,7 +421,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Gestión CAD & Arquitectura',
       description: 'Portal directivo para gestión de proyectos de arquitectura, diseños CAD y cotizaciones.',
       iconClass: 'fa-solid fa-compass-drafting',
-      image: 'assets/images/proyectos/proyecto-sysmiconarquitectura.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973770/proyecto-sysmiconarquitectura_jxfoju.png',
       tags: ['Arquitectura', 'CAD', 'En Vivo'],
       liveUrl: 'https://sysmicon.com/'
     },
@@ -433,7 +433,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Industrial & Comercial',
       description: 'Plataforma de comercio electrónico e industrial para soluciones en espumas y plásticos.',
       iconClass: 'fa-solid fa-store',
-      image: 'assets/images/proyectos/proyecto-catalogodigital.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974630/espumas-principal_dzeur0.jpg',
       tags: ['Industrial', 'E-Commerce', 'En Vivo'],
       liveUrl: 'https://espumasyplasticos.com/'
     },
@@ -445,7 +445,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Empaques & Soluciones Plásticas',
       description: 'Portal institucional e industrial para la exhibición de líneas de bolsas y empaques.',
       iconClass: 'fa-solid fa-building',
-      image: 'assets/images/proyectos/plaxtilineas.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974786/plaxtilineas_lh6eaz.png',
       tags: ['Corporativo', 'Plásticos', 'En Vivo'],
       liveUrl: 'https://plaxtilineas.com/'
     },
@@ -457,7 +457,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Boutique & Copiloto IA',
       description: 'Comercio electrónico para moda íntima con asistente inteligente e inventario en tiempo real.',
       iconClass: 'fa-solid fa-shirt',
-      image: 'assets/images/proyectos/proyecto-tiendaintima.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973903/proyecto-tiendaintima_oahugr.png',
       tags: ['Moda', 'IA', 'En Vivo'],
       liveUrl: 'https://tiendaintima.com/'
     },
