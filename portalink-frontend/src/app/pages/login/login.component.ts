@@ -44,19 +44,24 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
       </div>
 
-      <!-- Right Side (Forms Panel - Seamlessly Touches Navbar Line) -->
-      <div class="flex flex-col justify-start px-5 sm:px-12 lg:px-14 xl:px-16 relative bg-white lg:col-span-5 xl:col-span-5 min-h-[calc(100vh-68px)] lg:h-[calc(100vh-68px)] overflow-y-auto py-6 lg:py-8 pb-32 sm:pb-8">
-        <div class="w-full max-w-sm xl:max-w-md mx-auto">
+      <!-- Right Side (Forms Panel - Correctly Spaced Below Navbar) -->
+      <div class="flex flex-col justify-start px-5 sm:px-12 lg:px-14 xl:px-16 relative bg-white lg:col-span-5 xl:col-span-5 min-h-[calc(100vh-68px)] lg:h-[calc(100vh-68px)] overflow-y-auto pt-4 lg:pt-6 pb-24 sm:pb-8 no-scrollbar">
+        <div class="w-full max-w-sm xl:max-w-md mx-auto flex flex-col justify-start min-h-full">
 
-          <!-- Header Back Link -->
-          <div class="flex items-center justify-between mb-6">
-            <a (click)="goHome($event)" routerLink="/" class="inline-flex items-center gap-2 text-xs font-semibold text-neutral-800 hover:text-black no-underline cursor-pointer">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
-              </svg>
-              <span>Volver al Inicio</span>
+          <!-- Header Back Link (Top - Always Visible) -->
+          <div class="flex items-center justify-between mb-3 pt-2 shrink-0">
+            <a (click)="goHome($event)" routerLink="/" class="inline-flex items-center gap-2 text-xs font-semibold text-neutral-700 hover:text-black transition-colors no-underline cursor-pointer group">
+              <span class="w-7 h-7 rounded-full bg-neutral-100 group-hover:bg-neutral-200 flex items-center justify-center transition-colors">
+                <svg class="w-3.5 h-3.5 text-neutral-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
+                </svg>
+              </span>
+              <span class="font-semibold text-neutral-800">Volver al Inicio</span>
             </a>
           </div>
+
+          <!-- Main Card Content (Alineado un poco más abajo con my-auto) -->
+          <div class="my-auto py-2">
 
           <!-- Title Header Group -->
           <div class="text-center mb-6 space-y-1">
@@ -258,8 +263,9 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
             </div>
           </div>
+          </div> <!-- Close my-auto py-2 wrapper -->
 
-          <p class="text-center text-[11px] font-sans text-neutral-400 mt-6 pb-12 sm:pb-0">
+          <p class="text-center text-[11px] font-sans text-neutral-400 mt-6 pb-4 shrink-0">
             &copy; 2026 PortaLink. Todos los derechos reservados.
           </p>
 
