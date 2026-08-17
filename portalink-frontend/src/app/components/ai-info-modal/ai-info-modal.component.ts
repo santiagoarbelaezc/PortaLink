@@ -52,7 +52,7 @@ import { CommonModule } from '@angular/common';
             </h4>
             <div class="p-4 rounded-xl border" style="background-color: var(--card-bg); border-color: var(--card-border);">
               <p class="text-[13.5px] leading-relaxed font-light" style="color: var(--text-primary); opacity: 0.85;">
-                Rotbot es impulsado por <strong class="font-semibold" style="color: var(--text-primary);">Llama 3.3 70B Versatile</strong>, uno de los modelos de lenguaje de código abierto más avanzados del mundo desarrollados por Meta. Este modelo está altamente optimizado para razonamiento lógico complejo, generación de código estructurado y asesoramiento técnico profesional en diversas áreas del desarrollo de software.
+                Rotbot es impulsado por <strong class="font-semibold" style="color: var(--text-primary);">GPT-OSS 120B (openai/gpt-oss-120b)</strong>, uno de los modelos de lenguaje de código abierto con mayor capacidad de razonamiento técnico del mundo. Este modelo está altamente optimizado para razonamiento lógico complejo, generación de código estructurado y asesoramiento técnico profesional en diversas áreas del desarrollo de software.
               </p>
             </div>
           </div>

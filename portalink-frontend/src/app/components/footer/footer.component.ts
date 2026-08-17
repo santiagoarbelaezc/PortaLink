@@ -16,18 +16,15 @@ import { RouterModule } from '@angular/router';
           <!-- Col 1: Brand & Bio (4 Cols) -->
           <div class="lg:col-span-4 space-y-4">
             <div class="space-y-1">
-              <h3 class="text-2xl sm:text-3xl font-headline font-semibold tracking-tight" style="color: #0a0a0a !important;">
-                Santiago Arbeláez
+              <h3 class="text-2xl sm:text-3xl font-headline font-bold tracking-tight" style="color: #0a0a0a !important;">
+                PORTALINK
               </h3>
-              <p class="text-xs font-headline font-medium text-neutral-400 tracking-wider">
-                PORTALINK • SOFTWARE & IA
-              </p>
             </div>
             
-            <p class="text-xs font-sans text-neutral-500 leading-relaxed max-w-sm">
-              Plataforma de ingeniería de software a medida, desarrollo e-commerce de alto rendimiento e integración de Inteligencia Artificial avanzada para empresas y marcas.
+            <p class="text-xs font-sans text-neutral-500 leading-relaxed max-w-sm m-0">
+              Ingeniería de software a medida, desarrollo e-commerce e Inteligencia Artificial.
             </p>
-            
+
             <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/60 text-emerald-800 text-[11px] font-headline font-medium">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
               <span>Sistemas & IA Activos 24/7</span>

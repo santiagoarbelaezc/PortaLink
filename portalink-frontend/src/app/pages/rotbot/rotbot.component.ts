@@ -19,35 +19,38 @@ import { SiteService } from '../../services/site.service';
     <app-ai-info-modal [isOpen]="isInfoModalOpen" (closeEvent)="isInfoModalOpen = false"></app-ai-info-modal>
     <div class="fixed inset-0 w-full h-full flex flex-col overflow-hidden font-sans bg-white text-neutral-900 selection:bg-neutral-900 selection:text-white page-container">
       
-      <!-- CLEAN APPLE-STYLE HEADER -->
-      <header class="chat-header bg-white/95 backdrop-blur-xl border-b border-neutral-100 px-6 py-2.5 flex items-center justify-between z-30 flex-shrink-0">
+      <!-- CLEAN HEADER (Mas alta y comoda) -->
+      <header class="chat-header bg-white/95 backdrop-blur-xl border-b border-neutral-100 px-4 sm:px-6 pt-4 sm:pt-3.5 pb-3 flex items-center justify-between z-30 flex-shrink-0 shadow-2xs">
         
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-neutral-100 border border-neutral-200/80 flex items-center justify-center p-1 shadow-2xs">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-neutral-100 border border-neutral-200/80 flex items-center justify-center p-1 shadow-2xs shrink-0">
             <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
           </div>
           <div>
-            <h1 class="text-base sm:text-lg font-bold tracking-tight leading-none text-neutral-900">
-              RotBot IA
-            </h1>
-            <div class="flex items-center gap-1.5 mt-0.5">
-              <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-[10px] font-medium inline-flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>Copilot Activo</span>
+            <div class="flex items-center gap-1.5">
+              <h1 class="text-sm sm:text-lg font-bold tracking-tight leading-none text-neutral-900 m-0">
+                RotBot IA
+              </h1>
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="En línea"></span>
+            </div>
+            <div class="flex items-center gap-1 mt-0.5">
+              <span class="text-[10px] font-headline font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60 leading-none">
+                Copilot Activo
               </span>
             </div>
           </div>
         </div>
 
-        <div class="flex items-center gap-2.5">
+        <div class="flex items-center gap-1.5 sm:gap-2.5">
           <!-- Nuevo Chat -->
           <button (click)="resetChatWithEffect()" 
-                  class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-900 font-semibold text-xs tracking-wide transition-all shadow-2xs border-none cursor-pointer" 
+                  class="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-1.5 sm:px-3.5 sm:py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-900 font-semibold text-[11px] sm:text-xs tracking-wide transition-all shadow-2xs border-none cursor-pointer" 
                   title="Nuevo Chat">
             <svg class="w-3.5 h-3.5 transition-transform" [class.animate-spin]="isResetting" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-3.08 2.82"/>
             </svg>
-            <span>Nuevo Chat</span>
+            <span class="hidden xs:inline">Nuevo Chat</span>
+            <span class="xs:hidden">Nuevo</span>
           </button>
 
           <!-- Galería de Diseños -->
@@ -56,12 +59,13 @@ import { SiteService } from '../../services/site.service';
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
             </svg>
-            <span>Galería de Diseños</span>
+            <span>Galería</span>
           </a>
 
           <!-- Volver al Inicio -->
           <a routerLink="/" 
-             class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-900 font-semibold text-xs tracking-wide transition-all shadow-2xs no-underline border-none cursor-pointer">
+             class="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-1.5 sm:px-3.5 sm:py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-900 font-semibold text-[11px] sm:text-xs tracking-wide transition-all shadow-2xs no-underline border-none cursor-pointer"
+             title="Volver al Inicio">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
             </svg>
@@ -70,7 +74,7 @@ import { SiteService } from '../../services/site.service';
 
           <!-- Close / Back Button -->
           <button (click)="goBack()" 
-                  class="w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 flex items-center justify-center transition-all border-none cursor-pointer" 
+                  class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 flex items-center justify-center transition-all border-none cursor-pointer shrink-0" 
                   title="Cerrar y Volver">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -128,14 +132,14 @@ import { SiteService } from '../../services/site.service';
 
           <!-- Message Scroll Area -->
           <div #scrollContainer 
-               class="flex-grow overflow-y-auto p-4 sm:p-6 custom-scrollbar scroll-smooth">
+               class="flex-grow overflow-y-auto p-3.5 sm:p-6 custom-scrollbar scroll-smooth">
             
             <ng-container *ngIf="chatService.isLoadingHistory(); else chatContent">
               <!-- Skeleton Loader -->
-              <div class="flex flex-col gap-6 px-6 md:px-16 animate-pulse w-full max-w-5xl mx-auto">
+              <div class="flex flex-col gap-6 px-3 sm:px-6 md:px-16 animate-pulse w-full max-w-5xl mx-auto">
                  <!-- Skeleton Assistant -->
                  <div class="flex w-full justify-start items-end">
-                    <div class="w-9 h-9 rounded-full bg-neutral-100 mr-2.5 flex-shrink-0"></div>
+                    <div class="w-8 h-8 rounded-full bg-neutral-100 mr-2.5 flex-shrink-0"></div>
                     <div class="bg-neutral-100 h-20 w-3/4 max-w-sm rounded-2xl rounded-bl-xs"></div>
                  </div>
                  <!-- Skeleton User -->
@@ -146,36 +150,36 @@ import { SiteService } from '../../services/site.service';
             </ng-container>
 
             <ng-template #chatContent>
-              <div class="flex flex-col min-h-full justify-center py-2" [ngClass]="{'my-auto justify-center': chatService.messages.length <= 1}">
-                <!-- Welcome Intro Section -->
-                <div *ngIf="chatService.messages.length <= 1" class="flex flex-col items-center justify-center text-center p-6 my-2 max-w-lg mx-auto rounded-[28px] bg-white border border-neutral-200/80 shadow-2xs space-y-3">
-                  <div class="w-36 h-36 sm:w-44 sm:h-44 relative flex items-center justify-center overflow-visible">
-                    <img src="assets/images/rotbot4.png" class="w-full h-full object-contain" alt="Rotbot Full">
+              <div class="flex flex-col min-h-full justify-center py-1 sm:py-2" [ngClass]="{'my-auto justify-center': chatService.messages.length <= 1}">
+                <!-- ChatGPT Style Welcome Intro Section -->
+                <div *ngIf="chatService.messages.length <= 1" class="flex flex-col items-center justify-center text-center p-6 my-auto max-w-md mx-auto space-y-4">
+                  <div class="w-16 h-16 rounded-2xl bg-neutral-100 border border-neutral-200/80 p-3 flex items-center justify-center shadow-2xs">
+                    <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
                   </div>
-                  <div class="space-y-1">
-                    <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900">
-                      Sistemas con RotBot IA
+                  <div class="space-y-1.5">
+                    <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900 m-0">
+                      ¿En qué puedo ayudarte hoy?
                     </h2>
-                    <p class="text-xs sm:text-sm font-sans text-neutral-500 max-w-sm mx-auto leading-relaxed m-0">
-                      ¡Hola! Soy RotBot, tu copiloto tecnológico listo para guiarte en el desarrollo de tus proyectos web e Inteligencia Artificial.
+                    <p class="text-xs sm:text-sm font-sans text-neutral-400 max-w-xs mx-auto leading-relaxed m-0">
+                      RotBot IA • Asistente de Software & Diseño
                     </p>
                   </div>
                 </div>
      
-                <!-- Messages List (Always Available for Guests & Authenticated Users) -->
+                <!-- Messages List (ChatGPT Style) -->
                 <ng-container>
-                  <div *ngFor="let msg of chatService.messages" class="flex w-full px-6 md:px-16 animate-fade-in my-1.5" [ngClass]="{'justify-end': msg.role === 'user', 'justify-start': msg.role === 'assistant'}">
+                  <div *ngFor="let msg of chatService.messages" class="flex w-full px-2 sm:px-6 md:px-16 animate-fade-in my-2 sm:my-3" [ngClass]="{'justify-end': msg.role === 'user', 'justify-start': msg.role === 'assistant'}">
                     
                     <!-- Assistant Avatar -->
-                    <div *ngIf="msg.role === 'assistant'" class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center mr-2.5 p-1 border avatar-bg">
+                    <div *ngIf="msg.role === 'assistant'" class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center mr-2.5 p-1 border border-neutral-200/80 bg-neutral-100 shadow-2xs mt-0.5">
                       <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
                     </div>
        
                     <!-- Message Bubble -->
                     <div 
                       [ngClass]="{
-                        'assistant-bubble py-3 px-4 sm:px-5 rounded-[22px] text-xs sm:text-sm leading-relaxed max-w-[85%] border shadow-2xs': msg.role === 'assistant',
-                        'user-bubble px-4 py-3 rounded-[22px] rounded-tr-xs text-xs sm:text-sm leading-relaxed max-w-[85%] border shadow-sm': msg.role === 'user'
+                        'assistant-bubble py-3 px-4 sm:px-5 rounded-2xl text-xs sm:text-sm leading-relaxed max-w-[88%] sm:max-w-[85%] border shadow-2xs': msg.role === 'assistant',
+                        'user-bubble px-4 py-3 rounded-2xl rounded-tr-xs text-xs sm:text-sm leading-relaxed max-w-[85%] border shadow-2xs': msg.role === 'user'
                       }"
                     >
                       <div [innerHTML]="msg.content | markdown"></div>
@@ -249,11 +253,11 @@ import { SiteService } from '../../services/site.service';
             </ng-container>
  
             <!-- Typing Indicator -->
-            <div *ngIf="chatService.isTyping" class="flex items-center gap-3 w-full px-6 md:px-16">
-              <div class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center p-1 border avatar-bg">
+            <div *ngIf="chatService.isTyping" class="flex items-center gap-3 w-full px-3 sm:px-6 md:px-16 my-2">
+              <div class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center p-1 border border-neutral-200/80 bg-neutral-100">
                 <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
               </div>
-              <div class="assistant-bubble py-2 flex items-center gap-1.5">
+              <div class="assistant-bubble py-2.5 px-4 flex items-center gap-1.5">
                 <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce"></div>
                 <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce [animation-delay:0.2s]"></div>
                 <div class="w-1.5 h-1.5 rounded-full bg-current animate-bounce [animation-delay:0.4s]"></div>
@@ -263,9 +267,9 @@ import { SiteService } from '../../services/site.service';
         </ng-template>
       </div>
  
-          <!-- Input Area (Permanently Active for Guests & Authenticated Users) -->
-          <div class="chat-input-area p-3 sm:p-5 border-t border-neutral-100 bg-white sticky bottom-0 z-20">
-            <form (submit)="sendMessage()" class="relative max-w-4xl mx-auto flex items-center gap-3 bg-neutral-50 border border-neutral-200/80 rounded-2xl p-2 sm:p-2.5 focus-within:border-neutral-900 transition-colors shadow-2xs">
+          <!-- Floating Capsule Input Area (Mas alta y mas grande) -->
+          <div class="chat-input-area p-3.5 sm:p-5 pb-4 sm:pb-5 bg-white/95 backdrop-blur-xl sticky bottom-0 z-20 border-t border-neutral-100/80">
+            <form (submit)="sendMessage()" class="relative max-w-3xl mx-auto flex items-center gap-2.5 bg-neutral-100 border border-neutral-200/80 rounded-full px-4 sm:px-5 py-2 sm:py-2.5 focus-within:border-neutral-900 focus-within:bg-white focus-within:shadow-md transition-all">
               <textarea 
                 #chatInputRef
                 [(ngModel)]="chatService.userInput"
@@ -274,25 +278,25 @@ import { SiteService } from '../../services/site.service';
                 [disabled]="chatService.isBlocked()"
                 name="userInput"
                 rows="1"
-                [placeholder]="chatService.isBlocked() ? 'Chat suspendido por términos inapropiados (' + chatService.blockRemainingSeconds() + 's)...' : 'Escribe tu mensaje para RotBot IA...'"
-                class="w-full bg-transparent border-none px-3 py-1.5 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-0 resize-none max-h-32 leading-relaxed disabled:opacity-50 disabled:cursor-not-allowed"
+                [placeholder]="chatService.isBlocked() ? 'Chat suspendido (' + chatService.blockRemainingSeconds() + 's)...' : 'Pregunta algo a RotBot...'"
+                class="w-full bg-transparent border-none px-2 py-1.5 text-sm sm:text-base text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-0 resize-none max-h-36 leading-normal disabled:opacity-50 disabled:cursor-not-allowed"
               ></textarea>
 
               <button 
                 type="submit"
                 [disabled]="!chatService.userInput.trim() || chatService.isBlocked()"
-                class="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex-shrink-0 border-none shadow-sm"
+                class="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer flex-shrink-0 border-none shadow-xs"
                 style="background-color: #09090b !important; color: #ffffff !important;"
               >
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
-                  <line x1="22" y1="2" x2="11" y2="13"></line>
-                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                <svg class="w-4.5 h-4.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
+                  <line x1="12" y1="19" x2="12" y2="5"></line>
+                  <polyline points="5 12 12 5 19 12"></polyline>
                 </svg>
               </button>
             </form>
 
             <!-- Block Warning Badge -->
-            <div *ngIf="chatService.isBlocked()" class="max-w-4xl mx-auto mt-2.5 px-4 py-2 rounded-xl bg-red-50 border border-red-200/80 text-red-700 text-xs font-headline font-semibold flex items-center justify-between shadow-2xs animate-pulse">
+            <div *ngIf="chatService.isBlocked()" class="max-w-3xl mx-auto mt-2 px-4 py-2 rounded-xl bg-red-50 border border-red-200/80 text-red-700 text-xs font-headline font-semibold flex items-center justify-between shadow-2xs animate-pulse">
               <div class="flex items-center gap-2">
                 <svg class="w-4 h-4 text-red-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
@@ -302,8 +306,8 @@ import { SiteService } from '../../services/site.service';
               <span class="font-mono font-bold bg-red-100 px-2.5 py-0.5 rounded text-red-800">{{ chatService.blockRemainingSeconds() }}s</span>
             </div>
 
-            <div class="flex justify-center mt-2.5">
-               <span class="text-[11px] font-sans font-medium text-neutral-400">Powered by Portalink IA</span>
+            <div class="flex justify-center mt-2">
+               <span class="text-xs font-sans text-neutral-400">RotBot IA puede cometer errores. Verifica la información.</span>
             </div>
           </div>
         </main>
@@ -554,11 +558,11 @@ import { SiteService } from '../../services/site.service';
             <div class="p-4 rounded-2xl bg-neutral-50 border border-neutral-200/80 space-y-2">
               <div class="flex items-center justify-between">
                 <span class="text-[10px] uppercase font-bold tracking-wider text-neutral-400">Modelo de IA</span>
-                <span class="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200/60">Llama 3.3 70B</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200/60">GPT-OSS 120B</span>
               </div>
               <h5 class="text-sm font-bold text-neutral-900 m-0">Motor de Inteligencia Artificial</h5>
               <p class="text-xs m-0 text-neutral-500 leading-relaxed">
-                Rotbot es impulsado por <strong>Llama 3.3 70B Versatile</strong>, uno de los modelos de lenguaje de código abierto más avanzados del mundo desarrollados por Meta. Este modelo está altamente optimizado para razonamiento lógico complejo, generación de código estructurado y asesoramiento técnico profesional en diversas áreas del desarrollo de software.
+                Rotbot es impulsado por <strong class="font-semibold text-neutral-900">GPT-OSS 120B (openai/gpt-oss-120b)</strong>, uno de los modelos de lenguaje de código abierto con mayor capacidad de razonamiento técnico del mundo. Este modelo está altamente optimizado para razonamiento lógico complejo, generación de código estructurado y asesoramiento técnico profesional en diversas áreas del desarrollo de software.
               </p>
             </div>
 
@@ -783,6 +787,12 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
   @ViewChild('chatInputRef') private chatInputRef?: ElementRef<HTMLTextAreaElement>;
 
   selectedModalDesign = signal<{ designImage: string; categoryName?: string; liveUrl?: string; msg?: any } | null>(null);
+
+  sendQuickPrompt(text: string) {
+    if (this.chatService.isBlocked()) return;
+    this.chatService.userInput = text;
+    this.sendMessage();
+  }
 
   openDesignDetailModal(msg: any) {
     const categoryName = msg.formData?.categoryName || this.designFormState.categoryName || 'Proyecto Sugerido';

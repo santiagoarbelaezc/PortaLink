@@ -130,11 +130,11 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
               <div class="p-3.5 rounded-2xl bg-neutral-50 border border-neutral-200/80 space-y-1.5">
                 <div class="flex items-center justify-between">
                   <span class="text-[9.5px] uppercase font-bold tracking-wider text-neutral-400">Modelo de IA</span>
-                  <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[9px] font-semibold border border-blue-200/60">Llama 3.3 70B</span>
+                  <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[9px] font-semibold border border-blue-200/60">GPT-OSS 120B</span>
                 </div>
                 <h5 class="text-xs font-bold text-neutral-900 m-0">Motor de Inteligencia Artificial</h5>
                 <p class="text-[11px] m-0 text-neutral-500 leading-normal">
-                  Rotbot es impulsado por <strong>Llama 3.3 70B Versatile</strong>, uno de los modelos de lenguaje de código abierto más avanzados del mundo desarrollados por Meta. Este modelo está altamente optimizado para razonamiento lógico complejo, generación de código estructurado y asesoramiento técnico profesional en diversas áreas del desarrollo de software.
+                  Rotbot es impulsado por <strong class="font-semibold text-neutral-900">GPT-OSS 120B (openai/gpt-oss-120b)</strong>, uno de los modelos de lenguaje de código abierto con mayor capacidad de razonamiento técnico del mundo. Este modelo está altamente optimizado para razonamiento lógico complejo, generación de código estructurado y asesoramiento técnico profesional en diversas áreas del desarrollo de software.
                 </p>
               </div>
 
