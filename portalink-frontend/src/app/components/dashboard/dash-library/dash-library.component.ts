@@ -509,6 +509,12 @@ export class DashLibraryComponent implements OnInit {
   }
 
   onBlockInput(block: NoteBlock, event?: any) {
+    if (event && event.target && event.target.tagName === 'TEXTAREA') {
+      const el = event.target as HTMLTextAreaElement;
+      el.style.height = 'auto';
+      el.style.height = el.scrollHeight + 'px';
+    }
+
     if (event && event.target && typeof event.target.value === 'string' && event.target.value.includes('/')) {
       const val: string = event.target.value;
       if (val.trim().startsWith('/')) {
@@ -521,10 +527,27 @@ export class DashLibraryComponent implements OnInit {
     this.syncBlocksToContent();
   }
 
-  getLineCount(content: string, minRows: number = 1): number {
+  getLineCount(content: string, minRows: number = 1, type: string = 'texto'): number {
     if (!content) return minRows;
-    const lines = content.split('\n').length;
-    return Math.max(minRows, lines);
+
+    let maxCharsPerLine = 38;
+    if (type === 'titulo') maxCharsPerLine = 20;
+    else if (type === 'subtitulo') maxCharsPerLine = 26;
+    else if (type === 'alerta') maxCharsPerLine = 34;
+    else if (type === 'codigo') maxCharsPerLine = 32;
+
+    const lines = content.split('\n');
+    let totalRows = 0;
+
+    for (const line of lines) {
+      if (line.length === 0) {
+        totalRows += 1;
+      } else {
+        totalRows += Math.max(1, Math.ceil(line.length / maxCharsPerLine));
+      }
+    }
+
+    return Math.max(minRows, totalRows);
   }
 
   onBlockKeydown(event: KeyboardEvent, block: NoteBlock, index: number) {

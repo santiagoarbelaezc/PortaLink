@@ -22,8 +22,9 @@ const TAB_LABELS: Record<string, string> = {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <header class="flex-shrink-0 flex items-center justify-between px-4 sm:px-6 md:px-8 py-4 sm:py-5 border-b relative z-20 transition-all duration-300"
-            [ngClass]="theme === 'dark' ? 'bg-[#07070a] border-neutral-800' : 'bg-white border-neutral-200'">
+    <header class="flex-shrink-0 flex items-center justify-between px-4 sm:px-6 md:px-8 py-2 sm:py-5 border-b sticky top-0 z-30 transition-all duration-300"
+            style="padding-top: calc(env(safe-area-inset-top, 0px) + 0.35rem);"
+            [ngClass]="theme === 'dark' ? 'bg-[#07070a]/95 backdrop-blur-xl border-neutral-800' : 'bg-white/95 backdrop-blur-xl border-neutral-200'">
 
       <!-- Breadcrumb -->
       <div class="flex items-center gap-3 min-w-0">

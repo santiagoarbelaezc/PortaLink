@@ -43,7 +43,7 @@ interface Tab {
     DashLibraryComponent,
   ],
   template: `
-    <div class="admin-shell h-screen overflow-hidden flex font-sans relative"
+    <div class="admin-shell fixed inset-0 h-[100dvh] w-full md:relative md:h-screen overflow-hidden flex font-sans"
          [ngClass]="isDark ? 'bg-neutral-950 text-neutral-100' : 'bg-white text-neutral-900'">
 
       <!-- ══════════════════════════════════════
@@ -176,7 +176,7 @@ interface Tab {
       <!-- ══════════════════════════════════════
            MAIN AREA
       ══════════════════════════════════════ -->
-      <div class="flex-grow flex flex-col h-full overflow-hidden">
+      <div class="flex-grow flex flex-col h-full overflow-hidden min-w-0 relative">
 
         <!-- Top Bar (AI Search) -->
         <app-dash-ai-search
@@ -188,7 +188,7 @@ interface Tab {
         </app-dash-ai-search>
 
         <!-- Content -->
-        <main class="flex-grow overflow-y-auto overflow-x-hidden pb-28 md:pb-8 no-scrollbar"
+        <main class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain pb-20 md:pb-8 no-scrollbar"
               [ngClass]="isDark ? 'bg-[#020204]' : 'bg-white'">
           <div class="p-4 sm:p-6 md:p-8 w-full transition-all duration-300">
 
@@ -328,9 +328,9 @@ interface Tab {
       <!-- ══════════════════════════════════════
            MATERIAL DESIGN 3 MOBILE BOTTOM NAV BAR
       ══════════════════════════════════════ -->
-      <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur-2xl select-none px-2 pt-2.5 transition-all duration-300 shadow-[0_-4px_25px_rgba(0,0,0,0.08)]"
+      <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur-2xl select-none px-2 pt-1 pb-1 transition-all duration-300 shadow-[0_-4px_25px_rgba(0,0,0,0.08)]"
            [ngClass]="isDark ? 'bg-[#09090d]/95 border-neutral-800/80 text-neutral-400' : 'bg-white/95 border-neutral-200/90 text-neutral-600'"
-           style="padding-bottom: calc(0.7rem + env(safe-area-inset-bottom, 0px));">
+           style="padding-bottom: env(safe-area-inset-bottom, 0px);">
         <div class="flex items-center justify-around max-w-md mx-auto">
           
           <!-- Inicio -->
