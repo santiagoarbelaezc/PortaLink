@@ -199,130 +199,141 @@ export interface ControlSummary {
       </div>
 
       <!-- ══════════════════════════════════════
-           MODAL DE CREACIÓN / EDICIÓN DE TRANSACCIÓN
+           SECCIÓN DESPLEGABLE INLINE DE CREACIÓN / EDICIÓN DE TRANSACCIÓN
       ══════════════════════════════════════ -->
-      <div *ngIf="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
-        <div class="w-full max-w-xl rounded-[28px] border p-6 sm:p-7 space-y-5 shadow-2xl transition-all"
-             [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
-          
-          <div class="flex items-center justify-between border-b pb-4" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-            <div class="flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full" [ngClass]="editingTx.type === 'INGRESO' ? 'bg-emerald-400' : 'bg-red-400'"></span>
-              <h3 class="text-lg font-headline font-bold uppercase tracking-wider">
-                {{ editingTx.id ? 'Editar Transacción #' + editingTx.id : 'Registrar Transacción Real' }}
-              </h3>
-            </div>
-            <button (click)="showModal = false" class="p-1.5 rounded-full hover:bg-neutral-800 text-neutral-400 hover:text-white">✕</button>
+      <div *ngIf="showModal" class="rounded-2xl border p-5 sm:p-6 space-y-5 transition-all duration-300 animate-fadeIn"
+           [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-white' : 'bg-neutral-50 border-neutral-300 text-neutral-900'">
+        
+        <!-- Header (Coincide con Nueva Cuenta de Cobro) -->
+        <div class="flex items-center justify-between border-b pb-4" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+          <div class="flex items-center gap-2.5">
+            <span class="w-2.5 h-2.5 rounded-full" [ngClass]="editingTx.type === 'INGRESO' ? 'bg-emerald-400' : 'bg-red-400'"></span>
+            <h3 class="text-sm font-bold uppercase tracking-wide" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              {{ editingTx.id ? 'Editar Transacción #' + editingTx.id : 'Nueva Transacción' }}
+            </h3>
           </div>
+          <button (click)="showModal = false" class="p-1.5 rounded-xl border transition-colors opacity-70 hover:opacity-100 cursor-pointer"
+                  [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-200 text-neutral-500 hover:text-black hover:bg-neutral-100'">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
 
-          <!-- Form Fields -->
-          <div class="space-y-4 text-xs font-headline">
-            
-            <!-- Type Toggle -->
+        <!-- Form Fields (Misma tipografía, bordes e inputs de Cuenta de Cobro) -->
+        <div class="space-y-4 text-xs">
+          
+          <!-- Type Selector (Ingreso / Egreso) -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Tipo de Transacción *</label>
             <div class="grid grid-cols-2 gap-3">
               <button type="button" (click)="editingTx.type = 'INGRESO'"
-                      class="py-2.5 rounded-xl font-bold uppercase tracking-wider border transition-all cursor-pointer flex items-center justify-center gap-2"
-                      [ngClass]="editingTx.type === 'INGRESO' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'border-neutral-700 opacity-50'">
-                ▲ Ingreso (+)
+                      class="px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 shadow-xs"
+                      [ngClass]="editingTx.type === 'INGRESO' 
+                        ? (isDark ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400 font-extrabold' : 'bg-emerald-500 border-emerald-600 text-black font-extrabold') 
+                        : (isDark ? 'border-neutral-700 bg-neutral-800/40 text-neutral-400 hover:text-white' : 'border-neutral-300 bg-white text-neutral-600 hover:text-black')">
+                <span>Ingreso (+)</span>
               </button>
               <button type="button" (click)="editingTx.type = 'EGRESO'"
-                      class="py-2.5 rounded-xl font-bold uppercase tracking-wider border transition-all cursor-pointer flex items-center justify-center gap-2"
-                      [ngClass]="editingTx.type === 'EGRESO' ? 'bg-red-500/20 border-red-500 text-red-400' : 'border-neutral-700 opacity-50'">
-                ▼ Egreso (-)
+                      class="px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 shadow-xs"
+                      [ngClass]="editingTx.type === 'EGRESO' 
+                        ? (isDark ? 'bg-red-500/20 border-red-500/50 text-red-400 font-extrabold' : 'bg-red-500 border-red-600 text-white font-extrabold') 
+                        : (isDark ? 'border-neutral-700 bg-neutral-800/40 text-neutral-400 hover:text-white' : 'border-neutral-300 bg-white text-neutral-600 hover:text-black')">
+                <span>Egreso (-)</span>
               </button>
             </div>
-
-            <!-- Concept -->
-            <div class="space-y-1.5">
-              <label class="font-semibold uppercase tracking-wider opacity-70">Concepto de la Transacción *</label>
-              <input type="text" [(ngModel)]="editingTx.concept" placeholder="Ej: Pago de Licencia Rotbot Enterprise"
-                     class="w-full px-4 py-3 rounded-xl border outline-none font-medium bg-transparent"
-                     [ngClass]="isDark ? 'border-neutral-800 text-white focus:border-white' : 'border-neutral-300 text-neutral-900 focus:border-black'">
-            </div>
-
-            <!-- Category & Client -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="space-y-1.5">
-                <label class="font-semibold uppercase tracking-wider opacity-70">Categoría *</label>
-                <select [(ngModel)]="editingTx.category"
-                        class="w-full px-4 py-3 rounded-xl border outline-none font-medium cursor-pointer"
-                        [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800 text-white' : 'bg-neutral-50 border-neutral-300 text-neutral-900'">
-                  <option value="Enterprise IA">Enterprise IA</option>
-                  <option value="Desarrollo Web">Desarrollo Web</option>
-                  <option value="Retainer SaaS">Retainer SaaS</option>
-                  <option value="Consultoría">Consultoría</option>
-                  <option value="Infraestructura">Infraestructura & Cloud</option>
-                  <option value="Licencias">Licencias & Herramientas</option>
-                  <option value="Gastos Operativos">Gastos Operativos</option>
-                </select>
-              </div>
-
-              <div class="space-y-1.5">
-                <label class="font-semibold uppercase tracking-wider opacity-70">Cliente Asociado (Opcional)</label>
-                <select [(ngModel)]="editingTx.client_id"
-                        class="w-full px-4 py-3 rounded-xl border outline-none font-medium cursor-pointer"
-                        [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800 text-white' : 'bg-neutral-50 border-neutral-300 text-neutral-900'">
-                  <option [ngValue]="null">— Seleccionar cliente —</option>
-                  <option *ngFor="let c of clients" [value]="c.id">{{ c.name }}{{ c.company ? ' (' + c.company + ')' : '' }}</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Amount COP & Date -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="space-y-1.5">
-                <label class="font-semibold uppercase tracking-wider opacity-70">Monto en COP ($) *</label>
-                <input type="number" [(ngModel)]="editingTx.amount_cop" placeholder="1500000"
-                       class="w-full px-4 py-3 rounded-xl border outline-none font-bold text-sm bg-transparent"
-                       [ngClass]="isDark ? 'border-neutral-800 text-white focus:border-white' : 'border-neutral-300 text-neutral-900 focus:border-black'">
-              </div>
-
-              <div class="space-y-1.5">
-                <label class="font-semibold uppercase tracking-wider opacity-70">Fecha de Transacción *</label>
-                <input type="date" [(ngModel)]="editingTx.transaction_date"
-                       class="w-full px-4 py-3 rounded-xl border outline-none font-medium bg-transparent cursor-pointer"
-                       [ngClass]="isDark ? 'border-neutral-800 text-white focus:border-white' : 'border-neutral-300 text-neutral-900 focus:border-black'">
-              </div>
-            </div>
-
-            <!-- Payment Method & Notes -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="space-y-1.5">
-                <label class="font-semibold uppercase tracking-wider opacity-70">Método de Pago</label>
-                <select [(ngModel)]="editingTx.payment_method"
-                        class="w-full px-4 py-3 rounded-xl border outline-none font-medium cursor-pointer"
-                        [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800 text-white' : 'bg-neutral-50 border-neutral-300 text-neutral-900'">
-                  <option value="Transferencia Bancaria">Transferencia Bancaria</option>
-                  <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
-                  <option value="Efectivo / Caja">Efectivo / Caja</option>
-                  <option value="Crypto / USDT">Crypto / USDT</option>
-                </select>
-              </div>
-
-              <div class="space-y-1.5">
-                <label class="font-semibold uppercase tracking-wider opacity-70">Notas Adicionales</label>
-                <input type="text" [(ngModel)]="editingTx.notes" placeholder="Ej: Factura de referencia #1024"
-                       class="w-full px-4 py-3 rounded-xl border outline-none font-medium bg-transparent"
-                       [ngClass]="isDark ? 'border-neutral-800 text-white focus:border-white' : 'border-neutral-300 text-neutral-900 focus:border-black'">
-              </div>
-            </div>
-
           </div>
 
-          <!-- Buttons -->
-          <div class="flex items-center justify-end gap-3 pt-4 border-t" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-            <button (click)="showModal = false"
-                    class="px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider border opacity-70 hover:opacity-100 transition-all">
-              Cancelar
-            </button>
-            <button (click)="saveTransaction()" [disabled]="isSaving"
-                    class="px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer disabled:opacity-40"
-                    [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'">
-              {{ isSaving ? 'Guardando...' : (editingTx.id ? 'Guardar Cambios' : 'Registrar Transacción') }}
-            </button>
+          <!-- Concept -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Concepto de la Transacción *</label>
+            <input type="text" [(ngModel)]="editingTx.concept" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                   placeholder="Ej: Pago de Licencia Rotbot Enterprise, Mantenimiento Cloud, etc."
+                   class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none transition-colors font-semibold"
+                   [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500 focus:border-white focus:ring-1 focus:ring-white' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black focus:ring-1 focus:ring-black'">
+          </div>
+
+          <!-- Amount COP & Date -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Monto en COP ($) *</label>
+              <input type="number" [(ngModel)]="editingTx.amount_cop" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="Ej: 1500000"
+                     class="w-full px-3 py-2.5 rounded-xl text-sm font-sans font-bold border outline-none transition-colors"
+                     [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500 focus:border-white focus:ring-1 focus:ring-white' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black focus:ring-1 focus:ring-black'">
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Fecha de Transacción *</label>
+              <input type="date" [(ngModel)]="editingTx.transaction_date" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                     class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none cursor-pointer transition-colors font-medium"
+                     [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white focus:border-white focus:ring-1 focus:ring-white' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black focus:ring-1 focus:ring-black'">
+            </div>
+          </div>
+
+          <!-- Category & Client -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Categoría *</label>
+              <select [(ngModel)]="editingTx.category" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                      class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none cursor-pointer transition-colors font-medium"
+                      [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white focus:border-white focus:ring-1 focus:ring-white' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black focus:ring-1 focus:ring-black'">
+                <option value="Enterprise IA">Enterprise IA</option>
+                <option value="Desarrollo Web">Desarrollo Web</option>
+                <option value="Retainer SaaS">Retainer SaaS</option>
+                <option value="Consultoría">Consultoría</option>
+                <option value="Infraestructura">Infraestructura & Cloud</option>
+                <option value="Licencias">Licencias & Herramientas</option>
+                <option value="Gastos Operativos">Gastos Operativos</option>
+              </select>
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Cliente Asociado (Opcional)</label>
+              <select [(ngModel)]="editingTx.client_id" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                      class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none cursor-pointer transition-colors font-medium"
+                      [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white focus:border-white focus:ring-1 focus:ring-white' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black focus:ring-1 focus:ring-black'">
+                <option [ngValue]="null">— Seleccionar cliente —</option>
+                <option *ngFor="let c of clients" [value]="c.id">{{ c.name }}{{ c.company ? ' · ' + c.company : '' }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Payment Method & Notes -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Método de Pago</label>
+              <select [(ngModel)]="editingTx.payment_method" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                      class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none cursor-pointer transition-colors font-medium"
+                      [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white focus:border-white focus:ring-1 focus:ring-white' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black focus:ring-1 focus:ring-black'">
+                <option value="Transferencia Bancaria">Transferencia Bancaria</option>
+                <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
+                <option value="Efectivo / Caja">Efectivo / Caja</option>
+                <option value="Crypto / USDT">Crypto / USDT</option>
+              </select>
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Notas Adicionales</label>
+              <input type="text" [(ngModel)]="editingTx.notes" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="Ej: Factura de referencia #1024"
+                     class="w-full px-3 py-2.5 rounded-xl text-sm border outline-none transition-colors font-medium"
+                     [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500 focus:border-white focus:ring-1 focus:ring-white' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black focus:ring-1 focus:ring-black'">
+            </div>
           </div>
 
         </div>
+
+        <!-- Buttons (Coincide con el estilo de botones de Nueva Cuenta de Cobro) -->
+        <div class="flex gap-3 justify-end pt-3 border-t" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+          <button (click)="showModal = false"
+                  class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest border cursor-pointer transition-colors"
+                  [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:text-white' : 'border-neutral-300 text-neutral-500 hover:text-neutral-900'">
+            Cancelar
+          </button>
+          <button (click)="saveTransaction()" [disabled]="isSaving"
+                  class="px-6 py-2 rounded-xl text-xs font-bold uppercase tracking-widest cursor-pointer border transition-all shadow-lg disabled:opacity-40"
+                  [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200 border-white shadow-white/10' : 'bg-black text-white hover:bg-neutral-800 border-black shadow-black/10'">
+            {{ isSaving ? 'Guardando...' : (editingTx.id ? 'Guardar Cambios' : 'Registrar Transacción') }}
+          </button>
+        </div>
+
       </div>
 
       <!-- ══════════════════════════════════════

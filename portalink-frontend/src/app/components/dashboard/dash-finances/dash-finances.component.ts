@@ -193,7 +193,10 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                   </div>
                 </div>
 
-                <span class="text-xs font-semibold" [ngClass]="last ? (isDark ? 'text-emerald-400 font-bold' : 'text-neutral-900 font-bold') : 'opacity-60'">{{ m.month }}</span>
+                <div class="flex flex-col items-center leading-tight">
+                  <span class="text-xs font-semibold" [ngClass]="last ? (isDark ? 'text-emerald-400 font-bold' : 'text-neutral-900 font-bold') : 'opacity-80'">{{ m.month }}</span>
+                  <span class="text-[9px] font-mono opacity-50" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">{{ m.year }}</span>
+                </div>
               </div>
 
               <div *ngIf="monthlyIncome.length === 0" class="absolute inset-0 flex items-center justify-center text-xs opacity-50">
@@ -1322,7 +1325,10 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                 <div class="w-full rounded-t-sm transition-all duration-300"
                      [ngStyle]="{'height': m.height + '%'}"
                      [ngClass]="isDark ? 'bg-neutral-700 group-hover:bg-neutral-500' : 'bg-neutral-300 group-hover:bg-neutral-400'"></div>
-                <span class="text-[9px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ m.month }}</span>
+                <div class="flex flex-col items-center leading-tight">
+                  <span class="text-[9px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">{{ m.month }}</span>
+                  <span class="text-[8px] font-mono opacity-50" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-500'">{{ m.year }}</span>
+                </div>
               </div>
               <div *ngIf="monthlyIncome.length === 0" class="absolute inset-0 flex items-center justify-center text-sm" [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-400'">
                 No hay ingresos registrados aún.
