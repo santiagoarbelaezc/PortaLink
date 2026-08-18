@@ -305,6 +305,60 @@ CREATE TABLE IF NOT EXISTS `contact_messages` (
   `message` TEXT NOT NULL,
   `status` VARCHAR(50) DEFAULT 'UNREAD',
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- ----------------------------------------------------------------------------
+-- 17. Tabla: notebook_folders (Carpetas de Área de Estudio)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `notebook_folders` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `description` TEXT NULL,
+  `color` VARCHAR(50) NOT NULL DEFAULT '#2563eb',
+  `icon` VARCHAR(50) NOT NULL DEFAULT 'folder',
+  `order_index` INT NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX (`user_id`),
+  CONSTRAINT `fk_notebook_folder_user` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------------------------------------------------------
+-- 18. Tabla: notebook_modules (Cuadernos / Módulos de Estudio)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `notebook_modules` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `folder_id` INT NOT NULL,
+  `user_id` INT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `description` TEXT NULL,
+  `color` VARCHAR(50) NOT NULL DEFAULT '#3b82f6',
+  `icon` VARCHAR(50) NOT NULL DEFAULT 'book',
+  `is_favorite` TINYINT(1) NOT NULL DEFAULT 0,
+  `order_index` INT NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX (`folder_id`),
+  INDEX (`user_id`),
+  CONSTRAINT `fk_notebook_module_folder` FOREIGN KEY (`folder_id`) REFERENCES `notebook_folders` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_notebook_module_user` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------------------------------------------------------
+-- 19. Tabla: notebook_pages (Apuntes / Lecciones de Estudio)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `notebook_pages` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `notebook_id` INT NOT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `slug` VARCHAR(255) NULL,
+  `content` LONGTEXT NULL,
+  `tags` VARCHAR(255) NULL,
+  `is_pinned` TINYINT(1) NOT NULL DEFAULT 0,
+  `order_index` INT NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX (`notebook_id`),
+  CONSTRAINT `fk_notebook_page_notebook` FOREIGN KEY (`notebook_id`) REFERENCES `notebook_modules` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

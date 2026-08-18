@@ -1,0 +1,794 @@
+import { Component, Input, OnInit, ViewChild, ElementRef, inject, HostListener } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { LibraryService, NotebookFolder, NotebookModule, NotebookPage } from '../../../services/library.service';
+
+export interface SlashCommandItem {
+  key: string;
+  title: string;
+  desc: string;
+  icon: string;
+}
+
+@Component({
+  selector: 'app-dash-library',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './dash-library.component.html'
+})
+export class DashLibraryComponent implements OnInit {
+  @ViewChild('editorTextarea') editorTextarea?: ElementRef<HTMLTextAreaElement>;
+
+  @Input() theme: string = 'light';
+  get isDark(): boolean {
+    return this.theme === 'dark';
+  }
+
+  private libraryService = inject(LibraryService);
+
+  folders: NotebookFolder[] = [];
+  notebooks: NotebookModule[] = [];
+  pages: NotebookPage[] = [];
+
+  selectedFolder: NotebookFolder | null = null;
+  selectedNotebook: NotebookModule | null = null;
+  selectedPage: NotebookPage | null = null;
+
+  isLoading = false;
+  searchQuery = '';
+  searchResults: any[] = [];
+  isPreviewMode = false;
+  activeFilter: 'all' | 'favorites' | 'pinned' = 'all';
+
+  // Toast feedback
+  toastMessage = '';
+  toastType: 'success' | 'error' = 'success';
+
+  // Form states (Create / Edit)
+  isFolderModalOpen = false;
+  editingFolderId: number | null = null;
+  folderForm = { name: '', description: '', color: '#10b981', icon: 'folder' };
+
+  isNotebookModalOpen = false;
+  editingNotebookId: number | null = null;
+  notebookForm = { title: '', description: '', color: '#3b82f6', icon: 'book' };
+
+  // Confirmation Delete Modal state
+  isDeleteModalOpen = false;
+  deleteTargetType: 'folder' | 'notebook' | 'page' | null = null;
+  deleteItemTitle = '';
+  deleteItemRef: any = null;
+
+  // Notion Slash Command State with Keyboard Selection
+  showSlashMenu = false;
+  slashMenuQuery = '';
+  slashSelectedIndex = 0;
+  slashCommands: SlashCommandItem[] = [
+    { key: 'h2', title: 'Encabezado 2', desc: 'Título principal de sección', icon: 'H2' },
+    { key: 'h3', title: 'Encabezado 3', desc: 'Subtítulo secundario', icon: 'H3' },
+    { key: 'bold', title: 'Texto en Negrita', desc: 'Enfatizar texto importante', icon: 'B' },
+    { key: 'ts', title: 'Código TypeScript', desc: 'Bloque de código formateado TS', icon: 'TS' },
+    { key: 'sql', title: 'Código SQL', desc: 'Consultas y scripts de base de datos', icon: 'SQL' },
+    { key: 'todo', title: 'Lista de Tareas', desc: 'Casilla de verificación interactiva', icon: '☑' },
+    { key: 'callout', title: 'Alerta / Nota', desc: 'Caja destacada con consejo o idea', icon: '💡' },
+    { key: 'quote', title: 'Cita de Texto', desc: 'Bloque de cita elegante', icon: '“' },
+    { key: 'divider', title: 'Divisor', desc: 'Línea horizontal separadora', icon: '—' }
+  ];
+
+  // Color Swatches Palette
+  presetColors = [
+    '#10b981', // Emerald
+    '#3b82f6', // Sapphire Blue
+    '#8b5cf6', // Violet Purple
+    '#ec4899', // Rose Pink
+    '#f59e0b', // Amber Gold
+    '#ef4444', // Crimson Red
+    '#06b6d4', // Cyan
+    '#6366f1', // Indigo
+    '#14b8a6', // Teal
+    '#84cc16'  // Lime
+  ];
+
+  // Elegant Vector Icon Presets
+  presetIcons = [
+    'folder',
+    'book',
+    'code',
+    'database',
+    'tech',
+    'globe',
+    'academic',
+    'layers',
+    'star',
+    'sparkles',
+    'chart',
+    'shield',
+    'bookmark',
+    'pencil'
+  ];
+
+  // Summary metrics for executive KPI grid
+  get totalFoldersCount(): number {
+    return this.folders.length;
+  }
+
+  get totalNotebooksCount(): number {
+    return this.folders.reduce((acc, f) => acc + (f.notebook_count || 0), 0);
+  }
+
+  get totalPagesCount(): number {
+    return this.folders.reduce((acc, f) => acc + (f.pages_count || 0), 0);
+  }
+
+  get totalPinnedPagesCount(): number {
+    return this.pages.filter(p => p.is_pinned).length;
+  }
+
+  get filteredSlashCommands(): SlashCommandItem[] {
+    if (!this.slashMenuQuery.trim()) return this.slashCommands;
+    const q = this.slashMenuQuery.toLowerCase().replace('/', '');
+    return this.slashCommands.filter(c => 
+      c.title.toLowerCase().includes(q) || c.key.toLowerCase().includes(q)
+    );
+  }
+
+  isMobileScreen: boolean = false;
+
+  @HostListener('window:resize')
+  onResize() {
+    this.checkMobileScreen();
+  }
+
+  checkMobileScreen() {
+    this.isMobileScreen = typeof window !== 'undefined' && window.innerWidth < 768;
+    if (this.isMobileScreen && this.editorViewMode === 'split') {
+      this.editorViewMode = 'edit';
+    }
+    if (this.isMobileScreen) {
+      this.isSidebarCollapsed = true;
+    }
+  }
+
+  ngOnInit() {
+    this.checkMobileScreen();
+    const savedRatio = localStorage.getItem('portalink_lib_split_ratio');
+    if (savedRatio) {
+      this.editorSplitRatio = parseInt(savedRatio, 10) || 50;
+    }
+    if (!this.isMobileScreen) {
+      const savedSidebar = localStorage.getItem('portalink_lib_sidebar_collapsed');
+      if (savedSidebar === 'true') {
+        this.isSidebarCollapsed = true;
+      }
+    }
+    this.loadFolders();
+  }
+
+  showToast(msg: string, type: 'success' | 'error' = 'success') {
+    this.toastMessage = msg;
+    this.toastType = type;
+    setTimeout(() => {
+      if (this.toastMessage === msg) this.toastMessage = '';
+    }, 3500);
+  }
+
+  saveStateInLocalStorage() {
+    if (this.selectedFolder?.id) {
+      localStorage.setItem('portalink_lib_folder_id', this.selectedFolder.id.toString());
+    } else {
+      localStorage.removeItem('portalink_lib_folder_id');
+    }
+
+    if (this.selectedNotebook?.id) {
+      localStorage.setItem('portalink_lib_notebook_id', this.selectedNotebook.id.toString());
+    } else {
+      localStorage.removeItem('portalink_lib_notebook_id');
+    }
+
+    if (this.selectedPage?.id) {
+      localStorage.setItem('portalink_lib_page_id', this.selectedPage.id.toString());
+    } else {
+      localStorage.removeItem('portalink_lib_page_id');
+    }
+  }
+
+  restoreSavedState() {
+    const savedFolderId = localStorage.getItem('portalink_lib_folder_id');
+    const savedNotebookId = localStorage.getItem('portalink_lib_notebook_id');
+    const savedPageId = localStorage.getItem('portalink_lib_page_id');
+
+    if (!savedFolderId) return;
+    const folderId = parseInt(savedFolderId, 10);
+    const folder = this.folders.find(f => f.id === folderId);
+
+    if (folder) {
+      this.selectedFolder = folder;
+
+      if (!savedNotebookId) return;
+      const notebookId = parseInt(savedNotebookId, 10);
+
+      this.libraryService.getNotebooks(folderId).subscribe({
+        next: (res) => {
+          if (res.ok) {
+            this.notebooks = res.data;
+            const nb = this.notebooks.find(n => n.id === notebookId);
+            if (nb) {
+              this.selectedNotebook = nb;
+              const targetPageId = savedPageId ? parseInt(savedPageId, 10) : undefined;
+              this.loadPages(notebookId, targetPageId);
+            }
+          }
+        }
+      });
+    }
+  }
+
+  loadFolders() {
+    this.isLoading = true;
+    this.libraryService.getFolders().subscribe({
+      next: (res) => {
+        if (res.ok) {
+          this.folders = res.data;
+          this.restoreSavedState();
+        }
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+        this.showToast('Error al cargar carpetas', 'error');
+      }
+    });
+  }
+
+  selectFolder(folder: NotebookFolder | null) {
+    this.selectedFolder = folder;
+    this.selectedNotebook = null;
+    this.selectedPage = null;
+    this.notebooks = [];
+    this.pages = [];
+    this.saveStateInLocalStorage();
+
+    if (folder && folder.id) {
+      this.loadNotebooks(folder.id);
+    } else {
+      this.loadFolders();
+    }
+  }
+
+  loadNotebooks(folderId: number) {
+    this.isLoading = true;
+    this.libraryService.getNotebooks(folderId).subscribe({
+      next: (res) => {
+        if (res.ok) this.notebooks = res.data;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+        this.showToast('Error al cargar cuadernos', 'error');
+      }
+    });
+  }
+
+  selectNotebook(notebook: NotebookModule | null) {
+    this.selectedNotebook = notebook;
+    this.selectedPage = null;
+    this.pages = [];
+
+    if (notebook && notebook.id) {
+      this.loadPages(notebook.id);
+    }
+    this.saveStateInLocalStorage();
+  }
+
+  loadPages(notebookId: number, targetPageId?: number) {
+    this.libraryService.getPages(notebookId).subscribe({
+      next: (res) => {
+        if (res.ok) {
+          this.pages = res.data;
+          if (this.pages.length > 0) {
+            if (targetPageId) {
+              const found = this.pages.find(p => p.id === targetPageId);
+              this.selectedPage = found || this.pages[0];
+            } else if (!this.selectedPage) {
+              this.selectedPage = this.pages[0];
+            }
+          }
+          this.saveStateInLocalStorage();
+        }
+      }
+    });
+  }
+
+  selectPage(page: NotebookPage) {
+    this.selectedPage = page;
+    this.showSlashMenu = false;
+    this.saveStateInLocalStorage();
+  }
+
+  editorViewMode: 'edit' | 'split' | 'preview' = 'split';
+  editorSplitRatio: number = 50;
+  isSidebarCollapsed: boolean = false;
+  private autoSaveTimer: any = null;
+
+  toggleSidebar() {
+    this.isSidebarCollapsed = !this.isSidebarCollapsed;
+    localStorage.setItem('portalink_lib_sidebar_collapsed', this.isSidebarCollapsed ? 'true' : 'false');
+  }
+
+  setSplitRatio(ratio: number) {
+    this.editorSplitRatio = Math.max(25, Math.min(75, ratio));
+    localStorage.setItem('portalink_lib_split_ratio', this.editorSplitRatio.toString());
+  }
+
+  onTitleInput() {
+    if (!this.selectedPage) return;
+    const match = this.pages.find(p => p.id === this.selectedPage?.id);
+    if (match) {
+      match.title = this.selectedPage.title;
+    }
+    if (this.autoSaveTimer) clearTimeout(this.autoSaveTimer);
+    this.autoSaveTimer = setTimeout(() => {
+      this.autoSavePage();
+    }, 400);
+  }
+
+  createNewPage() {
+    if (!this.selectedNotebook || !this.selectedNotebook.id) return;
+
+    const tempId = Date.now();
+    const sampleContent = '## Resumen de la Lección\n\nEscribe tus apuntes aquí. Escribe `/` en cualquier línea para insertar bloques rápido.\n\n- [ ] Concepto clave 1\n- [ ] Práctica de código\n\n```typescript\n// Tu código aquí\nconst fecha = new Date();\n```\n';
+
+    const tempPage: NotebookPage = {
+      id: tempId,
+      notebook_id: this.selectedNotebook.id,
+      title: 'Nuevo Apunte de Estudio',
+      content: sampleContent,
+      tags: 'apuntes,estudio',
+      is_pinned: false
+    };
+
+    // ⚡ INSTANT OPTIMISTIC CREATION IN UI (0 ms)
+    this.pages.unshift(tempPage);
+    this.selectedPage = tempPage;
+    this.showToast('Apunte creado exitosamente');
+
+    this.libraryService.createPage({
+      notebook_id: this.selectedNotebook.id,
+      title: tempPage.title,
+      content: tempPage.content,
+      tags: tempPage.tags,
+      is_pinned: false
+    }).subscribe({
+      next: (res) => {
+        if (res.ok && res.data) {
+          const idx = this.pages.findIndex(p => p.id === tempId);
+          
+          // Preservar cualquier edición hecha por el usuario mientras la API respondía
+          const currentTitle = (this.selectedPage && this.selectedPage.id === tempId) ? this.selectedPage.title : tempPage.title;
+          const currentContent = (this.selectedPage && this.selectedPage.id === tempId) ? this.selectedPage.content : tempPage.content;
+          const currentTags = (this.selectedPage && this.selectedPage.id === tempId) ? this.selectedPage.tags : tempPage.tags;
+
+          const mergedPage: NotebookPage = {
+            ...res.data,
+            title: currentTitle,
+            content: currentContent,
+            tags: currentTags
+          };
+
+          if (idx !== -1) {
+            this.pages[idx] = mergedPage;
+          }
+          if (this.selectedPage && this.selectedPage.id === tempId) {
+            this.selectedPage = mergedPage;
+            if (currentTitle !== res.data.title || currentContent !== res.data.content) {
+              this.autoSavePage();
+            }
+          }
+          this.saveStateInLocalStorage();
+        }
+      },
+      error: () => {
+        this.pages = this.pages.filter(p => p.id !== tempId);
+        if (this.selectedPage?.id === tempId) {
+          this.selectedPage = this.pages.length > 0 ? this.pages[0] : null;
+        }
+        this.showToast('Error al crear apunte en servidor', 'error');
+      }
+    });
+  }
+
+  autoSavePage() {
+    if (!this.selectedPage || !this.selectedPage.id || typeof this.selectedPage.id === 'number' && this.selectedPage.id > 1000000000000) return;
+    this.libraryService.updatePage(this.selectedPage.id, {
+      title: this.selectedPage.title,
+      content: this.selectedPage.content,
+      tags: this.selectedPage.tags,
+      is_pinned: this.selectedPage.is_pinned
+    }).subscribe({
+      error: (err) => console.error('Error autoguardando apunte:', err)
+    });
+  }
+
+  togglePinPage(page: NotebookPage) {
+    if (!page.id) return;
+    page.is_pinned = !page.is_pinned;
+    this.libraryService.updatePage(page.id, { is_pinned: page.is_pinned }).subscribe(() => {
+      this.showToast(page.is_pinned ? 'Apunte fijado al inicio' : 'Apunte desfijado');
+      if (this.selectedNotebook?.id) this.loadPages(this.selectedNotebook.id);
+    });
+  }
+
+  // ── NOTION SLASH COMMANDS MENU WITH ARROW + ENTER NAVIGATION ────
+  onTextareaInput(e: any) {
+    this.autoSavePage();
+    const text: string = e.target.value || '';
+    const cursor = e.target.selectionStart || text.length;
+
+    // Check last line or typed slash
+    const textBeforeCursor = text.substring(0, cursor);
+    const lastLine = textBeforeCursor.split('\n').pop() || '';
+
+    if (lastLine.startsWith('/')) {
+      this.showSlashMenu = true;
+      this.slashMenuQuery = lastLine;
+      this.slashSelectedIndex = 0;
+    } else {
+      this.showSlashMenu = false;
+    }
+  }
+
+  onTextareaKeydown(event: KeyboardEvent) {
+    if (!this.showSlashMenu) return;
+
+    const list = this.filteredSlashCommands;
+    if (list.length === 0) return;
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      this.slashSelectedIndex = (this.slashSelectedIndex + 1) % list.length;
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.slashSelectedIndex = (this.slashSelectedIndex - 1 + list.length) % list.length;
+    } else if (event.key === 'Enter') {
+      event.preventDefault();
+      const selectedItem = list[this.slashSelectedIndex];
+      if (selectedItem) {
+        this.executeSlashCommand(selectedItem.key);
+      }
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      this.showSlashMenu = false;
+    }
+  }
+
+  executeSlashCommand(cmdKey: string) {
+    if (!this.selectedPage) return;
+    const textarea = this.editorTextarea?.nativeElement;
+    let content = this.selectedPage.content || '';
+
+    let cursorPos = content.length;
+    if (textarea) {
+      cursorPos = textarea.selectionStart || content.length;
+    }
+
+    const textBefore = content.substring(0, cursorPos);
+    const textAfter = content.substring(cursorPos);
+
+    // Reemplazar la barra '/' o consulta slash en la línea actual
+    const lastSlashIndex = textBefore.lastIndexOf('/');
+    let prefix = textBefore;
+    if (lastSlashIndex !== -1) {
+      prefix = textBefore.substring(0, lastSlashIndex);
+    }
+
+    let snippet = '';
+    if (cmdKey === 'h2') snippet = '## ';
+    else if (cmdKey === 'h3') snippet = '### ';
+    else if (cmdKey === 'bold') snippet = '**texto en negrita**';
+    else if (cmdKey === 'ts') snippet = '```typescript\n// Escribe tu código TypeScript aquí\nconst app = "PortaLink";\n```';
+    else if (cmdKey === 'sql') snippet = '```sql\n-- Escribe tu consulta SQL aquí\nSELECT * FROM usuarios;\n```';
+    else if (cmdKey === 'todo') snippet = '- [ ] ';
+    else if (cmdKey === 'callout') snippet = '> 💡 **Nota:** ';
+    else if (cmdKey === 'quote') snippet = '> ';
+    else if (cmdKey === 'divider') snippet = '---';
+
+    const newContent = prefix + snippet + textAfter;
+    const newCursorPos = prefix.length + snippet.length;
+
+    this.selectedPage.content = newContent;
+    this.showSlashMenu = false;
+    this.slashMenuQuery = '';
+    this.slashSelectedIndex = 0;
+    this.autoSavePage();
+
+    if (textarea) {
+      setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(newCursorPos, newCursorPos);
+      }, 10);
+    }
+  }
+
+  // ── CONFIRMATION DELETE MODAL HELPERS ─────────────────────────
+  openDeleteModal(type: 'folder' | 'notebook' | 'page', item: any) {
+    this.deleteTargetType = type;
+    this.deleteItemRef = item;
+    if (type === 'folder') this.deleteItemTitle = item.name;
+    else if (type === 'notebook') this.deleteItemTitle = item.title;
+    else if (type === 'page') this.deleteItemTitle = item.title;
+    this.isDeleteModalOpen = true;
+  }
+
+  closeDeleteModal() {
+    this.isDeleteModalOpen = false;
+    this.deleteTargetType = null;
+    this.deleteItemTitle = '';
+    this.deleteItemRef = null;
+  }
+
+  executeDelete() {
+    if (!this.deleteTargetType || !this.deleteItemRef) return;
+
+    if (this.deleteTargetType === 'folder') {
+      const folder = this.deleteItemRef as NotebookFolder;
+      if (!folder.id) return;
+      this.libraryService.deleteFolder(folder.id).subscribe({
+        next: () => {
+          this.loadFolders();
+          this.showToast('Carpeta eliminada permanentemente');
+          this.closeDeleteModal();
+        },
+        error: () => this.showToast('Error al eliminar la carpeta', 'error')
+      });
+
+    } else if (this.deleteTargetType === 'notebook') {
+      const nb = this.deleteItemRef as NotebookModule;
+      if (!nb.id) return;
+      this.libraryService.deleteNotebook(nb.id).subscribe({
+        next: () => {
+          if (this.selectedFolder?.id) this.loadNotebooks(this.selectedFolder.id);
+          this.showToast('Cuaderno eliminado permanentemente');
+          this.closeDeleteModal();
+        },
+        error: () => this.showToast('Error al eliminar el cuaderno', 'error')
+      });
+
+    } else if (this.deleteTargetType === 'page') {
+      const page = this.deleteItemRef as NotebookPage;
+      if (!page.id) return;
+      this.libraryService.deletePage(page.id).subscribe({
+        next: () => {
+          this.pages = this.pages.filter(p => p.id !== page.id);
+          if (this.selectedPage?.id === page.id) {
+            this.selectedPage = this.pages.length > 0 ? this.pages[0] : null;
+          }
+          this.showToast('Apunte eliminado permanentemente');
+          this.closeDeleteModal();
+        },
+        error: () => this.showToast('Error al eliminar el apunte', 'error')
+      });
+    }
+  }
+
+  // ── MODAL CARPETAS ──────────────────────────────────────────────
+  openFolderModal(folder?: NotebookFolder) {
+    if (folder && folder.id) {
+      this.editingFolderId = folder.id;
+      this.folderForm = {
+        name: folder.name,
+        description: folder.description || '',
+        color: folder.color || '#10b981',
+        icon: folder.icon || 'folder'
+      };
+    } else {
+      this.editingFolderId = null;
+      this.folderForm = { name: '', description: '', color: '#10b981', icon: 'folder' };
+    }
+    this.isFolderModalOpen = true;
+  }
+
+  selectFolderColor(color: string) {
+    this.folderForm.color = color;
+  }
+
+  selectFolderIcon(icon: string) {
+    this.folderForm.icon = icon;
+  }
+
+  saveFolder() {
+    if (!this.folderForm.name.trim()) {
+      this.showToast('Ingresa un nombre para la carpeta', 'error');
+      return;
+    }
+
+    if (this.editingFolderId) {
+      this.libraryService.updateFolder(this.editingFolderId, this.folderForm).subscribe({
+        next: (res) => {
+          if (res.ok) {
+            this.loadFolders();
+            this.isFolderModalOpen = false;
+            this.showToast('Carpeta actualizada');
+          }
+        }
+      });
+    } else {
+      this.libraryService.createFolder(this.folderForm).subscribe({
+        next: (res) => {
+          if (res.ok) {
+            this.loadFolders();
+            this.isFolderModalOpen = false;
+            this.showToast('Carpeta creada exitosamente');
+          }
+        }
+      });
+    }
+  }
+
+  // ── MODAL CUADERNOS ──────────────────────────────────────────────
+  openNotebookModal(notebook?: NotebookModule) {
+    if (notebook && notebook.id) {
+      this.editingNotebookId = notebook.id;
+      this.notebookForm = {
+        title: notebook.title,
+        description: notebook.description || '',
+        color: notebook.color || '#3b82f6',
+        icon: notebook.icon || 'book'
+      };
+    } else {
+      this.editingNotebookId = null;
+      this.notebookForm = { title: '', description: '', color: '#3b82f6', icon: 'book' };
+    }
+    this.isNotebookModalOpen = true;
+  }
+
+  selectNotebookColor(color: string) {
+    this.notebookForm.color = color;
+  }
+
+  selectNotebookIcon(icon: string) {
+    this.notebookForm.icon = icon;
+  }
+
+  saveNotebook() {
+    if (!this.notebookForm.title.trim() || !this.selectedFolder?.id) {
+      this.showToast('Ingresa un título para el cuaderno', 'error');
+      return;
+    }
+
+    if (this.editingNotebookId) {
+      this.libraryService.updateNotebook(this.editingNotebookId, this.notebookForm).subscribe({
+        next: (res) => {
+          if (res.ok && this.selectedFolder?.id) {
+            this.loadNotebooks(this.selectedFolder.id);
+            this.isNotebookModalOpen = false;
+            this.showToast('Cuaderno actualizado');
+          }
+        }
+      });
+    } else {
+      const data = { ...this.notebookForm, folder_id: this.selectedFolder.id };
+      this.libraryService.createNotebook(data).subscribe({
+        next: (res) => {
+          if (res.ok && this.selectedFolder?.id) {
+            this.loadNotebooks(this.selectedFolder.id);
+            this.isNotebookModalOpen = false;
+            this.showToast('Cuaderno creado exitosamente');
+          }
+        }
+      });
+    }
+  }
+
+  toggleFavoriteNotebook(nb: NotebookModule) {
+    if (!nb.id) return;
+    nb.is_favorite = !nb.is_favorite;
+    this.libraryService.updateNotebook(nb.id, { is_favorite: nb.is_favorite }).subscribe({
+      next: () => this.showToast(nb.is_favorite ? 'Agregado a favoritos' : 'Removido de favoritos')
+    });
+  }
+
+  // ── BUSCADOR & UTILIDADES ───────────────────────────────────────
+  onSearchInput() {
+    if (this.searchQuery.trim().length === 0) {
+      this.searchResults = [];
+      return;
+    }
+    this.libraryService.search(this.searchQuery).subscribe({
+      next: (res) => {
+        if (res.ok) this.searchResults = res.data;
+      }
+    });
+  }
+
+  selectSearchResult(item: any) {
+    this.searchQuery = '';
+    this.searchResults = [];
+    this.selectedFolder = { id: item.folder_id, name: item.folder_name, color: '#10b981', icon: 'folder' };
+    this.selectedNotebook = { id: item.notebook_id, folder_id: item.folder_id, title: item.notebook_title, color: item.notebook_color || '#3b82f6', icon: 'book' };
+    this.loadPages(item.notebook_id, item.page_id);
+    this.saveStateInLocalStorage();
+  }
+
+  goToBreadcrumb(target: 'root' | 'folder') {
+    if (target === 'root') {
+      this.selectedFolder = null;
+      this.selectedNotebook = null;
+      this.selectedPage = null;
+      this.saveStateInLocalStorage();
+      this.loadFolders();
+    } else if (target === 'folder') {
+      this.selectedNotebook = null;
+      this.selectedPage = null;
+      this.saveStateInLocalStorage();
+      if (this.selectedFolder?.id) this.loadNotebooks(this.selectedFolder.id);
+    }
+  }
+
+  getTagsArray(tagsStr?: string): string[] {
+    if (!tagsStr) return [];
+    return tagsStr.split(',').map(t => t.trim()).filter(Boolean);
+  }
+
+  exportPageToMarkdown() {
+    if (!this.selectedPage) return;
+    const blob = new Blob([this.selectedPage.content || ''], { type: 'text/markdown;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${this.selectedPage.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.md`;
+    link.click();
+    this.showToast('Archivo Markdown exportado');
+  }
+
+  printPage() {
+    window.print();
+  }
+
+  getNotebookColor(): string {
+    return this.selectedNotebook?.color || '#10b981';
+  }
+
+  formatMarkdown(content: string, darkTheme: boolean = this.isDark): string {
+    if (!content) return '';
+    const headingTextClass = darkTheme ? 'text-white' : 'text-neutral-900';
+    const borderClass = darkTheme ? 'border-neutral-800/80' : 'border-neutral-200';
+    const codeBgClass = darkTheme ? 'bg-[#09090b]' : 'bg-neutral-100 text-neutral-900';
+    const codeTextClass = darkTheme ? 'text-emerald-400 font-bold' : 'text-emerald-700 font-bold';
+
+    let html = content
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    // Headings (COMPACT & ELEGANT NOTION SPACING WITH DYNAMIC DARK/LIGHT TEXT COLOR)
+    html = html.replace(/^### (.*$)/gim, `<h3 class="text-base sm:text-lg font-bold mt-2.5 mb-1 text-emerald-500 font-headline">$1</h3>`);
+    html = html.replace(/^## (.*$)/gim, `<h2 class="text-lg sm:text-xl font-bold mt-3 mb-1.5 pb-1 border-b ${borderClass} font-headline ${headingTextClass}">$1</h2>`);
+    html = html.replace(/^# (.*$)/gim, `<h1 class="text-xl sm:text-2xl font-black mt-4 mb-2 ${headingTextClass} font-headline tracking-tight border-b pb-1 border-emerald-500/30">$1</h1>`);
+
+    // Horizontal Divider ---
+    html = html.replace(/^---$/gim, `<hr class="my-3 ${borderClass}">`);
+
+    // Bold & Italics
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-emerald-500">$1</strong>');
+    html = html.replace(/\*(.*?)\*/g, '<em class="italic opacity-80">$1</em>');
+
+    // Callouts / Blockquotes
+    html = html.replace(/^> (.*$)/gim, `<blockquote class="p-3 my-2 rounded-xl bg-emerald-500/10 border-l-4 border-emerald-500 text-xs sm:text-sm ${headingTextClass} font-medium flex items-start gap-2 shadow-sm">$1</blockquote>`);
+
+    // Code blocks
+    html = html.replace(/```([a-z]*)\n([\s\S]*?)```/gim, `<pre class="p-4 my-2.5 rounded-xl ${codeBgClass} border ${borderClass} ${codeTextClass} font-mono text-xs sm:text-sm overflow-x-auto shadow-inner relative group"><code>$2</code></pre>`);
+
+    // Checkboxes
+    html = html.replace(/- \[ \]/g, ' <input type="checkbox" disabled class="mr-2 rounded text-emerald-500 w-3.5 h-3.5">');
+    html = html.replace(/- \[x\]/g, ' <input type="checkbox" checked disabled class="mr-2 rounded text-emerald-500 w-3.5 h-3.5">');
+
+    // Line breaks conversion
+    html = html.replace(/\n/g, '<br>');
+
+    // Clean up excess breaks surrounding block elements (<h1-3>, <blockquote>, <pre>, <hr>)
+    html = html.replace(/(<\/h[1-3]>|<\/blockquote>|<\/pre>|<hr[^>]*>)\s*(<br\s*\/?>)+/gim, '$1');
+    html = html.replace(/(<br\s*\/?>)+\s*(<h[1-3]>|<blockquote|<pre|<hr)/gim, '$2');
+    html = html.replace(/(<br\s*\/?>){3,}/gim, '<br><br>');
+
+    return html;
+  }
+}

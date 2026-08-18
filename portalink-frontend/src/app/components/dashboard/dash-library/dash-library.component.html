@@ -1,0 +1,1164 @@
+<div class="space-y-6 tab-enter font-sans overflow-x-hidden">
+
+  <!-- ══════════════════════════════════════
+       HEADER & EXECUTIVE CONTROLS
+  ══════════════════════════════════════ -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-5"
+       [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+    
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em]"
+           [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">
+          Módulo de Conocimiento
+        </p>
+      </div>
+
+      <!-- TITLE -->
+      <div class="flex items-center gap-3 mt-1 flex-wrap">
+        <h2 class="text-2xl sm:text-3xl font-headline font-bold tracking-tight flex items-center gap-3"
+            [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+          <span class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25" />
+            </svg>
+          </span>
+          <span>{{ selectedNotebook ? selectedNotebook.title : (selectedFolder ? selectedFolder.name : 'Biblioteca & Cuadernos') }}</span>
+        </h2>
+      </div>
+
+      <!-- BREADCRUMB PATH TRAIL -->
+      <div class="flex items-center gap-2 text-xs font-semibold mt-2"
+           [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+        <button (click)="goToBreadcrumb('root')" class="hover:text-emerald-400 cursor-pointer flex items-center gap-1.5 transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+          <span>Biblioteca</span>
+        </button>
+        <ng-container *ngIf="selectedFolder">
+          <span>/</span>
+          <button (click)="goToBreadcrumb('folder')" class="hover:text-emerald-400 cursor-pointer flex items-center gap-1 transition-colors">
+            <span>{{ selectedFolder.name }}</span>
+          </button>
+        </ng-container>
+        <ng-container *ngIf="selectedNotebook">
+          <span>/</span>
+          <span class="font-bold text-emerald-400">{{ selectedNotebook.title }}</span>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- CONTROLS & ACTIONS -->
+    <div class="flex items-center gap-3 flex-wrap">
+      
+      <!-- BUSCADOR EXECUTIVE -->
+      <div class="relative min-w-[200px] sm:min-w-[260px]">
+        <input 
+          type="text"
+          [(ngModel)]="searchQuery"
+          (input)="onSearchInput()"
+          placeholder="Buscar apunte o código..."
+          class="w-full pl-9 pr-4 py-2 text-xs rounded-full border transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+          [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800 text-white placeholder:text-neutral-500' : 'bg-neutral-100/80 border-neutral-200 text-neutral-900 placeholder:text-neutral-400'"
+        />
+        <svg class="w-4 h-4 absolute left-3 top-2.5 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+        </svg>
+      </div>
+
+      <!-- BOTONES DE CREACIÓN -->
+      <button 
+        *ngIf="!selectedFolder && !selectedNotebook"
+        (click)="openFolderModal()"
+        class="px-5 py-2.5 rounded-full text-xs font-headline font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center gap-2 shadow-sm hover:scale-[1.02] active:scale-[0.98]"
+        [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'"
+      >
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        <span>Nueva Carpeta</span>
+      </button>
+
+      <button 
+        *ngIf="selectedFolder && !selectedNotebook"
+        (click)="openNotebookModal()"
+        class="px-5 py-2.5 rounded-full text-xs font-headline font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center gap-2 shadow-sm hover:scale-[1.02] active:scale-[0.98]"
+        [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'"
+      >
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        <span>Nuevo Cuaderno</span>
+      </button>
+
+      <button 
+        *ngIf="selectedNotebook"
+        (click)="createNewPage()"
+        class="px-5 py-2.5 rounded-full text-xs font-headline font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center gap-2 shadow-sm hover:scale-[1.02] active:scale-[0.98]"
+        [ngClass]="isDark ? 'bg-emerald-500 text-black hover:bg-emerald-400' : 'bg-emerald-600 text-white hover:bg-emerald-500'"
+      >
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        <span>Nuevo Apunte</span>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- TOAST FEEDBACK NOTIFICATION -->
+  <div *ngIf="toastMessage" class="p-4 rounded-2xl border flex items-center justify-between shadow-lg transition-all"
+       [ngClass]="toastType === 'error' ? 'bg-red-500/10 border-red-500/30 text-red-400' : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'">
+    <div class="flex items-center gap-3">
+      <span class="w-2 h-2 rounded-full" [ngClass]="toastType === 'error' ? 'bg-red-400' : 'bg-emerald-400'"></span>
+      <span class="text-xs font-headline font-bold uppercase tracking-wider">{{ toastMessage }}</span>
+    </div>
+    <button (click)="toastMessage = ''" class="text-xs opacity-70 hover:opacity-100">✕</button>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       REAL KPI STATS GRID (COMPACT 2x2 EN MÓVIL)
+  ══════════════════════════════════════ -->
+  <div *ngIf="!selectedNotebook" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
+
+    <!-- 1. Total Materias/Carpetas -->
+    <div class="rounded-2xl sm:rounded-[24px] border p-3.5 sm:p-6 space-y-1.5 sm:space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+         [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
+      <div class="flex items-center justify-between gap-1">
+        <span class="text-[10px] sm:text-xs font-headline font-semibold uppercase tracking-wider opacity-60 truncate">Materias & Áreas</span>
+        <span class="text-[9px] sm:text-[10px] font-headline font-semibold px-2 py-0.5 rounded-full border border-emerald-500/30 text-emerald-400 bg-emerald-500/10 tracking-wider shrink-0">
+          Organizado
+        </span>
+      </div>
+      <div class="space-y-0.5">
+        <p class="text-sm sm:text-2xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+          {{ totalFoldersCount }} Carpetas
+        </p>
+        <p class="text-[10px] sm:text-xs opacity-50 font-normal truncate hidden sm:block">Áreas principales de estudio</p>
+      </div>
+      <div class="pt-1 hidden sm:block">
+        <svg class="w-full h-6 stroke-current text-emerald-500/40 opacity-70 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 100 25">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M0 20 Q 25 10, 50 15 T 100 5" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- 2. Total Cuadernos -->
+    <div class="rounded-2xl sm:rounded-[24px] border p-3.5 sm:p-6 space-y-1.5 sm:space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+         [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
+      <div class="flex items-center justify-between gap-1">
+        <span class="text-[10px] sm:text-xs font-headline font-semibold uppercase tracking-wider opacity-60 truncate">Cuadernos Activos</span>
+        <span class="text-[9px] sm:text-[10px] font-headline font-semibold px-2 py-0.5 rounded-full border border-blue-500/30 text-blue-400 bg-blue-500/10 tracking-wider shrink-0">
+          Módulos
+        </span>
+      </div>
+      <div class="space-y-0.5">
+        <p class="text-sm sm:text-2xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+          {{ totalNotebooksCount }} Cuadernos
+        </p>
+        <p class="text-[10px] sm:text-xs opacity-50 font-normal truncate hidden sm:block">Módulos temáticos específicos</p>
+      </div>
+      <div class="pt-1 hidden sm:block">
+        <svg class="w-full h-6 stroke-current text-blue-400/40 opacity-70 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 100 25">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M0 22 L 30 15 L 60 18 L 100 4" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- 3. Total Apuntes Escritos -->
+    <div class="rounded-2xl sm:rounded-[24px] border p-3.5 sm:p-6 space-y-1.5 sm:space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+         [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
+      <div class="flex items-center justify-between gap-1">
+        <span class="text-[10px] sm:text-xs font-headline font-semibold uppercase tracking-wider opacity-60 truncate">Apuntes Escritos</span>
+        <span class="text-[9px] sm:text-[10px] font-headline font-semibold px-2 py-0.5 rounded-full border border-purple-500/30 text-purple-400 bg-purple-500/10 tracking-wider shrink-0">
+          Markdown
+        </span>
+      </div>
+      <div class="space-y-0.5">
+        <p class="text-sm sm:text-2xl font-headline font-bold tracking-tight text-purple-400">
+          {{ totalPagesCount }} Páginas
+        </p>
+        <p class="text-[10px] sm:text-xs opacity-50 font-normal truncate hidden sm:block">Documentos y resúmenes</p>
+      </div>
+      <div class="pt-1 hidden sm:block">
+        <div class="w-full bg-neutral-800 rounded-full h-1.5 overflow-hidden">
+          <div class="bg-purple-400 h-1.5 rounded-full transition-all duration-700" [style.width.%]="totalPagesCount > 0 ? 100 : 20"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Apuntes Fijados -->
+    <div class="rounded-2xl sm:rounded-[24px] border p-3.5 sm:p-6 space-y-1.5 sm:space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+         [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
+      <div class="flex items-center justify-between gap-1">
+        <span class="text-[10px] sm:text-xs font-headline font-semibold uppercase tracking-wider opacity-60 truncate">Apuntes Destacados</span>
+        <span class="text-[9px] sm:text-[10px] font-headline font-semibold px-2 py-0.5 rounded-full border border-amber-500/30 text-amber-400 bg-amber-500/10 tracking-wider shrink-0">
+          Prioridad
+        </span>
+      </div>
+      <div class="space-y-0.5">
+        <p class="text-sm sm:text-2xl font-headline font-bold tracking-tight text-amber-400">
+          {{ totalPinnedPagesCount }} Notas Clave
+        </p>
+        <p class="text-[10px] sm:text-xs opacity-50 font-normal truncate hidden sm:block">Acceso rápido prioritario</p>
+      </div>
+      <div class="pt-1 flex items-center justify-between text-[10px] sm:text-xs font-medium opacity-70">
+        <span class="truncate">Búsqueda rápida</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RESULTADOS BÚSQUEDA GLOBAL -->
+  <div *ngIf="searchQuery.trim().length > 0" class="space-y-3">
+    <h3 class="text-xs font-headline font-bold uppercase tracking-widest opacity-60">
+      Resultados de Búsqueda ({{ searchResults.length }})
+    </h3>
+    <div *ngIf="searchResults.length === 0" class="p-8 text-center rounded-[24px] border text-xs opacity-60"
+         [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+      No se encontraron apuntes o cuadernos que coincidan con "{{ searchQuery }}"
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div 
+        *ngFor="let item of searchResults"
+        (click)="selectSearchResult(item)"
+        class="p-5 rounded-[24px] border cursor-pointer transition-all duration-300 hover:border-emerald-500/50 hover:shadow-lg flex flex-col justify-between"
+        [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800' : 'bg-white border-neutral-200'"
+      >
+        <div>
+          <div class="flex items-center gap-2 text-[10px] font-headline font-bold text-emerald-400 mb-1.5">
+            <span>{{ item.folder_name }}</span>
+            <span>➔</span>
+            <span>{{ item.notebook_title }}</span>
+          </div>
+          <h4 class="text-sm font-headline font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ item.page_title }}</h4>
+          <p class="text-xs opacity-70 line-clamp-2 mt-1">{{ item.page_content }}</p>
+        </div>
+        <div *ngIf="item.tags" class="mt-3 flex flex-wrap gap-1.5">
+          <span *ngFor="let tag of getTagsArray(item.tags)" class="px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-400">#{{ tag }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       NIVEL 1: GRID DE CARPETAS / MATERIAS
+  ══════════════════════════════════════ -->
+  <div *ngIf="!selectedFolder && !selectedNotebook && searchQuery.trim().length === 0" class="space-y-4">
+    
+    <div class="flex items-center justify-between">
+      <h3 class="text-xs font-headline font-bold uppercase tracking-widest opacity-60">
+        Carpetas de Estudio ({{ folders.length }})
+      </h3>
+    </div>
+
+    <!-- ESTADO VACÍO CARPETAS -->
+    <div *ngIf="folders.length === 0 && !isLoading" class="p-12 text-center rounded-[28px] border my-6"
+         [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+      <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shadow-inner">
+        <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/></svg>
+      </div>
+      <h3 class="text-base font-headline font-bold">No tienes carpetas de estudio</h3>
+      <p class="text-xs opacity-60 max-w-sm mx-auto mt-1 mb-4">
+        Crea tu primera carpeta para organizar materias como Inglés, Bases de Datos, Desarrollo Web o IA.
+      </p>
+      <button (click)="openFolderModal()" 
+              class="px-5 py-2.5 rounded-full text-xs font-headline font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer shadow-md hover:scale-[1.02]"
+              [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'">
+        + Crear Primera Carpeta
+      </button>
+    </div>
+
+    <!-- GRID CARPETAS -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+      <div 
+        *ngFor="let folder of folders"
+        (click)="selectFolder(folder)"
+        class="group relative p-6 rounded-[24px] border transition-all duration-300 hover:border-emerald-500/50 hover:shadow-xl cursor-pointer overflow-hidden hover:scale-[1.01] flex flex-col justify-between"
+        [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800' : 'bg-white border-neutral-200/90'"
+      >
+        <!-- TOP ACCENT BAR -->
+        <div class="absolute top-0 left-0 right-0 h-1.5" [style.backgroundColor]="folder.color"></div>
+        
+        <div>
+          <div class="flex items-start justify-between gap-3 mb-4">
+            <!-- ICON BOX WITH COLOR TINT -->
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner transition-transform group-hover:scale-110"
+                 [style.backgroundColor]="folder.color + '20'" [style.color]="folder.color">
+              <svg *ngIf="folder.icon === 'code'" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+              <svg *ngIf="folder.icon === 'database'" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
+              <svg *ngIf="folder.icon === 'book'" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25"/></svg>
+              <svg *ngIf="folder.icon === 'tech'" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 15.75H3m18 0h-1.5M8.25 19.5V21m7.5-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25z"/></svg>
+              <svg *ngIf="folder.icon === 'globe'" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9s2.015-9 4.5-9m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m-17.432-4.506A8.959 8.959 0 003 12c0 .778.099 1.533.284 2.253"/></svg>
+              <svg *ngIf="folder.icon === 'academic'" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147L12 14.6l7.74-4.453a1.125 1.125 0 000-1.947L12 3.75 4.26 8.2a1.125 1.125 0 000 1.947zM4.26 10.147V16.5A1.125 1.125 0 005.385 17.625h13.23a1.125 1.125 0 001.125-1.125v-6.353"/></svg>
+              <svg *ngIf="folder.icon === 'chart'" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v16.5m0 0h16.5m-16.5 0l4.772-5.725a1.125 1.125 0 011.666-.086l5.811 5.8 4.772-5.725"/></svg>
+              <svg *ngIf="!folder.icon || folder.icon === 'folder' || ['code','database','book','tech','globe','academic','chart'].indexOf(folder.icon) === -1" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/></svg>
+            </div>
+
+            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button (click)="$event.stopPropagation(); openFolderModal(folder)" class="p-1.5 rounded-xl hover:bg-neutral-800 text-xs transition-colors">
+                <svg class="w-4 h-4 opacity-70 hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"/></svg>
+              </button>
+              <button (click)="$event.stopPropagation(); openDeleteModal('folder', folder)" class="p-1.5 rounded-xl hover:bg-neutral-800 text-xs hover:text-red-400 transition-colors">
+                <svg class="w-4 h-4 opacity-70 hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <h3 class="text-lg font-headline font-bold group-hover:text-emerald-400 transition-colors" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+            {{ folder.name }}
+          </h3>
+          <p class="text-xs opacity-60 line-clamp-2 mt-1 h-8">
+            {{ folder.description || 'Sin descripción asignada' }}
+          </p>
+        </div>
+
+        <div class="mt-6 pt-4 border-t flex items-center justify-between text-xs font-semibold opacity-70"
+             [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+          <span>{{ folder.notebook_count || 0 }} cuadernos</span>
+          <span>{{ folder.pages_count || 0 }} notas</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════
+       NIVEL 2: GRID DE CUADERNOS
+  ══════════════════════════════════════ -->
+  <div *ngIf="selectedFolder && !selectedNotebook && searchQuery.trim().length === 0" class="space-y-4">
+    
+    <div class="flex items-center justify-between">
+      <button (click)="selectFolder(null)" class="text-xs font-headline font-bold text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer">
+        ← Volver a todas las carpetas
+      </button>
+    </div>
+
+    <!-- ESTADO VACÍO CUADERNOS -->
+    <div *ngIf="notebooks.length === 0 && !isLoading" class="p-12 text-center rounded-[28px] border my-6"
+         [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+      <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+        <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25"/></svg>
+      </div>
+      <h3 class="text-base font-headline font-bold">No hay cuadernos en {{ selectedFolder.name }}</h3>
+      <p class="text-xs opacity-60 max-w-sm mx-auto mt-1 mb-4">
+        Crea tu primer cuaderno de estudio (ej. "A1 - Gramática", "Consultas SQL", etc.).
+      </p>
+      <button (click)="openNotebookModal()" 
+              class="px-5 py-2.5 rounded-full text-xs font-headline font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer shadow-md hover:scale-[1.02]"
+              [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'">
+        + Crear Cuaderno en {{ selectedFolder.name }}
+      </button>
+    </div>
+
+    <!-- GRID CUADERNOS -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+      <div 
+        *ngFor="let nb of notebooks"
+        (click)="selectNotebook(nb)"
+        class="group relative p-6 rounded-[24px] border transition-all duration-300 hover:border-emerald-500/50 hover:shadow-xl cursor-pointer flex flex-col justify-between overflow-hidden hover:scale-[1.01]"
+        [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800' : 'bg-white border-neutral-200/90'"
+      >
+        <!-- LEFT SPINE COLOR ACCENT -->
+        <div class="absolute top-0 left-0 bottom-0 w-2.5" [style.backgroundColor]="nb.color"></div>
+        
+        <div>
+          <div class="flex items-center justify-between gap-2 mb-3 pl-2">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-headline font-bold text-white shadow-sm" [style.backgroundColor]="nb.color">
+              Cuaderno
+            </span>
+            <div class="flex items-center gap-1">
+              <button (click)="$event.stopPropagation(); toggleFavoriteNotebook(nb)" class="p-1 text-xs hover:scale-125 transition-transform">
+                <svg class="w-4 h-4" [ngClass]="nb.is_favorite ? 'text-amber-400 fill-amber-400' : 'text-neutral-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385c.116.488-.42.877-.84.629l-4.706-2.785a.563.563 0 00-.573 0l-4.706 2.785c-.42.248-.956-.141-.84-.629l1.285-5.385a.563.563 0 00-.182-.557l-4.204-3.602c-.38-.325-.178-.948.32-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
+              </button>
+              <button (click)="$event.stopPropagation(); openNotebookModal(nb)" class="p-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                <svg class="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"/></svg>
+              </button>
+              <button (click)="$event.stopPropagation(); openDeleteModal('notebook', nb)" class="p-1 text-xs opacity-0 group-hover:opacity-100 hover:text-red-400 transition-opacity">
+                <svg class="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="pl-2">
+            <h3 class="text-base font-headline font-bold group-hover:text-emerald-400 transition-colors" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              {{ nb.title }}
+            </h3>
+            <p class="text-xs opacity-60 line-clamp-2 mt-1 h-8">
+              {{ nb.description || 'Sin descripción' }}
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-5 pt-3 border-t pl-2 flex items-center justify-between text-xs font-semibold opacity-70"
+             [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+          <span>{{ nb.pages_count || 0 }} apuntes</span>
+          <span class="text-emerald-400 group-hover:translate-x-1 transition-transform">Abrir →</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════
+       NIVEL 3: EDITOR DE APUNTES NOTION LIVE (SIDEBAR w-72 PERFECTA + PIZARRA CON AJUSTE DINÁMICO DE ANCHO)
+  ══════════════════════════════════════ -->
+  <div *ngIf="selectedNotebook && searchQuery.trim().length === 0" class="flex flex-col lg:flex-row gap-5 items-start">
+    
+    <!-- SIDEBAR DE APUNTES ANCHO PERFECTO (w-full lg:w-72 xl:w-80 shrink-0) COLAPSABLE -->
+    <div *ngIf="!isSidebarCollapsed" 
+         class="w-full lg:w-72 xl:w-80 shrink-0 rounded-[24px] border p-4 space-y-3.5 shadow-sm transition-all duration-300 animate-fade-in"
+         [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800' : 'bg-white border-neutral-200'">
+      
+      <div class="flex items-center justify-between pb-3 border-b"
+           [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+        <button (click)="selectNotebook(null)" class="text-[11px] font-headline font-bold text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer">
+          ← Volver
+        </button>
+        <div class="flex items-center gap-1.5">
+          <button (click)="createNewPage()" class="px-2.5 py-1 rounded-full text-white font-headline font-bold text-[10px] shadow-sm hover:opacity-90 transition-all cursor-pointer flex items-center gap-1" [style.backgroundColor]="getNotebookColor()">
+            <span>+ Apunte</span>
+          </button>
+
+          <!-- BOTÓN ESCONDER SIDEBAR -->
+          <button (click)="toggleSidebar()" title="Esconder lista de apuntes"
+                  class="p-1 rounded-lg transition-colors cursor-pointer"
+                  [ngClass]="isDark ? 'hover:bg-neutral-800 text-neutral-400 hover:text-white' : 'hover:bg-neutral-200 text-neutral-600 hover:text-black'">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- LISTA DE PÁGINAS DE APUNTES PERFECTAMENTE LEGIBLES -->
+      <div class="space-y-1.5 max-h-[660px] overflow-y-auto pr-1">
+        <div *ngIf="pages.length === 0" class="p-6 text-center text-xs opacity-50">
+          Sin apuntes aún. Haz clic en "+ Apunte".
+        </div>
+
+        <div 
+          *ngFor="let page of pages"
+          (click)="selectPage(page)"
+          class="group/item relative p-3 rounded-xl cursor-pointer transition-all border flex items-center justify-between gap-2 overflow-hidden"
+          [ngClass]="selectedPage?.id === page.id ? (isDark ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-300 font-bold' : 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold') : (isDark ? 'bg-transparent border-transparent hover:bg-neutral-800/60 text-neutral-300' : 'bg-transparent border-transparent hover:bg-neutral-100 text-neutral-700')"
+        >
+          <!-- LEFT ACTIVE BAR CON COLOR DEL CUADERNO -->
+          <div *ngIf="selectedPage?.id === page.id" class="absolute top-0 left-0 bottom-0 w-1" [style.backgroundColor]="getNotebookColor()"></div>
+
+          <div class="flex items-center gap-2 truncate pl-1 min-w-0">
+            <svg *ngIf="page.is_pinned" class="w-3.5 h-3.5 text-amber-400 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg>
+            <svg *ngIf="!page.is_pinned" class="w-3.5 h-3.5 opacity-50 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+            <span class="text-xs truncate font-headline">{{ page.title }}</span>
+          </div>
+
+          <!-- BOTONES VECTORIALES -->
+          <div class="flex items-center gap-1 shrink-0 opacity-0 group-hover/item:opacity-100 transition-opacity">
+            <button (click)="$event.stopPropagation(); togglePinPage(page)" class="p-1 rounded hover:bg-neutral-800 transition-colors" [title]="page.is_pinned ? 'Desfijar' : 'Fijar'">
+              <svg class="w-3.5 h-3.5" [ngClass]="page.is_pinned ? 'text-amber-400 fill-amber-400' : 'opacity-60'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75"/></svg>
+            </button>
+            <button (click)="$event.stopPropagation(); openDeleteModal('page', page)" class="p-1 rounded hover:bg-red-500/20 text-neutral-400 hover:text-red-400 transition-colors" title="Eliminar apunte">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN PIZARRA GRANDE EXPANDIDA (flex-1 min-w-0) -->
+    <div class="flex-1 min-w-0 rounded-xl sm:rounded-[28px] border p-2.5 sm:p-7 space-y-3 sm:space-y-5 shadow-lg relative min-h-[480px] sm:min-h-[640px] overflow-hidden"
+         [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200'">
+      
+      <!-- BARRA ACENTO SUPERIOR DEL COLOR DEL CUADERNO -->
+      <div class="absolute top-0 left-0 right-0 h-1" [style.backgroundColor]="getNotebookColor()"></div>
+      
+      <ng-container *ngIf="selectedPage; else noPageSelected">
+        
+        <!-- HEADER: TÍTULO + CONTROLES (APILADO EN MÓVIL) -->
+        <div class="flex flex-col gap-2.5 pb-2.5 sm:pb-4 border-b"
+             [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+          
+          <!-- FILA 1: Botón ver apuntes + Título -->
+          <div class="flex items-center gap-2 w-full min-w-0">
+            <button *ngIf="isSidebarCollapsed" 
+                    (click)="toggleSidebar()" 
+                    title="Mostrar lista de apuntes"
+                    class="px-2 py-1 rounded-lg border text-[10px] sm:text-xs font-headline font-bold flex items-center gap-1 transition-all cursor-pointer shadow-sm shrink-0"
+                    [style.borderColor]="getNotebookColor() + '40'"
+                    [style.color]="getNotebookColor()"
+                    [style.backgroundColor]="getNotebookColor() + '15'">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5" />
+              </svg>
+              <span>{{ pages.length }}</span>
+            </button>
+
+            <div class="w-full min-w-0">
+              <input 
+                type="text"
+                [(ngModel)]="selectedPage.title"
+                (input)="onTitleInput()"
+                placeholder="Apunte sin título..."
+                class="w-full text-base sm:text-2xl font-headline font-semibold tracking-normal bg-transparent border-b border-transparent hover:border-neutral-700/40 focus:border-emerald-500 py-0.5 sm:py-1 px-0 focus:outline-none transition-all placeholder:opacity-40"
+                [ngClass]="isDark ? 'text-white' : 'text-neutral-900'"
+              />
+            </div>
+          </div>
+
+          <!-- FILA 2: Acciones rápidas (scroll horizontal en móvil) -->
+          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+            <button (click)="exportPageToMarkdown()" title="Exportar a Markdown"
+                    class="px-2 py-1 sm:px-3.5 sm:py-2 rounded-lg sm:rounded-xl border text-[10px] sm:text-sm font-headline font-bold flex items-center gap-1 transition-all cursor-pointer shadow-sm shrink-0 whitespace-nowrap"
+                    [style.borderColor]="getNotebookColor() + '40'"
+                    [style.color]="getNotebookColor()"
+                    [ngClass]="isDark ? 'bg-neutral-800/80 hover:bg-neutral-700' : 'bg-neutral-100 hover:bg-neutral-200'">
+              <span>Exportar MD</span>
+            </button>
+
+            <button (click)="printPage()" title="Imprimir o Exportar PDF"
+                    class="px-2 py-1 sm:px-3.5 sm:py-2 rounded-lg sm:rounded-xl border text-[10px] sm:text-sm font-headline font-bold flex items-center gap-1 transition-all cursor-pointer shadow-sm shrink-0 whitespace-nowrap"
+                    [style.borderColor]="getNotebookColor() + '40'"
+                    [style.color]="getNotebookColor()"
+                    [ngClass]="isDark ? 'bg-neutral-800/80 hover:bg-neutral-700' : 'bg-neutral-100 hover:bg-neutral-200'">
+              <span>Imprimir PDF</span>
+            </button>
+
+            <!-- SEGMENT: Editor | Live Notion | Vista Previa -->
+            <div class="flex items-center gap-0.5 p-0.5 rounded-lg sm:rounded-xl border shrink-0"
+                 [style.borderColor]="getNotebookColor() + '30'"
+                 [ngClass]="isDark ? 'bg-neutral-950/80' : 'bg-neutral-100'">
+              
+              <button type="button" (click)="editorViewMode = 'edit'"
+                      class="px-2 py-0.5 sm:px-3 sm:py-1.5 rounded-md sm:rounded-lg text-[10px] sm:text-xs font-headline font-bold transition-all cursor-pointer whitespace-nowrap"
+                      [style.backgroundColor]="editorViewMode === 'edit' ? getNotebookColor() : 'transparent'"
+                      [style.color]="editorViewMode === 'edit' ? '#000000' : getNotebookColor()">
+                Editor
+              </button>
+
+              <button type="button" (click)="editorViewMode = 'split'"
+                      class="hidden lg:inline-flex px-3 py-1.5 rounded-lg text-xs font-headline font-bold items-center gap-1.5 transition-all cursor-pointer"
+                      [style.backgroundColor]="editorViewMode === 'split' ? getNotebookColor() : 'transparent'"
+                      [style.color]="editorViewMode === 'split' ? '#000000' : getNotebookColor()">
+                Live Notion ⚡
+              </button>
+
+              <button type="button" (click)="editorViewMode = 'preview'"
+                      class="px-2 py-0.5 sm:px-3 sm:py-1.5 rounded-md sm:rounded-lg text-[10px] sm:text-xs font-headline font-bold transition-all cursor-pointer whitespace-nowrap"
+                      [style.backgroundColor]="editorViewMode === 'preview' ? getNotebookColor() : 'transparent'"
+                      [style.color]="editorViewMode === 'preview' ? '#000000' : getNotebookColor()">
+                Vista Previa
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAGS INPUT -->
+        <div>
+          <input 
+            type="text"
+            [(ngModel)]="selectedPage.tags"
+            (change)="autoSavePage()"
+            placeholder="Etiquetas (ej. sql, bases-de-datos)..."
+            class="w-full px-2.5 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm rounded-lg sm:rounded-xl border focus:outline-none"
+            [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800 text-neutral-200 placeholder:text-neutral-600' : 'bg-neutral-50 border-neutral-200 text-neutral-800 placeholder:text-neutral-400'"
+          />
+        </div>
+
+        <!-- BARRA DE HERRAMIENTAS WORD + CONTROL DE ANCHO RESIZABLE DE PANELES -->
+        <div *ngIf="editorViewMode === 'edit' || editorViewMode === 'split'"
+             class="p-1.5 sm:p-2.5 rounded-xl sm:rounded-2xl border flex items-center justify-between gap-2 shadow-sm"
+             [style.borderColor]="getNotebookColor() + '30'"
+             [ngClass]="isDark ? 'bg-neutral-950/90' : 'bg-neutral-100/90'">
+          
+          <!-- IZQUIERDA: BOTONES TIPO WORD RIBBON (SCROLL HORIZONTAL EN MÓVIL) -->
+          <div class="flex items-center gap-1 sm:gap-1.5 overflow-x-auto max-w-full pb-0.5 no-scrollbar shrink-0">
+            
+            <!-- DESPLEGABLE DE TIPO DE TEXTO TIPO WORD (OCULTO EN MÓVIL) -->
+            <select #formatSelect (change)="executeSlashCommand(formatSelect.value); formatSelect.value = ''"
+                    class="hidden sm:inline-block px-3 py-1.5 rounded-xl border text-xs font-headline font-bold focus:outline-none transition-all cursor-pointer"
+                    [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-white hover:bg-neutral-800' : 'bg-white border-neutral-300 text-neutral-900 hover:bg-neutral-50'">
+              <option value="" disabled selected>Tipo de Texto (Word)...</option>
+              <option value="h2">H2 - Encabezado Seccional</option>
+              <option value="h3">H3 - Subencabezado</option>
+              <option value="bold">Negrita (**Texto**)</option>
+              <option value="callout">Alerta / Destacado (💡)</option>
+              <option value="ts">Bloque TypeScript</option>
+              <option value="sql">Bloque SQL</option>
+              <option value="todo">Lista de Tareas (☑)</option>
+              <option value="quote">Cita Inspiradora (”)</option>
+              <option value="divider">Línea Separadora (---)</option>
+            </select>
+
+            <div class="h-4 w-px bg-neutral-700/50 mx-1 hidden sm:block"></div>
+
+            <button type="button" (click)="executeSlashCommand('h2')" title="Encabezado Seccional (H2)"
+                    class="px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl border text-[10px] sm:text-xs font-headline font-black transition-all cursor-pointer shadow-sm shrink-0 whitespace-nowrap"
+                    [ngClass]="isDark ? 'border-neutral-700 bg-neutral-900 text-white hover:bg-neutral-800' : 'border-neutral-300 bg-white text-neutral-900 hover:bg-neutral-100'">
+              H2
+            </button>
+
+            <button type="button" (click)="executeSlashCommand('h3')" title="Subencabezado (H3)"
+                    class="px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl border text-[10px] sm:text-xs font-headline font-bold transition-all cursor-pointer shadow-sm shrink-0 whitespace-nowrap"
+                    [ngClass]="isDark ? 'border-neutral-700 bg-neutral-900 text-emerald-400 hover:bg-neutral-800' : 'border-neutral-300 bg-white text-emerald-600 hover:bg-neutral-100'">
+              H3
+            </button>
+
+            <button type="button" (click)="executeSlashCommand('bold')" title="Texto en Negrita"
+                    class="px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl border text-[10px] sm:text-xs font-headline font-black transition-all cursor-pointer shadow-sm shrink-0 whitespace-nowrap"
+                    [ngClass]="isDark ? 'border-neutral-700 bg-neutral-900 text-white hover:bg-neutral-800' : 'border-neutral-300 bg-white text-neutral-900 hover:bg-neutral-100'">
+              B
+            </button>
+
+            <button type="button" (click)="executeSlashCommand('ts')" title="Bloque TypeScript"
+                    class="px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl border text-[10px] sm:text-xs font-mono font-bold transition-all cursor-pointer text-blue-400 shadow-sm shrink-0 whitespace-nowrap"
+                    [ngClass]="isDark ? 'border-neutral-700 bg-neutral-900 hover:bg-neutral-800' : 'border-neutral-300 bg-white hover:bg-neutral-100'">
+              &lt;/&gt; TS
+            </button>
+
+            <button type="button" (click)="executeSlashCommand('sql')" title="Bloque SQL"
+                    class="px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl border text-[10px] sm:text-xs font-mono font-bold transition-all cursor-pointer text-amber-400 shadow-sm shrink-0 whitespace-nowrap"
+                    [ngClass]="isDark ? 'border-neutral-700 bg-neutral-900 hover:bg-neutral-800' : 'border-neutral-300 bg-white hover:bg-neutral-100'">
+              SQL
+            </button>
+
+            <button type="button" (click)="executeSlashCommand('todo')" title="Tarea Pendiente"
+                    class="px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl border text-[10px] sm:text-xs font-headline font-bold transition-all cursor-pointer text-purple-400 shadow-sm shrink-0 whitespace-nowrap"
+                    [ngClass]="isDark ? 'border-neutral-700 bg-neutral-900 hover:bg-neutral-800' : 'border-neutral-300 bg-white hover:bg-neutral-100'">
+              ☑ Tarea
+            </button>
+
+            <button type="button" (click)="executeSlashCommand('callout')" title="Caja de Alerta"
+                    class="px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded-lg sm:rounded-xl border text-[10px] sm:text-xs font-headline font-bold transition-all cursor-pointer text-yellow-400 shadow-sm shrink-0 whitespace-nowrap"
+                    [ngClass]="isDark ? 'border-neutral-700 bg-neutral-900 hover:bg-neutral-800' : 'border-neutral-300 bg-white hover:bg-neutral-100'">
+              💡 Alerta
+            </button>
+          </div>
+
+          <!-- DERECHA: CONTROLADOR DE ANCHO DE PANELES EN MODO VIVO SPLIT -->
+          <div *ngIf="editorViewMode === 'split'" class="flex items-center gap-1.5 bg-neutral-900/60 p-1 rounded-xl border border-neutral-800">
+            <span class="text-[10px] font-headline font-bold text-emerald-400 px-1 uppercase tracking-wider">Ancho Editor:</span>
+            
+            <button (click)="setSplitRatio(50)" title="Proporción 50% / 50%"
+                    class="px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold transition-all border"
+                    [ngClass]="editorSplitRatio === 50 ? 'bg-emerald-500 text-black border-emerald-400' : 'text-neutral-400 hover:text-white border-transparent'">
+              50/50
+            </button>
+
+            <button (click)="setSplitRatio(65)" title="Editor más ancho (65%)"
+                    class="px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold transition-all border"
+                    [ngClass]="editorSplitRatio === 65 ? 'bg-emerald-500 text-black border-emerald-400' : 'text-neutral-400 hover:text-white border-transparent'">
+              65/35
+            </button>
+
+            <button (click)="setSplitRatio(35)" title="Pizarra más ancha (65%)"
+                    class="px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold transition-all border"
+                    [ngClass]="editorSplitRatio === 35 ? 'bg-emerald-500 text-black border-emerald-400' : 'text-neutral-400 hover:text-white border-transparent'">
+              35/65
+            </button>
+
+            <div class="flex items-center gap-1 pl-1">
+              <button (click)="setSplitRatio(editorSplitRatio - 5)" title="Reducir 5%" class="px-1.5 py-0.5 rounded bg-neutral-800 text-xs hover:bg-neutral-700 text-neutral-200 font-bold">◀</button>
+              <span class="text-[10px] font-mono font-bold text-emerald-400 min-w-[28px] text-center">{{ editorSplitRatio }}%</span>
+              <button (click)="setSplitRatio(editorSplitRatio + 5)" title="Ampliar 5%" class="px-1.5 py-0.5 rounded bg-neutral-800 text-xs hover:bg-neutral-700 text-neutral-200 font-bold">▶</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- MAIN CANVAS WORKSPACE GRID CON ANCHO DINÁMICO RESIZABLE -->
+        <div *ngIf="editorViewMode === 'split'" class="flex flex-col lg:flex-row gap-5 items-stretch">
+          
+          <!-- PANE IZQUIERDO: TEXTAREA EDITOR MARKDOWN CON ANCHO PERSONALIZABLE -->
+          <div [style.width.%]="editorSplitRatio" class="relative space-y-2 shrink-0 transition-all duration-150 min-w-0">
+            
+            <!-- BARRA DE ASISTENTE DE COMANDOS NOTION CON ICONO MEJORADO Y COLOR DINÁMICO DEL CUADERNO -->
+            <div class="flex items-center justify-between gap-2 px-1">
+              <div class="flex items-center gap-2 text-xs font-headline font-bold flex-wrap" [style.color]="getNotebookColor()">
+                <span class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 border shadow-sm"
+                      [style.backgroundColor]="getNotebookColor() + '18'"
+                      [style.borderColor]="getNotebookColor() + '35'"
+                      [style.color]="getNotebookColor()">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                  </svg>
+                </span>
+                <span>Escribe</span>
+                <kbd class="px-2 py-0.5 rounded-md font-mono text-[11px] font-bold shadow-sm border"
+                     [style.backgroundColor]="getNotebookColor() + '20'"
+                     [style.borderColor]="getNotebookColor() + '40'"
+                     [style.color]="getNotebookColor()">/</kbd>
+                <span class="opacity-60">•</span>
+                <span>presiona</span>
+                <kbd class="px-2 py-0.5 rounded-md font-mono text-[11px] font-bold shadow-sm border"
+                     [style.backgroundColor]="getNotebookColor() + '20'"
+                     [style.borderColor]="getNotebookColor() + '40'"
+                     [style.color]="getNotebookColor()">ENTER</kbd>
+              </div>
+
+              <!-- BOTÓN TRIGGER SLASH MENU -->
+              <button type="button" (click)="showSlashMenu = !showSlashMenu"
+                      class="px-3 py-1 rounded-full text-xs font-headline font-bold border transition-all cursor-pointer flex items-center gap-1.5 shadow-sm hover:scale-[1.02]"
+                      [style.borderColor]="getNotebookColor() + '40'"
+                      [style.color]="getNotebookColor()"
+                      [ngClass]="isDark ? 'bg-neutral-800/80 hover:bg-neutral-700' : 'bg-neutral-100 hover:bg-neutral-200'">
+                <span>/ Comandos</span>
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+              </button>
+            </div>
+
+            <!-- NOTION SLASH COMMANDS POPOVER DROPDOWN MENU -->
+            <div *ngIf="showSlashMenu" 
+                 class="absolute left-0 right-0 sm:right-auto sm:w-84 top-10 z-40 rounded-2xl border shadow-2xl p-2.5 animate-fade-in backdrop-blur-md max-h-84 overflow-y-auto"
+                 [ngClass]="isDark ? 'bg-neutral-900/95 border-neutral-700 text-white' : 'bg-white/95 border-neutral-200 text-neutral-900'">
+              
+              <div class="p-2 border-b mb-1 flex items-center justify-between" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+                <span class="text-[10px] font-headline font-bold uppercase tracking-widest" [style.color]="getNotebookColor()">Comandos Notion (Flechas + Enter)</span>
+                <button (click)="showSlashMenu = false" class="text-xs opacity-60 hover:opacity-100">✕</button>
+              </div>
+
+              <div class="space-y-1">
+                <button 
+                  *ngFor="let item of filteredSlashCommands; let i = index"
+                  type="button"
+                  (click)="executeSlashCommand(item.key)"
+                  class="w-full p-2.5 rounded-xl text-left flex items-center gap-3 transition-all cursor-pointer border"
+                  [ngClass]="i === slashSelectedIndex ? (isDark ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300 shadow-sm' : 'bg-emerald-50 border-emerald-300 text-emerald-900 shadow-sm') : (isDark ? 'border-transparent hover:bg-neutral-800 text-neutral-300' : 'border-transparent hover:bg-neutral-100 text-neutral-800')"
+                >
+                  <div class="w-8 h-8 rounded-lg font-headline font-bold flex items-center justify-center text-xs shrink-0"
+                       [style.backgroundColor]="i === slashSelectedIndex ? getNotebookColor() : getNotebookColor() + '15'"
+                       [style.borderColor]="getNotebookColor() + '30'"
+                       [style.color]="i === slashSelectedIndex ? '#000000' : getNotebookColor()">
+                    {{ item.icon }}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between">
+                      <h5 class="text-xs font-headline font-bold truncate">{{ item.title }}</h5>
+                      <span *ngIf="i === slashSelectedIndex" class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded shadow-sm text-black" [style.backgroundColor]="getNotebookColor()">ENTER ↵</span>
+                    </div>
+                    <p class="text-[10px] opacity-60 truncate">{{ item.desc }}</p>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <!-- TEXTAREA EDITOR MARKDOWN -->
+            <textarea 
+              #editorTextarea
+              [(ngModel)]="selectedPage.content"
+              (input)="onTextareaInput($event)"
+              (keydown)="onTextareaKeydown($event)"
+              rows="22"
+              placeholder="Escribe tus apuntes aquí... Escribe '/' o usa la barra estilo Word para insertar bloques."
+              class="w-full p-3.5 sm:p-6 text-sm sm:text-lg font-mono leading-relaxed rounded-2xl border focus:outline-none focus:ring-2 focus:ring-emerald-500/50 resize-y transition-all"
+              [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800 text-neutral-100 placeholder:text-neutral-600' : 'bg-neutral-50 border-neutral-200 text-neutral-900 placeholder:text-neutral-400'"
+            ></textarea>
+          </div>
+
+          <!-- PANE DERECHO: VISOR LIVE NOTION CON ANCHO DINÁMICO RENDERIZADO EN TIEMPO REAL -->
+          <div [style.width.%]="100 - editorSplitRatio" 
+               class="flex-1 min-w-0 p-4 sm:p-7 rounded-2xl border min-h-[460px] text-sm sm:text-lg leading-snug relative overflow-y-auto max-h-[680px] shadow-inner transition-all duration-150"
+               [ngClass]="isDark ? 'bg-neutral-950/80 border-neutral-800 text-neutral-100' : 'bg-neutral-50 border-neutral-200 text-neutral-900'">
+            
+            <div class="flex items-center justify-between border-b pb-3 mb-4 opacity-70"
+                 [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+              <span class="text-[11px] font-headline font-bold uppercase tracking-widest flex items-center gap-1.5" [style.color]="getNotebookColor()">
+                <span class="w-2 h-2 rounded-full animate-ping" [style.backgroundColor]="getNotebookColor()"></span>
+                <span>Pizarra Notion Renderizada en Vivo</span>
+              </span>
+              <span class="text-[10px] font-mono opacity-50">Ancho: {{ 100 - editorSplitRatio }}%</span>
+            </div>
+
+            <div [innerHTML]="formatMarkdown(selectedPage.content || '', isDark)"></div>
+          </div>
+
+        </div>
+
+        <!-- MODO SOLO EDITOR A PANTALLA COMPLETA -->
+        <div *ngIf="editorViewMode === 'edit'" class="relative space-y-2">
+          <!-- BARRA DE ASISTENTE DE COMANDOS NOTION -->
+          <div class="flex items-center justify-between gap-2 px-1">
+            <div class="flex items-center gap-2 text-xs font-headline font-bold flex-wrap" [style.color]="getNotebookColor()">
+              <span class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 border shadow-sm"
+                    [style.backgroundColor]="getNotebookColor() + '18'"
+                    [style.borderColor]="getNotebookColor() + '35'"
+                    [style.color]="getNotebookColor()">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                </svg>
+              </span>
+              <span>Escribe</span>
+              <kbd class="px-2 py-0.5 rounded-md font-mono text-[11px] font-bold shadow-sm border"
+                   [style.backgroundColor]="getNotebookColor() + '20'"
+                   [style.borderColor]="getNotebookColor() + '40'"
+                   [style.color]="getNotebookColor()">/</kbd>
+              <span class="opacity-60">•</span>
+              <span>presiona</span>
+              <kbd class="px-2 py-0.5 rounded-md font-mono text-[11px] font-bold shadow-sm border"
+                   [style.backgroundColor]="getNotebookColor() + '20'"
+                   [style.borderColor]="getNotebookColor() + '40'"
+                   [style.color]="getNotebookColor()">ENTER</kbd>
+            </div>
+
+            <button type="button" (click)="showSlashMenu = !showSlashMenu"
+                    class="px-3 py-1 rounded-full text-xs font-headline font-bold border transition-all cursor-pointer flex items-center gap-1.5 shadow-sm hover:scale-[1.02]"
+                    [style.borderColor]="getNotebookColor() + '40'"
+                    [style.color]="getNotebookColor()"
+                    [ngClass]="isDark ? 'bg-neutral-800/80 hover:bg-neutral-700' : 'bg-neutral-100 hover:bg-neutral-200'">
+              <span>/ Comandos</span>
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+            </button>
+          </div>
+
+          <textarea 
+            #editorTextarea
+            [(ngModel)]="selectedPage.content"
+            (input)="onTextareaInput($event)"
+            (keydown)="onTextareaKeydown($event)"
+            rows="24"
+            placeholder="Escribe tus apuntes aquí... Escribe '/' para desplegar el menú Notion."
+            class="w-full p-6 text-base sm:text-lg font-mono leading-relaxed rounded-2xl border focus:outline-none focus:ring-2 focus:ring-emerald-500/50 resize-y transition-all"
+            [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800 text-neutral-100 placeholder:text-neutral-600' : 'bg-neutral-50 border-neutral-200 text-neutral-900 placeholder:text-neutral-400'"
+          ></textarea>
+        </div>
+
+        <!-- MODO SOLO VISTA PREVIA A PANTALLA COMPLETA -->
+        <div *ngIf="editorViewMode === 'preview'" 
+             class="p-7 rounded-2xl border min-h-[500px] text-base sm:text-lg leading-relaxed shadow-inner"
+             [ngClass]="isDark ? 'bg-neutral-950/80 border-neutral-800 text-neutral-100' : 'bg-neutral-50 border-neutral-200 text-neutral-900'">
+          <div [innerHTML]="formatMarkdown(selectedPage.content || '', isDark)"></div>
+        </div>
+
+      </ng-container>
+
+      <ng-template #noPageSelected>
+        <div class="p-12 text-center opacity-50">
+          <svg class="w-8 h-8 mx-auto mb-2 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+          <p class="text-xs">Selecciona un apunte de la lista lateral o crea uno nuevo.</p>
+        </div>
+      </ng-template>
+
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════
+       MODAL CARPETAS (DIVIDIDO EN 2 SECCIONES ANCHAS max-w-4xl)
+  ══════════════════════════════════════ -->
+  <div *ngIf="isFolderModalOpen" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="rounded-[32px] p-7 w-full max-w-4xl border shadow-2xl space-y-6 my-8 animate-fade-in"
+         [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
+      
+      <!-- MODAL HEADER -->
+      <div class="flex items-center justify-between pb-4 border-b" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl flex items-center justify-center shadow-inner"
+               [style.backgroundColor]="folderForm.color + '25'" [style.color]="folderForm.color">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/></svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-headline font-black">
+              {{ editingFolderId ? 'Editar Carpeta de Estudio' : 'Nueva Carpeta de Estudio' }}
+            </h3>
+            <p class="text-xs opacity-60">Personaliza la presentación y apariencia de tu materia.</p>
+          </div>
+        </div>
+        <button (click)="isFolderModalOpen = false" class="p-2 rounded-full hover:bg-neutral-800 opacity-60 hover:opacity-100 transition-all">✕</button>
+      </div>
+
+      <!-- GRID PRINCIPAL DE 2 SECCIONES -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-7 text-xs">
+        <!-- SECCIÓN IZQUIERDA -->
+        <div class="space-y-5">
+          <div>
+            <label class="block font-headline font-bold mb-1.5 uppercase tracking-wider text-[11px] opacity-70">Nombre de la Materia / Carpeta</label>
+            <input 
+              type="text" 
+              [(ngModel)]="folderForm.name" 
+              placeholder="ej. Inglés, Bases de Datos, Desarrollo Web"
+              class="w-full p-3.5 rounded-2xl border font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
+              [ngClass]="isDark ? 'bg-neutral-800/80 border-neutral-700 text-white placeholder:text-neutral-500' : 'bg-neutral-100 border-neutral-200 text-neutral-900 placeholder:text-neutral-400'" 
+            />
+          </div>
+
+          <div>
+            <label class="block font-headline font-bold mb-1.5 uppercase tracking-wider text-[11px] opacity-70">Descripción breve</label>
+            <textarea 
+              [(ngModel)]="folderForm.description" 
+              rows="3"
+              placeholder="ej. Vocabulario A1-B2, consultas SQL y modelos ER..."
+              class="w-full p-3.5 rounded-2xl border font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all resize-none"
+              [ngClass]="isDark ? 'bg-neutral-800/80 border-neutral-700 text-white placeholder:text-neutral-500' : 'bg-neutral-100 border-neutral-200 text-neutral-900 placeholder:text-neutral-400'"
+            ></textarea>
+          </div>
+
+          <div>
+            <label class="block font-headline font-bold mb-2 uppercase tracking-wider text-[11px] opacity-70">Color distintivo</label>
+            <div class="flex items-center gap-2.5 flex-wrap">
+              <button 
+                *ngFor="let color of presetColors"
+                type="button"
+                (click)="selectFolderColor(color)"
+                class="w-8 h-8 rounded-full transition-transform hover:scale-125 cursor-pointer border-2 relative flex items-center justify-center"
+                [style.backgroundColor]="color"
+                [class.border-white]="folderForm.color === color"
+                [class.border-transparent]="folderForm.color !== color"
+                [class.scale-115]="folderForm.color === color"
+              >
+                <svg *ngIf="folderForm.color === color" class="w-4 h-4 text-white drop-shadow-md" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN DERECHA -->
+        <div class="space-y-5">
+          <div>
+            <label class="block font-headline font-bold mb-2 uppercase tracking-wider text-[11px] opacity-70">Icono representativo</label>
+            <div class="grid grid-cols-7 gap-2 p-3 rounded-2xl border"
+                 [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+              
+              <button 
+                *ngFor="let iconKey of presetIcons"
+                type="button"
+                (click)="selectFolderIcon(iconKey)"
+                class="w-9 h-9 rounded-xl flex items-center justify-center border transition-all cursor-pointer hover:scale-110"
+                [ngClass]="folderForm.icon === iconKey ? 'border-emerald-500 bg-emerald-500/20 text-emerald-400 shadow-sm' : (isDark ? 'border-neutral-800 bg-neutral-900/60 text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-200 bg-white text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100')"
+              >
+                <svg *ngIf="iconKey === 'folder'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/></svg>
+                <svg *ngIf="iconKey === 'book'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25"/></svg>
+                <svg *ngIf="iconKey === 'code'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+                <svg *ngIf="iconKey === 'database'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
+                <svg *ngIf="iconKey === 'tech'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 15.75H3m18 0h-1.5M8.25 19.5V21m7.5-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25z"/></svg>
+                <svg *ngIf="iconKey === 'globe'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9s2.015-9 4.5-9m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m-17.432-4.506A8.959 8.959 0 003 12c0 .778.099 1.533.284 2.253"/></svg>
+                <svg *ngIf="iconKey === 'academic'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147L12 14.6l7.74-4.453a1.125 1.125 0 000-1.947L12 3.75 4.26 8.2a1.125 1.125 0 000 1.947zM4.26 10.147V16.5A1.125 1.125 0 005.385 17.625h13.23a1.125 1.125 0 001.125-1.125v-6.353"/></svg>
+                <svg *ngIf="iconKey === 'layers'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L12 7.5l5.571 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 18.75l-9.75-5.25 4.179-2.25"/></svg>
+                <svg *ngIf="iconKey === 'star'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385c.116.488-.42.877-.84.629l-4.706-2.785a.563.563 0 00-.573 0l-4.706 2.785c-.42.248-.956-.141-.84-.629l1.285-5.385a.563.563 0 00-.182-.557l-4.204-3.602c-.38-.325-.178-.948.32-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
+                <svg *ngIf="iconKey === 'sparkles'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/></svg>
+                <svg *ngIf="iconKey === 'chart'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v16.5m0 0h16.5m-16.5 0l4.772-5.725a1.125 1.125 0 011.666-.086l5.811 5.8 4.772-5.725"/></svg>
+                <svg *ngIf="iconKey === 'shield'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
+                <svg *ngIf="iconKey === 'bookmark'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z"/></svg>
+                <svg *ngIf="iconKey === 'pencil'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- VISTA PREVIA EN TIEMPO REAL -->
+          <div>
+            <label class="block font-headline font-bold mb-2 uppercase tracking-wider text-[11px] opacity-70">Vista Previa de la Tarjeta</label>
+            <div class="relative p-5 rounded-[24px] border transition-all overflow-hidden shadow-sm flex flex-col justify-between"
+                 [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200'">
+              <div class="absolute top-0 left-0 right-0 h-1.5" [style.backgroundColor]="folderForm.color"></div>
+              
+              <div>
+                <div class="flex items-start justify-between gap-3 mb-4">
+                  <div class="w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner"
+                       [style.backgroundColor]="folderForm.color + '20'" [style.color]="folderForm.color">
+                    <svg *ngIf="folderForm.icon === 'code'" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+                    <svg *ngIf="folderForm.icon === 'database'" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
+                    <svg *ngIf="folderForm.icon === 'book'" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25"/></svg>
+                    <svg *ngIf="!folderForm.icon || ['code','database','book'].indexOf(folderForm.icon) === -1" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/></svg>
+                  </div>
+                  <span class="text-[10px] font-headline font-semibold px-2.5 py-0.5 rounded-full border border-emerald-500/30 text-emerald-400 bg-emerald-500/10">
+                    Vista Previa
+                  </span>
+                </div>
+
+                <h4 class="font-headline font-bold text-base" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                  {{ folderForm.name || 'Nombre de la Materia' }}
+                </h4>
+                <p class="text-xs opacity-60 line-clamp-2 mt-1">
+                  {{ folderForm.description || 'Descripción breve de la materia o área de estudio...' }}
+                </p>
+              </div>
+
+              <div class="mt-4 pt-3 border-t flex items-center justify-between text-xs font-semibold opacity-60"
+                   [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+                <span>0 cuadernos</span>
+                <span>0 notas</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- MODAL FOOTER -->
+      <div class="flex items-center gap-3 pt-5 border-t" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+        <button (click)="isFolderModalOpen = false" 
+                class="flex-1 py-3.5 rounded-xl text-xs sm:text-sm font-headline font-bold uppercase tracking-wider border transition-all duration-300 cursor-pointer text-center"
+                [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200' : 'border-neutral-200 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'">
+          Cancelar
+        </button>
+
+        <button (click)="saveFolder()" 
+                class="flex-1 py-3.5 rounded-xl text-xs sm:text-sm font-headline font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer shadow-md hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+                [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+          </svg>
+          <span>Guardar Carpeta</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       MODAL CUADERNOS
+  ══════════════════════════════════════ -->
+  <div *ngIf="isNotebookModalOpen" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="rounded-[32px] p-7 w-full max-w-3xl border shadow-2xl space-y-6 my-8 animate-fade-in"
+         [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
+      
+      <div class="flex items-center justify-between pb-4 border-b" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl flex items-center justify-center shadow-inner"
+               [style.backgroundColor]="notebookForm.color + '25'" [style.color]="notebookForm.color">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25"/></svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-headline font-black">
+              {{ editingNotebookId ? 'Editar Cuaderno' : 'Nuevo Cuaderno de Estudio' }}
+            </h3>
+            <p class="text-xs opacity-60">Perteneciente a la materia {{ selectedFolder?.name }}.</p>
+          </div>
+        </div>
+        <button (click)="isNotebookModalOpen = false" class="p-2 rounded-full hover:bg-neutral-800 opacity-60 hover:opacity-100 transition-all">✕</button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+        <!-- IZQUIERDA -->
+        <div class="space-y-4">
+          <div>
+            <label class="block font-headline font-bold mb-1.5 uppercase tracking-wider text-[11px] opacity-70">Título del Cuaderno</label>
+            <input 
+              type="text" 
+              [(ngModel)]="notebookForm.title" 
+              placeholder="ej. Cuaderno - A1, Consultas SQL Avanzadas..."
+              class="w-full p-3.5 rounded-2xl border font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
+              [ngClass]="isDark ? 'bg-neutral-800/80 border-neutral-700 text-white placeholder:text-neutral-500' : 'bg-neutral-100 border-neutral-200 text-neutral-900 placeholder:text-neutral-400'" 
+            />
+          </div>
+
+          <div>
+            <label class="block font-headline font-bold mb-1.5 uppercase tracking-wider text-[11px] opacity-70">Descripción breve</label>
+            <textarea 
+              [(ngModel)]="notebookForm.description" 
+              rows="3"
+              placeholder="ej. Gramática básica, verbos regulares e irregulares..."
+              class="w-full p-3.5 rounded-2xl border font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all resize-none"
+              [ngClass]="isDark ? 'bg-neutral-800/80 border-neutral-700 text-white placeholder:text-neutral-500' : 'bg-neutral-100 border-neutral-200 text-neutral-900 placeholder:text-neutral-400'"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- DERECHA -->
+        <div class="space-y-4">
+          <div>
+            <label class="block font-headline font-bold mb-2 uppercase tracking-wider text-[11px] opacity-70">Color de Portada</label>
+            <div class="flex items-center gap-2.5 flex-wrap">
+              <button 
+                *ngFor="let color of presetColors"
+                type="button"
+                (click)="selectNotebookColor(color)"
+                class="w-8 h-8 rounded-full transition-transform hover:scale-125 cursor-pointer border-2 relative flex items-center justify-center"
+                [style.backgroundColor]="color"
+                [class.border-white]="notebookForm.color === color"
+                [class.border-transparent]="notebookForm.color !== color"
+                [class.scale-115]="notebookForm.color === color"
+              >
+                <svg *ngIf="notebookForm.color === color" class="w-4 h-4 text-white drop-shadow-md" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-headline font-bold mb-2 uppercase tracking-wider text-[11px] opacity-70">Vista Previa del Cuaderno</label>
+            <div class="relative p-5 rounded-[24px] border overflow-hidden flex flex-col justify-between"
+                 [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800' : 'bg-white border-neutral-200'">
+              <div class="absolute top-0 left-0 bottom-0 w-2.5" [style.backgroundColor]="notebookForm.color"></div>
+              <div class="pl-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-headline font-bold text-white shadow-sm inline-block mb-2" [style.backgroundColor]="notebookForm.color">
+                  Cuaderno
+                </span>
+                <h4 class="font-headline font-bold text-base" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                  {{ notebookForm.title || 'Título del Cuaderno' }}
+                </h4>
+                <p class="text-xs opacity-60 line-clamp-2 mt-1">
+                  {{ notebookForm.description || 'Descripción del módulo de estudio...' }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL FOOTER CUADERNOS -->
+      <div class="flex items-center gap-3 pt-5 border-t" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+        <button (click)="isNotebookModalOpen = false" 
+                class="flex-1 py-3.5 rounded-xl text-xs sm:text-sm font-headline font-bold uppercase tracking-wider border transition-all duration-300 cursor-pointer text-center"
+                [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200' : 'border-neutral-200 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'">
+          Cancelar
+        </button>
+
+        <button (click)="saveNotebook()" 
+                class="flex-1 py-3.5 rounded-xl text-xs sm:text-sm font-headline font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer shadow-md hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+                [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+          </svg>
+          <span>Guardar Cuaderno</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       MODAL DE CONFIRMACIÓN DE ELIMINACIÓN
+  ══════════════════════════════════════ -->
+  <div *ngIf="isDeleteModalOpen" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="rounded-[32px] p-7 w-full max-w-md border shadow-2xl space-y-5 animate-fade-in"
+         [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
+      
+      <!-- ICONO ADVERTENCIA -->
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 flex items-center justify-center shrink-0 shadow-inner">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-lg font-headline font-black">
+            ¿Eliminar {{ deleteTargetType === 'folder' ? 'Carpeta' : (deleteTargetType === 'notebook' ? 'Cuaderno' : 'Apunte') }}?
+          </h3>
+          <p class="text-xs opacity-60">Esta acción no se puede deshacer.</p>
+        </div>
+      </div>
+
+      <!-- HIGHLIGHT BOX -->
+      <div class="p-4 rounded-2xl border text-xs font-mono font-bold flex items-center gap-3"
+           [ngClass]="isDark ? 'bg-neutral-950/80 border-neutral-800 text-red-400' : 'bg-red-50/60 border-red-200 text-red-700'">
+        <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+        <span class="truncate">"{{ deleteItemTitle }}"</span>
+      </div>
+
+      <p class="text-xs opacity-60 leading-relaxed">
+        Se eliminará permanentemente este elemento {{ deleteTargetType === 'folder' ? 'y todos los cuadernos y apuntes asociados.' : (deleteTargetType === 'notebook' ? 'y todas las páginas contenidas.' : '.') }}
+      </p>
+
+      <!-- BOTONES DEL MODAL -->
+      <div class="flex items-center gap-3 pt-3 border-t" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+        <button (click)="closeDeleteModal()" 
+                class="flex-1 py-3 rounded-xl text-xs sm:text-sm font-headline font-bold uppercase tracking-wider border transition-all duration-300 cursor-pointer text-center"
+                [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200' : 'border-neutral-200 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'">
+          Cancelar
+        </button>
+
+        <button (click)="executeDelete()" 
+                class="flex-1 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs sm:text-sm font-headline font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer shadow-lg hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
+          </svg>
+          <span>Sí, Eliminar</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

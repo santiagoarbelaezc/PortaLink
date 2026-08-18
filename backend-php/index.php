@@ -78,6 +78,7 @@ use App\Controllers\ReportsController;
 use App\Controllers\ConfigController;
 use App\Controllers\MessagesController;
 use App\Controllers\SiteController;
+use App\Controllers\LibraryController;
 
 $request = new Request();
 $response = new Response();
@@ -335,6 +336,30 @@ $router->delete('/api/messages/:id', [MessagesController::class, 'deleteMessage'
 $router->get('/api/site/my', [SiteController::class, 'getMySite'], [AuthMiddleware::class]);
 $router->post('/api/site/save', [SiteController::class, 'saveMySite'], [AuthMiddleware::class]);
 $router->get('/api/site/:slug', [SiteController::class, 'getBySlug']);
+
+// ──────────────────────────────────────────────────────────────
+//  RUTAS DE BIBLIOTECA DE ESTUDIO (/api/library)
+// ──────────────────────────────────────────────────────────────
+// Carpetas (Nivel 1)
+$router->get('/api/library/folders', [LibraryController::class, 'getFolders'], [OptionalAuthMiddleware::class]);
+$router->post('/api/library/folders', [LibraryController::class, 'createFolder'], [OptionalAuthMiddleware::class]);
+$router->put('/api/library/folders/:id', [LibraryController::class, 'updateFolder'], [OptionalAuthMiddleware::class]);
+$router->delete('/api/library/folders/:id', [LibraryController::class, 'deleteFolder'], [OptionalAuthMiddleware::class]);
+
+// Cuadernos (Nivel 2)
+$router->get('/api/library/notebooks', [LibraryController::class, 'getNotebooks'], [OptionalAuthMiddleware::class]);
+$router->post('/api/library/notebooks', [LibraryController::class, 'createNotebook'], [OptionalAuthMiddleware::class]);
+$router->put('/api/library/notebooks/:id', [LibraryController::class, 'updateNotebook'], [OptionalAuthMiddleware::class]);
+$router->delete('/api/library/notebooks/:id', [LibraryController::class, 'deleteNotebook'], [OptionalAuthMiddleware::class]);
+
+// Apuntes / Páginas (Nivel 3)
+$router->get('/api/library/pages', [LibraryController::class, 'getPages'], [OptionalAuthMiddleware::class]);
+$router->post('/api/library/pages', [LibraryController::class, 'createPage'], [OptionalAuthMiddleware::class]);
+$router->put('/api/library/pages/:id', [LibraryController::class, 'updatePage'], [OptionalAuthMiddleware::class]);
+$router->delete('/api/library/pages/:id', [LibraryController::class, 'deletePage'], [OptionalAuthMiddleware::class]);
+
+// Buscador Global
+$router->get('/api/library/search', [LibraryController::class, 'searchLibrary'], [OptionalAuthMiddleware::class]);
 
 // Despachar la petición protegido contra errores fatales no capturados
 try {
