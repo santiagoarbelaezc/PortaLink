@@ -10,6 +10,13 @@ export interface SlashCommandItem {
   icon: string;
 }
 
+export interface NoteBlock {
+  id: string;
+  type: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto';
+  content: string;
+  language?: string;
+}
+
 @Component({
   selector: 'app-dash-library',
   standalone: true,
@@ -59,20 +66,42 @@ export class DashLibraryComponent implements OnInit {
   deleteItemTitle = '';
   deleteItemRef: any = null;
 
+  // Visual Block-Based Slate State
+  blocks: NoteBlock[] = [];
+  activeBlockId: string | null = null;
+  activeTypeMenuBlockId: string | null = null;
+
+  toggleBlockTypeMenu(blockId: string, event?: MouseEvent) {
+    if (event) event.stopPropagation();
+    this.activeTypeMenuBlockId = (this.activeTypeMenuBlockId === blockId) ? null : blockId;
+  }
+
+  selectBlockType(block: NoteBlock, newType: string) {
+    this.changeBlockType(block, newType);
+    this.activeTypeMenuBlockId = null;
+  }
+
+  getBlockTypeLabel(type: string): string {
+    switch (type) {
+      case 'titulo': return 'Título';
+      case 'subtitulo': return 'Subtítulo';
+      case 'codigo': return 'Código';
+      case 'alerta': return 'Alerta';
+      case 'texto': return 'Texto Normal';
+      default: return 'Texto Normal';
+    }
+  }
+
   // Notion Slash Command State with Keyboard Selection
   showSlashMenu = false;
   slashMenuQuery = '';
   slashSelectedIndex = 0;
   slashCommands: SlashCommandItem[] = [
-    { key: 'h2', title: 'Encabezado 2', desc: 'Título principal de sección', icon: 'H2' },
-    { key: 'h3', title: 'Encabezado 3', desc: 'Subtítulo secundario', icon: 'H3' },
-    { key: 'bold', title: 'Texto en Negrita', desc: 'Enfatizar texto importante', icon: 'B' },
-    { key: 'ts', title: 'Código TypeScript', desc: 'Bloque de código formateado TS', icon: 'TS' },
-    { key: 'sql', title: 'Código SQL', desc: 'Consultas y scripts de base de datos', icon: 'SQL' },
-    { key: 'todo', title: 'Lista de Tareas', desc: 'Casilla de verificación interactiva', icon: '☑' },
-    { key: 'callout', title: 'Alerta / Nota', desc: 'Caja destacada con consejo o idea', icon: '💡' },
-    { key: 'quote', title: 'Cita de Texto', desc: 'Bloque de cita elegante', icon: '“' },
-    { key: 'divider', title: 'Divisor', desc: 'Línea horizontal separadora', icon: '—' }
+    { key: 'titulo', title: 'Título', desc: 'Encabezado principal de sección', icon: 'H1' },
+    { key: 'subtitulo', title: 'Subtítulo', desc: 'Subtítulo secundario de sección', icon: 'H2' },
+    { key: 'codigo', title: 'Código', desc: 'Bloque de código formateado', icon: '</>' },
+    { key: 'alerta', title: 'Alerta / Nota', desc: 'Caja destacada con consejo o idea', icon: '!' },
+    { key: 'texto', title: 'Texto normal', desc: 'Párrafo de texto libre', icon: 'T' }
   ];
 
   // Color Swatches Palette
@@ -293,6 +322,9 @@ export class DashLibraryComponent implements OnInit {
               this.selectedPage = this.pages[0];
             }
           }
+          if (this.selectedPage) {
+            this.blocks = this.parseContentToBlocks(this.selectedPage.content || '');
+          }
           this.saveStateInLocalStorage();
         }
       }
@@ -302,10 +334,14 @@ export class DashLibraryComponent implements OnInit {
   selectPage(page: NotebookPage) {
     this.selectedPage = page;
     this.showSlashMenu = false;
+    this.blocks = this.parseContentToBlocks(page.content || '');
+    if (this.isMobileScreen) {
+      this.isSidebarCollapsed = true;
+    }
     this.saveStateInLocalStorage();
   }
 
-  editorViewMode: 'edit' | 'split' | 'preview' = 'split';
+  editorViewMode: 'edit' | 'split' | 'preview' = 'edit';
   editorSplitRatio: number = 50;
   isSidebarCollapsed: boolean = false;
   private autoSaveTimer: any = null;
@@ -332,11 +368,271 @@ export class DashLibraryComponent implements OnInit {
     }, 400);
   }
 
+  // ── BLOCK-BASED SLATE ENGINE (NO RAW MD VISIBLE ON CANVAS) ──────
+  generateBlockId(): string {
+    return 'blk_' + Math.random().toString(36).substring(2, 9);
+  }
+
+  parseContentToBlocks(content: string): NoteBlock[] {
+    if (!content || !content.trim()) {
+      return [{ id: this.generateBlockId(), type: 'texto', content: '' }];
+    }
+
+    const blocks: NoteBlock[] = [];
+    const lines = content.split('\n');
+    let i = 0;
+
+    while (i < lines.length) {
+      const line = lines[i];
+
+      // Bloque de Código: ```lang ... ```
+      if (line.trim().startsWith('```')) {
+        const langMatch = line.trim().match(/^```([a-zA-Z0-9_-]*)/);
+        const language = (langMatch && langMatch[1]) ? langMatch[1] : 'typescript';
+        const codeLines: string[] = [];
+        i++;
+        while (i < lines.length && !lines[i].trim().startsWith('```')) {
+          codeLines.push(lines[i]);
+          i++;
+        }
+        if (i < lines.length && lines[i].trim().startsWith('```')) {
+          i++;
+        }
+        blocks.push({
+          id: this.generateBlockId(),
+          type: 'codigo',
+          language,
+          content: codeLines.join('\n')
+        });
+        continue;
+      }
+
+      // Título (# o ##)
+      if (line.startsWith('# ') || line.startsWith('## ')) {
+        const text = line.replace(/^#{1,2}\s+/, '');
+        blocks.push({
+          id: this.generateBlockId(),
+          type: 'titulo',
+          content: text
+        });
+        i++;
+        continue;
+      }
+
+      // Subtítulo (### o ####)
+      if (line.startsWith('### ') || line.startsWith('#### ')) {
+        const text = line.replace(/^#{3,4}\s+/, '');
+        blocks.push({
+          id: this.generateBlockId(),
+          type: 'subtitulo',
+          content: text
+        });
+        i++;
+        continue;
+      }
+
+      // Alerta (> o > 💡)
+      if (line.startsWith('> ')) {
+        const alertLines: string[] = [];
+        while (i < lines.length && lines[i].startsWith('> ')) {
+          alertLines.push(lines[i].replace(/^>\s*(💡\s*|⚠️\s*|ℹ️\s*)?/, ''));
+          i++;
+        }
+        blocks.push({
+          id: this.generateBlockId(),
+          type: 'alerta',
+          content: alertLines.join('\n')
+        });
+        continue;
+      }
+
+      // Skip blank lines outside blocks
+      if (line.trim() === '') {
+        i++;
+        continue;
+      }
+
+      // Texto normal
+      const textLines: string[] = [];
+      while (
+        i < lines.length &&
+        !lines[i].trim().startsWith('```') &&
+        !lines[i].startsWith('# ') &&
+        !lines[i].startsWith('## ') &&
+        !lines[i].startsWith('### ') &&
+        !lines[i].startsWith('#### ') &&
+        !lines[i].startsWith('> ') &&
+        lines[i].trim() !== ''
+      ) {
+        textLines.push(lines[i]);
+        i++;
+      }
+
+      if (textLines.length > 0) {
+        blocks.push({
+          id: this.generateBlockId(),
+          type: 'texto',
+          content: textLines.join('\n')
+        });
+      }
+    }
+
+    if (blocks.length === 0) {
+      blocks.push({ id: this.generateBlockId(), type: 'texto', content: '' });
+    }
+
+    return blocks;
+  }
+
+  syncBlocksToContent() {
+    if (!this.selectedPage) return;
+
+    const mdParts = this.blocks.map(b => {
+      const rawContent = (b.content || '').trim();
+      if (b.type === 'titulo') {
+        return `# ${rawContent}`;
+      } else if (b.type === 'subtitulo') {
+        return `### ${rawContent}`;
+      } else if (b.type === 'codigo') {
+        const lang = b.language || 'typescript';
+        return `\`\`\`${lang}\n${b.content || ''}\n\`\`\``;
+      } else if (b.type === 'alerta') {
+        const lines = (b.content || '').split('\n');
+        return lines.map(l => `> 💡 ${l}`).join('\n');
+      } else {
+        return rawContent;
+      }
+    });
+
+    this.selectedPage.content = mdParts.join('\n\n');
+    this.onTitleInput();
+  }
+
+  onBlockInput(block: NoteBlock, event?: any) {
+    if (event && event.target && typeof event.target.value === 'string' && event.target.value.includes('/')) {
+      const val: string = event.target.value;
+      if (val.trim().startsWith('/')) {
+        this.showSlashMenu = true;
+        this.slashMenuQuery = val.trim();
+        this.slashSelectedIndex = 0;
+        this.activeBlockId = block.id;
+      }
+    }
+    this.syncBlocksToContent();
+  }
+
+  getLineCount(content: string, minRows: number = 1): number {
+    if (!content) return minRows;
+    const lines = content.split('\n').length;
+    return Math.max(minRows, lines);
+  }
+
+  onBlockKeydown(event: KeyboardEvent, block: NoteBlock, index: number) {
+    if (this.showSlashMenu) {
+      this.onTextareaKeydown(event);
+      return;
+    }
+
+    if (event.key === 'Enter') {
+      if (block.type === 'titulo' || block.type === 'subtitulo') {
+        if (!event.shiftKey) {
+          event.preventDefault();
+          this.addBlock('texto', index);
+        }
+      } else if (block.type === 'texto' || block.type === 'alerta') {
+        if (!event.shiftKey && block.content.trim() === '') {
+          event.preventDefault();
+          this.addBlock('texto', index);
+        }
+      }
+    } else if (event.key === 'Backspace' && block.content === '' && this.blocks.length > 1) {
+      event.preventDefault();
+      this.removeBlock(index);
+    }
+  }
+
+  addBlock(type: string, index?: number) {
+    const validTypes: ('titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto')[] = [
+      'titulo', 'subtitulo', 'codigo', 'alerta', 'texto'
+    ];
+    const blockType = validTypes.includes(type as any) ? (type as 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto') : 'texto';
+
+    const newBlock: NoteBlock = {
+      id: this.generateBlockId(),
+      type: blockType,
+      content: blockType === 'codigo' ? '// Tu código aquí\n' : '',
+      language: blockType === 'codigo' ? 'typescript' : undefined
+    };
+
+    if (typeof index === 'number') {
+      this.blocks.splice(index + 1, 0, newBlock);
+    } else {
+      this.blocks.push(newBlock);
+    }
+
+    this.activeBlockId = newBlock.id;
+    this.syncBlocksToContent();
+  }
+
+  removeBlock(index: number) {
+    if (this.blocks.length <= 1) {
+      this.blocks[0] = { id: this.generateBlockId(), type: 'texto', content: '' };
+    } else {
+      this.blocks.splice(index, 1);
+    }
+    this.syncBlocksToContent();
+  }
+
+  moveBlock(index: number, direction: 'up' | 'down') {
+    if (direction === 'up' && index > 0) {
+      const temp = this.blocks[index];
+      this.blocks[index] = this.blocks[index - 1];
+      this.blocks[index - 1] = temp;
+    } else if (direction === 'down' && index < this.blocks.length - 1) {
+      const temp = this.blocks[index];
+      this.blocks[index] = this.blocks[index + 1];
+      this.blocks[index + 1] = temp;
+    }
+    this.syncBlocksToContent();
+  }
+
+  duplicateBlock(index: number) {
+    const target = this.blocks[index];
+    if (!target) return;
+    const clone: NoteBlock = {
+      id: this.generateBlockId(),
+      type: target.type,
+      content: target.content,
+      language: target.language
+    };
+    this.blocks.splice(index + 1, 0, clone);
+    this.syncBlocksToContent();
+  }
+
+  changeBlockType(block: NoteBlock, newType: string) {
+    const validTypes: ('titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto')[] = [
+      'titulo', 'subtitulo', 'codigo', 'alerta', 'texto'
+    ];
+    block.type = validTypes.includes(newType as any) ? (newType as 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto') : 'texto';
+    if (block.type === 'codigo' && !block.language) {
+      block.language = 'typescript';
+    }
+    this.syncBlocksToContent();
+  }
+
+  copyCodeBlock(content: string) {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(content || '').then(() => {
+        this.showToast('Código copiado al portapapeles');
+      });
+    }
+  }
+
   createNewPage() {
     if (!this.selectedNotebook || !this.selectedNotebook.id) return;
 
     const tempId = Date.now();
-    const sampleContent = '## Resumen de la Lección\n\nEscribe tus apuntes aquí. Escribe `/` en cualquier línea para insertar bloques rápido.\n\n- [ ] Concepto clave 1\n- [ ] Práctica de código\n\n```typescript\n// Tu código aquí\nconst fecha = new Date();\n```\n';
+    const sampleContent = '# Título de la Lección de Estudio\n\nEste es un párrafo de texto normal. Escribe tus apuntes sin código markdown visible.\n\n### Subtítulo de Conceptos\n\n> 💡 **Nota:** Utiliza únicamente los 5 tipos de texto: Título, Subtítulo, Código, Alerta y Texto Normal.\n\n```typescript\n// Ejemplo de código fuente\nconst mensaje = "PortaLink - Apuntes Inteligentes";\nconsole.log(mensaje);\n```\n';
 
     const tempPage: NotebookPage = {
       id: tempId,
@@ -350,6 +646,7 @@ export class DashLibraryComponent implements OnInit {
     // ⚡ INSTANT OPTIMISTIC CREATION IN UI (0 ms)
     this.pages.unshift(tempPage);
     this.selectedPage = tempPage;
+    this.blocks = this.parseContentToBlocks(tempPage.content || '');
     this.showToast('Apunte creado exitosamente');
 
     this.libraryService.createPage({
@@ -363,7 +660,6 @@ export class DashLibraryComponent implements OnInit {
         if (res.ok && res.data) {
           const idx = this.pages.findIndex(p => p.id === tempId);
           
-          // Preservar cualquier edición hecha por el usuario mientras la API respondía
           const currentTitle = (this.selectedPage && this.selectedPage.id === tempId) ? this.selectedPage.title : tempPage.title;
           const currentContent = (this.selectedPage && this.selectedPage.id === tempId) ? this.selectedPage.content : tempPage.content;
           const currentTags = (this.selectedPage && this.selectedPage.id === tempId) ? this.selectedPage.tags : tempPage.tags;
@@ -421,20 +717,6 @@ export class DashLibraryComponent implements OnInit {
   // ── NOTION SLASH COMMANDS MENU WITH ARROW + ENTER NAVIGATION ────
   onTextareaInput(e: any) {
     this.autoSavePage();
-    const text: string = e.target.value || '';
-    const cursor = e.target.selectionStart || text.length;
-
-    // Check last line or typed slash
-    const textBeforeCursor = text.substring(0, cursor);
-    const lastLine = textBeforeCursor.split('\n').pop() || '';
-
-    if (lastLine.startsWith('/')) {
-      this.showSlashMenu = true;
-      this.slashMenuQuery = lastLine;
-      this.slashSelectedIndex = 0;
-    } else {
-      this.showSlashMenu = false;
-    }
   }
 
   onTextareaKeydown(event: KeyboardEvent) {
@@ -462,51 +744,29 @@ export class DashLibraryComponent implements OnInit {
   }
 
   executeSlashCommand(cmdKey: string) {
-    if (!this.selectedPage) return;
-    const textarea = this.editorTextarea?.nativeElement;
-    let content = this.selectedPage.content || '';
+    const validTypes: ('titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto')[] = [
+      'titulo', 'subtitulo', 'codigo', 'alerta', 'texto'
+    ];
+    const targetType = validTypes.includes(cmdKey as any) ? (cmdKey as 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto') : 'texto';
 
-    let cursorPos = content.length;
-    if (textarea) {
-      cursorPos = textarea.selectionStart || content.length;
+    if (this.activeBlockId) {
+      const targetBlock = this.blocks.find(b => b.id === this.activeBlockId);
+      if (targetBlock) {
+        if (targetBlock.content.startsWith('/')) {
+          targetBlock.content = targetBlock.content.substring(1);
+        }
+        targetBlock.type = targetType;
+      } else {
+        this.addBlock(targetType);
+      }
+    } else {
+      this.addBlock(targetType);
     }
 
-    const textBefore = content.substring(0, cursorPos);
-    const textAfter = content.substring(cursorPos);
-
-    // Reemplazar la barra '/' o consulta slash en la línea actual
-    const lastSlashIndex = textBefore.lastIndexOf('/');
-    let prefix = textBefore;
-    if (lastSlashIndex !== -1) {
-      prefix = textBefore.substring(0, lastSlashIndex);
-    }
-
-    let snippet = '';
-    if (cmdKey === 'h2') snippet = '## ';
-    else if (cmdKey === 'h3') snippet = '### ';
-    else if (cmdKey === 'bold') snippet = '**texto en negrita**';
-    else if (cmdKey === 'ts') snippet = '```typescript\n// Escribe tu código TypeScript aquí\nconst app = "PortaLink";\n```';
-    else if (cmdKey === 'sql') snippet = '```sql\n-- Escribe tu consulta SQL aquí\nSELECT * FROM usuarios;\n```';
-    else if (cmdKey === 'todo') snippet = '- [ ] ';
-    else if (cmdKey === 'callout') snippet = '> 💡 **Nota:** ';
-    else if (cmdKey === 'quote') snippet = '> ';
-    else if (cmdKey === 'divider') snippet = '---';
-
-    const newContent = prefix + snippet + textAfter;
-    const newCursorPos = prefix.length + snippet.length;
-
-    this.selectedPage.content = newContent;
     this.showSlashMenu = false;
     this.slashMenuQuery = '';
     this.slashSelectedIndex = 0;
-    this.autoSavePage();
-
-    if (textarea) {
-      setTimeout(() => {
-        textarea.focus();
-        textarea.setSelectionRange(newCursorPos, newCursorPos);
-      }, 10);
-    }
+    this.syncBlocksToContent();
   }
 
   // ── CONFIRMATION DELETE MODAL HELPERS ─────────────────────────
