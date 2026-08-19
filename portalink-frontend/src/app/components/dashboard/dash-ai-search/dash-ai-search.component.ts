@@ -22,8 +22,8 @@ const TAB_LABELS: Record<string, string> = {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <header class="flex-shrink-0 flex items-center justify-between px-4 sm:px-6 md:px-8 py-2 sm:py-5 border-b sticky top-0 z-30 transition-all duration-300"
-            style="padding-top: calc(env(safe-area-inset-top, 0px) + 0.35rem);"
+    <header class="flex-shrink-0 flex items-center justify-between px-4 sm:px-6 md:px-8 py-2.5 sm:py-3.5 md:!py-4 border-b sticky top-0 z-30 transition-all duration-300"
+            [style.padding-top]="isMobileScreen ? 'calc(env(safe-area-inset-top, 0px) + 0.35rem)' : null"
             [ngClass]="theme === 'dark' ? 'bg-[#07070a]/95 backdrop-blur-xl border-neutral-800' : 'bg-white/95 backdrop-blur-xl border-neutral-200'">
 
       <!-- Breadcrumb -->
@@ -100,5 +100,9 @@ export class DashAiSearchComponent {
 
   get currentLabel() {
     return TAB_LABELS[this.activeTab] || 'Panel';
+  }
+
+  get isMobileScreen(): boolean {
+    return typeof window !== 'undefined' && window.innerWidth < 768;
   }
 }

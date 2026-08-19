@@ -530,11 +530,13 @@ export class DashLibraryComponent implements OnInit {
   getLineCount(content: string, minRows: number = 1, type: string = 'texto'): number {
     if (!content) return minRows;
 
-    let maxCharsPerLine = 38;
-    if (type === 'titulo') maxCharsPerLine = 20;
-    else if (type === 'subtitulo') maxCharsPerLine = 26;
-    else if (type === 'alerta') maxCharsPerLine = 34;
-    else if (type === 'codigo') maxCharsPerLine = 32;
+    const isMobile = this.isMobileScreen || (typeof window !== 'undefined' && window.innerWidth < 768);
+
+    let maxCharsPerLine = isMobile ? 38 : 110;
+    if (type === 'titulo') maxCharsPerLine = isMobile ? 20 : 55;
+    else if (type === 'subtitulo') maxCharsPerLine = isMobile ? 26 : 75;
+    else if (type === 'alerta') maxCharsPerLine = isMobile ? 34 : 100;
+    else if (type === 'codigo') maxCharsPerLine = isMobile ? 32 : 90;
 
     const lines = content.split('\n');
     let totalRows = 0;
@@ -604,6 +606,46 @@ export class DashLibraryComponent implements OnInit {
       this.blocks.splice(index, 1);
     }
     this.syncBlocksToContent();
+  }
+
+  draggedBlockIndex: number | null = null;
+  dragOverBlockIndex: number | null = null;
+
+  onBlockDragStart(index: number, event: DragEvent) {
+    this.draggedBlockIndex = index;
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', index.toString());
+    }
+  }
+
+  onBlockDragOver(index: number, event: DragEvent) {
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
+    this.dragOverBlockIndex = index;
+  }
+
+  onBlockDragLeave() {
+    this.dragOverBlockIndex = null;
+  }
+
+  onBlockDrop(targetIndex: number, event: DragEvent) {
+    event.preventDefault();
+    this.dragOverBlockIndex = null;
+    if (this.draggedBlockIndex === null || this.draggedBlockIndex === targetIndex) return;
+
+    const movedBlock = this.blocks.splice(this.draggedBlockIndex, 1)[0];
+    this.blocks.splice(targetIndex, 0, movedBlock);
+
+    this.draggedBlockIndex = null;
+    this.syncBlocksToContent();
+  }
+
+  onBlockDragEnd() {
+    this.draggedBlockIndex = null;
+    this.dragOverBlockIndex = null;
   }
 
   moveBlock(index: number, direction: 'up' | 'down') {

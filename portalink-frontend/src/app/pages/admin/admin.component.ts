@@ -188,7 +188,7 @@ interface Tab {
         </app-dash-ai-search>
 
         <!-- Content -->
-        <main class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain pb-20 md:pb-8 no-scrollbar"
+        <main class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain md:overscroll-auto md:scroll-smooth pb-20 md:pb-8 no-scrollbar"
               [ngClass]="isDark ? 'bg-[#020204]' : 'bg-white'">
           <div class="p-4 sm:p-6 md:p-8 w-full transition-all duration-300">
 
