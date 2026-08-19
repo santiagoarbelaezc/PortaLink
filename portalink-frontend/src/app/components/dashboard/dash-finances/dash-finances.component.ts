@@ -79,41 +79,41 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
         </div>
 
         <!-- Comprehensive Filters -->
-        <div class="rounded-2xl border p-4 mb-4 flex flex-wrap gap-4 items-end"
+        <div class="rounded-2xl border p-3.5 sm:p-4 mb-4 grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4 items-end"
              [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
-           <div class="flex flex-col gap-1.5 flex-grow min-w-[200px]">
+           <div class="flex flex-col gap-1.5 col-span-2 sm:flex-grow sm:min-w-[200px]">
              <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Buscar Empresa o Cliente</label>
              <input type="text" [(ngModel)]="invFilterCompany" (ngModelChange)="buildKpis()" placeholder="Ej: TechCorp"
                     class="w-full px-3 py-2 rounded-xl text-sm border outline-none bg-transparent"
                     [ngClass]="isDark ? 'border-neutral-700 text-white placeholder-neutral-600 focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
            </div>
-           <div class="flex flex-col gap-1.5 w-28">
+           <div class="flex flex-col gap-1.5 col-span-1 sm:w-28">
              <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Precio Min</label>
              <input type="number" [(ngModel)]="invFilterMinPrice" (ngModelChange)="buildKpis()" placeholder="0"
                     class="w-full px-3 py-2 rounded-xl text-sm border outline-none bg-transparent"
                     [ngClass]="isDark ? 'border-neutral-700 text-white placeholder-neutral-600 focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
            </div>
-           <div class="flex flex-col gap-1.5 w-28">
+           <div class="flex flex-col gap-1.5 col-span-1 sm:w-28">
              <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Precio Max</label>
              <input type="number" [(ngModel)]="invFilterMaxPrice" (ngModelChange)="buildKpis()" placeholder="Múltiplo"
                     class="w-full px-3 py-2 rounded-xl text-sm border outline-none bg-transparent"
                     [ngClass]="isDark ? 'border-neutral-700 text-white placeholder-neutral-600 focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
            </div>
-           <div class="flex flex-col gap-1.5 w-32">
+           <div class="flex flex-col gap-1.5 col-span-1 sm:w-32">
              <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Desde (Fecha)</label>
              <input type="date" [(ngModel)]="invFilterStartDate" (ngModelChange)="buildKpis()"
                     class="w-full px-3 py-2 rounded-xl text-sm border outline-none bg-transparent cursor-pointer"
                     [ngClass]="isDark ? 'border-neutral-700 text-white focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 focus:border-neutral-500'">
            </div>
-           <div class="flex flex-col gap-1.5 w-32">
+           <div class="flex flex-col gap-1.5 col-span-1 sm:w-32">
              <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Hasta (Fecha)</label>
              <input type="date" [(ngModel)]="invFilterEndDate" (ngModelChange)="buildKpis()"
                     class="w-full px-3 py-2 rounded-xl text-sm border outline-none bg-transparent cursor-pointer"
                     [ngClass]="isDark ? 'border-neutral-700 text-white focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 focus:border-neutral-500'">
            </div>
-           <div class="flex-shrink-0">
+           <div class="col-span-2 sm:flex-shrink-0">
              <button (click)="kpiPeriod='all'; invFilterCompany=''; invFilterMinPrice=null; invFilterMaxPrice=null; invFilterStartDate=''; invFilterEndDate=''; buildKpis()"
-                     class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest border transition-colors cursor-pointer"
+                     class="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest border transition-colors cursor-pointer"
                      [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-300 text-neutral-500 hover:text-black hover:bg-neutral-100'">
                Limpiar
              </button>
@@ -281,7 +281,8 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
 
           <div class="divide-y" [ngClass]="isDark ? 'divide-neutral-800/60' : 'divide-neutral-100'">
             <ng-container *ngFor="let inv of recentInvoices">
-              <div (click)="toggleInvoice(inv.id)" class="grid grid-cols-12 px-6 py-3.5 items-center group cursor-pointer transition-colors"
+              <!-- Desktop Table Row -->
+              <div (click)="toggleInvoice(inv.id)" class="hidden md:grid md:grid-cols-12 px-6 py-3.5 items-center group cursor-pointer transition-colors"
                    [ngClass]="isDark ? 'hover:bg-neutral-800/30' : 'hover:bg-neutral-50'">
                 <div class="col-span-3 flex items-center gap-2">
                   <span class="text-xs font-semibold font-sans" [ngClass]="isDark ? 'text-neutral-400 group-hover:text-white' : 'text-neutral-500 group-hover:text-black'">#{{ inv.invoice_number || inv.id }}</span>
@@ -299,6 +300,25 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                     {{ inv.status === 'Parcial' || inv.status === 'PARCIAL' ? 'Abonada (' + getInvoicePaidPct(inv) + '%)' : inv.status }}
                   </span>
                   <svg class="w-4 h-4 ml-1 transition-transform duration-200" [ngClass]="expandedInvoiceId === inv.id ? 'rotate-180 text-white' : (isDark ? 'text-neutral-500 group-hover:text-white' : 'text-neutral-400 group-hover:text-black')" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+              </div>
+
+              <!-- Mobile Native Card Row (Optimized for iPhone 13) -->
+              <div (click)="toggleInvoice(inv.id)" class="md:hidden p-3.5 flex items-center justify-between gap-3 cursor-pointer transition-colors active:bg-neutral-800/40"
+                   [ngClass]="isDark ? 'hover:bg-neutral-800/30' : 'hover:bg-neutral-50'">
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="text-xs font-extrabold font-mono" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">#{{ inv.invoice_number || inv.id }}</span>
+                    <span class="text-[9px] font-bold uppercase px-2 py-0.5 rounded-full border" [ngClass]="getStatusClass(inv.status)">
+                      {{ inv.status === 'Parcial' || inv.status === 'PARCIAL' ? 'Abonada (' + getInvoicePaidPct(inv) + '%)' : inv.status }}
+                    </span>
+                  </div>
+                  <h4 class="text-xs font-extrabold truncate" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ inv.clientName || 'Cliente' }}</h4>
+                  <p class="text-[10px] truncate opacity-60" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ inv.clientCompany || 'Independiente' }}</p>
+                </div>
+                <div class="text-right shrink-0 flex flex-col items-end gap-1">
+                  <span class="text-xs font-black font-sans block" [ngClass]="isDark ? 'text-emerald-400' : 'text-emerald-700'">{{ formatCOP(inv.total || inv.total_amount || 0) }}</span>
+                  <svg class="w-4 h-4 transition-transform duration-200" [ngClass]="expandedInvoiceId === inv.id ? 'rotate-180 text-emerald-400' : 'text-neutral-500'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                 </div>
               </div>
               
@@ -396,8 +416,8 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
            </div>
         </div>
 
-        <!-- Client table -->
-        <div class="rounded-2xl border overflow-hidden"
+        <!-- Client table (Desktop View) -->
+        <div class="rounded-2xl border overflow-hidden hidden md:block"
              [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
           <div class="grid grid-cols-12 px-5 py-3 text-[10px] font-bold uppercase tracking-widest border-b"
                [ngClass]="isDark ? 'border-neutral-800 text-neutral-500' : 'border-neutral-200 text-neutral-400'">
@@ -442,6 +462,70 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                  [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-400'">
               No se encontraron clientes.
             </div>
+          </div>
+        </div>
+
+        <!-- Mobile Client Cards (App Native Experience for iPhone 13) -->
+        <div class="space-y-3 block md:hidden">
+          <div *ngFor="let c of displayedClients" class="rounded-2xl border p-4 transition-all shadow-xs"
+               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200'">
+            
+            <div class="flex items-start justify-between gap-3 mb-2.5">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 border"
+                     [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white' : 'bg-neutral-100 border-neutral-200 text-neutral-900'">
+                  {{ c.name.charAt(0).toUpperCase() }}
+                </div>
+                <div class="min-w-0">
+                  <h4 class="text-sm font-extrabold truncate" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ c.name }}</h4>
+                  <p class="text-[11px] opacity-60 truncate" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Desde {{ c.createdAt | date:'MMM yyyy' }}</p>
+                </div>
+              </div>
+
+              <!-- Quick action buttons -->
+              <div class="flex items-center gap-1 shrink-0">
+                <button (click)="editClient(c)" title="Editar" class="p-2 rounded-xl cursor-pointer border active:scale-95 transition-all"
+                        [ngClass]="isDark ? 'border-neutral-800 bg-neutral-800/80 text-neutral-300' : 'border-neutral-200 bg-neutral-100 text-neutral-700'">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                </button>
+                <button (click)="deleteClient(c.id!)" title="Eliminar" class="p-2 rounded-xl cursor-pointer border active:scale-95 transition-all text-red-400"
+                        [ngClass]="isDark ? 'border-neutral-800 bg-neutral-800/80' : 'border-neutral-200 bg-neutral-100'">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Details pill -->
+            <div class="space-y-1.5 p-3 rounded-xl mb-3 text-xs"
+                 [ngClass]="isDark ? 'bg-neutral-950/60 border border-neutral-800/80' : 'bg-neutral-50 border border-neutral-100'">
+              <div *ngIf="c.company" class="flex items-center justify-between">
+                <span class="text-[10px] font-bold uppercase tracking-wider opacity-50">Empresa:</span>
+                <span class="font-bold truncate" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ c.company }}</span>
+              </div>
+              <div *ngIf="c.email" class="flex items-center justify-between">
+                <span class="text-[10px] font-bold uppercase tracking-wider opacity-50">Email:</span>
+                <a [href]="'mailto:' + c.email" class="font-mono text-[11px] truncate opacity-90" [ngClass]="isDark ? 'text-emerald-400' : 'text-emerald-600'">{{ c.email }}</a>
+              </div>
+              <div *ngIf="c.phone" class="flex items-center justify-between">
+                <span class="text-[10px] font-bold uppercase tracking-wider opacity-50">Teléfono:</span>
+                <a [href]="'tel:' + c.phone" class="font-mono text-[11px] truncate opacity-90" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">{{ c.phone }}</a>
+              </div>
+            </div>
+
+            <!-- Bottom badge -->
+            <div class="flex items-center justify-between text-xs pt-0.5">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider opacity-50">Facturas Registradas:</span>
+              <span class="text-xs font-black px-2.5 py-0.5 rounded-full border"
+                    [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white' : 'bg-neutral-100 border-neutral-300 text-neutral-900'">
+                {{ getClientInvoiceCount(c.id) }} Cuentas
+              </span>
+            </div>
+
+          </div>
+
+          <div *ngIf="displayedClients.length === 0" class="px-5 py-8 text-center text-xs opacity-50 rounded-2xl border"
+               [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
+            No se encontraron clientes.
           </div>
         </div>
       </ng-container>
@@ -769,41 +853,41 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
         </div>
 
         <!-- Invoice Filters -->
-        <div class="rounded-2xl border p-4 mb-4 flex flex-wrap gap-4 items-end"
+        <div class="rounded-2xl border p-3.5 sm:p-4 mb-4 grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4 items-end"
              [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
-           <div class="flex flex-col gap-1.5 flex-grow min-w-[200px]">
+           <div class="flex flex-col gap-1.5 col-span-2 sm:flex-grow sm:min-w-[200px]">
              <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Buscar Empresa o Cliente</label>
              <input type="text" [(ngModel)]="invFilterCompany" placeholder="Ej: TechCorp"
                     class="w-full px-3 py-2 rounded-xl text-sm border outline-none bg-transparent"
                     [ngClass]="isDark ? 'border-neutral-700 text-white placeholder-neutral-600 focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
            </div>
-           <div class="flex flex-col gap-1.5 w-28">
+           <div class="flex flex-col gap-1.5 col-span-1 sm:w-28">
              <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Precio Min</label>
              <input type="number" [(ngModel)]="invFilterMinPrice" placeholder="0"
                     class="w-full px-3 py-2 rounded-xl text-sm border outline-none bg-transparent"
                     [ngClass]="isDark ? 'border-neutral-700 text-white placeholder-neutral-600 focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
            </div>
-           <div class="flex flex-col gap-1.5 w-28">
+           <div class="flex flex-col gap-1.5 col-span-1 sm:w-28">
              <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Precio Max</label>
              <input type="number" [(ngModel)]="invFilterMaxPrice" placeholder="Múltiplo"
                     class="w-full px-3 py-2 rounded-xl text-sm border outline-none bg-transparent"
                     [ngClass]="isDark ? 'border-neutral-700 text-white placeholder-neutral-600 focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
            </div>
-           <div class="flex flex-col gap-1.5 w-32">
+           <div class="flex flex-col gap-1.5 col-span-1 sm:w-32">
              <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Desde (Fecha)</label>
              <input type="date" [(ngModel)]="invFilterStartDate"
                     class="w-full px-3 py-2 rounded-xl text-sm border outline-none bg-transparent cursor-pointer"
                     [ngClass]="isDark ? 'border-neutral-700 text-white focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 focus:border-neutral-500'">
            </div>
-           <div class="flex flex-col gap-1.5 w-32">
+           <div class="flex flex-col gap-1.5 col-span-1 sm:w-32">
              <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Hasta (Fecha)</label>
              <input type="date" [(ngModel)]="invFilterEndDate"
                     class="w-full px-3 py-2 rounded-xl text-sm border outline-none bg-transparent cursor-pointer"
                     [ngClass]="isDark ? 'border-neutral-700 text-white focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 focus:border-neutral-500'">
            </div>
-           <div class="flex-shrink-0">
+           <div class="col-span-2 sm:flex-shrink-0">
              <button (click)="invFilterCompany=''; invFilterMinPrice=null; invFilterMaxPrice=null; invFilterStartDate=''; invFilterEndDate=''"
-                     class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest border transition-colors cursor-pointer"
+                     class="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest border transition-colors cursor-pointer"
                      [ngClass]="isDark ? 'border-neutral-700 text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-300 text-neutral-500 hover:text-black hover:bg-neutral-100'">
                Limpiar
              </button>
