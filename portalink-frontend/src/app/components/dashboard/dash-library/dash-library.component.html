@@ -91,7 +91,7 @@
         *ngIf="selectedNotebook"
         (click)="createNewPage()"
         class="px-5 py-2.5 rounded-full text-xs font-headline font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center gap-2 shadow-sm hover:scale-[1.02] active:scale-[0.98]"
-        [ngClass]="isDark ? 'bg-emerald-500 text-black hover:bg-emerald-400' : 'bg-emerald-600 text-white hover:bg-emerald-500'"
+        [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'"
       >
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
         <span>Nuevo Apunte</span>
@@ -414,8 +414,11 @@
             ← Volver
           </button>
           <div class="flex items-center gap-1.5">
-            <button (click)="createNewPage()" class="px-2.5 py-1 rounded-full text-white font-headline font-bold text-[10px] shadow-sm hover:opacity-90 transition-all cursor-pointer flex items-center gap-1" [style.backgroundColor]="getNotebookColor()">
-              <span>+ Apunte</span>
+            <button (click)="createNewPage()" 
+                    class="px-3 py-1.5 rounded-full font-headline font-bold text-xs shadow-sm transition-all duration-200 cursor-pointer flex items-center gap-1.5 active:scale-95 border shrink-0"
+                    [ngClass]="isDark ? 'bg-white text-black border-white hover:bg-neutral-200' : 'bg-[#09090b] text-white border-[#09090b] hover:bg-neutral-800'">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+              <span>Apunte</span>
             </button>
 
             <!-- BOTÓN ESCONDER SIDEBAR -->
@@ -507,18 +510,16 @@
           <!-- FILA 2: Acciones rápidas (scroll horizontal en móvil) -->
           <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
             <button (click)="exportPageToMarkdown()" title="Exportar a Markdown"
-                    class="px-2 py-1 sm:px-3.5 sm:py-2 rounded-lg sm:rounded-xl border text-[10px] sm:text-sm font-headline font-bold flex items-center gap-1 transition-all cursor-pointer shadow-sm shrink-0 whitespace-nowrap"
-                    [style.borderColor]="getNotebookColor() + '40'"
-                    [style.color]="getNotebookColor()"
-                    [ngClass]="isDark ? 'bg-neutral-800/80 hover:bg-neutral-700' : 'bg-neutral-100 hover:bg-neutral-200'">
+                    class="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl border text-[11px] sm:text-xs font-headline font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs shrink-0 whitespace-nowrap"
+                    [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800/90 text-neutral-200 hover:bg-neutral-700 hover:text-white' : 'border-neutral-300 bg-white text-neutral-800 hover:bg-neutral-100 hover:text-black'">
+              <svg class="w-3.5 h-3.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
               <span>Exportar MD</span>
             </button>
 
             <button (click)="printPage()" title="Imprimir o Exportar PDF"
-                    class="px-2 py-1 sm:px-3.5 sm:py-2 rounded-lg sm:rounded-xl border text-[10px] sm:text-sm font-headline font-bold flex items-center gap-1 transition-all cursor-pointer shadow-sm shrink-0 whitespace-nowrap"
-                    [style.borderColor]="getNotebookColor() + '40'"
-                    [style.color]="getNotebookColor()"
-                    [ngClass]="isDark ? 'bg-neutral-800/80 hover:bg-neutral-700' : 'bg-neutral-100 hover:bg-neutral-200'">
+                    class="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl border text-[11px] sm:text-xs font-headline font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs shrink-0 whitespace-nowrap"
+                    [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800/90 text-neutral-200 hover:bg-neutral-700 hover:text-white' : 'border-neutral-300 bg-white text-neutral-800 hover:bg-neutral-100 hover:text-black'">
+              <svg class="w-3.5 h-3.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231a1.125 1.125 0 01-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.085 48.085 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.087 48.087 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.656"/></svg>
               <span>Imprimir PDF</span>
             </button>
           </div>
