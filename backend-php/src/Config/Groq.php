@@ -47,8 +47,7 @@ class Groq
                 $lastError = $err;
                 
                 $code = $err->getCode();
-                // Solo hacer failover en errores de rate limit (429), auth (401) o servidor (>=500)
-                if ($code === 401 || $code === 429 || $code >= 500) {
+                if ($code === 401 || $code === 404 || $code === 429 || $code >= 500) {
                     continue;
                 }
                 throw $err;
@@ -65,10 +64,10 @@ class Groq
         $payloadData = [
             'model' => $options['model'],
             'messages' => $messages,
-            'temperature' => $options['temperature'],
-            'max_completion_tokens' => $options['max_tokens'],
-            'max_tokens' => $options['max_tokens'],
-            'top_p' => 1
+            'temperature' => (float)$options['temperature'],
+            'max_completion_tokens' => (int)$options['max_tokens'],
+            'top_p' => 1,
+            'reasoning_effort' => 'medium'
         ];
 
         $payload = json_encode($payloadData, JSON_UNESCAPED_UNICODE);

@@ -2,6 +2,7 @@ import { Component, Input, OnInit, ViewChild, ElementRef, inject, HostListener }
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LibraryService, NotebookFolder, NotebookModule, NotebookPage } from '../../../services/library.service';
+import { LibraryAiService } from '../../../services/library-ai.service';
 
 export interface SlashCommandItem {
   key: string;
@@ -25,6 +26,7 @@ export interface NoteBlock {
 })
 export class DashLibraryComponent implements OnInit {
   @ViewChild('editorTextarea') editorTextarea?: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('copilotMessagesContainer') copilotMessagesContainer?: ElementRef<HTMLDivElement>;
 
   @Input() theme: string = 'light';
   get isDark(): boolean {
@@ -32,6 +34,26 @@ export class DashLibraryComponent implements OnInit {
   }
 
   private libraryService = inject(LibraryService);
+  private libraryAiService = inject(LibraryAiService);
+
+  // Block-level AI action state
+  activeAiBlockId: string | null = null;
+  aiCustomInstruction = '';
+  isAiLoading = false;
+  aiResultPreview = '';
+  aiError = '';
+
+  // Floating Copilot State
+  isCopilotOpen = false;
+  isCopilotLoading = false;
+  isResettingCopilot = false;
+  showCopilotResetOverlay = false;
+  copilotOverlayOpacity = '1';
+  copilotInput = '';
+  copilotMessages: { role: 'user' | 'assistant'; content: string }[] = [
+    { role: 'assistant', content: '¡Hola! Soy **RotBot Apuntes IA**. ¿En qué puedo ayudarte con tus notas de estudio hoy? Puedo formatear tablas, explicar código, resumir conceptos o traducir texto.' }
+  ];
+
 
   folders: NotebookFolder[] = [];
   notebooks: NotebookModule[] = [];
@@ -1115,5 +1137,138 @@ export class DashLibraryComponent implements OnInit {
     html = html.replace(/(<br\s*\/?>){3,}/gim, '<br><br>');
 
     return html;
+  }
+
+  // ════════════════════════════════════════════════════════
+  // GROQ AI INTEGRATION METHODS (Bloque e IA Flotante)
+  // ════════════════════════════════════════════════════════
+
+  toggleAiBlockMenu(blockId: string, event: Event) {
+    event.stopPropagation();
+    this.activeAiBlockId = this.activeAiBlockId === blockId ? null : blockId;
+    this.activeTypeMenuBlockId = null;
+    this.aiCustomInstruction = '';
+    this.aiResultPreview = '';
+    this.aiError = '';
+  }
+
+  applyAiTransform(block: NoteBlock, presetInstruction: string) {
+    const instruction = presetInstruction || this.aiCustomInstruction.trim();
+    if (!instruction) return;
+
+    this.isAiLoading = true;
+    this.aiResultPreview = '';
+    this.aiError = '';
+
+    this.libraryAiService.transformBlockContent(block.content, block.type, instruction).subscribe(res => {
+      this.isAiLoading = false;
+      if (res.success) {
+        this.aiResultPreview = res.result;
+      } else {
+        this.aiError = res.error || 'No se pudo procesar la solicitud con la IA.';
+      }
+    });
+  }
+
+  replaceBlockContentWithAi(block: NoteBlock) {
+    if (!this.aiResultPreview) return;
+    block.content = this.aiResultPreview;
+    
+    // Auto detect block type if AI generated a Markdown table or Code
+    if (this.aiResultPreview.startsWith('|') && this.aiResultPreview.includes('-|')) {
+      block.type = 'codigo';
+    } else if (this.aiResultPreview.startsWith('```')) {
+      block.type = 'codigo';
+    }
+
+    this.activeAiBlockId = null;
+    this.aiResultPreview = '';
+    this.syncBlocksToContent();
+    this.showToast('Contenido actualizado por la IA');
+  }
+
+  insertAiResultAsNewBlock(blockIndex: number) {
+    if (!this.aiResultPreview) return;
+    
+    let blockType: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' = 'texto';
+    if (this.aiResultPreview.startsWith('|') && this.aiResultPreview.includes('-|')) {
+      blockType = 'codigo';
+    } else if (this.aiResultPreview.startsWith('```')) {
+      blockType = 'codigo';
+    }
+
+    const newBlock: NoteBlock = {
+      id: 'block-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
+      type: blockType,
+      content: this.aiResultPreview
+    };
+
+    this.blocks.splice(blockIndex + 1, 0, newBlock);
+    this.activeAiBlockId = null;
+    this.aiResultPreview = '';
+    this.syncBlocksToContent();
+    this.showToast('Nuevo bloque insertado por la IA');
+  }
+
+  // Copilot Assistant Methods
+  toggleCopilot() {
+    this.isCopilotOpen = !this.isCopilotOpen;
+    if (this.isCopilotOpen) {
+      this.scrollToBottomCopilot();
+    }
+  }
+
+  resetCopilotWithEffect() {
+    if (this.isResettingCopilot) return;
+    this.isResettingCopilot = true;
+    this.showCopilotResetOverlay = true;
+    this.copilotOverlayOpacity = '1';
+
+    setTimeout(() => {
+      this.copilotMessages = [
+        {
+          role: 'assistant',
+          content: '¡Hola! Soy RotBot Apuntes IA. ¿En qué puedo ayudarte a resumir, explicar o estructurar tus notas de estudio?'
+        }
+      ];
+      this.scrollToBottomCopilot();
+    }, 300);
+
+    setTimeout(() => {
+      this.copilotOverlayOpacity = '0';
+      setTimeout(() => {
+        this.showCopilotResetOverlay = false;
+        this.isResettingCopilot = false;
+      }, 500);
+    }, 1600);
+  }
+
+  scrollToBottomCopilot() {
+    setTimeout(() => {
+      if (this.copilotMessagesContainer?.nativeElement) {
+        const el = this.copilotMessagesContainer.nativeElement;
+        el.scrollTop = el.scrollHeight;
+      }
+    }, 80);
+  }
+
+  sendCopilotMessage() {
+    const text = this.copilotInput.trim();
+    if (!text || this.isCopilotLoading) return;
+
+    this.copilotMessages.push({ role: 'user', content: text });
+    this.copilotInput = '';
+    this.isCopilotLoading = true;
+    this.scrollToBottomCopilot();
+
+    this.libraryAiService.askCopilot(text, this.selectedPage?.title).subscribe(res => {
+      this.isCopilotLoading = false;
+      if (res.success) {
+        this.copilotMessages.push({ role: 'assistant', content: res.result });
+      } else {
+        this.copilotMessages.push({ role: 'assistant', content: '❌ Error: ' + (res.error || 'No se pudo obtener respuesta de la IA.') });
+      }
+      this.scrollToBottomCopilot();
+    });
   }
 }

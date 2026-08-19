@@ -79,6 +79,7 @@ use App\Controllers\ConfigController;
 use App\Controllers\MessagesController;
 use App\Controllers\SiteController;
 use App\Controllers\LibraryController;
+use App\Controllers\ChatAdminController;
 
 $request = new Request();
 $response = new Response();
@@ -258,6 +259,7 @@ $router->post('/api/auth/reset-password', [AuthController::class, 'resetPassword
 //  RUTAS DE CHAT & IA (/api/chat)
 // ──────────────────────────────────────────────────────────────
 $router->post('/api/chat/send', [ChatController::class, 'sendMessage'], [OptionalAuthMiddleware::class]);
+$router->post('/api/admin/chat', [ChatAdminController::class, 'handle'], [OptionalAuthMiddleware::class]);
 $router->get('/api/chat/history', [ChatController::class, 'getHistory'], [AuthMiddleware::class]);
 $router->get('/api/chat/usage', [ChatController::class, 'getUsage'], [OptionalAuthMiddleware::class]);
 $router->delete('/api/chat/clear', [ChatController::class, 'clearHistory'], [OptionalAuthMiddleware::class]);
