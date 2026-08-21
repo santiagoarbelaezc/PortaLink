@@ -1332,7 +1332,7 @@
   </div>
 
   <!-- ══════════════════════════════════════
-       ROTBOT IA COPILOTO FLOTANTE DE BIBLIOTECA (DESKTOP ONLY md+ & BIEN PEGADO A LA DERECHA)
+       ROTBOT IA COPILOTO FLOTANTE DE BIBLIOTECA
   ══════════════════════════════════════ -->
   <div class="hidden md:block fixed bottom-3 -right-8 z-[300]">
     
@@ -1345,13 +1345,20 @@
       </div>
     </button>
 
-    <!-- PANEL FLOTANTE DE CHAT ROTBOT IA (EXACTO AL HOME) -->
+    <!-- PANEL FLOTANTE DE CHAT ROTBOT IA (ARRASTRABLE) -->
     <div *ngIf="isCopilotOpen" 
-         class="chat-panel absolute bottom-0 right-6 md:right-12 w-[94vw] md:w-[480px] max-h-[88vh] h-[640px] overflow-hidden rounded-[32px] border shadow-[0_30px_70px_rgba(0,0,0,0.22)] font-sans flex flex-col z-[300] transition-all animate-fade-in"
-         [ngClass]="isDark ? 'bg-[#121215] border-neutral-800 text-white' : 'bg-white border-neutral-200/90 text-neutral-900'">
+         class="chat-panel fixed w-[94vw] md:w-[480px] max-h-[88vh] h-[640px] overflow-hidden rounded-[32px] border shadow-[0_30px_70px_rgba(0,0,0,0.22)] font-sans flex flex-col z-[300] transition-all animate-fade-in"
+         [ngClass]="isDark ? 'bg-[#121215] border-neutral-800 text-white' : 'bg-white border-neutral-200/90 text-neutral-900'"
+         [style.position]="isCopilotCustomPositioned ? 'fixed' : 'fixed'"
+         [style.left.px]="isCopilotCustomPositioned ? copilotPos.x : null"
+         [style.top.px]="isCopilotCustomPositioned ? copilotPos.y : null"
+         [style.bottom]="isCopilotCustomPositioned ? 'auto' : '1.5rem'"
+         [style.right]="isCopilotCustomPositioned ? 'auto' : '2.5rem'">
       
-      <!-- HEADER DEL CHAT -->
-      <div class="chat-header flex items-center justify-between border-b px-5 sm:px-6 py-3.5 relative overflow-hidden flex-shrink-0"
+      <!-- HEADER DEL CHAT (ZONA ARRASTRABLE CON CURSOR GRAB) -->
+      <div (mousedown)="startDragCopilot($event)"
+           (touchstart)="startDragCopilot($event)"
+           class="chat-header flex items-center justify-between border-b px-5 sm:px-6 py-3.5 relative overflow-hidden flex-shrink-0 cursor-grab active:cursor-grabbing select-none"
            [ngClass]="isDark ? 'border-neutral-800 bg-[#18181c]/95 backdrop-blur-xl' : 'border-neutral-100 bg-white/95 backdrop-blur-xl'">
         
         <div class="flex items-center gap-3 relative z-10">
@@ -1463,24 +1470,26 @@
 
       </div>
 
-      <!-- ÁREA DE ENTRADA / INPUT BAR EXACTA AL CHAT DE HOME -->
+      <!-- ÁREA DE ENTRADA / INPUT BAR MULTILÍNEA CON SHIFT + ENTER -->
       <div class="p-4 border-t flex-shrink-0"
            [ngClass]="isDark ? 'border-neutral-800 bg-[#18181c]' : 'border-neutral-100 bg-white'">
-        <form (submit)="sendCopilotMessage()" class="relative flex items-center gap-2 border rounded-2xl p-2 transition-colors shadow-xs"
+        <form (submit)="$event.preventDefault(); sendCopilotMessage()" class="relative flex items-end gap-2 border rounded-2xl p-2.5 transition-colors shadow-xs"
               [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 focus-within:border-emerald-500' : 'bg-neutral-50 border-neutral-200/80 focus-within:border-neutral-900'">
-          <input 
-            type="text" 
+          <textarea 
             [(ngModel)]="copilotInput"
             [disabled]="isCopilotLoading"
+            (keydown)="onCopilotKeydown($event)"
             name="copilotInput"
-            placeholder="Escribe tu mensaje para RotBot Apuntes IA..."
-            class="w-full bg-transparent border-none px-3 py-1.5 text-xs sm:text-sm outline-none focus:outline-none focus:ring-0 disabled:opacity-50"
+            rows="1"
+            placeholder="Escribe tu mensaje... (Shift + Enter para salto de línea)"
+            class="w-full bg-transparent border-none px-3 py-1 text-xs sm:text-sm outline-none focus:outline-none focus:ring-0 disabled:opacity-50 resize-none max-h-32 leading-relaxed"
             [ngClass]="isDark ? 'text-white placeholder:text-neutral-500' : 'text-neutral-900 placeholder:text-neutral-400'"
-          />
+          ></textarea>
           <button 
-            type="submit"
+            type="button"
+            (click)="sendCopilotMessage()"
             [disabled]="!copilotInput.trim() || isCopilotLoading"
-            class="w-9 h-9 rounded-full flex items-center justify-center transition-all disabled:opacity-30 cursor-pointer flex-shrink-0 border-none shadow-sm"
+            class="w-9 h-9 rounded-full flex items-center justify-center transition-all disabled:opacity-30 cursor-pointer flex-shrink-0 border-none shadow-sm mb-0.5"
             [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'"
           >
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -1490,8 +1499,9 @@
           </button>
         </form>
 
-        <div class="flex justify-center mt-2">
-          <span class="text-[10.5px] font-sans font-medium opacity-50">Powered by Portalink IA & Groq</span>
+        <div class="flex items-center justify-between mt-2 px-1 text-[10.5px] font-sans font-medium opacity-50">
+          <span>Shift + Enter para salto de línea</span>
+          <span>Powered by Google Gemini ⚡</span>
         </div>
       </div>
 

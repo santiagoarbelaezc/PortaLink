@@ -675,9 +675,7 @@ export class NavbarComponent implements OnInit {
 
   updateNavbarVisibility() {
     if (typeof window === 'undefined') return;
-    const scrollPos = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-    const isAtTop = scrollPos < 60;
-    this.isNavbarHiddenAtTop = isAtTop && !this.isMouseNearTop;
+    this.isNavbarHiddenAtTop = false;
   }
 
   @HostListener('window:scroll', [])

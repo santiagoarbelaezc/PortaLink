@@ -12,7 +12,7 @@ export class LibraryAiService {
   private readonly API_ENDPOINT = `${environment.apiUrl}/admin/chat`;
 
   /**
-   * Transforms or enhances a single block of content using backend PHP ChatAdminController
+   * Transforms or enhances a single block of content using backend PHP ChatAdminController (Groq AI)
    */
   transformBlockContent(content: string, blockType: string, instruction: string): Observable<{ success: boolean; result: string; error?: string }> {
     const payload = {
@@ -42,13 +42,14 @@ export class LibraryAiService {
   }
 
   /**
-   * General Copilot for Notes / Library study assistant via backend PHP ChatAdminController
+   * General Copilot for Notes / Library study assistant powered exclusively by Google Gemini API via backend PHP ChatAdminController
    */
-  askCopilot(prompt: string, noteTitle?: string): Observable<{ success: boolean; result: string; error?: string }> {
+  askCopilot(prompt: string, noteTitle?: string, history: any[] = []): Observable<{ success: boolean; result: string; error?: string }> {
     const payload = {
       mode: 'copilot',
       prompt,
-      note_title: noteTitle
+      note_title: noteTitle,
+      history
     };
 
     return this.http.post<any>(this.API_ENDPOINT, payload).pipe(
@@ -60,11 +61,11 @@ export class LibraryAiService {
         }
       }),
       catchError(err => {
-        console.error('Error enviando solicitud a backend PHP Copilot:', err);
+        console.error('Error enviando solicitud a backend PHP Copilot (Gemini):', err);
         return of({
           success: false,
           result: '',
-          error: err?.error?.error || err?.message || 'Error de conexión con el copiloto en el backend.'
+          error: err?.error?.error || err?.message || 'Error de conexión con el copiloto Gemini en el backend.'
         });
       })
     );

@@ -1252,6 +1252,13 @@ export class DashLibraryComponent implements OnInit {
     }, 80);
   }
 
+  onCopilotKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.sendCopilotMessage();
+    }
+  }
+
   sendCopilotMessage() {
     const text = this.copilotInput.trim();
     if (!text || this.isCopilotLoading) return;
@@ -1261,7 +1268,8 @@ export class DashLibraryComponent implements OnInit {
     this.isCopilotLoading = true;
     this.scrollToBottomCopilot();
 
-    this.libraryAiService.askCopilot(text, this.selectedPage?.title).subscribe(res => {
+    const historyPayload = this.copilotMessages.slice(1, -1);
+    this.libraryAiService.askCopilot(text, this.selectedPage?.title, historyPayload).subscribe(res => {
       this.isCopilotLoading = false;
       if (res.success) {
         this.copilotMessages.push({ role: 'assistant', content: res.result });
@@ -1270,5 +1278,64 @@ export class DashLibraryComponent implements OnInit {
       }
       this.scrollToBottomCopilot();
     });
+  }
+
+  // ── COPILOT DRAG & KEYBOARD LOGIC ─────────────────────────────
+  isDraggingCopilot = false;
+  copilotPos = { x: 0, y: 0 };
+  isCopilotCustomPositioned = false;
+  private dragStartOffset = { x: 0, y: 0 };
+
+  startDragCopilot(event: MouseEvent | TouchEvent) {
+    const target = event.target as HTMLElement;
+    if (target.closest('button')) return;
+
+    this.isDraggingCopilot = true;
+    const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+    const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
+
+    const chatEl = document.querySelector('.chat-panel') as HTMLElement;
+    if (chatEl) {
+      const rect = chatEl.getBoundingClientRect();
+      this.dragStartOffset = {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+      if (!this.isCopilotCustomPositioned) {
+        this.copilotPos = { x: rect.left, y: rect.top };
+        this.isCopilotCustomPositioned = true;
+      }
+    }
+  }
+
+  @HostListener('window:mousemove', ['$event'])
+  @HostListener('window:touchmove', ['$event'])
+  onDragCopilotMove(event: MouseEvent | TouchEvent) {
+    if (!this.isDraggingCopilot) return;
+
+    const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+    const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
+
+    const chatEl = document.querySelector('.chat-panel') as HTMLElement;
+    const chatWidth = chatEl ? chatEl.offsetWidth : 480;
+    const chatHeight = chatEl ? chatEl.offsetHeight : 600;
+
+    const margin = 12;
+    const maxX = window.innerWidth - chatWidth - margin;
+    const maxY = window.innerHeight - chatHeight - margin;
+
+    let newX = clientX - this.dragStartOffset.x;
+    let newY = clientY - this.dragStartOffset.y;
+
+    newX = Math.max(margin, Math.min(newX, maxX));
+    newY = Math.max(margin, Math.min(newY, maxY));
+
+    this.copilotPos = { x: newX, y: newY };
+  }
+
+  @HostListener('window:mouseup')
+  @HostListener('window:touchend')
+  onDragCopilotEnd() {
+    this.isDraggingCopilot = false;
   }
 }

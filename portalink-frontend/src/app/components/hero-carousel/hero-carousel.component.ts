@@ -1,6 +1,6 @@
-import { Component, signal, computed, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, signal, computed, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 export interface CarouselSlide {
   id: string;
@@ -21,12 +21,16 @@ export interface CarouselSlide {
       (mouseleave)="resumeAutoPlay()"
       class="hero-wrapper relative w-full min-h-screen lg:h-screen overflow-hidden bg-zinc-950 font-sans text-white select-none">
       
-      <!-- CAPA 1: Fondo dinámico con overlay (Transición suave de 1000ms) -->
+      <!-- CAPA 1: Fondo dinámico con overlay (Efecto Desvanecido Elegante) -->
       <div class="absolute inset-0 z-0 overflow-hidden">
         <img 
           [src]="currentSlide().image" 
           [alt]="currentSlide().title"
-          class="w-full h-full object-cover brightness-[0.65] contrast-[1.08] transition-all duration-1000 ease-out transform scale-105 animate-carousel-fade"
+          class="w-full h-full object-cover brightness-[0.65] contrast-[1.08] transition-all duration-700 ease-out transform"
+          [class.opacity-0]="isFading()"
+          [class.opacity-100]="!isFading()"
+          [class.scale-110]="isFading()"
+          [class.scale-105]="!isFading()"
         />
         <div class="absolute inset-0 bg-gradient-to-r from-black/95 via-black/60 to-transparent"></div>
         <div class="absolute inset-0 bg-black/30"></div>
@@ -49,8 +53,13 @@ export interface CarouselSlide {
       <!-- CAPA 3: Contenido Principal (Hero Text + Cards Rail) -->
       <section class="relative z-10 grid grid-cols-1 md:grid-cols-12 min-h-[calc(100vh-180px)] px-6 sm:px-12 items-center pb-24 md:pb-0">
         
-        <!-- Bloque de texto principal (Izquierda) con animación fluida -->
-        <div class="col-span-1 md:col-span-6 lg:col-span-5 flex flex-col justify-center space-y-4 max-w-lg pt-4 md:pt-0 animate-text-slide">
+        <!-- Bloque de texto principal (Izquierda) con Desvanecimiento Elegante -->
+        <div class="col-span-1 md:col-span-6 lg:col-span-5 flex flex-col justify-center space-y-4 max-w-lg pt-4 md:pt-0 transition-all duration-500 ease-out"
+             [class.opacity-0]="isFading()"
+             [class.translate-y-4]="isFading()"
+             [class.opacity-100]="!isFading()"
+             [class.translate-y-0]="!isFading()">
+          
           <span class="text-xs sm:text-sm font-semibold tracking-[0.25em] uppercase text-emerald-400/90 font-headline">
             {{ currentSlide().subtitle }}
           </span>
@@ -76,7 +85,9 @@ export interface CarouselSlide {
         </div>
 
         <!-- Riel de Tarjetas (Derecha) -->
-        <div class="col-span-1 md:col-span-6 lg:col-span-7 flex items-center justify-start md:justify-end pl-0 md:pl-8 mt-8 md:mt-0">
+        <div class="col-span-1 md:col-span-6 lg:col-span-7 flex items-center justify-start md:justify-end pl-0 md:pl-8 mt-8 md:mt-0 transition-opacity duration-500"
+             [class.opacity-70]="isFading()"
+             [class.opacity-100]="!isFading()">
           <div class="flex items-center space-x-4 sm:space-x-5 overflow-x-auto scrollbar-none py-2 max-w-full">
             
             @for (card of upcomingSlides(); track card.id; let i = $index) {
@@ -171,36 +182,6 @@ export interface CarouselSlide {
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
-
-    .animate-carousel-fade {
-      animation: carouselFade 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    .animate-text-slide {
-      animation: textSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    @keyframes carouselFade {
-      0% {
-        opacity: 0.4;
-        transform: scale(1.08);
-      }
-      100% {
-        opacity: 1;
-        transform: scale(1.02);
-      }
-    }
-
-    @keyframes textSlideIn {
-      0% {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
   `]
 })
 export class HeroCarouselComponent implements OnInit, OnDestroy {
@@ -264,6 +245,7 @@ export class HeroCarouselComponent implements OnInit, OnDestroy {
   ]);
 
   currentIndex = signal<number>(0);
+  isFading = signal<boolean>(false);
   private autoPlayTimer: any = null;
 
   currentSlide = computed(() => this.slides()[this.currentIndex()]);
@@ -306,7 +288,7 @@ export class HeroCarouselComponent implements OnInit, OnDestroy {
     this.stopAutoPlay();
     this.autoPlayTimer = setInterval(() => {
       this.next();
-    }, 5000);
+    }, 4000); // ⏱️ Cambio cada 4 segundos
   }
 
   stopAutoPlay() {
@@ -324,19 +306,28 @@ export class HeroCarouselComponent implements OnInit, OnDestroy {
     this.startAutoPlay();
   }
 
-  next() {
-    this.currentIndex.update(i => (i + 1) % this.slides().length);
+  changeSlide(newIndex: number) {
+    if (this.isFading()) return;
+    this.isFading.set(true);
+    setTimeout(() => {
+      this.currentIndex.set(newIndex);
+      this.isFading.set(false);
+    }, 280);
     this.startAutoPlay();
   }
 
+  next() {
+    const nextIdx = (this.currentIndex() + 1) % this.slides().length;
+    this.changeSlide(nextIdx);
+  }
+
   prev() {
-    this.currentIndex.update(i => (i - 1 + this.slides().length) % this.slides().length);
-    this.startAutoPlay();
+    const prevIdx = (this.currentIndex() - 1 + this.slides().length) % this.slides().length;
+    this.changeSlide(prevIdx);
   }
 
   onCardClick(relativeIndex: number) {
     const targetIdx = (this.currentIndex() + relativeIndex + 1) % this.slides().length;
-    this.currentIndex.set(targetIdx);
-    this.startAutoPlay();
+    this.changeSlide(targetIdx);
   }
 }

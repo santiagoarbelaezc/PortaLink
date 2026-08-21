@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 
 import { HeroVideoComponent } from '../../components/hero-video/hero-video.component';
-import { HeroCarouselComponent } from '../../components/hero-carousel/hero-carousel.component';
 import { AboutComponent } from '../../components/about/about.component';
 import { ContactComponent } from '../../components/contact/contact.component';
 import { FooterComponent } from '../../components/footer/footer.component';
@@ -23,7 +22,6 @@ import * as AOS from 'aos';
   imports: [
     CommonModule,
     RouterModule,
-    HeroCarouselComponent,
     HeroVideoComponent,
     AboutComponent,
     ContactComponent,
@@ -32,7 +30,6 @@ import * as AOS from 'aos';
   template: `
     <div class="dynamic-bg"></div>
     <main class="relative text-neutral-900">
-      <app-hero-carousel></app-hero-carousel>
       <app-hero-video></app-hero-video>
       
       <ng-container *ngIf="portfolioData(); else homeSkeleton">
