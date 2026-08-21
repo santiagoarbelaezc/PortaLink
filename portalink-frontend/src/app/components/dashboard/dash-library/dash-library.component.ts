@@ -51,7 +51,7 @@ export class DashLibraryComponent implements OnInit {
   copilotOverlayOpacity = '1';
   copilotInput = '';
   copilotMessages: { role: 'user' | 'assistant'; content: string }[] = [
-    { role: 'assistant', content: '¡Hola! Soy **RotBot Apuntes IA**. ¿En qué puedo ayudarte con tus notas de estudio hoy? Puedo formatear tablas, explicar código, resumir conceptos o traducir texto.' }
+    { role: 'assistant', content: '¡Hola! Soy **RotBot Apuntes IA**. ¿En qué puedo ayudarte a resumir, explicar o estructurar tus notas de estudio hoy?' }
   ];
 
 
