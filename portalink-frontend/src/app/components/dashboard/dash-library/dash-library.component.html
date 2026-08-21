@@ -1347,7 +1347,7 @@
 
     <!-- PANEL FLOTANTE DE CHAT ROTBOT IA (ARRASTRABLE) -->
     <div *ngIf="isCopilotOpen" 
-         class="chat-panel fixed w-[94vw] md:w-[480px] max-h-[88vh] h-[640px] overflow-hidden rounded-[32px] border shadow-[0_30px_70px_rgba(0,0,0,0.22)] font-sans flex flex-col z-[300] transition-all animate-fade-in"
+         class="chat-panel fixed w-[92vw] sm:w-[390px] md:w-[400px] max-h-[88vh] h-[630px] overflow-hidden rounded-[32px] border shadow-[0_30px_70px_rgba(0,0,0,0.22)] font-sans flex flex-col z-[300] transition-all animate-fade-in"
          [ngClass]="isDark ? 'bg-[#121215] border-neutral-800 text-white' : 'bg-white border-neutral-200/90 text-neutral-900'"
          [style.position]="isCopilotCustomPositioned ? 'fixed' : 'fixed'"
          [style.left.px]="isCopilotCustomPositioned ? copilotPos.x : null"

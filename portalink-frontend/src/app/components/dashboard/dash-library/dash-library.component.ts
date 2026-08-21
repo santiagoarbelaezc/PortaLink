@@ -1317,8 +1317,8 @@ export class DashLibraryComponent implements OnInit {
     const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
 
     const chatEl = document.querySelector('.chat-panel') as HTMLElement;
-    const chatWidth = chatEl ? chatEl.offsetWidth : 480;
-    const chatHeight = chatEl ? chatEl.offsetHeight : 600;
+    const chatWidth = chatEl ? chatEl.offsetWidth : 400;
+    const chatHeight = chatEl ? chatEl.offsetHeight : 630;
 
     const margin = 12;
     const maxX = window.innerWidth - chatWidth - margin;
