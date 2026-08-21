@@ -99,9 +99,49 @@ export class DashLibraryComponent implements OnInit {
     this.activeTypeMenuBlockId = (this.activeTypeMenuBlockId === blockId) ? null : blockId;
   }
 
-  selectBlockType(block: NoteBlock, newType: string) {
+  selectBlockType(block: NoteBlock, newType: string, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
     this.changeBlockType(block, newType);
     this.activeTypeMenuBlockId = null;
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  onGlobalTypeMenuKeydown(event: KeyboardEvent) {
+    if (!this.activeTypeMenuBlockId) return;
+
+    const block = this.blocks.find(b => b.id === this.activeTypeMenuBlockId);
+    if (!block) return;
+
+    const key = event.key.toLowerCase();
+
+    if (key === 't') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.selectBlockType(block, 'titulo');
+    } else if (key === 's') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.selectBlockType(block, 'subtitulo');
+    } else if (key === 'c') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.selectBlockType(block, 'codigo');
+    } else if (key === 'a') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.selectBlockType(block, 'alerta');
+    } else if (key === 'n') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.selectBlockType(block, 'texto');
+    } else if (key === 'escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.activeTypeMenuBlockId = null;
+    }
   }
 
   getBlockTypeLabel(type: string): string {
