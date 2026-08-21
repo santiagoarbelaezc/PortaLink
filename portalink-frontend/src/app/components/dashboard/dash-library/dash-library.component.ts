@@ -241,6 +241,30 @@ export class DashLibraryComponent implements OnInit {
     }
   }
 
+  loadCopilotChatFromStorage() {
+    if (typeof window === 'undefined') return;
+    try {
+      const saved = localStorage.getItem('portalink_copilot_chat');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this.copilotMessages = parsed;
+        }
+      }
+    } catch (e) {
+      console.error('Error cargando chat copilot de localStorage:', e);
+    }
+  }
+
+  saveCopilotChatToStorage() {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem('portalink_copilot_chat', JSON.stringify(this.copilotMessages));
+    } catch (e) {
+      console.error('Error guardando chat copilot en localStorage:', e);
+    }
+  }
+
   ngOnInit() {
     this.checkMobileScreen();
     const savedRatio = localStorage.getItem('portalink_lib_split_ratio');
@@ -253,6 +277,7 @@ export class DashLibraryComponent implements OnInit {
         this.isSidebarCollapsed = true;
       }
     }
+    this.loadCopilotChatFromStorage();
     this.loadFolders();
   }
 
@@ -1269,9 +1294,10 @@ export class DashLibraryComponent implements OnInit {
       this.copilotMessages = [
         {
           role: 'assistant',
-          content: '¡Hola! Soy RotBot Apuntes IA. ¿En qué puedo ayudarte a resumir, explicar o estructurar tus notas de estudio?'
+          content: '¡Hola! Soy **RotBot Apuntes IA**. ¿En qué puedo ayudarte a resumir, explicar o estructurar tus notas de estudio hoy?'
         }
       ];
+      this.saveCopilotChatToStorage();
       this.scrollToBottomCopilot();
     }, 300);
 
@@ -1348,6 +1374,7 @@ export class DashLibraryComponent implements OnInit {
     if (!text || this.isCopilotLoading) return;
 
     this.copilotMessages.push({ role: 'user', content: text });
+    this.saveCopilotChatToStorage();
     this.copilotInput = '';
     if (this.copilotTextareaElement?.nativeElement) {
       this.copilotTextareaElement.nativeElement.style.height = 'auto';
@@ -1364,6 +1391,7 @@ export class DashLibraryComponent implements OnInit {
       } else {
         this.copilotMessages.push({ role: 'assistant', content: '❌ Error: ' + (res.error || 'No se pudo obtener respuesta de la IA.') });
       }
+      this.saveCopilotChatToStorage();
       this.scrollToBottomCopilot();
       this.focusCopilotInput();
     });
