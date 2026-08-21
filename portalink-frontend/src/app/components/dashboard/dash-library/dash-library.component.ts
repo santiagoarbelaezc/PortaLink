@@ -27,6 +27,7 @@ export interface NoteBlock {
 export class DashLibraryComponent implements OnInit {
   @ViewChild('editorTextarea') editorTextarea?: ElementRef<HTMLTextAreaElement>;
   @ViewChild('copilotMessagesContainer') copilotMessagesContainer?: ElementRef<HTMLDivElement>;
+  @ViewChild('copilotTextarea') copilotTextareaElement?: ElementRef<HTMLTextAreaElement>;
 
   @Input() theme: string = 'light';
   get isDark(): boolean {
@@ -1243,6 +1244,38 @@ export class DashLibraryComponent implements OnInit {
     }, 1600);
   }
 
+  formatCopilotMessage(content: string): string {
+    if (!content) return '';
+    
+    // 1. Escapar caracteres HTML especiales
+    let html = content
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    // 2. Formatear **texto en negrilla** -> negrilla con color azul destacado
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-blue-600 dark:text-blue-400">$1</strong>');
+
+    // 3. Formatear *texto en cursiva/destacado* -> texto semi-negrilla azul
+    html = html.replace(/\*(.*?)\*/g, '<span class="font-semibold text-blue-600 dark:text-blue-400">$1</span>');
+
+    // 4. Limpiar cualquier asterisco suelto sobrante
+    html = html.replace(/\*/g, '');
+
+    // 5. Convertir saltos de línea \n a <br>
+    html = html.replace(/\n/g, '<br>');
+
+    return html;
+  }
+
+  focusCopilotInput() {
+    setTimeout(() => {
+      if (this.copilotTextareaElement?.nativeElement) {
+        this.copilotTextareaElement.nativeElement.focus();
+      }
+    }, 50);
+  }
+
   scrollToBottomCopilot() {
     setTimeout(() => {
       if (this.copilotMessagesContainer?.nativeElement) {
@@ -1252,10 +1285,21 @@ export class DashLibraryComponent implements OnInit {
     }, 80);
   }
 
+  adjustCopilotTextareaHeight(event?: Event) {
+    const el = this.copilotTextareaElement?.nativeElement || (event?.target as HTMLTextAreaElement);
+    if (el) {
+      el.style.height = 'auto';
+      const newHeight = Math.min(Math.max(el.scrollHeight, 24), 140);
+      el.style.height = `${newHeight}px`;
+    }
+  }
+
   onCopilotKeydown(event: KeyboardEvent) {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       this.sendCopilotMessage();
+    } else if (event.key === 'Enter' && event.shiftKey) {
+      setTimeout(() => this.adjustCopilotTextareaHeight(), 0);
     }
   }
 
@@ -1265,6 +1309,10 @@ export class DashLibraryComponent implements OnInit {
 
     this.copilotMessages.push({ role: 'user', content: text });
     this.copilotInput = '';
+    if (this.copilotTextareaElement?.nativeElement) {
+      this.copilotTextareaElement.nativeElement.style.height = 'auto';
+    }
+    this.focusCopilotInput();
     this.isCopilotLoading = true;
     this.scrollToBottomCopilot();
 
@@ -1277,6 +1325,7 @@ export class DashLibraryComponent implements OnInit {
         this.copilotMessages.push({ role: 'assistant', content: '❌ Error: ' + (res.error || 'No se pudo obtener respuesta de la IA.') });
       }
       this.scrollToBottomCopilot();
+      this.focusCopilotInput();
     });
   }
 

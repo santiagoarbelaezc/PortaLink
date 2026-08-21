@@ -1447,8 +1447,8 @@
             </div>
 
             <div class="px-4 py-3 rounded-2xl text-[13.5px] sm:text-sm font-normal leading-relaxed border shadow-xs whitespace-pre-wrap"
-                 [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 text-neutral-100 rounded-bl-xs' : 'bg-neutral-100 border-neutral-200/70 text-neutral-900 rounded-bl-xs'">
-              {{ msg.content }}
+                 [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 text-neutral-100 rounded-bl-xs' : 'bg-neutral-100 border-neutral-200/70 text-neutral-900 rounded-bl-xs'"
+                 [innerHTML]="formatCopilotMessage(msg.content)">
             </div>
           </div>
 
@@ -1476,13 +1476,15 @@
         <form (submit)="$event.preventDefault(); sendCopilotMessage()" class="relative flex items-center gap-2 border rounded-full px-3 py-1.5 transition-colors shadow-xs"
               [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 focus-within:border-emerald-500' : 'bg-neutral-50 border-neutral-300/80 focus-within:border-neutral-900'">
           <textarea 
+            #copilotTextarea
             [(ngModel)]="copilotInput"
             [disabled]="isCopilotLoading"
             (keydown)="onCopilotKeydown($event)"
+            (input)="adjustCopilotTextareaHeight($event)"
             name="copilotInput"
             rows="1"
             placeholder="Escribe tu mensaje..."
-            class="flex-1 bg-transparent border-none px-1.5 py-0.5 text-xs sm:text-sm outline-none focus:outline-none focus:ring-0 disabled:opacity-50 resize-none max-h-24 leading-snug self-center my-0"
+            class="flex-1 bg-transparent border-none px-1.5 py-0.5 text-xs sm:text-sm outline-none focus:outline-none focus:ring-0 disabled:opacity-50 resize-none max-h-36 leading-snug self-center my-0 transition-all duration-150"
             [ngClass]="isDark ? 'text-white placeholder:text-neutral-500' : 'text-neutral-900 placeholder:text-neutral-400'"
           ></textarea>
           <button 
