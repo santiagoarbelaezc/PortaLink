@@ -13,9 +13,12 @@ import { AuthService } from '../../services/auth.service';
     <!-- DESKTOP: Top pill navbar (md+)              -->
     <!-- ═══════════════════════════════════════════ -->
     <nav class="hidden md:block fixed top-0 left-0 w-full z-[9000] px-10 lg:px-20 py-3.5 backdrop-blur-xl transition-all duration-500"
-         [ngClass]="currentTheme === 'light' 
-           ? 'bg-white/90 border-b border-neutral-200/80 text-neutral-900 shadow-sm' 
-           : 'bg-black/90 border-b border-neutral-800/80 text-white shadow-md'">
+         [ngClass]="[
+           currentTheme === 'light' 
+             ? 'bg-white/90 border-b border-neutral-200/80 text-neutral-900 shadow-sm' 
+             : 'bg-black/90 border-b border-neutral-800/80 text-white shadow-md',
+           isNavbarHiddenAtTop ? 'opacity-0 pointer-events-none -translate-y-full' : 'opacity-100 pointer-events-auto translate-y-0'
+         ]">
       <div class="w-full flex items-center justify-between">
 
         <!-- Left Side: Brand Logo & Typography -->
@@ -515,6 +518,9 @@ export class NavbarComponent implements OnInit {
   currentTheme = 'light';
   activeSection = '#hero';
 
+  isNavbarHiddenAtTop = false;
+  isMouseNearTop = false;
+
   showLoginModal = false;
   activeTab = 'signin';
 
@@ -667,9 +673,18 @@ export class NavbarComponent implements OnInit {
     }
   }
 
+  updateNavbarVisibility() {
+    if (typeof window === 'undefined') return;
+    const scrollPos = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    const isAtTop = scrollPos < 60;
+    this.isNavbarHiddenAtTop = isAtTop && !this.isMouseNearTop;
+  }
+
   @HostListener('window:scroll', [])
   onWindowScroll() {
-    if (typeof window === 'undefined' || this.isManualScroll) return;
+    if (typeof window === 'undefined') return;
+    this.updateNavbarVisibility();
+    if (this.isManualScroll) return;
 
     if (this.router.url.includes('/login') || this.router.url.includes('/register')) {
       this.activeSection = '/login';
@@ -777,7 +792,12 @@ export class NavbarComponent implements OnInit {
 
   @HostListener('window:mousemove', ['$event'])
   onMouseMove(event: MouseEvent) {
-    this.handleDrag(event.clientX);
+    if (typeof window === 'undefined') return;
+    this.isMouseNearTop = event.clientY < 90;
+    this.updateNavbarVisibility();
+    if (this.isDragging) {
+      this.handleDrag(event.clientX);
+    }
   }
 
   @HostListener('window:mouseup')
