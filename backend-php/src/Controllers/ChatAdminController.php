@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Core\Request;
 use App\Core\Response;
 use App\Config\Groq;
+use App\Config\Gemini;
 use Exception;
 
 class ChatAdminController
@@ -29,6 +30,7 @@ class ChatAdminController
         $instruction = trim($body['instruction'] ?? '');
         $prompt = trim($body['prompt'] ?? '');
         $noteTitle = trim($body['note_title'] ?? '');
+        $history = $body['history'] ?? [];
 
         try {
             if ($mode === 'transform_block') {
@@ -63,28 +65,22 @@ PROMPT;
                 ]);
                 return;
             } elseif ($mode === 'copilot') {
+                // 🚀 CHAT FLOTANTE ROTBOT: ALIMENTADO EXCLUSIVAMENTE POR GOOGLE GEMINI (gemini-flash-latest)
                 $systemPrompt = <<<PROMPT
-Eres RotBot Apuntes IA, un copiloto ejecutivo de estudio profesional, conciso y natural.
+Eres RotBot Apuntes IA, un copiloto ejecutivo de estudio y aprendizaje altamente inteligente, refinado y natural.
 
 REGLAS DE RESPUESTA:
-1. VÉ DIRECTO AL GRANO. Da respuestas cortas, precisas y naturales.
-2. Evita íconos o emojis innecesarios (NO uses íconos como 📋, 1️⃣, 2️⃣, 3️⃣, 🚀, 💡). Mantiene una estética profesional y limpia.
-3. Si el usuario pide aclaración de un concepto o formatear una tabla, responde de forma concisa sin generar guías extensas de varios capítulos ni secciones adicionales no solicitadas.
+1. RESPUESTAS DE ALTA CALIDAD: Brinda información precisa, perspicaz y bien estructurada.
+2. FORMATO IMPECABLE: Destaca conceptos clave y términos relevantes con negritas (**concepto**). No utilices asteriscos sueltos ni símbolos de formato sin cerrar.
+3. CONCISIÓN DIRECTA: Ve directo al punto sin introducciones vacías ni despedidas repetitivas.
+4. TONO PROFESIONAL Y MODERNO: Mantén una redacción profesional, elegante, clara y pulida.
 PROMPT;
 
-                $userPrompt = $noteTitle ? "[Apunte Actual: {$noteTitle}]\n\nPregunta: {$prompt}" : $prompt;
+                $userPrompt = $noteTitle ? "[Apunte Actual: {$noteTitle}]\n\nConsulta del Usuario: {$prompt}" : $prompt;
 
-                $messages = [
-                    ['role' => 'system', 'content' => $systemPrompt],
-                    ['role' => 'user', 'content' => $userPrompt]
-                ];
+                $geminiRes = Gemini::callGemini($userPrompt, $systemPrompt, $history);
 
-                $groqRes = Groq::callGroq($messages, [
-                    'temperature' => 0.5,
-                    'max_tokens' => 2048
-                ]);
-
-                $reply = trim($groqRes['content'] ?? '');
+                $reply = trim($geminiRes['content'] ?? '');
 
                 $res->json([
                     'success' => true,
@@ -97,9 +93,9 @@ PROMPT;
                     'error' => 'Modo de IA no válido.'
                 ]);
             }
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             error_log("❌ [ChatAdminController] Error procesando solicitud IA: " . $e->getMessage());
-            $res->json([
+            $res->status(200)->json([
                 'success' => false,
                 'error' => 'Error de la IA: ' . $e->getMessage()
             ]);
