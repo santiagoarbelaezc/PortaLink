@@ -222,9 +222,23 @@ export class HeroDesignComponent implements OnInit, OnDestroy {
       badgeBorder: 'rgba(147, 51, 234, 0.35)'
     },
     {
+      projectId: 'erp-ecosystem',
+      isMultiMobile: false,
+      isReversed: true,
+      badge: 'ERP & Ecosistema Digital',
+      headline: 'Sistema integral para tu negocio',
+      subtext: 'Centraliza la gestión de tu empresa con ERP a medida, sincronización con tienda web, app móvil, facturación e inteligencia artificial.',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/q_auto:eco,f_auto,w_1300/v1787583314/slide2_aaafbj.png',
+      ctaText: 'Escríbenos ya',
+      link: '#contact',
+      badgeBg: 'rgba(59, 130, 246, 0.10)',
+      badgeColor: '#2563eb',
+      badgeBorder: 'rgba(59, 130, 246, 0.35)'
+    },
+    {
       projectId: 'camascotas',
       isMultiMobile: true,
-      isReversed: true,
+      isReversed: false,
       badge: 'E-Commerce & Mobile App',
       headline: 'Obtén tu aplicación web y móvil',
       subtext: 'Diseñamos soluciones para tu negocio o emprendimiento con una aplicación web y móvil, panel administrativo con las secciones que necesites.',
@@ -243,6 +257,7 @@ export class HeroDesignComponent implements OnInit, OnDestroy {
     {
       projectId: 'sysmicon',
       isMultiMobile: false,
+      isReversed: true,
       badge: 'Plataformas Web & Software',
       headline: 'Digitaliza tu empresa y servicios',
       subtext: 'Desarrollamos plataformas web corporativas, sistemas de administración y software escalable adaptado a tus necesidades.',
