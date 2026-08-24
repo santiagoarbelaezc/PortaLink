@@ -102,11 +102,11 @@ import { RouterModule } from '@angular/router';
 
             </div>
 
-            <!-- Case 2: Standard Desktop Showcase (Taller & Crisp) -->
-            <div *ngIf="!slide.isMultiMobile" class="relative w-full h-full max-h-[600px] rounded-2xl sm:rounded-3xl overflow-hidden border border-neutral-200/80 shadow-md bg-white group/img">
+            <!-- Case 2: Standard Desktop Showcase (Pure Transparent PNG) -->
+            <div *ngIf="!slide.isMultiMobile" class="relative w-full h-full max-h-[620px] flex items-center justify-center group/img">
               <img [src]="slide.image" 
                    [alt]="slide.headline"
-                   class="w-full h-full object-cover object-center transform group-hover/img:scale-[1.008] transition-transform duration-700"
+                   class="w-full h-full max-h-[620px] object-contain object-center drop-shadow-xl transform group-hover/img:scale-[1.01] transition-transform duration-700"
                    loading="lazy"
                    decoding="async">
             </div>
@@ -170,11 +170,11 @@ export class HeroDesignComponent implements OnInit, OnDestroy {
       headline: 'Comienza tu marca personal',
       subtext: 'Con inteligencia artificial integrada para mejorar tus ventas.',
       mobileImages: [
-        'https://res.cloudinary.com/doxdjiyvi/image/upload/q_auto:eco,f_auto,w_600/v1787547651/portalink1_a0jajw.png',
+        'https://res.cloudinary.com/doxdjiyvi/image/upload/q_auto:eco,f_auto,w_600/v1787579497/portalink1_xxzxts.png',
         'https://res.cloudinary.com/doxdjiyvi/image/upload/q_auto:eco,f_auto,w_600/v1787547653/portalink2_ehf9ki.png',
         'https://res.cloudinary.com/doxdjiyvi/image/upload/q_auto:eco,f_auto,w_600/v1787547652/porta-link3_n2paz8.png'
       ],
-      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/q_auto:eco,f_auto,w_600/v1787547651/portalink1_a0jajw.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/q_auto:eco,f_auto,w_600/v1787579497/portalink1_xxzxts.png',
       ctaText: 'Escríbenos ya',
       link: '#contact',
       badgeBg: 'rgba(147, 51, 234, 0.10)',
@@ -201,13 +201,14 @@ export class HeroDesignComponent implements OnInit, OnDestroy {
       badgeBorder: 'rgba(6, 182, 212, 0.35)'
     },
     {
-      projectId: 'tiendaintima',
+      projectId: 'sysmicon',
       isMultiMobile: false,
-      badge: 'Moda Íntima + IA',
-      headline: 'Tienda Íntima E-Commerce',
-      subtext: 'E-commerce elegante con motor de recomendación inteligente, catálogo interactivo y checkout ágil.',
-      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/q_auto:eco,f_auto,w_1100/v1786973903/proyecto-tiendaintima_oahugr.png',
-      ctaText: 'Ver Proyecto',
+      badge: 'Plataformas Web & Software',
+      headline: 'Digitaliza tu empresa y servicios',
+      subtext: 'Desarrollamos plataformas web corporativas, sistemas de administración y software escalable adaptado a tus necesidades.',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/q_auto:eco,f_auto,w_1200/v1787580641/sysmicon-hero1_ehlafz.png',
+      ctaText: 'Escríbenos ya',
+      link: '#contact',
       badgeBg: 'rgba(217, 119, 6, 0.10)',
       badgeColor: '#b45309',
       badgeBorder: 'rgba(217, 119, 6, 0.35)'
