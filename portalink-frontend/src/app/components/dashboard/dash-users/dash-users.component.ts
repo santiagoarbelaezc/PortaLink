@@ -23,40 +23,42 @@ interface User {
     <div class="space-y-6 tab-enter">
 
       <!-- Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4"
+      <div class="flex flex-col gap-4 border-b pb-4"
            [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-        <div>
-          <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em]"
-             [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Gestión de Cuentas</p>
-          <h2 class="text-3xl sm:text-4xl font-headline font-bold uppercase tracking-tight mt-0.5"
-              [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Usuarios</h2>
-        </div>
-          <div class="flex gap-3 items-center">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em]"
+               [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Gestión de Cuentas</p>
+            <h2 class="text-2xl sm:text-4xl font-headline font-bold uppercase tracking-tight mt-0.5"
+                [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Usuarios</h2>
+          </div>
+          <div class="grid grid-cols-2 sm:flex gap-2.5 sm:gap-3 items-center w-full sm:w-auto">
             <button (click)="downloadPdf()"
                     [disabled]="pdfLoading"
-                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider border transition-all duration-300 cursor-pointer hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+                    class="col-span-2 sm:col-span-1 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider border transition-all duration-300 cursor-pointer hover:scale-[1.02] active:scale-[0.98] shadow-sm"
                     [ngClass]="isDark ? 'border-neutral-700 text-white bg-white/10 hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-800 bg-neutral-100 hover:bg-neutral-200'">
               <svg class="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               {{ pdfLoading ? 'Generando...' : 'Exportar PDF' }}
             </button>
-            <div class="text-center px-4 py-2 rounded-xl border"
+            <div class="text-center px-4 py-2 rounded-xl border flex-1 sm:flex-initial"
                  [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900/60' : 'border-neutral-200 bg-white'">
-              <p class="text-2xl font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ activeUsers }}</p>
-              <p class="text-[10px] uppercase tracking-wide font-bold text-green-500">Activos</p>
+              <p class="text-xl sm:text-2xl font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ activeUsers }}</p>
+              <p class="text-[9px] sm:text-[10px] uppercase tracking-wide font-bold text-green-500">Activos</p>
             </div>
-            <div class="text-center px-4 py-2 rounded-xl border"
+            <div class="text-center px-4 py-2 rounded-xl border flex-1 sm:flex-initial"
                  [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900/60' : 'border-neutral-200 bg-white'">
-              <p class="text-2xl font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ usersList.length }}</p>
-              <p class="text-[10px] uppercase tracking-wide font-bold"
+              <p class="text-xl sm:text-2xl font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ usersList.length }}</p>
+              <p class="text-[9px] sm:text-[10px] uppercase tracking-wide font-bold"
                  [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Total</p>
             </div>
           </div>
+        </div>
       </div>
 
-      <!-- Users table -->
-      <div class="rounded-2xl border overflow-hidden"
+      <!-- Desktop Users Table (Hidden on Mobile) -->
+      <div class="hidden md:block rounded-2xl border overflow-hidden"
            [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
 
         <!-- Table header -->
@@ -155,6 +157,89 @@ interface User {
               </span>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Mobile Cards View (Optimized for touch & small screens) -->
+      <div class="block md:hidden space-y-3">
+        <div *ngFor="let user of usersList"
+             class="p-4 rounded-2xl border transition-all shadow-xs"
+             [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800' : 'bg-white border-neutral-200/90'">
+          
+          <!-- Top row: Avatar, Name, Email, Status -->
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <img [src]="user.avatar" [alt]="user.name"
+                   class="w-10 h-10 rounded-full object-cover shrink-0 border"
+                   [ngClass]="isDark ? 'border-neutral-700' : 'border-neutral-200'"
+                   (error)="onImgError($event, user.name)">
+              <div class="min-w-0">
+                <p class="text-sm font-bold truncate leading-snug" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ user.name }}</p>
+                <p class="text-xs truncate opacity-70" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ user.email }}</p>
+              </div>
+            </div>
+            
+            <!-- Status Badge -->
+            <button *ngIf="!isCurrentUser(user)"
+                    (click)="toggleStatus(user.id)"
+                    class="shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border cursor-pointer active:scale-95 transition-all"
+                    [ngClass]="user.status === 'Activo' 
+                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500' 
+                      : 'bg-neutral-500/10 border-neutral-500/30 text-neutral-400'">
+              <span class="w-1.5 h-1.5 rounded-full" [ngClass]="user.status === 'Activo' ? 'bg-emerald-500' : 'bg-neutral-400'"></span>
+              {{ user.status }}
+            </button>
+            <span *ngIf="isCurrentUser(user)"
+                  class="shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border bg-emerald-500/10 border-emerald-500/30 text-emerald-500">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              {{ user.status }}
+            </span>
+          </div>
+
+          <!-- Bottom Control Bar: Role select, Joined date, Delete action -->
+          <div class="pt-3 border-t flex items-center justify-between gap-2"
+               [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+            
+            <!-- Role control -->
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-bold uppercase tracking-widest opacity-50">Rol:</span>
+              <span *ngIf="isCurrentUser(user)"
+                    class="text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full opacity-80 cursor-not-allowed flex items-center gap-1"
+                    [ngClass]="getRoleClass(user.role)">
+                {{ user.role }} <span class="text-[9px]">🔒</span>
+              </span>
+              <select *ngIf="!isCurrentUser(user)"
+                      [ngModel]="user.role"
+                      (ngModelChange)="changeRole(user, $event)"
+                      [disabled]="updatingRole[user.id]"
+                      class="text-[10px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-full border cursor-pointer focus:outline-none"
+                      [ngClass]="getRoleSelectClass(user.role)">
+                <option value="Admin">ADMIN</option>
+                <option value="Usuario">USUARIO</option>
+              </select>
+            </div>
+
+            <!-- Joined & Actions -->
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] opacity-60 font-medium">{{ user.joined }}</span>
+              <button *ngIf="!isCurrentUser(user)"
+                      (click)="confirmDelete(user)"
+                      [disabled]="deletingUser[user.id]"
+                      class="p-2 rounded-xl text-xs transition-all active:scale-90"
+                      [ngClass]="isDark ? 'text-red-400 bg-red-950/30 hover:bg-red-900/40' : 'text-red-500 bg-red-50 hover:bg-red-100'"
+                      title="Eliminar usuario">
+                <svg *ngIf="!deletingUser[user.id]" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                <svg *ngIf="deletingUser[user.id]" class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </button>
+            </div>
+
+          </div>
+
         </div>
       </div>
     </div>

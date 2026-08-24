@@ -16,7 +16,7 @@ import { Router } from '@angular/router';
       <div class="space-y-6 tab-enter">
 
         <!-- ═══════════════════════ WELCOME BANNER ═══════════════════════ -->
-      <div class="relative overflow-hidden rounded-[28px] border p-6 md:p-10 min-h-[260px] flex flex-col justify-center transition-all duration-400"
+      <div class="relative overflow-hidden rounded-[24px] sm:rounded-[28px] border p-5 sm:p-8 md:p-10 min-h-[220px] sm:min-h-[260px] flex flex-col justify-center transition-all duration-400"
            [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800 shadow-[0_10px_35px_rgba(0,0,0,0.4)]' : 'bg-white border-neutral-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.04)]'">
 
         <!-- Rotbot flotando -->
@@ -27,57 +27,57 @@ import { Router } from '@angular/router';
         <div class="relative z-10 max-w-full sm:max-w-[75%] md:max-w-[60%]">
           <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em] mb-1.5"
              [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Panel de Control</p>
-          <h2 class="text-3xl sm:text-4xl font-headline font-bold leading-tight tracking-tight"
+          <h2 class="text-2xl sm:text-4xl font-headline font-bold leading-tight tracking-tight"
               [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
             Bienvenido, Santiago
           </h2>
-          <p class="text-xs sm:text-sm mt-1.5 mb-5 flex items-baseline gap-2 font-headline"
+          <p class="text-xs sm:text-sm mt-1.5 mb-4 sm:mb-5 flex items-baseline gap-2 font-headline"
              [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
              <span>{{ currentDate }}</span>
              <span class="text-sm md:text-base font-semibold" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-700'">{{ currentTime }}</span>
           </p>
 
           <!-- Quick chips -->
-          <div class="flex flex-wrap gap-2 relative z-10">
-            <span class="text-xs font-headline font-semibold px-3.5 py-1.5 rounded-full border flex items-center gap-1.5 tracking-wider"
+          <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap relative z-10">
+            <span class="text-[11px] sm:text-xs font-headline font-semibold px-3 py-1.5 rounded-full border flex items-center justify-center sm:justify-start gap-1.5 tracking-wider truncate"
                   [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80'">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-              {{ metrics.homeViews }} Vistas
+              <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+              <span class="truncate">{{ metrics.homeViews }} Vistas</span>
             </span>
-            <span class="text-xs font-headline font-semibold px-3.5 py-1.5 rounded-full border flex items-center gap-1.5 tracking-wider"
+            <span class="text-[11px] sm:text-xs font-headline font-semibold px-3 py-1.5 rounded-full border flex items-center justify-center sm:justify-start gap-1.5 tracking-wider truncate"
                   [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80'">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-              {{ unreadMessages }} Mensajes nuevos
+              <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+              <span class="truncate">{{ unreadMessages }} Mensajes</span>
             </span>
-            <span class="text-xs font-headline font-semibold px-3.5 py-1.5 rounded-full border flex items-center gap-1.5 tracking-wider"
+            <span class="text-[11px] sm:text-xs font-headline font-semibold px-3 py-1.5 rounded-full border flex items-center justify-center sm:justify-start gap-1.5 tracking-wider truncate"
                   [ngClass]="isDark ? 'border-blue-500/30 text-blue-400 bg-blue-500/10' : 'border-blue-200 text-blue-700 bg-blue-50'">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-              Servidor Online
+              <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+              <span class="truncate">Online</span>
             </span>
             <!-- Expiration Countdown Chip -->
-            <span class="text-xs font-headline font-semibold px-3.5 py-1.5 rounded-full border flex items-center gap-1.5 tracking-wider transition-all duration-300"
+            <span class="text-[11px] sm:text-xs font-headline font-semibold px-3 py-1.5 rounded-full border flex items-center justify-center sm:justify-start gap-1.5 tracking-wider transition-all duration-300 truncate"
                   [ngClass]="sessionIsWarning ? 
                     (isDark ? 'border-amber-500/40 text-amber-400 bg-amber-500/10 animate-pulse' : 'border-amber-300 text-amber-800 bg-amber-50/80 animate-pulse') : 
                     (isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80')">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              Sesión: {{ sessionTimeFormatted }}
+              <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <span class="truncate">{{ sessionTimeFormatted }}</span>
             </span>
           </div>
         </div>
       </div>
 
       <!-- ═══════════════════════ AI COMMAND CENTER ═══════════════════════ -->
-      <div class="rounded-[28px] border p-6 transition-all duration-300 relative overflow-hidden"
+      <div class="rounded-[24px] sm:rounded-[28px] border p-5 sm:p-6 transition-all duration-300 relative overflow-hidden"
            [ngClass]="isDark ? 'bg-neutral-900/50 border-blue-500/20' : 'bg-white border-blue-200/60 shadow-[0_10px_35px_rgba(0,0,0,0.03)]'">
         <!-- Background subtle glow -->
         <div class="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
         
-        <div class="relative z-10 flex flex-col md:flex-row gap-6">
-          <div class="flex-1 space-y-4">
+        <div class="relative z-10 flex flex-col md:flex-row gap-5 sm:gap-6">
+          <div class="flex-1 space-y-3 sm:space-y-4">
             
             <div class="flex items-center gap-3">
               <img [src]="isDark ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" alt="AI Icon" class="w-7 h-7 object-contain">
-              <h3 class="text-xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              <h3 class="text-lg sm:text-xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
                 Centro de Comando IA
               </h3>
             </div>
@@ -136,25 +136,25 @@ import { Router } from '@angular/router';
                   </div>
                 </div>
                 
-                <button class="px-7 py-3.5 rounded-full font-headline font-semibold text-xs uppercase tracking-wider transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-sm hover:shadow-md border-none"
+                <button class="w-full sm:w-auto px-7 py-3.5 rounded-full font-headline font-semibold text-xs uppercase tracking-wider transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-sm hover:shadow-md border-none shrink-0"
                         [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'">
                   Consultar IA
                 </button>
               </div>
               
-              <div class="flex flex-wrap items-center gap-2.5 pt-2">
-                <span class="text-[10px] font-headline font-semibold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-500'">
-                  Sugerencias rápidas:
+              <div class="flex items-center gap-2 pt-2 overflow-x-auto pb-1 scrollbar-none flex-nowrap sm:flex-wrap">
+                <span class="text-[10px] font-headline font-semibold uppercase tracking-widest shrink-0" [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-500'">
+                  Sugerencias:
                 </span>
-                <button (click)="aiQuery = 'mensajes'; onSearch()" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-headline font-semibold tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+                <button (click)="aiQuery = 'mensajes'; onSearch()" class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-headline font-semibold tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
                         [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-700 bg-neutral-50 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
                   <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-blue-500' : 'text-blue-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                  Mensajes nuevos
+                  Mensajes
                 </button>
-                <button (click)="aiQuery = 'usuarios'; onSearch()" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-headline font-semibold tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+                <button (click)="aiQuery = 'usuarios'; onSearch()" class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-headline font-semibold tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
                         [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-700 bg-neutral-50 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
                   <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-blue-500' : 'text-blue-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                  Usuarios registrados
+                  Usuarios
                 </button>
               </div>
             </div>
@@ -164,38 +164,38 @@ import { Router } from '@angular/router';
       </div>
 
       <!-- ═══════════════════════ METRIC CARDS ═══════════════════════ -->
-      <div class="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
+      <div class="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-2.5 sm:gap-4">
 
         <div *ngFor="let card of metricCards"
-             class="rounded-[24px] border p-6 transition-all duration-300 hover:scale-[1.01]"
+             class="rounded-[20px] sm:rounded-[24px] border p-4 sm:p-6 transition-all duration-300 hover:scale-[1.01]"
              [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800 hover:border-neutral-700 shadow-[0_10px_30px_rgba(0,0,0,0.3)]' : 'bg-white border-neutral-200/80 hover:border-neutral-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)]'">
-          <div class="flex justify-between items-start mb-4">
-            <p class="text-xs font-headline font-semibold uppercase tracking-wider"
+          <div class="flex justify-between items-start mb-2 sm:mb-4">
+            <p class="text-[10px] sm:text-xs font-headline font-semibold uppercase tracking-wider truncate pr-1"
                [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ card.label }}</p>
-            <span class="p-2.5 rounded-2xl border flex items-center justify-center shadow-xs"
+            <span class="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl border flex items-center justify-center shadow-xs shrink-0"
                   [ngClass]="isDark ? 'bg-neutral-800/80 border-neutral-700 text-neutral-200' : 'bg-neutral-100/80 border-neutral-200/80 text-neutral-800'">
               <!-- Eye icon — Vistas Home -->
-              <svg *ngIf="card.iconPath === 'eye'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <svg *ngIf="card.iconPath === 'eye'" class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               <!-- Link icon — Linktree -->
-              <svg *ngIf="card.iconPath === 'link'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <svg *ngIf="card.iconPath === 'link'" class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
               </svg>
               <!-- Chat icon — Rotbot -->
-              <svg *ngIf="card.iconPath === 'chat'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <svg *ngIf="card.iconPath === 'chat'" class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
               </svg>
               <!-- Bolt icon — Carga -->
-              <svg *ngIf="card.iconPath === 'bolt'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <svg *ngIf="card.iconPath === 'bolt'" class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
               </svg>
             </span>
           </div>
-          <p class="text-4xl sm:text-5xl font-headline font-bold tracking-tight leading-none"
+          <p class="text-2xl sm:text-5xl font-headline font-bold tracking-tight leading-none"
              [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ card.value }}</p>
-          <p class="text-xs mt-2.5 font-headline font-semibold"
+          <p class="text-[10px] sm:text-xs mt-2 sm:mt-2.5 font-headline font-semibold truncate"
              [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ card.sublabel }}</p>
         </div>
 

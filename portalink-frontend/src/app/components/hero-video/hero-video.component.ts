@@ -8,7 +8,7 @@ import * as AOS from 'aos';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <section id="hero" 
+    <section id="hero-video" 
              class="relative w-full flex flex-col items-center justify-center overflow-hidden transition-colors duration-500 pt-12 pb-2 sm:pt-20 md:pt-28 md:pb-4 px-4 sm:px-12 lg:px-20"
              [ngClass]="currentTheme === 'light' ? 'bg-white text-neutral-900' : 'bg-[#0a0a0a] text-white'">
       

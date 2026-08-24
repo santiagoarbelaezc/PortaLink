@@ -7,7 +7,7 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <section id="hero-design" 
+    <section id="hero" 
              class="relative w-full flex flex-col items-center justify-center overflow-hidden bg-white text-neutral-900 pt-16 sm:pt-20 md:pt-24 pb-6 sm:pb-10 px-4 sm:px-10 lg:px-16">
       
       <!-- Subtle Ambient Accent -->

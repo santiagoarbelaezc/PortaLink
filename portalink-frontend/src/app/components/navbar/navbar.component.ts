@@ -952,6 +952,13 @@ export class NavbarComponent implements OnInit {
   }
 
   private scrollIntoView(id: string, retries = 8) {
+    if (id === 'hero' || id === 'hero-design') {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+      return;
+    }
     const element = document.getElementById(id);
     if (element) {
       const offset = 100;
