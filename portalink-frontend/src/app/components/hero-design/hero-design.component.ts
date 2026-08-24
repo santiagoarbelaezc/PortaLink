@@ -16,7 +16,7 @@ import { RouterModule } from '@angular/router';
       </div>
 
       <!-- Main Open Space (Tightened & Unified) -->
-      <div class="group relative z-10 w-full max-w-[1440px] mx-auto min-h-[500px] sm:min-h-[560px] md:min-h-[610px] lg:min-h-[660px] flex items-center"
+      <div class="group relative z-10 w-full max-w-[1500px] mx-auto min-h-[520px] sm:min-h-[580px] md:min-h-[640px] lg:min-h-[700px] flex items-center"
            (mouseenter)="pauseAutoplay()"
            (mouseleave)="resumeAutoplay()">
 
@@ -30,8 +30,11 @@ import { RouterModule } from '@angular/router';
              [style.zIndex]="activeSlide === i ? '10' : '1'">
 
           <!-- Content Column -->
-          <div class="w-full md:w-[46%] lg:w-[44%] flex flex-col justify-center space-y-4 sm:space-y-5 z-10 shrink-0"
-               [ngClass]="slide.isReversed ? 'items-start md:items-end text-left md:text-right' : 'items-start text-left'">
+          <div class="w-full flex flex-col justify-center space-y-4 sm:space-y-5 z-10 shrink-0"
+               [ngClass]="[
+                 slide.isMultiMobile ? 'md:w-[46%] lg:w-[44%]' : 'md:w-[40%] lg:w-[38%]',
+                 slide.isReversed ? 'items-start md:items-end text-left md:text-right' : 'items-start text-left'
+               ]">
 
             <!-- Big Bold Headline (Increased Size) -->
             <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] xl:text-[3.6rem] font-headline font-bold uppercase tracking-tight leading-[1.04] text-[#0a0a0a] m-0"
@@ -103,7 +106,8 @@ import { RouterModule } from '@angular/router';
           </div>
 
           <!-- Right Showcase Visual Column (Larger & Slightly Taller) -->
-          <div class="w-full md:w-[54%] lg:w-[56%] h-[380px] sm:h-[480px] md:h-[570px] lg:h-[640px] relative flex items-center justify-center">
+          <div class="w-full h-[400px] sm:h-[500px] md:h-[600px] lg:h-[680px] relative flex items-center justify-center"
+               [ngClass]="slide.isMultiMobile ? 'md:w-[54%] lg:w-[56%]' : 'md:w-[60%] lg:w-[62%]'">
             
             <!-- Case 1: Triple Stacked Mobile Mockups (Taller & Elegant) -->
             <div *ngIf="slide.isMultiMobile" class="relative flex items-center justify-center w-full h-full">
@@ -137,11 +141,11 @@ import { RouterModule } from '@angular/router';
 
             </div>
 
-            <!-- Case 2: Standard Desktop Showcase (Pure Transparent PNG) -->
-            <div *ngIf="!slide.isMultiMobile" class="relative w-full h-full max-h-[620px] flex items-center justify-center group/img">
+            <!-- Case 2: Standard Desktop Showcase (Pure Transparent PNG - Enlarged) -->
+            <div *ngIf="!slide.isMultiMobile" class="relative w-full h-full max-h-[680px] flex items-center justify-center group/img">
               <img [src]="slide.image" 
                    [alt]="slide.headline"
-                   class="w-full h-full max-h-[620px] object-contain object-center drop-shadow-xl transform group-hover/img:scale-[1.01] transition-transform duration-700"
+                   class="w-full h-full max-h-[680px] object-contain object-center drop-shadow-2xl transform transition-transform duration-700 hover:scale-[1.015]"
                    loading="lazy"
                    decoding="async">
             </div>
@@ -228,7 +232,7 @@ export class HeroDesignComponent implements OnInit, OnDestroy {
       badge: 'ERP & Ecosistema Digital',
       headline: 'Sistema integral para tu negocio',
       subtext: 'Centraliza la gestión de tu empresa con ERP a medida, sincronización con tienda web, app móvil, facturación e inteligencia artificial.',
-      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/q_auto:eco,f_auto,w_1300/v1787583314/slide2_aaafbj.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/q_auto:eco,f_auto,w_1300/v1787584352/erp-beta_x5vnul.png',
       ctaText: 'Escríbenos ya',
       link: '#contact',
       badgeBg: 'rgba(59, 130, 246, 0.10)',

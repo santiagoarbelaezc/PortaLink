@@ -33,7 +33,7 @@ import * as AOS from 'aos';
     <div class="dynamic-bg"></div>
     <main class="relative text-neutral-900">
       <app-hero-design></app-hero-design>
-      <app-hero-video></app-hero-video>
+      <!-- <app-hero-video></app-hero-video> -->
       
       <ng-container *ngIf="portfolioData(); else homeSkeleton">
       
