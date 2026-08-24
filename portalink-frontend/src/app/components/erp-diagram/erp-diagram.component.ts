@@ -6,145 +6,186 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="erp-diagram-canvas w-full max-w-[1150px] mx-auto bg-white rounded-[20px] sm:rounded-[32px] p-2.5 xs:p-3 sm:p-5 lg:p-6 border border-slate-200/90 shadow-[0_15px_40px_rgba(0,0,0,0.06)] font-sans text-slate-800 relative select-none">
+    <div class="erp-diagram-canvas w-full max-w-[1150px] mx-auto bg-transparent sm:bg-white rounded-none sm:rounded-[32px] p-0 sm:p-5 lg:p-6 border-0 sm:border sm:border-slate-200/90 shadow-none sm:shadow-[0_20px_50px_rgba(0,0,0,0.05)] font-sans text-slate-800 relative select-none">
       
       <!-- ═══════════════════════════════════════════════════════════════ -->
-      <!-- MOBILE DESIGN (< LG) — Streamlined, Modern, Touch-Friendly     -->
+      <!-- MOBILE DESIGN (< LG) — Premium Interconnected Diagram View     -->
       <!-- ═══════════════════════════════════════════════════════════════ -->
-      <div class="flex lg:hidden flex-col gap-2.5 xs:gap-3 w-full">
+      <div class="flex lg:hidden flex-col items-center gap-0 w-full px-1 xs:px-2">
         
-        <!-- 1. Central Core Header & Modules -->
-        <div class="bg-white rounded-2xl border-2 border-slate-200/90 p-3 shadow-xs">
+        <!-- 1. Central Core Node: ERP & Base de Datos -->
+        <div class="w-full bg-white rounded-2xl border border-slate-200/90 p-3.5 shadow-sm relative z-10">
           
+          <!-- Header: ERP + Status -->
           <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-100">
             <div class="flex items-center gap-2">
-              <div class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-xs">
+              <div class="w-7 h-7 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs">
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
                 </svg>
               </div>
               <div>
-                <h4 class="text-xs xs:text-sm font-headline font-extrabold text-slate-900 leading-none m-0">ERP PortaLink</h4>
-                <span class="text-[9px] text-slate-500 font-normal">Gestiona tu empresa en tiempo real</span>
+                <h4 class="text-xs xs:text-sm font-headline font-extrabold text-slate-900 leading-none m-0">ERP</h4>
+                <span class="text-[9px] text-slate-500 font-normal">Núcleo Administrativo en la Nube</span>
               </div>
             </div>
-            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8.5px] font-semibold bg-emerald-50 text-emerald-600 border border-emerald-200/60">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              En Vivo
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] font-semibold bg-emerald-50 text-emerald-600 border border-emerald-200/70">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+              Sincronizado
             </span>
           </div>
 
-          <!-- 3 Internal Modules Grid -->
-          <div class="grid grid-cols-3 gap-1.5">
-            <div class="bg-slate-50/80 rounded-xl p-2 text-center border border-slate-100 flex flex-col items-center">
-              <div class="w-5 h-5 flex items-center justify-center text-slate-800 mb-1">
+          <!-- 3 Internal Modules -->
+          <div class="grid grid-cols-3 gap-2 mb-2.5">
+            <div class="bg-slate-50/90 rounded-xl p-2 text-center border border-slate-100 flex flex-col items-center">
+              <div class="w-5 h-5 flex items-center justify-center text-blue-600 mb-1">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
               </div>
-              <h6 class="text-[9.5px] font-headline font-bold text-slate-900 m-0">Inventario</h6>
-              <span class="text-[7.5px] text-slate-500 leading-tight block">Stock activo</span>
+              <h6 class="text-[10px] font-headline font-bold text-slate-900 m-0">Inventario</h6>
+              <span class="text-[7.5px] text-slate-500 block leading-tight">Stock en vivo</span>
             </div>
 
-            <div class="bg-slate-50/80 rounded-xl p-2 text-center border border-slate-100 flex flex-col items-center">
-              <div class="w-5 h-5 flex items-center justify-center text-slate-800 mb-1">
+            <div class="bg-slate-50/90 rounded-xl p-2 text-center border border-slate-100 flex flex-col items-center">
+              <div class="w-5 h-5 flex items-center justify-center text-blue-600 mb-1">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
               </div>
-              <h6 class="text-[9.5px] font-headline font-bold text-slate-900 m-0">Ventas</h6>
-              <span class="text-[7.5px] text-slate-500 leading-tight block">Facturación</span>
+              <h6 class="text-[10px] font-headline font-bold text-slate-900 m-0">Ventas</h6>
+              <span class="text-[7.5px] text-slate-500 block leading-tight">Facturación</span>
             </div>
 
-            <div class="bg-slate-50/80 rounded-xl p-2 text-center border border-slate-100 flex flex-col items-center">
-              <div class="w-5 h-5 flex items-center justify-center text-slate-800 mb-1">
+            <div class="bg-slate-50/90 rounded-xl p-2 text-center border border-slate-100 flex flex-col items-center">
+              <div class="w-5 h-5 flex items-center justify-center text-blue-600 mb-1">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
               </div>
-              <h6 class="text-[9.5px] font-headline font-bold text-slate-900 m-0">Clientes</h6>
-              <span class="text-[7.5px] text-slate-500 leading-tight block">CRM & Fidelidad</span>
+              <h6 class="text-[10px] font-headline font-bold text-slate-900 m-0">Clientes</h6>
+              <span class="text-[7.5px] text-slate-500 block leading-tight">CRM & Pedidos</span>
             </div>
           </div>
 
-        </div>
-
-        <!-- 2. Integrated Channels 2x2 Grid -->
-        <div class="grid grid-cols-2 gap-2">
-          
-          <!-- Sitio Web -->
-          <div class="bg-white rounded-2xl border border-slate-200 p-2.5 shadow-xs flex flex-col justify-between">
-            <div class="flex items-center justify-between mb-1.5">
-              <div class="flex items-center gap-1.5">
-                <div class="w-5 h-5 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                  <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
-                </div>
-                <h6 class="text-[10px] font-headline font-bold text-slate-900 m-0">Sitio Web</h6>
-              </div>
-            </div>
-            <div class="w-full h-12 flex items-center justify-center bg-slate-50 rounded-lg p-1 mb-1 border border-slate-100 overflow-hidden">
-              <img src="https://res.cloudinary.com/doxdjiyvi/image/upload/q_auto:eco,f_auto,w_300/v1787585847/e_p-heropq_yzeom8.png" alt="Sitio Web" class="h-full w-auto object-contain" loading="lazy"/>
-            </div>
-            <span class="text-[7.5px] text-slate-500 text-center block">Catálogo & Checkout</span>
-          </div>
-
-          <!-- App Móvil -->
-          <div class="bg-white rounded-2xl border border-slate-200 p-2.5 shadow-xs flex flex-col justify-between">
-            <div class="flex items-center justify-between mb-1.5">
-              <div class="flex items-center gap-1.5">
-                <div class="w-5 h-5 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                  <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-                </div>
-                <h6 class="text-[10px] font-headline font-bold text-slate-900 m-0">App Móvil</h6>
-              </div>
-            </div>
-            <div class="w-full h-12 flex items-center justify-center bg-slate-50 rounded-lg p-1 mb-1 border border-slate-100 overflow-hidden">
-              <img src="https://res.cloudinary.com/doxdjiyvi/image/upload/q_auto:eco,f_auto,w_200/v1787585921/camascotas-movilpq_l2puqq.png" alt="App Móvil" class="h-full w-auto object-contain" loading="lazy"/>
-            </div>
-            <span class="text-[7.5px] text-slate-500 text-center block">iOS & Android</span>
-          </div>
-
-          <!-- WhatsApp CRM -->
-          <div class="bg-white rounded-2xl border border-slate-200 p-2.5 shadow-xs flex flex-col justify-between">
-            <div class="flex items-center gap-1.5 mb-1.5">
-              <div class="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.694.062-2.18-.553-1.637-.677-2.709-2.338-2.791-2.446-.082-.108-.669-.89-.669-1.696 0-.806.42-1.203.57-1.363.144-.155.314-.194.419-.194.105 0 .21.001.302.006.098.005.228-.037.356.27.132.318.452 1.102.492 1.183.04.082.067.177.013.283-.053.106-.08.172-.16.266-.08.093-.169.208-.242.279-.08.079-.163.165-.07.325.093.16.413.682.887 1.104.61.543 1.124.712 1.284.792.16.08.254.067.348-.04.094-.108.4-.467.507-.627.107-.16.214-.134.36-.08.146.054.928.438 1.088.518.16.08.267.12.307.187.04.066.04.385-.104.79z"/></svg>
-              </div>
-              <h6 class="text-[10px] font-headline font-bold text-slate-900 m-0">WhatsApp</h6>
-            </div>
-            <div class="bg-emerald-50/60 border border-emerald-100 rounded-lg p-1 text-[7px] text-emerald-900 mb-1">
-              "¡Pedido #104 confirmado! ✅"
-            </div>
-            <span class="text-[7.5px] text-slate-500 text-center block">Atención 24/7</span>
-          </div>
-
-          <!-- IA Inteligente -->
-          <div class="bg-white rounded-2xl border border-slate-200 p-2.5 shadow-xs flex flex-col justify-between">
-            <div class="flex items-center gap-1.5 mb-1.5">
-              <div class="w-5 h-5 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center p-0.5 shrink-0">
-                <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="IA">
-              </div>
-              <h6 class="text-[10px] font-headline font-bold text-slate-900 m-0">IA Asistente</h6>
-            </div>
-            <div class="bg-blue-50/60 border border-blue-100 rounded-lg p-1 text-[7px] text-blue-900 mb-1">
-              +18% ventas proyectadas 📈
-            </div>
-            <span class="text-[7.5px] text-slate-500 text-center block">Automatizaciones</span>
-          </div>
-
-        </div>
-
-        <!-- 3. Base de Datos Cloud Bar -->
-        <div class="bg-white rounded-2xl border border-slate-200 p-2.5 shadow-xs flex items-center justify-between gap-2">
-          <div class="flex items-center gap-2">
-            <div class="w-7 h-7 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700 shrink-0">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <!-- Base de Datos Integration Bar -->
+          <div class="bg-blue-50/50 rounded-xl px-2.5 py-1.5 border border-blue-100/80 flex items-center justify-between">
+            <div class="flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 text-blue-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <ellipse cx="12" cy="5" rx="9" ry="3"/>
                 <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
                 <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
               </svg>
+              <span class="text-[8.5px] font-medium text-slate-700">Base de Datos Centralizada</span>
             </div>
-            <div>
-              <h6 class="text-[9.5px] font-headline font-bold text-slate-900 m-0 leading-none">Base de Datos Centralizada</h6>
-              <span class="text-[7.5px] text-slate-500">Sincronización en la nube en tiempo real</span>
-            </div>
+            <span class="text-[7.5px] font-semibold text-blue-700 bg-white px-1.5 py-0.5 rounded shadow-2xs">Cloud 100%</span>
           </div>
-          <span class="text-[8px] font-semibold text-blue-600 bg-blue-50 border border-blue-200/60 px-2 py-0.5 rounded-full shrink-0">
-            100% Sync
+
+        </div>
+
+        <!-- 2. Vertical Diagram Connector Bus with Branches -->
+        <div class="w-full flex flex-col items-center justify-center my-0.5 relative z-0">
+          <svg class="w-full max-w-[280px] h-6 text-slate-300" viewBox="0 0 280 24" fill="none">
+            <!-- Center Vertical Line -->
+            <line x1="140" y1="0" x2="140" y2="12" stroke="#cbd5e1" stroke-width="1.5"/>
+            <!-- Horizontal Fork -->
+            <path d="M70 20V12H210V20" stroke="#cbd5e1" stroke-width="1.5" fill="none"/>
+            <!-- Center Sync Badge -->
+            <circle cx="140" cy="12" r="3" fill="#2563eb"/>
+            <!-- Down Arrows -->
+            <path d="M67 17L70 21L73 17" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M207 17L210 21L213 17" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <!-- 3. Connected 4 Channels (2x2 High-Impact Cards) -->
+        <div class="grid grid-cols-2 gap-2 w-full relative z-10">
+          
+          <!-- Canal 1: SITIO WEB -->
+          <div class="bg-white rounded-2xl border border-slate-200/90 p-2.5 shadow-xs flex flex-col justify-between hover:border-blue-300 transition-colors">
+            <div>
+              <div class="flex items-center gap-1.5 mb-1.5">
+                <div class="w-5 h-5 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                  <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+                </div>
+                <h6 class="text-[10px] font-headline font-bold text-slate-900 m-0">SITIO WEB</h6>
+              </div>
+              <div class="w-full h-14 bg-slate-50/80 rounded-lg p-1 border border-slate-100 flex items-center justify-center overflow-hidden mb-1.5">
+                <img src="https://res.cloudinary.com/doxdjiyvi/image/upload/q_auto:eco,f_auto,w_300/v1787585847/e_p-heropq_yzeom8.png" alt="Sitio Web" class="w-full h-auto max-h-12 object-contain drop-shadow-xs" loading="lazy"/>
+              </div>
+            </div>
+            <ul class="text-[7.5px] text-slate-600 space-y-0.5 list-none p-0 m-0">
+              <li>✓ Catálogo online</li>
+              <li>✓ Pasarela de pago</li>
+            </ul>
+          </div>
+
+          <!-- Canal 2: APP MÓVIL -->
+          <div class="bg-white rounded-2xl border border-slate-200/90 p-2.5 shadow-xs flex flex-col justify-between hover:border-blue-300 transition-colors">
+            <div>
+              <div class="flex items-center gap-1.5 mb-1.5">
+                <div class="w-5 h-5 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                  <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                </div>
+                <h6 class="text-[10px] font-headline font-bold text-slate-900 m-0">APP MÓVIL</h6>
+              </div>
+              <div class="w-full h-14 bg-slate-50/80 rounded-lg p-1 border border-slate-100 flex items-center justify-center overflow-hidden mb-1.5">
+                <img src="https://res.cloudinary.com/doxdjiyvi/image/upload/q_auto:eco,f_auto,w_200/v1787585921/camascotas-movilpq_l2puqq.png" alt="App Móvil" class="h-full w-auto max-h-12 object-contain drop-shadow-xs" loading="lazy"/>
+              </div>
+            </div>
+            <ul class="text-[7.5px] text-slate-600 space-y-0.5 list-none p-0 m-0">
+              <li>✓ iOS & Android</li>
+              <li>✓ Gestión móvil</li>
+            </ul>
+          </div>
+
+          <!-- Canal 3: WHATSAPP CRM -->
+          <div class="bg-white rounded-2xl border border-slate-200/90 p-2.5 shadow-xs flex flex-col justify-between hover:border-emerald-300 transition-colors">
+            <div>
+              <div class="flex items-center gap-1.5 mb-1.5">
+                <div class="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.694.062-2.18-.553-1.637-.677-2.709-2.338-2.791-2.446-.082-.108-.669-.89-.669-1.696 0-.806.42-1.203.57-1.363.144-.155.314-.194.419-.194.105 0 .21.001.302.006.098.005.228-.037.356.27.132.318.452 1.102.492 1.183.04.082.067.177.013.283-.053.106-.08.172-.16.266-.08.093-.169.208-.242.279-.08.079-.163.165-.07.325.093.16.413.682.887 1.104.61.543 1.124.712 1.284.792.16.08.254.067.348-.04.094-.108.4-.467.507-.627.107-.16.214-.134.36-.08.146.054.928.438 1.088.518.16.08.267.12.307.187.04.066.04.385-.104.79z"/></svg>
+                </div>
+                <h6 class="text-[10px] font-headline font-bold text-slate-900 m-0">WHATSAPP</h6>
+              </div>
+              <div class="bg-emerald-50/80 border border-emerald-100 rounded-lg p-1.5 text-[7px] text-emerald-900 mb-1.5 leading-snug">
+                <span class="font-bold">Bot:</span> "Pedido #104 listo ✅"
+              </div>
+            </div>
+            <ul class="text-[7.5px] text-slate-600 space-y-0.5 list-none p-0 m-0">
+              <li>✓ Respuestas 24/7</li>
+              <li>✓ Notificaciones</li>
+            </ul>
+          </div>
+
+          <!-- Canal 4: IA ROTBOT -->
+          <div class="bg-white rounded-2xl border border-slate-200/90 p-2.5 shadow-xs flex flex-col justify-between hover:border-purple-300 transition-colors">
+            <div>
+              <div class="flex items-center gap-1.5 mb-1.5">
+                <div class="w-5 h-5 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center p-0.5 shrink-0">
+                  <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="RotBot AI">
+                </div>
+                <h6 class="text-[10px] font-headline font-bold text-slate-900 m-0">IA ASISTENTE</h6>
+              </div>
+              <div class="bg-blue-50/70 border border-blue-100 rounded-lg p-1.5 text-[7px] text-blue-900 mb-1.5 flex items-center justify-between">
+                <span>+18% ventas</span>
+                <svg class="w-5 h-2.5 text-blue-500" viewBox="0 0 24 10" fill="none">
+                  <path d="M1 8L8 4L14 7L23 1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </div>
+            </div>
+            <ul class="text-[7.5px] text-slate-600 space-y-0.5 list-none p-0 m-0">
+              <li>✓ Análisis de datos</li>
+              <li>✓ Automatización</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- 4. Bottom Analytics Ticker -->
+        <div class="w-full flex items-center justify-center gap-1.5 mt-2.5 flex-wrap">
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[7.5px] font-medium bg-white border border-slate-200 text-slate-600 shadow-2xs">
+            📊 KPIs en vivo
+          </span>
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[7.5px] font-medium bg-white border border-slate-200 text-slate-600 shadow-2xs">
+            🔄 Sincronización Automática
+          </span>
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[7.5px] font-medium bg-white border border-slate-200 text-slate-600 shadow-2xs">
+            📄 Facturación & DIAN
           </span>
         </div>
 

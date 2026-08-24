@@ -9,7 +9,7 @@ import { ErpDiagramComponent } from '../erp-diagram/erp-diagram.component';
   imports: [CommonModule, RouterModule, ErpDiagramComponent],
   template: `
     <section id="hero" 
-             class="relative w-full flex flex-col items-center justify-center overflow-hidden bg-white text-neutral-900 pt-8 xs:pt-9 sm:pt-14 md:pt-20 pb-6 sm:pb-8 px-3 xs:px-4 sm:px-8 lg:px-16 select-none">
+             class="relative w-full flex flex-col items-center justify-center overflow-hidden bg-white text-neutral-900 pt-8 xs:pt-9 sm:pt-14 md:pt-20 pb-10 xs:pb-12 sm:pb-10 px-3 xs:px-4 sm:px-8 lg:px-16 select-none">
       
       <!-- Subtle Ambient Accent -->
       <div class="absolute inset-0 pointer-events-none z-0 overflow-hidden">
@@ -17,7 +17,7 @@ import { ErpDiagramComponent } from '../erp-diagram/erp-diagram.component';
       </div>
 
       <!-- Main Open Space (Tightened & Unified) -->
-      <div class="group relative z-10 w-full max-w-[1500px] mx-auto min-h-[640px] xs:min-h-[700px] sm:min-h-[760px] md:min-h-[640px] lg:min-h-[700px] flex items-center cursor-grab active:cursor-grabbing"
+      <div class="group relative z-10 w-full max-w-[1500px] mx-auto min-h-[640px] xs:min-h-[700px] sm:min-h-[760px] md:min-h-[640px] lg:min-h-[700px] flex items-center"
            (mouseenter)="pauseAutoplay()"
            (mouseleave)="resumeAutoplay()"
            (touchstart)="onTouchStart($event)"
@@ -49,9 +49,12 @@ import { ErpDiagramComponent } from '../erp-diagram/erp-diagram.component';
               {{ slide.headline }}
             </h2>
 
-            <!-- 3. Subtitle / Tagline (Order 3 on Mobile, placed under images) -->
+            <!-- 3. Subtitle / Tagline (Order 3 on Mobile, placed under images, hidden on mobile for diagram slide) -->
             <p class="order-3 md:order-none text-xs xs:text-sm sm:text-base lg:text-xl text-neutral-600 font-sans font-normal leading-relaxed max-w-xl m-0 px-2 md:px-0 text-center"
-               [ngClass]="slide.isReversed ? 'md:text-right' : 'md:text-left'">
+               [ngClass]="[
+                 slide.isReversed ? 'md:text-right' : 'md:text-left',
+                 slide.projectId === 'erp-ecosystem' ? 'hidden md:block' : 'block'
+               ]">
               {{ slide.subtext }}
             </p>
 
@@ -172,8 +175,8 @@ import { ErpDiagramComponent } from '../erp-diagram/erp-diagram.component';
 
         </div>
 
-        <!-- Bottom Minimalist Dots (Touch-Optimized) -->
-        <div class="absolute -bottom-3 sm:-bottom-2 md:bottom-2 left-1/2 -translate-x-1/2 md:left-0 md:translate-x-0 z-20 flex items-center gap-1.5 sm:gap-2">
+        <!-- Bottom Minimalist Dots (Touch-Optimized - Lowered on Mobile) -->
+        <div class="absolute -bottom-7 xs:-bottom-8 sm:-bottom-4 md:bottom-2 left-1/2 -translate-x-1/2 md:left-0 md:translate-x-0 z-20 flex items-center gap-1.5 sm:gap-2">
           <button *ngFor="let slide of slides; let i = index"
                   (click)="goToSlide(i)"
                   class="transition-all duration-300 rounded-full border-none cursor-pointer p-0"
