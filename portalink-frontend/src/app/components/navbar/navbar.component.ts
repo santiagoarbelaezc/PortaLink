@@ -21,16 +21,12 @@ import { AuthService } from '../../services/auth.service';
          ]">
       <div class="w-full flex items-center justify-between">
 
-        <!-- Left Side: Brand Logo & Typography -->
+        <!-- Left Side: Brand Logo -->
         <div class="flex items-center flex-1">
-          <a (click)="scrollTo('#hero', $event)" routerLink="/" class="flex items-center gap-3 cursor-pointer group no-underline">
+          <a (click)="scrollTo('#hero', $event)" routerLink="/" class="flex items-center cursor-pointer group no-underline">
             <img [src]="currentTheme === 'light' ? 'assets/icons/navbar-logolight.png' : 'assets/icons/navbar-logodark.png'" 
                  alt="Portalink" 
                  class="h-8 sm:h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105" />
-            <span class="font-headline font-bold text-sm tracking-[0.24em] uppercase transition-colors"
-                  [ngClass]="currentTheme === 'light' ? 'text-neutral-900' : 'text-white'">
-              PORTALINK
-            </span>
           </a>
         </div>
 
