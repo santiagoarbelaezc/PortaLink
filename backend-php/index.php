@@ -80,6 +80,7 @@ use App\Controllers\MessagesController;
 use App\Controllers\SiteController;
 use App\Controllers\LibraryController;
 use App\Controllers\ChatAdminController;
+use App\Controllers\CommandCenterController;
 
 $request = new Request();
 $response = new Response();
@@ -362,6 +363,16 @@ $router->delete('/api/library/pages/:id', [LibraryController::class, 'deletePage
 
 // Buscador Global
 $router->get('/api/library/search', [LibraryController::class, 'searchLibrary'], [OptionalAuthMiddleware::class]);
+
+// ──────────────────────────────────────────────────────────────
+//  RUTAS DE CENTRO DE COMANDO IA (/api/command-center)
+// ──────────────────────────────────────────────────────────────
+$router->post('/api/command-center/query', [CommandCenterController::class, 'query'], [OptionalAuthMiddleware::class]);
+$router->post('/api/command-center/query-audio', [CommandCenterController::class, 'queryAudio'], [OptionalAuthMiddleware::class]);
+$router->post('/api/command-center/activity', [CommandCenterController::class, 'logActivity'], [OptionalAuthMiddleware::class]);
+$router->get('/api/command-center/radar', [CommandCenterController::class, 'getRadar'], [OptionalAuthMiddleware::class]);
+$router->get('/api/command-center/suggestions', [CommandCenterController::class, 'getSuggestions'], [OptionalAuthMiddleware::class]);
+$router->get('/api/command-center/recent-activities', [CommandCenterController::class, 'getRecentActivities'], [OptionalAuthMiddleware::class]);
 
 // Despachar la petición protegido contra errores fatales no capturados
 try {

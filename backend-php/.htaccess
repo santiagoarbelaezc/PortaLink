@@ -1,15 +1,64 @@
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ index.php [QSA,L]
-</IfModule>
+# ==============================================================================
+#  PORTALINK BACKEND SECURITY & ROUTING CONFIGURATION (.htaccess)
+# ==============================================================================
 
-# Handle CORS headers dynamically for Apache
+# 1. Deshabilitar listado de directorios (evita ver archivos si no hay index)
+Options -Indexes -MultiViews
+
+# 2. PROHIBIR ACCESO TOTAL A ARCHIVOS OCULTOS Y SENSIBLES (.env, .git, etc.)
+# Compatible con Apache 2.2 y Apache 2.4+
+<FilesMatch "(^\.|\.env|\.env\..*|\.sql|\.log|\.md|composer\.(json|lock)|schema_.*\.sql)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+<Files ".env">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</Files>
+
+# 3. CONFIGURACIÓN DE CABECERAS DE SEGURIDAD & CORS
 <IfModule mod_headers.c>
+    # Cabeceras de seguridad HTTP
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+
+    # CORS Dinámico
     SetEnvIf Origin "^(.*)$" ORIGIN_SUBDOMAIN=$1
     Header always set Access-Control-Allow-Origin "%{ORIGIN_SUBDOMAIN}e" env=ORIGIN_SUBDOMAIN
     Header always set Access-Control-Allow-Credentials "true"
     Header always set Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
-    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
+    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Accept, Origin"
+</IfModule>
+
+# 4. REGLAS DE REESCRITURA (MOD_REWRITE)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Responder inmediatamente 200 OK a peticiones OPTIONS (CORS preflight)
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ index.php [QSA,L]
+
+    # Bloquear explícitamente rutas a carpetas y archivos críticos (403 Forbidden)
+    RewriteRule ^\.env.*$ - [F,L,NC]
+    RewriteRule ^\.git.*$ - [F,L,NC]
+    RewriteRule ^vendor/.*$ - [F,L,NC]
+    RewriteRule ^src/.*$ - [F,L,NC]
+    RewriteRule \.(sql|log|env|lock|json)$ - [F,L,NC]
+
+    # Enrutar todas las peticiones de la API a index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [QSA,L]
 </IfModule>

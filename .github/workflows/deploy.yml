@@ -1,0 +1,58 @@
+name: CI/CD Pipeline - Deploy to GitHub Pages Domain
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'portalink-frontend/**'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    name: Build Angular & Deploy to santiagoarbelaezc.github.io
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout PortaLink Repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: 'portalink-frontend/package-lock.json'
+
+      - name: 📦 Install Frontend Dependencies
+        working-directory: portalink-frontend
+        run: npm ci
+
+      - name: ⚙️ Build Angular Production Bundle
+        working-directory: portalink-frontend
+        run: npx ng build --configuration=production
+
+      - name: 📄 Prepare SPA Routing for GitHub Pages (404.html & .nojekyll)
+        run: |
+          BUILD_DIR="portalink-frontend/dist/portalink-frontend/browser"
+          if [ ! -d "$BUILD_DIR" ]; then
+            BUILD_DIR="portalink-frontend/dist/portalink-frontend"
+          fi
+          echo "Preparing assets in $BUILD_DIR"
+          cp "$BUILD_DIR/index.html" "$BUILD_DIR/404.html"
+          touch "$BUILD_DIR/.nojekyll"
+
+      - name: 🚀 Deploy to santiagoarbelaezc.github.io
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          token: ${{ secrets.DEPLOY_TOKEN }}
+          repository-name: santiagoarbelaezc/santiagoarbelaezc.github.io
+          branch: main
+          folder: portalink-frontend/dist/portalink-frontend/browser
+          clean: true
+          commit-message: "Deploy from PortaLink commit: ${{ github.sha }} [skip ci]"
