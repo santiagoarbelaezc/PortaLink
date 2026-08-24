@@ -1,14 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { ErpDiagramComponent } from '../erp-diagram/erp-diagram.component';
 
 @Component({
   selector: 'app-hero-design',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ErpDiagramComponent],
   template: `
     <section id="hero" 
-             class="relative w-full flex flex-col items-center justify-center overflow-hidden bg-white text-neutral-900 pt-16 sm:pt-20 md:pt-24 pb-6 sm:pb-10 px-4 sm:px-10 lg:px-16">
+             class="relative w-full flex flex-col items-center justify-center overflow-hidden bg-white text-neutral-900 pt-14 xs:pt-16 sm:pt-20 md:pt-24 pb-8 sm:pb-10 px-3 xs:px-4 sm:px-8 lg:px-16 select-none">
       
       <!-- Subtle Ambient Accent -->
       <div class="absolute inset-0 pointer-events-none z-0 overflow-hidden">
@@ -16,64 +17,66 @@ import { RouterModule } from '@angular/router';
       </div>
 
       <!-- Main Open Space (Tightened & Unified) -->
-      <div class="group relative z-10 w-full max-w-[1500px] mx-auto min-h-[520px] sm:min-h-[580px] md:min-h-[640px] lg:min-h-[700px] flex items-center"
+      <div class="group relative z-10 w-full max-w-[1500px] mx-auto min-h-[560px] xs:min-h-[600px] sm:min-h-[680px] md:min-h-[640px] lg:min-h-[700px] flex items-center"
            (mouseenter)="pauseAutoplay()"
-           (mouseleave)="resumeAutoplay()">
+           (mouseleave)="resumeAutoplay()"
+           (touchstart)="onTouchStart($event)"
+           (touchend)="onTouchEnd($event)">
 
         <!-- Slides -->
         <div *ngFor="let slide of slides; let i = index"
-             class="absolute inset-0 flex flex-col items-center justify-between gap-4 sm:gap-6 lg:gap-8 transition-all duration-700 ease-in-out"
+             class="absolute inset-0 flex flex-col items-center justify-between md:justify-between gap-4 sm:gap-6 lg:gap-8 transition-all duration-700 ease-in-out"
              [ngClass]="slide.isReversed ? 'md:flex-row-reverse' : 'md:flex-row'"
              [style.opacity]="activeSlide === i ? '1' : '0'"
              [style.transform]="activeSlide === i ? 'translateX(0) scale(1)' : (i > activeSlide ? 'translateX(20px) scale(0.99)' : 'translateX(-20px) scale(0.99)')"
              [style.pointerEvents]="activeSlide === i ? 'auto' : 'none'"
              [style.zIndex]="activeSlide === i ? '10' : '1'">
 
-          <!-- Content Column -->
-          <div class="w-full flex flex-col justify-center space-y-4 sm:space-y-5 z-10 shrink-0"
+          <!-- Content Column (Adaptive Mobile Centering / Desktop Directional) -->
+          <div class="w-full flex flex-col justify-center space-y-3 xs:space-y-3.5 sm:space-y-4 md:space-y-5 z-10 shrink-0 text-center md:text-left"
                [ngClass]="[
                  slide.isMultiMobile ? 'md:w-[46%] lg:w-[44%]' : 'md:w-[40%] lg:w-[38%]',
-                 slide.isReversed ? 'items-start md:items-end text-left md:text-right' : 'items-start text-left'
+                 slide.isReversed ? 'items-center md:items-end md:text-right' : 'items-center md:items-start md:text-left'
                ]">
 
-            <!-- Big Bold Headline (Increased Size) -->
-            <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] xl:text-[3.6rem] font-headline font-bold uppercase tracking-tight leading-[1.04] text-[#0a0a0a] m-0"
+            <!-- Editorial Headline (Matching Trabajos Realizados Style) -->
+            <h2 class="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-headline font-semibold tracking-tight leading-[1.08] text-[#0a0a0a] m-0"
                 style="color: #0a0a0a !important;">
               {{ slide.headline }}
             </h2>
 
-            <!-- Subtitle / Tagline (Increased Size) -->
-            <p class="text-base sm:text-lg lg:text-xl text-neutral-600 font-sans font-normal leading-relaxed max-w-xl m-0">
+            <!-- Subtitle / Tagline (Responsive Scaling) -->
+            <p class="text-xs xs:text-sm sm:text-base lg:text-xl text-neutral-600 font-sans font-normal leading-relaxed max-w-xl m-0 px-1 xs:px-2 md:px-0">
               {{ slide.subtext }}
             </p>
 
             <!-- Action Buttons -->
-            <div class="pt-2 sm:pt-3">
+            <div class="pt-1.5 xs:pt-2 sm:pt-3 w-full">
               
               <!-- Case A: Multiple Buttons (Slide 1) -->
               <div *ngIf="slide.buttons && slide.buttons.length > 0" 
-                   class="flex flex-wrap items-center gap-2.5 sm:gap-3"
-                   [ngClass]="slide.isReversed ? 'justify-start md:justify-end' : 'justify-start'">
+                   class="flex flex-wrap items-center justify-center gap-2 xs:gap-2.5 sm:gap-3"
+                   [ngClass]="slide.isReversed ? 'md:justify-end' : 'md:justify-start'">
                 <ng-container *ngFor="let btn of slide.buttons">
                   <a *ngIf="btn.isRouter"
                      [routerLink]="btn.link"
-                     class="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 sm:py-3.5 rounded-full font-headline font-semibold text-xs uppercase tracking-wider transition-all duration-300 shadow-sm no-underline cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                     class="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 xs:px-4 sm:px-6 py-2.5 xs:py-3 sm:py-3.5 rounded-full font-headline font-semibold text-[11px] xs:text-xs uppercase tracking-wider transition-all duration-300 shadow-sm no-underline cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
                      [style.backgroundColor]="btn.isPrimary ? '#09090b' : '#f4f4f5'"
                      [style.color]="btn.isPrimary ? '#ffffff !important' : '#18181b !important'"
                      [style.border]="btn.isPrimary ? '1px solid #09090b' : '1px solid rgba(0,0,0,0.1)'">
                     <span [style.color]="btn.isPrimary ? '#ffffff !important' : '#18181b !important'" style="font-weight: 600;">{{ btn.text }}</span>
-                    <svg *ngIf="btn.isPrimary" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
+                    <svg *ngIf="btn.isPrimary" class="w-3 xs:w-3.5 h-3 xs:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                     </svg>
                   </a>
                   <a *ngIf="!btn.isRouter"
                      [href]="btn.link"
-                     class="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 sm:py-3.5 rounded-full font-headline font-semibold text-xs uppercase tracking-wider transition-all duration-300 shadow-sm no-underline cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                     class="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 xs:px-4 sm:px-6 py-2.5 xs:py-3 sm:py-3.5 rounded-full font-headline font-semibold text-[11px] xs:text-xs uppercase tracking-wider transition-all duration-300 shadow-sm no-underline cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
                      [style.backgroundColor]="btn.isPrimary ? '#09090b' : '#f4f4f5'"
                      [style.color]="btn.isPrimary ? '#ffffff !important' : '#18181b !important'"
                      [style.border]="btn.isPrimary ? '1px solid #09090b' : '1px solid rgba(0,0,0,0.1)'">
                     <span [style.color]="btn.isPrimary ? '#ffffff !important' : '#18181b !important'" style="font-weight: 600;">{{ btn.text }}</span>
-                    <svg *ngIf="btn.isPrimary" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
+                    <svg *ngIf="btn.isPrimary" class="w-3 xs:w-3.5 h-3 xs:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                     </svg>
                   </a>
@@ -81,10 +84,12 @@ import { RouterModule } from '@angular/router';
               </div>
 
               <!-- Case B: Single CTA Button -->
-              <div *ngIf="!slide.buttons || slide.buttons.length === 0">
+              <div *ngIf="!slide.buttons || slide.buttons.length === 0"
+                   class="flex items-center justify-center"
+                   [ngClass]="slide.isReversed ? 'md:justify-end' : 'md:justify-start'">
                 <a *ngIf="slide.link"
                    [href]="slide.link"
-                   class="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full font-headline font-semibold text-xs uppercase tracking-wider hover:opacity-90 active:scale-[0.99] transition-opacity duration-300 shadow-sm no-underline cursor-pointer"
+                   class="inline-flex items-center gap-2 px-6 xs:px-7 sm:px-8 py-3 sm:py-3.5 rounded-full font-headline font-semibold text-[11px] xs:text-xs uppercase tracking-wider hover:opacity-90 active:scale-[0.99] transition-opacity duration-300 shadow-sm no-underline cursor-pointer"
                    style="background-color: #09090b !important; color: #ffffff !important;">
                   <span style="color: #ffffff !important; font-weight: 600;">{{ slide.ctaText }}</span>
                   <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
@@ -93,7 +98,7 @@ import { RouterModule } from '@angular/router';
                 </a>
                 <a *ngIf="!slide.link"
                    [routerLink]="['/proyecto', slide.projectId]"
-                   class="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full font-headline font-semibold text-xs uppercase tracking-wider hover:opacity-90 active:scale-[0.99] transition-opacity duration-300 shadow-sm no-underline cursor-pointer"
+                   class="inline-flex items-center gap-2 px-6 xs:px-7 sm:px-8 py-3 sm:py-3.5 rounded-full font-headline font-semibold text-[11px] xs:text-xs uppercase tracking-wider hover:opacity-90 active:scale-[0.99] transition-opacity duration-300 shadow-sm no-underline cursor-pointer"
                    style="background-color: #09090b !important; color: #ffffff !important;">
                   <span style="color: #ffffff !important; font-weight: 600;">{{ slide.ctaText }}</span>
                   <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
@@ -105,15 +110,15 @@ import { RouterModule } from '@angular/router';
             </div>
           </div>
 
-          <!-- Right Showcase Visual Column (Larger & Slightly Taller) -->
-          <div class="w-full h-[400px] sm:h-[500px] md:h-[600px] lg:h-[680px] relative flex items-center justify-center"
+          <!-- Right Showcase Visual Column (Perfect Mobile & Desktop Scaling) -->
+          <div class="w-full h-[250px] xs:h-[290px] sm:h-[400px] md:h-[600px] lg:h-[680px] relative flex items-center justify-center"
                [ngClass]="slide.isMultiMobile ? 'md:w-[54%] lg:w-[56%]' : 'md:w-[60%] lg:w-[62%]'">
             
-            <!-- Case 1: Triple Stacked Mobile Mockups (Taller & Elegant) -->
+            <!-- Case 1: Triple Stacked Mobile Mockups (Proportional Mobile Sizing) -->
             <div *ngIf="slide.isMultiMobile" class="relative flex items-center justify-center w-full h-full">
               
               <!-- Phone Screen 1 (Left / Back) -->
-              <div class="absolute z-10 w-[150px] sm:w-[190px] md:w-[230px] lg:w-[255px] h-[310px] sm:h-[400px] md:h-[490px] lg:h-[555px] rounded-[24px] sm:rounded-[34px] overflow-hidden border border-neutral-200/80 shadow-md bg-white -translate-x-18 sm:-translate-x-26 md:-translate-x-36 lg:-translate-x-40 -translate-y-3 sm:-translate-y-5 scale-[0.93] transition-transform duration-500">
+              <div class="absolute z-10 w-[100px] xs:w-[120px] sm:w-[170px] md:w-[230px] lg:w-[255px] h-[205px] xs:h-[250px] sm:h-[350px] md:h-[490px] lg:h-[555px] rounded-[18px] xs:rounded-[22px] sm:rounded-[34px] overflow-hidden border border-neutral-200/80 shadow-md bg-white -translate-x-12 xs:-translate-x-15 sm:-translate-x-24 md:-translate-x-36 -translate-y-2 sm:-translate-y-5 scale-[0.93] transition-transform duration-500">
                 <img [src]="slide.mobileImages?.[1]" 
                      alt="Mockup Móvil Secundario"
                      class="w-full h-full object-cover object-top"
@@ -122,7 +127,7 @@ import { RouterModule } from '@angular/router';
               </div>
 
               <!-- Phone Screen 2 (Right / Back) -->
-              <div class="absolute z-20 w-[150px] sm:w-[190px] md:w-[230px] lg:w-[255px] h-[310px] sm:h-[400px] md:h-[490px] lg:h-[555px] rounded-[24px] sm:rounded-[34px] overflow-hidden border border-neutral-200/80 shadow-lg bg-white translate-x-18 sm:translate-x-26 md:translate-x-36 lg:translate-x-40 -translate-y-2 sm:-translate-y-3 scale-[0.96] transition-transform duration-500">
+              <div class="absolute z-20 w-[100px] xs:w-[120px] sm:w-[170px] md:w-[230px] lg:w-[255px] h-[205px] xs:h-[250px] sm:h-[350px] md:h-[490px] lg:h-[555px] rounded-[18px] xs:rounded-[22px] sm:rounded-[34px] overflow-hidden border border-neutral-200/80 shadow-lg bg-white translate-x-12 xs:translate-x-15 sm:translate-x-24 md:translate-x-36 -translate-y-1.5 sm:-translate-y-3 scale-[0.96] transition-transform duration-500">
                 <img [src]="slide.mobileImages?.[2]" 
                      alt="Mockup Móvil Métricas"
                      class="w-full h-full object-cover object-top"
@@ -131,7 +136,7 @@ import { RouterModule } from '@angular/router';
               </div>
 
               <!-- Phone Screen 3 (Center Hero Foreground - Largest & Tallest) -->
-              <div class="relative z-30 w-[155px] sm:w-[200px] md:w-[240px] lg:w-[268px] h-[320px] sm:h-[420px] md:h-[515px] lg:h-[580px] rounded-[26px] sm:rounded-[36px] overflow-hidden border-2 border-neutral-300 shadow-[0_22px_55px_rgba(0,0,0,0.15)] bg-white translate-y-2 sm:translate-y-4 transition-transform duration-500">
+              <div class="relative z-30 w-[108px] xs:w-[130px] sm:w-[185px] md:w-[240px] lg:w-[268px] h-[220px] xs:h-[270px] sm:h-[370px] md:h-[515px] lg:h-[580px] rounded-[20px] xs:rounded-[24px] sm:rounded-[36px] overflow-hidden border-2 border-neutral-300 shadow-[0_15px_35px_rgba(0,0,0,0.12)] sm:shadow-[0_22px_55px_rgba(0,0,0,0.15)] bg-white translate-y-1.5 sm:translate-y-4 transition-transform duration-500">
                 <img [src]="slide.mobileImages?.[0]" 
                      alt="Mockup Móvil Principal"
                      class="w-full h-full object-cover object-top"
@@ -141,11 +146,16 @@ import { RouterModule } from '@angular/router';
 
             </div>
 
-            <!-- Case 2: Standard Desktop Showcase (Pure Transparent PNG - Enlarged) -->
-            <div *ngIf="!slide.isMultiMobile" class="relative w-full h-full max-h-[680px] flex items-center justify-center group/img">
+            <!-- Case 2: Interactive Pure-Code Vector ERP Diagram (Slide 2) -->
+            <div *ngIf="slide.projectId === 'erp-ecosystem'" class="relative w-full h-full flex items-center justify-center">
+              <app-erp-diagram class="w-full"></app-erp-diagram>
+            </div>
+
+            <!-- Case 3: Standard Desktop Showcase (Slide 4 - Sysmicon) -->
+            <div *ngIf="!slide.isMultiMobile && slide.projectId !== 'erp-ecosystem'" class="relative w-full h-full max-h-[250px] xs:max-h-[290px] sm:max-h-[400px] md:max-h-[680px] flex items-center justify-center group/img px-2 sm:px-0">
               <img [src]="slide.image" 
                    [alt]="slide.headline"
-                   class="w-full h-full max-h-[680px] object-contain object-center drop-shadow-2xl transform transition-transform duration-700 hover:scale-[1.015]"
+                   class="w-full h-full max-h-[250px] xs:max-h-[290px] sm:max-h-[400px] md:max-h-[680px] object-contain object-center drop-shadow-xl md:drop-shadow-2xl transform transition-transform duration-700 hover:scale-[1.015]"
                    loading="lazy"
                    decoding="async">
             </div>
@@ -154,13 +164,13 @@ import { RouterModule } from '@angular/router';
 
         </div>
 
-        <!-- Bottom Minimalist Dots -->
-        <div class="absolute -bottom-2 md:bottom-2 left-1/2 -translate-x-1/2 md:left-0 md:translate-x-0 z-20 flex items-center gap-2">
+        <!-- Bottom Minimalist Dots (Touch-Optimized) -->
+        <div class="absolute -bottom-3 sm:-bottom-2 md:bottom-2 left-1/2 -translate-x-1/2 md:left-0 md:translate-x-0 z-20 flex items-center gap-1.5 sm:gap-2">
           <button *ngFor="let slide of slides; let i = index"
                   (click)="goToSlide(i)"
                   class="transition-all duration-300 rounded-full border-none cursor-pointer p-0"
                   [ngClass]="activeSlide === i
-                    ? 'w-7 h-1.5 bg-neutral-900'
+                    ? 'w-6 sm:w-7 h-1.5 bg-neutral-900'
                     : 'w-1.5 h-1.5 bg-neutral-300 hover:bg-neutral-600'"
                   [attr.aria-label]="'Slide ' + (i + 1)">
           </button>
@@ -168,9 +178,9 @@ import { RouterModule } from '@angular/router';
 
       </div>
 
-      <!-- Pure Minimalist Borderless < and > Navigation Arrows (Ultra-Subtle Hover) -->
+      <!-- Pure Minimalist Borderless < and > Navigation Arrows (Hidden on small mobile for cleaner UX, visible sm+) -->
       <button (click)="prevSlide()" 
-              class="absolute left-1 sm:left-3 lg:left-5 top-1/2 -translate-y-1/2 z-30 p-2 border-none bg-transparent text-neutral-300 hover:text-neutral-700 flex items-center justify-center cursor-pointer transition-colors duration-300 focus:outline-none"
+              class="hidden sm:flex absolute left-1 sm:left-3 lg:left-5 top-1/2 -translate-y-1/2 z-30 p-2 border-none bg-transparent text-neutral-300 hover:text-neutral-700 items-center justify-center cursor-pointer transition-colors duration-300 focus:outline-none"
               aria-label="Anterior">
         <svg class="w-8 h-8 sm:w-10 sm:h-10 lg:w-11 lg:h-11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M15 18l-6-6 6-6"/>
@@ -178,7 +188,7 @@ import { RouterModule } from '@angular/router';
       </button>
 
       <button (click)="nextSlide()" 
-              class="absolute right-1 sm:right-3 lg:right-5 top-1/2 -translate-y-1/2 z-30 p-2 border-none bg-transparent text-neutral-300 hover:text-neutral-700 flex items-center justify-center cursor-pointer transition-colors duration-300 focus:outline-none"
+              class="hidden sm:flex absolute right-1 sm:right-3 lg:right-5 top-1/2 -translate-y-1/2 z-30 p-2 border-none bg-transparent text-neutral-300 hover:text-neutral-700 items-center justify-center cursor-pointer transition-colors duration-300 focus:outline-none"
               aria-label="Siguiente">
         <svg class="w-8 h-8 sm:w-10 sm:h-10 lg:w-11 lg:h-11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 18l6-6-6-6"/>
@@ -199,6 +209,9 @@ export class HeroDesignComponent implements OnInit, OnDestroy {
   autoplayDuration = 6000;
   isAutoplayPaused = false;
   private autoplayTimer: any;
+
+  private touchStartX = 0;
+  private touchEndX = 0;
 
   slides = [
     {
@@ -282,6 +295,32 @@ export class HeroDesignComponent implements OnInit, OnDestroy {
     this.stopAutoplay();
   }
 
+  onTouchStart(e: TouchEvent) {
+    if (e.changedTouches && e.changedTouches.length > 0) {
+      this.touchStartX = e.changedTouches[0].screenX;
+      this.pauseAutoplay();
+    }
+  }
+
+  onTouchEnd(e: TouchEvent) {
+    if (e.changedTouches && e.changedTouches.length > 0) {
+      this.touchEndX = e.changedTouches[0].screenX;
+      this.handleSwipe();
+      this.resumeAutoplay();
+    }
+  }
+
+  private handleSwipe() {
+    const diff = this.touchStartX - this.touchEndX;
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) {
+        this.nextSlide();
+      } else {
+        this.prevSlide();
+      }
+    }
+  }
+
   goToSlide(index: number) {
     this.activeSlide = index;
     this.restartAutoplay();
@@ -327,3 +366,4 @@ export class HeroDesignComponent implements OnInit, OnDestroy {
     }
   }
 }
+
