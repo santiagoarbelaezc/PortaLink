@@ -89,7 +89,6 @@ export interface ActivityLog {
 export class CommandCenterService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/command-center`;
-  private geminiKey = 'AQ.Ab8RN6K8IgT3jGjqZkIj5AOvS9jjVM5WCK-3sis_N5ynsM_yaw';
 
   /**
    * Obtiene el radar proactivo del día con diagnóstico y accesos recientes.
@@ -101,29 +100,24 @@ export class CommandCenterService {
   }
 
   /**
-   * Envía la consulta en lenguaje natural al backend para ser procesada con Gemini y datos del sistema.
+   * Envía la consulta en lenguaje natural al backend PHP para ser procesada con Gemini y datos del sistema.
    */
   query(userPrompt: string): Observable<CommandCenterResponse> {
     const payload = { query: userPrompt };
 
     return this.http.post<CommandCenterResponse>(`${this.apiUrl}/query`, payload).pipe(
-      catchError(err => {
-        console.warn('[CommandCenter] Backend error, falling back to direct Gemini bridge:', err);
-        return this.fallbackDirectGemini(userPrompt);
-      })
+      catchError(() => of(this.localRegexFallback(userPrompt)))
     );
   }
 
   /**
-   * Procesa audio grabado por el micrófono directamente con Gemini Multimodal / Backend
+   * Procesa audio grabado por el micrófono enviándolo al backend PHP para interpretación con Gemini Multimodal.
    */
   queryVoiceAudio(base64Audio: string, mimeType = 'audio/webm'): Observable<VoiceAudioResult> {
     const payload = { audio: base64Audio, mimeType };
 
     return this.http.post<VoiceAudioResult>(`${this.apiUrl}/query-audio`, payload).pipe(
-      catchError(() => {
-        return this.fallbackDirectVoiceGemini(base64Audio, mimeType);
-      })
+      catchError(() => of(this.localVoiceFallback()))
     );
   }
 
@@ -287,197 +281,21 @@ export class CommandCenterService {
     };
   }
 
-  private fallbackDirectGemini(userPrompt: string): Observable<CommandCenterResponse> {
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${encodeURIComponent(this.geminiKey)}`;
-    const recentActs = this.getLocalActivities().slice(0, 8);
-    const recentActsJson = JSON.stringify(recentActs);
-
-    const systemPrompt = `
-Eres el motor de inteligencia central del Centro de Comando de PortaLink.
-Toma en cuenta las últimas actividades reales del usuario:
-${recentActsJson}
-
-Responde SIEMPRE en formato JSON estricto con:
-{
-  "summary": "Breve conclusión ejecutiva directa de 1 línea.",
-  "analysis": "Párrafo completo de análisis profundo realizado por la IA.",
-  "metrics": [
-    { "label": "Métrica", "value": "Valor" }
-  ],
-  "items": [
-    { "title": "Título", "subtitle": "Detalle", "badge": "Estado / Monto", "badgeColor": "emerald"|"blue"|"amber"|"purple", "details": "Detalle adicional", "targetTab": "finances"|"library"|"itinerary"|"messages"|"users"|"analytics" }
-  ],
-  "targetTab": "finances" | "library" | "itinerary" | "messages" | "users" | "analytics" | "stats" | "dashboard",
-  "actionText": "Texto para botón de redirección principal"
-}
-`;
-
-    const body = {
-      contents: [
-        {
-          role: 'user',
-          parts: [
-            { text: `${systemPrompt}\n\n[CONSULTA DEL USUARIO]:\n${userPrompt}\n\nResponde ÚNICAMENTE con el objeto JSON.` }
-          ]
-        }
-      ],
-      generationConfig: {
-        temperature: 0.2,
-        maxOutputTokens: 1200,
-        responseMimeType: 'application/json'
+  private localVoiceFallback(): VoiceAudioResult {
+    return {
+      ok: false,
+      transcript: '',
+      intent: 'query',
+      targetTab: 'dashboard',
+      actionText: 'Escribir Consulta',
+      data: {
+        summary: 'Servicio de voz procesado en el backend.',
+        analysis: 'Asegúrate de que el servidor backend esté en ejecución o escribe tu consulta directamente en la barra.',
+        targetTab: 'dashboard',
+        actionText: 'Escribir Consulta',
+        items: []
       }
     };
-
-    return this.http.post<any>(endpoint, body).pipe(
-      map(res => {
-        const text = res?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        let cleaned = text.trim();
-        if (cleaned.startsWith('```json')) cleaned = cleaned.substring(7);
-        if (cleaned.startsWith('```')) cleaned = cleaned.substring(3);
-        if (cleaned.endsWith('```')) cleaned = cleaned.substring(0, cleaned.length - 3);
-        cleaned = cleaned.trim();
-
-        const parsed = JSON.parse(cleaned);
-        return {
-          ok: true,
-          query: userPrompt,
-          data: {
-            summary: parsed.summary || 'Análisis completado',
-            analysis: parsed.analysis || parsed.reply || '',
-            reply: parsed.analysis || parsed.reply || 'Consulta procesada.',
-            metrics: parsed.metrics || [],
-            targetTab: parsed.targetTab || 'dashboard',
-            actionText: parsed.actionText || 'Ver en Dashboard',
-            items: parsed.items || []
-          }
-        };
-      }),
-      catchError(() => of(this.localRegexFallback(userPrompt)))
-    );
-  }
-
-  private fallbackDirectVoiceGemini(base64Audio: string, mimeType: string): Observable<VoiceAudioResult> {
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(this.geminiKey)}`;
-    const endpoint2 = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(this.geminiKey)}`;
-
-    const recentActs = this.getLocalActivities().slice(0, 6);
-    const recentActsJson = JSON.stringify(recentActs);
-
-    const promptText = `
-Eres el procesador de voz y asistente del Centro de Comando de PortaLink (Dashboard).
-Escucha atentamente el audio en español del usuario.
-
-TAREA OBLIGATORIA:
-1. Transcribe exactamente en español lo que el usuario pronunció en el campo "transcript".
-2. Si el usuario dijo una sola palabra o comando directo para ir a un módulo:
-   - Ejemplos: "biblioteca", "apuntes", "cuadernos" -> intent: "navigate", targetTab: "library", actionText: "Abrir Biblioteca", summary: "Navegando a la Biblioteca de Apuntes"
-   - Ejemplos: "finanzas", "facturas", "pagos", "cobros", "cartera" -> intent: "navigate", targetTab: "finances", actionText: "Ir a Finanzas", summary: "Navegando a Finanzas"
-   - Ejemplos: "control financiero" -> intent: "navigate", targetTab: "financial-control", actionText: "Ir a Control Financiero", summary: "Navegando a Control Financiero"
-   - Ejemplos: "agenda", "calendario", "tareas", "itinerario" -> intent: "navigate", targetTab: "itinerary", actionText: "Ver Agenda", summary: "Navegando a Agenda y Calendario"
-   - Ejemplos: "analíticas", "tráfico", "métricas", "visitas" -> intent: "navigate", targetTab: "analytics", actionText: "Ver Analíticas", summary: "Navegando a Analíticas"
-   - Ejemplos: "mensajes", "contactos", "correos" -> intent: "navigate", targetTab: "messages", actionText: "Ver Mensajes", summary: "Navegando a Mensajes"
-   - Ejemplos: "inicio", "dashboard", "home" -> intent: "navigate", targetTab: "dashboard", actionText: "Ir a Inicio", summary: "Navegando a Inicio"
-3. Si el usuario hizo una pregunta o consulta analítica sobre el sistema (ej: "dame mis clientes", "cuáles son las facturas pendientes", etc.):
-   - intent: "query"
-   - targetTab: "finances"|"library"|"itinerary"|"analytics"|"messages"|"dashboard"
-   - summary: Conclusión ejecutiva
-   - analysis: Párrafo analítico completo
-   - items: Lista de resultados relevantes
-
-Responde SIEMPRE en formato JSON estricto con:
-{
-  "transcript": "Texto exacto pronunciado por el usuario",
-  "intent": "navigate" | "query",
-  "targetTab": "library" | "finances" | "financial-control" | "itinerary" | "analytics" | "messages" | "dashboard",
-  "summary": "Resumen ejecutivo directo",
-  "analysis": "Párrafo explicativo del análisis (si intent es query)",
-  "metrics": [ { "label": "...", "value": "..." } ],
-  "items": [ { "title": "...", "subtitle": "...", "badge": "...", "badgeColor": "emerald"|"blue"|"amber"|"purple", "details": "...", "targetTab": "..." } ],
-  "actionText": "Texto para botón de redirección"
-}
-
-Últimas actividades registradas del usuario:
-${recentActsJson}
-`;
-
-    // Normalizar mimeType soportado por Gemini (audio/webm, audio/mp4, audio/ogg, audio/wav)
-    let cleanMime = mimeType.split(';')[0].trim();
-    if (!cleanMime || cleanMime === 'audio/x-m4a') cleanMime = 'audio/mp4';
-
-    const body = {
-      contents: [
-        {
-          role: 'user',
-          parts: [
-            { text: promptText },
-            {
-              inlineData: {
-                mimeType: cleanMime,
-                data: base64Audio
-              }
-            }
-          ]
-        }
-      ],
-      generationConfig: {
-        temperature: 0.1,
-        maxOutputTokens: 1200,
-        responseMimeType: 'application/json'
-      }
-    };
-
-    const callEndpoint = (url: string) => this.http.post<any>(url, body).pipe(
-      map(res => {
-        const text = res?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        let cleaned = text.trim();
-        if (cleaned.startsWith('```json')) cleaned = cleaned.substring(7);
-        if (cleaned.startsWith('```')) cleaned = cleaned.substring(3);
-        if (cleaned.endsWith('```')) cleaned = cleaned.substring(0, cleaned.length - 3);
-        cleaned = cleaned.trim();
-
-        const parsed = JSON.parse(cleaned);
-        const transcript = parsed.transcript || 'Comando de voz';
-        const intent = parsed.intent || (parsed.targetTab && parsed.targetTab !== 'dashboard' && !parsed.analysis ? 'navigate' : 'query');
-
-        return {
-          ok: true,
-          transcript,
-          intent,
-          targetTab: parsed.targetTab || 'dashboard',
-          actionText: parsed.actionText || 'Ver en Módulo',
-          data: {
-            summary: parsed.summary || `Voz: "${transcript}"`,
-            analysis: parsed.analysis || parsed.reply || '',
-            reply: parsed.analysis || parsed.reply || '',
-            metrics: parsed.metrics || [],
-            targetTab: parsed.targetTab || 'dashboard',
-            actionText: parsed.actionText || 'Ver en Dashboard',
-            items: parsed.items || []
-          }
-        };
-      })
-    );
-
-    return callEndpoint(endpoint).pipe(
-      catchError(() => callEndpoint(endpoint2)),
-      catchError(err => {
-        console.warn('[VoiceGemini] Fallback error:', err);
-        return of({
-          ok: false,
-          transcript: '',
-          intent: 'query' as const,
-          targetTab: 'dashboard',
-          actionText: 'Reintentar',
-          data: {
-            summary: 'No se pudo interpretar el audio',
-            analysis: 'Verifica tu conexión y permisos de micrófono.',
-            targetTab: 'dashboard',
-            actionText: 'Escribir Consulta',
-            items: []
-          }
-        });
-      })
-    );
   }
 
   private localRegexFallback(q: string): CommandCenterResponse {
