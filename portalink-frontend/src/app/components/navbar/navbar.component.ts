@@ -212,6 +212,10 @@ import { AuthService } from '../../services/auth.service';
               <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
               <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
             </ng-container>
+            <ng-container *ngIf="item.icon === 'certificate'">
+              <path d="M12 15l-2 5l-3 -2l-3 2l2 -5"></path>
+              <circle cx="12" cy="9" r="6"></circle>
+            </ng-container>
             <ng-container *ngIf="item.icon === 'user'">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
@@ -501,16 +505,18 @@ export class NavbarComponent implements OnInit {
 
   navItemsTranslations: any = {
     es: [
-      { name: 'Inicio',    link: '#hero',       icon: 'home'     },
-      { name: 'Diseños',   link: '/prototipos', icon: 'disenos'  },
-      { name: 'Links',     link: '/links',      icon: 'link'     },
-      { name: 'RotBot',    link: '/rotbot',     icon: 'chat'     }
+      { name: 'Inicio',       link: '#hero',          icon: 'home'     },
+      { name: 'Diseños',      link: '/prototipos',    icon: 'disenos'  },
+      { name: 'Certificados', link: '/certificados', icon: 'certificate' },
+      { name: 'Links',        link: '/links',         icon: 'link'     },
+      { name: 'RotBot',       link: '/rotbot',        icon: 'chat'     }
     ],
     en: [
-      { name: 'Home',      link: '#hero',       icon: 'home'     },
-      { name: 'Designs',   link: '/prototipos', icon: 'disenos'  },
-      { name: 'Links',     link: '/links',      icon: 'link'     },
-      { name: 'RotBot',    link: '/rotbot',     icon: 'chat'     }
+      { name: 'Home',         link: '#hero',          icon: 'home'     },
+      { name: 'Designs',      link: '/prototipos',    icon: 'disenos'  },
+      { name: 'Certificates', link: '/certificados', icon: 'certificate' },
+      { name: 'Links',        link: '/links',         icon: 'link'     },
+      { name: 'RotBot',       link: '/rotbot',        icon: 'chat'     }
     ]
   };
 
@@ -692,6 +698,12 @@ export class NavbarComponent implements OnInit {
 
     if (this.router.url.includes('/prototipos') || this.router.url.includes('/disenos') || this.router.url.includes('/descripcion-proyecto') || this.router.url.includes('/proyecto')) {
       this.activeSection = '/prototipos';
+      this.updatePillPosition();
+      return;
+    }
+
+    if (this.router.url.includes('/certificados')) {
+      this.activeSection = '/certificados';
       this.updatePillPosition();
       return;
     }
@@ -923,6 +935,7 @@ export class NavbarComponent implements OnInit {
     this.mobileItems = [
       { name: isEs ? 'Inicio' : 'Home',         link: '#hero',          icon: 'home' },
       { name: isEs ? 'Diseños' : 'Designs',     link: '/prototipos',    icon: 'disenos' },
+      { name: isEs ? 'Certificados' : 'Certs',  link: '/certificados',  icon: 'certificate' },
       { name: 'Links',                          link: '/links',         icon: 'link' },
       { name: 'Chat',                           link: '/rotbot',        icon: 'chat' },
       { name: isEs ? 'Cuenta' : 'Account',      link: this.authService.isAuthenticated() ? '/perfil' : '/login', icon: 'user' }

@@ -19,8 +19,14 @@ import { TratamientoDatosComponent } from './pages/tratamiento-datos/tratamiento
 import { DeslindeIaComponent } from './pages/deslinde-ia/deslinde-ia.component';
 import { DescripcionProyectoComponent } from './pages/descripcion-proyecto/descripcion-proyecto.component';
 import { DisenosComponent } from './pages/disenos/disenos.component';
+import { CertificadosComponent } from './pages/certificados/certificados.component';
 
 export const routes: Routes = [
+  {
+    path: 'certificados',
+    component: CertificadosComponent,
+    data: { animation: 'CertificadosPage' }
+  },
   {
     path: 'terminos',
     component: TerminosCondicionesComponent,
