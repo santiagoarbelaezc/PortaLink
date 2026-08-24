@@ -49,7 +49,7 @@ export class SessionTimerService implements OnDestroy {
     if (timeLeft <= 0) {
       this.sessionTimeLeft$.next(0);
       this.stop();
-      this.authService.logout();
+      this.authService.logoutSilent();
       this.sessionExpired$.next();
     } else {
       this.sessionTimeLeft$.next(timeLeft);

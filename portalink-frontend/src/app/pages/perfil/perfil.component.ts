@@ -88,17 +88,17 @@ import { Subscription } from 'rxjs';
           </button>
 
           <!-- Certificados Acreditados link -->
-          <button type="button"
-                  (click)="goToCertificados($event)"
-                  class="flex items-center rounded-2xl text-sm font-semibold tracking-wide transition-all duration-200 cursor-pointer w-full px-3.5 py-2.5 gap-3 border-none bg-transparent"
-                  [ngClass]="isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-900' : 'text-neutral-700 hover:text-black hover:bg-neutral-100'">
+          <a [routerLink]="['/certificados']"
+             (click)="goToCertificados($event)"
+             class="flex items-center rounded-2xl text-sm font-semibold tracking-wide transition-all duration-200 cursor-pointer w-full px-3.5 py-2.5 gap-3 border-none no-underline"
+             [ngClass]="isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-900' : 'text-neutral-700 hover:text-black hover:bg-neutral-100'">
             <svg class="w-[18px] h-[18px] flex-shrink-0 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path d="M12 15l-2 5l-3 -2l-3 2l2 -5"></path>
               <circle cx="12" cy="9" r="6"></circle>
             </svg>
             <span class="text-left text-[13px] font-headline font-semibold"
                   [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">Certificados</span>
-          </button>
+          </a>
         </nav>
 
         <!-- Bottom: Logout -->
@@ -234,12 +234,12 @@ import { Subscription } from 'rxjs';
                     </p>
                   </div>
 
-                  <button type="button"
-                          (click)="goToCertificados($event)"
-                          class="px-6 py-3 rounded-full bg-neutral-900 text-white font-headline font-bold text-xs uppercase tracking-wider hover:bg-neutral-800 transition-all shadow-md flex items-center justify-center gap-2 border-none cursor-pointer shrink-0">
+                  <a [routerLink]="['/certificados']"
+                     (click)="goToCertificados($event)"
+                     class="px-6 py-3 rounded-full bg-neutral-900 text-white font-headline font-bold text-xs uppercase tracking-wider hover:bg-neutral-800 transition-all shadow-md flex items-center justify-center gap-2 no-underline cursor-pointer shrink-0">
                     <span>Ver Certificados</span>
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
-                  </button>
+                  </a>
                 </div>
               </div>
 
@@ -509,9 +509,22 @@ export class PerfilComponent implements OnInit, OnDestroy {
   }
 
   goToCertificados(event?: Event) {
-    if (event) event.preventDefault();
+    console.log('🟢 goToCertificados CALLED');
+    console.log('🟢 Current URL:', this.router.url);
+    console.log('🟢 Has token:', this.authService.hasToken());
+    console.log('🟢 Is authenticated:', this.authService.isAuthenticated());
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      console.log('🟢 Event prevented + stopped');
+    }
     this.isMobileDrawerOpen = false;
-    this.router.navigate(['/certificados']);
+    console.log('🟢 About to navigateByUrl /certificados');
+    this.router.navigateByUrl('/certificados').then(
+      (success) => console.log('🟢 Navigation result:', success),
+      (err) => console.error('🔴 Navigation error:', err)
+    );
+    console.log('🟢 navigateByUrl called');
   }
 
   ngOnDestroy() {

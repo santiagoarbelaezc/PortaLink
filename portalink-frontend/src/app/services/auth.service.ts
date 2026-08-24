@@ -63,6 +63,8 @@ export class AuthService {
   }
 
   logout(): void {
+    console.warn('🔴 LOGOUT CALLED - navigating to /login');
+    console.trace('🔴 LOGOUT STACK TRACE:');
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem(this.TOKEN_KEY);
       localStorage.removeItem(this.USER_KEY);
@@ -71,6 +73,17 @@ export class AuthService {
     this.isAuthenticated.set(false);
     this.currentUser.set(null);
     this.router.navigate(['/login']);
+  }
+
+  /** Clears auth state without forcing navigation to /login */
+  logoutSilent(): void {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem(this.TOKEN_KEY);
+      localStorage.removeItem(this.USER_KEY);
+      window.dispatchEvent(new CustomEvent('auth-change'));
+    }
+    this.isAuthenticated.set(false);
+    this.currentUser.set(null);
   }
 
   private setSession(token: string, user: any): void {
