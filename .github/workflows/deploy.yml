@@ -22,20 +22,18 @@ jobs:
       - name: 📥 Checkout PortaLink Repository
         uses: actions/checkout@v4
 
-      - name: 🟢 Setup Node.js 20
+      - name: 🟢 Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: 'portalink-frontend/package-lock.json'
+          node-version: 22
 
       - name: 📦 Install Frontend Dependencies
         working-directory: portalink-frontend
-        run: npm ci
+        run: npm install --legacy-peer-deps
 
       - name: ⚙️ Build Angular Production Bundle
         working-directory: portalink-frontend
-        run: npx ng build --configuration=production
+        run: npm run build -- --configuration=production
 
       - name: 📄 Prepare SPA Routing for GitHub Pages (404.html & .nojekyll)
         run: |
