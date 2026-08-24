@@ -86,6 +86,19 @@ import { Subscription } from 'rxjs';
             <span class="text-left text-[13px] font-headline font-semibold"
                   [style.color]="activeTab === 'password' ? '#ffffff' : (isDark ? '#a3a3a3' : '#374151')">Cambiar Contraseña</span>
           </button>
+
+          <!-- Certificados Acreditados link -->
+          <button type="button"
+                  (click)="goToCertificados($event)"
+                  class="flex items-center rounded-2xl text-sm font-semibold tracking-wide transition-all duration-200 cursor-pointer w-full px-3.5 py-2.5 gap-3 border-none bg-transparent"
+                  [ngClass]="isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-900' : 'text-neutral-700 hover:text-black hover:bg-neutral-100'">
+            <svg class="w-[18px] h-[18px] flex-shrink-0 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M12 15l-2 5l-3 -2l-3 2l2 -5"></path>
+              <circle cx="12" cy="9" r="6"></circle>
+            </svg>
+            <span class="text-left text-[13px] font-headline font-semibold"
+                  [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">Certificados</span>
+          </button>
         </nav>
 
         <!-- Bottom: Logout -->
@@ -200,6 +213,33 @@ import { Subscription } from 'rxjs';
                       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                     </a>
                   </div>
+                </div>
+              </div>
+
+              <!-- Certificados Acreditados Card Banner -->
+              <div class="rounded-[28px] border p-6 sm:p-8 transition-all duration-300 relative overflow-hidden"
+                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white shadow-xl' : 'bg-white border-neutral-200/80 text-neutral-900 shadow-sm'">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative z-10">
+                  <div class="space-y-1">
+                    <span class="px-3 py-1 rounded-full text-[10px] font-headline font-bold uppercase tracking-widest inline-block border"
+                          [ngClass]="isDark ? 'bg-white/10 text-emerald-400 border-white/10' : 'bg-emerald-50 text-emerald-700 border-emerald-200/60'">
+                      Acreditaciones Oficiales
+                    </span>
+                    <h3 class="text-xl sm:text-2xl font-headline font-bold tracking-tight m-0"
+                        [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                      Certificaciones de Desarrollo
+                    </h3>
+                    <p class="text-xs m-0" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">
+                      Visualiza y verifica tus credenciales oficiales de freeCodeCamp en la sección dedicada.
+                    </p>
+                  </div>
+
+                  <button type="button"
+                          (click)="goToCertificados($event)"
+                          class="px-6 py-3 rounded-full bg-neutral-900 text-white font-headline font-bold text-xs uppercase tracking-wider hover:bg-neutral-800 transition-all shadow-md flex items-center justify-center gap-2 border-none cursor-pointer shrink-0">
+                    <span>Ver Certificados</span>
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                  </button>
                 </div>
               </div>
 
@@ -466,6 +506,12 @@ export class PerfilComponent implements OnInit, OnDestroy {
         this.mySite = null;
       }
     });
+  }
+
+  goToCertificados(event?: Event) {
+    if (event) event.preventDefault();
+    this.isMobileDrawerOpen = false;
+    this.router.navigate(['/certificados']);
   }
 
   ngOnDestroy() {

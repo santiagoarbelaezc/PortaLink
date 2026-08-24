@@ -22,7 +22,7 @@ export interface CertificateItem {
   template: `
     <div class="min-h-screen bg-white text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white">
 
-      <!-- STICKY HEADER COMPACTO ULTRALIMPIO (MISMO QUE DISENOS) -->
+      <!-- STICKY HEADER COMPACTO ULTRALIMPIO -->
       <div class="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-neutral-100/90 shadow-2xs transition-all duration-300">
         <div class="max-w-[1720px] mx-auto px-4 sm:px-8 lg:px-10 py-4 flex items-center justify-between gap-4">
           
@@ -49,83 +49,70 @@ export interface CertificateItem {
         </div>
       </div>
 
-      <!-- MAIN CONTENT: GRID MINIMALISTA TIPO DISENOS -->
+      <!-- MAIN CONTENT: LOS 3 CERTIFICADOS AL MISMO NIVEL EN UNA SOLA FILA -->
       <main class="max-w-[1720px] mx-auto px-4 sm:px-8 lg:px-10 py-8 md:py-12">
         
-        <!-- COMPOSITE GRID (1 PRINCIPAL ANCHA + 2 EN PARALELO) -->
-        <div class="space-y-8 lg:space-y-10">
+        <!-- GRID DE 3 COLUMNAS EN EL MISMO NIVEL -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
           
-          <!-- 1. CERTIFICADO PRINCIPAL DESTACADO (100% Ancho) -->
-          <div *ngIf="getItemById('js-algorithms-v8') as t">
-            <ng-container *ngTemplateOutlet="cardItem; context: { item: t, aspect: 'aspect-[16/9] sm:aspect-[24/10]' }"></ng-container>
-          </div>
+          <div *ngFor="let cert of certificates; let i = index" class="flex flex-col h-full">
+            
+            <div class="group relative rounded-[24px] sm:rounded-[32px] overflow-hidden border border-neutral-200/80 bg-white shadow-[0_10px_35px_rgba(0,0,0,0.04)] transition-all duration-500 hover:scale-[1.01] hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex flex-col justify-between cursor-pointer h-full"
+                 (click)="openModal(cert)"
+                 data-aos="fade-up"
+                 [attr.data-aos-delay]="i * 120"
+                 data-aos-duration="900">
 
-          <!-- 2. DOS CERTIFICADOS EN PARALELO (50% / 50%) -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-stretch">
-            <div *ngIf="getItemById('python-scientific-v7') as t">
-              <ng-container *ngTemplateOutlet="cardItem; context: { item: t, aspect: 'aspect-[16/10]' }"></ng-container>
+              <!-- Contenedor de Imagen de Certificado -->
+              <div class="relative w-full aspect-[16/10] overflow-hidden bg-neutral-50 flex-1 min-h-[200px] sm:min-h-[220px]">
+                <img [src]="cert.image" 
+                     [alt]="cert.name" 
+                     (error)="onImageError($event)"
+                     class="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105" 
+                     loading="lazy" />
+                
+                <!-- Insignia Flotante Izquierda: freeCodeCamp -->
+                <div class="absolute top-3.5 left-3.5 z-10">
+                  <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-900/85 backdrop-blur-md text-white text-[10.5px] sm:text-[11px] font-headline font-semibold shadow-xs">
+                    <span>freeCodeCamp</span>
+                  </div>
+                </div>
+
+                <!-- Insignia Flotante Derecha: Verificado -->
+                <div class="absolute top-3.5 right-3.5 z-10">
+                  <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/90 backdrop-blur-md text-white text-[10.5px] sm:text-[11px] font-headline font-semibold tracking-wider shadow-xs">
+                    <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                    <span>Verificado</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Barra Inferior de Detalles (Solo Título y Botón Ver Certificado) -->
+              <div class="p-4 sm:p-5 flex items-center justify-between gap-3 bg-white border-t border-neutral-100/80">
+                
+                <h3 class="text-sm sm:text-base font-headline font-semibold tracking-tight leading-snug truncate" style="color: #0a0a0a !important;">
+                  {{ cert.shortTitle }}
+                </h3>
+
+                <!-- Botón: Ver Certificado -->
+                <button (click)="openModal(cert); $event.stopPropagation()"
+                        class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 sm:px-4 sm:py-2 rounded-xl font-headline font-medium text-xs shadow-2xs hover:scale-[1.02] active:scale-[0.98] transition-all border-none flex-shrink-0 cursor-pointer"
+                        style="background-color: #09090b !important; color: #ffffff !important;">
+                  <span style="color: #ffffff !important; font-weight: 500;">Ver Certificado</span>
+                  <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+                  </svg>
+                </button>
+
+              </div>
+
             </div>
-            <div *ngIf="getItemById('backend-apis') as t">
-              <ng-container *ngTemplateOutlet="cardItem; context: { item: t, aspect: 'aspect-[16/10]' }"></ng-container>
-            </div>
+
           </div>
 
         </div>
 
       </main>
-
-      <!-- TEMPLATE DE TARJETA CLEAN (EXACTO A DISENOS) -->
-      <ng-template #cardItem let-t="item" let-aspect="aspect">
-        <div class="group relative rounded-[24px] sm:rounded-[32px] overflow-hidden border border-neutral-200/80 bg-white shadow-[0_10px_35px_rgba(0,0,0,0.04)] transition-all duration-500 hover:scale-[1.01] hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex flex-col justify-between cursor-pointer h-full"
-             (click)="openModal(t)"
-             data-aos="fade-up"
-             data-aos-duration="900">
-
-          <!-- Contenedor de Imagen de Certificado -->
-          <div class="relative w-full overflow-hidden bg-neutral-50 flex-1 min-h-[220px] sm:min-h-[260px]" [ngClass]="aspect || 'aspect-[16/10]'">
-            <img [src]="t.image" 
-                 [alt]="t.name" 
-                 (error)="onImageError($event)"
-                 class="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105" 
-                 loading="lazy" />
-            
-            <!-- Insignia Flotante Izquierda: freeCodeCamp -->
-            <div class="absolute top-3.5 left-3.5 z-10">
-              <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-900/85 backdrop-blur-md text-white text-[10.5px] sm:text-[11px] font-headline font-semibold shadow-xs">
-                <span>freeCodeCamp</span>
-              </div>
-            </div>
-
-            <!-- Insignia Flotante Derecha: Verificado -->
-            <div class="absolute top-3.5 right-3.5 z-10">
-              <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/90 backdrop-blur-md text-white text-[10.5px] sm:text-[11px] font-headline font-semibold tracking-wider shadow-xs">
-                <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-                <span>Verificado</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Barra Inferior de Detalles (Solo Título y Botón Ver Certificado) -->
-          <div class="p-4 sm:p-5 flex items-center justify-between gap-3 bg-white border-t border-neutral-100/80">
-            
-            <h3 class="text-base sm:text-xl font-headline font-semibold tracking-tight leading-snug truncate" style="color: #0a0a0a !important;">
-              {{ t.shortTitle }}
-            </h3>
-
-            <!-- Botón: Ver Certificado -->
-            <button (click)="openModal(t); $event.stopPropagation()"
-                    class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 sm:px-4 sm:py-2 rounded-xl font-headline font-medium text-xs shadow-2xs hover:scale-[1.02] active:scale-[0.98] transition-all border-none flex-shrink-0 cursor-pointer"
-                    style="background-color: #09090b !important; color: #ffffff !important;">
-              <span style="color: #ffffff !important; font-weight: 500;">Ver Certificado</span>
-              <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
-              </svg>
-            </button>
-
-          </div>
-
-        </div>
-      </ng-template>
 
       <!-- MODAL APPLE-STYLE DE ALTA RESOLUCIÓN -->
       <div class="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 bg-black/75 backdrop-blur-2xl transition-all duration-300 animate-fadeIn"
@@ -218,7 +205,7 @@ export class CertificadosComponent implements OnInit {
     {
       id: 'js-algorithms-v8',
       name: 'JavaScript Algorithms and Data Structures (v8)',
-      shortTitle: 'JavaScript Algorithms and Data Structures (v8)',
+      shortTitle: 'JavaScript Algorithms (v8)',
       issuer: 'freeCodeCamp',
       verificationUrl: 'https://www.freecodecamp.org/certification/santiagoarbelaezc/javascript-algorithms-and-data-structures-v8',
       description: 'Certificación oficial que acredita dominio en lenguaje JavaScript (ES6+), diseño de algoritmos de alta eficiencia, estructuras de datos fundamentales, Programación Orientada a Objetos (OOP), Programación Funcional pura y Expresiones Regulares avanzadas.',
@@ -235,7 +222,7 @@ export class CertificadosComponent implements OnInit {
     {
       id: 'python-scientific-v7',
       name: 'Scientific Computing with Python (v7)',
-      shortTitle: 'Scientific Computing with Python (v7)',
+      shortTitle: 'Scientific Computing Python (v7)',
       issuer: 'freeCodeCamp',
       verificationUrl: 'https://www.freecodecamp.org/certification/santiagoarbelaezc/scientific-computing-with-python-v7',
       description: 'Demuestra competencia en Python 3 para computación científica, procesamiento numérico y resolución algorítmica de problemas matemáticos. Incluye el desarrollo de estructuras de datos optimizadas, automatización y patrones orientados a objetos.',
@@ -252,7 +239,7 @@ export class CertificadosComponent implements OnInit {
     {
       id: 'backend-apis',
       name: 'Back End Development and APIs',
-      shortTitle: 'Back End Development and APIs',
+      shortTitle: 'Back End Development & APIs',
       issuer: 'freeCodeCamp',
       verificationUrl: 'https://www.freecodecamp.org/certification/santiagoarbelaezc/back-end-development-and-apis',
       description: 'Certificación profesional en desarrollo Backend y APIs RESTful. Cubre la creación de microservicios robustos con Node.js y Express.js, modelado de bases de datos NoSQL con MongoDB y Mongoose, autenticación y servidores de alta concurrencia.',
@@ -279,10 +266,6 @@ export class CertificadosComponent implements OnInit {
         });
       }, 100);
     }
-  }
-
-  getItemById(id: string): CertificateItem | undefined {
-    return this.certificates.find(c => c.id === id);
   }
 
   goBack() {

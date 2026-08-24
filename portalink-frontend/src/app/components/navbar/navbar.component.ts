@@ -507,14 +507,12 @@ export class NavbarComponent implements OnInit {
     es: [
       { name: 'Inicio',       link: '#hero',          icon: 'home'     },
       { name: 'Diseños',      link: '/prototipos',    icon: 'disenos'  },
-      { name: 'Certificados', link: '/certificados', icon: 'certificate' },
       { name: 'Links',        link: '/links',         icon: 'link'     },
       { name: 'RotBot',       link: '/rotbot',        icon: 'chat'     }
     ],
     en: [
       { name: 'Home',         link: '#hero',          icon: 'home'     },
       { name: 'Designs',      link: '/prototipos',    icon: 'disenos'  },
-      { name: 'Certificates', link: '/certificados', icon: 'certificate' },
       { name: 'Links',        link: '/links',         icon: 'link'     },
       { name: 'RotBot',       link: '/rotbot',        icon: 'chat'     }
     ]
@@ -935,7 +933,6 @@ export class NavbarComponent implements OnInit {
     this.mobileItems = [
       { name: isEs ? 'Inicio' : 'Home',         link: '#hero',          icon: 'home' },
       { name: isEs ? 'Diseños' : 'Designs',     link: '/prototipos',    icon: 'disenos' },
-      { name: isEs ? 'Certificados' : 'Certs',  link: '/certificados',  icon: 'certificate' },
       { name: 'Links',                          link: '/links',         icon: 'link' },
       { name: 'Chat',                           link: '/rotbot',        icon: 'chat' },
       { name: isEs ? 'Cuenta' : 'Account',      link: this.authService.isAuthenticated() ? '/perfil' : '/login', icon: 'user' }
