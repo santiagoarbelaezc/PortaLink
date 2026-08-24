@@ -30,45 +30,80 @@ import { RouterModule } from '@angular/router';
              [style.zIndex]="activeSlide === i ? '10' : '1'">
 
           <!-- Content Column -->
-          <div class="w-full md:w-[42%] lg:w-[38%] flex flex-col justify-center space-y-3.5 sm:space-y-4 z-10 shrink-0"
+          <div class="w-full md:w-[46%] lg:w-[44%] flex flex-col justify-center space-y-4 sm:space-y-5 z-10 shrink-0"
                [ngClass]="slide.isReversed ? 'items-start md:items-end text-left md:text-right' : 'items-start text-left'">
 
-            <!-- Big Bold Headline -->
-            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-headline font-bold uppercase tracking-tight leading-[1.05] text-[#0a0a0a] m-0"
+            <!-- Big Bold Headline (Increased Size) -->
+            <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] xl:text-[3.6rem] font-headline font-bold uppercase tracking-tight leading-[1.04] text-[#0a0a0a] m-0"
                 style="color: #0a0a0a !important;">
               {{ slide.headline }}
             </h2>
 
-            <!-- Subtitle / Tagline -->
-            <p class="text-sm sm:text-base text-neutral-600 font-sans font-normal leading-relaxed max-w-md m-0">
+            <!-- Subtitle / Tagline (Increased Size) -->
+            <p class="text-base sm:text-lg lg:text-xl text-neutral-600 font-sans font-normal leading-relaxed max-w-xl m-0">
               {{ slide.subtext }}
             </p>
 
-            <!-- CTA Button (Smooth Subtle Hover) -->
-            <div class="pt-1.5 sm:pt-2">
-              <a *ngIf="slide.link"
-                 [href]="slide.link"
-                 class="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full font-headline font-semibold text-xs uppercase tracking-wider hover:opacity-90 active:scale-[0.99] transition-opacity duration-300 shadow-sm no-underline cursor-pointer"
-                 style="background-color: #09090b !important; color: #ffffff !important;">
-                <span style="color: #ffffff !important; font-weight: 600;">{{ slide.ctaText }}</span>
-                <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-                </svg>
-              </a>
-              <a *ngIf="!slide.link"
-                 [routerLink]="['/proyecto', slide.projectId]"
-                 class="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full font-headline font-semibold text-xs uppercase tracking-wider hover:opacity-90 active:scale-[0.99] transition-opacity duration-300 shadow-sm no-underline cursor-pointer"
-                 style="background-color: #09090b !important; color: #ffffff !important;">
-                <span style="color: #ffffff !important; font-weight: 600;">{{ slide.ctaText }}</span>
-                <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-                </svg>
-              </a>
+            <!-- Action Buttons -->
+            <div class="pt-2 sm:pt-3">
+              
+              <!-- Case A: Multiple Buttons (Slide 1) -->
+              <div *ngIf="slide.buttons && slide.buttons.length > 0" 
+                   class="flex flex-wrap items-center gap-2.5 sm:gap-3"
+                   [ngClass]="slide.isReversed ? 'justify-start md:justify-end' : 'justify-start'">
+                <ng-container *ngFor="let btn of slide.buttons">
+                  <a *ngIf="btn.isRouter"
+                     [routerLink]="btn.link"
+                     class="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 sm:py-3.5 rounded-full font-headline font-semibold text-xs uppercase tracking-wider transition-all duration-300 shadow-sm no-underline cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                     [style.backgroundColor]="btn.isPrimary ? '#09090b' : '#f4f4f5'"
+                     [style.color]="btn.isPrimary ? '#ffffff !important' : '#18181b !important'"
+                     [style.border]="btn.isPrimary ? '1px solid #09090b' : '1px solid rgba(0,0,0,0.1)'">
+                    <span [style.color]="btn.isPrimary ? '#ffffff !important' : '#18181b !important'" style="font-weight: 600;">{{ btn.text }}</span>
+                    <svg *ngIf="btn.isPrimary" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                    </svg>
+                  </a>
+                  <a *ngIf="!btn.isRouter"
+                     [href]="btn.link"
+                     class="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 sm:py-3.5 rounded-full font-headline font-semibold text-xs uppercase tracking-wider transition-all duration-300 shadow-sm no-underline cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                     [style.backgroundColor]="btn.isPrimary ? '#09090b' : '#f4f4f5'"
+                     [style.color]="btn.isPrimary ? '#ffffff !important' : '#18181b !important'"
+                     [style.border]="btn.isPrimary ? '1px solid #09090b' : '1px solid rgba(0,0,0,0.1)'">
+                    <span [style.color]="btn.isPrimary ? '#ffffff !important' : '#18181b !important'" style="font-weight: 600;">{{ btn.text }}</span>
+                    <svg *ngIf="btn.isPrimary" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                    </svg>
+                  </a>
+                </ng-container>
+              </div>
+
+              <!-- Case B: Single CTA Button -->
+              <div *ngIf="!slide.buttons || slide.buttons.length === 0">
+                <a *ngIf="slide.link"
+                   [href]="slide.link"
+                   class="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full font-headline font-semibold text-xs uppercase tracking-wider hover:opacity-90 active:scale-[0.99] transition-opacity duration-300 shadow-sm no-underline cursor-pointer"
+                   style="background-color: #09090b !important; color: #ffffff !important;">
+                  <span style="color: #ffffff !important; font-weight: 600;">{{ slide.ctaText }}</span>
+                  <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                  </svg>
+                </a>
+                <a *ngIf="!slide.link"
+                   [routerLink]="['/proyecto', slide.projectId]"
+                   class="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full font-headline font-semibold text-xs uppercase tracking-wider hover:opacity-90 active:scale-[0.99] transition-opacity duration-300 shadow-sm no-underline cursor-pointer"
+                   style="background-color: #09090b !important; color: #ffffff !important;">
+                  <span style="color: #ffffff !important; font-weight: 600;">{{ slide.ctaText }}</span>
+                  <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                  </svg>
+                </a>
+              </div>
+
             </div>
           </div>
 
           <!-- Right Showcase Visual Column (Larger & Slightly Taller) -->
-          <div class="w-full md:w-[58%] lg:w-[62%] h-[380px] sm:h-[480px] md:h-[570px] lg:h-[640px] relative flex items-center justify-center">
+          <div class="w-full md:w-[54%] lg:w-[56%] h-[380px] sm:h-[480px] md:h-[570px] lg:h-[640px] relative flex items-center justify-center">
             
             <!-- Case 1: Triple Stacked Mobile Mockups (Taller & Elegant) -->
             <div *ngIf="slide.isMultiMobile" class="relative flex items-center justify-center w-full h-full">
@@ -168,7 +203,12 @@ export class HeroDesignComponent implements OnInit, OnDestroy {
       isReversed: false,
       badge: 'Portafolios & Marca Personal',
       headline: 'Comienza tu marca personal',
-      subtext: 'Con inteligencia artificial integrada para mejorar tus ventas.',
+      subtext: 'Con inteligencia artificial integrada para potenciar tus ventas, automatizar la atención a tus clientes y posicionar tus proyectos con presencia digital de alto impacto.',
+      buttons: [
+        { text: 'Proyectos realizados', link: '/prototipos', isRouter: true, isPrimary: false },
+        { text: 'Contacto', link: '#contact', isRouter: false, isPrimary: false },
+        { text: 'Escríbeme ya', link: '#contact', isRouter: false, isPrimary: true }
+      ],
       mobileImages: [
         'https://res.cloudinary.com/doxdjiyvi/image/upload/q_auto:eco,f_auto,w_600/v1787579497/portalink1_xxzxts.png',
         'https://res.cloudinary.com/doxdjiyvi/image/upload/q_auto:eco,f_auto,w_600/v1787547653/portalink2_ehf9ki.png',
