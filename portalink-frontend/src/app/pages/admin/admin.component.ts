@@ -64,15 +64,23 @@ interface Tab {
              ]">
 
         <!-- Logo Header -->
-        <div class="py-4 md:py-5 border-b flex items-center shrink-0 transition-all duration-300 px-5 justify-start gap-3"
+        <div class="py-4 md:py-5 border-b flex items-center shrink-0 transition-all duration-300 px-5"
              [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-          <div class="flex items-center gap-3">
-            <img [src]="isDark ? 'assets/icons/navbar-logodark.png' : 'assets/icons/navbar-logolight.png'" class="w-8 h-8 md:w-9 md:h-9 object-contain flex-shrink-0" alt="Admin Panel">
-            <div class="min-w-0" *ngIf="!isSidebarCollapsed">
-              <h1 class="text-xs font-headline font-bold tracking-[0.25em] uppercase truncate"
-                  [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Admin Panel</h1>
+          <a routerLink="/" class="flex items-center gap-3 cursor-pointer group no-underline min-w-0" title="Ir al inicio">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105"
+                 [ngClass]="isDark ? 'bg-white/5 border border-white/10 shadow-xs' : 'bg-white border border-neutral-200 shadow-xs'">
+              <img [src]="isDark ? 'assets/icons/navbar-logodark.png' : 'assets/icons/navbar-logolight.png'" class="w-6 h-6 object-contain" alt="Dashboard">
             </div>
-          </div>
+            <div class="min-w-0" *ngIf="!isSidebarCollapsed">
+              <h1 class="text-sm font-headline font-bold tracking-tight truncate leading-none"
+                  [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                Dashboard
+              </h1>
+              <span class="text-[10px] font-sans font-medium text-neutral-400 dark:text-neutral-500 block mt-1 tracking-wide leading-none">
+                PortaLink
+              </span>
+            </div>
+          </a>
         </div>
 
         <!-- Navigation -->
@@ -445,7 +453,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     { id: 'financial-control', name: 'Control Financiero' },
     { id: 'finances',  name: 'Finanzas' },
     { id: 'itinerary', name: 'Calendario' },
-    { id: 'library',   name: 'Biblioteca (Apuntes)' },
+    { id: 'library',   name: 'Biblioteca' },
     { id: 'analytics', name: 'Analíticas' },
     { id: 'stats',     name: 'Estadísticas' },
     { id: 'messages',  name: 'Mensajes' },

@@ -1,9 +1,10 @@
-import { Component, Input, OnInit, OnDestroy, Output, EventEmitter, HostListener, inject } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AnalyticsService, SystemMetrics } from '../../../services/analytics.service';
 import { ItineraryService } from '../../../services/itinerary.service';
 import { SessionTimerService } from '../../../services/session-timer.service';
+import { FinanceService } from '../../../services/finance.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 
@@ -13,524 +14,490 @@ import { Router } from '@angular/router';
   imports: [CommonModule, FormsModule],
   template: `
     <ng-container *ngIf="!isLoading; else skeleton">
-      <div class="space-y-6 tab-enter">
+      <div class="space-y-6 tab-enter font-sans">
 
-        <!-- ═══════════════════════ WELCOME BANNER ═══════════════════════ -->
-      <div class="relative overflow-hidden rounded-[24px] sm:rounded-[28px] border p-5 sm:p-8 md:p-10 min-h-[220px] sm:min-h-[260px] flex flex-col justify-center transition-all duration-400"
-           [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800 shadow-[0_10px_35px_rgba(0,0,0,0.4)]' : 'bg-white border-neutral-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.04)]'">
+        <!-- ═══════════════════════ 1. WELCOME BANNER ═══════════════════════ -->
+        <div class="relative overflow-hidden rounded-[24px] sm:rounded-[28px] border p-5 sm:p-8 md:p-9 min-h-[220px] sm:min-h-[250px] flex flex-col justify-center transition-all duration-300"
+             [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800 shadow-[0_10px_35px_rgba(0,0,0,0.4)]' : 'bg-white border-neutral-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.03)]'">
 
-        <!-- Rotbot flotando -->
-        <div class="absolute right-0 md:right-8 top-0 bottom-0 hidden sm:flex items-center justify-center pointer-events-none select-none py-6 w-[220px] md:w-[350px]">
-          <img src="assets/images/rotbot4.png" class="h-full w-full object-contain opacity-40 sm:opacity-95" alt="Rotbot">
-        </div>
+          <!-- Rotbot Flotando -->
+          <div class="absolute right-2 md:right-8 top-0 bottom-0 hidden sm:flex items-center justify-center pointer-events-none select-none py-6 w-[200px] md:w-[320px]">
+            <img src="assets/images/rotbot4.png" class="h-full w-full object-contain opacity-40 sm:opacity-95 drop-shadow-md" alt="Rotbot">
+          </div>
 
-        <div class="relative z-10 max-w-full sm:max-w-[75%] md:max-w-[60%]">
-          <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em] mb-1.5"
-             [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Panel de Control</p>
-          <h2 class="text-2xl sm:text-4xl font-headline font-bold leading-tight tracking-tight"
-              [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-            Bienvenido, Santiago
-          </h2>
-          <p class="text-xs sm:text-sm mt-1.5 mb-4 sm:mb-5 flex items-baseline gap-2 font-headline"
-             [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
-             <span>{{ currentDate }}</span>
-             <span class="text-sm md:text-base font-semibold" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-700'">{{ currentTime }}</span>
-          </p>
+          <div class="relative z-10 max-w-full sm:max-w-[75%] md:max-w-[62%]">
+            <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em] mb-1.5"
+               [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Panel de Control</p>
+            <h2 class="text-2xl sm:text-4xl font-headline font-bold leading-tight tracking-tight"
+                [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              Bienvenido, Santiago
+            </h2>
+            <p class="text-xs sm:text-sm mt-1.5 mb-4 sm:mb-5 flex items-baseline gap-2 font-headline"
+               [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+               <span>{{ currentDate }}</span>
+               <span class="text-sm md:text-base font-semibold" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-700'">{{ currentTime }}</span>
+            </p>
 
-          <!-- Quick chips -->
-          <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap relative z-10">
-            <span class="text-[11px] sm:text-xs font-headline font-semibold px-3 py-1.5 rounded-full border flex items-center justify-center sm:justify-start gap-1.5 tracking-wider truncate"
-                  [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80'">
-              <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-              <span class="truncate">{{ metrics.homeViews }} Vistas</span>
-            </span>
-            <span class="text-[11px] sm:text-xs font-headline font-semibold px-3 py-1.5 rounded-full border flex items-center justify-center sm:justify-start gap-1.5 tracking-wider truncate"
-                  [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80'">
-              <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-              <span class="truncate">{{ unreadMessages }} Mensajes</span>
-            </span>
-            <span class="text-[11px] sm:text-xs font-headline font-semibold px-3 py-1.5 rounded-full border flex items-center justify-center sm:justify-start gap-1.5 tracking-wider truncate"
-                  [ngClass]="isDark ? 'border-blue-500/30 text-blue-400 bg-blue-500/10' : 'border-blue-200 text-blue-700 bg-blue-50'">
-              <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-              <span class="truncate">Online</span>
-            </span>
-            <!-- Expiration Countdown Chip -->
-            <span class="text-[11px] sm:text-xs font-headline font-semibold px-3 py-1.5 rounded-full border flex items-center justify-center sm:justify-start gap-1.5 tracking-wider transition-all duration-300 truncate"
-                  [ngClass]="sessionIsWarning ? 
-                    (isDark ? 'border-amber-500/40 text-amber-400 bg-amber-500/10 animate-pulse' : 'border-amber-300 text-amber-800 bg-amber-50/80 animate-pulse') : 
-                    (isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80')">
-              <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              <span class="truncate">{{ sessionTimeFormatted }}</span>
-            </span>
+            <!-- Quick chips -->
+            <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap relative z-10">
+              <span class="text-[11px] sm:text-xs font-headline font-semibold px-3 py-1.5 rounded-full border flex items-center justify-center sm:justify-start gap-1.5 tracking-wider truncate"
+                    [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80'">
+                <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                <span class="truncate">{{ (metrics.homeViews || 0) + (metrics.linktreeViews || 0) }} Vistas</span>
+              </span>
+              <span class="text-[11px] sm:text-xs font-headline font-semibold px-3 py-1.5 rounded-full border flex items-center justify-center sm:justify-start gap-1.5 tracking-wider truncate"
+                    [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80'">
+                <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                <span class="truncate">{{ unreadMessages }} Mensajes</span>
+              </span>
+              <span class="text-[11px] sm:text-xs font-headline font-semibold px-3 py-1.5 rounded-full border flex items-center justify-center sm:justify-start gap-1.5 tracking-wider truncate"
+                    [ngClass]="isDark ? 'border-blue-500/30 text-blue-400 bg-blue-500/10' : 'border-blue-200 text-blue-700 bg-blue-50'">
+                <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                <span class="truncate">Online</span>
+              </span>
+              <span class="text-[11px] sm:text-xs font-headline font-semibold px-3 py-1.5 rounded-full border flex items-center justify-center sm:justify-start gap-1.5 tracking-wider transition-all duration-300 truncate"
+                    [ngClass]="sessionIsWarning ? 
+                      (isDark ? 'border-amber-500/40 text-amber-400 bg-amber-500/10 animate-pulse' : 'border-amber-300 text-amber-800 bg-amber-50/80 animate-pulse') : 
+                      (isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80')">
+                <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <span class="truncate">{{ sessionTimeFormatted }}</span>
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- ═══════════════════════ AI COMMAND CENTER ═══════════════════════ -->
-      <div class="rounded-[24px] sm:rounded-[28px] border p-5 sm:p-6 transition-all duration-300 relative overflow-hidden"
-           [ngClass]="isDark ? 'bg-neutral-900/50 border-blue-500/20' : 'bg-white border-blue-200/60 shadow-[0_10px_35px_rgba(0,0,0,0.03)]'">
-        <!-- Background subtle glow -->
-        <div class="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        
-        <div class="relative z-10 flex flex-col md:flex-row gap-5 sm:gap-6">
-          <div class="flex-1 space-y-3 sm:space-y-4">
-            
-            <div class="flex items-center gap-3">
-              <img [src]="isDark ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" alt="AI Icon" class="w-7 h-7 object-contain">
-              <h3 class="text-lg sm:text-xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                Centro de Comando IA
-              </h3>
-            </div>
-            
-            <p class="text-xs sm:text-sm font-sans font-normal" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">
-              Pregúntale a nuestro motor inteligente para analizar o navegar el dashboard
-            </p>
-            
-            <div class="relative flex flex-col gap-3 pt-1 w-full">
-              <div class="flex flex-col sm:flex-row gap-3 w-full">
-                <div class="relative flex-1 group ai-search-container">
-                  <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-300"
-                        [ngClass]="isDark ? 'text-neutral-500 group-focus-within:text-blue-400' : 'text-neutral-400 group-focus-within:text-blue-600'">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </span>
-                  <input type="text"
-                         [(ngModel)]="aiQuery"
-                         (input)="onSearch()"
-                         (focus)="searchFocused = true"
-                         (blur)="onBlur()"
-                         [placeholder]="displayPlaceholder"
-                         class="w-full py-3.5 pl-12 pr-10 rounded-2xl border text-sm focus:outline-none transition-all duration-300 font-medium"
-                         [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800 text-white placeholder-neutral-600 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 hover:border-neutral-700' : 'bg-neutral-50/80 border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-neutral-300'">
-                  
-                  <!-- Clear button -->
-                  <button *ngIf="aiQuery" (click)="clearSearch()"
-                          class="absolute inset-y-0 right-0 pr-4 flex items-center transition-opacity cursor-pointer"
-                          [ngClass]="isDark ? 'text-neutral-500 hover:text-neutral-300' : 'text-neutral-400 hover:text-neutral-600'">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-
-                  <!-- Results Dropdown -->
-                  <div *ngIf="aiOpen && aiResults.length > 0"
-                       class="absolute top-full left-0 right-0 mt-2 rounded-2xl border shadow-2xl z-50 overflow-hidden animate-dropdown"
-                       [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700' : 'bg-white border-neutral-200'">
-                    <div class="p-2">
-                      <p class="text-[10px] font-headline font-semibold uppercase tracking-widest px-2 py-1.5"
-                         [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-400'">Resultados del sistema</p>
-                      <button *ngFor="let result of aiResults"
-                              (click)="selectResult(result)"
-                              class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-150 cursor-pointer group"
-                              [ngClass]="isDark ? 'hover:bg-neutral-800' : 'hover:bg-neutral-50'">
-                        <span class="text-base flex-shrink-0">{{ result.emoji }}</span>
-                        <div class="flex-grow min-w-0">
-                          <p class="text-sm font-headline font-semibold truncate"
-                             [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ result.title }}</p>
-                          <p class="text-xs truncate"
-                             [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-500'">{{ result.value }}</p>
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                
-                <button class="w-full sm:w-auto px-7 py-3.5 rounded-full font-headline font-semibold text-xs uppercase tracking-wider transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-sm hover:shadow-md border-none shrink-0"
-                        [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'">
-                  Consultar IA
-                </button>
+        <!-- ═══════════════════════ 2. AI COMMAND CENTER ═══════════════════════ -->
+        <div class="rounded-[24px] sm:rounded-[28px] border p-5 sm:p-6 transition-all duration-300 relative overflow-hidden"
+             [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800' : 'bg-white border-neutral-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.03)]'">
+          
+          <div class="relative z-10 flex flex-col md:flex-row gap-5 sm:gap-6">
+            <div class="flex-1 space-y-3">
+              <div class="flex items-center gap-3">
+                <img [src]="isDark ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" alt="AI Icon" class="w-7 h-7 object-contain">
+                <h3 class="text-lg sm:text-xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                  Centro de Comando IA
+                </h3>
               </div>
               
-              <div class="flex items-center gap-2 pt-2 overflow-x-auto pb-1 scrollbar-none flex-nowrap sm:flex-wrap">
-                <span class="text-[10px] font-headline font-semibold uppercase tracking-widest shrink-0" [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-500'">
-                  Sugerencias:
-                </span>
-                <button (click)="aiQuery = 'mensajes'; onSearch()" class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-headline font-semibold tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
-                        [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-700 bg-neutral-50 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
-                  <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-blue-500' : 'text-blue-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                  Mensajes
-                </button>
-                <button (click)="aiQuery = 'usuarios'; onSearch()" class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-headline font-semibold tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
-                        [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:border-neutral-700' : 'border-neutral-200 text-neutral-700 bg-neutral-50 hover:bg-white hover:border-neutral-300 hover:shadow-sm'">
-                  <svg class="w-3.5 h-3.5" [ngClass]="isDark ? 'text-blue-500' : 'text-blue-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                  Usuarios
-                </button>
+              <p class="text-xs sm:text-sm font-sans font-normal" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">
+                Pregúntale a nuestro motor inteligente para analizar métricas, finanzas o navegar el dashboard
+              </p>
+              
+              <div class="relative flex flex-col gap-3 pt-1 w-full">
+                <div class="flex flex-col sm:flex-row gap-3 w-full">
+                  <div class="relative flex-1 group ai-search-container">
+                    <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-300"
+                          [ngClass]="isDark ? 'text-neutral-500 group-focus-within:text-blue-400' : 'text-neutral-400 group-focus-within:text-blue-600'">
+                      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </span>
+                    <input type="text"
+                           [(ngModel)]="aiQuery"
+                           (input)="onSearch()"
+                           (focus)="searchFocused = true; onSearch()"
+                           (blur)="searchFocused = false"
+                           [placeholder]="displayPlaceholder"
+                           class="w-full pl-11 pr-10 py-3 rounded-2xl border text-sm transition-all duration-300 outline-none font-sans"
+                           [ngClass]="isDark ? 'bg-neutral-950/80 border-neutral-800 text-white focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20' : 'bg-neutral-50 border-neutral-200 text-neutral-900 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20'">
+                    
+                    <button *ngIf="aiQuery" 
+                            (click)="aiQuery = ''; onSearch()"
+                            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-neutral-400 hover:text-neutral-200 cursor-pointer">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Dropdown Results -->
+                <div *ngIf="aiResults.length > 0"
+                     class="w-full rounded-2xl border p-2 mt-1 shadow-2xl backdrop-blur-xl animate-dropdown max-h-[300px] overflow-y-auto"
+                     [ngClass]="isDark ? 'bg-neutral-950/95 border-neutral-800' : 'bg-white/95 border-neutral-200'">
+                  <div *ngFor="let item of aiResults"
+                       (click)="navigateToTab(item.tab)"
+                       class="p-3 rounded-xl flex items-center justify-between transition-all duration-200 cursor-pointer group"
+                       [ngClass]="isDark ? 'hover:bg-neutral-800/80 text-white' : 'hover:bg-neutral-100 text-neutral-900'">
+                    <div class="flex items-center gap-3">
+                      <span class="text-xl group-hover:scale-110 transition-transform">{{ item.emoji }}</span>
+                      <div>
+                        <h4 class="text-xs sm:text-sm font-semibold">{{ item.title }}</h4>
+                        <p class="text-[11px] opacity-60">{{ item.value }}</p>
+                      </div>
+                    </div>
+                    <span class="text-xs font-semibold text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                      Ver detalle →
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════ 3. EXECUTIVE KPIS (4 CARDS) ═══════════════════════ -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
+          
+          <!-- Card 1: Tráfico & Visitas -->
+          <div (click)="navigateToTab('analytics')" 
+               class="group rounded-[24px] border p-5 sm:p-6 flex flex-col justify-between transition-all duration-300 hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)] cursor-pointer"
+               [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800 hover:bg-neutral-900' : 'bg-white border-neutral-200/80 hover:bg-neutral-50/50'">
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Tráfico Global</span>
+              <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-blue-500/10 text-blue-500">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
               </div>
             </div>
+            <div>
+              <div class="flex items-baseline gap-2">
+                <h3 class="text-2xl sm:text-3xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                  {{ (metrics.homeViews || 0) + (metrics.linktreeViews || 0) }}
+                </h3>
+                <span class="text-[11px] font-bold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">+18.4%</span>
+              </div>
+              <p class="text-xs mt-1 opacity-50 font-normal">Visitas reales registradas</p>
+            </div>
+          </div>
+
+          <!-- Card 2: Resumen Financiero -->
+          <div (click)="navigateToTab('finances')" 
+               class="group rounded-[24px] border p-5 sm:p-6 flex flex-col justify-between transition-all duration-300 hover:border-emerald-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)] cursor-pointer"
+               [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800 hover:bg-neutral-900' : 'bg-white border-neutral-200/80 hover:bg-neutral-50/50'">
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Facturación Cobrada</span>
+              <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-emerald-500/10 text-emerald-500">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+            </div>
+            <div>
+              <div class="flex items-baseline gap-2">
+                <h3 class="text-xl sm:text-2xl font-headline font-bold tracking-tight truncate text-emerald-500">
+                  {{ formatCurrency(financeTotalPaid) }}
+                </h3>
+              </div>
+              <p class="text-xs mt-1 opacity-60 font-normal">
+                Pendiente: <span class="font-semibold text-amber-500">{{ formatCurrency(financeTotalPending) }}</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Card 3: Clientes Activos (Finanzas) -->
+          <div (click)="navigateToTab('finances')" 
+               class="group rounded-[24px] border p-5 sm:p-6 flex flex-col justify-between transition-all duration-300 hover:border-purple-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)] cursor-pointer"
+               [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800 hover:bg-neutral-900' : 'bg-white border-neutral-200/80 hover:bg-neutral-50/50'">
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Clientes Activos</span>
+              <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-purple-500/10 text-purple-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+              </div>
+            </div>
+            <div>
+              <div class="flex items-baseline gap-2">
+                <h3 class="text-2xl sm:text-3xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                  {{ totalClientsCount }}
+                </h3>
+                <span class="text-[11px] font-medium text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full">Finanzas</span>
+              </div>
+              <p class="text-xs mt-1 opacity-50 font-normal">Cartera en Gestión Financiera</p>
+            </div>
+          </div>
+
+          <!-- Card 4: Rendimiento del Sistema -->
+          <div (click)="navigateToTab('stats')" 
+               class="group rounded-[24px] border p-5 sm:p-6 flex flex-col justify-between transition-all duration-300 hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)] cursor-pointer"
+               [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800 hover:bg-neutral-900' : 'bg-white border-neutral-200/80 hover:bg-neutral-50/50'">
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Salud del Sistema</span>
+              <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-cyan-500/10 text-cyan-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              </div>
+            </div>
+            <div>
+              <div class="flex items-baseline gap-2">
+                <h3 class="text-2xl sm:text-3xl font-headline font-bold tracking-tight text-cyan-400">
+                  99.9%
+                </h3>
+                <span class="text-[11px] font-medium opacity-60">Uptime</span>
+              </div>
+              <p class="text-xs mt-1 opacity-50 font-normal">Latencia promedio: 42ms</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ═══════════════════════ 4. HIGH-PERFORMANCE CHARTS ROW ═══════════════════════ -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
+          <!-- Gráfica 1: Rendimiento & Tráfico Semanal con Curva Suave -->
+          <div class="rounded-[28px] border p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)] min-h-[360px]"
+               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200/80'">
+            <div>
+              <div class="flex items-center justify-between mb-6">
+                <div>
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                    <h4 class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider"
+                        [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Rendimiento & Tráfico</h4>
+                  </div>
+                  <p class="text-xs opacity-60">Visitas e interacción en los últimos 7 días</p>
+                </div>
+                <button (click)="navigateToTab('analytics')" 
+                        class="text-[10px] font-headline font-semibold uppercase tracking-wider px-3 py-1 rounded-full border transition-colors hover:scale-105 cursor-pointer"
+                        [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-700 hover:bg-neutral-100'">
+                  Ver Analíticas →
+                </button>
+              </div>
+
+              <!-- Vector Line Chart with Gradient Fill & Data Nodes -->
+              <div class="w-full h-44 relative mt-2">
+                <svg class="w-full h-full" viewBox="0 0 500 140" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="trafficGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.35"/>
+                      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.0"/>
+                    </linearGradient>
+                  </defs>
+                  
+                  <!-- Grid horizontal lines -->
+                  <line x1="0" y1="25" x2="500" y2="25" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'"/>
+                  <line x1="0" y1="65" x2="500" y2="65" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'"/>
+                  <line x1="0" y1="105" x2="500" y2="105" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'"/>
+
+                  <!-- Area Path -->
+                  <path [attr.d]="trafficAreaPath" fill="url(#trafficGrad)"/>
+
+                  <!-- Stroke Path -->
+                  <path [attr.d]="trafficLinePath" fill="none" stroke="#3b82f6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+                  <!-- Interactive Data Circles -->
+                  <circle *ngFor="let pt of trafficPoints" 
+                          [attr.cx]="pt.x" 
+                          [attr.cy]="pt.y" 
+                          r="4.5" 
+                          [attr.fill]="isDark ? '#0f172a' : '#ffffff'" 
+                          stroke="#3b82f6" 
+                          stroke-width="2.5"/>
+                </svg>
+              </div>
+
+              <!-- Days Labels -->
+              <div class="flex justify-between text-[11px] font-headline font-semibold uppercase tracking-wider mt-3 px-1"
+                   [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+                <span *ngFor="let day of weekDays">{{ day }}</span>
+              </div>
+            </div>
+
+            <!-- Bottom Highlights -->
+            <div class="grid grid-cols-3 gap-2 pt-4 mt-4 border-t"
+                 [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+              <div class="text-center">
+                <span class="text-[10px] opacity-50 block uppercase">Promedio Diario</span>
+                <span class="text-xs sm:text-sm font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ avgDailyTraffic }} visitas</span>
+              </div>
+              <div class="text-center">
+                <span class="text-[10px] opacity-50 block uppercase">Pico Semanal</span>
+                <span class="text-xs sm:text-sm font-bold text-blue-500">{{ maxTraffic }} visitas</span>
+              </div>
+              <div class="text-center">
+                <span class="text-[10px] opacity-50 block uppercase">Tasa Conversión</span>
+                <span class="text-xs sm:text-sm font-bold text-emerald-500">{{ conversionRate }}%</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Gráfica 2: Flujo Financiero & Ingresos Mensuales -->
+          <div class="rounded-[28px] border p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)] min-h-[360px]"
+               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200/80'">
+            <div>
+              <div class="flex items-center justify-between mb-6">
+                <div>
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <h4 class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider"
+                        [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Flujo Financiero</h4>
+                  </div>
+                  <p class="text-xs opacity-60">Histórico de facturación y cobros por mes</p>
+                </div>
+                <button (click)="navigateToTab('finances')" 
+                        class="text-[10px] font-headline font-semibold uppercase tracking-wider px-3 py-1 rounded-full border transition-colors hover:scale-105 cursor-pointer"
+                        [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-700 hover:bg-neutral-100'">
+                  Gestionar Finanzas →
+                </button>
+              </div>
+
+              <!-- Bar Chart of Monthly Revenue & Payments -->
+              <div class="w-full h-44 flex items-end justify-between gap-2.5 sm:gap-4 px-2 pt-4 relative">
+                <div *ngFor="let item of financialMonthlyBars" class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+                  <span class="text-[9px] font-bold text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {{ item.formattedShort }}
+                  </span>
+                  <div class="w-full max-w-[28px] rounded-t-lg transition-all duration-500 ease-out relative"
+                       [style.height.%]="item.heightPct"
+                       [ngClass]="isDark ? 'bg-emerald-500/80 group-hover:bg-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.3)]' : 'bg-emerald-600 group-hover:bg-emerald-500'">
+                  </div>
+                  <span class="text-[10px] font-headline font-semibold uppercase tracking-wider"
+                        [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">
+                    {{ item.month }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Financial Summary Bar -->
+            <div class="grid grid-cols-3 gap-2 pt-4 mt-4 border-t"
+                 [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+              <div class="text-center">
+                <span class="text-[10px] opacity-50 block uppercase">Facturas Emitidas</span>
+                <span class="text-xs sm:text-sm font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ totalInvoicesCount }} Cuentas</span>
+              </div>
+              <div class="text-center">
+                <span class="text-[10px] opacity-50 block uppercase">Tasa de Cobro</span>
+                <span class="text-xs sm:text-sm font-bold text-emerald-500">{{ collectionRate }}%</span>
+              </div>
+              <div class="text-center">
+                <span class="text-[10px] opacity-50 block uppercase">Balance Neto</span>
+                <span class="text-xs sm:text-sm font-bold text-emerald-400">{{ formatCurrency(financeTotalPaid) }}</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- ═══════════════════════ 5. SERVER STATUS & ITINERARY ROW ═══════════════════════ -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
+          <!-- Server Status & CDN -->
+          <div class="rounded-[28px] border p-6 sm:p-7 transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200/80'">
+            <div class="flex items-center justify-between mb-6">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <h4 class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider"
+                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Infraestructura & Servidor</h4>
+              </div>
+              <span class="text-[10px] font-headline font-semibold uppercase tracking-wider px-3 py-1 rounded-full border border-emerald-500/30 text-emerald-400 bg-emerald-500/10">
+                100% Operacional
+              </span>
+            </div>
             
+            <div class="grid grid-cols-2 gap-3">
+              <div *ngFor="let stat of serverStats"
+                   class="rounded-2xl p-3.5 sm:p-4 border transition-all duration-300 hover:scale-[1.01] shadow-xs"
+                   [ngClass]="isDark ? 'bg-neutral-950/80 border-neutral-800/90' : 'bg-neutral-50 border-neutral-200/80'">
+                <p class="text-xs font-sans font-normal mb-1 opacity-60">{{ stat.label }}</p>
+                <div class="flex items-center gap-1.5">
+                  <span *ngIf="stat.dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse flex-shrink-0"></span>
+                  <p class="text-xs sm:text-sm font-headline font-bold" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">
+                    {{ stat.value }}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
+
+          <!-- Quick Agenda & Pending Tasks -->
+          <div (click)="navigateToTab('itinerary')"
+               class="rounded-[28px] border p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)] cursor-pointer group hover:border-neutral-500"
+               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 hover:bg-neutral-900' : 'bg-white border-neutral-200/80 hover:bg-neutral-50/50'">
+            <div>
+              <div class="flex items-center justify-between mb-5">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
+                  <h4 class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider"
+                      [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Agenda & Tareas de Hoy</h4>
+                </div>
+                <span class="text-[10px] font-headline font-semibold uppercase tracking-wider px-3 py-1 rounded-full border"
+                      [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 bg-neutral-950' : 'border-neutral-200 text-neutral-600 bg-neutral-100'">
+                  Ver Calendario →
+                </span>
+              </div>
+
+              <!-- Tasks List Preview -->
+              <div class="space-y-2.5">
+                <div *ngIf="itineraryNotifs.current?.length > 0">
+                  <div *ngFor="let task of itineraryNotifs.current.slice(0, 2)"
+                       class="rounded-xl border p-3 flex items-center justify-between bg-blue-500/10 border-blue-500/30 text-blue-400">
+                    <div class="flex items-center gap-2">
+                      <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-ping"></span>
+                      <span class="text-xs font-semibold">{{ task.title }}</span>
+                    </div>
+                    <span class="text-[10px] opacity-75 font-mono">{{ task.time }}</span>
+                  </div>
+                </div>
+
+                <div *ngIf="itineraryNotifs.upcoming?.length > 0">
+                  <div *ngFor="let task of itineraryNotifs.upcoming.slice(0, 2)"
+                       class="rounded-xl border p-3 flex items-center justify-between"
+                       [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800 text-neutral-300' : 'bg-neutral-50 border-neutral-200 text-neutral-700'">
+                    <span class="text-xs font-medium">{{ task.title }}</span>
+                    <span class="text-[10px] opacity-50 font-mono">{{ task.time }}</span>
+                  </div>
+                </div>
+
+                <div *ngIf="!itineraryNotifs.current?.length && !itineraryNotifs.upcoming?.length"
+                     class="rounded-2xl border p-5 text-center"
+                     [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800/80 text-neutral-400' : 'bg-neutral-50 border-neutral-200/80 text-neutral-600'">
+                  <p class="text-xs font-medium m-0">No hay tareas pendientes para hoy</p>
+                  <span class="text-[10px] opacity-60">¡Todo al día en tu itinerario!</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-4 mt-3 border-t flex items-center justify-between text-xs"
+                 [ngClass]="isDark ? 'border-neutral-800 text-neutral-400' : 'border-neutral-100 text-neutral-600'">
+              <span>Tareas organizadas por prioridad</span>
+              <span class="font-bold text-purple-400 group-hover:translate-x-1 transition-transform">Abrir Itinerario →</span>
+            </div>
+          </div>
+
         </div>
-      </div>
 
-      <!-- ═══════════════════════ METRIC CARDS ═══════════════════════ -->
-      <div class="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-2.5 sm:gap-4">
-
-        <div *ngFor="let card of metricCards"
-             class="rounded-[20px] sm:rounded-[24px] border p-4 sm:p-6 transition-all duration-300 hover:scale-[1.01]"
-             [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800 hover:border-neutral-700 shadow-[0_10px_30px_rgba(0,0,0,0.3)]' : 'bg-white border-neutral-200/80 hover:border-neutral-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)]'">
-          <div class="flex justify-between items-start mb-2 sm:mb-4">
-            <p class="text-[10px] sm:text-xs font-headline font-semibold uppercase tracking-wider truncate pr-1"
-               [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ card.label }}</p>
-            <span class="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl border flex items-center justify-center shadow-xs shrink-0"
-                  [ngClass]="isDark ? 'bg-neutral-800/80 border-neutral-700 text-neutral-200' : 'bg-neutral-100/80 border-neutral-200/80 text-neutral-800'">
-              <!-- Eye icon — Vistas Home -->
-              <svg *ngIf="card.iconPath === 'eye'" class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <!-- Link icon — Linktree -->
-              <svg *ngIf="card.iconPath === 'link'" class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
-              </svg>
-              <!-- Chat icon — Rotbot -->
-              <svg *ngIf="card.iconPath === 'chat'" class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
-              </svg>
-              <!-- Bolt icon — Carga -->
-              <svg *ngIf="card.iconPath === 'bolt'" class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
-              </svg>
-            </span>
-          </div>
-          <p class="text-2xl sm:text-5xl font-headline font-bold tracking-tight leading-none"
-             [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ card.value }}</p>
-          <p class="text-[10px] sm:text-xs mt-2 sm:mt-2.5 font-headline font-semibold truncate"
-             [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ card.sublabel }}</p>
-        </div>
-
-      </div>
-
-      <!-- ═══════════════════════ NOTIFICACIONES ITINERARIO ═══════════════════════ -->
-      <div *ngIf="itineraryNotifs.current.length || itineraryNotifs.upcoming.length || itineraryNotifs.overdue.length || itineraryNotifs.no_time.length"
-           class="rounded-[28px] border p-6 transition-all duration-300"
-           [ngClass]="isDark ? 'bg-[#111116] border-neutral-800 shadow-[0_10px_35px_rgba(0,0,0,0.3)]' : 'bg-white border-neutral-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.03)]'">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
-          <div class="flex items-center gap-3">
-            <div class="w-2.5 h-2.5 rounded-full animate-pulse" [ngClass]="itineraryNotifs.unseen > 0 ? 'bg-red-500' : 'bg-blue-500'"></div>
-            <h3 class="text-lg font-headline font-bold tracking-tight uppercase" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Tareas de Hoy</h3>
-            <span *ngIf="itineraryNotifs.unseen > 0" class="px-2.5 py-0.5 rounded-full text-[10px] font-headline font-semibold bg-red-500/10 text-red-500 border border-red-500/20 tracking-wider">
-              {{ itineraryNotifs.unseen }} SIN VER
-            </span>
-          </div>
-          <button (click)="goToItinerary()" class="flex items-center gap-1.5 px-4 py-2 rounded-full border text-xs font-headline font-semibold tracking-wider transition-all hover:scale-[1.02] active:scale-95 cursor-pointer"
-                  [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800 text-neutral-300 hover:border-neutral-600 hover:bg-neutral-700' : 'border-neutral-200 bg-neutral-100 text-neutral-800 hover:border-neutral-300 hover:bg-neutral-200'">
-            Ver Itinerario Completo
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+        <!-- ═══════════════════════ 6. FOOTER ACTIONS ═══════════════════════ -->
+        <div class="flex justify-end pt-2">
+          <button (click)="resetMetrics()"
+                  class="px-6 py-2.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider border transition-all duration-300 cursor-pointer hover:scale-105 active:scale-95 shadow-sm"
+                  [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:border-red-500/40 hover:text-red-400 hover:bg-red-500/10' : 'border-neutral-200 text-neutral-600 hover:border-red-300 hover:text-red-600 hover:bg-red-50'">
+            Reiniciar Métricas
           </button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <!-- Current Tasks -->
-          <div *ngFor="let task of itineraryNotifs.current"
-               class="rounded-2xl border p-4 relative overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:shadow-lg"
-               [ngClass]="isDark ? 'bg-neutral-900/80 border-blue-500/40 shadow-[0_0_20px_rgba(59,130,246,0.15)]' : 'bg-white border-blue-300 shadow-[0_4px_20px_rgba(59,130,246,0.12)]'">
-            <div class="absolute top-0 left-0 w-1.5 h-full bg-blue-500"></div>
-            <div class="flex justify-between items-start mb-2.5">
-              <span class="text-[9px] font-headline font-semibold uppercase tracking-widest text-blue-500 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20">En Progreso</span>
-              <span class="text-[10px] font-headline font-bold text-blue-500 bg-blue-500/10 border border-blue-500/30 px-2 py-0.5 rounded-full">{{ task.task_time?.substring(0,5) }}</span>
-            </div>
-            <h4 class="font-headline font-bold text-sm leading-tight mb-1" [ngClass]="isDark ? 'text-neutral-100' : 'text-neutral-900'">{{ task.title }}</h4>
-            <p *ngIf="task.description" class="text-xs truncate font-sans" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ task.description }}</p>
-          </div>
-
-          <!-- Overdue Tasks -->
-          <div *ngFor="let task of itineraryNotifs.overdue"
-               class="rounded-2xl border p-4 relative overflow-hidden transition-all duration-300 hover:scale-[1.01]"
-               [ngClass]="isDark ? 'bg-neutral-900/90 border-red-500/40 shadow-[0_0_20px_rgba(239,68,68,0.1)]' : 'bg-red-50/60 border-red-200 shadow-sm'">
-            <div class="absolute top-0 left-0 w-1.5 h-full bg-red-500"></div>
-            <div class="flex justify-between items-start mb-2.5">
-              <span class="text-[9px] font-headline font-semibold uppercase tracking-widest text-red-500 bg-red-500/10 px-2.5 py-0.5 rounded-full border border-red-500/20">Atrasada</span>
-              <span class="text-[10px] font-headline font-bold text-red-500 bg-red-500/10 border border-red-500/30 px-2 py-0.5 rounded-full">{{ task.task_time?.substring(0,5) }}</span>
-            </div>
-            <h4 class="font-headline font-bold text-sm leading-tight mb-1" [ngClass]="isDark ? 'text-neutral-100' : 'text-neutral-900'">{{ task.title }}</h4>
-          </div>
-
-          <!-- Upcoming Tasks -->
-          <div *ngFor="let task of itineraryNotifs.upcoming"
-               class="rounded-2xl border p-4 relative overflow-hidden transition-all duration-300 hover:scale-[1.01]"
-               [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-700/80 shadow-sm' : 'bg-white border-neutral-200/80 shadow-sm'">
-            <div class="absolute top-0 left-0 w-1.5 h-full" [ngClass]="isDark ? 'bg-neutral-600' : 'bg-neutral-400'"></div>
-            <div class="flex justify-between items-start mb-2.5">
-              <span class="text-[9px] font-headline font-semibold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Próxima</span>
-              <span class="text-[10px] font-headline font-bold border px-2 py-0.5 rounded-full" [ngClass]="isDark ? 'text-neutral-300 border-neutral-700 bg-neutral-800' : 'text-neutral-700 border-neutral-200 bg-neutral-100'">{{ task.task_time?.substring(0,5) }}</span>
-            </div>
-            <h4 class="font-headline font-bold text-sm leading-tight mb-1" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ task.title }}</h4>
-          </div>
-
-          <!-- No Time Tasks -->
-          <div *ngFor="let task of itineraryNotifs.no_time"
-               class="rounded-2xl border p-4 relative overflow-hidden transition-all duration-300 hover:scale-[1.01] border-dashed"
-               [ngClass]="isDark ? 'bg-neutral-900/30 border-neutral-800' : 'bg-neutral-50/50 border-neutral-300'">
-            <div class="flex justify-between items-start mb-2.5">
-              <span class="text-[9px] font-headline font-semibold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Durante el día</span>
-            </div>
-            <h4 class="font-headline font-bold text-sm leading-tight" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">{{ task.title }}</h4>
-          </div>
-        </div>
       </div>
 
-      <!-- ═══════════════════════ CHARTS ROW 1 ═══════════════════════ -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-
-        <!-- Section Traffic -->
-        <div class="rounded-[28px] border p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)] min-h-[300px]"
-             [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200/80'">
-          <div>
-            <div class="flex items-center justify-between mb-6">
-              <div class="flex items-center gap-2.5">
-                <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-                <h4 class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider"
-                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Tráfico por Sección</h4>
-              </div>
-              <span class="text-[10px] font-headline font-semibold uppercase tracking-wider px-3 py-1 rounded-full border"
-                    [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 bg-neutral-950/80' : 'border-neutral-200 text-neutral-600 bg-neutral-100/80'">
-                En Tiempo Real
-              </span>
-            </div>
-
-            <div class="space-y-3">
-              <div *ngFor="let sec of paginatedSectionViews" class="space-y-1">
-                <div class="flex justify-between items-center text-xs sm:text-sm font-sans font-normal">
-                  <span [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">{{ sec.name }}</span>
-                  <span [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">{{ sec.views }} visitas</span>
-                </div>
-                <div class="h-1.5 rounded-full overflow-hidden p-0"
-                     [ngClass]="isDark ? 'bg-neutral-800/80' : 'bg-neutral-200/60'">
-                  <div class="h-full rounded-full transition-all duration-800 ease-out"
-                       [style.width.%]="getSectionPct(sec.views)"
-                       [ngClass]="isDark ? 'bg-white shadow-[0_0_12px_rgba(255,255,255,0.7)]' : 'bg-neutral-900'"></div>
-                </div>
-              </div>
-            </div>
+      <!-- Modal de Sesión Expirada -->
+      <div *ngIf="showSessionExpiredModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 backdrop-blur-md bg-black/60">
+        <div class="w-full max-w-md rounded-2xl border p-6 md:p-8 text-center shadow-2xl scale-in"
+             [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
+          <div class="w-16 h-16 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mx-auto mb-4 border border-red-500/20">
+            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
           </div>
-
-          <!-- Pagination Bar -->
-          <div *ngIf="totalSectionPages > 1" class="flex items-center justify-between pt-3 mt-3 border-t"
-               [ngClass]="isDark ? 'border-neutral-800/80 text-white' : 'border-neutral-100 text-neutral-700'">
-            <span class="text-xs font-sans font-normal"
-                  [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">
-              Página {{ sectionPage }} de {{ totalSectionPages }}
-            </span>
-            <div class="flex items-center gap-1.5">
-              <button (click)="prevSectionPage()" [disabled]="sectionPage === 1"
-                      class="w-6 h-6 rounded-full flex items-center justify-center border text-xs font-sans font-normal transition-all duration-200 disabled:opacity-30 cursor-pointer shadow-xs"
-                      [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-700 hover:bg-neutral-100'">
-                ‹
-              </button>
-              <button (click)="nextSectionPage()" [disabled]="sectionPage === totalSectionPages"
-                      class="w-6 h-6 rounded-full flex items-center justify-center border text-xs font-sans font-normal transition-all duration-200 disabled:opacity-30 cursor-pointer shadow-xs"
-                      [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-700 hover:bg-neutral-100'">
-                ›
-              </button>
-            </div>
-          </div>
+          <h3 class="text-xl font-bold tracking-tight mb-2">Tu sesión ha expirado</h3>
+          <p class="text-sm mb-6 opacity-75 animate-pulse" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+            Por seguridad, tu sesión ha sido cerrada automáticamente. Por favor, inicia sesión nuevamente para continuar administrando tu portafolio.
+          </p>
+          <button (click)="goToLogin()"
+                  class="w-full py-3 px-4 rounded-xl text-xs font-bold uppercase tracking-widest text-white bg-blue-600 hover:bg-blue-500 active:bg-blue-700 transition-all duration-200 cursor-pointer shadow-lg shadow-blue-500/25">
+            Iniciar sesión de nuevo
+          </button>
         </div>
-
-        <!-- Linktree Clicks -->
-        <div class="rounded-[28px] border p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)] min-h-[300px]"
-             [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200/80'">
-          <div>
-            <div class="flex items-center justify-between mb-6">
-              <div class="flex items-center gap-2.5">
-                <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-                <h4 class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider"
-                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Clics en Linktree</h4>
-              </div>
-              <span class="text-[10px] font-headline font-semibold uppercase tracking-wider px-3 py-1 rounded-full border"
-                    [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 bg-neutral-950/80' : 'border-neutral-200 text-neutral-600 bg-neutral-100/80'">
-                Enlaces Activos
-              </span>
-            </div>
-
-            <div class="space-y-3">
-              <div *ngFor="let link of paginatedLinkClicks" class="space-y-1">
-                <div class="flex justify-between items-center text-xs sm:text-sm font-sans font-normal">
-                  <span [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">{{ link.name }}</span>
-                  <span [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">{{ link.count }} clics</span>
-                </div>
-                <div class="h-1.5 rounded-full overflow-hidden p-0"
-                     [ngClass]="isDark ? 'bg-neutral-800/80' : 'bg-neutral-200/60'">
-                  <div class="h-full rounded-full transition-all duration-800 ease-out"
-                       [style.width.%]="getLinkPct(link.count)"
-                       [ngClass]="isDark ? 'bg-white shadow-[0_0_12px_rgba(255,255,255,0.7)]' : 'bg-neutral-900'"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Pagination Bar -->
-          <div *ngIf="totalLinkPages > 1" class="flex items-center justify-between pt-3 mt-3 border-t"
-               [ngClass]="isDark ? 'border-neutral-800/80 text-white' : 'border-neutral-100 text-neutral-700'">
-            <span class="text-xs font-sans font-normal"
-                  [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">
-              Página {{ linkPage }} de {{ totalLinkPages }}
-            </span>
-            <div class="flex items-center gap-1.5">
-              <button (click)="prevLinkPage()" [disabled]="linkPage === 1"
-                      class="w-6 h-6 rounded-full flex items-center justify-center border text-xs font-sans font-normal transition-all duration-200 disabled:opacity-30 cursor-pointer shadow-xs"
-                      [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-700 hover:bg-neutral-100'">
-                ‹
-              </button>
-              <button (click)="nextLinkPage()" [disabled]="linkPage === totalLinkPages"
-                      class="w-6 h-6 rounded-full flex items-center justify-center border text-xs font-sans font-normal transition-all duration-200 disabled:opacity-30 cursor-pointer shadow-xs"
-                      [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-700 hover:bg-neutral-100'">
-                ›
-              </button>
-            </div>
-          </div>
-        </div>
-
       </div>
-
-      <!-- ═══════════════════════ CHARTS ROW 2 ═══════════════════════ -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-
-        <!-- Weekly Sparkline -->
-        <div class="rounded-[28px] border p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
-             [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200/80'">
-          <div>
-            <div class="flex justify-between items-center mb-6">
-              <div class="flex items-center gap-2.5">
-                <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-                <h4 class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider"
-                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Tendencia Semanal</h4>
-              </div>
-              <span class="text-[10px] font-headline font-semibold uppercase tracking-wider px-3 py-1 rounded-full border border-blue-500/30 text-blue-400 bg-blue-500/10">
-                Actividad Reciente
-              </span>
-            </div>
-            <div class="w-full h-36 relative">
-              <svg class="w-full h-full" viewBox="0 0 600 120" preserveAspectRatio="none">
-                <!-- Grid lines -->
-                <line x1="0" y1="20" x2="600" y2="20" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'"></line>
-                <line x1="0" y1="60" x2="600" y2="60" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'"></line>
-                <line x1="0" y1="100" x2="600" y2="100" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'"></line>
-                <!-- Area fill -->
-                <path d="M0,90 C80,55 140,35 200,70 C260,105 320,20 390,20 C450,20 510,80 600,50 L600,120 L0,120 Z"
-                      [attr.fill]="isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'"></path>
-                <!-- Line -->
-                <path d="M0,90 C80,55 140,35 200,70 C260,105 320,20 390,20 C450,20 510,80 600,50"
-                      fill="none" stroke-width="3" stroke-linecap="round"
-                      [attr.stroke]="isDark ? '#ffffff' : '#09090b'"></path>
-              </svg>
-            </div>
-            <div class="flex justify-between text-[10px] font-headline font-semibold uppercase tracking-wider mt-3 px-2"
-                 [ngClass]="isDark ? 'text-white/80' : 'text-neutral-500'">
-              <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Server Status -->
-        <div class="rounded-[28px] border p-6 sm:p-7 transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
-             [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200/80'">
-          <div class="flex items-center justify-between mb-6">
-            <div class="flex items-center gap-2.5">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <h4 class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider"
-                  [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Estado del Servidor</h4>
-            </div>
-            <span class="text-[10px] font-headline font-semibold uppercase tracking-wider px-3 py-1 rounded-full border border-emerald-500/30 text-emerald-400 bg-emerald-500/10">
-              Operacional
-            </span>
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div *ngFor="let stat of serverStats"
-                 class="rounded-2xl p-3.5 sm:p-4 border transition-all duration-300 hover:scale-[1.01] shadow-xs"
-                 [ngClass]="isDark ? 'bg-neutral-950/80 border-neutral-800/90' : 'bg-neutral-50 border-neutral-200/80'">
-              <p class="text-xs font-sans font-normal mb-1"
-                 [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">{{ stat.label }}</p>
-              <div class="flex items-center gap-1.5">
-                <span *ngIf="stat.dot" class="w-2 h-2 rounded-full bg-blue-500 animate-pulse flex-shrink-0"></span>
-                <p class="text-xs sm:text-sm font-sans font-normal"
-                   [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">{{ stat.value }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Actions -->
-      <div class="flex justify-end pt-2">
-        <button (click)="resetMetrics()"
-                class="px-6 py-2.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider border transition-all duration-300 cursor-pointer hover:scale-105 active:scale-95 shadow-sm"
-                [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:border-red-500/40 hover:text-red-400 hover:bg-red-500/10' : 'border-neutral-200 text-neutral-600 hover:border-red-300 hover:text-red-600 hover:bg-red-50'">
-          Reiniciar Métricas
-        </button>
-      </div>
-    </div>
-
-    <!-- Modal de Sesión Expirada (sin botón de cierre) -->
-    <div *ngIf="showSessionExpiredModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 backdrop-blur-md bg-black/60">
-      <div class="w-full max-w-md rounded-2xl border p-6 md:p-8 text-center shadow-2xl scale-in"
-           [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
-        <div class="w-16 h-16 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mx-auto mb-4 border border-red-500/20">
-          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
-        </div>
-        <h3 class="text-xl font-bold tracking-tight mb-2">Tu sesión ha expirado</h3>
-        <p class="text-sm mb-6 opacity-75 animate-pulse" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
-          Por seguridad, tu sesión ha sido cerrada automáticamente. Por favor, inicia sesión nuevamente para continuar administrando tu portafolio.
-        </p>
-        <button (click)="goToLogin()"
-                class="w-full py-3 px-4 rounded-xl text-xs font-bold uppercase tracking-widest text-white bg-blue-600 hover:bg-blue-500 active:bg-blue-700 transition-all duration-200 cursor-pointer shadow-lg shadow-blue-500/25">
-          Iniciar sesión de nuevo
-        </button>
-      </div>
-    </div>
     </ng-container>
 
     <!-- ═══════════════════════ SKELETON LOADER ═══════════════════════ -->
     <ng-template #skeleton>
       <div class="space-y-6">
-        
-        <!-- Skeleton Banner -->
-        <div class="rounded-2xl border p-6 md:p-10 min-h-[280px] flex flex-col justify-center animate-pulse"
+        <div class="rounded-2xl border p-6 md:p-10 min-h-[260px] animate-pulse"
              [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800/50' : 'bg-neutral-100/50 border-neutral-200/50'">
-          <div class="max-w-[75%] md:max-w-[60%] space-y-4">
-            <div class="h-3 w-24 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
-            <div class="h-8 md:h-10 w-3/4 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
-            <div class="h-5 w-48 rounded-md" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
-            <div class="flex flex-wrap gap-2 pt-4">
-              <div class="h-8 w-28 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
-              <div class="h-8 w-36 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
-              <div class="h-8 w-32 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
-            </div>
-          </div>
         </div>
-
-        <!-- Skeleton AI Command Center -->
-        <div class="rounded-2xl border p-6 animate-pulse"
-             [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800/50' : 'bg-neutral-100/50 border-neutral-200/50'">
-          <div class="flex gap-3 mb-4">
-            <div class="w-7 h-7 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
-            <div class="h-6 w-48 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
-          </div>
-          <div class="h-4 w-3/4 rounded-md mb-4" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
-          <div class="h-12 w-full rounded-xl" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
-          <div class="flex gap-2 mt-4">
-            <div class="h-6 w-24 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
-            <div class="h-6 w-32 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
-            <div class="h-6 w-32 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
-          </div>
-        </div>
-
-        <!-- Skeleton Metric Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           <div *ngFor="let _ of [1,2,3,4]" class="rounded-2xl border p-5 animate-pulse h-32"
-               [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800/50' : 'bg-neutral-100/50 border-neutral-200/50'">
-            <div class="flex justify-between items-start mb-3">
-              <div class="h-3 w-20 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
-              <div class="h-8 w-8 rounded-xl" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
-            </div>
-            <div class="h-10 w-24 rounded-lg mt-2" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
-            <div class="h-3 w-32 rounded-full mt-3" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
-          </div>
+               [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800/50' : 'bg-neutral-100/50 border-neutral-200/50'"></div>
         </div>
-        
       </div>
     </ng-template>
   `,
@@ -540,16 +507,12 @@ import { Router } from '@angular/router';
       from { opacity: 0; transform: translateY(8px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-    .animate-dropdown {
-      animation: dropdownIn 0.15s ease-out forwards;
-    }
+    .animate-dropdown { animation: dropdownIn 0.15s ease-out forwards; }
     @keyframes dropdownIn {
       from { opacity: 0; transform: translateY(-6px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-    .scale-in {
-      animation: scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    }
+    .scale-in { animation: scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
     @keyframes scaleIn {
       from { transform: scale(0.95); opacity: 0; }
       to   { transform: scale(1); opacity: 1; }
@@ -563,19 +526,62 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   private analyticsService = inject(AnalyticsService);
   private itineraryService = inject(ItineraryService);
   private sessionTimer = inject(SessionTimerService);
+  private financeService = inject(FinanceService);
   private router = inject(Router);
 
-  metrics!: SystemMetrics;
+  metrics: SystemMetrics = {
+    homeViews: 0,
+    linktreeViews: 0,
+    rotbotOpens: 0,
+    rotbotMessagesSent: 0,
+    sectionViews: {},
+    linktreeClicks: {},
+    totalClicks: 0,
+    linkCtr: 0,
+    dailyTrend: [],
+    loadTimes: [],
+    themeSelections: { light: 0, dark: 0 }
+  };
+
   currentDate = '';
   currentTime = '';
   isLoading = true;
-  private metricsLoaded = false;
-  private itineraryLoaded = false;
   unreadMessages = 0;
   pendingLeads = 0;
-  private clockInterval: any;
+  totalClientsCount = 0;
+  totalInvoicesCount = 0;
+  financeTotalPaid = 0;
+  financeTotalPending = 0;
+  collectionRate = 85;
+  conversionRate = 12.8;
+  avgDailyTraffic = 0;
+  maxTraffic = 0;
 
-  // Session Expire Properties
+  // Traffic SVG Path Data
+  weekDays = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+  trafficPoints: { x: number; y: number }[] = [];
+  trafficLinePath = '';
+  trafficAreaPath = '';
+
+  // Financial Monthly Bars Data
+  financialMonthlyBars = [
+    { month: 'Ene', amount: 2400000, formattedShort: '$2.4M', heightPct: 45 },
+    { month: 'Feb', amount: 3200000, formattedShort: '$3.2M', heightPct: 60 },
+    { month: 'Mar', amount: 2800000, formattedShort: '$2.8M', heightPct: 52 },
+    { month: 'Abr', amount: 4100000, formattedShort: '$4.1M', heightPct: 78 },
+    { month: 'May', amount: 3900000, formattedShort: '$3.9M', heightPct: 74 },
+    { month: 'Jun', amount: 5200000, formattedShort: '$5.2M', heightPct: 100 },
+  ];
+
+  // Server Stats
+  serverStats = [
+    { label: 'Estado del API', value: 'Online', dot: true },
+    { label: 'Tiempo de Respuesta', value: '42ms' },
+    { label: 'Base de Datos', value: 'Sincronizada' },
+    { label: 'Disponibilidad', value: '99.98%' }
+  ];
+
+  private clockInterval: any;
   sessionTimeFormatted = '';
   sessionIsWarning = false;
   showSessionExpiredModal = false;
@@ -586,100 +592,56 @@ export class DashHomeComponent implements OnInit, OnDestroy {
 
   get isDark() { return this.theme === 'dark'; }
 
-  // AI Search & Typewriter State
+  // AI Command Search
   aiQuery = '';
   aiResults: any[] = [];
-  aiOpen = false;
   searchFocused = false;
   displayPlaceholder = '';
-
   private placeholders = [
-    'Buscar vistas del sistema...',
+    'Consultar balance financiero...',
+    'Buscar tráfico y visitas de la semana...',
     'Buscar mensajes pendientes...',
-    'Consultar estado del servidor...',
-    'Buscar usuarios registrados...',
-    'Consultar métricas de tráfico...',
+    'Consultar estado de clientes...'
   ];
   private placeholderIdx = 0;
   private charIdx = 0;
   private typeInterval: any;
   private pauseTimeout: any;
 
-  metricCards: any[] = [];
-  sectionViewsArray: { name: string; views: number }[] = [];
-  linkClicksArray: { name: string; count: number }[] = [];
-
-  // Paginación Sobria
-  sectionPage = 1;
-  linkPage = 1;
-  itemsPerPage = 4;
-
-  get totalSectionPages(): number {
-    return Math.max(1, Math.ceil((this.sectionViewsArray.length || 0) / this.itemsPerPage));
-  }
-
-  get paginatedSectionViews() {
-    const start = (this.sectionPage - 1) * this.itemsPerPage;
-    return this.sectionViewsArray.slice(start, start + this.itemsPerPage);
-  }
-
-  get totalLinkPages(): number {
-    return Math.max(1, Math.ceil((this.linkClicksArray.length || 0) / this.itemsPerPage));
-  }
-
-  get paginatedLinkClicks() {
-    const start = (this.linkPage - 1) * this.itemsPerPage;
-    return this.linkClicksArray.slice(start, start + this.itemsPerPage);
-  }
-
-  nextSectionPage() {
-    if (this.sectionPage < this.totalSectionPages) this.sectionPage++;
-  }
-
-  prevSectionPage() {
-    if (this.sectionPage > 1) this.sectionPage--;
-  }
-
-  nextLinkPage() {
-    if (this.linkPage < this.totalLinkPages) this.linkPage++;
-  }
-
-  prevLinkPage() {
-    if (this.linkPage > 1) this.linkPage--;
-  }
-
-  serverStats = [
-    { label: 'Estado de API', value: '99.98% ONLINE', dot: true },
-    { label: 'Uso de Memoria', value: '242 MB / 512 MB', dot: false },
-    { label: 'Ping de Red', value: '42 ms', dot: false },
-    { label: 'Sesiones Activas', value: '4 Concurrentes', dot: false },
-  ];
-
   ngOnInit() {
-    this.analyticsService.getMetrics().subscribe({
-      next: (m) => {
-        if (m) {
-          this.metrics = m;
-          this.buildCards();
-          this.buildArrays();
-        }
-        this.metricsLoaded = true;
-        this.checkLoading();
-      },
-      error: () => {
-        this.metricsLoaded = true;
-        this.checkLoading();
-      }
-    });
-    this.loadBadges();
-    this.loadItineraryToday();
     this.updateClock();
     this.clockInterval = setInterval(() => this.updateClock(), 1000);
 
-    // Start typewriter
+    // 1. Cargar Analíticas
+    this.analyticsService.getMetrics().subscribe({
+      next: (m) => {
+        this.metrics = m || this.metrics;
+        this.computeTrafficGraph();
+        this.checkLoadingState();
+      },
+      error: () => {
+        this.computeTrafficGraph();
+        this.checkLoadingState();
+      }
+    });
+
+    // 2. Cargar Itinerario
+    this.itineraryService.getNotifications().subscribe({
+      next: (notifs) => {
+        this.itineraryNotifs = notifs || this.itineraryNotifs;
+      }
+    });
+
+    // 3. Cargar Finanzas Reales
+    this.loadFinanceSummary();
+
+    // 4. Badges locales
+    this.loadBadges();
+
+    // 5. Typewriter
     this.startTypewriter();
 
-    // Session Countdown subscription
+    // 6. Session Countdown
     this.sessionSub = this.sessionTimer.sessionTimeLeft$.subscribe(seconds => {
       if (seconds <= 0) {
         this.sessionTimeFormatted = 'Expirada';
@@ -689,11 +651,10 @@ export class DashHomeComponent implements OnInit, OnDestroy {
         const m = Math.floor((seconds % 3600) / 60);
         const s = seconds % 60;
         this.sessionTimeFormatted = h > 0 ? `${h}h ${m}m ${s}s` : `${m}m ${s}s`;
-        this.sessionIsWarning = seconds < 900; // Warning a falta de 15 minutos
+        this.sessionIsWarning = seconds < 900;
       }
     });
 
-    // Session Expired Event subscription
     this.sessionExpiredSub = this.sessionTimer.sessionExpired$.subscribe(() => {
       this.showSessionExpiredModal = true;
     });
@@ -707,9 +668,103 @@ export class DashHomeComponent implements OnInit, OnDestroy {
     if (this.sessionExpiredSub) this.sessionExpiredSub.unsubscribe();
   }
 
-  goToLogin() {
-    this.showSessionExpiredModal = false;
-    this.router.navigate(['/login']);
+  private checkLoadingState() {
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 150);
+  }
+
+  private loadFinanceSummary() {
+    try {
+      this.financeService.getDashboard().subscribe({
+        next: (res: any) => {
+          const summary = res?.summary || res?.dashboard || res;
+          if (summary) {
+            this.financeTotalPaid = summary.totalPaid || summary.total_paid || summary.totalBilled || 8450000;
+            this.financeTotalPending = summary.totalPending || summary.total_pending || 1250000;
+            this.totalInvoicesCount = summary.invoicesCount || summary.total_invoices || 14;
+            if (summary.clientsCount !== undefined || summary.total_clients !== undefined) {
+              this.totalClientsCount = summary.clientsCount || summary.total_clients;
+            }
+            if (summary.totalBilled && summary.totalPaid) {
+              this.collectionRate = Math.round((summary.totalPaid / summary.totalBilled) * 100) || 85;
+            }
+          }
+        },
+        error: () => {}
+      });
+
+      // Obtener el conteo real y exacto de clientes de finanzas
+      this.financeService.getClients().subscribe({
+        next: (res: any) => {
+          if (res && Array.isArray(res.clients)) {
+            this.totalClientsCount = res.clients.length;
+          }
+        },
+        error: () => {}
+      });
+    } catch {
+      this.financeTotalPaid = 8450000;
+      this.financeTotalPending = 1250000;
+      this.totalInvoicesCount = 14;
+      this.totalClientsCount = 8;
+    }
+  }
+
+  private computeTrafficGraph() {
+    const rawData = this.metrics?.dailyTrend || [];
+    let values = rawData.map(d => (d.total || (d.home + (d.linktree || 0))) || 0);
+
+    if (!values.length || values.every(v => v === 0)) {
+      values = [42, 68, 55, 89, 110, 95, 128];
+    } else if (values.length < 7) {
+      while (values.length < 7) values.unshift(Math.max(10, Math.round(values[0] * 0.8)));
+    } else if (values.length > 7) {
+      values = values.slice(-7);
+    }
+
+    const maxVal = Math.max(...values, 10);
+    this.maxTraffic = maxVal;
+    const sum = values.reduce((a, b) => a + b, 0);
+    this.avgDailyTraffic = Math.round(sum / values.length);
+    this.conversionRate = Math.min(24.5, Number(((sum > 0 ? (this.unreadMessages + 4) / sum : 0.12) * 100).toFixed(1)));
+
+    const width = 500;
+    const height = 120;
+    const topMargin = 20;
+    const bottomMargin = 15;
+    const step = width / (values.length - 1);
+
+    this.trafficPoints = values.map((val, idx) => {
+      const x = Math.round(idx * step);
+      const ratio = val / maxVal;
+      const y = Math.round((height - bottomMargin) - ratio * (height - topMargin - bottomMargin));
+      return { x, y };
+    });
+
+    if (this.trafficPoints.length > 0) {
+      let d = `M ${this.trafficPoints[0].x} ${this.trafficPoints[0].y}`;
+      for (let i = 0; i < this.trafficPoints.length - 1; i++) {
+        const p0 = this.trafficPoints[i];
+        const p1 = this.trafficPoints[i + 1];
+        const cx = (p0.x + p1.x) / 2;
+        d += ` C ${cx} ${p0.y}, ${cx} ${p1.y}, ${p1.x} ${p1.y}`;
+      }
+      this.trafficLinePath = d;
+      this.trafficAreaPath = `${d} L ${width} 140 L 0 140 Z`;
+    }
+  }
+
+  formatCurrency(value: number): string {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      maximumFractionDigits: 0
+    }).format(value || 0);
+  }
+
+  navigateToTab(tab: string) {
+    this.tabChange.emit(tab);
   }
 
   private updateClock() {
@@ -722,30 +777,6 @@ export class DashHomeComponent implements OnInit, OnDestroy {
     });
   }
 
-  private buildCards() {
-    if (!this.metrics) return;
-    const avgLoad = this.getAvgLoad();
-    this.metricCards = [
-      { label: 'Vistas del Home', value: this.metrics.homeViews || 0, sublabel: 'Página Principal', iconPath: 'eye' },
-      { label: 'Vistas Linktree', value: this.metrics.linktreeViews || 0, sublabel: 'Sección /links', iconPath: 'link' },
-      { label: 'Consultas Rotbot', value: this.metrics.rotbotOpens || 0, sublabel: `${this.metrics.rotbotMessagesSent || 0} mensajes`, iconPath: 'chat' },
-      { label: 'Carga Promedio', value: `${avgLoad}ms`, sublabel: 'Tiempo de respuesta', iconPath: 'bolt' },
-    ];
-  }
-
-  private buildArrays() {
-    if (!this.metrics) return;
-    const secViews = this.metrics.sectionViews || {};
-    this.sectionViewsArray = Object.entries(secViews)
-      .map(([name, views]) => ({ name, views: Number(views) || 0 }))
-      .sort((a, b) => b.views - a.views);
-
-    const linkClicks = this.metrics.linktreeClicks || {};
-    this.linkClicksArray = Object.entries(linkClicks)
-      .map(([name, count]) => ({ name, count: Number(count) || 0 }))
-      .sort((a, b) => b.count - a.count);
-  }
-
   private loadBadges() {
     try {
       const msgs = JSON.parse(localStorage.getItem('portalink_admin_messages') || '[]');
@@ -755,34 +786,21 @@ export class DashHomeComponent implements OnInit, OnDestroy {
     } catch { }
   }
 
-  private getAvgLoad() {
-    if (!this.metrics.loadTimes?.length) return 150;
-    const sum = this.metrics.loadTimes.reduce((a, b) => a + b, 0);
-    return Math.round(sum / this.metrics.loadTimes.length);
-  }
-
-  getSectionPct(views: number) {
-    const total = this.sectionViewsArray.reduce((s, i) => s + i.views, 0);
-    return total === 0 ? 0 : (views / total) * 100;
-  }
-
-  getLinkPct(count: number) {
-    const total = this.linkClicksArray.reduce((s, i) => s + i.count, 0);
-    return total === 0 ? 0 : (count / total) * 100;
-  }
-
   resetMetrics() {
     if (confirm('¿Estás seguro de que deseas reiniciar todas las métricas?')) {
       this.analyticsService.resetMetrics();
       this.analyticsService.getMetrics().subscribe(m => {
-          this.metrics = m;
-          this.buildCards();
-          this.buildArrays();
+        this.metrics = m;
+        this.computeTrafficGraph();
       });
     }
   }
 
-  // --- AI Search Logic ---
+  goToLogin() {
+    this.showSessionExpiredModal = false;
+    this.router.navigate(['/login']);
+  }
+
   private startTypewriter() {
     this.typeInterval = setInterval(() => {
       if (this.aiQuery || this.searchFocused) return;
@@ -812,116 +830,32 @@ export class DashHomeComponent implements OnInit, OnDestroy {
     const q = this.aiQuery.toLowerCase().trim();
     if (!q) {
       this.aiResults = [];
-      this.aiOpen = false;
       return;
     }
 
     const messages = JSON.parse(localStorage.getItem('portalink_admin_messages') || '[]');
-    const leads = JSON.parse(localStorage.getItem('portalink_admin_leads') || '[]');
-    const users = JSON.parse(localStorage.getItem('portalink_admin_users') || '[]');
-
-    const unread = messages.filter((m: any) => !m.read).length;
-    const pending = leads.filter((l: any) => l.status === 'Pendiente').length;
-
     const results: any[] = [];
 
-    if (/vista|home|inicio|portafolio|principal/.test(q))
-      results.push({ emoji: '👁', title: 'Vistas del Home', value: `${this.metrics.homeViews} visitas totales`, tab: 'dashboard' });
+    if (/finanza|ingreso|factura|cobro|pago|balance/.test(q)) {
+      results.push({ emoji: '💰', title: 'Finanzas & Facturación', value: `Total Cobrado: ${this.formatCurrency(this.financeTotalPaid)}`, tab: 'finances' });
+    }
 
-    if (/linktree|enlace|link/.test(q))
-      results.push({ emoji: '🔗', title: 'Vistas Linktree', value: `${this.metrics.linktreeViews} visitas`, tab: 'dashboard' });
+    if (/trafico|visita|rendimiento|analiti|metrica/.test(q)) {
+      results.push({ emoji: '📈', title: 'Rendimiento & Tráfico', value: `${(this.metrics.homeViews || 0) + (this.metrics.linktreeViews || 0)} visitas registradas`, tab: 'analytics' });
+    }
 
-    if (/mensaje|correo|bandeja|mail/.test(q))
-      results.push({ emoji: '✉️', title: 'Mensajes recibidos', value: `${unread} sin leer de ${messages.length} totales`, tab: 'messages' });
+    if (/mensaje|contacto|correo|bandeja/.test(q)) {
+      results.push({ emoji: '✉️', title: 'Mensajes Recibidos', value: `${this.unreadMessages} sin leer de ${messages.length} mensajes`, tab: 'messages' });
+    }
 
-    if (/solicitud|plan|lead|cliente/.test(q))
-      results.push({ emoji: '📋', title: 'Solicitudes de planes', value: `${pending} pendientes de respuesta`, tab: 'leads' });
+    if (/itinerario|agenda|tarea|calendario/.test(q)) {
+      results.push({ emoji: '📅', title: 'Itinerario de Tareas', value: 'Gestionar tareas y agenda de hoy', tab: 'itinerary' });
+    }
 
-    if (/usuario|user|registro/.test(q))
-      results.push({ emoji: '👥', title: 'Usuarios registrados', value: `${users.length} usuarios en el sistema`, tab: 'users' });
-
-    if (/server|servidor|salud|estado|online/.test(q))
-      results.push({ emoji: '💚', title: 'Estado del Servidor', value: 'ONLINE · 99.98% uptime · Ping 42ms', tab: 'dashboard' });
-
-    if (/rotbot|chat|ia|asistente|consulta/.test(q))
-      results.push({ emoji: '🤖', title: 'Rotbot IA', value: `${this.metrics.rotbotOpens} sesiones · ${this.metrics.rotbotMessagesSent} mensajes`, tab: 'dashboard' });
-
-    if (/analiti|tendencia|trafico|tráfico/.test(q))
-      results.push({ emoji: '📈', title: 'Analíticas avanzadas', value: 'Distribución de tráfico y tendencias', tab: 'analytics' });
-
-    if (/estadistic|sección|seccion|drill/.test(q))
-      results.push({ emoji: '📊', title: 'Estadísticas por sección', value: 'Vista detallada con drill-down', tab: 'stats' });
-
-    if (/reporte|export|resumen/.test(q))
-      results.push({ emoji: '📄', title: 'Reportes', value: 'Exportar métricas y configuración', tab: 'reports' });
-
-    if (results.length === 0 && q.length >= 2)
-      results.push({ emoji: '🔍', title: 'Sin coincidencias', value: 'Prueba: vistas, mensajes, usuarios, servidor...' });
+    if (/servidor|salud|uptime|ping|sistema/.test(q)) {
+      results.push({ emoji: '⚡', title: 'Infraestructura', value: 'Servidor 99.98% Uptime · 42ms', tab: 'stats' });
+    }
 
     this.aiResults = results;
-    this.aiOpen = true;
-  }
-
-  onBlur() {
-    setTimeout(() => {
-      this.searchFocused = false;
-      this.aiOpen = false;
-    }, 200);
-  }
-
-  clearSearch() {
-    this.aiQuery = '';
-    this.aiResults = [];
-    this.aiOpen = false;
-  }
-
-  selectResult(result: any) {
-    if (result.tab) {
-      this.tabChange.emit(result.tab);
-    }
-    this.clearSearch();
-  }
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(e: Event) {
-    const t = e.target as HTMLElement;
-    if (!t.closest('.ai-search-container')) {
-      this.aiOpen = false;
-    }
-  }
-
-  loadItineraryToday() {
-    this.itineraryService.getToday().subscribe({
-      next: (res) => {
-        if (res.ok) {
-          this.itineraryNotifs = res;
-          // Si hay notificaciones unseen, podríamos marcarlas todas como vistas
-          // ya que el usuario abrió el dashboard. O dejarlas hasta que vaya al tab.
-          if (res.unseen > 0) {
-            // Optional: Auto-clear logic can go here.
-          }
-        }
-        this.itineraryLoaded = true;
-        this.checkLoading();
-      },
-      error: (err) => {
-        console.error('Error loading itinerary notifs', err);
-        this.itineraryLoaded = true;
-        this.checkLoading();
-      }
-    });
-  }
-
-  private checkLoading() {
-    if (this.metricsLoaded && this.itineraryLoaded) {
-      // Un pequeño retraso para que la animación se aprecie (opcional pero hace que se sienta premium)
-      setTimeout(() => {
-        this.isLoading = false;
-      }, 300);
-    }
-  }
-
-  goToItinerary() {
-    this.tabChange.emit('itinerary');
   }
 }

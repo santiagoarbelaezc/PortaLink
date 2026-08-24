@@ -9,6 +9,7 @@ const TAB_LABELS: Record<string, string> = {
   'financial-control': 'Control Financiero',
   finances: 'Finanzas',
   itinerary: 'Calendario',
+  library: 'Biblioteca',
   analytics: 'Analíticas',
   stats: 'Estadísticas',
   messages: 'Mensajes',
