@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { MessagesService } from '../../services/messages.service';
 import { AuthService } from '../../services/auth.service';
+import { CommandCenterService } from '../../services/command-center.service';
 
 // Dashboard Components
 import { DashAiSearchComponent } from '../../components/dashboard/dash-ai-search/dash-ai-search.component';
@@ -439,6 +440,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private messagesService = inject(MessagesService);
   private authService = inject(AuthService);
+  private commandCenterService = inject(CommandCenterService);
   private cdr = inject(ChangeDetectorRef);
 
   activeTab = 'dashboard';
@@ -506,6 +508,19 @@ export class AdminComponent implements OnInit, OnDestroy {
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem('portalink_admin_tab', id);
     }
+
+    try {
+      const tabObj = this.tabs.find(t => t.id === id);
+      const tabName = tabObj ? tabObj.name : id;
+      let prompt = `Ver ${tabName}`;
+      if (id === 'finances') prompt = 'Reporte de finanzas y pagos';
+      else if (id === 'library') prompt = 'Cuadernos y apuntes de biblioteca';
+      else if (id === 'itinerary') prompt = 'Agenda y tareas de hoy';
+      else if (id === 'analytics') prompt = 'Rendimiento y visitas';
+      else if (id === 'messages') prompt = 'Mensajes de contacto';
+
+      this.commandCenterService.logActivity(id, `Accedió a ${tabName}`, 'tab_view', null, prompt).subscribe({ error: () => {} });
+    } catch {}
     
     try {
       this.cdr.markForCheck();

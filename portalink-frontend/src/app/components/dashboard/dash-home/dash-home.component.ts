@@ -5,6 +5,8 @@ import { AnalyticsService, SystemMetrics } from '../../../services/analytics.ser
 import { ItineraryService } from '../../../services/itinerary.service';
 import { SessionTimerService } from '../../../services/session-timer.service';
 import { FinanceService } from '../../../services/finance.service';
+import { CommandCenterService, CommandCenterResponse, RadarResponse, RadarInsight, RecentAccess } from '../../../services/command-center.service';
+import { AudioRecorderService, RecordedAudio } from '../../../services/audio-recorder.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 
@@ -66,75 +68,389 @@ import { Router } from '@angular/router';
           </div>
         </div>
 
-        <!-- ═══════════════════════ 2. AI COMMAND CENTER ═══════════════════════ -->
-        <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-6 transition-all duration-300 relative overflow-hidden"
-             [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800' : 'bg-white border-neutral-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.03)]'">
+        <!-- ═══════════════════════ 2. CENTRO DE COMANDO IA (DISEÑO ORIGINAL ELEVADO) ═══════════════════════ -->
+        <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-6 md:p-7 transition-all duration-300 relative overflow-hidden space-y-4"
+             [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800 shadow-[0_10px_35px_rgba(0,0,0,0.4)]' : 'bg-white border-neutral-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.03)]'">
           
-          <div class="relative z-10 flex flex-col md:flex-row gap-3 xs:gap-4 sm:gap-6">
-            <div class="flex-1 space-y-2 xs:space-y-3">
-              <div class="flex items-center gap-2.5 xs:gap-3">
-                <img [src]="isDark ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" alt="AI Icon" class="w-6 h-6 xs:w-7 xs:h-7 object-contain">
-                <h3 class="text-base xs:text-lg sm:text-xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+          <!-- Header Clásico (Equilibrado & Elegante) -->
+          <div class="flex items-center justify-between flex-wrap gap-2.5">
+            <div class="flex items-center gap-2.5 xs:gap-3">
+              <img [src]="isDark ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" alt="AI Icon" class="w-7 h-7 sm:w-8 sm:h-8 object-contain shrink-0">
+              <div>
+                <h3 class="text-base xs:text-lg sm:text-xl font-headline font-bold tracking-tight m-0 leading-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
                   Centro de Comando IA
                 </h3>
+                <p class="text-[11px] xs:text-xs sm:text-[13px] font-sans text-neutral-400 dark:text-neutral-500 m-0 mt-0.5">
+                  Pregúntale a nuestro motor inteligente para analizar métricas, finanzas o navegar el dashboard
+                </p>
               </div>
-              
-              <p class="text-[11px] xs:text-xs sm:text-sm font-sans font-normal" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">
-                Pregúntale a nuestro motor inteligente para analizar métricas, finanzas o navegar el dashboard
-              </p>
-              
-              <div class="relative flex flex-col gap-2 pt-0.5 w-full">
-                <div class="flex flex-col sm:flex-row gap-2 xs:gap-3 w-full">
-                  <div class="relative flex-1 group ai-search-container">
-                    <span class="absolute inset-y-0 left-0 pl-3.5 xs:pl-4 flex items-center pointer-events-none transition-colors duration-300"
-                          [ngClass]="isDark ? 'text-neutral-500 group-focus-within:text-white' : 'text-neutral-400 group-focus-within:text-neutral-900'">
-                      <svg class="w-4 h-4 xs:w-5 xs:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                    </span>
-                    <input type="text"
-                           [(ngModel)]="aiQuery"
-                           (input)="onSearch()"
-                           (focus)="searchFocused = true; onSearch()"
-                           (blur)="searchFocused = false"
-                           [placeholder]="displayPlaceholder"
-                           class="w-full pl-9 xs:pl-11 pr-8 xs:pr-10 py-2.5 xs:py-3 rounded-xl sm:rounded-2xl border text-xs xs:text-sm transition-all duration-300 outline-none font-sans"
-                           [ngClass]="isDark ? 'bg-neutral-950/80 border-neutral-800 text-white focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500/20' : 'bg-neutral-50 border-neutral-200 text-neutral-900 focus:border-neutral-400 focus:bg-white focus:ring-1 focus:ring-neutral-400/20'">
-                    
-                    <button *ngIf="aiQuery" 
-                            (click)="aiQuery = ''; onSearch()"
-                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-200 cursor-pointer">
-                      <svg class="w-3.5 h-3.5 xs:w-4 xs:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Dropdown Results -->
-                <div *ngIf="aiResults.length > 0"
-                     class="w-full rounded-xl sm:rounded-2xl border p-1.5 xs:p-2 mt-1 shadow-2xl backdrop-blur-xl animate-dropdown max-h-[260px] overflow-y-auto"
-                     [ngClass]="isDark ? 'bg-neutral-950/95 border-neutral-800' : 'bg-white/95 border-neutral-200'">
-                  <div *ngFor="let item of aiResults"
-                       (click)="navigateToTab(item.tab)"
-                       class="p-2 xs:p-3 rounded-lg xs:rounded-xl flex items-center justify-between transition-all duration-200 cursor-pointer group"
-                       [ngClass]="isDark ? 'hover:bg-neutral-800/80 text-white' : 'hover:bg-neutral-100 text-neutral-900'">
-                    <div class="flex items-center gap-2.5">
-                      <span class="text-lg group-hover:scale-110 transition-transform">{{ item.emoji }}</span>
-                      <div>
-                        <h4 class="text-xs xs:text-sm font-semibold leading-tight">{{ item.title }}</h4>
-                        <p class="text-[10px] xs:text-[11px] opacity-60 leading-tight">{{ item.value }}</p>
-                      </div>
-                    </div>
-                    <span class="text-[11px] font-semibold text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                      Ver →
-                    </span>
-                  </div>
-                </div>
-              </div>
-
+            </div>
+            
+            <div class="flex items-center gap-2">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-headline font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                Gemini Flash
+              </span>
             </div>
           </div>
+
+          <!-- Barra de Búsqueda Principal (Equilibrada con Lupa Visible) -->
+          <div class="relative flex items-center w-full">
+            <div class="absolute inset-y-0 left-0 pl-3.5 sm:pl-4 flex items-center pointer-events-none z-10"
+                 [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+              <svg *ngIf="!isAiSearching" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <svg *ngIf="isAiSearching" class="animate-spin w-5 h-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </div>
+
+            <input type="text"
+                   [(ngModel)]="aiQuery"
+                   (keyup.enter)="askGeminiCommand()"
+                   [disabled]="isAiSearching"
+                   [placeholder]="isAiSearching ? 'Analizando el sistema con Gemini...' : displayPlaceholder"
+                   class="w-full pl-11 sm:pl-12 pr-32 sm:pr-40 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl border text-xs sm:text-sm transition-all duration-300 outline-none font-sans"
+                   [ngClass]="isDark ? 'bg-neutral-950/85 border-neutral-800 text-white focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600/20' : 'bg-neutral-50 border-neutral-200 text-neutral-900 focus:border-neutral-400 focus:bg-white focus:ring-1 focus:ring-neutral-400/20'">
+            
+            <div class="absolute right-1.5 sm:right-2 flex items-center gap-1">
+              <button *ngIf="aiQuery && !isAiSearching && !isVoiceRecording"
+                      (click)="aiQuery = ''; activeAiResponse = null;"
+                      class="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 cursor-pointer">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              <!-- Botón de Micrófono (Voz Universal con Gemini) -->
+              <button (click)="toggleVoiceInput()"
+                      [disabled]="isAiSearching || isAiVoiceProcessing"
+                      class="relative p-2 sm:p-2.5 rounded-xl transition-all duration-300 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                      [ngClass]="isVoiceRecording
+                        ? 'bg-red-500 text-white shadow-lg shadow-red-500/40 scale-110'
+                        : isAiVoiceProcessing
+                          ? 'bg-blue-500 text-white animate-pulse'
+                          : isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100'"
+                      [title]="isVoiceRecording ? 'Detener y procesar audio' : 'Activar comando de voz con Gemini'">
+                
+                <!-- Ondas de pulso concéntricas cuando graba -->
+                <span *ngIf="isVoiceRecording" class="absolute inset-0 rounded-xl animate-ping bg-red-500/40"></span>
+
+                <!-- Ícono de micrófono o spinner procesando -->
+                <svg *ngIf="!isAiVoiceProcessing" class="w-4 h-4 sm:w-4.5 sm:h-4.5 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                </svg>
+                <svg *ngIf="isAiVoiceProcessing" class="animate-spin w-4 h-4 sm:w-4.5 sm:h-4.5 text-white relative z-10" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </button>
+
+              <button (click)="askGeminiCommand()"
+                      [disabled]="isAiSearching || !aiQuery.trim() || isVoiceRecording || isAiVoiceProcessing"
+                      class="px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-headline font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-2xs active:scale-95"
+                      [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-neutral-800'">
+                {{ (isAiSearching || isAiVoiceProcessing) ? '...' : 'Preguntar' }}
+              </button>
+            </div>
+
+            <!-- Visualizador de Onda de Audio en Tiempo Real (Micrófono Activo) -->
+            <div *ngIf="isVoiceRecording" 
+                 class="absolute -bottom-8 left-0 right-0 flex items-center justify-center gap-2.5 animate-dropdown">
+              <div class="flex items-end gap-[3px] h-5 px-2 py-1 rounded-full bg-red-500/10 border border-red-500/20">
+                <span class="w-1 rounded-full bg-red-500 transition-all duration-75" [style.height.px]="getWaveBarHeight(0)"></span>
+                <span class="w-1 rounded-full bg-red-500 transition-all duration-75" [style.height.px]="getWaveBarHeight(1)"></span>
+                <span class="w-1 rounded-full bg-red-500 transition-all duration-75" [style.height.px]="getWaveBarHeight(2)"></span>
+                <span class="w-1 rounded-full bg-red-500 transition-all duration-75" [style.height.px]="getWaveBarHeight(3)"></span>
+                <span class="w-1 rounded-full bg-red-500 transition-all duration-75" [style.height.px]="getWaveBarHeight(4)"></span>
+              </div>
+              <span class="text-[10px] sm:text-[11px] font-headline font-semibold text-red-500 uppercase tracking-wider animate-pulse">
+                Escuchando audio... (habla o pulsa para enviar)
+              </span>
+            </div>
+
+            <!-- Indicador de Procesamiento IA del Audio -->
+            <div *ngIf="isAiVoiceProcessing" 
+                 class="absolute -bottom-8 left-0 right-0 flex items-center justify-center gap-2 animate-dropdown">
+              <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping"></span>
+              <span class="text-[10px] sm:text-[11px] font-headline font-semibold text-blue-500 dark:text-blue-400 uppercase tracking-wider">
+                Gemini interpretando tu audio...
+              </span>
+            </div>
+
+            <!-- Toast de Error de Voz -->
+            <div *ngIf="voiceErrorMessage"
+                 class="absolute -bottom-8 left-0 right-0 flex items-center justify-center animate-dropdown">
+              <span class="text-[10px] sm:text-[11px] font-sans text-amber-500 dark:text-amber-400 bg-amber-500/10 px-3 py-0.5 rounded-full border border-amber-500/20">
+                ⚠ {{ voiceErrorMessage }}
+              </span>
+            </div>
+          </div>
+
+          <!-- ══════ TARJETAS MONOCROMÁTICAS DE ACCESOS & MÓDULOS (ESTILO EJECUTIVO) ══════ -->
+          <div *ngIf="!activeAiResponse" class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 xs:gap-3 sm:gap-4 pt-1">
+            
+            <!-- Card 1: Finanzas -->
+            <div (click)="navigateToTab('finances')"
+                 class="group rounded-[18px] xs:rounded-[20px] sm:rounded-[22px] border p-3.5 xs:p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 hover:border-neutral-400 dark:hover:border-neutral-600 hover:shadow-md cursor-pointer active:scale-98"
+                 [ngClass]="isDark ? 'bg-neutral-950/70 border-neutral-800' : 'bg-white border-neutral-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.02)]'">
+              <div class="flex items-center justify-between">
+                <span class="text-[9px] xs:text-[10px] sm:text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 truncate">
+                  Finanzas & Cobros
+                </span>
+                <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shrink-0 border"
+                     [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
+                  <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+              <div class="mt-2.5 mb-1.5">
+                <h4 class="text-base xs:text-lg sm:text-xl font-headline font-bold tracking-tight m-0 leading-tight truncate"
+                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                  Finanzas
+                </h4>
+              </div>
+              <div class="flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400 dark:text-neutral-500 font-sans pt-1 border-t"
+                   [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+                <span class="truncate">Cartera & Facturación</span>
+                <span class="font-headline font-bold text-neutral-900 dark:text-white group-hover:translate-x-0.5 transition-transform ml-1">→</span>
+              </div>
+            </div>
+
+            <!-- Card 2: Biblioteca -->
+            <div (click)="navigateToTab('library')"
+                 class="group rounded-[18px] xs:rounded-[20px] sm:rounded-[22px] border p-3.5 xs:p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 hover:border-neutral-400 dark:hover:border-neutral-600 hover:shadow-md cursor-pointer active:scale-98"
+                 [ngClass]="isDark ? 'bg-neutral-950/70 border-neutral-800' : 'bg-white border-neutral-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.02)]'">
+              <div class="flex items-center justify-between">
+                <span class="text-[9px] xs:text-[10px] sm:text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 truncate">
+                  Biblioteca
+                </span>
+                <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shrink-0 border"
+                     [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
+                  <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                </div>
+              </div>
+              <div class="mt-2.5 mb-1.5">
+                <h4 class="text-base xs:text-lg sm:text-xl font-headline font-bold tracking-tight m-0 leading-tight truncate"
+                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                  Biblioteca
+                </h4>
+              </div>
+              <div class="flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400 dark:text-neutral-500 font-sans pt-1 border-t"
+                   [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+                <span class="truncate">Cuadernos & Apuntes</span>
+                <span class="font-headline font-bold text-neutral-900 dark:text-white group-hover:translate-x-0.5 transition-transform ml-1">→</span>
+              </div>
+            </div>
+
+            <!-- Card 3: Itinerario -->
+            <div (click)="navigateToTab('itinerary')"
+                 class="group rounded-[18px] xs:rounded-[20px] sm:rounded-[22px] border p-3.5 xs:p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 hover:border-neutral-400 dark:hover:border-neutral-600 hover:shadow-md cursor-pointer active:scale-98"
+                 [ngClass]="isDark ? 'bg-neutral-950/70 border-neutral-800' : 'bg-white border-neutral-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.02)]'">
+              <div class="flex items-center justify-between">
+                <span class="text-[9px] xs:text-[10px] sm:text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 truncate">
+                  Agenda & Tareas
+                </span>
+                <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shrink-0 border"
+                     [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
+                  <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+              </div>
+              <div class="mt-2.5 mb-1.5">
+                <h4 class="text-base xs:text-lg sm:text-xl font-headline font-bold tracking-tight m-0 leading-tight truncate"
+                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                  Itinerario
+                </h4>
+              </div>
+              <div class="flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400 dark:text-neutral-500 font-sans pt-1 border-t"
+                   [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+                <span class="truncate">Tareas & Calendario</span>
+                <span class="font-headline font-bold text-neutral-900 dark:text-white group-hover:translate-x-0.5 transition-transform ml-1">→</span>
+              </div>
+            </div>
+
+            <!-- Card 4: Analíticas -->
+            <div (click)="navigateToTab('analytics')"
+                 class="group rounded-[18px] xs:rounded-[20px] sm:rounded-[22px] border p-3.5 xs:p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 hover:border-neutral-400 dark:hover:border-neutral-600 hover:shadow-md cursor-pointer active:scale-98"
+                 [ngClass]="isDark ? 'bg-neutral-950/70 border-neutral-800' : 'bg-white border-neutral-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.02)]'">
+              <div class="flex items-center justify-between">
+                <span class="text-[9px] xs:text-[10px] sm:text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 truncate">
+                  Analíticas & Tráfico
+                </span>
+                <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shrink-0 border"
+                     [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
+                  <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+              </div>
+              <div class="mt-2.5 mb-1.5">
+                <h4 class="text-base xs:text-lg sm:text-xl font-headline font-bold tracking-tight m-0 leading-tight truncate"
+                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                  Analíticas
+                </h4>
+              </div>
+              <div class="flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400 dark:text-neutral-500 font-sans pt-1 border-t"
+                   [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+                <span class="truncate">Métricas & Visitas</span>
+                <span class="font-headline font-bold text-neutral-900 dark:text-white group-hover:translate-x-0.5 transition-transform ml-1">→</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ══════ RESPUESTA INTELIGENTE GEMINI (DISEÑO EJECUTIVO ELEVADO) ══════ -->
+          <div *ngIf="activeAiResponse"
+               class="rounded-[22px] sm:rounded-[26px] border p-4 sm:p-6 md:p-7 mt-2 animate-dropdown transition-all duration-300 shadow-xl space-y-4"
+               [ngClass]="isDark ? 'bg-neutral-950/95 border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900 shadow-[0_12px_45px_rgba(0,0,0,0.05)]'">
+            
+            <!-- Header de Respuesta -->
+            <div class="flex items-center justify-between gap-3 pb-3 border-b"
+                 [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shadow-xs border"
+                     [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-blue-400' : 'bg-neutral-100 border-neutral-200 text-neutral-900'">
+                  <svg class="w-4 h-4 sm:w-4.5 sm:h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <h5 class="text-xs sm:text-sm md:text-base font-headline font-bold m-0 leading-tight">
+                      Análisis de RotBot IA
+                    </h5>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-headline font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                      Gemini Flash
+                    </span>
+                  </div>
+                  <span class="text-[11px] opacity-50 block mt-0.5 font-sans">Consulta: "{{ activeAiResponse.query }}"</span>
+                </div>
+              </div>
+
+              <button (click)="activeAiResponse = null" 
+                      class="p-1.5 rounded-xl border transition-colors cursor-pointer"
+                      [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:bg-neutral-900 hover:text-white' : 'border-neutral-200 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900'"
+                      title="Cerrar análisis">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- 1. Resumen Ejecutivo (Callout Banner) -->
+            <div *ngIf="activeAiResponse.data.summary"
+                 class="rounded-xl border p-3.5 sm:p-4 flex items-start gap-3 border-l-4 border-l-blue-500 shadow-2xs"
+                 [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800/90' : 'bg-neutral-50/90 border-neutral-200/90'">
+              <div class="w-6 h-6 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0 mt-0.5">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+              </div>
+              <p class="text-xs sm:text-sm font-headline font-semibold leading-relaxed m-0"
+                 [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">
+                {{ activeAiResponse.data.summary }}
+              </p>
+            </div>
+
+            <!-- 2. Análisis Detallado de la IA -->
+            <div class="rounded-xl border p-3.5 sm:p-4 relative overflow-hidden"
+                 [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800/80 text-neutral-300' : 'bg-neutral-50/50 border-neutral-200/80 text-neutral-700'">
+              <div class="flex items-center gap-1.5 mb-2 text-[10px] sm:text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-500">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span>Evaluación de la Base de Datos</span>
+              </div>
+              <p class="text-xs sm:text-sm font-sans font-normal leading-relaxed m-0 whitespace-pre-line">
+                {{ activeAiResponse.data.analysis || activeAiResponse.data.reply }}
+              </p>
+            </div>
+
+            <!-- 3. Métricas Clave (si aplican) -->
+            <div *ngIf="activeAiResponse.data.metrics && activeAiResponse.data.metrics.length > 0"
+                 class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <div *ngFor="let m of activeAiResponse.data.metrics"
+                   class="rounded-xl border p-2.5 text-center shadow-2xs"
+                   [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800' : 'bg-white border-neutral-200'">
+                <span class="text-[10px] opacity-50 block uppercase font-headline font-semibold truncate">{{ m.label }}</span>
+                <span class="text-xs sm:text-sm font-headline font-bold truncate block mt-0.5"
+                      [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ m.value }}</span>
+              </div>
+            </div>
+
+            <!-- 4. Resultados Encontrados (Tarjetas Monocromáticas con Íconos Dedicados) -->
+            <div *ngIf="activeAiResponse.data.items && activeAiResponse.data.items.length > 0" class="space-y-2 pt-1">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] sm:text-[11px] font-headline font-bold uppercase tracking-wider opacity-60">
+                  Resultados Encontrados ({{ activeAiResponse.data.items.length }})
+                </span>
+                <span class="text-[10px] opacity-40 hidden sm:inline">Haz clic en una tarjeta para abrirla</span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div *ngFor="let item of activeAiResponse.data.items"
+                     (click)="navigateToTab(item.targetTab || activeAiResponse.data.targetTab)"
+                     class="group rounded-2xl border p-3 sm:p-3.5 flex items-center justify-between gap-3 transition-all duration-200 cursor-pointer hover:border-neutral-400 dark:hover:border-neutral-600 hover:shadow-md active:scale-98 shadow-2xs"
+                     [ngClass]="isDark ? 'bg-neutral-950/70 border-neutral-800' : 'bg-white border-neutral-200/90'">
+                  
+                  <div class="flex items-center gap-3 min-w-0">
+                    <!-- Icono según tipo de resultado -->
+                    <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border"
+                         [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="getItemIconPath(item)" />
+                      </svg>
+                    </div>
+
+                    <div class="min-w-0">
+                      <h6 class="text-xs sm:text-sm font-headline font-bold m-0 truncate leading-tight group-hover:text-blue-500 transition-colors"
+                          [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                        {{ item.title }}
+                      </h6>
+                      <p class="text-[10px] sm:text-[11px] opacity-60 m-0 truncate leading-tight mt-1 font-sans">
+                        {{ item.subtitle || item.details || 'Registro verificado' }}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-2 shrink-0">
+                    <span *ngIf="item.badge" 
+                          class="text-[9px] sm:text-[10px] font-headline font-semibold px-2 py-0.5 rounded-full border shadow-2xs"
+                          [ngClass]="getBadgeColorClass(item.badgeColor)">
+                      {{ item.badge }}
+                    </span>
+                    <span class="text-xs font-bold text-neutral-400 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all">
+                      →
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 5. Barra de Acción Principal / Redirección -->
+            <div class="flex items-center justify-between pt-3 border-t flex-wrap gap-2.5"
+                 [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+              <span class="text-[11px] opacity-50 font-sans">Acción recomendada:</span>
+              <button (click)="navigateToTab(activeAiResponse.data.targetTab)"
+                      class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-headline font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md hover:scale-102 active:scale-95"
+                      [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-neutral-800'">
+                <span>{{ activeAiResponse.data.actionText || 'Ver en el Módulo' }}</span>
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </button>
+            </div>
+
+          </div>
+
         </div>
 
         <!-- ═══════════════════════ 3. EXECUTIVE KPIS (2x2 GRID ON MOBILE) ═══════════════════════ -->
@@ -483,16 +799,109 @@ import { Router } from '@angular/router';
       </div>
     </ng-container>
 
-    <!-- ═══════════════════════ SKELETON LOADER ═══════════════════════ -->
+    <!-- ═══════════════════════ SKELETON LOADER (1:1 PIXEL-PERFECT MATCH) ═══════════════════════ -->
     <ng-template #skeleton>
-      <div class="space-y-4 xs:space-y-6">
-        <div class="rounded-2xl border p-4 xs:p-6 md:p-10 min-h-[200px] xs:min-h-[260px] animate-pulse"
-             [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800/50' : 'bg-neutral-100/50 border-neutral-200/50'">
+      <div class="space-y-4 xs:space-y-5 sm:space-y-6 animate-pulse font-sans">
+        
+        <!-- 1. Welcome Banner Skeleton -->
+        <div class="relative overflow-hidden rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-8 md:p-9 min-h-[190px] xs:min-h-[210px] sm:min-h-[250px] flex flex-col justify-center"
+             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800/80' : 'bg-white border-neutral-200/80'">
+          <div class="space-y-3 max-w-[65%]">
+            <div class="h-3 w-28 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+            <div class="h-7 sm:h-9 w-48 sm:w-72 rounded-xl" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+            <div class="h-3 w-40 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/70' : 'bg-neutral-200/70'"></div>
+            
+            <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap pt-2">
+              <div *ngFor="let _ of [1,2,3,4]" class="h-7 w-24 sm:w-28 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/80' : 'bg-neutral-200/80'"></div>
+            </div>
+          </div>
+          <div class="absolute right-4 top-1/2 -translate-y-1/2 hidden sm:block w-36 h-36 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/30' : 'bg-neutral-100'"></div>
         </div>
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 xs:gap-4">
-          <div *ngFor="let _ of [1,2,3,4]" class="rounded-2xl border p-4 animate-pulse h-28 xs:h-32"
-               [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800/50' : 'bg-neutral-100/50 border-neutral-200/50'"></div>
+
+        <!-- 2. AI Command Center Skeleton -->
+        <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-6 space-y-3"
+             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800/80' : 'bg-white border-neutral-200/80'">
+          <div class="flex items-center gap-3">
+            <div class="w-7 h-7 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+            <div class="h-5 w-44 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+          </div>
+          <div class="h-3 w-72 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/70' : 'bg-neutral-200/70'"></div>
+          <div class="h-11 sm:h-12 w-full rounded-xl sm:rounded-2xl" [ngClass]="isDark ? 'bg-neutral-950/80 border border-neutral-800' : 'bg-neutral-100 border border-neutral-200'"></div>
+          <div class="flex items-center gap-2 pt-1 flex-wrap">
+            <div class="h-3 w-16 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/60' : 'bg-neutral-200/60'"></div>
+            <div *ngFor="let _ of [1,2,3,4]" class="h-6 w-28 sm:w-36 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/70' : 'bg-neutral-200/70'"></div>
+          </div>
         </div>
+
+        <!-- 3. KPI Cards Skeleton (2x2 Mobile / 4 Desktop) -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 xs:gap-3 sm:gap-5">
+          <div *ngFor="let _ of [1,2,3,4]" 
+               class="rounded-[18px] xs:rounded-[20px] sm:rounded-[24px] border p-3.5 xs:p-4 sm:p-6 flex flex-col justify-between h-28 xs:h-32 sm:h-36"
+               [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800/80' : 'bg-white border-neutral-200/80'">
+            <div class="flex items-center justify-between">
+              <div class="h-3 w-16 sm:w-24 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+              <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+            </div>
+            <div class="space-y-1.5">
+              <div class="h-6 sm:h-8 w-20 sm:w-28 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+              <div class="h-2.5 w-24 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/60' : 'bg-neutral-200/60'"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. High-Performance Charts Skeleton -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 xs:gap-5">
+          <div *ngFor="let _ of [1,2]" 
+               class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 flex flex-col justify-between min-h-[320px] xs:min-h-[340px] sm:min-h-[360px]"
+               [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800/80' : 'bg-white border-neutral-200/80'">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="space-y-1.5">
+                  <div class="h-4 w-36 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+                  <div class="h-2.5 w-24 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/60' : 'bg-neutral-200/60'"></div>
+                </div>
+                <div class="h-6 w-20 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+              </div>
+              <div class="h-36 sm:h-44 w-full rounded-xl flex items-end justify-between p-2 gap-2" [ngClass]="isDark ? 'bg-neutral-950/40' : 'bg-neutral-50'">
+                <div *ngFor="let h of [30, 60, 45, 80, 70, 95]" class="flex-1 rounded-t-md" [style.height.%]="h" [ngClass]="isDark ? 'bg-neutral-800/60' : 'bg-neutral-200/60'"></div>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-2 pt-3 border-t" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+              <div *ngFor="let _ of [1,2,3]" class="space-y-1 text-center flex flex-col items-center">
+                <div class="h-2 w-12 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/60' : 'bg-neutral-200/60'"></div>
+                <div class="h-3.5 w-14 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Infrastructure & Agenda Skeleton -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 xs:gap-5">
+          <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 space-y-4"
+               [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800/80' : 'bg-white border-neutral-200/80'">
+            <div class="flex items-center justify-between">
+              <div class="h-4 w-32 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+              <div class="h-5 w-24 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+            </div>
+            <div class="grid grid-cols-2 gap-2.5">
+              <div *ngFor="let _ of [1,2,3,4]" class="h-16 rounded-xl sm:rounded-2xl p-3 border"
+                   [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800' : 'bg-neutral-50 border-neutral-200'"></div>
+            </div>
+          </div>
+
+          <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 space-y-4"
+               [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800/80' : 'bg-white border-neutral-200/80'">
+            <div class="flex items-center justify-between">
+              <div class="h-4 w-32 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+              <div class="h-5 w-20 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+            </div>
+            <div class="space-y-2">
+              <div *ngFor="let _ of [1,2]" class="h-11 rounded-lg sm:rounded-xl border p-2.5"
+                   [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800' : 'bg-neutral-50 border-neutral-200'"></div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </ng-template>
   `,
@@ -502,15 +911,25 @@ import { Router } from '@angular/router';
       from { opacity: 0; transform: translateY(8px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-    .animate-dropdown { animation: dropdownIn 0.15s ease-out forwards; }
+    .animate-dropdown { animation: dropdownIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     @keyframes dropdownIn {
-      from { opacity: 0; transform: translateY(-6px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(-8px) scale(0.99); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
     }
     .scale-in { animation: scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
     @keyframes scaleIn {
       from { transform: scale(0.95); opacity: 0; }
       to   { transform: scale(1); opacity: 1; }
+    }
+    .voice-wave span {
+      display: inline-block;
+      width: 3px;
+      border-radius: 3px;
+      animation: voiceWave 1.2s ease-in-out infinite;
+    }
+    @keyframes voiceWave {
+      0%, 100% { height: 6px; opacity: 0.4; }
+      50% { height: 18px; opacity: 1; }
     }
   `]
 })
@@ -522,6 +941,8 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   private itineraryService = inject(ItineraryService);
   private sessionTimer = inject(SessionTimerService);
   private financeService = inject(FinanceService);
+  private commandCenterService = inject(CommandCenterService);
+  private audioRecorder = inject(AudioRecorderService);
   private router = inject(Router);
 
   metrics: SystemMetrics = {
@@ -551,6 +972,42 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   conversionRate = 12.8;
   avgDailyTraffic = 0;
   maxTraffic = 0;
+
+  // Radar Proactivo State
+  radarData: RadarResponse | null = null;
+  isRadarLoading = false;
+
+  // AI Command Search State
+  aiQuery = '';
+  isAiSearching = false;
+  activeAiResponse: CommandCenterResponse | null = null;
+  displayPlaceholder = 'Pregúntale a Gemini o consulta finanzas, clientes, biblioteca...';
+
+  // Voice Recording & Multimodal AI State
+  isVoiceRecording = false;
+  isAiVoiceProcessing = false;
+  audioVolume = 0;
+  voiceErrorMessage = '';
+  private voiceSubs: Subscription[] = [];
+
+  quickSuggestions = [
+    'Dame los clientes actuales',
+    'Pagos pendientes en finanzas',
+    'Cuaderno de SQL en biblioteca',
+    'Agenda y tareas de hoy',
+    'Reporte de finanzas'
+  ];
+
+  private placeholders = [
+    'Consultar balance de cobro y pagos...',
+    'Buscar clientes activos...',
+    'Consultar notas de SQL en biblioteca...',
+    'Revisar agenda de hoy...'
+  ];
+  private placeholderIdx = 0;
+  private charIdx = 0;
+  private typeInterval: any;
+  private pauseTimeout: any;
 
   // Traffic SVG Path Data
   weekDays = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
@@ -587,27 +1044,14 @@ export class DashHomeComponent implements OnInit, OnDestroy {
 
   get isDark() { return this.theme === 'dark'; }
 
-  // AI Command Search
-  aiQuery = '';
-  aiResults: any[] = [];
-  searchFocused = false;
-  displayPlaceholder = '';
-  private placeholders = [
-    'Consultar balance financiero...',
-    'Buscar tráfico y visitas de la semana...',
-    'Buscar mensajes pendientes...',
-    'Consultar estado de clientes...'
-  ];
-  private placeholderIdx = 0;
-  private charIdx = 0;
-  private typeInterval: any;
-  private pauseTimeout: any;
-
   ngOnInit() {
     this.updateClock();
     this.clockInterval = setInterval(() => this.updateClock(), 1000);
 
-    // 1. Cargar Analíticas
+    // 1. Cargar Radar y Accesos Recientes
+    this.loadRadarData();
+
+    // 2. Cargar Analíticas
     this.analyticsService.getMetrics().subscribe({
       next: (m) => {
         this.metrics = m || this.metrics;
@@ -620,23 +1064,45 @@ export class DashHomeComponent implements OnInit, OnDestroy {
       }
     });
 
-    // 2. Cargar Itinerario
+    // 3. Cargar Itinerario
     this.itineraryService.getNotifications().subscribe({
       next: (notifs) => {
         this.itineraryNotifs = notifs || this.itineraryNotifs;
       }
     });
 
-    // 3. Cargar Finanzas Reales
+    // 4. Cargar Finanzas Reales
     this.loadFinanceSummary();
 
-    // 4. Badges locales
+    // 5. Badges locales
     this.loadBadges();
 
-    // 5. Typewriter
+    // 6. Sugerencias dinámicas
+    this.loadDynamicSuggestions();
+
+    // 7. Universal Voice Recording Setup
+    if (this.audioRecorder.isSupported) {
+      this.voiceSubs.push(
+        this.audioRecorder.isRecording$.subscribe(rec => {
+          this.isVoiceRecording = rec;
+        }),
+        this.audioRecorder.audioVolume$.subscribe(vol => {
+          this.audioVolume = vol;
+        }),
+        this.audioRecorder.recordedAudio$.subscribe(audio => {
+          this.processRecordedVoiceAudio(audio);
+        }),
+        this.audioRecorder.error$.subscribe(errMsg => {
+          this.voiceErrorMessage = errMsg;
+          setTimeout(() => this.voiceErrorMessage = '', 5000);
+        })
+      );
+    }
+
+    // 8. Typewriter
     this.startTypewriter();
 
-    // 6. Session Countdown
+    // 8. Session Countdown
     this.sessionSub = this.sessionTimer.sessionTimeLeft$.subscribe(seconds => {
       if (seconds <= 0) {
         this.sessionTimeFormatted = 'Expirada';
@@ -661,12 +1127,45 @@ export class DashHomeComponent implements OnInit, OnDestroy {
     clearTimeout(this.pauseTimeout);
     if (this.sessionSub) this.sessionSub.unsubscribe();
     if (this.sessionExpiredSub) this.sessionExpiredSub.unsubscribe();
+    this.voiceSubs.forEach(s => s.unsubscribe());
+    if (this.isVoiceRecording) this.audioRecorder.stopRecording();
   }
 
   private checkLoadingState() {
     setTimeout(() => {
       this.isLoading = false;
     }, 150);
+  }
+
+  loadRadarData() {
+    this.isRadarLoading = true;
+    this.commandCenterService.getRadar().subscribe({
+      next: (res) => {
+        this.isRadarLoading = false;
+        if (res && res.ok) {
+          this.radarData = res;
+        }
+      },
+      error: () => {
+        this.isRadarLoading = false;
+      }
+    });
+  }
+
+  loadDynamicSuggestions() {
+    this.commandCenterService.getSuggestions().subscribe({
+      next: (suggs) => {
+        if (suggs && suggs.length > 0) {
+          this.quickSuggestions = suggs;
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  selectSuggestion(prompt: string) {
+    this.aiQuery = prompt;
+    this.askGeminiCommand();
   }
 
   private loadFinanceSummary() {
@@ -689,7 +1188,6 @@ export class DashHomeComponent implements OnInit, OnDestroy {
         error: () => {}
       });
 
-      // Conteo exacto de clientes de finanzas
       this.financeService.getClients().subscribe({
         next: (res: any) => {
           if (res && Array.isArray(res.clients)) {
@@ -750,6 +1248,115 @@ export class DashHomeComponent implements OnInit, OnDestroy {
     }
   }
 
+  // ═══════════════ UNIVERSAL VOICE CAPTURE & GEMINI MULTIMODAL ═══════════════
+
+  toggleVoiceInput() {
+    if (this.isAiSearching || this.isAiVoiceProcessing) return;
+
+    if (this.isVoiceRecording) {
+      this.audioRecorder.stopRecording();
+    } else {
+      this.activeAiResponse = null;
+      this.voiceErrorMessage = '';
+      this.audioRecorder.startRecording();
+    }
+  }
+
+  getWaveBarHeight(index: number): number {
+    const base = 4;
+    const max = 22;
+    // Variación según el índice y el volumen actual capturado por el micrófono
+    const factors = [0.6, 0.9, 1.2, 0.8, 0.5];
+    const computed = base + (this.audioVolume / 100) * (max - base) * factors[index];
+    return Math.min(max, Math.max(base, Math.round(computed)));
+  }
+
+  private processRecordedVoiceAudio(audio: RecordedAudio) {
+    this.isAiVoiceProcessing = true;
+    this.voiceErrorMessage = '';
+
+    this.commandCenterService.queryVoiceAudio(audio.base64, audio.mimeType).subscribe({
+      next: (res) => {
+        this.isAiVoiceProcessing = false;
+
+        if (res && res.transcript) {
+          this.aiQuery = res.transcript;
+        }
+
+        // Si es navegación directa (ej: "biblioteca", "finanzas", "agenda")
+        if (res.intent === 'navigate' && res.targetTab && res.targetTab !== 'dashboard') {
+          this.navigateToTab(res.targetTab);
+        } else if (res.data) {
+          // Si es una consulta compleja con análisis o listado de registros
+          this.activeAiResponse = {
+            ok: true,
+            query: res.transcript || 'Comando de voz',
+            data: res.data
+          };
+          this.loadRadarData();
+          this.loadDynamicSuggestions();
+        }
+      },
+      error: () => {
+        this.isAiVoiceProcessing = false;
+        this.voiceErrorMessage = 'No se pudo interpretar el audio. Intenta de nuevo.';
+        setTimeout(() => this.voiceErrorMessage = '', 4000);
+      }
+    });
+  }
+
+  // ═══════════════ AI COMMAND EXECUTION ═══════════════
+
+  askGeminiCommand() {
+    const q = this.aiQuery.trim();
+    if (!q || this.isAiSearching) return;
+
+    this.isAiSearching = true;
+    this.activeAiResponse = null;
+
+    this.commandCenterService.query(q).subscribe({
+      next: (res) => {
+        this.isAiSearching = false;
+        if (res && res.data) {
+          this.activeAiResponse = res;
+          this.loadRadarData();
+          this.loadDynamicSuggestions();
+        }
+      },
+      error: () => {
+        this.isAiSearching = false;
+      }
+    });
+  }
+
+  getBadgeColorClass(color?: string): string {
+    switch (color) {
+      case 'emerald':
+        return 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20';
+      case 'blue':
+        return 'bg-blue-500/10 text-blue-500 border border-blue-500/20';
+      case 'amber':
+        return 'bg-amber-500/10 text-amber-500 border border-amber-500/20';
+      case 'purple':
+        return 'bg-purple-500/10 text-purple-400 border border-purple-500/20';
+      case 'red':
+        return 'bg-red-500/10 text-red-400 border border-red-500/20';
+      default:
+        return 'bg-neutral-500/10 text-neutral-400 border border-neutral-500/20';
+    }
+  }
+
+  getSectionDotColor(section: string): string {
+    switch (section) {
+      case 'finances': return 'bg-amber-500';
+      case 'library': return 'bg-purple-500';
+      case 'itinerary': return 'bg-blue-500';
+      case 'analytics': return 'bg-emerald-500';
+      case 'messages': return 'bg-cyan-400';
+      default: return 'bg-neutral-400';
+    }
+  }
+
   formatCurrency(value: number): string {
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
@@ -796,9 +1403,33 @@ export class DashHomeComponent implements OnInit, OnDestroy {
     this.router.navigate(['/login']);
   }
 
+  getItemIconPath(item: any): string {
+    const text = ((item?.title || '') + ' ' + (item?.subtitle || '') + ' ' + (item?.targetTab || '')).toLowerCase();
+    
+    if (text.includes('cliente') || text.includes('contacto') || text.includes('usuario') || text.includes('@') || item?.targetTab === 'users') {
+      return 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z';
+    }
+    if (text.includes('factura') || text.includes('pago') || text.includes('cop') || text.includes('cobro') || text.includes('ingreso') || item?.targetTab === 'finances') {
+      return 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z';
+    }
+    if (text.includes('cuaderno') || text.includes('apunte') || text.includes('sql') || text.includes('nota') || item?.targetTab === 'library') {
+      return 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253';
+    }
+    if (text.includes('tarea') || text.includes('agenda') || text.includes('itinerario') || item?.targetTab === 'itinerary') {
+      return 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z';
+    }
+    if (text.includes('mensaje') || text.includes('correo') || item?.targetTab === 'messages') {
+      return 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z';
+    }
+    if (text.includes('tráfico') || text.includes('visita') || item?.targetTab === 'analytics') {
+      return 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z';
+    }
+    return 'M13 10V3L4 14h7v7l9-11h-7z';
+  }
+
   private startTypewriter() {
     this.typeInterval = setInterval(() => {
-      if (this.aiQuery || this.searchFocused) return;
+      if (this.aiQuery || this.isAiSearching || this.activeAiResponse) return;
       const target = this.placeholders[this.placeholderIdx];
       if (this.charIdx < target.length) {
         this.displayPlaceholder = target.substring(0, this.charIdx + 1);
@@ -816,41 +1447,8 @@ export class DashHomeComponent implements OnInit, OnDestroy {
               this.startTypewriter();
             }
           }, 25);
-        }, 1800);
+        }, 2200);
       }
-    }, 65);
-  }
-
-  onSearch() {
-    const q = this.aiQuery.toLowerCase().trim();
-    if (!q) {
-      this.aiResults = [];
-      return;
-    }
-
-    const messages = JSON.parse(localStorage.getItem('portalink_admin_messages') || '[]');
-    const results: any[] = [];
-
-    if (/finanza|ingreso|factura|cobro|pago|balance/.test(q)) {
-      results.push({ emoji: '💰', title: 'Finanzas & Facturación', value: `Total Cobrado: ${this.formatCurrency(this.financeTotalPaid)}`, tab: 'finances' });
-    }
-
-    if (/trafico|visita|rendimiento|analiti|metrica/.test(q)) {
-      results.push({ emoji: '📈', title: 'Rendimiento & Tráfico', value: `${(this.metrics.homeViews || 0) + (this.metrics.linktreeViews || 0)} visitas registradas`, tab: 'analytics' });
-    }
-
-    if (/mensaje|contacto|correo|bandeja/.test(q)) {
-      results.push({ emoji: '✉️', title: 'Mensajes Recibidos', value: `${this.unreadMessages} sin leer de ${messages.length} mensajes`, tab: 'messages' });
-    }
-
-    if (/itinerario|agenda|tarea|calendario/.test(q)) {
-      results.push({ emoji: '📅', title: 'Itinerario de Tareas', value: 'Gestionar tareas y agenda de hoy', tab: 'itinerary' });
-    }
-
-    if (/servidor|salud|uptime|ping|sistema/.test(q)) {
-      results.push({ emoji: '⚡', title: 'Infraestructura', value: 'Servidor 99.98% Uptime · 42ms', tab: 'stats' });
-    }
-
-    this.aiResults = results;
+    }, 60);
   }
 }
