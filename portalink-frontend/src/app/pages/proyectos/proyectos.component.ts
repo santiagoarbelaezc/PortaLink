@@ -2,7 +2,6 @@ import { Component, inject, signal, OnInit, OnDestroy, effect, ViewChild, Elemen
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 
-import { HeroVideoComponent } from '../../components/hero-video/hero-video.component';
 import { HeroDesignComponent } from '../../components/hero-design/hero-design.component';
 import { AboutComponent } from '../../components/about/about.component';
 import { ContactComponent } from '../../components/contact/contact.component';
@@ -23,7 +22,6 @@ import * as AOS from 'aos';
   imports: [
     CommonModule,
     RouterModule,
-    HeroVideoComponent,
     HeroDesignComponent,
     AboutComponent,
     ContactComponent,

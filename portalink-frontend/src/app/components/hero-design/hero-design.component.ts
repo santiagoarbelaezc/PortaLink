@@ -9,7 +9,7 @@ import { ErpDiagramComponent } from '../erp-diagram/erp-diagram.component';
   imports: [CommonModule, RouterModule, ErpDiagramComponent],
   template: `
     <section id="hero" 
-             class="relative w-full flex flex-col items-center justify-center overflow-hidden bg-white text-neutral-900 pt-14 xs:pt-16 sm:pt-20 md:pt-24 pb-8 sm:pb-10 px-3 xs:px-4 sm:px-8 lg:px-16 select-none">
+             class="relative w-full flex flex-col items-center justify-center overflow-hidden bg-white text-neutral-900 pt-8 xs:pt-9 sm:pt-14 md:pt-20 pb-6 sm:pb-8 px-3 xs:px-4 sm:px-8 lg:px-16 select-none">
       
       <!-- Subtle Ambient Accent -->
       <div class="absolute inset-0 pointer-events-none z-0 overflow-hidden">
@@ -17,41 +17,46 @@ import { ErpDiagramComponent } from '../erp-diagram/erp-diagram.component';
       </div>
 
       <!-- Main Open Space (Tightened & Unified) -->
-      <div class="group relative z-10 w-full max-w-[1500px] mx-auto min-h-[560px] xs:min-h-[600px] sm:min-h-[680px] md:min-h-[640px] lg:min-h-[700px] flex items-center"
+      <div class="group relative z-10 w-full max-w-[1500px] mx-auto min-h-[640px] xs:min-h-[700px] sm:min-h-[760px] md:min-h-[640px] lg:min-h-[700px] flex items-center cursor-grab active:cursor-grabbing"
            (mouseenter)="pauseAutoplay()"
            (mouseleave)="resumeAutoplay()"
            (touchstart)="onTouchStart($event)"
-           (touchend)="onTouchEnd($event)">
+           (touchend)="onTouchEnd($event)"
+           (pointerdown)="onPointerDown($event)"
+           (pointerup)="onPointerUp($event)"
+           (wheel)="onWheel($event)">
 
         <!-- Slides -->
         <div *ngFor="let slide of slides; let i = index"
-             class="absolute inset-0 flex flex-col items-center justify-between md:justify-between gap-4 sm:gap-6 lg:gap-8 transition-all duration-700 ease-in-out"
+             class="absolute inset-0 flex flex-col items-center justify-between md:justify-between gap-1.5 xs:gap-2 sm:gap-6 lg:gap-8 transition-all duration-700 ease-in-out"
              [ngClass]="slide.isReversed ? 'md:flex-row-reverse' : 'md:flex-row'"
              [style.opacity]="activeSlide === i ? '1' : '0'"
              [style.transform]="activeSlide === i ? 'translateX(0) scale(1)' : (i > activeSlide ? 'translateX(20px) scale(0.99)' : 'translateX(-20px) scale(0.99)')"
              [style.pointerEvents]="activeSlide === i ? 'auto' : 'none'"
              [style.zIndex]="activeSlide === i ? '10' : '1'">
 
-          <!-- Content Column (Adaptive Mobile Centering / Desktop Directional) -->
-          <div class="w-full flex flex-col justify-center space-y-3 xs:space-y-3.5 sm:space-y-4 md:space-y-5 z-10 shrink-0 text-center md:text-left"
+          <!-- Content Column: Desktop flex wrapper / Mobile contents to allow exact ordering -->
+          <div class="contents md:flex md:flex-col md:justify-center md:space-y-4 lg:space-y-5 z-10 shrink-0 text-center md:text-left"
                [ngClass]="[
-                 slide.isMultiMobile ? 'md:w-[46%] lg:w-[44%]' : 'md:w-[40%] lg:w-[38%]',
-                 slide.isReversed ? 'items-center md:items-end md:text-right' : 'items-center md:items-start md:text-left'
+                 slide.isMultiMobile ? 'md:w-[46%] lg:w-[44%]' : (slide.projectId === 'erp-ecosystem' ? 'md:w-[32%] lg:w-[30%]' : 'md:w-[40%] lg:w-[38%]'),
+                 slide.isReversed ? 'md:items-end md:text-right' : 'md:items-start md:text-left'
                ]">
 
-            <!-- Editorial Headline (Matching Trabajos Realizados Style) -->
-            <h2 class="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-headline font-semibold tracking-tight leading-[1.08] text-[#0a0a0a] m-0"
+            <!-- 1. Editorial Headline (Higher Up on Mobile, Large Typography matching Trabajos Realizados) -->
+            <h2 class="order-1 md:order-none text-4xl xs:text-5xl sm:text-5xl lg:text-6xl font-headline font-semibold tracking-tight leading-[1.08] text-[#0a0a0a] m-0 text-center"
+                [ngClass]="slide.isReversed ? 'md:text-right' : 'md:text-left'"
                 style="color: #0a0a0a !important;">
               {{ slide.headline }}
             </h2>
 
-            <!-- Subtitle / Tagline (Responsive Scaling) -->
-            <p class="text-xs xs:text-sm sm:text-base lg:text-xl text-neutral-600 font-sans font-normal leading-relaxed max-w-xl m-0 px-1 xs:px-2 md:px-0">
+            <!-- 3. Subtitle / Tagline (Order 3 on Mobile, placed under images) -->
+            <p class="order-3 md:order-none text-xs xs:text-sm sm:text-base lg:text-xl text-neutral-600 font-sans font-normal leading-relaxed max-w-xl m-0 px-2 md:px-0 text-center"
+               [ngClass]="slide.isReversed ? 'md:text-right' : 'md:text-left'">
               {{ slide.subtext }}
             </p>
 
-            <!-- Action Buttons -->
-            <div class="pt-1.5 xs:pt-2 sm:pt-3 w-full">
+            <!-- 4. Action Buttons (Order 4 on Mobile, placed at the bottom) -->
+            <div class="order-4 md:order-none pt-1 xs:pt-2 sm:pt-3 w-full">
               
               <!-- Case A: Multiple Buttons (Slide 1) -->
               <div *ngIf="slide.buttons && slide.buttons.length > 0" 
@@ -110,15 +115,18 @@ import { ErpDiagramComponent } from '../erp-diagram/erp-diagram.component';
             </div>
           </div>
 
-          <!-- Right Showcase Visual Column (Perfect Mobile & Desktop Scaling) -->
-          <div class="w-full h-[250px] xs:h-[290px] sm:h-[400px] md:h-[600px] lg:h-[680px] relative flex items-center justify-center"
-               [ngClass]="slide.isMultiMobile ? 'md:w-[54%] lg:w-[56%]' : 'md:w-[60%] lg:w-[62%]'">
+          <!-- 2. Visual Showcase Column (Order 2 on Mobile, Enlarge Proportions) -->
+          <div class="order-2 md:order-none w-full relative flex items-center justify-center my-1 xs:my-2 md:my-0 px-1 xs:px-2 sm:px-0"
+               [ngClass]="[
+                 slide.isMultiMobile ? 'md:w-[54%] lg:w-[56%] h-[340px] xs:h-[400px] sm:h-[490px] md:h-[600px] lg:h-[680px]' : 
+                 (slide.projectId === 'erp-ecosystem' ? 'md:w-[68%] lg:w-[70%] h-auto md:h-[600px] lg:h-[680px]' : 'md:w-[60%] lg:w-[62%] h-[310px] xs:h-[370px] sm:h-[460px] md:h-[600px] lg:h-[680px]')
+               ]">
             
-            <!-- Case 1: Triple Stacked Mobile Mockups (Proportional Mobile Sizing) -->
-            <div *ngIf="slide.isMultiMobile" class="relative flex items-center justify-center w-full h-full">
+            <!-- Case 1: Triple Stacked Mobile Mockups (Upright / Straight Proportions) -->
+            <div *ngIf="slide.isMultiMobile" class="relative flex items-center justify-center w-full h-full overflow-visible">
               
-              <!-- Phone Screen 1 (Left / Back) -->
-              <div class="absolute z-10 w-[100px] xs:w-[120px] sm:w-[170px] md:w-[230px] lg:w-[255px] h-[205px] xs:h-[250px] sm:h-[350px] md:h-[490px] lg:h-[555px] rounded-[18px] xs:rounded-[22px] sm:rounded-[34px] overflow-hidden border border-neutral-200/80 shadow-md bg-white -translate-x-12 xs:-translate-x-15 sm:-translate-x-24 md:-translate-x-36 -translate-y-2 sm:-translate-y-5 scale-[0.93] transition-transform duration-500">
+              <!-- Phone Screen 1 (Left / Upright & Scaled) -->
+              <div class="absolute z-10 w-[130px] xs:w-[158px] sm:w-[205px] md:w-[235px] lg:w-[255px] h-[260px] xs:h-[315px] sm:h-[410px] md:h-[490px] lg:h-[555px] rounded-[22px] xs:rounded-[26px] sm:rounded-[34px] overflow-hidden border border-neutral-200/90 shadow-[0_12px_35px_rgba(0,0,0,0.12)] bg-white -translate-x-14 xs:-translate-x-18 sm:-translate-x-28 md:-translate-x-36 -translate-y-1 sm:-translate-y-3 scale-[0.93] transition-transform duration-500">
                 <img [src]="slide.mobileImages?.[1]" 
                      alt="Mockup Móvil Secundario"
                      class="w-full h-full object-cover object-top"
@@ -126,8 +134,8 @@ import { ErpDiagramComponent } from '../erp-diagram/erp-diagram.component';
                      decoding="async">
               </div>
 
-              <!-- Phone Screen 2 (Right / Back) -->
-              <div class="absolute z-20 w-[100px] xs:w-[120px] sm:w-[170px] md:w-[230px] lg:w-[255px] h-[205px] xs:h-[250px] sm:h-[350px] md:h-[490px] lg:h-[555px] rounded-[18px] xs:rounded-[22px] sm:rounded-[34px] overflow-hidden border border-neutral-200/80 shadow-lg bg-white translate-x-12 xs:translate-x-15 sm:translate-x-24 md:translate-x-36 -translate-y-1.5 sm:-translate-y-3 scale-[0.96] transition-transform duration-500">
+              <!-- Phone Screen 2 (Right / Upright & Scaled) -->
+              <div class="absolute z-20 w-[130px] xs:w-[158px] sm:w-[205px] md:w-[235px] lg:w-[255px] h-[260px] xs:h-[315px] sm:h-[410px] md:h-[490px] lg:h-[555px] rounded-[22px] xs:rounded-[26px] sm:rounded-[34px] overflow-hidden border border-neutral-200/90 shadow-[0_12px_35px_rgba(0,0,0,0.12)] bg-white translate-x-14 xs:translate-x-18 sm:translate-x-28 md:translate-x-36 -translate-y-1 sm:-translate-y-2 scale-[0.93] transition-transform duration-500">
                 <img [src]="slide.mobileImages?.[2]" 
                      alt="Mockup Móvil Métricas"
                      class="w-full h-full object-cover object-top"
@@ -136,7 +144,7 @@ import { ErpDiagramComponent } from '../erp-diagram/erp-diagram.component';
               </div>
 
               <!-- Phone Screen 3 (Center Hero Foreground - Largest & Tallest) -->
-              <div class="relative z-30 w-[108px] xs:w-[130px] sm:w-[185px] md:w-[240px] lg:w-[268px] h-[220px] xs:h-[270px] sm:h-[370px] md:h-[515px] lg:h-[580px] rounded-[20px] xs:rounded-[24px] sm:rounded-[36px] overflow-hidden border-2 border-neutral-300 shadow-[0_15px_35px_rgba(0,0,0,0.12)] sm:shadow-[0_22px_55px_rgba(0,0,0,0.15)] bg-white translate-y-1.5 sm:translate-y-4 transition-transform duration-500">
+              <div class="relative z-30 w-[145px] xs:w-[178px] sm:w-[225px] md:w-[250px] lg:w-[270px] h-[290px] xs:h-[355px] sm:h-[450px] md:h-[515px] lg:h-[580px] rounded-[24px] xs:rounded-[30px] sm:rounded-[36px] overflow-hidden border-2 border-neutral-300/90 shadow-[0_22px_55px_rgba(0,0,0,0.22)] bg-white translate-y-1.5 sm:translate-y-4 scale-100 transition-transform duration-500">
                 <img [src]="slide.mobileImages?.[0]" 
                      alt="Mockup Móvil Principal"
                      class="w-full h-full object-cover object-top"
@@ -151,11 +159,11 @@ import { ErpDiagramComponent } from '../erp-diagram/erp-diagram.component';
               <app-erp-diagram class="w-full"></app-erp-diagram>
             </div>
 
-            <!-- Case 3: Standard Desktop Showcase (Slide 4 - Sysmicon) -->
-            <div *ngIf="!slide.isMultiMobile && slide.projectId !== 'erp-ecosystem'" class="relative w-full h-full max-h-[250px] xs:max-h-[290px] sm:max-h-[400px] md:max-h-[680px] flex items-center justify-center group/img px-2 sm:px-0">
+            <!-- Case 3: Standard Desktop Showcase (Enlarged) -->
+            <div *ngIf="!slide.isMultiMobile && slide.projectId !== 'erp-ecosystem'" class="relative w-full h-full max-h-[310px] xs:max-h-[370px] sm:max-h-[460px] md:max-h-[680px] flex items-center justify-center group/img px-2 sm:px-0">
               <img [src]="slide.image" 
                    [alt]="slide.headline"
-                   class="w-full h-full max-h-[250px] xs:max-h-[290px] sm:max-h-[400px] md:max-h-[680px] object-contain object-center drop-shadow-xl md:drop-shadow-2xl transform transition-transform duration-700 hover:scale-[1.015]"
+                   class="w-full h-full max-h-[310px] xs:max-h-[370px] sm:max-h-[460px] md:max-h-[680px] object-contain object-center drop-shadow-xl md:drop-shadow-2xl transform transition-transform duration-700 hover:scale-[1.015]"
                    loading="lazy"
                    decoding="async">
             </div>
@@ -178,20 +186,20 @@ import { ErpDiagramComponent } from '../erp-diagram/erp-diagram.component';
 
       </div>
 
-      <!-- Pure Minimalist Borderless < and > Navigation Arrows (Hidden on small mobile for cleaner UX, visible sm+) -->
+      <!-- Pure Minimalist Borderless Navigation Arrows (Visible on Mobile & Desktop) -->
       <button (click)="prevSlide()" 
-              class="hidden sm:flex absolute left-1 sm:left-3 lg:left-5 top-1/2 -translate-y-1/2 z-30 p-2 border-none bg-transparent text-neutral-300 hover:text-neutral-700 items-center justify-center cursor-pointer transition-colors duration-300 focus:outline-none"
+              class="flex absolute left-0 xs:left-1 sm:left-3 lg:left-5 top-1/2 -translate-y-1/2 z-40 p-1.5 xs:p-2 border-none bg-transparent text-neutral-300 hover:text-neutral-800 active:text-neutral-950 items-center justify-center cursor-pointer transition-colors duration-300 focus:outline-none"
               aria-label="Anterior">
-        <svg class="w-8 h-8 sm:w-10 sm:h-10 lg:w-11 lg:h-11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M15 18l-6-6 6-6"/>
+        <svg class="w-6 xs:w-7 sm:w-9 lg:w-10 h-6 xs:h-7 sm:h-9 lg:h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 19l-7-7 7-7"/>
         </svg>
       </button>
 
       <button (click)="nextSlide()" 
-              class="hidden sm:flex absolute right-1 sm:right-3 lg:right-5 top-1/2 -translate-y-1/2 z-30 p-2 border-none bg-transparent text-neutral-300 hover:text-neutral-700 items-center justify-center cursor-pointer transition-colors duration-300 focus:outline-none"
+              class="flex absolute right-0 xs:right-1 sm:right-3 lg:right-5 top-1/2 -translate-y-1/2 z-40 p-1.5 xs:p-2 border-none bg-transparent text-neutral-300 hover:text-neutral-800 active:text-neutral-950 items-center justify-center cursor-pointer transition-colors duration-300 focus:outline-none"
               aria-label="Siguiente">
-        <svg class="w-8 h-8 sm:w-10 sm:h-10 lg:w-11 lg:h-11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 18l6-6-6-6"/>
+        <svg class="w-6 xs:w-7 sm:w-9 lg:w-10 h-6 xs:h-7 sm:h-9 lg:h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 5l7 7-7 7"/>
         </svg>
       </button>
 
@@ -212,15 +220,19 @@ export class HeroDesignComponent implements OnInit, OnDestroy {
 
   private touchStartX = 0;
   private touchEndX = 0;
+  private pointerStartX = 0;
+  private pointerEndX = 0;
+  private isPointerDown = false;
+  private lastWheelTime = 0;
 
   slides = [
     {
       projectId: 'portalink',
       isMultiMobile: true,
       isReversed: false,
-      badge: 'Portafolios & Marca Personal',
-      headline: 'Comienza tu marca personal',
-      subtext: 'Con inteligencia artificial integrada para potenciar tus ventas, automatizar la atención a tus clientes y posicionar tus proyectos con presencia digital de alto impacto.',
+      badge: 'Soluciones Digitales & IA',
+      headline: 'Digitaliza tu negocio o emprendimiento',
+      subtext: 'Con inteligencia artificial integrada para multiplicar tus ventas, automatizar la atención a tus clientes 24/7 y posicionar tu marca con plataformas web modernas, catálogos interactivos y aplicaciones móviles de alto impacto.',
       buttons: [
         { text: 'Proyectos realizados', link: '/prototipos', isRouter: true, isPrimary: false },
         { text: 'Contacto', link: '#contact', isRouter: false, isPrimary: false },
@@ -239,9 +251,28 @@ export class HeroDesignComponent implements OnInit, OnDestroy {
       badgeBorder: 'rgba(147, 51, 234, 0.35)'
     },
     {
-      projectId: 'erp-ecosystem',
+      projectId: 'erp-platform',
       isMultiMobile: false,
       isReversed: true,
+      badge: 'Software Empresarial & ERP',
+      headline: 'Software y plataformas para tu empresa',
+      subtext: 'Automatiza procesos, administra tus inventarios, ventas y finanzas con plataformas cloud escalables diseñadas para hacer crecer tu negocio.',
+      buttons: [
+        { text: 'Proyectos realizados', link: '/prototipos', isRouter: true, isPrimary: false },
+        { text: 'Contacto', link: '#contact', isRouter: false, isPrimary: false },
+        { text: 'Escríbeme ya', link: '#contact', isRouter: false, isPrimary: true }
+      ],
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/q_auto:eco,f_auto,w_1300/v1787585777/e_p-hero2_q31svn.png',
+      ctaText: 'Escríbenos ya',
+      link: '#contact',
+      badgeBg: 'rgba(37, 99, 235, 0.10)',
+      badgeColor: '#2563eb',
+      badgeBorder: 'rgba(37, 99, 235, 0.35)'
+    },
+    {
+      projectId: 'erp-ecosystem',
+      isMultiMobile: false,
+      isReversed: false,
       badge: 'ERP & Ecosistema Digital',
       headline: 'Sistema integral para tu negocio',
       subtext: 'Centraliza la gestión de tu empresa con ERP a medida, sincronización con tienda web, app móvil, facturación e inteligencia artificial.',
@@ -255,7 +286,7 @@ export class HeroDesignComponent implements OnInit, OnDestroy {
     {
       projectId: 'camascotas',
       isMultiMobile: true,
-      isReversed: false,
+      isReversed: true,
       badge: 'E-Commerce & Mobile App',
       headline: 'Obtén tu aplicación web y móvil',
       subtext: 'Diseñamos soluciones para tu negocio o emprendimiento con una aplicación web y móvil, panel administrativo con las secciones que necesites.',
@@ -274,16 +305,16 @@ export class HeroDesignComponent implements OnInit, OnDestroy {
     {
       projectId: 'sysmicon',
       isMultiMobile: false,
-      isReversed: true,
+      isReversed: false,
       badge: 'Plataformas Web & Software',
       headline: 'Digitaliza tu empresa y servicios',
       subtext: 'Desarrollamos plataformas web corporativas, sistemas de administración y software escalable adaptado a tus necesidades.',
-      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/q_auto:eco,f_auto,w_1200/v1787580641/sysmicon-hero1_ehlafz.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/q_auto:eco,f_auto,w_1300/v1787580641/sysmicon-hero1_ehlafz.png',
       ctaText: 'Escríbenos ya',
       link: '#contact',
-      badgeBg: 'rgba(217, 119, 6, 0.10)',
-      badgeColor: '#b45309',
-      badgeBorder: 'rgba(217, 119, 6, 0.35)'
+      badgeBg: 'rgba(16, 185, 129, 0.10)',
+      badgeColor: '#059669',
+      badgeBorder: 'rgba(16, 185, 129, 0.35)'
     }
   ];
 
@@ -305,14 +336,43 @@ export class HeroDesignComponent implements OnInit, OnDestroy {
   onTouchEnd(e: TouchEvent) {
     if (e.changedTouches && e.changedTouches.length > 0) {
       this.touchEndX = e.changedTouches[0].screenX;
-      this.handleSwipe();
+      this.handleSwipe(this.touchStartX, this.touchEndX);
       this.resumeAutoplay();
     }
   }
 
-  private handleSwipe() {
-    const diff = this.touchStartX - this.touchEndX;
-    if (Math.abs(diff) > 40) {
+  onPointerDown(e: PointerEvent) {
+    this.isPointerDown = true;
+    this.pointerStartX = e.clientX;
+    this.pauseAutoplay();
+  }
+
+  onPointerUp(e: PointerEvent) {
+    if (this.isPointerDown) {
+      this.isPointerDown = false;
+      this.pointerEndX = e.clientX;
+      this.handleSwipe(this.pointerStartX, this.pointerEndX);
+      this.resumeAutoplay();
+    }
+  }
+
+  onWheel(e: WheelEvent) {
+    if (Math.abs(e.deltaX) > 25) {
+      const now = Date.now();
+      if (now - this.lastWheelTime > 400) {
+        this.lastWheelTime = now;
+        if (e.deltaX > 0) {
+          this.nextSlide();
+        } else {
+          this.prevSlide();
+        }
+      }
+    }
+  }
+
+  private handleSwipe(startX: number, endX: number) {
+    const diff = startX - endX;
+    if (Math.abs(diff) > 35) {
       if (diff > 0) {
         this.nextSlide();
       } else {
@@ -366,4 +426,3 @@ export class HeroDesignComponent implements OnInit, OnDestroy {
     }
   }
 }
-
