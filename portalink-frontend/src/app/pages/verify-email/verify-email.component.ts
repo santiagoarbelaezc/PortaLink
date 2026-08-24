@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule, Router } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -8,53 +8,102 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="min-h-screen bg-[#0a0a0c] text-white flex flex-col items-center justify-center p-6 font-sans relative overflow-hidden">
-      <!-- Glow effect -->
-      <div class="absolute -top-40 -left-40 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="min-h-screen bg-white text-neutral-900 flex flex-col items-center justify-center p-6 font-sans relative overflow-hidden">
+      
+      <!-- Subtle Ambient Lighting Backdrop -->
+      <div class="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full blur-[140px] opacity-35 bg-neutral-200/70"></div>
+        <div class="absolute -bottom-32 right-1/4 w-[600px] h-[400px] rounded-full blur-[120px] opacity-25 bg-neutral-200/50"></div>
+      </div>
 
-      <div class="max-w-md w-full bg-[#121217] border border-neutral-800 rounded-2xl p-8 text-center shadow-2xl relative z-10">
-        <!-- Logo -->
-        <div class="flex items-center justify-center gap-2 mb-6">
-          <span class="text-xl font-black tracking-widest text-white uppercase">PORTALINK</span>
+      <!-- Main Card Container -->
+      <div class="max-w-md w-full bg-white/90 backdrop-blur-md border border-neutral-200/90 rounded-[28px] sm:rounded-[36px] p-8 sm:p-10 text-center shadow-[0_20px_50px_rgba(0,0,0,0.06)] relative z-10 transition-all duration-500">
+        
+        <!-- Header / Logo -->
+        <div class="flex flex-col items-center justify-center gap-1.5 mb-6">
+          <span class="text-xl sm:text-2xl font-black tracking-widest text-[#0a0a0a] uppercase font-headline">
+            PORTALINK
+          </span>
+          <span class="text-[10px] font-bold uppercase tracking-[0.22em] text-neutral-400">
+            Verificación de Cuenta
+          </span>
         </div>
 
         <!-- Estado: Cargando -->
-        <div *ngIf="status() === 'loading'" class="py-8">
-          <div class="w-12 h-12 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <h2 class="text-lg font-bold">Verificando tu cuenta...</h2>
-          <p class="text-xs text-neutral-400 mt-2">Por favor espera un momento mientras validamos tu enlace.</p>
+        <div *ngIf="status() === 'loading'" class="py-8 space-y-4">
+          <div class="w-12 h-12 border-3 border-neutral-900 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <h2 class="text-xl font-bold text-neutral-900 font-headline tracking-tight m-0">
+            Verificando tu cuenta...
+          </h2>
+          <p class="text-sm text-neutral-500 font-normal leading-relaxed max-w-xs mx-auto m-0">
+            Estamos validando tu enlace de seguridad. Esto solo tomará un momento.
+          </p>
         </div>
 
         <!-- Estado: Éxito -->
-        <div *ngIf="status() === 'success'" class="py-6">
-          <div class="w-16 h-16 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 flex items-center justify-center mx-auto mb-5 text-2xl">
-            ✓
+        <div *ngIf="status() === 'success'" class="py-4 space-y-4">
+          <div class="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-600 flex items-center justify-center mx-auto shadow-xs">
+            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+            </svg>
           </div>
-          <h2 class="text-xl font-black text-white">¡Cuenta Verificada!</h2>
-          <p class="text-sm text-neutral-400 mt-2 leading-relaxed">
-            {{ message() }}
+
+          <h2 class="text-2xl font-bold text-neutral-900 font-headline tracking-tight m-0">
+            ¡Cuenta Verificada!
+          </h2>
+          
+          <p class="text-sm text-neutral-600 font-normal leading-relaxed max-w-xs mx-auto m-0">
+            {{ message() || 'Tu dirección de correo electrónico ha sido confirmada con éxito. Ya puedes acceder a todas las funciones de tu cuenta.' }}
           </p>
-          <a routerLink="/login"
-             class="mt-8 block w-full py-3.5 rounded-xl bg-cyan-400 text-black font-bold text-xs uppercase tracking-wider hover:bg-cyan-300 transition-all shadow-lg shadow-cyan-400/20">
-            Ir a Iniciar Sesión
-          </a>
+
+          <div class="pt-4">
+            <a routerLink="/login"
+               class="inline-flex items-center justify-center gap-2.5 w-full py-3.5 px-6 rounded-full font-headline font-semibold text-xs uppercase tracking-wider shadow-sm hover:opacity-90 active:scale-[0.99] transition-all no-underline cursor-pointer"
+               style="background-color: #09090b !important; color: #ffffff !important;">
+              <span style="color: #ffffff !important; font-weight: 600;">Iniciar Sesión</span>
+              <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
+            </a>
+          </div>
         </div>
 
         <!-- Estado: Error -->
-        <div *ngIf="status() === 'error'" class="py-6">
-          <div class="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center mx-auto mb-5 text-2xl">
-            ✕
+        <div *ngIf="status() === 'error'" class="py-4 space-y-4">
+          <div class="w-16 h-16 rounded-full bg-rose-50 border border-rose-200/80 text-rose-600 flex items-center justify-center mx-auto shadow-xs">
+            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
           </div>
-          <h2 class="text-xl font-black text-white">No se pudo verificar</h2>
-          <p class="text-sm text-neutral-400 mt-2 leading-relaxed">
-            {{ message() }}
+
+          <h2 class="text-2xl font-bold text-neutral-900 font-headline tracking-tight m-0">
+            No se pudo verificar
+          </h2>
+
+          <p class="text-sm text-neutral-600 font-normal leading-relaxed max-w-xs mx-auto m-0">
+            {{ message() || 'El enlace de verificación es inválido o ha expirado.' }}
           </p>
-          <a routerLink="/login"
-             class="mt-8 block w-full py-3.5 rounded-xl border border-neutral-700 text-white font-bold text-xs uppercase tracking-wider hover:bg-neutral-800 transition-all">
-            Volver al Login
-          </a>
+
+          <div class="pt-4 flex flex-col gap-2.5">
+            <a routerLink="/login"
+               class="inline-flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-full font-headline font-semibold text-xs uppercase tracking-wider shadow-sm hover:opacity-90 active:scale-[0.99] transition-all no-underline cursor-pointer"
+               style="background-color: #09090b !important; color: #ffffff !important;">
+              <span style="color: #ffffff !important; font-weight: 600;">Ir al Inicio de Sesión</span>
+            </a>
+            <a routerLink="/"
+               class="inline-flex items-center justify-center gap-2 w-full py-3 px-6 rounded-full font-headline font-semibold text-xs uppercase tracking-wider text-neutral-700 hover:text-black bg-neutral-100 hover:bg-neutral-200 transition-all no-underline cursor-pointer">
+              <span>Volver a la Página Principal</span>
+            </a>
+          </div>
         </div>
+
       </div>
+
+      <!-- Bottom Footer Note -->
+      <p class="text-xs text-neutral-400 font-normal mt-6 relative z-10 text-center m-0">
+        © 2026 PortaLink. Todos los derechos reservados.
+      </p>
+
     </div>
   `
 })
