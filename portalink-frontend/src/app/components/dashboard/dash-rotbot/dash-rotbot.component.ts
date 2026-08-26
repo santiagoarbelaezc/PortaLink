@@ -488,14 +488,14 @@ export class DashRotbotComponent implements OnInit, OnDestroy {
   isVoiceRecording = false;
 
   userMessage = '';
-  selectedVoiceId = 'nPczCjzI2devNBz1zQrb';
+  selectedVoiceId = 'iP95p4xoKVk53GoZ742B';
   voices = this.robotService.voices;
 
   chatHistory: ChatEntry[] = [
     {
       id: 'welcome',
       sender: 'rotbot',
-      text: '¡Hola! ¿Qué tal todo? Aquí estoy listo para charlar de música, proyectos, responder preguntas o simplemente pasar el rato.',
+      text: 'Hola, qué tal. Pregúntame lo que necesites o cuéntame lo que quieras.',
       emotion: 'happy',
       time: 'Ahora'
     }
@@ -522,7 +522,7 @@ export class DashRotbotComponent implements OnInit, OnDestroy {
       {
         id: 'welcome_' + Date.now(),
         sender: 'rotbot',
-        text: '¡Memoria reiniciada! Pregúntame lo que desees sobre tus proyectos y métricas.',
+        text: 'Listo, conversación limpia. Cuéntame.',
         emotion: 'happy',
         time: 'Ahora'
       }
