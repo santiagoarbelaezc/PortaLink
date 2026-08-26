@@ -3,11 +3,17 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 
+export type RotbotMode = 'charla' | 'ensenanza' | 'escucha';
+
 export interface RobotChatResponse {
   ok: boolean;
   reply: string;
   emotion: 'happy' | 'neutral' | 'thinking' | 'surprised' | 'talking' | string;
   audio?: string | null;
+  phrase?: string | null;
+  phrase_audio?: string | null;
+  score?: number | null;
+  sources?: any[];
   error?: string;
 }
 
@@ -32,15 +38,26 @@ export class RobotChatService {
     { id: 'bIHbv24MWmeRgasZH58o', name: 'Will (Optimista & Relajado)', preview: 'Tono amigable y cálido' }
   ];
 
-  sendMessage(message: string, voiceId = 'iP95p4xoKVk53GoZ742B', history: { role: string; content: string }[] = []): Observable<RobotChatResponse> {
-    const payload = { message, voice_id: voiceId, history };
+  sendMessage(
+    message: string,
+    voiceId = 'iP95p4xoKVk53GoZ742B',
+    history: { role: string; content: string }[] = [],
+    mode: RotbotMode = 'charla',
+    phraseToEvaluate?: string
+  ): Observable<RobotChatResponse> {
+    const payload: any = { message, voice_id: voiceId, history, mode };
+    if (phraseToEvaluate) {
+      payload.phrase_to_evaluate = phraseToEvaluate;
+    }
 
     return this.http.post<RobotChatResponse>(this.apiUrl, payload).pipe(
       catchError(err => {
         console.warn('[RobotChatService] Backend error, using local reply:', err);
         return of({
           ok: true,
-          reply: 'Hubo un problema con la conexión, pero aquí sigo. Intenta de nuevo.',
+          reply: mode === 'charla' 
+            ? 'Connection hiccup, but I am still here! Try again.' 
+            : 'Hubo un problema con la conexión. Intenta de nuevo.',
           emotion: 'happy',
           audio: null
         });
