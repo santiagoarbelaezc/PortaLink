@@ -70,6 +70,87 @@ export class DashLibraryComponent implements OnInit {
   isPreviewMode = false;
   activeFilter: 'all' | 'favorites' | 'pinned' = 'all';
 
+  // ── Folder Filtering & Sorting Suite ──────────────────────────────────
+  folderSearchQuery: string = '';
+  folderFilterStatus: 'all' | 'with-notebooks' | 'empty' | 'with-notes' = 'all';
+  folderFilterColor: string = 'all';
+  folderSortBy: 'name-asc' | 'name-desc' | 'notebooks-desc' | 'pages-desc' | 'recent' | 'oldest' = 'name-asc';
+  folderViewLayout: 'grid' | 'list' = 'grid';
+
+  get displayedFolders(): NotebookFolder[] {
+    let list = [...this.folders];
+
+    // 1. Text search
+    if (this.folderSearchQuery.trim()) {
+      const q = this.folderSearchQuery.toLowerCase().trim();
+      list = list.filter(f => 
+        (f.name && f.name.toLowerCase().includes(q)) || 
+        (f.description && f.description.toLowerCase().includes(q))
+      );
+    }
+
+    // 2. Status filter
+    if (this.folderFilterStatus === 'with-notebooks') {
+      list = list.filter(f => (f.notebook_count || 0) > 0);
+    } else if (this.folderFilterStatus === 'empty') {
+      list = list.filter(f => (f.notebook_count || 0) === 0);
+    } else if (this.folderFilterStatus === 'with-notes') {
+      list = list.filter(f => (f.pages_count || 0) > 0);
+    }
+
+    // 3. Color filter
+    if (this.folderFilterColor !== 'all') {
+      list = list.filter(f => f.color?.toLowerCase() === this.folderFilterColor.toLowerCase());
+    }
+
+    // 4. Sorting
+    list.sort((a, b) => {
+      switch (this.folderSortBy) {
+        case 'name-asc':
+          return (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' });
+        case 'name-desc':
+          return (b.name || '').localeCompare(a.name || '', undefined, { sensitivity: 'base' });
+        case 'notebooks-desc':
+          return (b.notebook_count || 0) - (a.notebook_count || 0);
+        case 'pages-desc':
+          return (b.pages_count || 0) - (a.pages_count || 0);
+        case 'recent': {
+          const dateA = new Date(a.created_at || a.updated_at || 0).getTime();
+          const dateB = new Date(b.created_at || b.updated_at || 0).getTime();
+          return dateB - dateA;
+        }
+        case 'oldest': {
+          const dateA = new Date(a.created_at || a.updated_at || 0).getTime();
+          const dateB = new Date(b.created_at || b.updated_at || 0).getTime();
+          return dateA - dateB;
+        }
+        default:
+          return 0;
+      }
+    });
+
+    return list;
+  }
+
+  get availableFolderColors(): string[] {
+    const colors = new Set<string>();
+    for (const f of this.folders) {
+      if (f.color) colors.add(f.color.toLowerCase());
+    }
+    return Array.from(colors);
+  }
+
+  get isFolderFilterActive(): boolean {
+    return !!this.folderSearchQuery.trim() || this.folderFilterStatus !== 'all' || this.folderFilterColor !== 'all' || this.folderSortBy !== 'name-asc';
+  }
+
+  resetFolderFilters() {
+    this.folderSearchQuery = '';
+    this.folderFilterStatus = 'all';
+    this.folderFilterColor = 'all';
+    this.folderSortBy = 'name-asc';
+  }
+
   // Toast feedback
   toastMessage = '';
   toastType: 'success' | 'error' = 'success';
