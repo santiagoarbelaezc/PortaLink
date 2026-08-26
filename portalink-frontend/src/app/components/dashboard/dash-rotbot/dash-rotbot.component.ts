@@ -310,16 +310,22 @@ interface ChatEntry {
             
             <div class="relative flex items-center gap-2.5">
               
-              <!-- Voice Microphone Button -->
+              <!-- High-Visibility Microphone Action Button -->
               <button (click)="toggleVoiceInput()"
                       [disabled]="isProcessing || isSpeaking"
-                      class="p-3 rounded-xl border transition-all duration-300 cursor-pointer disabled:opacity-40"
+                      class="w-12 h-12 rounded-2xl border transition-all duration-300 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center shrink-0 relative group"
                       [ngClass]="isVoiceRecording 
-                        ? 'bg-red-500 text-white shadow-lg shadow-red-500/40 animate-pulse border-red-400' 
-                        : (isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white' : 'bg-white border-neutral-200 text-neutral-600 hover:text-black')"
+                        ? 'bg-gradient-to-tr from-rose-600 to-red-500 text-white shadow-[0_0_25px_rgba(244,63,94,0.65)] border-rose-400 scale-105' 
+                        : (isDark ? 'bg-neutral-900 border-neutral-700/80 text-cyan-400 hover:bg-neutral-800 hover:border-cyan-500/50 hover:text-cyan-300 shadow-sm' : 'bg-white border-neutral-300 text-neutral-800 hover:bg-neutral-50 hover:border-cyan-500 shadow-xs')"
                       [title]="isVoiceRecording ? 'Stop recording' : (currentMode === 'escucha' ? 'Speak the phrase' : 'Speak in English')">
-                <svg class="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                
+                <!-- Radar Ping Ripples while active -->
+                <span *ngIf="isVoiceRecording" class="absolute -inset-1 rounded-2xl bg-rose-500/40 animate-ping pointer-events-none"></span>
+                <span *ngIf="isVoiceRecording" class="absolute -inset-0.5 rounded-2xl bg-rose-400/30 animate-pulse pointer-events-none"></span>
+
+                <!-- Crisp SVG Microphone Vector Icon -->
+                <svg class="w-5 h-5 relative z-10 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15a3 3 0 003-3V4.5a3 3 0 00-6 0V12a3 3 0 003 3z" />
                 </svg>
               </button>
 
@@ -329,14 +335,14 @@ interface ChatEntry {
                      (keyup.enter)="send(userMessage)"
                      [disabled]="isProcessing || isSpeaking"
                      [placeholder]="getInputPlaceholder()"
-                     class="flex-1 px-4 py-3 rounded-xl border text-sm sm:text-base outline-none transition-all font-sans"
-                     [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white focus:border-cyan-400/60' : 'bg-white border-neutral-200 text-neutral-900 focus:border-cyan-500/60 shadow-2xs'" />
+                     class="flex-1 px-4 py-3 rounded-2xl border text-sm sm:text-base outline-none transition-all font-sans"
+                     [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 text-white focus:border-cyan-400/70 focus:ring-2 focus:ring-cyan-500/20' : 'bg-white border-neutral-300 text-neutral-900 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 shadow-xs'" />
 
               <!-- Send Button -->
               <button (click)="send(userMessage)"
                       [disabled]="isProcessing || isSpeaking || !userMessage.trim()"
-                      class="px-5 sm:px-6 py-3 rounded-xl font-headline font-bold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-md active:scale-95 flex items-center gap-1.5"
-                      [ngClass]="isDark ? 'bg-cyan-400 text-black hover:bg-cyan-300' : 'bg-neutral-900 text-white hover:bg-neutral-800'">
+                      class="px-5 sm:px-6 py-3 rounded-2xl font-headline font-bold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-md active:scale-95 flex items-center gap-1.5 shrink-0"
+                      [ngClass]="isDark ? 'bg-cyan-400 text-black hover:bg-cyan-300 hover:shadow-[0_0_20px_rgba(0,240,255,0.4)]' : 'bg-neutral-900 text-white hover:bg-neutral-800'">
                 <span>{{ isProcessing ? '...' : (currentMode === 'escucha' ? 'Evaluate' : 'Send') }}</span>
                 <svg *ngIf="!isProcessing" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
@@ -345,9 +351,31 @@ interface ChatEntry {
 
             </div>
 
-            <!-- Voice Recording Indicator -->
-            <div *ngIf="isVoiceRecording" class="flex items-center justify-center gap-2 mt-2.5 text-xs font-mono text-red-500 animate-pulse">
-              <span>● Listening to your microphone... {{ currentMode === 'escucha' ? 'repeat the phrase in English now' : 'speak now' }}</span>
+            <!-- Voice Recording Live Audio Visualizer Banner -->
+            <div *ngIf="isVoiceRecording" 
+                 class="mt-2.5 px-4 py-2.5 rounded-2xl border flex items-center justify-between shadow-lg transition-all animate-fadeIn"
+                 [ngClass]="isDark ? 'bg-rose-500/10 border-rose-500/30 text-rose-400' : 'bg-rose-50 border-rose-200 text-rose-700'">
+              
+              <div class="flex items-center gap-3">
+                <span class="relative flex h-3 w-3 shrink-0">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
+                </span>
+                <div class="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+                  <span class="text-xs font-headline font-bold uppercase tracking-wider">Listening to microphone...</span>
+                  <span class="text-[11px] opacity-80 font-sans hidden sm:inline">{{ currentMode === 'escucha' ? 'Repeat target sentence now' : 'Speak clearly in English' }}</span>
+                </div>
+              </div>
+
+              <!-- Dynamic 5-Bar Equalizer Animation -->
+              <div class="flex items-center gap-1 h-4 shrink-0">
+                <span class="w-1 bg-rose-500 rounded-full animate-mic-bar" style="animation-delay: 0.05s"></span>
+                <span class="w-1 bg-rose-500 rounded-full animate-mic-bar" style="animation-delay: 0.25s"></span>
+                <span class="w-1 bg-rose-500 rounded-full animate-mic-bar" style="animation-delay: 0.12s"></span>
+                <span class="w-1 bg-rose-500 rounded-full animate-mic-bar" style="animation-delay: 0.35s"></span>
+                <span class="w-1 bg-rose-500 rounded-full animate-mic-bar" style="animation-delay: 0.18s"></span>
+              </div>
+
             </div>
 
           </div>
@@ -437,6 +465,15 @@ interface ChatEntry {
     .animate-voice-bar {
       animation: voiceBar 0.45s ease-in-out infinite alternate;
     }
+
+    @keyframes micBar {
+      0%, 100% { height: 4px; }
+      50% { height: 16px; }
+    }
+
+    .animate-mic-bar {
+      animation: micBar 0.4s ease-in-out infinite alternate;
+    }
   `]
 })
 export class DashRotbotComponent implements OnInit, OnDestroy, OnChanges {
@@ -486,9 +523,84 @@ export class DashRotbotComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnInit() {
     this.refreshActiveStudyPlan();
+    const loaded = this.loadChatFromStorage(this.currentMode);
+    if (!loaded) {
+      this.initDefaultChat(this.currentMode);
+    }
     this.voiceSub = this.audioRecorder.recordedAudio$.subscribe(rec => {
       this.handleVoiceTranscript(rec);
     });
+  }
+
+  private saveChatToStorage() {
+    if (typeof localStorage === 'undefined') return;
+    try {
+      const toSave = this.chatHistory.map(entry => ({
+        id: entry.id,
+        sender: entry.sender,
+        text: entry.text,
+        emotion: entry.emotion,
+        phrase: entry.phrase,
+        score: entry.score,
+        time: entry.time
+      }));
+      localStorage.setItem(`rotbot_chat_${this.currentMode}`, JSON.stringify(toSave));
+    } catch (e) {
+      console.warn('[DashRotbot] Error saving chat to localStorage:', e);
+    }
+  }
+
+  private loadChatFromStorage(mode: RotbotMode): boolean {
+    if (typeof localStorage === 'undefined') return false;
+    try {
+      const raw = localStorage.getItem(`rotbot_chat_${mode}`);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this.chatHistory = parsed;
+          return true;
+        }
+      }
+    } catch (e) {
+      console.warn('[DashRotbot] Error loading chat from localStorage:', e);
+    }
+    return false;
+  }
+
+  private initDefaultChat(mode: RotbotMode) {
+    if (mode === 'charla') {
+      this.chatHistory = [
+        {
+          id: 'welcome_' + Date.now(),
+          sender: 'rotbot',
+          text: "Welcome to English Chat mode! I'll talk with you like a native friend. What's on your mind today?",
+          emotion: 'happy',
+          time: 'Just now'
+        }
+      ];
+    } else if (mode === 'ensenanza') {
+      this.chatHistory = [
+        {
+          id: 'welcome_' + Date.now(),
+          sender: 'rotbot',
+          text: 'Welcome to Grammar & Lesson mode! Ask me about grammar rules, vocabulary distinctions, verb tenses, idioms, or sentence structures.',
+          emotion: 'happy',
+          time: 'Just now'
+        }
+      ];
+    } else if (mode === 'escucha') {
+      this.chatHistory = [
+        {
+          id: 'welcome_' + Date.now(),
+          sender: 'rotbot',
+          text: 'Welcome to Listening & Pronunciation mode! I will give you practical English sentences to listen to and repeat via microphone. Let’s practice!',
+          emotion: 'happy',
+          time: 'Just now'
+        }
+      ];
+      this.requestNewListeningPhrase();
+    }
+    this.saveChatToStorage();
   }
 
   refreshActiveStudyPlan() {
@@ -546,42 +658,20 @@ export class DashRotbotComponent implements OnInit, OnDestroy, OnChanges {
     this.lastAudio = null;
     this.lastPhraseAudio = null;
 
-    if (mode === 'charla') {
-      this.chatHistory = [
-        {
-          id: 'welcome_' + Date.now(),
-          sender: 'rotbot',
-          text: "Welcome to English Chat mode! I'll talk with you like a native friend. What's on your mind today?",
-          emotion: 'happy',
-          time: 'Just now'
-        }
-      ];
-    } else if (mode === 'ensenanza') {
-      this.chatHistory = [
-        {
-          id: 'welcome_' + Date.now(),
-          sender: 'rotbot',
-          text: 'Welcome to Grammar & Lesson mode! Ask me about grammar rules, vocabulary distinctions, verb tenses, idioms, or sentence structures.',
-          emotion: 'happy',
-          time: 'Just now'
-        }
-      ];
-    } else if (mode === 'escucha') {
-      this.chatHistory = [
-        {
-          id: 'welcome_' + Date.now(),
-          sender: 'rotbot',
-          text: 'Welcome to Listening & Pronunciation mode! I will give you practical English sentences to listen to and repeat via microphone. Let’s practice!',
-          emotion: 'happy',
-          time: 'Just now'
-        }
-      ];
-      this.requestNewListeningPhrase();
+    const loaded = this.loadChatFromStorage(mode);
+    if (!loaded) {
+      this.initDefaultChat(mode);
     }
+    setTimeout(() => this.scrollToBottom(), 50);
   }
 
   clearChat() {
-    this.switchMode(this.currentMode, false);
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.removeItem(`rotbot_chat_${this.currentMode}`);
+      } catch {}
+    }
+    this.initDefaultChat(this.currentMode);
   }
 
   getInputPlaceholder(): string {
@@ -615,6 +705,7 @@ export class DashRotbotComponent implements OnInit, OnDestroy, OnChanges {
           audio: res.audio,
           time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
         });
+        this.saveChatToStorage();
         this.scrollToBottom();
 
         // Rotbot habla en voz alta su mensaje de instrucción/bienvenida automáticamente
@@ -644,6 +735,7 @@ export class DashRotbotComponent implements OnInit, OnDestroy, OnChanges {
       text,
       time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
     });
+    this.saveChatToStorage();
     this.scrollToBottom();
 
     // Construir historial reciente para memoria conversacional
@@ -684,6 +776,7 @@ export class DashRotbotComponent implements OnInit, OnDestroy, OnChanges {
           audio: res.audio,
           time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
         });
+        this.saveChatToStorage();
         this.scrollToBottom();
 
         // Reproducir voz si viene audio y no está silenciado
