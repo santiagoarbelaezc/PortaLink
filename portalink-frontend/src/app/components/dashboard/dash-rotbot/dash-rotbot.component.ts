@@ -1,10 +1,11 @@
-import { Component, Input, OnInit, OnDestroy, inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, OnChanges, SimpleChanges, inject, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RobotChatService, RobotChatResponse, RotbotMode } from '../../../services/robot-chat.service';
 import { AudioRecorderService, RecordedAudio } from '../../../services/audio-recorder.service';
 import { CommandCenterService } from '../../../services/command-center.service';
 import { Subscription } from 'rxjs';
+import { DashStudyPlanComponent } from './dash-study-plan.component';
 
 interface ChatEntry {
   id: string;
@@ -21,111 +22,22 @@ interface ChatEntry {
 @Component({
   selector: 'app-dash-rotbot',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DashStudyPlanComponent],
   template: `
-    <!-- Main Full-Level Container without page scroll -->
-    <div class="w-full flex flex-col gap-4 tab-enter font-sans lg:h-[calc(100vh-170px)] lg:min-h-[560px] lg:max-h-[760px]">
+    <!-- Main Cockpit Container (Full Width & Locked Scroll) -->
+    <div class="w-full h-full flex flex-col justify-center tab-enter font-sans min-h-0 my-auto">
 
-      <!-- ═══════════════════════ 1. TOP HEADER & MODE SELECTOR ═══════════════════════ -->
-      <div class="flex-shrink-0 relative overflow-hidden rounded-[22px] sm:rounded-[26px] border px-4 py-3 sm:px-6 sm:py-3.5 transition-all duration-300"
-           [ngClass]="isDark ? 'bg-[#090b10]/90 border-neutral-800 shadow-lg' : 'bg-white border-neutral-200/90 shadow-2xs'">
-        
-        <!-- Ambient Glow -->
-        <div class="absolute -right-16 -top-16 w-60 h-60 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none"></div>
+      <!-- ═══════════════════════ STUDY PLAN HUB VIEW ═══════════════════════ -->
+      <app-dash-study-plan
+        *ngIf="currentMode === 'study-plan'"
+        class="w-full h-full flex flex-col min-h-0"
+        [theme]="theme"
+        (switchMode)="switchMode($event)">
+      </app-dash-study-plan>
 
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
-          
-          <!-- Bot Identity Title -->
-          <div class="flex items-center gap-3.5">
-            <div class="w-11 h-11 rounded-2xl flex items-center justify-center bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 shadow-inner">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-              </svg>
-            </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <h1 class="text-base sm:text-lg font-headline font-bold tracking-tight"
-                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                  Rotbot English Coach
-                </h1>
-                <span class="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">
-                  AI Tutor
-                </span>
-              </div>
-              <p class="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
-                Your AI English Teacher & Practice Partner
-              </p>
-            </div>
-          </div>
-
-          <!-- Actions: Mode Selector Tabs & Audio Toggle -->
-          <div class="flex items-center gap-2.5 self-start md:self-auto flex-wrap">
-            
-            <!-- Mode Tabs -->
-            <div class="flex items-center gap-1 p-1 rounded-2xl border backdrop-blur-md"
-                 [ngClass]="isDark ? 'bg-neutral-950/80 border-neutral-800' : 'bg-neutral-100 border-neutral-200/90'">
-              
-              <!-- Chat Tab -->
-              <button (click)="switchMode('charla')"
-                      class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-2"
-                      [ngClass]="currentMode === 'charla'
-                        ? 'bg-cyan-500 text-black shadow-md shadow-cyan-500/25 font-bold'
-                        : (isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-900' : 'text-neutral-600 hover:text-black hover:bg-white')">
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                </svg>
-                <span>Chat</span>
-              </button>
-
-              <!-- Learn Tab -->
-              <button (click)="switchMode('ensenanza')"
-                      class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-2"
-                      [ngClass]="currentMode === 'ensenanza'
-                        ? 'bg-cyan-500 text-black shadow-md shadow-cyan-500/25 font-bold'
-                        : (isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-900' : 'text-neutral-600 hover:text-black hover:bg-white')">
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-                  <path d="M8 7h8"/>
-                  <path d="M8 11h6"/>
-                </svg>
-                <span>Learn</span>
-              </button>
-
-              <!-- Listening Tab -->
-              <button (click)="switchMode('escucha')"
-                      class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-2"
-                      [ngClass]="currentMode === 'escucha'
-                        ? 'bg-cyan-500 text-black shadow-md shadow-cyan-500/25 font-bold'
-                        : (isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-900' : 'text-neutral-600 hover:text-black hover:bg-white')">
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>
-                </svg>
-                <span>Listening</span>
-              </button>
-            </div>
-
-            <!-- Audio Mute/Unmute Toggle -->
-            <button (click)="toggleMute()"
-                    class="px-3.5 py-2 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center gap-2 text-xs sm:text-sm font-semibold"
-                    [ngClass]="isMuted 
-                      ? 'bg-red-500/10 border-red-500/30 text-red-500' 
-                      : (isDark ? 'bg-neutral-950/80 border-neutral-800 text-neutral-300 hover:text-white' : 'bg-neutral-100 border-neutral-200 text-neutral-700 hover:text-black')"
-                    [title]="isMuted ? 'Unmute audio' : 'Mute audio'">
-              <svg *ngIf="!isMuted" class="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.414 0-.75-.336-.75-.75V8.25c0-.414.336-.75.75-.75h2.24z" />
-              </svg>
-              <svg *ngIf="isMuted" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-1.5l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.414 0-.75-.336-.75-.75V8.25c0-.414.336-.75.75-.75h2.24z" />
-              </svg>
-              <span>{{ isMuted ? 'Muted' : 'Voice Active' }}</span>
-            </button>
-
-          </div>
-        </div>
-      </div>
-
-      <!-- ═══════════════════════ 2. SAME-LEVEL 2-COLUMN GRID ═══════════════════════ -->
-      <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch min-h-0 overflow-hidden">
+      <!-- ═══════════════════════ 2-COLUMN ROTBOT COCKPIT (CHAT / LEARN / LISTENING) ═══════════════════════ -->
+      <div *ngIf="currentMode !== 'study-plan'"
+           class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-stretch min-h-0 h-full w-full overflow-hidden">
 
         <!-- ─────────── LEFT COLUMN: LARGER 3D ROTBOT HEAD STAGE (Col 5) ─────────── -->
         <div class="lg:col-span-5 h-full flex flex-col justify-center items-center rounded-[24px] sm:rounded-[28px] border overflow-hidden transition-all duration-300 shadow-xl relative"
@@ -138,7 +50,7 @@ interface ChatEntry {
           <div class="w-full h-full relative flex items-center justify-center p-6 min-h-0 overflow-hidden select-none">
             
             <!-- Head Container with Scaled Dimensions -->
-            <div class="relative w-full max-w-[340px] sm:max-w-[420px] lg:max-w-[460px] aspect-square flex items-center justify-center my-auto">
+            <div class="relative w-full max-w-[340px] sm:max-w-[420px] md:max-w-[480px] lg:max-w-[520px] xl:max-w-[560px] aspect-square flex items-center justify-center my-auto">
               
               <!-- 1. The Official 3D Rotbot Head Image -->
               <img src="https://res.cloudinary.com/doxdjiyvi/image/upload/v1787626350/rotbot-img_j54b0d.png" 
@@ -239,6 +151,20 @@ interface ChatEntry {
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
               <span>Reset</span>
+            </button>
+          </div>
+
+          <!-- 📌 ACTIVE STUDY PLAN BANNER -->
+          <div *ngIf="isStudyPlanActive && studyPlanText.trim()" 
+               class="mx-4 sm:mx-5 mt-3 px-3.5 py-2 rounded-xl border flex items-center justify-between text-xs transition-all shadow-xs"
+               [ngClass]="isDark ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300' : 'bg-cyan-50 border-cyan-200 text-cyan-900'">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shrink-0"></span>
+              <span class="font-bold truncate">Daily Plan Grounded:</span>
+              <span class="truncate opacity-80 font-mono text-[11px]">{{ getStudyPlanPreview() }}</span>
+            </div>
+            <button (click)="switchMode('study-plan')" class="underline hover:text-cyan-400 font-bold shrink-0 cursor-pointer ml-2">
+              Manage Plans
             </button>
           </div>
 
@@ -513,8 +439,14 @@ interface ChatEntry {
     }
   `]
 })
-export class DashRotbotComponent implements OnInit, OnDestroy {
+export class DashRotbotComponent implements OnInit, OnDestroy, OnChanges {
   @Input() theme = 'dark';
+  @Input() currentMode: RotbotMode = 'charla';
+  @Output() currentModeChange = new EventEmitter<RotbotMode>();
+  @Input() isMuted = false;
+  @Output() isMutedChange = new EventEmitter<boolean>();
+  @Input() isStudyPlanActive = false;
+  @Output() isStudyPlanActiveChange = new EventEmitter<boolean>();
 
   private robotService = inject(RobotChatService);
   private audioRecorder = inject(AudioRecorderService);
@@ -525,18 +457,17 @@ export class DashRotbotComponent implements OnInit, OnDestroy {
   currentEmotion: string = 'happy';
   isSpeaking = false;
   isProcessing = false;
-  isMuted = false;
   isVoiceRecording = false;
 
-  currentMode: RotbotMode = 'charla';
   currentPhrase: string = '';
   lastScore: number | null = null;
   lastAudio: string | null = null;
   lastPhraseAudio: string | null = null;
 
+  studyPlanText = '';
+
   userMessage = '';
   selectedVoiceId = 'iP95p4xoKVk53GoZ742B';
-  voices = this.robotService.voices;
 
   chatHistory: ChatEntry[] = [
     {
@@ -554,9 +485,40 @@ export class DashRotbotComponent implements OnInit, OnDestroy {
   get isDark() { return this.theme === 'dark'; }
 
   ngOnInit() {
+    this.refreshActiveStudyPlan();
     this.voiceSub = this.audioRecorder.recordedAudio$.subscribe(rec => {
       this.handleVoiceTranscript(rec);
     });
+  }
+
+  refreshActiveStudyPlan() {
+    this.robotService.fetchActiveMaterial().subscribe({
+      next: (res: any) => {
+        const mat = res?.data || res;
+        if (mat && mat.content) {
+          this.robotService.setCachedActive(mat);
+          this.studyPlanText = mat.content;
+          this.isStudyPlanActive = true;
+        } else {
+          this.robotService.setCachedActive(null);
+          this.studyPlanText = '';
+          this.isStudyPlanActive = false;
+        }
+        this.isStudyPlanActiveChange.emit(this.isStudyPlanActive);
+      },
+      error: () => {
+        const plan = this.robotService.getStudyPlan();
+        this.studyPlanText = plan.text;
+        this.isStudyPlanActive = plan.active && plan.text.trim().length > 0;
+        this.isStudyPlanActiveChange.emit(this.isStudyPlanActive);
+      }
+    });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['currentMode'] && !changes['currentMode'].firstChange) {
+      this.switchMode(this.currentMode, false);
+    }
   }
 
   ngOnDestroy() {
@@ -564,9 +526,20 @@ export class DashRotbotComponent implements OnInit, OnDestroy {
     if (this.voiceSub) this.voiceSub.unsubscribe();
   }
 
-  switchMode(mode: RotbotMode) {
-    if (this.currentMode === mode) return;
+  getStudyPlanPreview(): string {
+    if (!this.studyPlanText) return '';
+    const firstLine = this.studyPlanText.trim().split('\n')[0].replace(/^#+\s*/, '');
+    return firstLine.length > 45 ? firstLine.substring(0, 42) + '...' : firstLine;
+  }
+
+  switchMode(mode: RotbotMode, emit = true) {
+    this.refreshActiveStudyPlan();
+
+    if (this.currentMode === mode && !emit && this.chatHistory.length > 1) return;
     this.currentMode = mode;
+    if (emit) {
+      this.currentModeChange.emit(mode);
+    }
     this.stopAudio();
     this.currentPhrase = '';
     this.lastScore = null;
@@ -608,7 +581,7 @@ export class DashRotbotComponent implements OnInit, OnDestroy {
   }
 
   clearChat() {
-    this.switchMode(this.currentMode);
+    this.switchMode(this.currentMode, false);
   }
 
   getInputPlaceholder(): string {
@@ -621,7 +594,9 @@ export class DashRotbotComponent implements OnInit, OnDestroy {
     this.isProcessing = true;
     this.currentEmotion = 'thinking';
 
-    this.robotService.sendMessage('Give me a new practice phrase', this.selectedVoiceId, [], 'escucha').subscribe({
+    const activePlan = (this.isStudyPlanActive && this.studyPlanText.trim()) ? this.studyPlanText.trim() : undefined;
+
+    this.robotService.sendMessage('Give me a new practice phrase', this.selectedVoiceId, [], 'escucha', undefined, activePlan).subscribe({
       next: (res: RobotChatResponse) => {
         this.isProcessing = false;
         this.currentEmotion = res.emotion || 'happy';
@@ -678,8 +653,9 @@ export class DashRotbotComponent implements OnInit, OnDestroy {
     }));
 
     const phraseToEvaluate = (this.currentMode === 'escucha' && this.currentPhrase) ? this.currentPhrase : undefined;
+    const activePlan = (this.isStudyPlanActive && this.studyPlanText.trim()) ? this.studyPlanText.trim() : undefined;
 
-    this.robotService.sendMessage(text, this.selectedVoiceId, history, this.currentMode, phraseToEvaluate).subscribe({
+    this.robotService.sendMessage(text, this.selectedVoiceId, history, this.currentMode, phraseToEvaluate, activePlan).subscribe({
       next: (res: RobotChatResponse) => {
         this.isProcessing = false;
         this.currentEmotion = res.emotion || 'happy';

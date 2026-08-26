@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { MessagesService } from '../../services/messages.service';
 import { AuthService } from '../../services/auth.service';
 import { CommandCenterService } from '../../services/command-center.service';
+import { RotbotMode } from '../../services/robot-chat.service';
 
 // Dashboard Components
 import { DashAiSearchComponent } from '../../components/dashboard/dash-ai-search/dash-ai-search.component';
@@ -69,7 +70,7 @@ interface Tab {
         <!-- Logo Header -->
         <div class="py-4 md:py-5 border-b flex items-center shrink-0 transition-all duration-300 px-5"
              [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-          <a routerLink="/" class="flex items-center gap-3 cursor-pointer group no-underline min-w-0" title="Ir al inicio">
+          <button (click)="reloadDashboard()" class="flex items-center gap-3 cursor-pointer group no-underline min-w-0 text-left bg-transparent border-0 p-0 w-full focus:outline-none" title="Recargar Dashboard">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105"
                  [ngClass]="isDark ? 'bg-white/5 border border-white/10 shadow-xs' : 'bg-white border border-neutral-200 shadow-xs'">
               <img [src]="isDark ? 'assets/icons/navbar-logodark.png' : 'assets/icons/navbar-logolight.png'" class="w-6 h-6 object-contain" alt="Dashboard">
@@ -83,7 +84,7 @@ interface Tab {
                 PortaLink
               </span>
             </div>
-          </a>
+          </button>
         </div>
 
         <!-- Navigation -->
@@ -193,19 +194,28 @@ interface Tab {
       ══════════════════════════════════════ -->
       <div class="flex-grow flex flex-col h-full overflow-hidden min-w-0 relative">
 
-        <!-- Top Bar (AI Search) -->
+        <!-- Top Bar (AI Search & Rotbot Dynamic Header) -->
         <app-dash-ai-search
           [theme]="currentTheme"
           [activeTab]="activeTab"
+          [(rotbotMode)]="rotbotMode"
+          [(rotbotMuted)]="rotbotMuted"
+          [isStudyPlanActive]="isStudyPlanActive"
           (tabChange)="setTab($event)"
           (themeChange)="toggleTheme()"
           (toggleSidebar)="handleToggleSidebar()">
         </app-dash-ai-search>
 
         <!-- Content -->
-        <main class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain md:overscroll-auto md:scroll-smooth pb-20 md:pb-8 no-scrollbar"
-              [ngClass]="isDark ? 'bg-[#020204]' : 'bg-white'">
-          <div class="p-4 sm:p-6 md:p-8 w-full transition-all duration-300">
+        <main class="flex-1 min-h-0 transition-all duration-300 no-scrollbar"
+              [ngClass]="[
+                isDark ? 'bg-[#020204]' : 'bg-white',
+                activeTab === 'rotbot' && rotbotMode !== 'study-plan'
+                  ? 'overflow-hidden flex flex-col justify-center items-center h-full p-3 sm:p-4 md:p-5 lg:p-6' 
+                  : 'overflow-y-auto overflow-x-hidden overscroll-contain md:overscroll-auto md:scroll-smooth p-4 sm:p-6 md:p-8 pb-20 md:pb-8'
+              ]">
+          <div class="transition-all duration-300"
+               [ngClass]="activeTab === 'rotbot' && rotbotMode !== 'study-plan' ? 'w-full h-full flex flex-col justify-center items-center my-auto' : 'w-full'">
 
             <app-dash-home
               *ngIf="activeTab === 'dashboard'"
@@ -215,7 +225,11 @@ interface Tab {
 
             <app-dash-rotbot
               *ngIf="activeTab === 'rotbot'"
-              [theme]="currentTheme">
+              class="w-full h-full flex flex-col justify-center my-auto"
+              [theme]="currentTheme"
+              [(currentMode)]="rotbotMode"
+              [(isMuted)]="rotbotMuted"
+              [(isStudyPlanActive)]="isStudyPlanActive">
             </app-dash-rotbot>
 
             <app-dash-itinerary
@@ -462,6 +476,10 @@ export class AdminComponent implements OnInit, OnDestroy {
   unreadMessages = 0;
   pendingLeads = 0;
 
+  rotbotMode: RotbotMode = 'charla';
+  rotbotMuted = false;
+  isStudyPlanActive = false;
+
   tabs: Tab[] = [
     { id: 'dashboard', name: 'Inicio' },
     { id: 'rotbot',    name: 'Rotbot IA' },
@@ -509,6 +527,15 @@ export class AdminComponent implements OnInit, OnDestroy {
       this.isMobileDrawerOpen = !this.isMobileDrawerOpen;
     } else {
       this.isSidebarCollapsed = !this.isSidebarCollapsed;
+    }
+  }
+
+  reloadDashboard() {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('portalink_admin_tab', 'dashboard');
+    }
+    if (typeof window !== 'undefined') {
+      window.location.reload();
     }
   }
 
