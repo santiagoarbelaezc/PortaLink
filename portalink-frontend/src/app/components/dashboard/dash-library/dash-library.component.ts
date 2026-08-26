@@ -132,6 +132,18 @@ export class DashLibraryComponent implements OnInit {
     return list;
   }
 
+  get countWithNotebooks(): number {
+    return this.folders.filter(f => (f.notebook_count || 0) > 0).length;
+  }
+
+  get countWithNotes(): number {
+    return this.folders.filter(f => (f.pages_count || 0) > 0).length;
+  }
+
+  get countEmpty(): number {
+    return this.folders.filter(f => (f.notebook_count || 0) === 0).length;
+  }
+
   get availableFolderColors(): string[] {
     const colors = new Set<string>();
     for (const f of this.folders) {
@@ -149,6 +161,40 @@ export class DashLibraryComponent implements OnInit {
     this.folderFilterStatus = 'all';
     this.folderFilterColor = 'all';
     this.folderSortBy = 'name-asc';
+    this.isSortDropdownOpen = false;
+  }
+
+  // ── Custom Dropdown Combobox Suite ──
+  isSortDropdownOpen = false;
+  sortOptions = [
+    { id: 'name-asc', label: 'Nombre (A - Z)', desc: 'Orden alfabético normal', icon: 'az' },
+    { id: 'name-desc', label: 'Nombre (Z - A)', desc: 'Orden alfabético inverso', icon: 'za' },
+    { id: 'notebooks-desc', label: 'Más Cuadernos', desc: 'Por cantidad de módulos', icon: 'notebooks' },
+    { id: 'pages-desc', label: 'Más Notas', desc: 'Por volumen de apuntes', icon: 'notes' },
+    { id: 'recent', label: 'Más Recientes', desc: 'Editados recientemente', icon: 'recent' },
+    { id: 'oldest', label: 'Más Antiguas', desc: 'Primeras materias creadas', icon: 'oldest' },
+  ];
+
+  get currentSortLabel(): string {
+    return this.sortOptions.find(o => o.id === this.folderSortBy)?.label || 'Nombre (A - Z)';
+  }
+
+  toggleSortDropdown(event?: MouseEvent) {
+    if (event) event.stopPropagation();
+    this.isSortDropdownOpen = !this.isSortDropdownOpen;
+  }
+
+  selectSortOption(optionId: any, event?: MouseEvent) {
+    if (event) event.stopPropagation();
+    this.folderSortBy = optionId;
+    this.isSortDropdownOpen = false;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick() {
+    if (this.isSortDropdownOpen) {
+      this.isSortDropdownOpen = false;
+    }
   }
 
   // Toast feedback
