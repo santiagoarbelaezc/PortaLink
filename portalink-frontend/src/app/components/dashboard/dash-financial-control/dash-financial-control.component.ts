@@ -399,7 +399,7 @@ export interface ControlSummary {
               </tr>
             </thead>
             <tbody class="divide-y" [ngClass]="isDark ? 'divide-neutral-800/60' : 'divide-neutral-100'">
-              <tr *ngFor="let tx of transactions" class="hover:bg-white/5 transition-colors">
+              <tr *ngFor="let tx of paginatedTransactions" class="hover:bg-white/5 transition-colors">
                 <!-- Fecha -->
                 <td class="py-3.5 px-3 font-mono opacity-80 whitespace-nowrap">{{ tx.transaction_date }}</td>
                 <!-- Tipo Badge -->
@@ -431,16 +431,83 @@ export interface ControlSummary {
                 </td>
                 <!-- Acciones -->
                 <td class="py-3.5 px-3 text-center whitespace-nowrap flex items-center justify-center gap-2">
-                  <button (click)="openEditModal(tx)" class="p-1.5 rounded-full hover:bg-neutral-800 text-neutral-400 hover:text-white" title="Editar">
+                  <button (click)="openEditModal(tx)" class="p-1.5 rounded-full hover:bg-neutral-800 text-neutral-400 hover:text-white cursor-pointer transition-colors" title="Editar">
                     ✎
                   </button>
-                  <button (click)="deleteTransaction(tx)" class="p-1.5 rounded-full hover:bg-red-500/20 text-neutral-400 hover:text-red-400" title="Eliminar">
+                  <button (click)="deleteTransaction(tx)" class="p-1.5 rounded-full hover:bg-red-500/20 text-neutral-400 hover:text-red-400 cursor-pointer transition-colors" title="Eliminar">
                     ✕
                   </button>
                 </td>
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <!-- 📄 TABLE PAGINATION CONTROLS -->
+        <div *ngIf="!isLoading && transactions.length > 0" 
+             class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t"
+             [ngClass]="isDark ? 'border-neutral-800 text-neutral-400' : 'border-neutral-200 text-neutral-600'">
+          
+          <div class="flex items-center gap-3 text-xs">
+            <span>
+              Mostrando <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ (currentPage - 1) * pageSize + 1 }}</span> - 
+              <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ getMin(currentPage * pageSize, transactions.length) }}</span> de 
+              <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ transactions.length }}</span>
+            </span>
+
+            <div class="flex items-center gap-1.5 ml-2">
+              <span class="text-[11px] opacity-70">Por pág:</span>
+              <select [(ngModel)]="pageSize" (change)="currentPage = 1"
+                      class="px-2 py-1 rounded-lg text-xs font-semibold border outline-none cursor-pointer"
+                      [ngClass]="isDark ? 'border-neutral-700 text-white bg-neutral-950' : 'border-neutral-300 text-neutral-900 bg-white'">
+                <option [value]="5">5</option>
+                <option [value]="10">10</option>
+                <option [value]="25">25</option>
+                <option [value]="50">50</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1.5 self-end sm:self-auto">
+            <!-- First Page -->
+            <button (click)="currentPage = 1" [disabled]="currentPage === 1"
+                    class="p-1.5 rounded-lg border transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'"
+                    title="Primera página">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" /></svg>
+            </button>
+
+            <!-- Prev Page -->
+            <button (click)="currentPage = currentPage - 1" [disabled]="currentPage === 1"
+                    class="px-2.5 py-1 rounded-lg border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                    [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'">
+              <span>‹</span>
+              <span class="hidden sm:inline">Ant</span>
+            </button>
+
+            <!-- Page Indicator -->
+            <span class="px-3 py-1 text-xs font-mono font-bold rounded-lg border"
+                  [ngClass]="isDark ? 'bg-neutral-950 border-neutral-700 text-white' : 'bg-neutral-100 border-neutral-300 text-neutral-900'">
+              {{ currentPage }} / {{ totalPages }}
+            </span>
+
+            <!-- Next Page -->
+            <button (click)="currentPage = currentPage + 1" [disabled]="currentPage >= totalPages"
+                    class="px-2.5 py-1 rounded-lg border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                    [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'">
+              <span class="hidden sm:inline">Sig</span>
+              <span>›</span>
+            </button>
+
+            <!-- Last Page -->
+            <button (click)="currentPage = totalPages" [disabled]="currentPage >= totalPages"
+                    class="p-1.5 rounded-lg border transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'"
+                    title="Última página">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5" /></svg>
+            </button>
+          </div>
+
         </div>
 
       </div>
@@ -470,6 +537,23 @@ export class DashFinancialControlComponent implements OnInit, OnDestroy {
 
   toastMessage = '';
   toastType: 'success' | 'error' = 'success';
+
+  // Pagination
+  currentPage = 1;
+  pageSize = 5;
+
+  get totalPages(): number {
+    return Math.ceil(this.transactions.length / this.pageSize) || 1;
+  }
+
+  get paginatedTransactions(): FinancialTransaction[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.transactions.slice(start, start + this.pageSize);
+  }
+
+  getMin(a: number, b: number): number {
+    return Math.min(a, b);
+  }
 
   summary: ControlSummary = {
     arr_total: 0,
@@ -531,13 +615,18 @@ export class DashFinancialControlComponent implements OnInit, OnDestroy {
         next: (res) => {
           if (res && res.ok && Array.isArray(res.transactions)) {
             this.transactions = res.transactions;
+            if (this.currentPage > this.totalPages) {
+              this.currentPage = 1;
+            }
           } else {
             this.transactions = [];
+            this.currentPage = 1;
           }
           this.isLoading = false;
         },
         error: () => {
           this.transactions = [];
+          this.currentPage = 1;
           this.isLoading = false;
         }
       });

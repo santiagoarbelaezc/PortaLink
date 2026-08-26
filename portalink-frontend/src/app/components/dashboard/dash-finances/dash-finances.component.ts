@@ -280,7 +280,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
           </div>
 
           <div class="divide-y" [ngClass]="isDark ? 'divide-neutral-800/60' : 'divide-neutral-100'">
-            <ng-container *ngFor="let inv of recentInvoices">
+            <ng-container *ngFor="let inv of paginatedRecentInvoices">
               <!-- Desktop Table Row -->
               <div (click)="toggleInvoice(inv.id)" class="hidden md:grid md:grid-cols-12 px-6 py-3.5 items-center group cursor-pointer transition-colors"
                    [ngClass]="isDark ? 'hover:bg-neutral-800/30' : 'hover:bg-neutral-50'">
@@ -358,6 +358,63 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
               No hay movimientos registrados.
             </div>
           </div>
+
+          <!-- 📄 RECENT INVOICES PAGINATION BAR -->
+          <div *ngIf="recentInvoices.length > 0" 
+               class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 border-t transition-all"
+               [ngClass]="isDark ? 'bg-black/30 border-neutral-800 text-neutral-400' : 'bg-neutral-50/50 border-neutral-200 text-neutral-600'">
+            
+            <div class="flex items-center gap-3 text-xs">
+              <span>
+                Mostrando <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ (recentPage - 1) * recentPageSize + 1 }}</span> - 
+                <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ getMin(recentPage * recentPageSize, recentInvoices.length) }}</span> de 
+                <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ recentInvoices.length }}</span>
+              </span>
+
+              <div class="flex items-center gap-1.5 ml-2">
+                <span class="text-[11px] opacity-70">Por pág:</span>
+                <select [(ngModel)]="recentPageSize" (change)="recentPage = 1"
+                        class="px-2 py-1 rounded-lg text-xs font-semibold border outline-none cursor-pointer"
+                        [ngClass]="isDark ? 'border-neutral-700 text-white bg-neutral-950' : 'border-neutral-300 text-neutral-900 bg-white'">
+                  <option [value]="5">5</option>
+                  <option [value]="10">10</option>
+                  <option [value]="25">25</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 self-end sm:self-auto">
+              <button (click)="recentPage = 1" [disabled]="recentPage === 1"
+                      class="p-1.5 rounded-lg border transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                      [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'"
+                      title="Primera página">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" /></svg>
+              </button>
+              <button (click)="recentPage = recentPage - 1" [disabled]="recentPage === 1"
+                      class="px-2.5 py-1 rounded-lg border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                      [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'">
+                <span>‹</span>
+                <span class="hidden sm:inline">Ant</span>
+              </button>
+              <span class="px-3 py-1 text-xs font-mono font-bold rounded-lg border"
+                    [ngClass]="isDark ? 'bg-neutral-950 border-neutral-700 text-white' : 'bg-neutral-100 border-neutral-300 text-neutral-900'">
+                {{ recentPage }} / {{ totalRecentPages }}
+              </span>
+              <button (click)="recentPage = recentPage + 1" [disabled]="recentPage >= totalRecentPages"
+                      class="px-2.5 py-1 rounded-lg border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                      [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'">
+                <span class="hidden sm:inline">Sig</span>
+                <span>›</span>
+              </button>
+              <button (click)="recentPage = totalRecentPages" [disabled]="recentPage >= totalRecentPages"
+                      class="p-1.5 rounded-lg border transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                      [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'"
+                      title="Última página">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5" /></svg>
+              </button>
+            </div>
+
+          </div>
         </div>
       </ng-container>
 
@@ -428,8 +485,8 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
             <span class="col-span-1"></span>
           </div>
           <div class="divide-y" [ngClass]="isDark ? 'divide-neutral-800' : 'divide-neutral-100'">
-            <div *ngFor="let c of displayedClients" class="grid grid-cols-12 px-5 py-4 items-center"
-                 [ngClass]="isDark ? 'hover:bg-neutral-800/30' : 'hover:bg-neutral-50'">
+            <div *ngFor="let c of paginatedClients" class="grid grid-cols-12 px-5 py-4 items-center"
+                  [ngClass]="isDark ? 'hover:bg-neutral-800/30' : 'hover:bg-neutral-50'">
               <div class="col-span-3">
                 <p class="text-sm font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ c.name }}</p>
                 <p class="text-xs" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Desde {{ c.createdAt | date:'MMM yyyy' }}</p>
@@ -467,7 +524,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
 
         <!-- Mobile Client Cards (App Native Experience for iPhone 13) -->
         <div class="space-y-3 block md:hidden">
-          <div *ngFor="let c of displayedClients" class="rounded-2xl border p-4 transition-all shadow-xs"
+          <div *ngFor="let c of paginatedClients" class="rounded-2xl border p-4 transition-all shadow-xs"
                [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200'">
             
             <div class="flex items-start justify-between gap-3 mb-2.5">
@@ -527,6 +584,64 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
                [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
             No se encontraron clientes.
           </div>
+        </div>
+
+        <!-- 📄 CLIENTS PAGINATION BAR -->
+        <div *ngIf="displayedClients.length > 0" 
+             class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border transition-all"
+             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800 text-neutral-400' : 'bg-white border-neutral-200 text-neutral-600'">
+          
+          <div class="flex items-center gap-3 text-xs">
+            <span>
+              Mostrando <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ (clientPage - 1) * clientPageSize + 1 }}</span> - 
+              <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ getMin(clientPage * clientPageSize, displayedClients.length) }}</span> de 
+              <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ displayedClients.length }}</span>
+            </span>
+
+            <div class="flex items-center gap-1.5 ml-2">
+              <span class="text-[11px] opacity-70">Por pág:</span>
+              <select [(ngModel)]="clientPageSize" (change)="clientPage = 1"
+                      class="px-2 py-1 rounded-lg text-xs font-semibold border outline-none cursor-pointer"
+                      [ngClass]="isDark ? 'border-neutral-700 text-white bg-neutral-950' : 'border-neutral-300 text-neutral-900 bg-white'">
+                <option [value]="5">5</option>
+                <option [value]="10">10</option>
+                <option [value]="25">25</option>
+                <option [value]="50">50</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1.5 self-end sm:self-auto">
+            <button (click)="clientPage = 1" [disabled]="clientPage === 1"
+                    class="p-1.5 rounded-lg border transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'"
+                    title="Primera página">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" /></svg>
+            </button>
+            <button (click)="clientPage = clientPage - 1" [disabled]="clientPage === 1"
+                    class="px-2.5 py-1 rounded-lg border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                    [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'">
+              <span>‹</span>
+              <span class="hidden sm:inline">Ant</span>
+            </button>
+            <span class="px-3 py-1 text-xs font-mono font-bold rounded-lg border"
+                  [ngClass]="isDark ? 'bg-neutral-950 border-neutral-700 text-white' : 'bg-neutral-100 border-neutral-300 text-neutral-900'">
+              {{ clientPage }} / {{ totalClientPages }}
+            </span>
+            <button (click)="clientPage = clientPage + 1" [disabled]="clientPage >= totalClientPages"
+                    class="px-2.5 py-1 rounded-lg border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                    [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'">
+              <span class="hidden sm:inline">Sig</span>
+              <span>›</span>
+            </button>
+            <button (click)="clientPage = totalClientPages" [disabled]="clientPage >= totalClientPages"
+                    class="p-1.5 rounded-lg border transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'"
+                    title="Última página">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5" /></svg>
+            </button>
+          </div>
+
         </div>
       </ng-container>
 
@@ -628,7 +743,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
 
         <!-- Services Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div *ngFor="let s of filteredServices" class="rounded-[28px] border p-6 flex flex-col justify-between transition-all duration-300 hover:scale-[1.01] shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+          <div *ngFor="let s of paginatedServices" class="rounded-[28px] border p-6 flex flex-col justify-between transition-all duration-300 hover:scale-[1.01] shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
                [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200/80 hover:border-neutral-300'">
             
             <div>
@@ -684,6 +799,64 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
             </div>
 
           </div>
+        </div>
+
+        <!-- 📄 SERVICES PAGINATION BAR -->
+        <div *ngIf="filteredServices.length > 0" 
+             class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border transition-all"
+             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800 text-neutral-400' : 'bg-white border-neutral-200 text-neutral-600'">
+          
+          <div class="flex items-center gap-3 text-xs">
+            <span>
+              Mostrando <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ (servicePage - 1) * servicePageSize + 1 }}</span> - 
+              <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ getMin(servicePage * servicePageSize, filteredServices.length) }}</span> de 
+              <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ filteredServices.length }}</span>
+            </span>
+
+            <div class="flex items-center gap-1.5 ml-2">
+              <span class="text-[11px] opacity-70">Por pág:</span>
+              <select [(ngModel)]="servicePageSize" (change)="servicePage = 1"
+                      class="px-2 py-1 rounded-lg text-xs font-semibold border outline-none cursor-pointer"
+                      [ngClass]="isDark ? 'border-neutral-700 text-white bg-neutral-950' : 'border-neutral-300 text-neutral-900 bg-white'">
+                <option [value]="4">4</option>
+                <option [value]="8">8</option>
+                <option [value]="16">16</option>
+                <option [value]="32">32</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1.5 self-end sm:self-auto">
+            <button (click)="servicePage = 1" [disabled]="servicePage === 1"
+                    class="p-1.5 rounded-lg border transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'"
+                    title="Primera página">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" /></svg>
+            </button>
+            <button (click)="servicePage = servicePage - 1" [disabled]="servicePage === 1"
+                    class="px-2.5 py-1 rounded-lg border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                    [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'">
+              <span>‹</span>
+              <span class="hidden sm:inline">Ant</span>
+            </button>
+            <span class="px-3 py-1 text-xs font-mono font-bold rounded-lg border"
+                  [ngClass]="isDark ? 'bg-neutral-950 border-neutral-700 text-white' : 'bg-neutral-100 border-neutral-300 text-neutral-900'">
+              {{ servicePage }} / {{ totalServicePages }}
+            </span>
+            <button (click)="servicePage = servicePage + 1" [disabled]="servicePage >= totalServicePages"
+                    class="px-2.5 py-1 rounded-lg border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                    [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'">
+              <span class="hidden sm:inline">Sig</span>
+              <span>›</span>
+            </button>
+            <button (click)="servicePage = totalServicePages" [disabled]="servicePage >= totalServicePages"
+                    class="p-1.5 rounded-lg border transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'"
+                    title="Última página">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5" /></svg>
+            </button>
+          </div>
+
         </div>
 
         <div *ngIf="filteredServices.length === 0" class="p-12 text-center text-xs opacity-50 rounded-[28px] border" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
@@ -1100,7 +1273,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
 
         <!-- Mobile Invoice Cards (App Native Experience) -->
         <div class="space-y-3 block md:hidden">
-          <div *ngFor="let inv of displayedInvoices" class="rounded-2xl border p-4 transition-all shadow-sm"
+          <div *ngFor="let inv of paginatedInvoices" class="rounded-2xl border p-4 transition-all shadow-sm"
                [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200'">
             
             <!-- Header -->
@@ -1211,7 +1384,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
             <span class="col-span-1"></span>
           </div>
           <div class="divide-y" [ngClass]="isDark ? 'divide-neutral-800' : 'divide-neutral-100'">
-            <ng-container *ngFor="let inv of displayedInvoices">
+            <ng-container *ngFor="let inv of paginatedInvoices">
               <div class="grid grid-cols-12 px-5 py-4 items-center transition-colors gap-2"
                    [ngClass]="isDark ? 'hover:bg-neutral-800/30' : 'hover:bg-neutral-50'">
                 
@@ -1362,6 +1535,64 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas' | 'legal';
               No hay cuentas de cobro aún.
             </div>
           </div>
+        </div>
+
+        <!-- 📄 INVOICES PAGINATION BAR -->
+        <div *ngIf="displayedInvoices.length > 0" 
+             class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border transition-all"
+             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800 text-neutral-400' : 'bg-white border-neutral-200 text-neutral-600'">
+          
+          <div class="flex items-center gap-3 text-xs">
+            <span>
+              Mostrando <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ (invPage - 1) * invPageSize + 1 }}</span> - 
+              <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ getMin(invPage * invPageSize, displayedInvoices.length) }}</span> de 
+              <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ displayedInvoices.length }}</span>
+            </span>
+
+            <div class="flex items-center gap-1.5 ml-2">
+              <span class="text-[11px] opacity-70">Por pág:</span>
+              <select [(ngModel)]="invPageSize" (change)="invPage = 1"
+                      class="px-2 py-1 rounded-lg text-xs font-semibold border outline-none cursor-pointer"
+                      [ngClass]="isDark ? 'border-neutral-700 text-white bg-neutral-950' : 'border-neutral-300 text-neutral-900 bg-white'">
+                <option [value]="5">5</option>
+                <option [value]="10">10</option>
+                <option [value]="25">25</option>
+                <option [value]="50">50</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1.5 self-end sm:self-auto">
+            <button (click)="invPage = 1" [disabled]="invPage === 1"
+                    class="p-1.5 rounded-lg border transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'"
+                    title="Primera página">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" /></svg>
+            </button>
+            <button (click)="invPage = invPage - 1" [disabled]="invPage === 1"
+                    class="px-2.5 py-1 rounded-lg border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                    [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'">
+              <span>‹</span>
+              <span class="hidden sm:inline">Ant</span>
+            </button>
+            <span class="px-3 py-1 text-xs font-mono font-bold rounded-lg border"
+                  [ngClass]="isDark ? 'bg-neutral-950 border-neutral-700 text-white' : 'bg-neutral-100 border-neutral-300 text-neutral-900'">
+              {{ invPage }} / {{ totalInvPages }}
+            </span>
+            <button (click)="invPage = invPage + 1" [disabled]="invPage >= totalInvPages"
+                    class="px-2.5 py-1 rounded-lg border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                    [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'">
+              <span class="hidden sm:inline">Sig</span>
+              <span>›</span>
+            </button>
+            <button (click)="invPage = totalInvPages" [disabled]="invPage >= totalInvPages"
+                    class="p-1.5 rounded-lg border transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'"
+                    title="Última página">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5" /></svg>
+            </button>
+          </div>
+
         </div>
       </ng-container>
 
@@ -1776,8 +2007,23 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
     this.showGadget(msg, 'success');
   }
 
-  // Client filters
+  // Recent invoices pagination (Últimos Movimientos)
+  recentPage = 1;
+  recentPageSize = 5;
+
+  get totalRecentPages(): number {
+    return Math.ceil(this.recentInvoices.length / this.recentPageSize) || 1;
+  }
+
+  get paginatedRecentInvoices(): Invoice[] {
+    const start = (this.recentPage - 1) * this.recentPageSize;
+    return this.recentInvoices.slice(start, start + this.recentPageSize);
+  }
+
+  // Client filters & pagination
   clientFilterText = '';
+  clientPage = 1;
+  clientPageSize = 5;
 
   get displayedClients() {
     if (!this.clientFilterText) return this.clients;
@@ -1789,12 +2035,23 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
     );
   }
 
-  // Invoice filters
+  get totalClientPages(): number {
+    return Math.ceil(this.displayedClients.length / this.clientPageSize) || 1;
+  }
+
+  get paginatedClients(): Client[] {
+    const start = (this.clientPage - 1) * this.clientPageSize;
+    return this.displayedClients.slice(start, start + this.clientPageSize);
+  }
+
+  // Invoice filters & pagination
   invFilterCompany = '';
   invFilterMinPrice: number | null = null;
   invFilterMaxPrice: number | null = null;
   invFilterStartDate = '';
   invFilterEndDate = '';
+  invPage = 1;
+  invPageSize = 5;
 
   get displayedInvoices() {
     return this.invoices.filter(i => {
@@ -1811,6 +2068,38 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
       if (this.invFilterEndDate && (i.issuedAt || '') > this.invFilterEndDate) match = false;
       return match;
     });
+  }
+
+  get totalInvPages(): number {
+    return Math.ceil(this.displayedInvoices.length / this.invPageSize) || 1;
+  }
+
+  get paginatedInvoices(): Invoice[] {
+    const start = (this.invPage - 1) * this.invPageSize;
+    return this.displayedInvoices.slice(start, start + this.invPageSize);
+  }
+
+  // Service filters & pagination
+  filterCategory = 'all';
+  servicePage = 1;
+  servicePageSize = 5;
+
+  get filteredServices(): Service[] {
+    if (this.filterCategory === 'all') return this.allServices;
+    return this.allServices.filter(s => s.category === this.filterCategory);
+  }
+
+  get totalServicePages(): number {
+    return Math.ceil(this.filteredServices.length / this.servicePageSize) || 1;
+  }
+
+  get paginatedServices(): Service[] {
+    const start = (this.servicePage - 1) * this.servicePageSize;
+    return this.filteredServices.slice(start, start + this.servicePageSize);
+  }
+
+  getMin(a: number, b: number): number {
+    return Math.min(a, b);
   }
 
   get paidPercentage(): number {
@@ -1866,7 +2155,6 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
   // Service form
   showServiceForm = false;
   editingService: Partial<Service> | null = null;
-  filterCategory = 'all';
   serviceCategories = [
     { id: 'all', label: 'Todos' },
     { id: 'desarrollo', label: 'Desarrollo' },
@@ -1881,11 +2169,6 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
   editingInvoice: Partial<Invoice> | null = null;
   selectedClientId = '';
   serviceToAdd = '';
-
-  get filteredServices() {
-    if (this.filterCategory === 'all') return this.allServices;
-    return this.allServices.filter(s => s.category === this.filterCategory);
-  }
 
   isLoading = false;
 

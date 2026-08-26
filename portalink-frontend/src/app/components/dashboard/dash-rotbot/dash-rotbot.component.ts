@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, OnChanges, SimpleChanges, inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, AfterViewInit, OnDestroy, OnChanges, SimpleChanges, inject, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RobotChatService, RobotChatResponse, RotbotMode } from '../../../services/robot-chat.service';
@@ -476,7 +476,7 @@ interface ChatEntry {
     }
   `]
 })
-export class DashRotbotComponent implements OnInit, OnDestroy, OnChanges {
+export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
   @Input() theme = 'dark';
   @Input() currentMode: RotbotMode = 'charla';
   @Output() currentModeChange = new EventEmitter<RotbotMode>();
@@ -531,6 +531,11 @@ export class DashRotbotComponent implements OnInit, OnDestroy, OnChanges {
     this.voiceSub = this.audioRecorder.recordedAudio$.subscribe(rec => {
       this.handleVoiceTranscript(rec);
     });
+    this.scrollToBottom(true);
+  }
+
+  ngAfterViewInit() {
+    this.scrollToBottom(true);
   }
 
   private saveChatToStorage() {
@@ -929,11 +934,24 @@ export class DashRotbotComponent implements OnInit, OnDestroy, OnChanges {
     });
   }
 
-  private scrollToBottom() {
-    setTimeout(() => {
-      if (this.chatContainer) {
-        this.chatContainer.nativeElement.scrollTop = this.chatContainer.nativeElement.scrollHeight;
+  private scrollToBottom(instant = false) {
+    const doScroll = () => {
+      if (this.chatContainer && this.chatContainer.nativeElement) {
+        const el = this.chatContainer.nativeElement;
+        if (instant) {
+          el.scrollTop = el.scrollHeight;
+        } else {
+          el.scrollTo({
+            top: el.scrollHeight,
+            behavior: 'smooth'
+          });
+        }
       }
-    }, 100);
+    };
+
+    doScroll();
+    setTimeout(doScroll, 40);
+    setTimeout(doScroll, 150);
+    setTimeout(doScroll, 350);
   }
 }
