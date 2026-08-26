@@ -31,7 +31,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
             
             <!-- Image Showcase (Aspect ratio 16/10) -->
             <div class="relative w-full overflow-hidden bg-neutral-50 aspect-[16/10]">
-              <img [src]="project.images && project.images.length > 0 ? project.images[0] : 'assets/images/fotos/photo2.jpg'" 
+              <img [src]="project.images && project.images.length > 0 ? project.images[0] : 'assets/images/proyectos/card1.png'" 
                    [alt]="getProjectTitle(project)" 
                    class="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 hover:scale-105 card-bg-img" />
               

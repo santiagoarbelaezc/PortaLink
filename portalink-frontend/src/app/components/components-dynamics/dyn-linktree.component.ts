@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
       <div class="relative z-10 w-full max-w-md mx-auto flex flex-col items-center">
         <!-- Profile -->
         <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden mb-5 border-2 border-white/20">
-          <img [src]="(config?.avatarImage || 'assets/images/fotos/main-link.jpg').startsWith('assets/') ? (config?.avatarImage || 'assets/images/fotos/main-link.jpg') : 'assets/images/' + (config?.avatarImage || 'assets/images/fotos/main-link.jpg')" alt="Profile" class="w-full h-full object-cover">
+          <img [src]="config?.avatarImage || 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975015/principal_bunphx.jpg'" alt="Profile" class="w-full h-full object-cover">
         </div>
         
         <h1 class="text-2xl sm:text-3xl font-bold uppercase tracking-tight text-white mb-2 text-center">

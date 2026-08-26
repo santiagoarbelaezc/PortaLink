@@ -16,7 +16,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
           <div class="lg:col-span-5 w-full" appReveal>
             <div class="relative w-full rounded-[28px] sm:rounded-[36px] overflow-hidden border border-neutral-200/80 bg-white shadow-[0_10px_35px_rgba(0,0,0,0.04)] transition-all duration-500 hover:scale-[1.01] hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] group">
               <div class="aspect-[4/5] w-full overflow-hidden bg-neutral-50">
-                <img [src]="data?.avatarImage || 'assets/images/fotos/main-link.jpg'" 
+                <img [src]="data?.avatarImage || 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975015/principal_bunphx.jpg'" 
                      alt="Perfil Profesional" 
                      class="w-full h-full object-cover object-[center_25%] transition-transform duration-700 ease-out group-hover:scale-105" />
               </div>

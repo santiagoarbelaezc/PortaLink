@@ -16,7 +16,7 @@ import { CommonModule } from '@angular/common';
             <div class="aspect-[4/5] overflow-hidden border border-white/20 relative">
               <div class="absolute top-2 left-2 w-3 h-3 border-t border-l border-white/50 z-10"></div>
               <div class="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-white/50 z-10"></div>
-              <img [src]="(config?.avatarImage || 'assets/images/fotos/photo3.jpeg').startsWith('assets/') ? (config?.avatarImage || 'assets/images/fotos/photo3.jpeg') : 'assets/images/' + (config?.avatarImage || 'assets/images/fotos/photo3.jpeg')" alt="Profile" class="w-full h-full object-cover grayscale brightness-75 hover:brightness-100 hover:grayscale-0 transition-all duration-700" />
+              <img [src]="config?.avatarImage || 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975015/principal_bunphx.jpg'" alt="Profile" class="w-full h-full object-cover grayscale brightness-75 hover:brightness-100 hover:grayscale-0 transition-all duration-700" />
             </div>
             <div class="absolute -top-4 -right-4 w-20 h-20 border border-white/10 opacity-40"></div>
           </div>

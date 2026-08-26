@@ -18,6 +18,7 @@ import { DashFinancesComponent } from '../../components/dashboard/dash-finances/
 import { DashFinancialControlComponent } from '../../components/dashboard/dash-financial-control/dash-financial-control.component';
 import { DashItineraryComponent } from '../../components/dashboard/dash-itinerary/dash-itinerary.component';
 import { DashLibraryComponent } from '../../components/dashboard/dash-library/dash-library.component';
+import { DashRotbotComponent } from '../../components/dashboard/dash-rotbot/dash-rotbot.component';
 
 interface Tab {
   id: string;
@@ -32,6 +33,7 @@ interface Tab {
     RouterModule,
     DashAiSearchComponent,
     DashHomeComponent,
+    DashRotbotComponent,
     DashAnalyticsComponent,
     DashStatsComponent,
     DashMessagesComponent,
@@ -97,6 +99,10 @@ interface Tab {
                 <!-- Home / Dashboard -->
                 <ng-container *ngIf="tab.id === 'dashboard'">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                </ng-container>
+                <!-- Rotbot IA -->
+                <ng-container *ngIf="tab.id === 'rotbot'">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2zM9 10h.01M15 10h.01" />
                 </ng-container>
                 <!-- Control Financiero -->
                 <ng-container *ngIf="tab.id === 'financial-control'">
@@ -207,6 +213,11 @@ interface Tab {
               (tabChange)="setTab($event)">
             </app-dash-home>
 
+            <app-dash-rotbot
+              *ngIf="activeTab === 'rotbot'"
+              [theme]="currentTheme">
+            </app-dash-rotbot>
+
             <app-dash-itinerary
               *ngIf="activeTab === 'itinerary'"
               [theme]="currentTheme">
@@ -308,6 +319,7 @@ interface Tab {
                   [ngClass]="activeTab === tab.id ? (isDark ? 'bg-emerald-500/30 text-emerald-300' : 'bg-emerald-500/20 text-emerald-700') : (isDark ? 'bg-neutral-800 text-neutral-400' : 'bg-white text-neutral-600')">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <ng-container *ngIf="tab.id === 'dashboard'"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></ng-container>
+                <ng-container *ngIf="tab.id === 'rotbot'"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2zM9 10h.01M15 10h.01" /></ng-container>
                 <ng-container *ngIf="tab.id === 'finances'"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></ng-container>
                 <ng-container *ngIf="tab.id === 'financial-control'"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-3l3 3 3-3M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22" /></ng-container>
                 <ng-container *ngIf="tab.id === 'analytics'"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></ng-container>
@@ -452,6 +464,7 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   tabs: Tab[] = [
     { id: 'dashboard', name: 'Inicio' },
+    { id: 'rotbot',    name: 'Rotbot IA' },
     { id: 'financial-control', name: 'Control Financiero' },
     { id: 'finances',  name: 'Finanzas' },
     { id: 'itinerary', name: 'Calendario' },

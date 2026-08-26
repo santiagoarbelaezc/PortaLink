@@ -314,7 +314,7 @@ export class PlanesGalleryComponent implements OnInit, OnChanges {
       title: 'Luxe Architecture Studio',
       category: 'Landing Page',
       client: 'Estudio Luxe SA',
-      image: 'assets/images/fotos/photo2.jpg',
+      image: 'assets/images/diseños/arquitectura.png',
       gradient: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
       description: 'Landing page inmersiva de una sola página diseñada para presentar proyectos arquitectónicos de alta gama con transiciones fluidas e interactividad 3D.',
       highlights: [
@@ -332,7 +332,7 @@ export class PlanesGalleryComponent implements OnInit, OnChanges {
       title: 'Aura Fashion Boutique',
       category: 'E-commerce',
       client: 'Aura Moda & Belleza',
-      image: 'assets/images/fotos/photo3.jpeg',
+      image: 'assets/images/diseños/tiendaropa.png',
       gradient: 'linear-gradient(135deg, #434343 0%, #000000 100%)',
       description: 'Tienda en línea autopersonalizable con editor visual en vivo que permite al cliente cambiar banners, colores de temporada y secciones en tiempo real sin tocar código.',
       highlights: [
@@ -350,7 +350,7 @@ export class PlanesGalleryComponent implements OnInit, OnChanges {
       title: 'Rotbot AutoParts AI Store',
       category: 'E-commerce + IA',
       client: 'Grupo MotorSmart',
-      image: 'assets/images/fotos/photo4.jpeg',
+      image: 'assets/images/diseños/e-commerce.png',
       gradient: 'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)',
       description: 'Comercio electrónico avanzado con Copiloto Rotbot IA 24/7 que asiste a mecánicos y conductores a encontrar el repuesto exacto según el número de chasis (VIN) y año.',
       highlights: [
@@ -368,7 +368,7 @@ export class PlanesGalleryComponent implements OnInit, OnChanges {
       title: 'FitPulse Gym & Coaching',
       category: 'Landing Page',
       client: 'FitPulse Club',
-      image: 'assets/images/fotos/principal.jpg',
+      image: 'assets/images/diseños/gym.png',
       gradient: 'linear-gradient(135deg, #cb2d3e 0%, #ef476f 100%)',
       description: 'Sitio web de alto impacto para centro de entrenamiento con calculadora de índice de masa corporal (IMC), horarios interactivos y reserva directa con entrenadores.',
       highlights: [
@@ -386,7 +386,7 @@ export class PlanesGalleryComponent implements OnInit, OnChanges {
       title: 'Nova Bio Cosmetics',
       category: 'E-commerce + IA',
       client: 'Nova Bio Lab',
-      image: 'assets/images/fotos/link-principal.jpg',
+      image: 'assets/images/diseños/catalogo-digital.png',
       gradient: 'linear-gradient(135deg, #134e5e 0%, #71b280 100%)',
       description: 'Plataforma de cosmética orgánica equipada con un diagnosticador virtual por IA que analiza el tipo de piel de los clientes y construye una rutina personalizada.',
       highlights: [

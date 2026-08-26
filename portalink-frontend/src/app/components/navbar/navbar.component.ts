@@ -183,6 +183,8 @@ import { AuthService } from '../../services/auth.service';
           <img *ngIf="item.icon === 'chat'" 
                [src]="currentTheme === 'light' ? 'assets/icons/logo-link-light.png' : 'assets/icons/logo-link-dark.png'" 
                alt="RotBot" 
+               width="20"
+               height="20"
                class="w-5 h-5 object-contain transition-all duration-300 group-hover:scale-110" 
                [class.opacity-100]="activeSection === item.link"
                [class.opacity-60]="activeSection !== item.link" />

@@ -46,12 +46,12 @@ export class PortfolioConfigService {
   private normalizeImages(data: any): any {
     if (!data) return data;
     const str = JSON.stringify(data)
-      .replace(/about-portrait\.png/g, 'assets/images/fotos/link-principal.jpg')
-      .replace(/hero-portrait\.png/g, 'assets/images/fotos/link-principal.jpg')
-      .replace(/assets\/images\/fotos\/principal\.jpg/g, 'assets/images/fotos/link-principal.jpg')
-      .replace(/project-1\.png/g, 'assets/images/fotos/photo2.jpg')
-      .replace(/project-3\.png/g, 'assets/images/fotos/photo3.jpeg')
-      .replace(/project-2\.png/g, 'assets/images/fotos/photo4.jpeg');
+      .replace(/about-portrait\.png/g, 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975015/principal_bunphx.jpg')
+      .replace(/hero-portrait\.png/g, 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975015/principal_bunphx.jpg')
+      .replace(/assets\/images\/fotos\/[a-zA-Z0-9_-]+\.(jpg|jpeg|png)/g, 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786975015/principal_bunphx.jpg')
+      .replace(/project-1\.png/g, 'assets/images/proyectos/card1.png')
+      .replace(/project-3\.png/g, 'assets/images/proyectos/card2.png')
+      .replace(/project-2\.png/g, 'assets/images/proyectos/plaxtilineas.png');
     try {
       const parsed = JSON.parse(str);
       if (parsed?.hero) {
@@ -103,19 +103,6 @@ export class PortfolioConfigService {
           }
         } else {
           this._config.set(JSON.parse(JSON.stringify(normOriginal)));
-        }
-
-        if (typeof window !== 'undefined') {
-          this.imageOptimizer.preloadAndOptimize([
-            'assets/images/fotos/main-link.jpg',
-            'assets/images/fotos/color-1.jpg',
-            'assets/images/fotos/blanco-negro-1.jpg',
-            'assets/images/fotos/color-2.jpg',
-            'assets/images/fotos/blanco-negro-2.jpg',
-            'assets/images/fotos/color-3.jpg',
-            'assets/images/fotos/blanco-negro-3.jpg',
-            'assets/images/fotos/color-4.jpg'
-          ], 900, 0.5);
         }
       },
       error: (err) => console.error('Error loading portfolio config:', err)
