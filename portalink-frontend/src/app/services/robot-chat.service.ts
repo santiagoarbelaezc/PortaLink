@@ -135,6 +135,18 @@ export class RobotChatService {
     this.cachedActiveMaterial = material;
   }
 
+  transcribeAudio(base64Audio: string, mimeType = 'audio/webm'): Observable<{ ok: boolean; transcript: string }> {
+    return this.http.post<{ ok: boolean; transcript: string }>(`${environment.apiUrl}/robot/transcribe`, {
+      audio: base64Audio,
+      mimeType
+    }).pipe(
+      catchError(err => {
+        console.warn('[RobotChatService] Transcribe error:', err);
+        return of({ ok: false, transcript: '' });
+      })
+    );
+  }
+
   getStudyPlan(): { text: string; active: boolean } {
     if (this.cachedActiveMaterial && this.cachedActiveMaterial.content.trim()) {
       return { text: this.cachedActiveMaterial.content, active: true };

@@ -518,6 +518,7 @@ export class DashRotbotComponent implements OnInit, OnDestroy, OnChanges {
 
   private currentAudio: HTMLAudioElement | null = null;
   private voiceSub!: Subscription;
+  private recognition: any = null;
 
   get isDark() { return this.theme === 'dark'; }
 
@@ -635,6 +636,9 @@ export class DashRotbotComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnDestroy() {
     this.stopAudio();
+    if (this.recognition) {
+      try { this.recognition.abort(); } catch {}
+    }
     if (this.voiceSub) this.voiceSub.unsubscribe();
   }
 
@@ -882,12 +886,14 @@ export class DashRotbotComponent implements OnInit, OnDestroy, OnChanges {
 
   toggleVoiceInput() {
     if (this.isVoiceRecording) {
-      this.audioRecorder.stopRecording();
       this.isVoiceRecording = false;
-    } else {
-      this.isVoiceRecording = true;
-      this.audioRecorder.startRecording();
+      this.audioRecorder.stopRecording();
+      return;
     }
+
+    this.userMessage = '';
+    this.isVoiceRecording = true;
+    this.audioRecorder.startRecording();
   }
 
   private handleVoiceTranscript(audio: RecordedAudio) {
@@ -895,16 +901,28 @@ export class DashRotbotComponent implements OnInit, OnDestroy, OnChanges {
     this.isProcessing = true;
     this.currentEmotion = 'thinking';
 
-    this.commandCenter.queryVoiceAudio(audio.base64, audio.mimeType).subscribe({
+    // Transcribir audio con el backend y colocar el texto en el input
+    this.robotService.transcribeAudio(audio.base64, audio.mimeType).subscribe({
       next: (res) => {
-        if (res && res.transcript) {
-          this.send(res.transcript);
+        if (res && res.transcript && res.transcript.trim()) {
+          // 1. Colocar lo interpretado dentro de la caja de texto (input)
+          this.userMessage = res.transcript.trim();
+          this.isProcessing = false;
+          this.currentEmotion = 'happy';
+
+          // 2. Despachar el mensaje a Rotbot
+          setTimeout(() => {
+            if (this.userMessage.trim()) {
+              this.send(this.userMessage);
+            }
+          }, 450);
         } else {
           this.isProcessing = false;
           this.currentEmotion = 'happy';
         }
       },
-      error: () => {
+      error: (err) => {
+        console.warn('[DashRotbot] Transcribe error:', err);
         this.isProcessing = false;
         this.currentEmotion = 'neutral';
       }
