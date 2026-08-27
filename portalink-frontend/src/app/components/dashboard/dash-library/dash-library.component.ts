@@ -190,7 +190,7 @@ export class DashLibraryComponent implements OnInit {
     this.isSortDropdownOpen = false;
   }
 
-  @HostListener('document:click', ['$event'])
+  @HostListener('document:click')
   onDocumentClick() {
     if (this.isSortDropdownOpen) {
       this.isSortDropdownOpen = false;
