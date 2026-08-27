@@ -575,7 +575,7 @@ class CommandCenterController
      */
     private function callGemini(string $userPrompt, array $context): array
     {
-        $apiKey = getenv('GEMINI_API_KEY') ?: ($_ENV['GEMINI_API_KEY'] ?? 'AQ.Ab8RN6K8IgT3jGjqZkIj5AOvS9jjVM5WCK-3sis_N5ynsM_yaw');
+        $apiKey = getenv('GEMINI_API_KEY') ?: ($_ENV['GEMINI_API_KEY'] ?? '');
         $model = getenv('GEMINI_MODEL') ?: 'gemini-flash-latest';
 
         $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key=" . urlencode($apiKey);
@@ -717,8 +717,8 @@ SYS;
      */
     private function callGeminiAudio(string $base64Audio, string $mimeType, array $context): array
     {
-        $apiKey = getenv('GEMINI_API_KEY') ?: ($_ENV['GEMINI_API_KEY'] ?? 'AQ.Ab8RN6K8IgT3jGjqZkIj5AOvS9jjVM5WCK-3sis_N5ynsM_yaw');
-        $modelsToTry = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-flash-latest'];
+        $apiKey = getenv('GEMINI_API_KEY') ?: ($_ENV['GEMINI_API_KEY'] ?? '');
+        $modelsToTry = ['gemini-3.6-flash', 'gemini-3.1-pro-preview', 'gemini-flash-latest'];
 
         $cleanMime = explode(';', $mimeType)[0];
         if (!$cleanMime || $cleanMime === 'audio/x-m4a') $cleanMime = 'audio/mp4';

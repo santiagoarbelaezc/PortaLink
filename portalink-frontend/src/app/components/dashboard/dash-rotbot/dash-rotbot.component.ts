@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, AfterViewInit, OnDestroy, OnChanges, SimpleChanges, inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, AfterViewInit, OnDestroy, OnChanges, SimpleChanges, inject, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RobotChatService, RobotChatResponse, RotbotMode } from '../../../services/robot-chat.service';
@@ -136,22 +136,105 @@ interface ChatEntry {
              [ngClass]="isDark ? 'bg-[#090b10]/90 border-neutral-800' : 'bg-white border-neutral-200/90'">
 
           <!-- Chat Top Header -->
-          <div class="px-5 py-3.5 border-b flex items-center justify-between flex-shrink-0"
+          <div class="px-5 py-3 border-b flex items-center justify-between flex-shrink-0 relative z-30"
                [ngClass]="isDark ? 'border-neutral-800/80 bg-neutral-950/50' : 'border-neutral-200/80 bg-neutral-50/70'">
-            <div class="flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
-              <span class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider"
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shrink-0"></span>
+              <span class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider truncate"
                     [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">
-                {{ currentMode === 'charla' ? 'English Conversational Lounge' : (currentMode === 'ensenanza' ? 'Grammar & Vocabulary Classroom' : 'Pronunciation & Listening Lab') }}
+                {{ currentMode === 'charla' ? 'English Lounge' : (currentMode === 'ensenanza' ? 'Classroom' : 'Listening Lab') }}
               </span>
             </div>
-            <button (click)="clearChat()" 
-                    class="text-xs font-mono text-neutral-400 hover:text-red-400 transition-colors cursor-pointer flex items-center gap-1.5">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-              <span>Reset</span>
-            </button>
+
+            <!-- Right Header Controls: Voice Selector Combobox + Reset Button -->
+            <div class="flex items-center gap-2 shrink-0">
+              
+              <!-- 🎙️ Custom Voice Combobox Dropdown -->
+              <div class="relative z-50">
+                <button 
+                  type="button"
+                  (click)="toggleVoiceDropdown($event)"
+                  class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all duration-200 cursor-pointer shadow-xs active:scale-98 select-none"
+                  [ngClass]="isVoiceDropdownOpen
+                    ? (isDark ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 ring-2 ring-cyan-500/20' : 'bg-cyan-50 border-cyan-400 text-cyan-900 ring-2 ring-cyan-500/20')
+                    : (isDark ? 'bg-neutral-900/90 border-neutral-800 hover:border-neutral-700 text-neutral-300' : 'bg-white border-neutral-200 hover:border-neutral-300 text-neutral-700')">
+                  
+                  <span class="text-cyan-400">🎙️</span>
+                  <span class="font-headline font-bold text-[11px] uppercase tracking-wider">Voz: {{ currentVoice.name }}</span>
+                  <span class="px-1 py-0.2 rounded text-[9px] font-mono font-bold uppercase"
+                        [ngClass]="isDark ? 'bg-neutral-800 text-neutral-400' : 'bg-neutral-100 text-neutral-600'">
+                    {{ currentVoice.accent }}
+                  </span>
+
+                  <!-- Chevron -->
+                  <svg class="w-3.5 h-3.5 opacity-60 transition-transform duration-200"
+                       [ngClass]="isVoiceDropdownOpen ? 'rotate-180 text-cyan-400 opacity-100' : ''"
+                       fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                  </svg>
+                </button>
+
+                <!-- Floating Voice Selector Menu -->
+                <div *ngIf="isVoiceDropdownOpen"
+                     (click)="$event.stopPropagation()"
+                     class="absolute right-0 top-full mt-2 w-72 max-h-84 overflow-hidden flex flex-col rounded-2xl border p-1.5 z-[100] transition-all shadow-[0_20px_60px_rgba(0,0,0,0.9)] animate-in fade-in zoom-in-95 duration-150"
+                     [ngClass]="isDark ? 'bg-[#0b0e14] border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900 shadow-[0_20px_50px_rgba(0,0,0,0.18)]'">
+                  
+                  <div class="px-3 py-2 border-b mb-1 flex items-center justify-between"
+                       [ngClass]="isDark ? 'border-neutral-800/90 text-neutral-400' : 'border-neutral-100 text-neutral-500'">
+                    <span class="text-[10px] font-headline font-bold uppercase tracking-widest text-cyan-400">Voz de Rotbot</span>
+                    <span class="text-[9px] font-mono opacity-60 font-semibold">{{ availableVoices.length }} opciones</span>
+                  </div>
+
+                  <!-- Voice List (Scrollable) -->
+                  <div class="space-y-1 overflow-y-auto max-h-64 pr-1">
+                    <div *ngFor="let v of availableVoices"
+                         (click)="selectVoice(v.id, $event)"
+                         class="w-full px-2.5 py-2 rounded-xl flex items-center justify-between gap-2 transition-all duration-150 cursor-pointer group"
+                         [ngClass]="selectedVoiceId === v.id
+                           ? (isDark ? 'bg-cyan-500/15 text-cyan-300 font-bold border border-cyan-500/30' : 'bg-cyan-50 text-cyan-900 font-bold border border-cyan-300')
+                           : (isDark ? 'text-neutral-300 hover:bg-neutral-900 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100 hover:text-black')">
+                      
+                      <div class="flex items-center gap-2 min-w-0 flex-1">
+                        <span class="w-2 h-2 rounded-full shrink-0"
+                              [ngClass]="selectedVoiceId === v.id ? 'bg-cyan-400 animate-pulse' : 'bg-neutral-600'"></span>
+                        <div class="min-w-0">
+                          <div class="flex items-center gap-1.5">
+                            <span class="text-xs font-headline font-bold truncate">{{ v.name }}</span>
+                            <span class="px-1 py-0.2 rounded text-[8px] font-mono font-bold"
+                                  [ngClass]="isDark ? 'bg-neutral-800 text-neutral-400' : 'bg-neutral-200 text-neutral-700'">
+                              {{ v.accent }}
+                            </span>
+                          </div>
+                          <span class="text-[9px] opacity-60 font-sans block truncate leading-tight">{{ v.desc }}</span>
+                        </div>
+                      </div>
+
+                      <!-- Preview / Test Voice Button -->
+                      <button type="button"
+                              (click)="testVoice(v.id, $event)"
+                              class="px-2 py-1 rounded-lg text-[9px] font-headline font-bold uppercase tracking-wider transition-all cursor-pointer shrink-0"
+                              [ngClass]="isDark ? 'bg-neutral-800 hover:bg-cyan-500/20 hover:text-cyan-300 text-neutral-300 border border-neutral-700' : 'bg-neutral-100 hover:bg-cyan-100 hover:text-cyan-900 text-neutral-700 border border-neutral-200'"
+                              title="Escuchar muestra de esta voz">
+                        ▶ Probar
+                      </button>
+
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Reset Button -->
+              <button (click)="clearChat()" 
+                      class="text-xs font-mono text-neutral-400 hover:text-red-400 transition-colors cursor-pointer flex items-center gap-1 p-1.5 rounded-lg"
+                      title="Reiniciar conversación">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+
+            </div>
           </div>
 
           <!-- 📌 ACTIVE STUDY PLAN BANNER -->
@@ -504,7 +587,86 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
   studyPlanText = '';
 
   userMessage = '';
-  selectedVoiceId = 'iP95p4xoKVk53GoZ742B';
+  selectedVoiceId = 'bIHbv24MWmeRgasZH58o';
+
+  // ── ElevenLabs Voice Selection Suite ────────────────────────────────
+  isVoiceDropdownOpen = false;
+
+  availableVoices = [
+    { id: 'bIHbv24MWmeRgasZH58o', name: 'Will', desc: 'Relaxed Optimist • Conversacional', accent: 'US' },
+    { id: 'pNInz6obpgDQGcFmaJgB', name: 'Adam', desc: 'Dominant, Firm • Clásico profundo', accent: 'US' },
+    { id: 'iP95p4xoKVk53GoZ742B', name: 'Chris', desc: 'Charming, Down-to-Earth', accent: 'US' },
+    { id: 'CwhRBWXzGAHq8TQ4Fs17', name: 'Roger', desc: 'Laid-Back, Casual, Resonant', accent: 'US' },
+    { id: 'JBFqnCBsd6RMkjVDRZzb', name: 'George', desc: 'Warm Storyteller • Británico', accent: 'UK' },
+    { id: 'cgSgspJ2msm6clMCkdW9', name: 'Jessica', desc: 'Playful, Bright, Warm', accent: 'US' },
+    { id: 'EXAVITQu4vr4xnSDxMaL', name: 'Sarah', desc: 'Mature, Reassuring, Confident', accent: 'US' },
+    { id: 'FGY2WhTYpPnrIDTdsKH5', name: 'Laura', desc: 'Enthusiast, Quirky Attitude', accent: 'US' },
+    { id: 'IKne3meq5aSn9XLyUdCD', name: 'Charlie', desc: 'Deep, Energetic • Australiano', accent: 'AU' },
+    { id: 'N2lVS1w4EtoT3dr4eOWO', name: 'Callum', desc: 'Husky Trickster • Expresivo', accent: 'US' },
+    { id: 'SAz9YHcvj6GT2YYXdXww', name: 'River', desc: 'Relaxed, Neutral, Informative', accent: 'US' },
+    { id: 'SOYHLrjzK2X1ezoPC6cr', name: 'Harry', desc: 'Fierce Warrior • Dinámico', accent: 'US' },
+    { id: 'TX3LPaxmHKxFdv7VOQHJ', name: 'Liam', desc: 'Energetic Creator', accent: 'US' },
+    { id: 'Xb7hH8MSUJpSbSDYk0k2', name: 'Alice', desc: 'Clear Educator • Británica', accent: 'UK' },
+    { id: 'XrExE9yKIg1WjnnlVkGX', name: 'Matilda', desc: 'Professional, Warm', accent: 'US' },
+    { id: 'cjVigY5qzO86Huf0OWal', name: 'Eric', desc: 'Smooth, Trustworthy', accent: 'US' },
+    { id: 'hpp4J3VqNfWAUOO0d1Us', name: 'Bella', desc: 'Professional, Bright, Warm', accent: 'US' },
+    { id: 'nPczCjzI2devNBz1zQrb', name: 'Brian', desc: 'Deep, Resonant & Comforting', accent: 'US' },
+    { id: 'onwK4e9ZLuTAKqWW03F9', name: 'Daniel', desc: 'Steady Broadcaster • Británico', accent: 'UK' },
+    { id: 'pFZP5JQG7iQjIQuC4Bku', name: 'Lily', desc: 'Velvety Actress • Británica', accent: 'UK' },
+    { id: 'pqHfZKP75CvOlQylNhV4', name: 'Bill', desc: 'Wise, Mature, Balanced', accent: 'US' },
+  ];
+
+  get currentVoice() {
+    return this.availableVoices.find(v => v.id === this.selectedVoiceId) || this.availableVoices[0];
+  }
+
+  toggleVoiceDropdown(event?: MouseEvent) {
+    if (event) event.stopPropagation();
+    this.isVoiceDropdownOpen = !this.isVoiceDropdownOpen;
+  }
+
+  selectVoice(voiceId: string, event?: MouseEvent) {
+    if (event) event.stopPropagation();
+    this.selectedVoiceId = voiceId;
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('rotbot_selected_voice', voiceId);
+    }
+    this.isVoiceDropdownOpen = false;
+  }
+
+  testVoice(voiceId: string, event?: MouseEvent) {
+    if (event) event.stopPropagation();
+    this.selectedVoiceId = voiceId;
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('rotbot_selected_voice', voiceId);
+    }
+    this.isVoiceDropdownOpen = false;
+    this.stopAudio();
+    this.isProcessing = true;
+    this.currentEmotion = 'talking';
+
+    this.robotService.sendMessage('Hello! This is a voice sample. How do I sound?', voiceId, [], 'charla').subscribe({
+      next: (res) => {
+        this.isProcessing = false;
+        if (res.audio) {
+          this.reproduceAudio(res.audio);
+        } else {
+          this.pronouncePhrase('Hello! This is a voice sample in English.');
+        }
+      },
+      error: () => {
+        this.isProcessing = false;
+        this.currentEmotion = 'neutral';
+      }
+    });
+  }
+
+  @HostListener('document:click')
+  onDocumentClick() {
+    if (this.isVoiceDropdownOpen) {
+      this.isVoiceDropdownOpen = false;
+    }
+  }
 
   chatHistory: ChatEntry[] = [
     {
@@ -519,10 +681,18 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
   private currentAudio: HTMLAudioElement | null = null;
   private voiceSub!: Subscription;
   private recognition: any = null;
+  private englishVoice: any = null;
 
   get isDark() { return this.theme === 'dark'; }
 
   ngOnInit() {
+    this.initVoices();
+    if (typeof localStorage !== 'undefined') {
+      const savedVoice = localStorage.getItem('rotbot_selected_voice');
+      if (savedVoice && this.availableVoices.some(v => v.id === savedVoice)) {
+        this.selectedVoiceId = savedVoice;
+      }
+    }
     this.refreshActiveStudyPlan();
     const loaded = this.loadChatFromStorage(this.currentMode);
     if (!loaded) {
@@ -532,6 +702,21 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
       this.handleVoiceTranscript(rec);
     });
     this.scrollToBottom(true);
+  }
+
+  private initVoices() {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    const findEng = () => {
+      const voices = window.speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        this.englishVoice = voices.find(v => (v.lang === 'en-US' || v.lang.startsWith('en')) && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('David') || v.name.includes('Zira') || v.name.includes('Jenny') || v.name.includes('Guy') || v.name.includes('English')))
+                          || voices.find(v => v.lang === 'en-US')
+                          || voices.find(v => v.lang.startsWith('en'))
+                          || null;
+      }
+    };
+    findEng();
+    window.speechSynthesis.onvoiceschanged = () => findEng();
   }
 
   ngAfterViewInit() {
@@ -720,6 +905,8 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
         // Rotbot habla en voz alta su mensaje de instrucción/bienvenida automáticamente
         if (res.audio && !this.isMuted) {
           this.reproduceAudio(res.audio);
+        } else if (!this.isMuted && (res.phrase || res.reply)) {
+          this.pronouncePhrase(res.phrase || res.reply);
         }
       },
       error: () => {
@@ -791,6 +978,8 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
         // Reproducir voz si viene audio y no está silenciado
         if (res.audio && !this.isMuted) {
           this.reproduceAudio(res.audio);
+        } else if (!this.isMuted && res.reply) {
+          this.pronouncePhrase(res.reply);
         } else {
           setTimeout(() => {
             if (!this.isSpeaking) this.currentEmotion = 'happy';
@@ -823,9 +1012,19 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
       try {
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(textToSpeak);
-        utterance.lang = 'en-US';
-        utterance.rate = 0.90;
+        utterance.rate = 0.92;
         utterance.pitch = 1.0;
+
+        if (!this.englishVoice) {
+          this.initVoices();
+        }
+
+        if (this.englishVoice) {
+          utterance.voice = this.englishVoice;
+          utterance.lang = this.englishVoice.lang || 'en-US';
+        } else {
+          utterance.lang = 'en-US';
+        }
 
         this.isSpeaking = true;
         this.currentEmotion = 'talking';

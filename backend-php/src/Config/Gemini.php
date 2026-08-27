@@ -12,34 +12,49 @@ class Gemini
      */
     public static function callGemini(string $prompt, string $systemPrompt = '', array $history = []): array
     {
-        $apiKey = $_ENV['GEMINI_API_KEY'] ?? '';
+        @set_time_limit(120);
+
+        $keys = array_filter([
+            $_ENV['GEMINI_API_KEY'] ?? getenv('GEMINI_API_KEY') ?: '',
+            $_ENV['GEMINI_API_KEY_2'] ?? getenv('GEMINI_API_KEY_2') ?: '',
+            $_ENV['GEMINI_API_KEY_3'] ?? getenv('GEMINI_API_KEY_3') ?: ''
+        ]);
         
-        // Lista de modelos de Gemini en orden de preferencia
+        // Lista de modelos oficiales y activos de Gemini según la API de Google
         $modelsToTry = [
-            'gemini-2.0-flash',
-            'gemini-1.5-flash',
+            'gemini-3.6-flash',
+            'gemini-3.1-pro-preview',
             'gemini-flash-latest',
-            'gemini-1.5-pro'
+            'gemini-pro-latest'
         ];
 
         $lastError = null;
 
-        foreach ($modelsToTry as $model) {
-            try {
-                return self::requestGeminiModel($model, $apiKey, $prompt, $systemPrompt, $history);
-            } catch (Throwable $e) {
-                $lastError = $e->getMessage();
-                // Si el modelo está ocupado o en alta demanda, probar el siguiente modelo automáticamente
-                if (str_contains(strtolower($lastError), 'demand') || str_contains(strtolower($lastError), '429') || str_contains(strtolower($lastError), '503') || str_contains(strtolower($lastError), 'not found')) {
-                    continue;
-                } else {
-                    // Si es un error de API Key u otro error crítico, romper o reintentar
+        foreach ($keys as $apiKey) {
+            $keyQuotaExceeded = false;
+
+            foreach ($modelsToTry as $model) {
+                if ($keyQuotaExceeded) {
+                    break; // Pasar a la siguiente API Key si esta ya excedió su cuota
+                }
+
+                try {
+                    return self::requestGeminiModel($model, $apiKey, $prompt, $systemPrompt, $history);
+                } catch (Throwable $e) {
+                    $lastError = $e->getMessage();
+                    error_log("⚠️ [Gemini] Key ...".substr($apiKey, -8)." con modelo {$model} falló: {$lastError}");
+                    
+                    // Si la cuota de la key está agotada (HTTP 429 / Quota exceeded), saltar al siguiente key directamente
+                    if (stripos($lastError, 'quota') !== false || stripos($lastError, 'exceeded') !== false || stripos($lastError, '429') !== false) {
+                        $keyQuotaExceeded = true;
+                    }
                     continue;
                 }
             }
         }
 
-        // Si todos los modelos de Gemini están saturados, recurrir a Groq AI como respaldo de seguridad
+        // Si todos los modelos/keys de Gemini fallaron o están sin cuota, recurrir a Groq AI inmediatamente
+        error_log("ℹ️ [Gemini] Todas las keys/modelos de Gemini no disponibles. Activando respaldo ultrarrápido con Groq AI...");
         try {
             $messages = [];
             if (!empty($systemPrompt)) {
@@ -99,7 +114,10 @@ class Gemini
         ];
 
         $payload = [
-            'contents' => $contents
+            'contents' => $contents,
+            'tools' => [
+                ['google_search' => (object)[]]
+            ]
         ];
 
         if (!empty($systemPrompt)) {
@@ -110,6 +128,56 @@ class Gemini
             ];
         }
 
+        $result = self::executeGeminiCurl($url, $apiKey, $payload, $model);
+        
+        // Si falló por tools o rate limit de grounding, reintentar sin tools
+        if (!$result['ok']) {
+            // Si fue error de cuota / rate limit, propagar error de inmediato
+            if (stripos($result['error'] ?? '', 'quota') !== false || stripos($result['error'] ?? '', 'exceeded') !== false) {
+                throw new Exception($result['error']);
+            }
+
+            unset($payload['tools']);
+            $result = self::executeGeminiCurl($url, $apiKey, $payload, $model);
+            if (!$result['ok']) {
+                throw new Exception($result['error']);
+            }
+        }
+
+        $resData = $result['data'];
+        $text = $resData['candidates'][0]['content']['parts'][0]['text'] ?? '';
+
+        if (empty($text)) {
+            throw new Exception("Gemini ({$model}) no retornó texto.");
+        }
+
+        // Extraer metadata de Google Search grounding si existe
+        $groundingMeta = $resData['candidates'][0]['groundingMetadata'] ?? null;
+        $searchQueries = $groundingMeta['webSearchQueries'] ?? [];
+        $groundingChunks = $groundingMeta['groundingChunks'] ?? [];
+
+        $sources = [];
+        foreach ($groundingChunks as $chunk) {
+            if (isset($chunk['web'])) {
+                $sources[] = [
+                    'title' => $chunk['web']['title'] ?? '',
+                    'url'   => $chunk['web']['uri'] ?? ''
+                ];
+            }
+        }
+
+        return [
+            'content'       => $text,
+            'raw'           => $result,
+            'model'         => $model,
+            'searchQueries' => $searchQueries,
+            'sources'       => $sources,
+            'wasGrounded'   => !empty($groundingChunks)
+        ];
+    }
+
+    private static function executeGeminiCurl(string $url, string $apiKey, array $payload, string $model): array
+    {
         $jsonPayload = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
         $ch = curl_init($url);
@@ -121,8 +189,8 @@ class Gemini
                 'X-goog-api-key: ' . $apiKey
             ],
             CURLOPT_POSTFIELDS => $jsonPayload,
-            CURLOPT_CONNECTTIMEOUT => 8,
-            CURLOPT_TIMEOUT => 25,
+            CURLOPT_CONNECTTIMEOUT => 3,
+            CURLOPT_TIMEOUT => 6,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => 0,
             CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4
@@ -134,26 +202,17 @@ class Gemini
         curl_close($ch);
 
         if ($error) {
-            throw new Exception("cURL Error ({$model}): " . $error);
+            return ['ok' => false, 'error' => "cURL Error ({$model}): " . $error];
         }
 
         if ($httpCode !== 200) {
             $errData = json_decode($response, true);
             $errMsg = $errData['error']['message'] ?? "HTTP {$httpCode} de Gemini ({$model})";
-            throw new Exception($errMsg);
+            return ['ok' => false, 'error' => $errMsg];
         }
 
-        $result = json_decode($response, true);
-        $text = $result['candidates'][0]['content']['parts'][0]['text'] ?? '';
-
-        if (empty($text)) {
-            throw new Exception("Gemini ({$model}) no retornó texto.");
-        }
-
-        return [
-            'content' => $text,
-            'raw' => $result,
-            'model' => $model
-        ];
+        $resData = json_decode($response, true);
+        return ['ok' => true, 'data' => $resData];
     }
 }
+

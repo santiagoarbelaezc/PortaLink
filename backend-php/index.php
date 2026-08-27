@@ -50,12 +50,14 @@ if (file_exists(__DIR__ . '/.env') && class_exists('Dotenv\Dotenv')) {
     // Respaldo simple para leer .env si phpdotenv aún no está instalado vía Composer
     $lines = file(__DIR__ . '/.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($lines as $line) {
-        if (str_starts_with(trim($line), '#')) continue;
-        if (str_contains($line, '=')) {
-            list($name, $value) = explode('=', $line, 2);
+        $trimmed = trim($line);
+        if (empty($trimmed) || str_starts_with($trimmed, '#')) continue;
+        if (str_contains($trimmed, '=')) {
+            list($name, $value) = explode('=', $trimmed, 2);
             $name = trim($name);
-            $value = trim($value);
+            $value = trim($value, " \t\n\r\0\x0B\"'");
             $_ENV[$name] = $value;
+            $_SERVER[$name] = $value;
             putenv("{$name}={$value}");
         }
     }
@@ -81,6 +83,8 @@ use App\Controllers\SiteController;
 use App\Controllers\LibraryController;
 use App\Controllers\ChatAdminController;
 use App\Controllers\CommandCenterController;
+use App\Controllers\RobotChatController;
+use App\Controllers\StudyPlanController;
 
 $request = new Request();
 $response = new Response();
@@ -373,6 +377,23 @@ $router->post('/api/command-center/activity', [CommandCenterController::class, '
 $router->get('/api/command-center/radar', [CommandCenterController::class, 'getRadar'], [OptionalAuthMiddleware::class]);
 $router->get('/api/command-center/suggestions', [CommandCenterController::class, 'getSuggestions'], [OptionalAuthMiddleware::class]);
 $router->get('/api/command-center/recent-activities', [CommandCenterController::class, 'getRecentActivities'], [OptionalAuthMiddleware::class]);
+
+// ──────────────────────────────────────────────────────────────
+//  RUTAS DE ROTBOT IA CON ELEVENLABS & OJOS OLED (/api/robot)
+// ──────────────────────────────────────────────────────────────
+$router->post('/api/robot/chat', [RobotChatController::class, 'chat'], [OptionalAuthMiddleware::class]);
+$router->post('/api/robot_chat.php', [RobotChatController::class, 'chat'], [OptionalAuthMiddleware::class]);
+$router->post('/api/robot/transcribe', [RobotChatController::class, 'transcribe'], [OptionalAuthMiddleware::class]);
+
+// ──────────────────────────────────────────────────────────────
+//  RUTAS DE PLANES DE ESTUDIO DE ROTBOT (/api/robot/study-plans)
+// ──────────────────────────────────────────────────────────────
+$router->get('/api/robot/study-plans', [StudyPlanController::class, 'getAll'], [OptionalAuthMiddleware::class]);
+$router->post('/api/robot/study-plans', [StudyPlanController::class, 'create'], [OptionalAuthMiddleware::class]);
+$router->put('/api/robot/study-plans/:id', [StudyPlanController::class, 'update'], [OptionalAuthMiddleware::class]);
+$router->delete('/api/robot/study-plans/:id', [StudyPlanController::class, 'delete'], [OptionalAuthMiddleware::class]);
+$router->post('/api/robot/study-plans/:id/activate', [StudyPlanController::class, 'activate'], [OptionalAuthMiddleware::class]);
+$router->get('/api/robot/study-plans/active', [StudyPlanController::class, 'getActive'], [OptionalAuthMiddleware::class]);
 
 // Despachar la petición protegido contra errores fatales no capturados
 try {
