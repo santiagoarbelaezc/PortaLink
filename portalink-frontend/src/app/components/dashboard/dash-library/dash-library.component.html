@@ -1109,10 +1109,10 @@
                     <span>IA</span>
                   </button>
 
-                  <!-- MENU DE OPCIONES IA DE ESTE BLOQUE (DESPLEGADO HACIA ARRIBA) -->
+                  <!-- MENU DE OPCIONES IA DE ESTE BLOQUE (DESPLEGADO COMPACTO Y ELEGANTE) -->
                   <div *ngIf="activeAiBlockId === block.id" 
                        (click)="$event.stopPropagation()"
-                       class="absolute right-0 bottom-full mb-2 w-[85vw] max-w-84 z-[100] rounded-2xl border shadow-2xl p-4 backdrop-blur-2xl animate-fade-in font-sans"
+                       class="absolute right-0 bottom-full mb-2 w-[320px] sm:w-[360px] max-w-[calc(100vw-32px)] z-[100] rounded-2xl border shadow-2xl p-3.5 backdrop-blur-2xl animate-fade-in font-sans"
                        [ngClass]="isDark ? 'bg-[#121215] border-neutral-700 text-white shadow-black/80' : 'bg-white border-neutral-200 text-neutral-900 shadow-2xl'">
                     
                     <!-- CABECERA DE LA VENTANA -->
@@ -1229,6 +1229,17 @@
 
                 <span class="opacity-30 text-xs shrink-0">|</span>
 
+                <!-- BOTÓN TEXTO EN ROJO (Ctrl + Shift + D) -->
+                <button type="button" 
+                        (click)="applyRedTextToActiveBlock()" 
+                        title="Colorear texto seleccionado en rojo (Ctrl + Shift + D)" 
+                        class="hover:scale-105 p-1 sm:p-1.5 rounded-md hover:bg-red-500/20 shrink-0 text-red-400 transition-all flex items-center gap-1 cursor-pointer">
+                  <span class="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0 shadow-xs shadow-red-500/50"></span>
+                  <span class="text-[10px] font-bold hidden sm:inline text-red-400">Rojo</span>
+                </button>
+
+                <span class="opacity-30 text-xs shrink-0">|</span>
+
                 <!-- BOTÓN CONMUTAR POSICIÓN ARRIBA / ABAJO -->
                 <button type="button" 
                         (click)="toggleToolbarPosition($event)" 
@@ -1269,36 +1280,38 @@
 
             <!-- 👑 TÍTULO MONOCROMÁTICO COMPACTO -->
             <div *ngIf="block.type === 'titulo'">
-              <textarea 
-                [(ngModel)]="block.content"
+              <div 
+                contenteditable="true"
+                [id]="'block-' + block.id"
+                [(appContentEditable)]="block.content"
+                (appContentEditableChange)="syncBlocksToContent()"
                 (focus)="activeBlockId = block.id"
-                (input)="onBlockInput(block, $event)"
                 (keydown)="onBlockKeydown($event, block, i)"
                 spellcheck="false"
                 autocorrect="off"
                 autocapitalize="off"
-                [rows]="getLineCount(block.content, 1, 'titulo')"
                 placeholder="Escribe el título principal..."
-                class="w-full bg-transparent text-2xl sm:text-3xl font-extrabold font-headline pb-1 pt-0.5 focus:outline-none focus:border-b focus:border-neutral-400 resize-none transition-all leading-snug"
-                [ngClass]="isDark ? 'text-white placeholder:text-neutral-600' : 'text-neutral-900 placeholder:text-neutral-400'"
-              ></textarea>
+                class="w-full bg-transparent text-2xl sm:text-3xl font-extrabold font-headline pb-1 pt-0.5 focus:outline-none focus:border-b focus:border-neutral-400 outline-none transition-all leading-snug empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.4em]"
+                [ngClass]="isDark ? 'text-white' : 'text-neutral-900'"
+              ></div>
             </div>
 
             <!-- 📌 SUBTÍTULO MONOCROMÁTICO COMPACTO -->
             <div *ngIf="block.type === 'subtitulo'">
-              <textarea 
-                [(ngModel)]="block.content"
+              <div 
+                contenteditable="true"
+                [id]="'block-' + block.id"
+                [(appContentEditable)]="block.content"
+                (appContentEditableChange)="syncBlocksToContent()"
                 (focus)="activeBlockId = block.id"
-                (input)="onBlockInput(block, $event)"
                 (keydown)="onBlockKeydown($event, block, i)"
                 spellcheck="false"
                 autocorrect="off"
                 autocapitalize="off"
-                [rows]="getLineCount(block.content, 1, 'subtitulo')"
                 placeholder="Escribe un subtítulo..."
-                class="w-full bg-transparent text-lg sm:text-xl font-bold font-headline pb-1 pt-0.5 focus:outline-none focus:border-b focus:border-neutral-400 resize-none transition-all leading-snug"
-                [ngClass]="isDark ? 'text-neutral-200 placeholder:text-neutral-600' : 'text-neutral-800 placeholder:text-neutral-400'"
-              ></textarea>
+                class="w-full bg-transparent text-lg sm:text-xl font-bold font-headline pb-1 pt-0.5 focus:outline-none focus:border-b focus:border-neutral-400 outline-none transition-all leading-snug empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.4em]"
+                [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'"
+              ></div>
             </div>
 
             <!-- 💻 CÓDIGO TERMINAL BLACK CARD COMPACTO -->
@@ -1351,36 +1364,38 @@
                 </svg>
               </div>
               <div class="flex-1 min-w-0">
-                <textarea 
-                  [(ngModel)]="block.content"
+                <div 
+                  contenteditable="true"
+                  [id]="'block-' + block.id"
+                  [(appContentEditable)]="block.content"
+                  (appContentEditableChange)="syncBlocksToContent()"
                   (focus)="activeBlockId = block.id"
-                  (input)="onBlockInput(block, $event)"
                   (keydown)="onBlockKeydown($event, block, i)"
                   spellcheck="false"
                   autocorrect="off"
                   autocapitalize="off"
-                  [rows]="getLineCount(block.content, 1, 'alerta')"
                   placeholder="Escribe un consejo o nota importante..."
-                  class="w-full bg-transparent text-xs sm:text-sm font-medium leading-relaxed focus:outline-none resize-y text-neutral-200 placeholder:text-neutral-500"
-                ></textarea>
+                  class="w-full bg-transparent text-xs sm:text-sm font-medium leading-relaxed outline-none text-neutral-200 empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.4em]"
+                ></div>
               </div>
             </div>
 
             <!-- 📝 TEXTO NORMAL MONOCROMÁTICO COMPACTO -->
             <div *ngIf="block.type === 'texto'">
-              <textarea 
-                [(ngModel)]="block.content"
+              <div 
+                contenteditable="true"
+                [id]="'block-' + block.id"
+                [(appContentEditable)]="block.content"
+                (appContentEditableChange)="syncBlocksToContent()"
                 (focus)="activeBlockId = block.id"
-                (input)="onBlockInput(block, $event)"
                 (keydown)="onBlockKeydown($event, block, i)"
                 spellcheck="false"
                 autocorrect="off"
                 autocapitalize="off"
-                [rows]="getLineCount(block.content, 1, 'texto')"
                 placeholder="Escribe texto normal... (Escribe '/' para cambiar de bloque)"
-                class="w-full bg-transparent text-base sm:text-lg leading-snug py-0.5 focus:outline-none resize-y transition-all"
-                [ngClass]="isDark ? 'text-neutral-300 placeholder:text-neutral-600' : 'text-neutral-800 placeholder:text-neutral-400'"
-              ></textarea>
+                class="w-full bg-transparent text-base sm:text-lg leading-snug py-0.5 outline-none transition-all empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.5em]"
+                [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-800'"
+              ></div>
             </div>
 
           </div>
@@ -1791,20 +1806,21 @@
   <!-- ══════════════════════════════════════
        ROTBOT IA COPILOTO FLOTANTE DE BIBLIOTECA
   ══════════════════════════════════════ -->
-  <div class="hidden md:block fixed bottom-3 -right-8 z-[300]">
+  <div class="hidden md:block fixed bottom-2 -right-5 sm:-right-7 z-[300] pointer-events-none">
     
-    <!-- BOTÓN APERTURA ROTBOT PERSONAJE -->
+    <!-- BOTÓN APERTURA ROTBOT PERSONAJE (AJUSTADO CEÑIDO Y ELEGANTE) -->
     <button *ngIf="!isCopilotOpen" 
             (click)="toggleCopilot()"
-            class="group relative flex h-[280px] w-[190px] items-center justify-end bg-transparent border-none overflow-visible shadow-none origin-right cursor-pointer">
+            title="Abrir RotBot Copiloto IA"
+            class="pointer-events-auto group relative flex h-[210px] sm:h-[235px] w-[82px] sm:w-[92px] items-center justify-end bg-transparent border-none overflow-visible shadow-none cursor-pointer hover:-translate-x-1 transition-transform duration-300 ease-out">
       <div class="relative flex items-center justify-end w-full h-full">
-        <img src="assets/images/robot-izquierda.png" class="h-full w-auto object-contain object-right relative z-10 translate-x-8 hover:scale-105 transition-transform" alt="Rotbot IA">
+        <img src="assets/images/robot-izquierda.png" class="h-full w-auto object-contain object-right relative z-10 hover:scale-[1.02] transition-transform duration-300 ease-out" alt="Rotbot IA">
       </div>
     </button>
 
     <!-- PANEL FLOTANTE DE CHAT ROTBOT IA (ARRASTRABLE) -->
     <div *ngIf="isCopilotOpen" 
-         class="chat-panel fixed w-[92vw] sm:w-[390px] md:w-[400px] max-h-[88vh] h-[630px] overflow-hidden rounded-[32px] border shadow-[0_30px_70px_rgba(0,0,0,0.22)] font-sans flex flex-col z-[300] transition-all animate-fade-in"
+         class="chat-panel pointer-events-auto fixed w-[92vw] sm:w-[390px] md:w-[400px] max-h-[88vh] h-[630px] overflow-hidden rounded-[32px] border shadow-[0_30px_70px_rgba(0,0,0,0.22)] font-sans flex flex-col z-[300] transition-all animate-fade-in"
          [ngClass]="isDark ? 'bg-[#121215] border-neutral-800 text-white' : 'bg-white border-neutral-200/90 text-neutral-900'"
          [style.position]="isCopilotCustomPositioned ? 'fixed' : 'fixed'"
          [style.left.px]="isCopilotCustomPositioned ? copilotPos.x : null"

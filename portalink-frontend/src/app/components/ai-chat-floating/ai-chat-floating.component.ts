@@ -14,17 +14,18 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
   imports: [CommonModule, FormsModule, MarkdownPipe],
   template: `
     <!-- Floating Container (Solo visible en Desktop md+) -->
-    <div class="hidden md:block fixed bottom-3 -right-8 z-[500]">
+    <div class="hidden md:block fixed bottom-2 -right-5 sm:-right-7 z-[500] pointer-events-none">
       
       <!-- Open Chat Button -->
       <button 
         *ngIf="!isOpen"
         [@buttonAnimation]
         (click)="toggleChat()"
-        class="group relative flex h-[280px] w-[190px] items-center justify-end bg-transparent border-none overflow-visible shadow-none origin-right cursor-pointer"
+        title="Abrir RotBot IA"
+        class="pointer-events-auto group relative flex h-[210px] sm:h-[235px] w-[82px] sm:w-[92px] items-center justify-end bg-transparent border-none overflow-visible shadow-none cursor-pointer hover:-translate-x-1 transition-transform duration-300 ease-out"
       >
         <div class="relative flex items-center justify-end w-full h-full">
-          <img src="assets/images/robot-izquierda.png" class="h-full w-auto object-contain object-right relative z-10 translate-x-8 hover:scale-105 transition-transform" alt="Rotbot">
+          <img src="assets/images/robot-izquierda.png" class="h-full w-auto object-contain object-right relative z-10 hover:scale-[1.02] transition-transform duration-300 ease-out" alt="Rotbot">
         </div>
       </button>
 
@@ -32,7 +33,7 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
       <div 
         *ngIf="isOpen"
         [@chatAnimation]
-        class="chat-panel absolute bottom-0 right-6 md:right-12 w-[94vw] md:w-[480px] max-h-[88vh] h-[660px] overflow-hidden rounded-[32px] bg-white border border-neutral-200/90 shadow-[0_30px_70px_rgba(0,0,0,0.16)] origin-bottom-right font-sans flex flex-col z-50 text-neutral-900"
+        class="chat-panel pointer-events-auto absolute bottom-0 right-6 md:right-12 w-[94vw] md:w-[480px] max-h-[88vh] h-[660px] overflow-hidden rounded-[32px] bg-white border border-neutral-200/90 shadow-[0_30px_70px_rgba(0,0,0,0.16)] origin-bottom-right font-sans flex flex-col z-50 text-neutral-900"
       >
         <!-- Header -->
         <div class="chat-header flex items-center justify-between border-b border-neutral-100 bg-white/95 backdrop-blur-xl px-6 py-3.5 relative overflow-hidden flex-shrink-0">

@@ -1,6 +1,7 @@
-import { Component, Input, OnInit, ViewChild, ElementRef, inject, HostListener } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ElementRef, inject, HostListener, Directive, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { LibraryService, NotebookFolder, NotebookModule, NotebookPage } from '../../../services/library.service';
 import { LibraryAiService } from '../../../services/library-ai.service';
 
@@ -18,10 +19,49 @@ export interface NoteBlock {
   language?: string;
 }
 
+@Directive({
+  selector: '[appContentEditable]',
+  standalone: true
+})
+export class ContentEditableDirective implements OnChanges {
+  @Input() appContentEditable: string = '';
+  @Output() appContentEditableChange = new EventEmitter<string>();
+
+  private isFocused = false;
+
+  constructor(private el: ElementRef<HTMLElement>) {}
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['appContentEditable'] && !this.isFocused) {
+      let val = this.appContentEditable || '';
+      val = val.replace(/<red>(.*?)<\/red>/gi, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
+      val = val.replace(/\[red\](.*?)\[\/red\]/gi, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
+      val = val.replace(/&lt;red&gt;(.*?)&lt;\/red&gt;/gi, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
+      this.el.nativeElement.innerHTML = val;
+    }
+  }
+
+  @HostListener('focus')
+  onFocus() {
+    this.isFocused = true;
+  }
+
+  @HostListener('blur')
+  onBlur() {
+    this.isFocused = false;
+    this.appContentEditableChange.emit(this.el.nativeElement.innerHTML);
+  }
+
+  @HostListener('input')
+  onInput() {
+    this.appContentEditableChange.emit(this.el.nativeElement.innerHTML);
+  }
+}
+
 @Component({
   selector: 'app-dash-library',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ContentEditableDirective],
   templateUrl: './dash-library.component.html'
 })
 export class DashLibraryComponent implements OnInit {
@@ -36,6 +76,7 @@ export class DashLibraryComponent implements OnInit {
 
   private libraryService = inject(LibraryService);
   private libraryAiService = inject(LibraryAiService);
+  private sanitizer = inject(DomSanitizer);
 
   // Block-level AI action state
   activeAiBlockId: string | null = null;
@@ -304,8 +345,105 @@ export class DashLibraryComponent implements OnInit {
     this.activeTypeMenuBlockId = null;
   }
 
+  // ── Helper para renderizar contenido con colores en contenteditable ──
+  getSafeBlockHtml(block: NoteBlock): SafeHtml {
+    if (!block.content) return '';
+    let content = block.content;
+    
+    // Convertir etiquetas legadas <red>...</red> o [red]...[/red] a HTML estilizado en rojo
+    content = content.replace(/<red>(.*?)<\/red>/gi, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
+    content = content.replace(/\[red\](.*?)\[\/red\]/gi, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
+    content = content.replace(/&lt;red&gt;(.*?)&lt;\/red&gt;/gi, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
+    
+    return this.sanitizer.bypassSecurityTrustHtml(content);
+  }
+
+  onBlockContentEditableInput(block: NoteBlock, event: Event) {
+    const el = event.target as HTMLElement;
+    if (!el) return;
+    block.content = el.innerHTML;
+    this.syncBlocksToContent();
+  }
+
+  // ── Atajo para Colorear Texto en Rojo (Ctrl + Shift + D) ──────────────
+  applyRedTextColorToSelection(block?: NoteBlock) {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) {
+      this.showToast('Selecciona el texto con el cursor primero');
+      return;
+    }
+
+    const range = selection.getRangeAt(0);
+    const selectedText = selection.toString();
+
+    // Comprobar si el texto seleccionado o su ancestro ya está coloreado en rojo
+    let container = range.commonAncestorContainer as HTMLElement;
+    if (container.nodeType === Node.TEXT_NODE) {
+      container = container.parentElement as HTMLElement;
+    }
+
+    const redElement = container?.closest('.text-red-500, [style*="239, 68, 68"], [style*="#ef4444"], red') as HTMLElement | null;
+
+    if (redElement) {
+      // Toggle: Deshacer color rojo
+      const plainText = redElement.innerText || redElement.textContent || '';
+      const textNode = document.createTextNode(plainText);
+      redElement.parentNode?.replaceChild(textNode, redElement);
+      this.showToast('Color rojo removido');
+    } else if (selectedText && selectedText.trim().length > 0) {
+      // Aplicar color rojo real al fragmento seleccionado
+      const span = document.createElement('span');
+      span.className = 'text-red-500 font-bold';
+      span.style.color = '#ef4444';
+
+      try {
+        range.surroundContents(span);
+      } catch (e) {
+        const fragment = range.extractContents();
+        span.appendChild(fragment);
+        range.insertNode(span);
+      }
+      this.showToast('Texto colocado en rojo');
+    } else {
+      // Si no hay selección, insertar ejemplo en rojo
+      const span = document.createElement('span');
+      span.className = 'text-red-500 font-bold';
+      span.style.color = '#ef4444';
+      span.textContent = 'texto en rojo';
+      range.insertNode(span);
+
+      const newRange = document.createRange();
+      newRange.selectNodeContents(span);
+      selection.removeAllRanges();
+      selection.addRange(newRange);
+      this.showToast('Texto en rojo insertado');
+    }
+
+    // Sincronizar bloque activo
+    const targetBlock = block || (this.activeBlockId ? this.blocks.find(b => b.id === this.activeBlockId) : null);
+    if (targetBlock) {
+      const blockEl = document.getElementById('block-' + targetBlock.id);
+      if (blockEl) {
+        targetBlock.content = blockEl.innerHTML;
+      }
+      this.syncBlocksToContent();
+    }
+  }
+
+  applyRedTextToActiveBlock() {
+    this.applyRedTextColorToSelection();
+  }
+
   @HostListener('window:keydown', ['$event'])
   onGlobalTypeMenuKeydown(event: KeyboardEvent) {
+    // Atajo global Ctrl + Shift + D / Cmd + Shift + D
+    if ((event.ctrlKey || event.metaKey) && event.shiftKey && (event.key === 'D' || event.key === 'd')) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.applyRedTextColorToSelection();
+      return;
+    }
+
     if (!this.activeTypeMenuBlockId) return;
 
     const block = this.blocks.find(b => b.id === this.activeTypeMenuBlockId);
@@ -842,21 +980,28 @@ export class DashLibraryComponent implements OnInit {
       return;
     }
 
+    // Atajo Ctrl + Shift + D / Cmd + Shift + D para colorear texto en rojo
+    if ((event.ctrlKey || event.metaKey) && event.shiftKey && (event.key === 'D' || event.key === 'd')) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.applyRedTextColorToSelection(block);
+      return;
+    }
+
     if (event.key === 'Enter') {
       if (block.type === 'titulo' || block.type === 'subtitulo') {
         if (!event.shiftKey) {
           event.preventDefault();
           this.addBlock('texto', index);
         }
-      } else if (block.type === 'texto' || block.type === 'alerta') {
-        if (!event.shiftKey && block.content.trim() === '') {
-          event.preventDefault();
-          this.addBlock('texto', index);
-        }
       }
-    } else if (event.key === 'Backspace' && block.content === '' && this.blocks.length > 1) {
-      event.preventDefault();
-      this.removeBlock(index);
+    } else if (event.key === 'Backspace') {
+      const blockEl = document.getElementById('block-' + block.id);
+      const isContentEmpty = !block.content || block.content.trim() === '' || (blockEl && (blockEl.innerText.trim() === '' || blockEl.innerHTML === '<br>'));
+      if (isContentEmpty && this.blocks.length > 1) {
+        event.preventDefault();
+        this.removeBlock(index);
+      }
     }
   }
 
@@ -1375,6 +1520,12 @@ export class DashLibraryComponent implements OnInit {
 
     // Horizontal Divider ---
     html = html.replace(/^---$/gim, `<hr class="my-3 ${borderClass}">`);
+
+    // Red Highlight / Text Color (<red>...</red> o [red]...[/red])
+    html = html.replace(/<red>(.*?)<\/red>/gim, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
+    html = html.replace(/\[red\](.*?)\[\/red\]/gim, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
+    html = html.replace(/&lt;red&gt;(.*?)&lt;\/red&gt;/gim, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
+    html = html.replace(/&lt;\[red\]&gt;(.*?)&lt;\[\/red\]&gt;/gim, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
 
     // Bold & Italics
     html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-emerald-500">$1</strong>');

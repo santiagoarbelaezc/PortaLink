@@ -13,6 +13,10 @@ export class MarkdownPipe implements PipeTransform {
 
     let html = value.replace(/===LANDING_JSON_START===[\s\S]*?===LANDING_JSON_END===/g, '').trim();
 
+    // Red text (<red>text</red> or [red]text[/red])
+    html = html.replace(/<red>(.*?)<\/red>/gim, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
+    html = html.replace(/\[red\](.*?)\[\/red\]/gim, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
+
     // Bold text (**text**)
     html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold font-headline text-neutral-900">$1</strong>');
     
