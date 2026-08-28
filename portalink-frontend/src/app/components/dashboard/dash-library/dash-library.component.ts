@@ -1668,16 +1668,24 @@ export class DashLibraryComponent implements OnInit {
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
 
-    // 2. Formatear **texto en negrilla** -> negrilla con color azul destacado
+    // 2. Formatear encabezados markdown (###, ##, #)
+    html = html.replace(/^### (.*?)$/gm, '<h3 class="text-xs sm:text-sm font-bold mt-2 mb-1 text-blue-500">$1</h3>');
+    html = html.replace(/^## (.*?)$/gm, '<h2 class="text-sm sm:text-base font-bold mt-2 mb-1 text-blue-500">$1</h2>');
+    html = html.replace(/^# (.*?)$/gm, '<h1 class="text-base sm:text-lg font-extrabold mt-2 mb-1 text-blue-500">$1</h1>');
+
+    // 3. Separadores horizontales (--- o ***)
+    html = html.replace(/^---+$/gm, '<hr class="my-2 border-neutral-200 dark:border-neutral-700/80">');
+
+    // 4. Formatear **texto en negrilla** -> negrilla con color azul destacado
     html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-blue-600 dark:text-blue-400">$1</strong>');
 
-    // 3. Formatear *texto en cursiva/destacado* -> texto semi-negrilla azul
+    // 5. Formatear *texto en cursiva/destacado* -> texto semi-negrilla azul
     html = html.replace(/\*(.*?)\*/g, '<span class="font-semibold text-blue-600 dark:text-blue-400">$1</span>');
 
-    // 4. Limpiar cualquier asterisco suelto sobrante
+    // 6. Limpiar cualquier asterisco suelto sobrante
     html = html.replace(/\*/g, '');
 
-    // 5. Convertir saltos de línea \n a <br>
+    // 7. Convertir saltos de línea \n a <br>
     html = html.replace(/\n/g, '<br>');
 
     return html;

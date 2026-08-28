@@ -1901,25 +1901,25 @@
       </div>
 
       <!-- ÁREA DE MENSAJES CON SCROLL Y BURBUJAS ESTILO HOME -->
-      <div #copilotMessagesContainer class="flex-1 p-4 sm:p-5 overflow-y-auto space-y-4 text-[13.5px] sm:text-sm font-sans"
+      <div #copilotMessagesContainer class="flex-1 p-3.5 sm:p-5 overflow-y-auto overflow-x-hidden space-y-4 text-[13.5px] sm:text-sm font-sans w-full max-w-full min-w-0"
            [ngClass]="isDark ? 'bg-[#121215]' : 'bg-white'">
         
-        <div *ngFor="let msg of copilotMessages" class="flex flex-col" [ngClass]="msg.role === 'user' ? 'items-end' : 'items-start'">
+        <div *ngFor="let msg of copilotMessages" class="flex flex-col w-full min-w-0 max-w-full" [ngClass]="msg.role === 'user' ? 'items-end' : 'items-start'">
           
           <!-- MENSAJE USUARIO -->
-          <div *ngIf="msg.role === 'user'" class="max-w-[85%] px-4 py-3 rounded-2xl font-medium text-[13.5px] sm:text-sm leading-relaxed shadow-xs"
+          <div *ngIf="msg.role === 'user'" class="max-w-[85%] px-4 py-3 rounded-2xl font-medium text-[13.5px] sm:text-sm leading-relaxed shadow-xs break-words [overflow-wrap:anywhere]"
                [ngClass]="isDark ? 'bg-emerald-600 text-white rounded-br-xs' : 'bg-[#09090b] text-white rounded-br-xs'">
             {{ msg.content }}
           </div>
 
           <!-- MENSAJE ASISTENTE ROTBOT -->
-          <div *ngIf="msg.role === 'assistant'" class="flex items-start gap-2.5 max-w-[90%]">
-            <div class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center p-1 border"
+          <div *ngIf="msg.role === 'assistant'" class="flex items-start gap-2.5 max-w-full w-full min-w-0">
+            <div class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center p-1 border mt-0.5"
                  [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700' : 'bg-neutral-100 border-neutral-200'">
               <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
             </div>
 
-            <div class="px-4 py-3 rounded-2xl text-[13.5px] sm:text-sm font-normal leading-relaxed border shadow-xs whitespace-pre-wrap"
+            <div class="flex-1 min-w-0 max-w-[calc(100%-42px)] px-4 py-3 rounded-2xl text-[13.5px] sm:text-sm font-normal leading-relaxed border shadow-xs break-words [overflow-wrap:anywhere] [word-break:break-word]"
                  [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 text-neutral-100 rounded-bl-xs' : 'bg-neutral-100 border-neutral-200/70 text-neutral-900 rounded-bl-xs'"
                  [innerHTML]="formatCopilotMessage(msg.content)">
             </div>
