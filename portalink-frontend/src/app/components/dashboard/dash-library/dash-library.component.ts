@@ -221,6 +221,75 @@ export class DashLibraryComponent implements OnInit {
   activeBlockId: string | null = null;
   activeTypeMenuBlockId: string | null = null;
 
+  // ── Drag & Posicionamiento de la barra flotante de herramientas ──────
+  toolbarPosition: 'top' | 'bottom' = 'top';
+  toolbarOffsets: { [blockId: string]: { x: number; y: number } } = {};
+  isDraggingToolbar = false;
+  draggedToolbarBlockId: string | null = null;
+  dragStartMouseX = 0;
+  dragStartMouseY = 0;
+  dragStartOffsetX = 0;
+  dragStartOffsetY = 0;
+
+  toggleToolbarPosition(event?: MouseEvent) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    this.toolbarPosition = this.toolbarPosition === 'top' ? 'bottom' : 'top';
+  }
+
+  onToolbarDragStart(blockId: string, event: MouseEvent) {
+    event.stopPropagation();
+    event.preventDefault();
+    this.isDraggingToolbar = true;
+    this.draggedToolbarBlockId = blockId;
+    this.dragStartMouseX = event.clientX;
+    this.dragStartMouseY = event.clientY;
+    const currentOffset = this.toolbarOffsets[blockId] || { x: 0, y: 0 };
+    this.dragStartOffsetX = currentOffset.x;
+    this.dragStartOffsetY = currentOffset.y;
+
+    const onMouseMove = (e: MouseEvent) => {
+      if (!this.isDraggingToolbar || this.draggedToolbarBlockId !== blockId) return;
+      const dx = e.clientX - this.dragStartMouseX;
+      const dy = e.clientY - this.dragStartMouseY;
+      this.toolbarOffsets[blockId] = {
+        x: this.dragStartOffsetX + dx,
+        y: this.dragStartOffsetY + dy
+      };
+    };
+
+    const onMouseUp = () => {
+      this.isDraggingToolbar = false;
+      this.draggedToolbarBlockId = null;
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
+    window.addEventListener('mouseup', onMouseUp, { once: true });
+  }
+
+  getToolbarTransform(blockId: string): string {
+    const offset = this.toolbarOffsets[blockId];
+    if (!offset) return '';
+    return `translate3d(${offset.x}px, ${offset.y}px, 0)`;
+  }
+
+  hasToolbarOffset(blockId: string): boolean {
+    const offset = this.toolbarOffsets[blockId];
+    return !!(offset && (offset.x !== 0 || offset.y !== 0));
+  }
+
+  resetToolbarPosition(blockId: string, event?: MouseEvent) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    delete this.toolbarOffsets[blockId];
+  }
+
   toggleBlockTypeMenu(blockId: string, event?: MouseEvent) {
     if (event) event.stopPropagation();
     this.activeTypeMenuBlockId = (this.activeTypeMenuBlockId === blockId) ? null : blockId;
