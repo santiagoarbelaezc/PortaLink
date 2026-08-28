@@ -54,11 +54,21 @@ class RobotChatController
             $audioBase64 = $this->callElevenLabsTTS($speechText, $voiceId, $elevenKeys);
         }
 
+        // Si ElevenLabs agotó cuota o falló, activar motor Neural Hi-Fi ilimitado de respaldo
+        if (empty($audioBase64) && !empty($speechText)) {
+            $audioBase64 = $this->callNeuralFallbackTTS($speechText, 'en-US');
+        }
+
         // 4. Si hay una frase objetivo, generar audio EXCLUSIVAMENTE para la frase en inglés
         $phraseAudioBase64 = null;
-        if (!empty($phrase) && !empty($elevenKeys) && !empty($voiceId)) {
+        if (!empty($phrase)) {
             $cleanPhrase = $this->cleanTextForSpeech($phrase);
-            $phraseAudioBase64 = $this->callElevenLabsTTS($cleanPhrase, $voiceId, $elevenKeys);
+            if (!empty($elevenKeys) && !empty($voiceId)) {
+                $phraseAudioBase64 = $this->callElevenLabsTTS($cleanPhrase, $voiceId, $elevenKeys);
+            }
+            if (empty($phraseAudioBase64) && !empty($cleanPhrase)) {
+                $phraseAudioBase64 = $this->callNeuralFallbackTTS($cleanPhrase, 'en-US');
+            }
         }
 
         $response->json([
@@ -520,6 +530,93 @@ PROMPT;
             } catch (\Throwable $e) {
                 error_log('[RobotChat] ElevenLabs error: ' . $e->getMessage());
             }
+        }
+
+        return null;
+    }
+
+    /**
+     * Motor de respaldo de voz neuronal ilimitado de alta fidelidad.
+     * Convierte el texto en audio MP3 en inglés nativo dividiendo por oraciones de forma transparente.
+     */
+    private function callNeuralFallbackTTS(string $text, string $lang = 'en-US'): ?string
+    {
+        $cleanText = trim($text);
+        if (empty($cleanText)) return null;
+
+        // Dividir texto largo en fragmentos naturales de máximo 180 caracteres para garantizar máxima calidad
+        $sentences = preg_split('/(?<=[.?!;:,])\s+|\n+/', $cleanText, -1, PREG_SPLIT_NO_EMPTY);
+        if (empty($sentences)) {
+            $sentences = [$cleanText];
+        }
+
+        $chunks = [];
+        $currentChunk = '';
+        foreach ($sentences as $sentence) {
+            $sentence = trim($sentence);
+            if (empty($sentence)) continue;
+
+            if (mb_strlen($currentChunk . ' ' . $sentence, 'UTF-8') <= 180) {
+                $currentChunk = trim($currentChunk . ' ' . $sentence);
+            } else {
+                if (!empty($currentChunk)) {
+                    $chunks[] = $currentChunk;
+                }
+                // Si la oración en sí es más larga de 180 caracteres, dividir por palabras
+                if (mb_strlen($sentence, 'UTF-8') > 180) {
+                    $words = explode(' ', $sentence);
+                    $subChunk = '';
+                    foreach ($words as $w) {
+                        if (mb_strlen($subChunk . ' ' . $w, 'UTF-8') <= 180) {
+                            $subChunk = trim($subChunk . ' ' . $w);
+                        } else {
+                            if (!empty($subChunk)) $chunks[] = $subChunk;
+                            $subChunk = $w;
+                        }
+                    }
+                    if (!empty($subChunk)) $chunks[] = $subChunk;
+                    $currentChunk = '';
+                } else {
+                    $currentChunk = $sentence;
+                }
+            }
+        }
+        if (!empty($currentChunk)) {
+            $chunks[] = $currentChunk;
+        }
+
+        $fullAudioBinary = '';
+
+        foreach ($chunks as $chunk) {
+            $url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=' . urlencode($lang) . '&q=' . urlencode($chunk);
+
+            try {
+                $ch = curl_init($url);
+                curl_setopt_array($ch, [
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_TIMEOUT => 6,
+                    CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    CURLOPT_SSL_VERIFYPEER => false,
+                    CURLOPT_SSL_VERIFYHOST => 0,
+                    CURLOPT_HTTPHEADER => [
+                        'Referer: https://translate.google.com/',
+                        'Accept: audio/mpeg, audio/*; q=0.9'
+                    ]
+                ]);
+                $binary = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+
+                if ($httpCode === 200 && $binary && strlen($binary) > 100) {
+                    $fullAudioBinary .= $binary;
+                }
+            } catch (\Throwable $e) {
+                error_log('[RobotChat] Neural TTS chunk error: ' . $e->getMessage());
+            }
+        }
+
+        if (strlen($fullAudioBinary) > 500) {
+            return 'data:audio/mp3;base64,' . base64_encode($fullAudioBinary);
         }
 
         return null;
