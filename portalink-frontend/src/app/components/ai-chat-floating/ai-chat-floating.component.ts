@@ -14,7 +14,7 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
   imports: [CommonModule, FormsModule, MarkdownPipe],
   template: `
     <!-- Floating Container (Solo visible en Desktop md+) -->
-    <div class="hidden md:block fixed bottom-2 -right-5 sm:-right-7 z-[500] pointer-events-none">
+    <div class="hidden md:block fixed bottom-2 -right-6 sm:-right-8 z-[500] pointer-events-none">
       
       <!-- Open Chat Button -->
       <button 
@@ -22,10 +22,10 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
         [@buttonAnimation]
         (click)="toggleChat()"
         title="Abrir RotBot IA"
-        class="pointer-events-auto group relative flex h-[210px] sm:h-[235px] w-[82px] sm:w-[92px] items-center justify-end bg-transparent border-none overflow-visible shadow-none cursor-pointer hover:-translate-x-1 transition-transform duration-300 ease-out"
+        class="pointer-events-auto group relative flex h-[235px] sm:h-[265px] w-[95px] sm:w-[105px] items-center justify-end bg-transparent border-none overflow-visible shadow-none cursor-pointer transition-all duration-500 ease-out"
       >
         <div class="relative flex items-center justify-end w-full h-full">
-          <img src="assets/images/robot-izquierda.png" class="h-full w-auto object-contain object-right relative z-10 hover:scale-[1.02] transition-transform duration-300 ease-out" alt="Rotbot">
+          <img src="assets/images/robot-izquierda.png" class="h-full w-auto object-contain object-right relative z-10 transition-all duration-500 ease-out group-hover:brightness-105 group-hover:-translate-x-0.5" alt="Rotbot">
         </div>
       </button>
 

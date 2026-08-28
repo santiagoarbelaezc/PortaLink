@@ -1314,9 +1314,11 @@ export class DashLibraryComponent implements OnInit {
         next: () => {
           this.pages = this.pages.filter(p => p.id !== page.id);
           if (this.selectedPage?.id === page.id) {
-            this.selectedPage = this.pages.length > 0 ? this.pages[0] : null;
+            this.selectedPage = null;
+            this.blocks = [];
+            this.activeBlockId = null;
           }
-          this.showToast('Apunte eliminado permanentemente');
+          this.showToast('Apunte eliminado correctamente');
           this.closeDeleteModal();
         },
         error: () => this.showToast('Error al eliminar el apunte', 'error')
