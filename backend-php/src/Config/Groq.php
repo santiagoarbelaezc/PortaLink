@@ -2,12 +2,14 @@
 
 namespace App\Config;
 
+use App\Utils\AiLogger;
 use RuntimeException;
+use Throwable;
 
 class Groq
 {
     /**
-     * Llama a la API de Groq con failover automático entre dos API keys via cURL.
+     * Llama a la API de Groq con failover automático entre múltiples API keys via cURL.
      * @param array $messages Array de mensajes en formato OpenAI [['role' => 'user', 'content' => '...']]
      * @param array $options Opciones adicionales (temperature, max_tokens)
      * @return array {content: string, tokens: int}
@@ -15,48 +17,71 @@ class Groq
      */
     public static function callGroq(array $messages, array $options = []): array
     {
-        $keyType = $options['key_type'] ?? 'design';
-        
-        if ($keyType === 'consulting') {
-            $primaryKey = $_ENV['GROQ_API_KEY_CONSULTING'] ?? getenv('GROQ_API_KEY_CONSULTING');
-            $fallbackKey = null; // No fallback for consulting yet
-        } else {
-            $primaryKey = $_ENV['GROQ_API_KEY_PRIMARY'] ?? getenv('GROQ_API_KEY_PRIMARY');
-            $fallbackKey = $_ENV['GROQ_API_KEY_FALLBACK'] ?? getenv('GROQ_API_KEY_FALLBACK');
-        }
+        // Pool de API Keys de Groq soportando nombres estándar y alternativas
+        $keys = array_values(array_unique(array_filter([
+            $_ENV['GROQ_API_KEY_COPILOT'] ?? getenv('GROQ_API_KEY_COPILOT') ?: '',
+            $_ENV['GROQ_API_KEY_PRIMARY'] ?? getenv('GROQ_API_KEY_PRIMARY') ?: '',
+            $_ENV['GROQ_API_KEY'] ?? getenv('GROQ_API_KEY') ?: '',
+            $_ENV['GROQ_API_KEY_1'] ?? getenv('GROQ_API_KEY_1') ?: '',
+            $_ENV['GROQ_API_KEY_2'] ?? getenv('GROQ_API_KEY_2') ?: '',
+            $_ENV['GROQ_API_KEY_FALLBACK'] ?? getenv('GROQ_API_KEY_FALLBACK') ?: '',
+            $_ENV['GROQ_API_KEY_3'] ?? getenv('GROQ_API_KEY_3') ?: ''
+        ])));
 
-        $modelsToTry = array_unique(array_filter([
-            $_ENV['GROQ_MODEL'] ?? getenv('GROQ_MODEL') ?: 'llama-3.3-70b-versatile',
+        $preferredModel = $options['model'] ?? null;
+        $modelsToTry = array_values(array_unique(array_filter([
+            $preferredModel,
+            $_ENV['GROQ_MODEL'] ?? getenv('GROQ_MODEL') ?: 'openai/gpt-oss-120b',
+            'openai/gpt-oss-120b',
             'llama-3.3-70b-versatile',
-            'llama-3.1-8b-instant',
-            'openai/gpt-oss-120b'
-        ]));
-        $maxTokens = (int)($options['max_tokens'] ?? $_ENV['GROQ_MAX_TOKENS'] ?? getenv('GROQ_MAX_TOKENS') ?: 2048);
-        $temperature = (float)($options['temperature'] ?? $_ENV['GROQ_TEMPERATURE'] ?? getenv('GROQ_TEMPERATURE') ?: 0.7);
+            'llama-3.1-8b-instant'
+        ])));
 
-        $keys = array_filter([$primaryKey, $fallbackKey]);
+        $maxTokens = (int)($options['max_tokens'] ?? $_ENV['GROQ_MAX_TOKENS'] ?? getenv('GROQ_MAX_TOKENS') ?: 2048);
+        $temperature = (float)($options['temperature'] ?? $_ENV['GROQ_TEMPERATURE'] ?? getenv('GROQ_TEMPERATURE') ?: 1.0);
+
         if (empty($keys)) {
+            AiLogger::error('Groq', 'No hay API keys configuradas para Groq en .env');
             throw new RuntimeException("No hay API keys configuradas para Groq.");
         }
 
         $lastError = null;
         foreach ($keys as $apiKey) {
+            $keySuffix = substr($apiKey, -6);
+            $keyQuotaExceeded = false;
+
             foreach ($modelsToTry as $model) {
+                if ($keyQuotaExceeded) {
+                    break;
+                }
+
                 try {
-                    return self::makeGroqRequest($apiKey, $messages, [
+                    $result = self::makeGroqRequest($apiKey, $messages, [
                         'model' => $model,
                         'max_tokens' => $maxTokens,
                         'temperature' => $temperature,
                     ]);
-                } catch (RuntimeException $err) {
-                    error_log("⚠️ [Groq] Falló con key ..." . substr($apiKey, -8) . " modelo {$model}: " . $err->getMessage());
-                    $lastError = $err;
+                    AiLogger::info('Groq', "Llamada exitosa con modelo {$model} (Key ...{$keySuffix})");
+                    return $result;
+                } catch (Throwable $err) {
+                    $lastError = $err->getMessage();
+                    AiLogger::warning('Groq', "Fallo con modelo {$model} (Key ...{$keySuffix}): {$lastError}");
+                    
+                    if (stripos($lastError, 'rate_limit') !== false || 
+                        stripos($lastError, 'quota') !== false || 
+                        stripos($lastError, '429') !== false ||
+                        stripos($lastError, 'exceeded') !== false) {
+                        AiLogger::warning('Groq', "Rate limit / Cuota alcanzada en Key ...{$keySuffix}. Rotando...");
+                        $keyQuotaExceeded = true;
+                    }
                     continue;
                 }
             }
         }
 
-        throw $lastError ?: new RuntimeException("Todas las API keys y modelos de Groq fallaron.");
+        $finalMsg = "Todas las API keys y modelos de Groq fallaron. Detalle: " . ($lastError ?: 'Error desconocido');
+        AiLogger::error('Groq', $finalMsg);
+        throw new RuntimeException($finalMsg);
     }
 
     private static function makeGroqRequest(string $apiKey, array $messages, array $options): array
@@ -83,7 +108,8 @@ class Groq
                 'Content-Type: application/json',
                 'Content-Length: ' . strlen($payload)
             ],
-            CURLOPT_TIMEOUT => 30,
+            CURLOPT_TIMEOUT => 25,
+            CURLOPT_CONNECTTIMEOUT => 5,
             CURLOPT_SSL_VERIFYPEER => false,
         ]);
 
@@ -98,79 +124,21 @@ class Groq
 
         $parsed = json_decode($responseBody, true);
         if ($statusCode !== 200) {
-            $errorMsg = $parsed['error']['message'] ?? ("Error HTTP " . $statusCode);
-            throw new RuntimeException($errorMsg, $statusCode);
+            $errMsg = $parsed['error']['message'] ?? "Error HTTP {$statusCode} desde Groq";
+            throw new RuntimeException("Groq Error ({$statusCode}): {$errMsg}", $statusCode);
         }
 
         $content = $parsed['choices'][0]['message']['content'] ?? '';
-        $tokens = (int)($parsed['usage']['completion_tokens'] ?? 0);
+        $tokens = (int)($parsed['usage']['total_tokens'] ?? 0);
+
+        if (empty($content)) {
+            throw new RuntimeException("Groq respondió sin contenido en el mensaje.");
+        }
 
         return [
             'content' => $content,
-            'tokens' => $tokens
+            'tokens' => $tokens,
+            'model' => $options['model']
         ];
-    }
-
-    /**
-     * Transcribe audio a texto en menos de 300ms usando Whisper Large v3 Turbo en Groq.
-     */
-    public static function transcribeAudio(string $binaryAudio, string $mimeType = 'audio/webm'): string
-    {
-        $primaryKey = $_ENV['GROQ_API_KEY_PRIMARY'] ?? getenv('GROQ_API_KEY_PRIMARY');
-        $fallbackKey = $_ENV['GROQ_API_KEY_FALLBACK'] ?? getenv('GROQ_API_KEY_FALLBACK');
-        $keys = array_values(array_unique(array_filter([$primaryKey, $fallbackKey])));
-
-        if (empty($keys) || empty($binaryAudio)) return '';
-
-        $ext = 'webm';
-        if (str_contains($mimeType, 'mp4') || str_contains($mimeType, 'm4a')) $ext = 'm4a';
-        elseif (str_contains($mimeType, 'ogg')) $ext = 'ogg';
-        elseif (str_contains($mimeType, 'wav')) $ext = 'wav';
-
-        $tmpFile = tempnam(sys_get_temp_dir(), 'rotbot_') . '.' . $ext;
-        file_put_contents($tmpFile, $binaryAudio);
-
-        foreach ($keys as $apiKey) {
-            try {
-                $cfile = new \CURLFile($tmpFile, $mimeType, 'recording.' . $ext);
-                $postData = [
-                    'file' => $cfile,
-                    'model' => 'whisper-large-v3-turbo',
-                    'language' => 'en',
-                    'response_format' => 'json',
-                    'temperature' => '0.0'
-                ];
-
-                $ch = curl_init('https://api.groq.com/openai/v1/audio/transcriptions');
-                curl_setopt_array($ch, [
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_POST => true,
-                    CURLOPT_POSTFIELDS => $postData,
-                    CURLOPT_HTTPHEADER => [
-                        'Authorization: Bearer ' . $apiKey
-                    ],
-                    CURLOPT_TIMEOUT => 8,
-                    CURLOPT_SSL_VERIFYPEER => false,
-                    CURLOPT_SSL_VERIFYHOST => 0
-                ]);
-
-                $res = curl_exec($ch);
-                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                curl_close($ch);
-
-                if ($httpCode === 200 && $res) {
-                    $json = json_decode($res, true);
-                    if (!empty($json['text'])) {
-                        @unlink($tmpFile);
-                        return trim($json['text']);
-                    }
-                }
-            } catch (\Throwable $e) {
-                error_log('[Groq Whisper] Error: ' . $e->getMessage());
-            }
-        }
-
-        @unlink($tmpFile);
-        return '';
     }
 }

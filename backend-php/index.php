@@ -10,18 +10,6 @@ if (PHP_SAPI === 'cli-server') {
     }
 }
 
-// Enviar cabeceras CORS dinámicas permitiendo cualquier origen de petición (Localhost o Firebase)
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
-header("Access-Control-Allow-Origin: {$origin}");
-header('Access-Control-Allow-Credentials: true');
-header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
-
-if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
-    http_response_code(204);
-    exit;
-}
-
 // Autoloader de Composer (o fallback simple si aún no se ha ejecutado composer install)
 if (file_exists(__DIR__ . '/vendor/autoload.php')) {
     require __DIR__ . '/vendor/autoload.php';
@@ -41,6 +29,9 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
         }
     });
 }
+
+// Aplicar CORS estricto con lista blanca y cabeceras de seguridad
+\App\Core\Cors::handle();
 
 // Cargar variables de entorno si existe .env
 if (file_exists(__DIR__ . '/.env') && class_exists('Dotenv\Dotenv')) {

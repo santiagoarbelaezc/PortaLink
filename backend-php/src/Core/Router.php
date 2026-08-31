@@ -48,16 +48,8 @@ class Router
 
     public function dispatch(Request $request, Response $response): void
     {
-        // Handle preflight OPTIONS request
-        if ($request->method === 'OPTIONS') {
-            $origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
-            header("Access-Control-Allow-Origin: {$origin}");
-            header('Access-Control-Allow-Credentials: true');
-            header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
-            header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
-            http_response_code(204);
-            exit;
-        }
+        // Handle preflight OPTIONS request and CORS headers
+        Cors::handle();
 
         foreach ($this->routes as $route) {
             if ($route['method'] !== $request->method) {

@@ -2,59 +2,78 @@
 
 namespace App\Config;
 
+use App\Utils\AiLogger;
 use Exception;
 use Throwable;
 
 class Gemini
 {
     /**
-     * Ejecuta una llamada a la API REST de Google Gemini con reintento automático y respaldo de modelos
+     * Ejecuta una llamada a la API REST de Google Gemini con pool de claves, reintento automático y respaldo a Groq
      */
     public static function callGemini(string $prompt, string $systemPrompt = '', array $history = []): array
     {
         @set_time_limit(120);
 
-        $keys = array_filter([
+        // Pool de API Keys de Google Gemini
+        $keys = array_values(array_unique(array_filter([
             $_ENV['GEMINI_API_KEY'] ?? getenv('GEMINI_API_KEY') ?: '',
+            $_ENV['GEMINI_API_KEY_1'] ?? getenv('GEMINI_API_KEY_1') ?: '',
             $_ENV['GEMINI_API_KEY_2'] ?? getenv('GEMINI_API_KEY_2') ?: '',
-            $_ENV['GEMINI_API_KEY_3'] ?? getenv('GEMINI_API_KEY_3') ?: ''
-        ]);
+            $_ENV['GEMINI_API_KEY_3'] ?? getenv('GEMINI_API_KEY_3') ?: '',
+            $_ENV['GEMINI_API_KEY_4'] ?? getenv('GEMINI_API_KEY_4') ?: '',
+            $_ENV['GEMINI_API_KEY_5'] ?? getenv('GEMINI_API_KEY_5') ?: ''
+        ])));
         
-        // Lista de modelos oficiales y activos de Gemini según la API de Google
+        // Modelos soportados de Google Gemini en orden de preferencia y velocidad
         $modelsToTry = [
-            'gemini-3.6-flash',
-            'gemini-3.1-pro-preview',
-            'gemini-flash-latest',
+            'gemini-1.5-flash',
+            'gemini-1.5-flash-latest',
+            'gemini-2.0-flash',
+            'gemini-1.5-pro',
             'gemini-pro-latest'
         ];
 
         $lastError = null;
+        $failedKeysCount = 0;
 
-        foreach ($keys as $apiKey) {
-            $keyQuotaExceeded = false;
+        if (!empty($keys)) {
+            foreach ($keys as $keyIndex => $apiKey) {
+                $keySuffix = substr($apiKey, -6);
+                $keyQuotaExceeded = false;
 
-            foreach ($modelsToTry as $model) {
-                if ($keyQuotaExceeded) {
-                    break; // Pasar a la siguiente API Key si esta ya excedió su cuota
-                }
-
-                try {
-                    return self::requestGeminiModel($model, $apiKey, $prompt, $systemPrompt, $history);
-                } catch (Throwable $e) {
-                    $lastError = $e->getMessage();
-                    error_log("⚠️ [Gemini] Key ...".substr($apiKey, -8)." con modelo {$model} falló: {$lastError}");
-                    
-                    // Si la cuota de la key está agotada (HTTP 429 / Quota exceeded), saltar al siguiente key directamente
-                    if (stripos($lastError, 'quota') !== false || stripos($lastError, 'exceeded') !== false || stripos($lastError, '429') !== false) {
-                        $keyQuotaExceeded = true;
+                foreach ($modelsToTry as $model) {
+                    if ($keyQuotaExceeded) {
+                        break; // Pasar a la siguiente API Key si esta ya excedió su cuota
                     }
-                    continue;
+
+                    try {
+                        $response = self::requestGeminiModel($model, $apiKey, $prompt, $systemPrompt, $history);
+                        AiLogger::info('Gemini', "Respuesta exitosa con modelo {$model} (Key ...{$keySuffix})");
+                        return $response;
+                    } catch (Throwable $e) {
+                        $lastError = $e->getMessage();
+                        AiLogger::warning('Gemini', "Fallo con modelo {$model} (Key ...{$keySuffix}): {$lastError}");
+                        
+                        // Si la cuota de la key está agotada (HTTP 429 / Quota exceeded / Resource Exhausted), saltar al siguiente key
+                        if (stripos($lastError, 'quota') !== false || 
+                            stripos($lastError, 'exceeded') !== false || 
+                            stripos($lastError, '429') !== false ||
+                            stripos($lastError, 'RESOURCE_EXHAUSTED') !== false) {
+                            AiLogger::warning('Gemini', "Cuota agotada en Key ...{$keySuffix}. Rotando a la siguiente API Key...");
+                            $keyQuotaExceeded = true;
+                        }
+                        continue;
+                    }
                 }
+                $failedKeysCount++;
             }
+        } else {
+            AiLogger::warning('Gemini', 'No se encontraron GEMINI_API_KEY en el entorno. Pasando directamente a Groq de respaldo.');
         }
 
         // Si todos los modelos/keys de Gemini fallaron o están sin cuota, recurrir a Groq AI inmediatamente
-        error_log("ℹ️ [Gemini] Todas las keys/modelos de Gemini no disponibles. Activando respaldo ultrarrápido con Groq AI...");
+        AiLogger::info('Gemini', 'Activando motor de respaldo con Groq AI...');
         try {
             $messages = [];
             if (!empty($systemPrompt)) {
@@ -75,13 +94,18 @@ class Gemini
                 'max_tokens' => 2048
             ]);
 
+            AiLogger::info('Groq', 'Respuesta exitosa obtenida desde motor de respaldo Groq.');
+
             return [
                 'content' => trim($groqRes['content'] ?? ''),
                 'raw' => $groqRes,
-                'fallback' => true
+                'fallback' => true,
+                'provider' => 'groq'
             ];
         } catch (Throwable $fallbackErr) {
-            throw new Exception("Gemini e IA de respaldo saturados. Detalle: " . ($lastError ?: $fallbackErr->getMessage()));
+            $fatalMsg = "Servicios de IA no disponibles. Gemini: " . ($lastError ?: 'Sin claves válidas') . " | Groq: " . $fallbackErr->getMessage();
+            AiLogger::error('Gemini', $fatalMsg);
+            throw new Exception($fatalMsg);
         }
     }
 
@@ -132,8 +156,9 @@ class Gemini
         
         // Si falló por tools o rate limit de grounding, reintentar sin tools
         if (!$result['ok']) {
-            // Si fue error de cuota / rate limit, propagar error de inmediato
-            if (stripos($result['error'] ?? '', 'quota') !== false || stripos($result['error'] ?? '', 'exceeded') !== false) {
+            if (stripos($result['error'] ?? '', 'quota') !== false || 
+                stripos($result['error'] ?? '', 'exceeded') !== false ||
+                stripos($result['error'] ?? '', '429') !== false) {
                 throw new Exception($result['error']);
             }
 
@@ -151,7 +176,6 @@ class Gemini
             throw new Exception("Gemini ({$model}) no retornó texto.");
         }
 
-        // Extraer metadata de Google Search grounding si existe
         $groundingMeta = $resData['candidates'][0]['groundingMetadata'] ?? null;
         $searchQueries = $groundingMeta['webSearchQueries'] ?? [];
         $groundingChunks = $groundingMeta['groundingChunks'] ?? [];
@@ -172,7 +196,8 @@ class Gemini
             'model'         => $model,
             'searchQueries' => $searchQueries,
             'sources'       => $sources,
-            'wasGrounded'   => !empty($groundingChunks)
+            'wasGrounded'   => !empty($groundingChunks),
+            'provider'      => 'gemini'
         ];
     }
 
@@ -189,8 +214,8 @@ class Gemini
                 'X-goog-api-key: ' . $apiKey
             ],
             CURLOPT_POSTFIELDS => $jsonPayload,
-            CURLOPT_CONNECTTIMEOUT => 3,
-            CURLOPT_TIMEOUT => 6,
+            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_TIMEOUT => 25,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => 0,
             CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4
@@ -215,4 +240,3 @@ class Gemini
         return ['ok' => true, 'data' => $resData];
     }
 }
-

@@ -6,7 +6,9 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Config\Groq;
 use App\Config\Gemini;
+use App\Utils\AiLogger;
 use Exception;
+use Throwable;
 
 class ChatAdminController
 {
@@ -16,6 +18,9 @@ class ChatAdminController
      */
     public function handle(Request $req, Response $res): void
     {
+        // Enviar cabeceras CORS estrictas y de seguridad de forma preventiva
+        \App\Core\Cors::handle();
+
         $body = $req->body ?? [];
         if (empty($body)) {
             $raw = file_get_contents('php://input');
@@ -61,11 +66,12 @@ PROMPT;
 
                 $res->json([
                     'success' => true,
-                    'result' => $reply
+                    'result' => $reply,
+                    'provider' => 'groq'
                 ]);
                 return;
+
             } elseif ($mode === 'copilot') {
-                // 🚀 CHAT FLOTANTE ROTBOT: ALIMENTADO EXCLUSIVAMENTE POR GOOGLE GEMINI (gemini-flash-latest)
                 $systemPrompt = <<<PROMPT
 Eres RotBot Apuntes IA, un copiloto ejecutivo de estudio y aprendizaje altamente inteligente, refinado y natural.
 
@@ -76,28 +82,73 @@ REGLAS DE RESPUESTA:
 4. TONO PROFESIONAL Y MODERNO: Mantén una redacción profesional, elegante, clara y pulida.
 PROMPT;
 
+                $messages = [
+                    ['role' => 'system', 'content' => $systemPrompt]
+                ];
+
+                if (!empty($history) && is_array($history)) {
+                    foreach ($history as $msg) {
+                        $role = ($msg['role'] === 'user') ? 'user' : 'assistant';
+                        $text = trim($msg['content'] ?? '');
+                        if (!empty($text)) {
+                            $messages[] = [
+                                'role' => $role,
+                                'content' => $text
+                            ];
+                        }
+                    }
+                }
+
                 $userPrompt = $noteTitle ? "[Apunte Actual: {$noteTitle}]\n\nConsulta del Usuario: {$prompt}" : $prompt;
+                $messages[] = ['role' => 'user', 'content' => $userPrompt];
 
-                $geminiRes = Gemini::callGemini($userPrompt, $systemPrompt, $history);
+                $groqRes = Groq::callGroq($messages, [
+                    'temperature' => 1.0,
+                    'max_tokens' => 2048,
+                    'model' => 'openai/gpt-oss-120b'
+                ]);
 
-                $reply = trim($geminiRes['content'] ?? '');
+                $reply = trim($groqRes['content'] ?? '');
 
                 $res->json([
                     'success' => true,
-                    'result' => $reply
+                    'result' => $reply,
+                    'provider' => 'groq',
+                    'model' => $groqRes['model'] ?? 'openai/gpt-oss-120b'
                 ]);
                 return;
+
             } else {
                 $res->status(400)->json([
                     'success' => false,
+                    'error_type' => 'invalid_mode',
                     'error' => 'Modo de IA no válido.'
                 ]);
+                return;
             }
-        } catch (\Throwable $e) {
-            error_log("❌ [ChatAdminController] Error procesando solicitud IA: " . $e->getMessage());
+
+        } catch (Throwable $e) {
+            $errorMsg = $e->getMessage();
+            AiLogger::error('ChatAdminController', "Error procesando solicitud de IA ({$mode}): {$errorMsg}");
+
+            $isQuotaError = (
+                stripos($errorMsg, 'quota') !== false ||
+                stripos($errorMsg, 'rate limit') !== false ||
+                stripos($errorMsg, 'exceeded') !== false ||
+                stripos($errorMsg, '429') !== false ||
+                stripos($errorMsg, 'RESOURCE_EXHAUSTED') !== false
+            );
+
+            $errorType = $isQuotaError ? 'quota_exceeded' : 'service_error';
+            $userFriendlyMessage = $isQuotaError
+                ? 'El servicio de IA ha alcanzado su límite de consultas temporales. Por favor, reintenta en un momento.'
+                : 'No se pudo conectar con el servicio de IA. Verifica tu conexión o reintenta en breve.';
+
             $res->status(200)->json([
                 'success' => false,
-                'error' => 'Error de la IA: ' . $e->getMessage()
+                'error_type' => $errorType,
+                'error' => $userFriendlyMessage,
+                'technical_detail' => $errorMsg
             ]);
         }
     }

@@ -612,6 +612,15 @@ export class DashLibraryComponent implements OnInit {
       }
     }
     this.loadCopilotChatFromStorage();
+    try {
+      const savedWidth = localStorage.getItem('portalink_copilot_width');
+      if (savedWidth) {
+        const parsedW = parseInt(savedWidth, 10);
+        if (parsedW >= 360 && parsedW <= 1000) {
+          this.copilotWidth = parsedW;
+        }
+      }
+    } catch {}
     this.loadFolders();
   }
 
@@ -1581,6 +1590,7 @@ export class DashLibraryComponent implements OnInit {
         this.aiResultPreview = res.result;
       } else {
         this.aiError = res.error || 'No se pudo procesar la solicitud con la IA.';
+        this.showToast(this.aiError, 'error');
       }
     });
   }
@@ -1746,7 +1756,9 @@ export class DashLibraryComponent implements OnInit {
       if (res.success) {
         this.copilotMessages.push({ role: 'assistant', content: res.result });
       } else {
-        this.copilotMessages.push({ role: 'assistant', content: '❌ Error: ' + (res.error || 'No se pudo obtener respuesta de la IA.') });
+        const errorText = res.error || 'El servicio de IA ha alcanzado su límite temporal de consultas. Intenta de nuevo en unos momentos.';
+        this.copilotMessages.push({ role: 'assistant', content: '⚠️ **Aviso de IA**: ' + errorText });
+        this.showToast(errorText, 'error');
       }
       this.saveCopilotChatToStorage();
       this.scrollToBottomCopilot();
@@ -1754,11 +1766,36 @@ export class DashLibraryComponent implements OnInit {
     });
   }
 
-  // ── COPILOT DRAG & KEYBOARD LOGIC ─────────────────────────────
+  // ── COPILOT DRAG & RESIZE LOGIC ─────────────────────────────
+  copilotWidth = 400;
   isDraggingCopilot = false;
+  isResizingCopilot = false;
   copilotPos = { x: 0, y: 0 };
   isCopilotCustomPositioned = false;
   private dragStartOffset = { x: 0, y: 0 };
+  private resizeStartX = 0;
+  private resizeStartWidth = 400;
+
+  startResizeCopilot(event: MouseEvent | TouchEvent) {
+    event.stopPropagation();
+    event.preventDefault();
+    this.isResizingCopilot = true;
+    this.resizeStartX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+    this.resizeStartWidth = this.copilotWidth;
+  }
+
+  toggleCopilotWidthPreset() {
+    if (this.copilotWidth < 500) {
+      this.copilotWidth = 650;
+    } else if (this.copilotWidth < 760) {
+      this.copilotWidth = 840;
+    } else {
+      this.copilotWidth = 400;
+    }
+    try {
+      localStorage.setItem('portalink_copilot_width', String(this.copilotWidth));
+    } catch {}
+  }
 
   startDragCopilot(event: MouseEvent | TouchEvent) {
     const target = event.target as HTMLElement;
@@ -1785,13 +1822,26 @@ export class DashLibraryComponent implements OnInit {
   @HostListener('window:mousemove', ['$event'])
   @HostListener('window:touchmove', ['$event'])
   onDragCopilotMove(event: MouseEvent | TouchEvent) {
+    if (this.isResizingCopilot) {
+      const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+      const deltaX = this.resizeStartX - clientX; // Arrastrar hacia la izquierda incrementa el ancho
+      const minW = 360;
+      const maxW = Math.min(window.innerWidth - 30, 920);
+      const newWidth = Math.max(minW, Math.min(this.resizeStartWidth + deltaX, maxW));
+      this.copilotWidth = newWidth;
+      try {
+        localStorage.setItem('portalink_copilot_width', String(newWidth));
+      } catch {}
+      return;
+    }
+
     if (!this.isDraggingCopilot) return;
 
     const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
     const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
 
     const chatEl = document.querySelector('.chat-panel') as HTMLElement;
-    const chatWidth = chatEl ? chatEl.offsetWidth : 400;
+    const chatWidth = chatEl ? chatEl.offsetWidth : this.copilotWidth;
     const chatHeight = chatEl ? chatEl.offsetHeight : 630;
 
     const margin = 12;
@@ -1811,5 +1861,6 @@ export class DashLibraryComponent implements OnInit {
   @HostListener('window:touchend')
   onDragCopilotEnd() {
     this.isDraggingCopilot = false;
+    this.isResizingCopilot = false;
   }
 }

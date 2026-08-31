@@ -1783,44 +1783,78 @@
       </div>
     </button>
 
-    <!-- PANEL FLOTANTE DE CHAT ROTBOT IA (ARRASTRABLE) -->
+    <!-- PANEL FLOTANTE DE CHAT ROTBOT IA (ARRASTRABLE Y REDIMENSIONABLE EN ANCHO) -->
     <div *ngIf="isCopilotOpen" 
-         class="chat-panel pointer-events-auto fixed w-[92vw] sm:w-[390px] md:w-[400px] max-h-[88vh] h-[630px] overflow-hidden rounded-[32px] border shadow-[0_30px_70px_rgba(0,0,0,0.22)] font-sans flex flex-col z-[300] transition-all animate-fade-in"
+         class="chat-panel pointer-events-auto fixed max-w-[94vw] max-h-[88vh] h-[630px] overflow-visible rounded-[32px] border shadow-[0_30px_70px_rgba(0,0,0,0.22)] font-sans flex flex-col z-[300] transition-all animate-fade-in"
          [ngClass]="isDark ? 'bg-[#121215] border-neutral-800 text-white' : 'bg-white border-neutral-200/90 text-neutral-900'"
+         [style.width.px]="copilotWidth"
          [style.position]="isCopilotCustomPositioned ? 'fixed' : 'fixed'"
          [style.left.px]="isCopilotCustomPositioned ? copilotPos.x : null"
          [style.top.px]="isCopilotCustomPositioned ? copilotPos.y : null"
          [style.bottom]="isCopilotCustomPositioned ? 'auto' : '1.5rem'"
          [style.right]="isCopilotCustomPositioned ? 'auto' : '2.5rem'">
       
+      <!-- BOTÓN / MANIJA LATERAL PARA ESTIRAR A LO ANCHO (BORDE IZQUIERDO) -->
+      <div (mousedown)="startResizeCopilot($event)"
+           (touchstart)="startResizeCopilot($event)"
+           (click)="toggleCopilotWidthPreset()"
+           title="Arrastra para cambiar el ancho o haz clic para alternar tamaño"
+           class="absolute -left-4 top-1/2 -translate-y-1/2 z-50 flex items-center justify-center cursor-ew-resize select-none group/resizer p-1">
+        <div class="w-6 h-12 rounded-full border shadow-lg flex items-center justify-center transition-all duration-200 group-hover/resizer:scale-110 active:scale-95 cursor-ew-resize"
+             [ngClass]="isDark ? 'bg-[#18181c] border-neutral-700 text-neutral-400 group-hover/resizer:text-emerald-400 group-hover/resizer:border-emerald-500/60 group-hover/resizer:shadow-emerald-500/20' : 'bg-white border-neutral-300 text-neutral-600 group-hover/resizer:text-emerald-600 group-hover/resizer:border-emerald-500/60 group-hover/resizer:shadow-emerald-500/20'">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" transform="rotate(90 12 12)" />
+          </svg>
+        </div>
+      </div>
+
       <!-- HEADER DEL CHAT (ZONA ARRASTRABLE CON CURSOR GRAB) -->
       <div (mousedown)="startDragCopilot($event)"
            (touchstart)="startDragCopilot($event)"
-           class="chat-header flex items-center justify-between border-b px-5 sm:px-6 py-3.5 relative overflow-hidden flex-shrink-0 cursor-grab active:cursor-grabbing select-none"
+           class="chat-header flex items-center justify-between border-b px-5 sm:px-6 py-3.5 relative overflow-hidden flex-shrink-0 cursor-grab active:cursor-grabbing select-none rounded-t-[32px]"
            [ngClass]="isDark ? 'border-neutral-800 bg-[#18181c]/95 backdrop-blur-xl' : 'border-neutral-100 bg-white/95 backdrop-blur-xl'">
         
-        <div class="flex items-center gap-3 relative z-10">
-          <div class="w-9 h-9 rounded-2xl border flex items-center justify-center p-1 shadow-xs"
+        <div class="flex items-center gap-3 relative z-10 min-w-0">
+          <div class="w-9 h-9 rounded-2xl border flex items-center justify-center p-1 shadow-xs shrink-0"
                [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700' : 'bg-neutral-100 border-neutral-200/80'">
             <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
           </div>
-          <div>
-            <h3 class="font-sans text-base font-bold tracking-tight leading-none"
+          <div class="min-w-0">
+            <h3 class="font-sans text-base font-bold tracking-tight leading-none truncate"
                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
               RotBot Apuntes IA
             </h3>
             <div class="flex items-center gap-1.5 mt-1">
-              <span class="px-2 py-0.5 rounded-full text-[9.5px] font-semibold inline-flex items-center gap-1 border"
+              <span class="px-2 py-0.5 rounded-full text-[9.5px] font-semibold inline-flex items-center gap-1 border truncate"
                     [ngClass]="isDark ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30' : 'bg-emerald-50 text-emerald-800 border-emerald-200/60'">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>Copilot Apuntes • {{ selectedPage?.title || 'Biblioteca' }}</span>
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                <span class="truncate">Copilot Apuntes • {{ selectedPage?.title || 'Biblioteca' }}</span>
               </span>
             </div>
           </div>
         </div>
         
         <!-- BOTONES DE ACCIÓN EN EL HEADER -->
-        <div class="flex items-center gap-2 relative z-10">
+        <div class="flex items-center gap-1.5 relative z-10 shrink-0">
+          <!-- Toggle Ancho Preset Button -->
+          <button (click)="toggleCopilotWidthPreset()" 
+                  class="w-8 h-8 rounded-full border-none cursor-pointer flex items-center justify-center transition-all"
+                  [ngClass]="isDark ? 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-900 hover:text-white'"
+                  [title]="copilotWidth > 500 ? 'Reducir ancho (400px)' : 'Expandir ancho'">
+            <svg *ngIf="copilotWidth <= 500" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <polyline points="9 21 3 21 3 15"></polyline>
+              <line x1="21" y1="3" x2="14" y2="10"></line>
+              <line x1="3" y1="21" x2="10" y2="14"></line>
+            </svg>
+            <svg *ngIf="copilotWidth > 500" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="4 14 10 14 10 20"></polyline>
+              <polyline points="20 10 14 10 14 4"></polyline>
+              <line x1="14" y1="10" x2="21" y2="3"></line>
+              <line x1="10" y1="14" x2="3" y2="21"></line>
+            </svg>
+          </button>
+
           <!-- Reset Chat Button con animación spin de RotBot -->
           <button (click)="resetCopilotWithEffect()" 
                   class="w-8 h-8 rounded-full border-none cursor-pointer flex items-center justify-center transition-all"
