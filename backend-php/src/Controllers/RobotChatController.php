@@ -107,7 +107,9 @@ class RobotChatController
 
         // 1. Intentar primero con Groq Whisper (Ultra-rápido: ~200ms)
         try {
-            $groqTranscript = Groq::transcribeAudio($binaryAudio, $mimeType);
+            $groqTranscript = Groq::transcribeAudio($binaryAudio, $mimeType, [
+                'prompt' => 'Transcribe verbatim what the user said in English or whatever words were spoken. Output only the exact spoken words without translation.'
+            ]);
             if (!empty($groqTranscript)) {
                 $response->json([
                     'ok' => true,
@@ -134,7 +136,7 @@ class RobotChatController
     private function transcribeAudioGemini(string $audioData, string $mimeType): string
     {
         $apiKey = getenv('GEMINI_API_KEY') ?: ($_ENV['GEMINI_API_KEY'] ?? '');
-        $model = 'gemini-3.6-flash';
+        $model = getenv('GEMINI_MODEL') ?: 'gemini-3.6-flash';
 
         $cleanMime = explode(';', $mimeType)[0];
         if (!$cleanMime || $cleanMime === 'audio/x-m4a') $cleanMime = 'audio/mp4';

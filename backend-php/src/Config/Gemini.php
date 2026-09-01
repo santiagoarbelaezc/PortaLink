@@ -27,10 +27,10 @@ class Gemini
         
         // Modelos soportados de Google Gemini en orden de preferencia y velocidad
         $modelsToTry = [
-            'gemini-1.5-flash',
-            'gemini-1.5-flash-latest',
-            'gemini-2.0-flash',
-            'gemini-1.5-pro',
+            'gemini-3.6-flash',
+            'gemini-flash-latest',
+            'gemini-3.1-pro-preview',
+            'gemini-2.5-flash',
             'gemini-pro-latest'
         ];
 

@@ -141,4 +141,114 @@ class Groq
             'model' => $options['model']
         ];
     }
+
+    /**
+     * Transcribe un archivo de audio binario usando Groq Whisper (whisper-large-v3-turbo / whisper-large-v3)
+     * @param string $binaryAudio Datos de audio binarios
+     * @param string $mimeType Tipo MIME (e.g. audio/webm, audio/mp4, audio/wav, audio/m4a)
+     * @param array $options Opciones adicionales (language, prompt)
+     * @return string Transcripción en texto
+     */
+    public static function transcribeAudio(string $binaryAudio, string $mimeType = 'audio/webm', array $options = []): string
+    {
+        $keys = array_values(array_unique(array_filter([
+            $_ENV['GROQ_API_KEY_COPILOT'] ?? getenv('GROQ_API_KEY_COPILOT') ?: '',
+            $_ENV['GROQ_API_KEY_PRIMARY'] ?? getenv('GROQ_API_KEY_PRIMARY') ?: '',
+            $_ENV['GROQ_API_KEY'] ?? getenv('GROQ_API_KEY') ?: '',
+            $_ENV['GROQ_API_KEY_1'] ?? getenv('GROQ_API_KEY_1') ?: '',
+            $_ENV['GROQ_API_KEY_2'] ?? getenv('GROQ_API_KEY_2') ?: '',
+            $_ENV['GROQ_API_KEY_FALLBACK'] ?? getenv('GROQ_API_KEY_FALLBACK') ?: '',
+            $_ENV['GROQ_API_KEY_3'] ?? getenv('GROQ_API_KEY_3') ?: ''
+        ])));
+
+        if (empty($keys)) {
+            throw new RuntimeException("No hay API keys configuradas para Groq.");
+        }
+
+        $cleanMime = explode(';', $mimeType)[0] ?: 'audio/webm';
+        $ext = 'webm';
+        if (str_contains($cleanMime, 'mp4') || str_contains($cleanMime, 'm4a') || str_contains($cleanMime, 'aac')) {
+            $ext = 'm4a';
+        } elseif (str_contains($cleanMime, 'wav')) {
+            $ext = 'wav';
+        } elseif (str_contains($cleanMime, 'mp3') || str_contains($cleanMime, 'mpeg')) {
+            $ext = 'mp3';
+        } elseif (str_contains($cleanMime, 'ogg')) {
+            $ext = 'ogg';
+        }
+
+        $tmpBase = tempnam(sys_get_temp_dir(), 'groq_stt_');
+        $tmpFilePath = $tmpBase . '.' . $ext;
+        @unlink($tmpBase);
+        file_put_contents($tmpFilePath, $binaryAudio);
+
+        $models = ['whisper-large-v3-turbo', 'whisper-large-v3'];
+        $lastError = null;
+
+        try {
+            foreach ($keys as $apiKey) {
+                $keySuffix = substr($apiKey, -6);
+                foreach ($models as $model) {
+                    try {
+                        $ch = curl_init('https://api.groq.com/openai/v1/audio/transcriptions');
+                        $cFile = new \CURLFile($tmpFilePath, $cleanMime, 'audio.' . $ext);
+                        $postData = [
+                            'file' => $cFile,
+                            'model' => $model,
+                            'response_format' => 'json',
+                            'temperature' => 0.0
+                        ];
+
+                        if (!empty($options['language'])) {
+                            $postData['language'] = $options['language'];
+                        }
+                        $postData['prompt'] = $options['prompt'] ?? 'Transcribe verbatim the exact words spoken by the user in English or Spanish. Output exact words and do not translate.';
+
+                        curl_setopt_array($ch, [
+                            CURLOPT_RETURNTRANSFER => true,
+                            CURLOPT_POST => true,
+                            CURLOPT_POSTFIELDS => $postData,
+                            CURLOPT_HTTPHEADER => [
+                                'Authorization: Bearer ' . $apiKey
+                            ],
+                            CURLOPT_TIMEOUT => 20,
+                            CURLOPT_CONNECTTIMEOUT => 5,
+                            CURLOPT_SSL_VERIFYPEER => false,
+                        ]);
+
+                        $responseBody = curl_exec($ch);
+                        $curlError = curl_error($ch);
+                        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                        curl_close($ch);
+
+                        if ($responseBody === false || $curlError) {
+                            throw new RuntimeException("Error cURL en Groq Whisper: " . $curlError);
+                        }
+
+                        $parsed = json_decode($responseBody, true);
+                        if ($statusCode !== 200) {
+                            $errMsg = $parsed['error']['message'] ?? "Error HTTP {$statusCode}";
+                            throw new RuntimeException("Groq Whisper Error ({$statusCode}): {$errMsg}");
+                        }
+
+                        $text = trim($parsed['text'] ?? '');
+                        if ($text !== '') {
+                            AiLogger::info('GroqWhisper', "Audio transcrito con éxito usando {$model} (Key ...{$keySuffix})");
+                            return $text;
+                        }
+                    } catch (Throwable $err) {
+                        $lastError = $err->getMessage();
+                        AiLogger::warning('GroqWhisper', "Fallo con {$model} (Key ...{$keySuffix}): {$lastError}");
+                        continue;
+                    }
+                }
+            }
+        } finally {
+            if (file_exists($tmpFilePath)) {
+                @unlink($tmpFilePath);
+            }
+        }
+
+        throw new RuntimeException("No se pudo transcribir el audio con Groq Whisper. Detalle: " . ($lastError ?: 'Error desconocido'));
+    }
 }
