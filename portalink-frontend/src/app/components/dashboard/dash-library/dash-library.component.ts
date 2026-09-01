@@ -1383,13 +1383,13 @@ export class DashLibraryComponent implements OnInit {
             id: this.generateBlockId(),
             type: 'codigo',
             language: 'sql',
-            content: '| ID | Nombre       | Ciudad    |\n|----|--------------|-----------|\n| 1  | Sofia Castro | Madrid    |\n| 2  | Mateo Rios   | Barcelona |\n| 3  | Lucas Silva  | Valencia  |'
+            content: ''
           },
           {
             id: this.generateBlockId(),
             type: 'codigo',
             language: 'sql',
-            content: '| pedido_id | cliente_id | producto    | monto |\n|-----------|------------|-------------|-------|\n| 10        | 11         | Laptop      | 1200  |\n| 10        | 21         | Mouse       | 30    |\n| 10        | 32         | Monitor     | 400   |'
+            content: ''
           }
         ]
       };
@@ -1532,7 +1532,7 @@ export class DashLibraryComponent implements OnInit {
         id: this.generateBlockId(),
         type: 'codigo',
         language: 'sql',
-        content: '| Columna A | Columna B |\n|---|---|\n| Dato 1 | Dato 2 |'
+        content: ''
       }
     ];
     this.syncBlocksToContent();
