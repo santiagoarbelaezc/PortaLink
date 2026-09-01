@@ -12,11 +12,20 @@ export interface SlashCommandItem {
   icon: string;
 }
 
-export interface NoteBlock {
+export interface NoteBlockColumn {
   id: string;
   type: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto';
   content: string;
   language?: string;
+}
+
+export interface NoteBlock {
+  id: string;
+  type: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'columnas';
+  content: string;
+  language?: string;
+  columns?: NoteBlockColumn[];
+  columnRatio?: '50-50' | '33-66' | '66-33' | '40-60' | '60-40';
 }
 
 @Directive({
@@ -482,9 +491,10 @@ export class DashLibraryComponent implements OnInit {
     switch (type) {
       case 'titulo': return 'Título';
       case 'subtitulo': return 'Subtítulo';
-      case 'codigo': return 'Código';
+      case 'codigo': return 'Código / Tabla';
       case 'alerta': return 'Alerta';
       case 'texto': return 'Texto Normal';
+      case 'columnas': return '2 Columnas';
       default: return 'Texto Normal';
     }
   }
@@ -496,9 +506,10 @@ export class DashLibraryComponent implements OnInit {
   slashCommands: SlashCommandItem[] = [
     { key: 'titulo', title: 'Título', desc: 'Encabezado principal de sección', icon: 'H1' },
     { key: 'subtitulo', title: 'Subtítulo', desc: 'Subtítulo secundario de sección', icon: 'H2' },
-    { key: 'codigo', title: 'Código', desc: 'Bloque de código formateado', icon: '</>' },
+    { key: 'codigo', title: 'Código / Tabla', desc: 'Bloque de código o tabla estructurada', icon: '</>' },
     { key: 'alerta', title: 'Alerta / Nota', desc: 'Caja destacada con consejo o idea', icon: '!' },
-    { key: 'texto', title: 'Texto normal', desc: 'Párrafo de texto libre', icon: 'T' }
+    { key: 'texto', title: 'Texto normal', desc: 'Párrafo de texto libre', icon: 'T' },
+    { key: 'columnas', title: '2 Columnas Paralelas', desc: 'Colocar dos tablas o bloques lado a lado', icon: '◫' }
   ];
 
   // Color Swatches Palette
@@ -816,6 +827,72 @@ export class DashLibraryComponent implements OnInit {
     while (i < lines.length) {
       const line = lines[i];
 
+      // Bloque de Columnas Paralelas: :::columns ratio=50-50 ... :::
+      if (line.trim().startsWith(':::columns')) {
+        const ratioMatch = line.trim().match(/ratio=([0-9-]+)/);
+        const columnRatio = (ratioMatch && ratioMatch[1]) ? (ratioMatch[1] as any) : '50-50';
+        const colBlocks: NoteBlockColumn[] = [];
+        i++; // avanzar después de :::columns
+
+        let currentColType: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' = 'texto';
+        let currentColLang: string | undefined = undefined;
+        let currentColLines: string[] = [];
+
+        const flushCol = () => {
+          if (currentColLines.length > 0 || colBlocks.length < 2) {
+            colBlocks.push({
+              id: this.generateBlockId(),
+              type: currentColType,
+              language: currentColLang,
+              content: currentColLines.join('\n').trim()
+            });
+            currentColLines = [];
+            currentColType = 'texto';
+            currentColLang = undefined;
+          }
+        };
+
+        while (i < lines.length && !lines[i].trim().startsWith(':::') && !lines[i].trim().startsWith(':::columns')) {
+          const l = lines[i];
+          if (l.trim().startsWith(':::column')) {
+            flushCol();
+            const typeMatch = l.trim().match(/type=([a-z]+)/);
+            if (typeMatch && ['titulo', 'subtitulo', 'codigo', 'alerta', 'texto'].includes(typeMatch[1])) {
+              currentColType = typeMatch[1] as any;
+            }
+            const langMatch = l.trim().match(/language=([a-zA-Z0-9_-]+)/);
+            if (langMatch) currentColLang = langMatch[1];
+            i++;
+            continue;
+          }
+          currentColLines.push(l);
+          i++;
+        }
+        flushCol();
+
+        if (i < lines.length && lines[i].trim() === ':::') {
+          i++;
+        }
+
+        // Asegurar que siempre tenga 2 columnas
+        while (colBlocks.length < 2) {
+          colBlocks.push({
+            id: this.generateBlockId(),
+            type: 'texto',
+            content: ''
+          });
+        }
+
+        blocks.push({
+          id: this.generateBlockId(),
+          type: 'columnas',
+          content: '',
+          columnRatio: columnRatio || '50-50',
+          columns: colBlocks
+        });
+        continue;
+      }
+
       // Bloque de Código: ```lang ... ```
       if (line.trim().startsWith('```')) {
         const langMatch = line.trim().match(/^```([a-zA-Z0-9_-]*)/);
@@ -887,6 +964,7 @@ export class DashLibraryComponent implements OnInit {
       const textLines: string[] = [];
       while (
         i < lines.length &&
+        !lines[i].trim().startsWith(':::columns') &&
         !lines[i].trim().startsWith('```') &&
         !lines[i].startsWith('# ') &&
         !lines[i].startsWith('## ') &&
@@ -930,6 +1008,14 @@ export class DashLibraryComponent implements OnInit {
       } else if (b.type === 'alerta') {
         const lines = (b.content || '').split('\n');
         return lines.map(l => `> 💡 ${l}`).join('\n');
+      } else if (b.type === 'columnas') {
+        const ratio = b.columnRatio || '50-50';
+        const cols = b.columns || [];
+        const colsStr = cols.map(c => {
+          const langAttr = c.language ? ` language=${c.language}` : '';
+          return `:::column type=${c.type || 'texto'}${langAttr}\n${c.content || ''}`;
+        }).join('\n');
+        return `:::columns ratio=${ratio}\n${colsStr}\n:::`;
       } else {
         return rawContent;
       }
@@ -1015,17 +1101,41 @@ export class DashLibraryComponent implements OnInit {
   }
 
   addBlock(type: string, index?: number) {
-    const validTypes: ('titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto')[] = [
-      'titulo', 'subtitulo', 'codigo', 'alerta', 'texto'
+    const validTypes: ('titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'columnas')[] = [
+      'titulo', 'subtitulo', 'codigo', 'alerta', 'texto', 'columnas'
     ];
-    const blockType = validTypes.includes(type as any) ? (type as 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto') : 'texto';
+    const blockType = validTypes.includes(type as any) ? (type as any) : 'texto';
 
-    const newBlock: NoteBlock = {
-      id: this.generateBlockId(),
-      type: blockType,
-      content: blockType === 'codigo' ? '// Tu código aquí\n' : '',
-      language: blockType === 'codigo' ? 'typescript' : undefined
-    };
+    let newBlock: NoteBlock;
+    if (blockType === 'columnas') {
+      newBlock = {
+        id: this.generateBlockId(),
+        type: 'columnas',
+        content: '',
+        columnRatio: '50-50',
+        columns: [
+          {
+            id: this.generateBlockId(),
+            type: 'codigo',
+            language: 'sql',
+            content: '| ID | Nombre       | Ciudad    |\n|----|--------------|-----------|\n| 1  | Sofia Castro | Madrid    |\n| 2  | Mateo Rios   | Barcelona |\n| 3  | Lucas Silva  | Valencia  |'
+          },
+          {
+            id: this.generateBlockId(),
+            type: 'codigo',
+            language: 'sql',
+            content: '| pedido_id | cliente_id | producto    | monto |\n|-----------|------------|-------------|-------|\n| 10        | 11         | Laptop      | 1200  |\n| 10        | 21         | Mouse       | 30    |\n| 10        | 32         | Monitor     | 400   |'
+          }
+        ]
+      };
+    } else {
+      newBlock = {
+        id: this.generateBlockId(),
+        type: blockType,
+        content: blockType === 'codigo' ? '// Tu código aquí\n' : '',
+        language: blockType === 'codigo' ? 'typescript' : undefined
+      };
+    }
 
     if (typeof index === 'number') {
       this.blocks.splice(index + 1, 0, newBlock);
@@ -1106,19 +1216,83 @@ export class DashLibraryComponent implements OnInit {
       id: this.generateBlockId(),
       type: target.type,
       content: target.content,
-      language: target.language
+      language: target.language,
+      columnRatio: target.columnRatio,
+      columns: target.columns ? target.columns.map(c => ({ ...c, id: this.generateBlockId() })) : undefined
     };
     this.blocks.splice(index + 1, 0, clone);
     this.syncBlocksToContent();
   }
 
   changeBlockType(block: NoteBlock, newType: string) {
+    if (newType === 'columnas') {
+      this.convertToColumns(block);
+      return;
+    }
     const validTypes: ('titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto')[] = [
       'titulo', 'subtitulo', 'codigo', 'alerta', 'texto'
     ];
-    block.type = validTypes.includes(newType as any) ? (newType as 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto') : 'texto';
+    block.type = validTypes.includes(newType as any) ? (newType as any) : 'texto';
     if (block.type === 'codigo' && !block.language) {
       block.language = 'typescript';
+    }
+    // Si viene de columnas, limpiar estructura de columnas
+    if (block.columns) {
+      if (block.columns[0] && block.columns[0].content) {
+        block.content = block.columns[0].content;
+      }
+      delete block.columns;
+      delete block.columnRatio;
+    }
+    this.syncBlocksToContent();
+  }
+
+  convertToColumns(block: NoteBlock) {
+    if (block.type === 'columnas') return;
+    const currentContent = block.content || '';
+    const currentType = block.type;
+    const currentLang = block.language;
+
+    block.type = 'columnas';
+    block.columnRatio = '50-50';
+    block.content = '';
+    block.columns = [
+      {
+        id: this.generateBlockId(),
+        type: currentType,
+        language: currentLang,
+        content: currentContent
+      },
+      {
+        id: this.generateBlockId(),
+        type: 'codigo',
+        language: 'sql',
+        content: '| Columna A | Columna B |\n|---|---|\n| Dato 1 | Dato 2 |'
+      }
+    ];
+    this.syncBlocksToContent();
+  }
+
+  setColumnRatio(block: NoteBlock, ratio: '50-50' | '33-66' | '66-33' | '40-60' | '60-40') {
+    block.columnRatio = ratio;
+    this.syncBlocksToContent();
+  }
+
+  setColumnType(col: NoteBlockColumn, newType: string) {
+    const validTypes: ('titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto')[] = [
+      'titulo', 'subtitulo', 'codigo', 'alerta', 'texto'
+    ];
+    col.type = validTypes.includes(newType as any) ? (newType as any) : 'texto';
+    if (col.type === 'codigo' && !col.language) {
+      col.language = 'sql';
+    }
+    this.syncBlocksToContent();
+  }
+
+  onColumnInput(col: NoteBlockColumn, event: Event) {
+    const target = event.target as HTMLElement;
+    if (target) {
+      col.content = target.innerText || target.innerHTML || '';
     }
     this.syncBlocksToContent();
   }
@@ -1247,6 +1421,23 @@ export class DashLibraryComponent implements OnInit {
   }
 
   executeSlashCommand(cmdKey: string) {
+    if (cmdKey === 'columnas') {
+      if (this.activeBlockId) {
+        const targetBlock = this.blocks.find(b => b.id === this.activeBlockId);
+        if (targetBlock) {
+          this.convertToColumns(targetBlock);
+        } else {
+          this.addBlock('columnas');
+        }
+      } else {
+        this.addBlock('columnas');
+      }
+      this.showSlashMenu = false;
+      this.slashMenuQuery = '';
+      this.slashSelectedIndex = 0;
+      return;
+    }
+
     const validTypes: ('titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto')[] = [
       'titulo', 'subtitulo', 'codigo', 'alerta', 'texto'
     ];

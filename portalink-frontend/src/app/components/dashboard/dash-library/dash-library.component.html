@@ -770,19 +770,19 @@
   <!-- ══════════════════════════════════════
        NIVEL 3: EDITOR DE APUNTES NOTION LIVE (SIDEBAR w-72 PERFECTA + PIZARRA CON AJUSTE DINÁMICO DE ANCHO)
   ══════════════════════════════════════ -->
-  <div *ngIf="selectedNotebook && searchQuery.trim().length === 0" class="flex flex-col lg:flex-row gap-3 sm:gap-5 items-start w-full min-w-0 overflow-hidden">
+  <div *ngIf="selectedNotebook && searchQuery.trim().length === 0" class="flex flex-col lg:flex-row gap-3 sm:gap-5 items-start w-full min-w-0">
     
-    <!-- SIDEBAR DE APUNTES ANCHO PERFECTO / MODAL BOTTOM DRAWER EN MÓVIL -->
+    <!-- SIDEBAR DE APUNTES STICKY CON SCROLL INTERNO INDEPENDIENTE / DRAWER EN MÓVIL -->
     <div *ngIf="!isSidebarCollapsed" 
          (click)="isMobileScreen ? toggleSidebar() : null"
-         class="fixed inset-0 z-50 lg:relative lg:z-auto flex flex-col justify-end lg:justify-start bg-black/75 backdrop-blur-md lg:bg-transparent lg:backdrop-blur-none p-0 lg:p-0 transition-all">
+         class="fixed inset-0 z-50 lg:sticky lg:top-4 lg:self-start lg:z-10 flex flex-col justify-end lg:justify-start bg-black/75 backdrop-blur-md lg:bg-transparent lg:backdrop-blur-none p-0 lg:p-0 transition-all">
       
       <div (click)="$event.stopPropagation()"
-           class="w-full lg:w-72 xl:w-80 shrink-0 rounded-t-[32px] lg:rounded-[24px] border-t lg:border border-neutral-800 p-4 sm:p-5 space-y-4 shadow-2xl max-h-[82vh] lg:max-h-none overflow-y-auto animate-slide-up lg:animate-fade-in"
+           class="w-full lg:w-72 xl:w-80 shrink-0 rounded-t-[32px] lg:rounded-[24px] border-t lg:border border-neutral-800 p-4 sm:p-5 flex flex-col space-y-4 shadow-2xl max-h-[82vh] lg:max-h-[calc(100vh-2rem)] overflow-hidden animate-slide-up lg:animate-fade-in"
            [ngClass]="isDark ? 'bg-[#121215] text-white' : 'bg-white text-neutral-900'">
         
         <!-- SIDEBAR TOP NAVIGATION -->
-        <div class="flex items-center justify-between pb-3 border-b"
+        <div class="flex items-center justify-between pb-3 border-b shrink-0"
              [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
           
           <button (click)="selectNotebook(null)" 
@@ -813,7 +813,7 @@
         </div>
 
         <!-- INFORMACIÓN DEL CUADERNO ACTUAL -->
-        <div class="flex items-center justify-between px-1 text-[11px] font-headline font-semibold text-neutral-400">
+        <div class="flex items-center justify-between px-1 text-[11px] font-headline font-semibold text-neutral-400 shrink-0">
           <div class="flex items-center gap-2 truncate">
             <span class="w-2.5 h-2.5 rounded-full shrink-0 shadow-xs" [style.backgroundColor]="getNotebookColor()"></span>
             <span class="truncate" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-700'">{{ selectedNotebook.title }}</span>
@@ -824,8 +824,8 @@
           </span>
         </div>
 
-        <!-- LISTA DE PÁGINAS DE APUNTES CON DISEÑO PREMIUM -->
-        <div class="space-y-1.5 max-h-[640px] overflow-y-auto pr-1">
+        <!-- LISTA DE PÁGINAS DE APUNTES CON SCROLL INTERNO INDEPENDIENTE -->
+        <div class="space-y-1.5 flex-1 min-h-0 overflow-y-auto pr-1">
           <div *ngIf="pages.length === 0" class="py-8 px-4 text-center rounded-2xl border border-dashed text-xs opacity-60 flex flex-col items-center gap-2"
                [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900/30' : 'border-neutral-200 bg-neutral-50'">
             <svg class="w-6 h-6 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
@@ -1056,6 +1056,16 @@
                           <span>Texto Normal</span>
                         </div>
                         <kbd class="px-1.5 py-0.5 text-[9px] font-mono font-bold rounded border uppercase opacity-60" [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-300' : 'bg-neutral-100 border-neutral-300 text-neutral-700'">N</kbd>
+                      </button>
+
+                      <button type="button" (mousedown)="$event.stopPropagation(); $event.preventDefault()" (click)="selectBlockType(block, 'columnas', $event)"
+                              class="w-full px-3 py-2 rounded-xl text-left text-xs font-headline font-bold flex items-center justify-between transition-all cursor-pointer"
+                              [ngClass]="block.type === 'columnas' ? (isDark ? 'bg-neutral-800 text-white border border-neutral-700' : 'bg-neutral-100 text-neutral-900 font-bold border border-neutral-300') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100 hover:text-black')">
+                        <div class="flex items-center gap-2.5">
+                          <span class="text-base leading-none">◫</span>
+                          <span>2 Columnas</span>
+                        </div>
+                        <kbd class="px-1.5 py-0.5 text-[9px] font-mono font-bold rounded border uppercase opacity-60" [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-300' : 'bg-neutral-100 border-neutral-300 text-neutral-700'">2</kbd>
                       </button>
                     </div>
                   </div>
@@ -1363,16 +1373,203 @@
               ></div>
             </div>
 
+            <!-- ◫ 2 COLUMNAS PARALELAS CON AJUSTE DINÁMICO DE ANCHO -->
+            <div *ngIf="block.type === 'columnas'" class="rounded-2xl border p-2 sm:p-3 my-2 space-y-2.5 transition-all shadow-sm"
+                 [ngClass]="isDark ? 'bg-[#151518]/90 border-neutral-800 text-white' : 'bg-neutral-50/80 border-neutral-200 text-neutral-900'">
+              
+              <!-- HEADER DE CONTROL DE PROPORCIÓN DE ANCHO -->
+              <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b text-[11px] font-headline select-none"
+                   [ngClass]="isDark ? 'border-neutral-800 text-neutral-400' : 'border-neutral-200 text-neutral-600'">
+                <div class="flex items-center gap-1.5 font-bold">
+                  <span class="text-emerald-400 font-bold text-sm">◫</span>
+                  <span>2 Columnas Paralelas</span>
+                </div>
+
+                <!-- SELECTOR DE ANCHO RELATIVO CON BOTONES RÁPIDOS -->
+                <div class="flex items-center gap-1 bg-black/30 p-1 rounded-xl border"
+                     [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-300/80'">
+                  <span class="text-[10px] uppercase font-bold tracking-wider px-1 opacity-60">Ancho:</span>
+                  <button type="button" (click)="setColumnRatio(block, '50-50')" 
+                          class="px-2 py-0.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer"
+                          [ngClass]="(block.columnRatio || '50-50') === '50-50' ? (isDark ? 'bg-white text-black shadow-xs font-extrabold' : 'bg-neutral-900 text-white shadow-xs font-extrabold') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-600 hover:text-black')">
+                    50 / 50
+                  </button>
+                  <button type="button" (click)="setColumnRatio(block, '33-66')" 
+                          class="px-2 py-0.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer"
+                          [ngClass]="block.columnRatio === '33-66' ? (isDark ? 'bg-white text-black shadow-xs font-extrabold' : 'bg-neutral-900 text-white shadow-xs font-extrabold') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-600 hover:text-black')">
+                    33 / 67
+                  </button>
+                  <button type="button" (click)="setColumnRatio(block, '66-33')" 
+                          class="px-2 py-0.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer"
+                          [ngClass]="block.columnRatio === '66-33' ? (isDark ? 'bg-white text-black shadow-xs font-extrabold' : 'bg-neutral-900 text-white shadow-xs font-extrabold') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-600 hover:text-black')">
+                    67 / 33
+                  </button>
+                  <button type="button" (click)="setColumnRatio(block, '40-60')" 
+                          class="px-2 py-0.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer"
+                          [ngClass]="block.columnRatio === '40-60' ? (isDark ? 'bg-white text-black shadow-xs font-extrabold' : 'bg-neutral-900 text-white shadow-xs font-extrabold') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-600 hover:text-black')">
+                    40 / 60
+                  </button>
+                  <button type="button" (click)="setColumnRatio(block, '60-40')" 
+                          class="px-2 py-0.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer"
+                          [ngClass]="block.columnRatio === '60-40' ? (isDark ? 'bg-white text-black shadow-xs font-extrabold' : 'bg-neutral-900 text-white shadow-xs font-extrabold') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-600 hover:text-black')">
+                    60 / 40
+                  </button>
+                </div>
+              </div>
+
+              <!-- CONTENEDOR FLEX DE LAS 2 COLUMNAS -->
+              <div class="flex flex-col md:flex-row gap-3 sm:gap-4 items-stretch w-full">
+                
+                <!-- COLUMNA 1 (IZQUIERDA) -->
+                <div *ngIf="block.columns && block.columns[0]"
+                     class="min-w-0 flex flex-col rounded-xl border p-2 sm:p-3 space-y-1.5 transition-all"
+                     [ngClass]="[
+                       (block.columnRatio === '33-66' ? 'w-full md:w-1/3' : block.columnRatio === '66-33' ? 'w-full md:w-2/3' : block.columnRatio === '40-60' ? 'w-full md:w-2/5' : block.columnRatio === '60-40' ? 'w-full md:w-3/5' : 'w-full md:w-1/2'),
+                       isDark ? 'bg-[#0f0f12] border-neutral-800/80' : 'bg-white border-neutral-200'
+                     ]">
+                  
+                  <!-- HEADER INTERNO COLUMNA 1 -->
+                  <div class="flex items-center justify-between pb-1.5 border-b text-[10px] font-headline shrink-0"
+                       [ngClass]="isDark ? 'border-neutral-800 text-neutral-400' : 'border-neutral-100 text-neutral-500'">
+                    <div class="flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                      <select [ngModel]="block.columns[0].type" (ngModelChange)="setColumnType(block.columns[0], $event)"
+                              class="bg-transparent font-bold outline-none cursor-pointer"
+                              [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
+                        <option value="texto">Texto</option>
+                        <option value="codigo">Código / Tabla</option>
+                        <option value="alerta">Alerta</option>
+                        <option value="titulo">Título</option>
+                        <option value="subtitulo">Subtítulo</option>
+                      </select>
+                    </div>
+
+                    <div class="flex items-center gap-1.5">
+                      <select *ngIf="block.columns[0].type === 'codigo'" [(ngModel)]="block.columns[0].language" (change)="syncBlocksToContent()"
+                              class="bg-neutral-900 text-neutral-200 text-[9px] font-bold rounded px-1.5 py-0.5 border border-neutral-800 outline-none cursor-pointer">
+                        <option value="sql">SQL</option>
+                        <option value="typescript">TypeScript</option>
+                        <option value="javascript">JavaScript</option>
+                        <option value="html">HTML</option>
+                        <option value="json">JSON</option>
+                      </select>
+                      <button *ngIf="block.columns[0].type === 'codigo'" (click)="copyCodeBlock(block.columns[0].content)" title="Copiar"
+                              class="text-[9px] hover:text-white transition-colors cursor-pointer">
+                        Copiar
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- EDITOR COLUMNA 1 -->
+                  <div class="flex-1 min-h-[90px] flex flex-col">
+                    <textarea *ngIf="block.columns[0].type === 'codigo'"
+                              [(ngModel)]="block.columns[0].content"
+                              (input)="syncBlocksToContent()"
+                              (focus)="activeBlockId = block.id"
+                              spellcheck="false"
+                              placeholder="| Columna 1 | Columna 2 |&#10;|---|---|&#10;| Dato A | Dato B |"
+                              [rows]="getLineCount(block.columns[0].content, 4, 'codigo')"
+                              class="w-full p-2 font-mono text-[11px] sm:text-xs leading-relaxed bg-[#050507] text-emerald-300 border border-neutral-800 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500/50 resize-y flex-1"
+                    ></textarea>
+
+                    <div *ngIf="block.columns[0].type !== 'codigo'"
+                         contenteditable="true"
+                         [(appContentEditable)]="block.columns[0].content"
+                         (appContentEditableChange)="syncBlocksToContent()"
+                         (focus)="activeBlockId = block.id"
+                         spellcheck="false"
+                         placeholder="Escribe contenido en la columna izquierda..."
+                         class="w-full bg-transparent text-xs sm:text-sm leading-relaxed p-1 outline-none empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none flex-1"
+                         [ngClass]="block.columns[0].type === 'titulo' ? 'font-extrabold text-base sm:text-lg' : block.columns[0].type === 'subtitulo' ? 'font-bold text-sm sm:text-base' : block.columns[0].type === 'alerta' ? 'italic text-amber-300/90' : 'text-neutral-200'"
+                    ></div>
+                  </div>
+                </div>
+
+                <!-- COLUMNA 2 (DERECHA) -->
+                <div *ngIf="block.columns && block.columns[1]"
+                     class="min-w-0 flex flex-col rounded-xl border p-2 sm:p-3 space-y-1.5 transition-all"
+                     [ngClass]="[
+                       (block.columnRatio === '33-66' ? 'w-full md:w-2/3' : block.columnRatio === '66-33' ? 'w-full md:w-1/3' : block.columnRatio === '40-60' ? 'w-full md:w-3/5' : block.columnRatio === '60-40' ? 'w-full md:w-2/5' : 'w-full md:w-1/2'),
+                       isDark ? 'bg-[#0f0f12] border-neutral-800/80' : 'bg-white border-neutral-200'
+                     ]">
+                  
+                  <!-- HEADER INTERNO COLUMNA 2 -->
+                  <div class="flex items-center justify-between pb-1.5 border-b text-[10px] font-headline shrink-0"
+                       [ngClass]="isDark ? 'border-neutral-800 text-neutral-400' : 'border-neutral-100 text-neutral-500'">
+                    <div class="flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+                      <select [ngModel]="block.columns[1].type" (ngModelChange)="setColumnType(block.columns[1], $event)"
+                              class="bg-transparent font-bold outline-none cursor-pointer"
+                              [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
+                        <option value="texto">Texto</option>
+                        <option value="codigo">Código / Tabla</option>
+                        <option value="alerta">Alerta</option>
+                        <option value="titulo">Título</option>
+                        <option value="subtitulo">Subtítulo</option>
+                      </select>
+                    </div>
+
+                    <div class="flex items-center gap-1.5">
+                      <select *ngIf="block.columns[1].type === 'codigo'" [(ngModel)]="block.columns[1].language" (change)="syncBlocksToContent()"
+                              class="bg-neutral-900 text-neutral-200 text-[9px] font-bold rounded px-1.5 py-0.5 border border-neutral-800 outline-none cursor-pointer">
+                        <option value="sql">SQL</option>
+                        <option value="typescript">TypeScript</option>
+                        <option value="javascript">JavaScript</option>
+                        <option value="html">HTML</option>
+                        <option value="json">JSON</option>
+                      </select>
+                      <button *ngIf="block.columns[1].type === 'codigo'" (click)="copyCodeBlock(block.columns[1].content)" title="Copiar"
+                              class="text-[9px] hover:text-white transition-colors cursor-pointer">
+                        Copiar
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- EDITOR COLUMNA 2 -->
+                  <div class="flex-1 min-h-[90px] flex flex-col">
+                    <textarea *ngIf="block.columns[1].type === 'codigo'"
+                              [(ngModel)]="block.columns[1].content"
+                              (input)="syncBlocksToContent()"
+                              (focus)="activeBlockId = block.id"
+                              spellcheck="false"
+                              placeholder="| Columna A | Columna B |&#10;|---|---|&#10;| Dato 1 | Dato 2 |"
+                              [rows]="getLineCount(block.columns[1].content, 4, 'codigo')"
+                              class="w-full p-2 font-mono text-[11px] sm:text-xs leading-relaxed bg-[#050507] text-blue-300 border border-neutral-800 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500/50 resize-y flex-1"
+                    ></textarea>
+
+                    <div *ngIf="block.columns[1].type !== 'codigo'"
+                         contenteditable="true"
+                         [(appContentEditable)]="block.columns[1].content"
+                         (appContentEditableChange)="syncBlocksToContent()"
+                         (focus)="activeBlockId = block.id"
+                         spellcheck="false"
+                         placeholder="Escribe contenido en la columna derecha..."
+                         class="w-full bg-transparent text-xs sm:text-sm leading-relaxed p-1 outline-none empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none flex-1"
+                         [ngClass]="block.columns[1].type === 'titulo' ? 'font-extrabold text-base sm:text-lg' : block.columns[1].type === 'subtitulo' ? 'font-bold text-sm sm:text-base' : block.columns[1].type === 'alerta' ? 'italic text-amber-300/90' : 'text-neutral-200'"
+                    ></div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
           </div>
 
-          <!-- BOTÓN INFERIOR PARA AGREGAR MÁS BLOQUES -->
-          <div class="pt-3 border-t border-dashed flex justify-center"
+          <!-- BOTONES INFERIORES PARA AGREGAR MÁS BLOQUES -->
+          <div class="pt-3 border-t border-dashed flex flex-wrap items-center justify-center gap-2"
                [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-200'">
             <button type="button" (click)="addBlock('texto')"
-                    class="px-4 py-2 rounded-xl text-xs font-headline font-bold border transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+                    class="px-3.5 py-1.5 rounded-xl text-xs font-headline font-bold border transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
                     [ngClass]="isDark ? 'border-neutral-700 bg-neutral-900 text-neutral-300 hover:bg-neutral-800 hover:text-white' : 'border-neutral-300 bg-white text-neutral-800 hover:bg-neutral-100 hover:text-black'">
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-              <span>+ Agregar Bloque de Texto</span>
+              <span>+ Texto</span>
+            </button>
+            <button type="button" (click)="addBlock('columnas')"
+                    class="px-3.5 py-1.5 rounded-xl text-xs font-headline font-bold border transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+                    [ngClass]="isDark ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20' : 'border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100'">
+              <span class="text-sm">◫</span>
+              <span>+ 2 Columnas Paralelas</span>
             </button>
           </div>
 
@@ -1400,6 +1597,13 @@
               <svg class="w-4 h-4 text-neutral-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
             </span>
             <span>Código</span>
+          </button>
+
+          <button type="button" (click)="addBlock('columnas')" class="flex flex-col items-center gap-0.5 p-1 text-[10px] font-bold text-emerald-300 hover:text-white active:scale-95 transition-all">
+            <span class="p-2 rounded-xl bg-emerald-500/20 border border-emerald-500/40 shadow-inner">
+              <span class="text-sm leading-none">◫</span>
+            </span>
+            <span>2 Col</span>
           </button>
 
           <button type="button" (click)="addBlock('alerta')" class="flex flex-col items-center gap-0.5 p-1 text-[10px] font-bold text-neutral-300 hover:text-white active:scale-95 transition-all">
