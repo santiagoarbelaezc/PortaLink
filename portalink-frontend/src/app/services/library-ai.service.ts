@@ -44,11 +44,12 @@ export class LibraryAiService {
   /**
    * General Copilot for Notes / Library study assistant powered exclusively by Google Gemini API via backend PHP ChatAdminController
    */
-  askCopilot(prompt: string, noteTitle?: string, history: any[] = []): Observable<{ success: boolean; result: string; error?: string }> {
+  askCopilot(prompt: string, noteTitle?: string, history: any[] = [], noteContent?: string): Observable<{ success: boolean; result: string; error?: string }> {
     const payload = {
       mode: 'copilot',
       prompt,
       note_title: noteTitle,
+      note_content: noteContent,
       history
     };
 

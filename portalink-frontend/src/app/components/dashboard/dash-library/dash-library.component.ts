@@ -12,6 +12,19 @@ export interface SlashCommandItem {
   icon: string;
 }
 
+export interface LibraryTab {
+  id: string;
+  title: string;
+  icon?: string;
+  color?: string;
+  folderId: number | null;
+  notebookId: number | null;
+  pageId: number | null;
+  folderTitle?: string;
+  notebookTitle?: string;
+  pageTitle?: string;
+}
+
 export interface NoteBlockColumn {
   id: string;
   type: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto';
@@ -71,7 +84,8 @@ export class ContentEditableDirective implements OnChanges {
   selector: 'app-dash-library',
   standalone: true,
   imports: [CommonModule, FormsModule, ContentEditableDirective],
-  templateUrl: './dash-library.component.html'
+  templateUrl: './dash-library.component.html',
+  host: { class: 'block w-full' }
 })
 export class DashLibraryComponent implements OnInit {
   @ViewChild('editorTextarea') editorTextarea?: ElementRef<HTMLTextAreaElement>;
@@ -89,6 +103,7 @@ export class DashLibraryComponent implements OnInit {
 
   // Block-level AI action state
   activeAiBlockId: string | null = null;
+  activeAiTargetColIndex: number | null = null;
   aiCustomInstruction = '';
   isAiLoading = false;
   aiResultPreview = '';
@@ -245,6 +260,9 @@ export class DashLibraryComponent implements OnInit {
     if (this.isSortDropdownOpen) {
       this.isSortDropdownOpen = false;
     }
+    this.activeColTypeMenuId = null;
+    this.activeColLangMenuId = null;
+    this.activeTypeMenuBlockId = null;
   }
 
   // Toast feedback
@@ -343,6 +361,47 @@ export class DashLibraryComponent implements OnInit {
   toggleBlockTypeMenu(blockId: string, event?: MouseEvent) {
     if (event) event.stopPropagation();
     this.activeTypeMenuBlockId = (this.activeTypeMenuBlockId === blockId) ? null : blockId;
+    this.activeColTypeMenuId = null;
+    this.activeColLangMenuId = null;
+  }
+
+  // ── CUSTOM COLUMN TYPE & LANGUAGE SELECTOR MENUS ──────────────
+  activeColTypeMenuId: string | null = null;
+  activeColLangMenuId: string | null = null;
+
+  toggleColTypeMenu(colId: string, event: Event) {
+    event.stopPropagation();
+    event.preventDefault();
+    this.activeColTypeMenuId = (this.activeColTypeMenuId === colId) ? null : colId;
+    this.activeColLangMenuId = null;
+    this.activeTypeMenuBlockId = null;
+  }
+
+  selectColType(col: NoteBlockColumn, newType: string, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    this.setColumnType(col, newType);
+    this.activeColTypeMenuId = null;
+  }
+
+  toggleColLangMenu(colId: string, event: Event) {
+    event.stopPropagation();
+    event.preventDefault();
+    this.activeColLangMenuId = (this.activeColLangMenuId === colId) ? null : colId;
+    this.activeColTypeMenuId = null;
+    this.activeTypeMenuBlockId = null;
+  }
+
+  selectColLang(col: NoteBlockColumn, newLang: string, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    col.language = newLang;
+    this.syncBlocksToContent();
+    this.activeColLangMenuId = null;
   }
 
   selectBlockType(block: NoteBlock, newType: string, event?: Event) {
@@ -632,7 +691,209 @@ export class DashLibraryComponent implements OnInit {
         }
       }
     } catch {}
+    this.initTabs();
     this.loadFolders();
+  }
+
+  // ── MULTI-TAB WORKSPACE NAVIGATION ──────────────────────────
+  tabs: LibraryTab[] = [];
+  activeTabId: string = '';
+
+  initTabs() {
+    try {
+      const savedTabs = localStorage.getItem('portalink_lib_tabs');
+      const savedActiveTabId = localStorage.getItem('portalink_lib_active_tab_id');
+      if (savedTabs) {
+        const parsed = JSON.parse(savedTabs);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this.tabs = parsed;
+          this.activeTabId = (savedActiveTabId && this.tabs.some(t => t.id === savedActiveTabId)) 
+            ? savedActiveTabId 
+            : this.tabs[0].id;
+          return;
+        }
+      }
+    } catch (e) {
+      console.error('Error cargando pestañas:', e);
+    }
+
+    const defaultTab: LibraryTab = {
+      id: 'tab_' + Date.now(),
+      title: 'Biblioteca',
+      icon: 'folder',
+      color: '#10b981',
+      folderId: null,
+      notebookId: null,
+      pageId: null
+    };
+    this.tabs = [defaultTab];
+    this.activeTabId = defaultTab.id;
+    this.saveTabsToStorage();
+  }
+
+  saveTabsToStorage() {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem('portalink_lib_tabs', JSON.stringify(this.tabs));
+      localStorage.setItem('portalink_lib_active_tab_id', this.activeTabId);
+    } catch (e) {}
+  }
+
+  syncActiveTabMeta() {
+    const tab = this.tabs.find(t => t.id === this.activeTabId);
+    if (!tab) return;
+
+    tab.folderId = this.selectedFolder?.id || null;
+    tab.folderTitle = this.selectedFolder?.name;
+    tab.notebookId = this.selectedNotebook?.id || null;
+    tab.notebookTitle = this.selectedNotebook?.title;
+    tab.pageId = this.selectedPage?.id || null;
+    tab.pageTitle = this.selectedPage?.title;
+
+    tab.color = this.selectedNotebook?.color || this.selectedFolder?.color || '#10b981';
+    tab.icon = this.selectedNotebook?.icon || this.selectedFolder?.icon || 'folder';
+
+    if (this.selectedPage && this.selectedPage.title) {
+      tab.title = this.selectedPage.title;
+    } else if (this.selectedNotebook && this.selectedNotebook.title) {
+      tab.title = this.selectedNotebook.title;
+    } else if (this.selectedFolder && this.selectedFolder.name) {
+      tab.title = this.selectedFolder.name;
+    } else {
+      tab.title = 'Biblioteca';
+    }
+
+    this.saveTabsToStorage();
+  }
+
+  openNewTab(folderId?: number | null, notebookId?: number | null, pageId?: number | null) {
+    this.syncActiveTabMeta();
+
+    const newTabId = 'tab_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+    let title = 'Nueva Pestaña';
+    let color = '#10b981';
+    let icon = 'folder';
+
+    if (notebookId && this.notebooks.length > 0) {
+      const nb = this.notebooks.find(n => n.id === notebookId);
+      if (nb) {
+        title = nb.title;
+        color = nb.color || color;
+        icon = nb.icon || icon;
+      }
+    } else if (folderId && this.folders.length > 0) {
+      const f = this.folders.find(fold => fold.id === folderId);
+      if (f) {
+        title = f.name;
+        color = f.color || color;
+        icon = f.icon || icon;
+      }
+    }
+
+    const newTab: LibraryTab = {
+      id: newTabId,
+      title,
+      icon,
+      color,
+      folderId: folderId ?? null,
+      notebookId: notebookId ?? null,
+      pageId: pageId ?? null
+    };
+
+    this.tabs.push(newTab);
+    this.switchTab(newTabId);
+  }
+
+  openNotebookInNewTab(notebook: NotebookModule, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    this.openNewTab(this.selectedFolder?.id, notebook.id, null);
+  }
+
+  switchTab(tabId: string) {
+    if (this.activeTabId === tabId && this.selectedNotebook) return;
+
+    this.syncActiveTabMeta();
+    this.activeTabId = tabId;
+    this.saveTabsToStorage();
+
+    const tab = this.tabs.find(t => t.id === tabId);
+    if (!tab) return;
+
+    if (tab.folderId) {
+      const folder = this.folders.find(f => f.id === tab.folderId);
+      this.selectedFolder = folder || null;
+
+      if (this.selectedFolder && tab.notebookId) {
+        this.libraryService.getNotebooks(tab.folderId).subscribe({
+          next: (res) => {
+            if (res.ok) {
+              this.notebooks = res.data;
+              const nb = this.notebooks.find(n => n.id === tab.notebookId);
+              this.selectedNotebook = nb || null;
+              if (this.selectedNotebook && typeof this.selectedNotebook.id === 'number') {
+                this.loadPages(this.selectedNotebook.id, tab.pageId || undefined);
+              }
+            }
+          }
+        });
+      } else if (this.selectedFolder) {
+        this.selectedNotebook = null;
+        this.selectedPage = null;
+        this.pages = [];
+        this.loadNotebooks(tab.folderId);
+      }
+    } else {
+      this.selectedFolder = null;
+      this.selectedNotebook = null;
+      this.selectedPage = null;
+      this.notebooks = [];
+      this.pages = [];
+    }
+  }
+
+  closeTab(tabId: string, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+
+    if (this.tabs.length <= 1) {
+      // Si solo queda una pestaña, reiniciar a la vista raíz de Biblioteca
+      this.selectedFolder = null;
+      this.selectedNotebook = null;
+      this.selectedPage = null;
+      this.notebooks = [];
+      this.pages = [];
+      this.syncActiveTabMeta();
+      return;
+    }
+
+    const idx = this.tabs.findIndex(t => t.id === tabId);
+    if (idx === -1) return;
+
+    if (this.activeTabId === tabId) {
+      const nextIdx = idx === this.tabs.length - 1 ? idx - 1 : idx + 1;
+      const nextTab = this.tabs[nextIdx];
+      this.tabs.splice(idx, 1);
+      this.switchTab(nextTab.id);
+    } else {
+      this.tabs.splice(idx, 1);
+      this.saveTabsToStorage();
+    }
+  }
+
+  closeOtherTabs(keepTabId: string, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    this.tabs = this.tabs.filter(t => t.id === keepTabId);
+    this.switchTab(keepTabId);
+    this.saveTabsToStorage();
+    this.showToast('Pestañas secundarias cerradas');
   }
 
   showToast(msg: string, type: 'success' | 'error' = 'success') {
@@ -644,6 +905,8 @@ export class DashLibraryComponent implements OnInit {
   }
 
   saveStateInLocalStorage() {
+    this.syncActiveTabMeta();
+
     if (this.selectedFolder?.id) {
       localStorage.setItem('portalink_lib_folder_id', this.selectedFolder.id.toString());
     } else {
@@ -664,29 +927,26 @@ export class DashLibraryComponent implements OnInit {
   }
 
   restoreSavedState() {
-    const savedFolderId = localStorage.getItem('portalink_lib_folder_id');
-    const savedNotebookId = localStorage.getItem('portalink_lib_notebook_id');
-    const savedPageId = localStorage.getItem('portalink_lib_page_id');
+    const activeTab = this.tabs.find(t => t.id === this.activeTabId);
+    const targetFolderId = activeTab?.folderId ?? (localStorage.getItem('portalink_lib_folder_id') ? parseInt(localStorage.getItem('portalink_lib_folder_id')!, 10) : null);
+    const targetNotebookId = activeTab?.notebookId ?? (localStorage.getItem('portalink_lib_notebook_id') ? parseInt(localStorage.getItem('portalink_lib_notebook_id')!, 10) : null);
+    const targetPageId = activeTab?.pageId ?? (localStorage.getItem('portalink_lib_page_id') ? parseInt(localStorage.getItem('portalink_lib_page_id')!, 10) : undefined);
 
-    if (!savedFolderId) return;
-    const folderId = parseInt(savedFolderId, 10);
-    const folder = this.folders.find(f => f.id === folderId);
+    if (!targetFolderId) return;
+    const folder = this.folders.find(f => f.id === targetFolderId);
 
     if (folder) {
       this.selectedFolder = folder;
+      if (!targetNotebookId) return;
 
-      if (!savedNotebookId) return;
-      const notebookId = parseInt(savedNotebookId, 10);
-
-      this.libraryService.getNotebooks(folderId).subscribe({
+      this.libraryService.getNotebooks(targetFolderId).subscribe({
         next: (res) => {
           if (res.ok) {
             this.notebooks = res.data;
-            const nb = this.notebooks.find(n => n.id === notebookId);
+            const nb = this.notebooks.find(n => n.id === targetNotebookId);
             if (nb) {
               this.selectedNotebook = nb;
-              const targetPageId = savedPageId ? parseInt(savedPageId, 10) : undefined;
-              this.loadPages(notebookId, targetPageId);
+              this.loadPages(targetNotebookId, targetPageId);
             }
           }
         }
@@ -837,25 +1097,28 @@ export class DashLibraryComponent implements OnInit {
         let currentColType: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' = 'texto';
         let currentColLang: string | undefined = undefined;
         let currentColLines: string[] = [];
+        let hasActiveCol = false;
 
         const flushCol = () => {
-          if (currentColLines.length > 0 || colBlocks.length < 2) {
+          if (hasActiveCol) {
             colBlocks.push({
               id: this.generateBlockId(),
               type: currentColType,
               language: currentColLang,
-              content: currentColLines.join('\n').trim()
+              content: currentColLines.join('\n')
             });
             currentColLines = [];
             currentColType = 'texto';
             currentColLang = undefined;
+            hasActiveCol = false;
           }
         };
 
-        while (i < lines.length && !lines[i].trim().startsWith(':::') && !lines[i].trim().startsWith(':::columns')) {
+        while (i < lines.length && lines[i].trim() !== ':::' && !lines[i].trim().startsWith(':::columns')) {
           const l = lines[i];
           if (l.trim().startsWith(':::column')) {
             flushCol();
+            hasActiveCol = true;
             const typeMatch = l.trim().match(/type=([a-z]+)/);
             if (typeMatch && ['titulo', 'subtitulo', 'codigo', 'alerta', 'texto'].includes(typeMatch[1])) {
               currentColType = typeMatch[1] as any;
@@ -865,7 +1128,9 @@ export class DashLibraryComponent implements OnInit {
             i++;
             continue;
           }
-          currentColLines.push(l);
+          if (hasActiveCol) {
+            currentColLines.push(l);
+          }
           i++;
         }
         flushCol();
@@ -874,7 +1139,7 @@ export class DashLibraryComponent implements OnInit {
           i++;
         }
 
-        // Asegurar que siempre tenga 2 columnas
+        // Asegurar que siempre tenga exactamente 2 columnas
         while (colBlocks.length < 2) {
           colBlocks.push({
             id: this.generateBlockId(),
@@ -888,7 +1153,7 @@ export class DashLibraryComponent implements OnInit {
           type: 'columnas',
           content: '',
           columnRatio: columnRatio || '50-50',
-          columns: colBlocks
+          columns: colBlocks.slice(0, 2)
         });
         continue;
       }
@@ -1010,7 +1275,7 @@ export class DashLibraryComponent implements OnInit {
         return lines.map(l => `> 💡 ${l}`).join('\n');
       } else if (b.type === 'columnas') {
         const ratio = b.columnRatio || '50-50';
-        const cols = b.columns || [];
+        const cols = (b.columns || []).slice(0, 2);
         const colsStr = cols.map(c => {
           const langAttr = c.language ? ` language=${c.language}` : '';
           return `:::column type=${c.type || 'texto'}${langAttr}\n${c.content || ''}`;
@@ -1758,9 +2023,15 @@ export class DashLibraryComponent implements OnInit {
   // GROQ AI INTEGRATION METHODS (Bloque e IA Flotante)
   // ════════════════════════════════════════════════════════
 
-  toggleAiBlockMenu(blockId: string, event: Event) {
+  toggleAiBlockMenu(blockId: string, event: Event, targetColIndex?: number) {
     event.stopPropagation();
-    this.activeAiBlockId = this.activeAiBlockId === blockId ? null : blockId;
+    if (this.activeAiBlockId === blockId && this.activeAiTargetColIndex === (targetColIndex ?? null)) {
+      this.activeAiBlockId = null;
+      this.activeAiTargetColIndex = null;
+    } else {
+      this.activeAiBlockId = blockId;
+      this.activeAiTargetColIndex = targetColIndex ?? null;
+    }
     this.activeTypeMenuBlockId = null;
     this.aiCustomInstruction = '';
     this.aiResultPreview = '';
@@ -1775,7 +2046,22 @@ export class DashLibraryComponent implements OnInit {
     this.aiResultPreview = '';
     this.aiError = '';
 
-    this.libraryAiService.transformBlockContent(block.content, block.type, instruction).subscribe(res => {
+    let contentToSend = block.content || '';
+    let blockTypeToSend = block.type;
+
+    if (block.type === 'columnas' && block.columns) {
+      if (this.activeAiTargetColIndex !== null && block.columns[this.activeAiTargetColIndex]) {
+        const targetCol = block.columns[this.activeAiTargetColIndex];
+        contentToSend = targetCol.content || '';
+        blockTypeToSend = targetCol.type || 'codigo';
+      } else {
+        const c1 = block.columns[0];
+        const c2 = block.columns[1];
+        contentToSend = `[COLUMNA IZQUIERDA (${c1?.type || 'texto'}${c1?.language ? ' ' + c1.language : ''})]:\n${c1?.content || ''}\n\n[COLUMNA DERECHA (${c2?.type || 'texto'}${c2?.language ? ' ' + c2.language : ''})]:\n${c2?.content || ''}`;
+      }
+    }
+
+    this.libraryAiService.transformBlockContent(contentToSend, blockTypeToSend, instruction).subscribe(res => {
       this.isAiLoading = false;
       if (res.success) {
         this.aiResultPreview = res.result;
@@ -1786,21 +2072,58 @@ export class DashLibraryComponent implements OnInit {
     });
   }
 
-  replaceBlockContentWithAi(block: NoteBlock) {
+  replaceBlockContentWithAi(block: NoteBlock, targetColIndex?: number) {
     if (!this.aiResultPreview) return;
-    block.content = this.aiResultPreview;
-    
-    // Auto detect block type if AI generated a Markdown table or Code
-    if (this.aiResultPreview.startsWith('|') && this.aiResultPreview.includes('-|')) {
-      block.type = 'codigo';
-    } else if (this.aiResultPreview.startsWith('```')) {
-      block.type = 'codigo';
+    const colIdx = targetColIndex !== undefined ? targetColIndex : this.activeAiTargetColIndex;
+
+    if (block.type === 'columnas' && block.columns) {
+      if (colIdx !== null && colIdx !== undefined && block.columns[colIdx]) {
+        // Update specific target column
+        block.columns[colIdx].content = this.aiResultPreview;
+        if (this.aiResultPreview.startsWith('|') && this.aiResultPreview.includes('-|')) {
+          block.columns[colIdx].type = 'codigo';
+          if (!block.columns[colIdx].language) block.columns[colIdx].language = 'sql';
+        } else if (this.aiResultPreview.startsWith('```')) {
+          block.columns[colIdx].type = 'codigo';
+        }
+        this.showToast(`Columna ${colIdx + 1} actualizada con IA`);
+      } else {
+        // Check if AI output formatted both columns
+        if (this.aiResultPreview.includes('[COLUMNA IZQUIERDA') || this.aiResultPreview.includes('[COLUMNA DERECHA')) {
+          const parts = this.aiResultPreview.split(/\[COLUMNA DERECHA[^\]]*\]:?/i);
+          if (parts.length >= 2) {
+            const leftText = parts[0].replace(/\[COLUMNA IZQUIERDA[^\]]*\]:?/i, '').trim();
+            const rightText = parts[1].trim();
+            block.columns[0].content = leftText;
+            block.columns[1].content = rightText;
+            this.showToast('Ambas columnas actualizadas con IA');
+          }
+        } else {
+          // Default to first column or column 2 if column 1 has content
+          const destCol = (block.columns[0].content && !block.columns[1].content) ? 1 : 0;
+          block.columns[destCol].content = this.aiResultPreview;
+          if (this.aiResultPreview.startsWith('|')) {
+            block.columns[destCol].type = 'codigo';
+            if (!block.columns[destCol].language) block.columns[destCol].language = 'sql';
+          }
+          this.showToast(`Columna ${destCol + 1} actualizada con IA`);
+        }
+      }
+    } else {
+      block.content = this.aiResultPreview;
+      // Auto detect block type if AI generated a Markdown table or Code
+      if (this.aiResultPreview.startsWith('|') && this.aiResultPreview.includes('-|')) {
+        block.type = 'codigo';
+      } else if (this.aiResultPreview.startsWith('```')) {
+        block.type = 'codigo';
+      }
+      this.showToast('Contenido actualizado por la IA');
     }
 
     this.activeAiBlockId = null;
+    this.activeAiTargetColIndex = null;
     this.aiResultPreview = '';
     this.syncBlocksToContent();
-    this.showToast('Contenido actualizado por la IA');
   }
 
   insertAiResultAsNewBlock(blockIndex: number) {
@@ -1942,7 +2265,33 @@ export class DashLibraryComponent implements OnInit {
     this.scrollToBottomCopilot();
 
     const historyPayload = this.copilotMessages.slice(1, -1);
-    this.libraryAiService.askCopilot(text, this.selectedPage?.title, historyPayload).subscribe(res => {
+
+    let noteContentSnapshot = '';
+    if (this.selectedPage) {
+      noteContentSnapshot = this.blocks.map((b, idx) => {
+        if (b.type === 'columnas') {
+          const col1 = b.columns?.[0];
+          const col2 = b.columns?.[1];
+          return `[BLOQUE ${idx + 1}: 2 COLUMNAS PARALELAS (Proporción ${b.columnRatio || '50-50'})]\n` +
+                 `  ◀ COLUMNA IZQUIERDA (Tipo: ${col1?.type || 'texto'}${col1?.language ? ', Lenguaje: ' + col1.language : ''}):\n` +
+                 `${col1?.content || '(vacía)'}\n\n` +
+                 `  ▶ COLUMNA DERECHA (Tipo: ${col2?.type || 'texto'}${col2?.language ? ', Lenguaje: ' + col2.language : ''}):\n` +
+                 `${col2?.content || '(vacía)'}`;
+        } else if (b.type === 'codigo') {
+          return `[BLOQUE ${idx + 1}: CÓDIGO / TABLA (${b.language || 'sql'})]:\n${b.content || ''}`;
+        } else if (b.type === 'alerta') {
+          return `[BLOQUE ${idx + 1}: ALERTA / CONSEJO]:\n${b.content || ''}`;
+        } else if (b.type === 'titulo') {
+          return `[BLOQUE ${idx + 1}: TÍTULO]:\n# ${b.content || ''}`;
+        } else if (b.type === 'subtitulo') {
+          return `[BLOQUE ${idx + 1}: SUBTÍTULO]:\n### ${b.content || ''}`;
+        } else {
+          return `[BLOQUE ${idx + 1}: TEXTO]:\n${b.content || ''}`;
+        }
+      }).join('\n\n------------------------\n\n');
+    }
+
+    this.libraryAiService.askCopilot(text, this.selectedPage?.title, historyPayload, noteContentSnapshot).subscribe(res => {
       this.isCopilotLoading = false;
       if (res.success) {
         this.copilotMessages.push({ role: 'assistant', content: res.result });

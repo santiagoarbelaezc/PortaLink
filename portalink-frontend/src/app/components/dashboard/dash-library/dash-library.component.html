@@ -1,4 +1,83 @@
-<div class="space-y-6 tab-enter font-sans overflow-x-hidden">
+<div class="space-y-4 sm:space-y-6 tab-enter font-sans">
+
+  <!-- ══════════════════════════════════════
+       BARRA MULTI-PESTAÑAS DE TRABAJO SIMULTÁNEO (DOCK DE TRABAJO PREMIUM)
+  ══════════════════════════════════════ -->
+  <div class="rounded-2xl border p-1.5 flex items-center justify-between gap-2.5 select-none transition-all shadow-lg backdrop-blur-xl"
+       [ngClass]="isDark ? 'bg-[#0c0c0e]/90 border-neutral-800/80' : 'bg-neutral-100/80 border-neutral-200/90'">
+    
+    <!-- CONTENEDOR DESPLAZABLE DE PESTAÑAS -->
+    <div class="flex items-center gap-1.5 overflow-x-auto py-0.5 scrollbar-none flex-1 min-w-0">
+      
+      <!-- ICONO DISCRETO DE ESPACIO DE TRABAJO -->
+      <div class="pl-1.5 pr-1 hidden sm:flex items-center text-neutral-500 shrink-0" title="Espacio de trabajo multi-pestañas">
+        <svg class="w-3.5 h-3.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 8.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v8.25A2.25 2.25 0 006 16.5h2.25m8.25-8.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-7.5A2.25 2.25 0 018.25 18v-1.5m8.25-8.25h-6a2.25 2.25 0 00-2.25 2.25v6" />
+        </svg>
+      </div>
+
+      <!-- LISTA DE PESTAÑAS -->
+      <div *ngFor="let tab of tabs" 
+           (click)="switchTab(tab.id)"
+           class="group/tab relative flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-headline font-semibold transition-all duration-150 cursor-pointer shrink-0 max-w-[190px] sm:max-w-[220px]"
+           [ngClass]="activeTabId === tab.id ? (isDark ? 'bg-[#18181d] border-neutral-700/90 text-white shadow-md shadow-black/40 ring-1 ring-white/10' : 'bg-white border-neutral-300 text-neutral-950 shadow-sm ring-1 ring-neutral-900/10') : (isDark ? 'bg-transparent border-transparent text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/40 hover:border-neutral-800' : 'bg-transparent border-transparent text-neutral-600 hover:text-neutral-950 hover:bg-neutral-200/60 hover:border-neutral-300')">
+        
+        <!-- INDICADOR ACTIVO CON GLOW Y COLOR DEL CUADERNO -->
+        <span class="w-2 h-2 rounded-full shrink-0 transition-all" 
+              [style.backgroundColor]="tab.color || '#10b981'"
+              [style.boxShadow]="activeTabId === tab.id ? '0 0 8px ' + (tab.color || '#10b981') : 'none'"
+              [class.animate-pulse]="activeTabId === tab.id"></span>
+        
+        <!-- TÍTULO DE LA PESTAÑA -->
+        <span class="truncate min-w-0 tracking-tight">{{ tab.title || 'Biblioteca' }}</span>
+
+        <!-- BOTÓN CERRAR PESTAÑA -->
+        <button type="button" 
+                (click)="closeTab(tab.id, $event)"
+                title="Cerrar pestaña"
+                class="w-4 h-4 rounded-md flex items-center justify-center transition-all ml-0.5 shrink-0 cursor-pointer"
+                [ngClass]="activeTabId === tab.id ? 'text-neutral-400 hover:text-red-400 hover:bg-red-500/20 opacity-70 hover:opacity-100' : 'text-neutral-500 hover:text-red-400 hover:bg-red-500/20 opacity-0 group-hover/tab:opacity-100'">
+          <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- BOTÓN AÑADIR NUEVA PESTAÑA -->
+      <button type="button" 
+              (click)="openNewTab()" 
+              title="Abrir nueva pestaña de trabajo"
+              class="w-7 h-7 rounded-xl border flex items-center justify-center transition-all shrink-0 cursor-pointer shadow-2xs"
+              [ngClass]="isDark ? 'border-neutral-800/90 bg-neutral-900/60 hover:bg-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700' : 'border-neutral-300/90 bg-white/70 hover:bg-white text-neutral-600 hover:text-black hover:border-neutral-400'">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- CONTROLES LATERALES DERECHOS -->
+    <div class="flex items-center gap-1.5 shrink-0 pl-1 border-l"
+         [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-200/80'">
+      
+      <!-- BADGE DE PESTAÑAS ACTIVAS -->
+      <span class="text-[10px] font-headline font-bold px-2 py-0.5 rounded-lg tracking-wider"
+            [ngClass]="isDark ? 'bg-neutral-900/80 text-neutral-400 border border-neutral-800' : 'bg-neutral-200/80 text-neutral-600 border border-neutral-300'">
+        {{ tabs.length }} {{ tabs.length === 1 ? 'pestaña' : 'pestañas' }}
+      </span>
+
+      <!-- BOTÓN CERRAR OTRAS PESTAÑAS (CUANDO HAY > 1) -->
+      <button *ngIf="tabs.length > 1"
+              type="button"
+              (click)="closeOtherTabs(activeTabId, $event)"
+              title="Cerrar todas las demás pestañas"
+              class="hidden sm:flex items-center gap-1 px-2 py-0.5 rounded-lg border text-[10px] font-headline font-semibold transition-all cursor-pointer"
+              [ngClass]="isDark ? 'border-neutral-800 hover:border-neutral-700 bg-neutral-900/40 text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-300 hover:border-neutral-400 bg-white/40 text-neutral-600 hover:text-black hover:bg-neutral-100'">
+        <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        <span>Cerrar otras</span>
+      </button>
+    </div>
+
+  </div>
 
   <!-- ══════════════════════════════════════
        HEADER & EXECUTIVE CONTROLS
@@ -738,10 +817,15 @@
               <button (click)="$event.stopPropagation(); toggleFavoriteNotebook(nb)" class="p-1 text-xs hover:scale-125 transition-transform">
                 <svg class="w-4 h-4" [ngClass]="nb.is_favorite ? 'text-amber-400 fill-amber-400' : 'text-neutral-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385c.116.488-.42.877-.84.629l-4.706-2.785a.563.563 0 00-.573 0l-4.706 2.785c-.42.248-.956-.141-.84-.629l1.285-5.385a.563.563 0 00-.182-.557l-4.204-3.602c-.38-.325-.178-.948.32-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
               </button>
-              <button (click)="$event.stopPropagation(); openNotebookModal(nb)" class="p-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+              <button (click)="openNotebookInNewTab(nb, $event)" class="p-1 text-xs opacity-0 group-hover:opacity-100 hover:text-emerald-400 transition-opacity" title="Abrir en nueva pestaña">
+                <svg class="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                </svg>
+              </button>
+              <button (click)="$event.stopPropagation(); openNotebookModal(nb)" class="p-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity" title="Editar cuaderno">
                 <svg class="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"/></svg>
               </button>
-              <button (click)="$event.stopPropagation(); openDeleteModal('notebook', nb)" class="p-1 text-xs opacity-0 group-hover:opacity-100 hover:text-red-400 transition-opacity">
+              <button (click)="$event.stopPropagation(); openDeleteModal('notebook', nb)" class="p-1 text-xs opacity-0 group-hover:opacity-100 hover:text-red-400 transition-opacity" title="Eliminar cuaderno">
                 <svg class="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
               </button>
             </div>
@@ -798,7 +882,7 @@
                     class="px-3 py-1.5 rounded-xl font-headline font-bold text-xs shadow-xs transition-all duration-200 cursor-pointer flex items-center gap-1.5 active:scale-95 border shrink-0 hover:scale-105"
                     [ngClass]="isDark ? 'bg-white text-black border-white hover:bg-neutral-200' : 'bg-[#09090b] text-white border-[#09090b] hover:bg-neutral-800'">
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-              <span>+ Apunte</span>
+              <span>Apunte</span>
             </button>
 
             <!-- BOTÓN ESCONDER SIDEBAR -->
@@ -1079,8 +1163,8 @@
                           (click)="toggleAiBlockMenu(block.id, $event)"
                           title="Asistente IA para este bloque"
                           class="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-xl text-[11px] sm:text-xs font-headline font-bold transition-all cursor-pointer shadow-xs border shrink-0"
-                          [ngClass]="isDark ? 'bg-neutral-800 text-white border-neutral-700 hover:bg-neutral-700' : 'bg-neutral-100 text-neutral-900 border-neutral-200/90 hover:bg-neutral-200/80'">
-                    <img src="assets/icons/logo-link-light.png" class="w-3.5 h-3.5 object-contain shrink-0" alt="Rotbot">
+                          [ngClass]="(activeAiBlockId === block.id && activeAiTargetColIndex === null) ? (isDark ? 'bg-emerald-500 text-black border-emerald-400' : 'bg-emerald-600 text-white border-emerald-500') : (isDark ? 'bg-neutral-800 text-white border-neutral-700 hover:bg-neutral-700' : 'bg-neutral-100 text-neutral-900 border-neutral-200/90 hover:bg-neutral-200/80')">
+                    <svg class="w-3.5 h-3.5 shrink-0" [ngClass]="(activeAiBlockId === block.id && activeAiTargetColIndex === null) ? 'text-black' : 'text-emerald-400'" fill="currentColor" viewBox="0 0 24 24"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/></svg>
                     <span>IA</span>
                   </button>
 
@@ -1185,16 +1269,41 @@
                         {{ aiResultPreview }}
                       </div>
 
-                      <div class="flex items-center gap-2 pt-1">
-                        <button (click)="replaceBlockContentWithAi(block)"
+                      <div class="flex flex-wrap items-center gap-2 pt-1">
+                        <!-- SI ES UN BLOQUE DE 2 COLUMNAS -->
+                        <ng-container *ngIf="block.type === 'columnas'">
+                          <button *ngIf="activeAiTargetColIndex === 0 || activeAiTargetColIndex === null"
+                                  (click)="replaceBlockContentWithAi(block, 0)"
+                                  class="flex-1 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs border-none"
+                                  [ngClass]="isDark ? 'bg-emerald-500 text-black hover:bg-emerald-400' : 'bg-emerald-600 text-white hover:bg-emerald-700'">
+                            Colocar en Columna 1
+                          </button>
+                          <button *ngIf="activeAiTargetColIndex === 1 || activeAiTargetColIndex === null"
+                                  (click)="replaceBlockContentWithAi(block, 1)"
+                                  class="flex-1 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs border-none"
+                                  [ngClass]="isDark ? 'bg-blue-500 text-black hover:bg-blue-400' : 'bg-blue-600 text-white hover:bg-blue-700'">
+                            Colocar en Columna 2
+                          </button>
+                          <button *ngIf="activeAiTargetColIndex === null"
+                                  (click)="replaceBlockContentWithAi(block)"
+                                  class="px-2.5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer shrink-0"
+                                  [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800 text-neutral-200 hover:text-white' : 'border-neutral-300 bg-neutral-100 text-neutral-800'">
+                            Ambas Columnas
+                          </button>
+                        </ng-container>
+
+                        <!-- SI ES UN BLOQUE ESTÁNDAR -->
+                        <button *ngIf="block.type !== 'columnas'"
+                                (click)="replaceBlockContentWithAi(block)"
                                 class="flex-1 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs border-none"
                                 [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'">
                           Reemplazar Bloque
                         </button>
+
                         <button (click)="insertAiResultAsNewBlock(i)"
-                                class="flex-1 px-3 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer"
+                                class="px-3 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer shrink-0"
                                 [ngClass]="isDark ? 'border-neutral-700 bg-neutral-900 text-neutral-200 hover:bg-neutral-800' : 'border-neutral-300 bg-white text-neutral-800 hover:bg-neutral-100'">
-                          Insertar Abajo
+                          + Insertar Abajo
                         </button>
                       </div>
                     </div>
@@ -1422,131 +1531,480 @@
                 
                 <!-- COLUMNA 1 (IZQUIERDA) -->
                 <div *ngIf="block.columns && block.columns[0]"
-                     class="min-w-0 flex flex-col rounded-xl border p-2 sm:p-3 space-y-1.5 transition-all"
+                     class="min-w-0 flex flex-col rounded-2xl border p-2 sm:p-2.5 space-y-1.5 transition-all"
                      [ngClass]="[
                        (block.columnRatio === '33-66' ? 'w-full md:w-1/3' : block.columnRatio === '66-33' ? 'w-full md:w-2/3' : block.columnRatio === '40-60' ? 'w-full md:w-2/5' : block.columnRatio === '60-40' ? 'w-full md:w-3/5' : 'w-full md:w-1/2'),
-                       isDark ? 'bg-[#0f0f12] border-neutral-800/80' : 'bg-white border-neutral-200'
+                       isDark ? 'bg-[#0f0f12]/80 border-neutral-800/80' : 'bg-white/80 border-neutral-200'
                      ]">
                   
                   <!-- HEADER INTERNO COLUMNA 1 -->
-                  <div class="flex items-center justify-between pb-1.5 border-b text-[10px] font-headline shrink-0"
+                  <div class="flex items-center justify-between pb-1.5 border-b text-[10px] font-headline shrink-0 relative"
                        [ngClass]="isDark ? 'border-neutral-800 text-neutral-400' : 'border-neutral-100 text-neutral-500'">
-                    <div class="flex items-center gap-1.5">
-                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                      <select [ngModel]="block.columns[0].type" (ngModelChange)="setColumnType(block.columns[0], $event)"
-                              class="bg-transparent font-bold outline-none cursor-pointer"
-                              [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
-                        <option value="texto">Texto</option>
-                        <option value="codigo">Código / Tabla</option>
-                        <option value="alerta">Alerta</option>
-                        <option value="titulo">Título</option>
-                        <option value="subtitulo">Subtítulo</option>
-                      </select>
+                    
+                    <!-- CUSTOM SELECT TIPO COLUMNA 1 -->
+                    <div class="relative inline-block text-left">
+                      <button type="button" (click)="toggleColTypeMenu(block.columns[0].id, $event)"
+                              class="flex items-center gap-1.5 px-2 py-0.5 rounded-lg border text-[10px] font-headline font-bold transition-all cursor-pointer shadow-xs"
+                              [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-200 hover:text-white hover:border-neutral-600' : 'bg-white border-neutral-300 text-neutral-800 hover:text-black hover:border-neutral-400'">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                        <span>{{ getBlockTypeLabel(block.columns[0].type) }}</span>
+                        <svg class="w-2.5 h-2.5 opacity-60 ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                      </button>
+
+                      <!-- POPOVER TIPO COLUMNA 1 -->
+                      <div *ngIf="activeColTypeMenuId === block.columns[0].id"
+                           class="absolute left-0 top-full mt-1.5 w-44 z-[100] rounded-xl border shadow-2xl p-1 backdrop-blur-2xl animate-fade-in"
+                           [ngClass]="isDark ? 'bg-[#18181c] border-neutral-700 text-white shadow-black/80' : 'bg-white border-neutral-200 text-neutral-900 shadow-xl'">
+                        <div class="space-y-0.5">
+                          <button type="button" (click)="selectColType(block.columns[0], 'texto', $event)"
+                                  class="w-full px-2.5 py-1.5 rounded-lg text-left text-[11px] font-headline font-semibold flex items-center justify-between transition-all cursor-pointer"
+                                  [ngClass]="block.columns[0].type === 'texto' ? (isDark ? 'bg-neutral-800 text-emerald-400 font-bold' : 'bg-neutral-100 text-emerald-600 font-bold') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100 hover:text-black')">
+                            <div class="flex items-center gap-2">
+                              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+                              <span>Texto Normal</span>
+                            </div>
+                            <span *ngIf="block.columns[0].type === 'texto'" class="text-xs">✓</span>
+                          </button>
+
+                          <button type="button" (click)="selectColType(block.columns[0], 'codigo', $event)"
+                                  class="w-full px-2.5 py-1.5 rounded-lg text-left text-[11px] font-mono font-semibold flex items-center justify-between transition-all cursor-pointer"
+                                  [ngClass]="block.columns[0].type === 'codigo' ? (isDark ? 'bg-neutral-800 text-emerald-400 font-bold' : 'bg-neutral-100 text-emerald-600 font-bold') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100 hover:text-black')">
+                            <div class="flex items-center gap-2">
+                              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+                              <span>Código / Tabla</span>
+                            </div>
+                            <span *ngIf="block.columns[0].type === 'codigo'" class="text-xs">✓</span>
+                          </button>
+
+                          <button type="button" (click)="selectColType(block.columns[0], 'alerta', $event)"
+                                  class="w-full px-2.5 py-1.5 rounded-lg text-left text-[11px] font-headline font-semibold flex items-center justify-between transition-all cursor-pointer"
+                                  [ngClass]="block.columns[0].type === 'alerta' ? (isDark ? 'bg-neutral-800 text-emerald-400 font-bold' : 'bg-neutral-100 text-emerald-600 font-bold') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100 hover:text-black')">
+                            <div class="flex items-center gap-2">
+                              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.438a3.75 3.75 0 01-7.5 0m7.5 0v1.875a1.875 1.875 0 01-1.875 1.875h-3.75A1.875 1.875 0 018.25 21.75V19.875m3.75-14.625a6.002 6.002 0 00-5.467 3.527C6.082 9.879 6 10.932 6 12c0 2.257.94 4.3 2.457 5.74m7.086 0A8.966 8.966 0 0018 12c0-1.068-.082-2.121-.533-3.223a6.002 6.002 0 00-5.467-3.527z"/></svg>
+                              <span>Alerta</span>
+                            </div>
+                            <span *ngIf="block.columns[0].type === 'alerta'" class="text-xs">✓</span>
+                          </button>
+
+                          <button type="button" (click)="selectColType(block.columns[0], 'titulo', $event)"
+                                  class="w-full px-2.5 py-1.5 rounded-lg text-left text-[11px] font-headline font-semibold flex items-center justify-between transition-all cursor-pointer"
+                                  [ngClass]="block.columns[0].type === 'titulo' ? (isDark ? 'bg-neutral-800 text-emerald-400 font-bold' : 'bg-neutral-100 text-emerald-600 font-bold') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100 hover:text-black')">
+                            <div class="flex items-center gap-2">
+                              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m0-15l-6 6m6-6l6 6M4.5 19.5h15"/></svg>
+                              <span>Título</span>
+                            </div>
+                            <span *ngIf="block.columns[0].type === 'titulo'" class="text-xs">✓</span>
+                          </button>
+
+                          <button type="button" (click)="selectColType(block.columns[0], 'subtitulo', $event)"
+                                  class="w-full px-2.5 py-1.5 rounded-lg text-left text-[11px] font-headline font-semibold flex items-center justify-between transition-all cursor-pointer"
+                                  [ngClass]="block.columns[0].type === 'subtitulo' ? (isDark ? 'bg-neutral-800 text-emerald-400 font-bold' : 'bg-neutral-100 text-emerald-600 font-bold') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100 hover:text-black')">
+                            <div class="flex items-center gap-2">
+                              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h12m-12 5.25h9"/></svg>
+                              <span>Subtítulo</span>
+                            </div>
+                            <span *ngIf="block.columns[0].type === 'subtitulo'" class="text-xs">✓</span>
+                          </button>
+                        </div>
+                      </div>
                     </div>
 
                     <div class="flex items-center gap-1.5">
-                      <select *ngIf="block.columns[0].type === 'codigo'" [(ngModel)]="block.columns[0].language" (change)="syncBlocksToContent()"
-                              class="bg-neutral-900 text-neutral-200 text-[9px] font-bold rounded px-1.5 py-0.5 border border-neutral-800 outline-none cursor-pointer">
-                        <option value="sql">SQL</option>
-                        <option value="typescript">TypeScript</option>
-                        <option value="javascript">JavaScript</option>
-                        <option value="html">HTML</option>
-                        <option value="json">JSON</option>
-                      </select>
-                      <button *ngIf="block.columns[0].type === 'codigo'" (click)="copyCodeBlock(block.columns[0].content)" title="Copiar"
-                              class="text-[9px] hover:text-white transition-colors cursor-pointer">
-                        Copiar
+                      <button type="button" 
+                              (click)="toggleAiBlockMenu(block.id, $event, 0)"
+                              title="Generar o transformar Columna 1 con IA"
+                              class="flex items-center gap-1.5 px-2 py-0.5 rounded-lg border text-[10px] font-headline font-bold transition-all cursor-pointer shadow-2xs"
+                              [ngClass]="(activeAiBlockId === block.id && activeAiTargetColIndex === 0) ? (isDark ? 'bg-emerald-500 text-black border-emerald-400 font-extrabold shadow-sm' : 'bg-emerald-600 text-white border-emerald-500 font-extrabold shadow-sm') : (isDark ? 'bg-neutral-900/80 border-neutral-800 text-neutral-300 hover:text-white hover:border-neutral-700' : 'bg-neutral-100 border-neutral-300 text-neutral-700 hover:text-black')">
+                        <svg class="w-3 h-3 shrink-0" [ngClass]="(activeAiBlockId === block.id && activeAiTargetColIndex === 0) ? (isDark ? 'text-black' : 'text-white') : 'text-emerald-400'" fill="currentColor" viewBox="0 0 24 24"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/></svg>
+                        <span>IA</span>
                       </button>
+                      <span class="text-[10px] uppercase font-bold tracking-wider opacity-40">Columna 1</span>
                     </div>
                   </div>
 
-                  <!-- EDITOR COLUMNA 1 -->
-                  <div class="flex-1 min-h-[90px] flex flex-col">
-                    <textarea *ngIf="block.columns[0].type === 'codigo'"
-                              [(ngModel)]="block.columns[0].content"
-                              (input)="syncBlocksToContent()"
-                              (focus)="activeBlockId = block.id"
-                              spellcheck="false"
-                              placeholder="| Columna 1 | Columna 2 |&#10;|---|---|&#10;| Dato A | Dato B |"
-                              [rows]="getLineCount(block.columns[0].content, 4, 'codigo')"
-                              class="w-full p-2 font-mono text-[11px] sm:text-xs leading-relaxed bg-[#050507] text-emerald-300 border border-neutral-800 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500/50 resize-y flex-1"
-                    ></textarea>
+                  <!-- EDITOR COLUMNA 1 (FORMATO IDÉNTICO A BLOQUES NORMALES) -->
+                  <div class="flex-1 min-h-[90px] flex flex-col justify-center">
+                    
+                    <!-- 1. CÓDIGO / TABLA MAC TERMINAL -->
+                    <div *ngIf="block.columns[0].type === 'codigo'" 
+                         class="relative group/code rounded-xl overflow-hidden border shadow-sm my-1 transition-all font-mono flex-1 flex flex-col"
+                         [ngClass]="isDark ? 'bg-[#000000] border-neutral-800 text-white' : 'bg-neutral-950 border-neutral-800 text-white'">
+                      <div class="flex items-center justify-between px-3 py-1.5 border-b text-[11px] font-mono select-none bg-[#0c0c0e] border-neutral-800">
+                        <div class="flex items-center gap-1.5">
+                          <span class="w-2 h-2 rounded-full bg-neutral-700"></span>
+                          <span class="w-2 h-2 rounded-full bg-neutral-700"></span>
+                          <span class="w-2 h-2 rounded-full bg-neutral-700"></span>
+                          
+                          <!-- CUSTOM SELECT LENGUAJE COLUMNA 1 -->
+                          <div class="relative inline-block text-left ml-1">
+                            <button type="button" (click)="toggleColLangMenu(block.columns[0].id, $event)"
+                                    class="flex items-center gap-1 px-2 py-0.5 rounded-lg border text-[10px] font-mono font-bold transition-all cursor-pointer shadow-2xs"
+                                    [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200 hover:text-white' : 'bg-neutral-900 border-neutral-700 text-neutral-200 hover:text-white'">
+                              <span class="uppercase">{{ block.columns[0].language || 'sql' }}</span>
+                              <svg class="w-2.5 h-2.5 opacity-60 ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                            </button>
 
-                    <div *ngIf="block.columns[0].type !== 'codigo'"
-                         contenteditable="true"
-                         [(appContentEditable)]="block.columns[0].content"
-                         (appContentEditableChange)="syncBlocksToContent()"
-                         (focus)="activeBlockId = block.id"
-                         spellcheck="false"
-                         placeholder="Escribe contenido en la columna izquierda..."
-                         class="w-full bg-transparent text-xs sm:text-sm leading-relaxed p-1 outline-none empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none flex-1"
-                         [ngClass]="block.columns[0].type === 'titulo' ? 'font-extrabold text-base sm:text-lg' : block.columns[0].type === 'subtitulo' ? 'font-bold text-sm sm:text-base' : block.columns[0].type === 'alerta' ? 'italic text-amber-300/90' : 'text-neutral-200'"
-                    ></div>
+                            <!-- POPOVER LENGUAJE COLUMNA 1 -->
+                            <div *ngIf="activeColLangMenuId === block.columns[0].id"
+                                 class="absolute left-0 top-full mt-1.5 w-32 z-[100] rounded-xl border shadow-2xl p-1 backdrop-blur-2xl animate-fade-in"
+                                 [ngClass]="isDark ? 'bg-[#18181c] border-neutral-700 text-white shadow-black/80' : 'bg-white border-neutral-200 text-neutral-900 shadow-xl'">
+                              <div class="space-y-0.5 font-mono text-[10px]">
+                                <button type="button" (click)="selectColLang(block.columns[0], 'sql', $event)"
+                                        class="w-full px-2 py-1 rounded-lg text-left flex items-center justify-between transition-all cursor-pointer"
+                                        [ngClass]="(block.columns[0].language || 'sql') === 'sql' ? (isDark ? 'bg-neutral-800 text-emerald-400 font-bold' : 'bg-neutral-100 text-emerald-600 font-bold') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100')">
+                                  <span>SQL</span>
+                                  <span *ngIf="(block.columns[0].language || 'sql') === 'sql'">✓</span>
+                                </button>
+                                <button type="button" (click)="selectColLang(block.columns[0], 'typescript', $event)"
+                                        class="w-full px-2 py-1 rounded-lg text-left flex items-center justify-between transition-all cursor-pointer"
+                                        [ngClass]="block.columns[0].language === 'typescript' ? (isDark ? 'bg-neutral-800 text-emerald-400 font-bold' : 'bg-neutral-100 text-emerald-600 font-bold') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100')">
+                                  <span>TypeScript</span>
+                                  <span *ngIf="block.columns[0].language === 'typescript'">✓</span>
+                                </button>
+                                <button type="button" (click)="selectColLang(block.columns[0], 'javascript', $event)"
+                                        class="w-full px-2 py-1 rounded-lg text-left flex items-center justify-between transition-all cursor-pointer"
+                                        [ngClass]="block.columns[0].language === 'javascript' ? (isDark ? 'bg-neutral-800 text-emerald-400 font-bold' : 'bg-neutral-100 text-emerald-600 font-bold') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100')">
+                                  <span>JavaScript</span>
+                                  <span *ngIf="block.columns[0].language === 'javascript'">✓</span>
+                                </button>
+                                <button type="button" (click)="selectColLang(block.columns[0], 'html', $event)"
+                                        class="w-full px-2 py-1 rounded-lg text-left flex items-center justify-between transition-all cursor-pointer"
+                                        [ngClass]="block.columns[0].language === 'html' ? (isDark ? 'bg-neutral-800 text-emerald-400 font-bold' : 'bg-neutral-100 text-emerald-600 font-bold') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100')">
+                                  <span>HTML</span>
+                                  <span *ngIf="block.columns[0].language === 'html'">✓</span>
+                                </button>
+                                <button type="button" (click)="selectColLang(block.columns[0], 'json', $event)"
+                                        class="w-full px-2 py-1 rounded-lg text-left flex items-center justify-between transition-all cursor-pointer"
+                                        [ngClass]="block.columns[0].language === 'json' ? (isDark ? 'bg-neutral-800 text-emerald-400 font-bold' : 'bg-neutral-100 text-emerald-600 font-bold') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100')">
+                                  <span>JSON</span>
+                                  <span *ngIf="block.columns[0].language === 'json'">✓</span>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <button type="button" (click)="copyCodeBlock(block.columns[0].content)" class="px-2 py-0.5 rounded text-[10px] font-headline font-bold text-neutral-400 hover:text-white transition-all flex items-center gap-1 cursor-pointer">
+                          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v9.25c0 .621-.504 1.125-1.125 1.125z"/></svg>
+                          <span>Copiar</span>
+                        </button>
+                      </div>
+                      <div class="p-2 sm:p-3 flex-1 flex flex-col">
+                        <textarea 
+                          [(ngModel)]="block.columns[0].content"
+                          (input)="onBlockInput(block, $event); syncBlocksToContent()"
+                          (focus)="activeBlockId = block.id"
+                          spellcheck="false"
+                          placeholder="| Columna 1 | Columna 2 |&#10;|---|---|&#10;| Dato 1 | Dato 2 |"
+                          [rows]="getLineCount(block.columns[0].content, 4, 'codigo')"
+                          class="w-full bg-transparent font-mono text-[11px] sm:text-sm text-zinc-100 leading-relaxed outline-none resize-y border-none placeholder:text-neutral-600 flex-1 min-h-[90px] break-all"
+                        ></textarea>
+                      </div>
+                    </div>
+
+                    <!-- 2. ALERTA / CONSEJO CARD -->
+                    <div *ngIf="block.columns[0].type === 'alerta'"
+                         class="p-3 rounded-xl bg-neutral-900/60 border-l-2 border-neutral-400 flex items-start gap-2.5 my-1 flex-1">
+                      <div class="w-6 h-6 rounded-lg bg-neutral-800 border border-neutral-700 text-neutral-300 flex items-center justify-center shrink-0 mt-0.5">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.438a3.75 3.75 0 01-7.5 0m7.5 0v1.875a1.875 1.875 0 01-1.875 1.875h-3.75A1.875 1.875 0 018.25 21.75V19.875m3.75-14.625a6.002 6.002 0 00-5.467 3.527C6.082 9.879 6 10.932 6 12c0 2.257.94 4.3 2.457 5.74m7.086 0A8.966 8.966 0 0018 12c0-1.068-.082-2.121-.533-3.223a6.002 6.002 0 00-5.467-3.527z" />
+                        </svg>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div 
+                          contenteditable="true"
+                          [(appContentEditable)]="block.columns[0].content"
+                          (appContentEditableChange)="syncBlocksToContent()"
+                          (focus)="activeBlockId = block.id"
+                          spellcheck="false"
+                          placeholder="Escribe un consejo o nota importante..."
+                          class="w-full bg-transparent text-xs sm:text-sm font-medium leading-relaxed outline-none text-neutral-200 empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.4em]"
+                        ></div>
+                      </div>
+                    </div>
+
+                    <!-- 3. TÍTULO -->
+                    <div *ngIf="block.columns[0].type === 'titulo'" class="py-1 flex-1">
+                      <div 
+                        contenteditable="true"
+                        [(appContentEditable)]="block.columns[0].content"
+                        (appContentEditableChange)="syncBlocksToContent()"
+                        (focus)="activeBlockId = block.id"
+                        spellcheck="false"
+                        placeholder="Título Principal..."
+                        class="w-full bg-transparent text-xl sm:text-2xl font-headline font-extrabold tracking-tight py-1 outline-none transition-all empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.5em]"
+                        [ngClass]="isDark ? 'text-white' : 'text-neutral-900'"
+                      ></div>
+                    </div>
+
+                    <!-- 4. SUBTÍTULO -->
+                    <div *ngIf="block.columns[0].type === 'subtitulo'" class="py-1 flex-1">
+                      <div 
+                        contenteditable="true"
+                        [(appContentEditable)]="block.columns[0].content"
+                        (appContentEditableChange)="syncBlocksToContent()"
+                        (focus)="activeBlockId = block.id"
+                        spellcheck="false"
+                        placeholder="Subtítulo de sección..."
+                        class="w-full bg-transparent text-base sm:text-lg font-headline font-bold py-1 outline-none transition-all empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.5em]"
+                        [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'"
+                      ></div>
+                    </div>
+
+                    <!-- 5. TEXTO NORMAL -->
+                    <div *ngIf="block.columns[0].type === 'texto'" class="py-0.5 flex-1">
+                      <div 
+                        contenteditable="true"
+                        [(appContentEditable)]="block.columns[0].content"
+                        (appContentEditableChange)="syncBlocksToContent()"
+                        (focus)="activeBlockId = block.id"
+                        spellcheck="false"
+                        placeholder="Escribe texto..."
+                        class="w-full bg-transparent text-base sm:text-lg leading-snug py-0.5 outline-none transition-all empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.5em]"
+                        [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-800'"
+                      ></div>
+                    </div>
+
                   </div>
                 </div>
 
                 <!-- COLUMNA 2 (DERECHA) -->
                 <div *ngIf="block.columns && block.columns[1]"
-                     class="min-w-0 flex flex-col rounded-xl border p-2 sm:p-3 space-y-1.5 transition-all"
+                     class="min-w-0 flex flex-col rounded-2xl border p-2 sm:p-2.5 space-y-1.5 transition-all"
                      [ngClass]="[
                        (block.columnRatio === '33-66' ? 'w-full md:w-2/3' : block.columnRatio === '66-33' ? 'w-full md:w-1/3' : block.columnRatio === '40-60' ? 'w-full md:w-3/5' : block.columnRatio === '60-40' ? 'w-full md:w-2/5' : 'w-full md:w-1/2'),
-                       isDark ? 'bg-[#0f0f12] border-neutral-800/80' : 'bg-white border-neutral-200'
+                       isDark ? 'bg-[#0f0f12]/80 border-neutral-800/80' : 'bg-white/80 border-neutral-200'
                      ]">
                   
                   <!-- HEADER INTERNO COLUMNA 2 -->
-                  <div class="flex items-center justify-between pb-1.5 border-b text-[10px] font-headline shrink-0"
+                  <div class="flex items-center justify-between pb-1.5 border-b text-[10px] font-headline shrink-0 relative"
                        [ngClass]="isDark ? 'border-neutral-800 text-neutral-400' : 'border-neutral-100 text-neutral-500'">
-                    <div class="flex items-center gap-1.5">
-                      <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
-                      <select [ngModel]="block.columns[1].type" (ngModelChange)="setColumnType(block.columns[1], $event)"
-                              class="bg-transparent font-bold outline-none cursor-pointer"
-                              [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
-                        <option value="texto">Texto</option>
-                        <option value="codigo">Código / Tabla</option>
-                        <option value="alerta">Alerta</option>
-                        <option value="titulo">Título</option>
-                        <option value="subtitulo">Subtítulo</option>
-                      </select>
+                    
+                    <!-- CUSTOM SELECT TIPO COLUMNA 2 -->
+                    <div class="relative inline-block text-left">
+                      <button type="button" (click)="toggleColTypeMenu(block.columns[1].id, $event)"
+                              class="flex items-center gap-1.5 px-2 py-0.5 rounded-lg border text-[10px] font-headline font-bold transition-all cursor-pointer shadow-xs"
+                              [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-200 hover:text-white hover:border-neutral-600' : 'bg-white border-neutral-300 text-neutral-800 hover:text-black hover:border-neutral-400'">
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+                        <span>{{ getBlockTypeLabel(block.columns[1].type) }}</span>
+                        <svg class="w-2.5 h-2.5 opacity-60 ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                      </button>
+
+                      <!-- POPOVER TIPO COLUMNA 2 -->
+                      <div *ngIf="activeColTypeMenuId === block.columns[1].id"
+                           class="absolute left-0 top-full mt-1.5 w-44 z-[100] rounded-xl border shadow-2xl p-1 backdrop-blur-2xl animate-fade-in"
+                           [ngClass]="isDark ? 'bg-[#18181c] border-neutral-700 text-white shadow-black/80' : 'bg-white border-neutral-200 text-neutral-900 shadow-xl'">
+                        <div class="space-y-0.5">
+                          <button type="button" (click)="selectColType(block.columns[1], 'texto', $event)"
+                                  class="w-full px-2.5 py-1.5 rounded-lg text-left text-[11px] font-headline font-semibold flex items-center justify-between transition-all cursor-pointer"
+                                  [ngClass]="block.columns[1].type === 'texto' ? (isDark ? 'bg-neutral-800 text-blue-400 font-bold' : 'bg-neutral-100 text-blue-600 font-bold') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100 hover:text-black')">
+                            <div class="flex items-center gap-2">
+                              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+                              <span>Texto Normal</span>
+                            </div>
+                            <span *ngIf="block.columns[1].type === 'texto'" class="text-xs">✓</span>
+                          </button>
+
+                          <button type="button" (click)="selectColType(block.columns[1], 'codigo', $event)"
+                                  class="w-full px-2.5 py-1.5 rounded-lg text-left text-[11px] font-mono font-semibold flex items-center justify-between transition-all cursor-pointer"
+                                  [ngClass]="block.columns[1].type === 'codigo' ? (isDark ? 'bg-neutral-800 text-blue-400 font-bold' : 'bg-neutral-100 text-blue-600 font-bold') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100 hover:text-black')">
+                            <div class="flex items-center gap-2">
+                              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+                              <span>Código / Tabla</span>
+                            </div>
+                            <span *ngIf="block.columns[1].type === 'codigo'" class="text-xs">✓</span>
+                          </button>
+
+                          <button type="button" (click)="selectColType(block.columns[1], 'alerta', $event)"
+                                  class="w-full px-2.5 py-1.5 rounded-lg text-left text-[11px] font-headline font-semibold flex items-center justify-between transition-all cursor-pointer"
+                                  [ngClass]="block.columns[1].type === 'alerta' ? (isDark ? 'bg-neutral-800 text-blue-400 font-bold' : 'bg-neutral-100 text-blue-600 font-bold') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100 hover:text-black')">
+                            <div class="flex items-center gap-2">
+                              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.438a3.75 3.75 0 01-7.5 0m7.5 0v1.875a1.875 1.875 0 01-1.875 1.875h-3.75A1.875 1.875 0 018.25 21.75V19.875m3.75-14.625a6.002 6.002 0 00-5.467 3.527C6.082 9.879 6 10.932 6 12c0 2.257.94 4.3 2.457 5.74m7.086 0A8.966 8.966 0 0018 12c0-1.068-.082-2.121-.533-3.223a6.002 6.002 0 00-5.467-3.527z"/></svg>
+                              <span>Alerta</span>
+                            </div>
+                            <span *ngIf="block.columns[1].type === 'alerta'" class="text-xs">✓</span>
+                          </button>
+
+                          <button type="button" (click)="selectColType(block.columns[1], 'titulo', $event)"
+                                  class="w-full px-2.5 py-1.5 rounded-lg text-left text-[11px] font-headline font-semibold flex items-center justify-between transition-all cursor-pointer"
+                                  [ngClass]="block.columns[1].type === 'titulo' ? (isDark ? 'bg-neutral-800 text-blue-400 font-bold' : 'bg-neutral-100 text-blue-600 font-bold') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100 hover:text-black')">
+                            <div class="flex items-center gap-2">
+                              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m0-15l-6 6m6-6l6 6M4.5 19.5h15"/></svg>
+                              <span>Título</span>
+                            </div>
+                            <span *ngIf="block.columns[1].type === 'titulo'" class="text-xs">✓</span>
+                          </button>
+
+                          <button type="button" (click)="selectColType(block.columns[1], 'subtitulo', $event)"
+                                  class="w-full px-2.5 py-1.5 rounded-lg text-left text-[11px] font-headline font-semibold flex items-center justify-between transition-all cursor-pointer"
+                                  [ngClass]="block.columns[1].type === 'subtitulo' ? (isDark ? 'bg-neutral-800 text-blue-400 font-bold' : 'bg-neutral-100 text-blue-600 font-bold') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100 hover:text-black')">
+                            <div class="flex items-center gap-2">
+                              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h12m-12 5.25h9"/></svg>
+                              <span>Subtítulo</span>
+                            </div>
+                            <span *ngIf="block.columns[1].type === 'subtitulo'" class="text-xs">✓</span>
+                          </button>
+                        </div>
+                      </div>
                     </div>
 
                     <div class="flex items-center gap-1.5">
-                      <select *ngIf="block.columns[1].type === 'codigo'" [(ngModel)]="block.columns[1].language" (change)="syncBlocksToContent()"
-                              class="bg-neutral-900 text-neutral-200 text-[9px] font-bold rounded px-1.5 py-0.5 border border-neutral-800 outline-none cursor-pointer">
-                        <option value="sql">SQL</option>
-                        <option value="typescript">TypeScript</option>
-                        <option value="javascript">JavaScript</option>
-                        <option value="html">HTML</option>
-                        <option value="json">JSON</option>
-                      </select>
-                      <button *ngIf="block.columns[1].type === 'codigo'" (click)="copyCodeBlock(block.columns[1].content)" title="Copiar"
-                              class="text-[9px] hover:text-white transition-colors cursor-pointer">
-                        Copiar
+                      <button type="button" 
+                              (click)="toggleAiBlockMenu(block.id, $event, 1)"
+                              title="Generar o transformar Columna 2 con IA"
+                              class="flex items-center gap-1.5 px-2 py-0.5 rounded-lg border text-[10px] font-headline font-bold transition-all cursor-pointer shadow-2xs"
+                              [ngClass]="(activeAiBlockId === block.id && activeAiTargetColIndex === 1) ? (isDark ? 'bg-blue-500 text-black border-blue-400 font-extrabold shadow-sm' : 'bg-blue-600 text-white border-blue-500 font-extrabold shadow-sm') : (isDark ? 'bg-neutral-900/80 border-neutral-800 text-neutral-300 hover:text-white hover:border-neutral-700' : 'bg-neutral-100 border-neutral-300 text-neutral-700 hover:text-black')">
+                        <svg class="w-3 h-3 shrink-0" [ngClass]="(activeAiBlockId === block.id && activeAiTargetColIndex === 1) ? (isDark ? 'text-black' : 'text-white') : 'text-blue-400'" fill="currentColor" viewBox="0 0 24 24"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/></svg>
+                        <span>IA</span>
                       </button>
+                      <span class="text-[10px] uppercase font-bold tracking-wider opacity-40">Columna 2</span>
                     </div>
                   </div>
 
-                  <!-- EDITOR COLUMNA 2 -->
-                  <div class="flex-1 min-h-[90px] flex flex-col">
-                    <textarea *ngIf="block.columns[1].type === 'codigo'"
-                              [(ngModel)]="block.columns[1].content"
-                              (input)="syncBlocksToContent()"
-                              (focus)="activeBlockId = block.id"
-                              spellcheck="false"
-                              placeholder="| Columna A | Columna B |&#10;|---|---|&#10;| Dato 1 | Dato 2 |"
-                              [rows]="getLineCount(block.columns[1].content, 4, 'codigo')"
-                              class="w-full p-2 font-mono text-[11px] sm:text-xs leading-relaxed bg-[#050507] text-blue-300 border border-neutral-800 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500/50 resize-y flex-1"
-                    ></textarea>
+                  <!-- EDITOR COLUMNA 2 (FORMATO IDÉNTICO A BLOQUES NORMALES) -->
+                  <div class="flex-1 min-h-[90px] flex flex-col justify-center">
+                    
+                    <!-- 1. CÓDIGO / TABLA MAC TERMINAL -->
+                    <div *ngIf="block.columns[1].type === 'codigo'" 
+                         class="relative group/code rounded-xl overflow-hidden border shadow-sm my-1 transition-all font-mono flex-1 flex flex-col"
+                         [ngClass]="isDark ? 'bg-[#000000] border-neutral-800 text-white' : 'bg-neutral-950 border-neutral-800 text-white'">
+                      <div class="flex items-center justify-between px-3 py-1.5 border-b text-[11px] font-mono select-none bg-[#0c0c0e] border-neutral-800">
+                        <div class="flex items-center gap-1.5">
+                          <span class="w-2 h-2 rounded-full bg-neutral-700"></span>
+                          <span class="w-2 h-2 rounded-full bg-neutral-700"></span>
+                          <span class="w-2 h-2 rounded-full bg-neutral-700"></span>
+                          
+                          <!-- CUSTOM SELECT LENGUAJE COLUMNA 2 -->
+                          <div class="relative inline-block text-left ml-1">
+                            <button type="button" (click)="toggleColLangMenu(block.columns[1].id, $event)"
+                                    class="flex items-center gap-1 px-2 py-0.5 rounded-lg border text-[10px] font-mono font-bold transition-all cursor-pointer shadow-2xs"
+                                    [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200 hover:text-white' : 'bg-neutral-900 border-neutral-700 text-neutral-200 hover:text-white'">
+                              <span class="uppercase">{{ block.columns[1].language || 'sql' }}</span>
+                              <svg class="w-2.5 h-2.5 opacity-60 ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                            </button>
 
-                    <div *ngIf="block.columns[1].type !== 'codigo'"
-                         contenteditable="true"
-                         [(appContentEditable)]="block.columns[1].content"
-                         (appContentEditableChange)="syncBlocksToContent()"
-                         (focus)="activeBlockId = block.id"
-                         spellcheck="false"
-                         placeholder="Escribe contenido en la columna derecha..."
-                         class="w-full bg-transparent text-xs sm:text-sm leading-relaxed p-1 outline-none empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none flex-1"
-                         [ngClass]="block.columns[1].type === 'titulo' ? 'font-extrabold text-base sm:text-lg' : block.columns[1].type === 'subtitulo' ? 'font-bold text-sm sm:text-base' : block.columns[1].type === 'alerta' ? 'italic text-amber-300/90' : 'text-neutral-200'"
-                    ></div>
+                            <!-- POPOVER LENGUAJE COLUMNA 2 -->
+                            <div *ngIf="activeColLangMenuId === block.columns[1].id"
+                                 class="absolute left-0 top-full mt-1.5 w-32 z-[100] rounded-xl border shadow-2xl p-1 backdrop-blur-2xl animate-fade-in"
+                                 [ngClass]="isDark ? 'bg-[#18181c] border-neutral-700 text-white shadow-black/80' : 'bg-white border-neutral-200 text-neutral-900 shadow-xl'">
+                              <div class="space-y-0.5 font-mono text-[10px]">
+                                <button type="button" (click)="selectColLang(block.columns[1], 'sql', $event)"
+                                        class="w-full px-2 py-1 rounded-lg text-left flex items-center justify-between transition-all cursor-pointer"
+                                        [ngClass]="(block.columns[1].language || 'sql') === 'sql' ? (isDark ? 'bg-neutral-800 text-blue-400 font-bold' : 'bg-neutral-100 text-blue-600 font-bold') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100')">
+                                  <span>SQL</span>
+                                  <span *ngIf="(block.columns[1].language || 'sql') === 'sql'">✓</span>
+                                </button>
+                                <button type="button" (click)="selectColLang(block.columns[1], 'typescript', $event)"
+                                        class="w-full px-2 py-1 rounded-lg text-left flex items-center justify-between transition-all cursor-pointer"
+                                        [ngClass]="block.columns[1].language === 'typescript' ? (isDark ? 'bg-neutral-800 text-blue-400 font-bold' : 'bg-neutral-100 text-blue-600 font-bold') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100')">
+                                  <span>TypeScript</span>
+                                  <span *ngIf="block.columns[1].language === 'typescript'">✓</span>
+                                </button>
+                                <button type="button" (click)="selectColLang(block.columns[1], 'javascript', $event)"
+                                        class="w-full px-2 py-1 rounded-lg text-left flex items-center justify-between transition-all cursor-pointer"
+                                        [ngClass]="block.columns[1].language === 'javascript' ? (isDark ? 'bg-neutral-800 text-blue-400 font-bold' : 'bg-neutral-100 text-blue-600 font-bold') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100')">
+                                  <span>JavaScript</span>
+                                  <span *ngIf="block.columns[1].language === 'javascript'">✓</span>
+                                </button>
+                                <button type="button" (click)="selectColLang(block.columns[1], 'html', $event)"
+                                        class="w-full px-2 py-1 rounded-lg text-left flex items-center justify-between transition-all cursor-pointer"
+                                        [ngClass]="block.columns[1].language === 'html' ? (isDark ? 'bg-neutral-800 text-blue-400 font-bold' : 'bg-neutral-100 text-blue-600 font-bold') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100')">
+                                  <span>HTML</span>
+                                  <span *ngIf="block.columns[1].language === 'html'">✓</span>
+                                </button>
+                                <button type="button" (click)="selectColLang(block.columns[1], 'json', $event)"
+                                        class="w-full px-2 py-1 rounded-lg text-left flex items-center justify-between transition-all cursor-pointer"
+                                        [ngClass]="block.columns[1].language === 'json' ? (isDark ? 'bg-neutral-800 text-blue-400 font-bold' : 'bg-neutral-100 text-blue-600 font-bold') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100')">
+                                  <span>JSON</span>
+                                  <span *ngIf="block.columns[1].language === 'json'">✓</span>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <button type="button" (click)="copyCodeBlock(block.columns[1].content)" class="px-2 py-0.5 rounded text-[10px] font-headline font-bold text-neutral-400 hover:text-white transition-all flex items-center gap-1 cursor-pointer">
+                          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v9.25c0 .621-.504 1.125-1.125 1.125z"/></svg>
+                          <span>Copiar</span>
+                        </button>
+                      </div>
+                      <div class="p-2 sm:p-3 flex-1 flex flex-col">
+                        <textarea 
+                          [(ngModel)]="block.columns[1].content"
+                          (input)="onBlockInput(block, $event); syncBlocksToContent()"
+                          (focus)="activeBlockId = block.id"
+                          spellcheck="false"
+                          placeholder="| Columna A | Columna B |&#10;|---|---|&#10;| Dato 1 | Dato 2 |"
+                          [rows]="getLineCount(block.columns[1].content, 4, 'codigo')"
+                          class="w-full bg-transparent font-mono text-[11px] sm:text-sm text-zinc-100 leading-relaxed outline-none resize-y border-none placeholder:text-neutral-600 flex-1 min-h-[90px] break-all"
+                        ></textarea>
+                      </div>
+                    </div>
+
+                    <!-- 2. ALERTA / CONSEJO CARD -->
+                    <div *ngIf="block.columns[1].type === 'alerta'"
+                         class="flex items-start gap-3 p-3.5 sm:p-4 rounded-2xl border my-1 transition-all shadow-sm flex-1"
+                         [ngClass]="isDark ? 'bg-amber-950/20 border-amber-500/30 text-amber-200' : 'bg-amber-50/80 border-amber-200/90 text-amber-900'">
+                      <div class="p-1 rounded-lg bg-amber-500/20 text-amber-400 shrink-0 mt-0.5">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.438a3.75 3.75 0 01-7.5 0m7.5 0v1.875a1.875 1.875 0 01-1.875 1.875h-3.75A1.875 1.875 0 018.25 21.75V19.875m3.75-14.625a6.002 6.002 0 00-5.467 3.527C6.082 9.879 6 10.932 6 12c0 2.257.94 4.3 2.457 5.74m7.086 0A8.966 8.966 0 0018 12c0-1.068-.082-2.121-.533-3.223a6.002 6.002 0 00-5.467-3.527z" />
+                        </svg>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div 
+                          contenteditable="true"
+                          [(appContentEditable)]="block.columns[1].content"
+                          (appContentEditableChange)="syncBlocksToContent()"
+                          (focus)="activeBlockId = block.id"
+                          spellcheck="false"
+                          placeholder="Escribe un consejo o nota importante..."
+                          class="w-full bg-transparent text-xs sm:text-sm font-medium leading-relaxed outline-none text-neutral-200 empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.4em]"
+                        ></div>
+                      </div>
+                    </div>
+
+                    <!-- 3. TÍTULO -->
+                    <div *ngIf="block.columns[1].type === 'titulo'" class="py-1 flex-1">
+                      <div 
+                        contenteditable="true"
+                        [(appContentEditable)]="block.columns[1].content"
+                        (appContentEditableChange)="syncBlocksToContent()"
+                        (focus)="activeBlockId = block.id"
+                        spellcheck="false"
+                        placeholder="Título Principal..."
+                        class="w-full bg-transparent text-xl sm:text-2xl font-headline font-extrabold tracking-tight py-1 outline-none transition-all empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.5em]"
+                        [ngClass]="isDark ? 'text-white' : 'text-neutral-900'"
+                      ></div>
+                    </div>
+
+                    <!-- 4. SUBTÍTULO -->
+                    <div *ngIf="block.columns[1].type === 'subtitulo'" class="py-1 flex-1">
+                      <div 
+                        contenteditable="true"
+                        [(appContentEditable)]="block.columns[1].content"
+                        (appContentEditableChange)="syncBlocksToContent()"
+                        (focus)="activeBlockId = block.id"
+                        spellcheck="false"
+                        placeholder="Subtítulo de sección..."
+                        class="w-full bg-transparent text-base sm:text-lg font-headline font-bold py-1 outline-none transition-all empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.5em]"
+                        [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'"
+                      ></div>
+                    </div>
+
+                    <!-- 5. TEXTO NORMAL -->
+                    <div *ngIf="block.columns[1].type === 'texto'" class="py-0.5 flex-1">
+                      <div 
+                        contenteditable="true"
+                        [(appContentEditable)]="block.columns[1].content"
+                        (appContentEditableChange)="syncBlocksToContent()"
+                        (focus)="activeBlockId = block.id"
+                        spellcheck="false"
+                        placeholder="Escribe texto..."
+                        class="w-full bg-transparent text-base sm:text-lg leading-snug py-0.5 outline-none transition-all empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.5em]"
+                        [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-800'"
+                      ></div>
+                    </div>
+
                   </div>
                 </div>
 
@@ -1563,13 +2021,13 @@
                     class="px-3.5 py-1.5 rounded-xl text-xs font-headline font-bold border transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
                     [ngClass]="isDark ? 'border-neutral-700 bg-neutral-900 text-neutral-300 hover:bg-neutral-800 hover:text-white' : 'border-neutral-300 bg-white text-neutral-800 hover:bg-neutral-100 hover:text-black'">
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-              <span>+ Texto</span>
+              <span>Texto</span>
             </button>
             <button type="button" (click)="addBlock('columnas')"
                     class="px-3.5 py-1.5 rounded-xl text-xs font-headline font-bold border transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
                     [ngClass]="isDark ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20' : 'border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100'">
               <span class="text-sm">◫</span>
-              <span>+ 2 Columnas Paralelas</span>
+              <span>2 Columnas Paralelas</span>
             </button>
           </div>
 

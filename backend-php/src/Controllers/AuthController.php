@@ -133,7 +133,7 @@ class AuthController
                 'rol' => $usuario['rol'],
                 'email' => $usuario['email'],
                 'telefono' => $usuario['telefono'],
-                'exp' => time() + (8 * 3600)
+                'exp' => time() + (24 * 3600)
             ];
 
             $token = JWT::encode($payload, $secret, 'HS256');
@@ -360,7 +360,7 @@ class AuthController
                 'rol' => $updatedUser['rol'],
                 'email' => $updatedUser['email'],
                 'telefono' => $updatedUser['telefono'],
-                'exp' => time() + (8 * 3600)
+                'exp' => time() + (24 * 3600)
             ];
             $token = JWT::encode($payload, $secret, 'HS256');
 

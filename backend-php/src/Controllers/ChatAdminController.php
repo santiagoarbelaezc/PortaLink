@@ -35,6 +35,7 @@ class ChatAdminController
         $instruction = trim($body['instruction'] ?? '');
         $prompt = trim($body['prompt'] ?? '');
         $noteTitle = trim($body['note_title'] ?? '');
+        $noteContent = trim($body['note_content'] ?? '');
         $history = $body['history'] ?? [];
 
         try {
@@ -44,7 +45,7 @@ Eres un editor de texto profesional, elegante, directo y altamente conciso.
 
 REGLAS ABSOLUTAS:
 1. Responde ÚNICAMENTE con el resultado exacto solicitado. Ve directo al grano sin introducciones, saludos, resúmenes ni despedidas.
-2. Si se solicita dar formato a una tabla, responde EXCLUSIVAMENTE con la tabla Markdown formateada y alineada de forma impecable.
+2. Si se solicita dar formato a una tabla o tablas en paralelo, responde EXCLUSIVAMENTE con la tabla o estructura Markdown formateada y alineada de forma impecable.
 3. Si se solicita traducir, responde ÚNICAMENTE con la traducción profesional.
 4. Si se solicita corregir o mejorar redacción, responde ÚNICAMENTE con el texto final corregido.
 5. NO agregues íconos, emojis innecesarios, explicaciones metodológicas ni secciones adicionales.
@@ -73,13 +74,19 @@ PROMPT;
 
             } elseif ($mode === 'copilot') {
                 $systemPrompt = <<<PROMPT
-Eres RotBot Apuntes IA, un copiloto ejecutivo de estudio y aprendizaje altamente inteligente, refinado y natural.
+Eres RotBot Apuntes IA, el copiloto ejecutivo de estudio y aprendizaje de PortaLink. Eres altamente inteligente, analítico, refinado y experto en programación, bases de datos (SQL), teoría y redacción.
+
+CONTEXTO DEL APUNTE:
+El usuario te puede proveer el contenido completo del apunte en el que está trabajando. Los apuntes pueden contener:
+- Bloques de Texto, Títulos (#), Subtítulos (###), Alertas (> 💡).
+- Bloques de Código o Tablas Markdown.
+- Bloques de 2 Columnas Paralelas (con [COLUMNA IZQUIERDA] y [COLUMNA DERECHA], por ejemplo dos tablas SQL comparativas, esquemas relacionales, o explicaciones lado a lado).
 
 REGLAS DE RESPUESTA:
-1. RESPUESTAS DE ALTA CALIDAD: Brinda información precisa, perspicaz y bien estructurada.
-2. FORMATO IMPECABLE: Destaca conceptos clave y términos relevantes con negritas (**concepto**). No utilices asteriscos sueltos ni símbolos de formato sin cerrar.
-3. CONCISIÓN DIRECTA: Ve directo al punto sin introducciones vacías ni despedidas repetitivas.
-4. TONO PROFESIONAL Y MODERNO: Mantén una redacción profesional, elegante, clara y pulida.
+1. ANÁLISIS COMPLETO: Analiza detenidamente todo el contenido del apunte suministrado, prestando especial atención a las tablas y celdas de las columnas paralelas.
+2. RESPUESTAS DE ALTA CALIDAD: Brinda información precisa, perspicaz, con ejemplos claros y bien estructurada.
+3. FORMATO IMPECABLE: Destaca conceptos clave con negritas (**concepto**). Si muestras tablas o consultas, usa formato Markdown limpio.
+4. CONCISIÓN DIRECTA: Ve directo al punto sin rodeos ni saludos innecesarios.
 PROMPT;
 
                 $messages = [
@@ -99,7 +106,14 @@ PROMPT;
                     }
                 }
 
-                $userPrompt = $noteTitle ? "[Apunte Actual: {$noteTitle}]\n\nConsulta del Usuario: {$prompt}" : $prompt;
+                $userPrompt = "";
+                if (!empty($noteContent)) {
+                    $userPrompt .= "CONTENIDO Y ESTRUCTURA DEL APUNTE ACTUAL:\n\"\"\"\n{$noteContent}\n\"\"\"\n\n";
+                } elseif (!empty($noteTitle)) {
+                    $userPrompt .= "[Apunte Actual: {$noteTitle}]\n\n";
+                }
+                $userPrompt .= "CONSULTA DEL USUARIO:\n{$prompt}";
+
                 $messages[] = ['role' => 'user', 'content' => $userPrompt];
 
                 $groqRes = Groq::callGroq($messages, [
