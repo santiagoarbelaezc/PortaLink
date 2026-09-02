@@ -13,8 +13,7 @@ import { DashAnalyticsHubComponent } from '../../components/dashboard/dash-analy
 import { DashMessagesComponent } from '../../components/dashboard/dash-messages/dash-messages.component';
 import { DashUsersComponent } from '../../components/dashboard/dash-users/dash-users.component';
 import { DashConfigComponent } from '../../components/dashboard/dash-config/dash-config.component';
-import { DashFinancesComponent } from '../../components/dashboard/dash-finances/dash-finances.component';
-import { DashFinancialControlComponent } from '../../components/dashboard/dash-financial-control/dash-financial-control.component';
+import { DashFinancesHubComponent } from '../../components/dashboard/dash-finances-hub/dash-finances-hub.component';
 import { DashItineraryComponent } from '../../components/dashboard/dash-itinerary/dash-itinerary.component';
 import { DashLibraryComponent } from '../../components/dashboard/dash-library/dash-library.component';
 import { DashRotbotComponent } from '../../components/dashboard/dash-rotbot/dash-rotbot.component';
@@ -39,8 +38,7 @@ interface Tab {
     DashMessagesComponent,
     DashUsersComponent,
     DashConfigComponent,
-    DashFinancesComponent,
-    DashFinancialControlComponent,
+    DashFinancesHubComponent,
     DashItineraryComponent,
     DashLibraryComponent,
     DashDbViewerComponent,
@@ -283,15 +281,11 @@ interface Tab {
               [theme]="currentTheme">
             </app-dash-config>
 
-            <app-dash-financial-control
-              *ngIf="activeTab === 'financial-control'"
-              [theme]="currentTheme">
-            </app-dash-financial-control>
-
-            <app-dash-finances
-              *ngIf="activeTab === 'finances'"
-              [theme]="currentTheme">
-            </app-dash-finances>
+            <app-dash-finances-hub
+              *ngIf="activeTab === 'finances' || activeTab === 'financial-control'"
+              [theme]="currentTheme"
+              [defaultSubTab]="activeTab === 'financial-control' ? 'control' : 'finances'">
+            </app-dash-finances-hub>
 
             <app-dash-library
               *ngIf="activeTab === 'library'"
@@ -423,17 +417,17 @@ interface Tab {
                   [ngClass]="activeTab === 'finances' ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-neutral-400' : 'text-neutral-500')">Finanzas</span>
           </button>
 
-          <!-- Control -->
-          <button (click)="setTab('financial-control')"
+          <!-- Analíticas -->
+          <button (click)="setTab('analytics')"
                   class="flex flex-col items-center justify-center py-1 px-2 transition-all duration-200 active:scale-90 cursor-pointer group">
             <div class="w-[60px] h-9 rounded-full flex items-center justify-center transition-all duration-300 relative"
-                 [ngClass]="activeTab === 'financial-control' ? (isDark ? 'bg-emerald-500/20 text-emerald-400 font-bold scale-105' : 'bg-emerald-500/15 text-emerald-600 font-bold scale-105') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">
+                 [ngClass]="activeTab === 'analytics' ? (isDark ? 'bg-emerald-500/20 text-emerald-400 font-bold scale-105' : 'bg-emerald-500/15 text-emerald-600 font-bold scale-105') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">
               <svg class="w-[22px] h-[22px] transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-3l3 3 3-3M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
               </svg>
             </div>
             <span class="text-[10.5px] font-bold tracking-tight transition-colors mt-1"
-                  [ngClass]="activeTab === 'financial-control' ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-neutral-400' : 'text-neutral-500')">Control</span>
+                  [ngClass]="activeTab === 'analytics' ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-neutral-400' : 'text-neutral-500')">Analíticas</span>
           </button>
 
           <!-- Mensajes -->
@@ -511,7 +505,6 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   tabs: Tab[] = [
     { id: 'dashboard',         name: 'Inicio' },
-    { id: 'financial-control', name: 'Control Financiero' },
     { id: 'finances',          name: 'Finanzas' },
     { id: 'analytics',         name: 'Analíticas' },
     { id: 'messages',          name: 'Mensajes' },
@@ -531,6 +524,8 @@ export class AdminComponent implements OnInit, OnDestroy {
     const savedTab = localStorage.getItem('portalink_admin_tab');
     if (savedTab === 'stats' || savedTab === 'reports') {
       this.activeTab = 'analytics';
+    } else if (savedTab === 'financial-control') {
+      this.activeTab = 'finances';
     } else if (savedTab && this.tabs.some(t => t.id === savedTab)) {
       this.activeTab = savedTab;
     } else {

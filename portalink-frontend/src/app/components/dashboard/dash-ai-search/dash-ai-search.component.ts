@@ -9,7 +9,7 @@ export type { RotbotMode };
 const TAB_LABELS: Record<string, string> = {
   dashboard: 'Inicio',
   rotbot: 'Rotbot English Coach',
-  'financial-control': 'Control Financiero',
+  'financial-control': 'Finanzas',
   finances: 'Finanzas',
   itinerary: 'Calendario',
   library: 'Biblioteca',

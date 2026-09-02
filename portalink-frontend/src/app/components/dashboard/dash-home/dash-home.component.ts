@@ -19,52 +19,89 @@ import { Router } from '@angular/router';
       <div class="space-y-4 xs:space-y-5 sm:space-y-6 tab-enter font-sans">
 
         <!-- ═══════════════════════ 1. WELCOME BANNER ═══════════════════════ -->
-        <div class="relative overflow-hidden rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-8 md:p-9 min-h-[190px] xs:min-h-[210px] sm:min-h-[250px] flex flex-col justify-center transition-all duration-300"
-             [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800 shadow-[0_10px_35px_rgba(0,0,0,0.4)]' : 'bg-white border-neutral-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.03)]'">
+        <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl border p-5 xs:p-6 sm:p-8 md:p-9 min-h-[200px] xs:min-h-[220px] sm:min-h-[240px] flex flex-col justify-center transition-all duration-300 shadow-sm group"
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.03)]'">
 
-          <!-- Rotbot Flotando -->
-          <div class="absolute right-1 sm:right-2 md:right-8 top-0 bottom-0 hidden sm:flex items-center justify-center pointer-events-none select-none py-6 w-[180px] sm:w-[220px] md:w-[320px]">
-            <img src="assets/images/rotbot4.png" class="h-full w-full object-contain opacity-40 sm:opacity-95 drop-shadow-md" alt="Rotbot">
+          <!-- Subtle Background Ambient Glow -->
+          <div *ngIf="isDark" class="absolute -top-24 -left-24 w-80 h-80 bg-white/[0.02] rounded-full blur-3xl pointer-events-none"></div>
+          <div *ngIf="isDark" class="absolute -bottom-24 right-1/4 w-80 h-80 bg-white/[0.015] rounded-full blur-3xl pointer-events-none"></div>
+
+          <!-- Rotbot 3D Flotando con efecto premium -->
+          <div class="absolute right-1 sm:right-2 md:right-8 top-0 bottom-0 hidden sm:flex items-center justify-center pointer-events-none select-none py-4 sm:py-6 w-[180px] sm:w-[220px] md:w-[320px]">
+            <img src="assets/images/rotbot4.png" class="h-full w-full object-contain opacity-60 sm:opacity-95 drop-shadow-[0_15px_35px_rgba(0,0,0,0.6)] transition-transform duration-500 group-hover:scale-[1.02]" alt="Rotbot">
           </div>
 
-          <div class="relative z-10 max-w-full sm:max-w-[75%] md:max-w-[62%]">
-            <p class="text-[10px] xs:text-xs font-headline font-semibold uppercase tracking-[0.2em] xs:tracking-[0.25em] mb-1"
-               [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Panel de Control</p>
-            <h2 class="text-xl xs:text-2xl sm:text-4xl font-headline font-bold leading-tight tracking-tight"
+          <div class="relative z-10 max-w-full sm:max-w-[75%] md:max-w-[62%] space-y-3">
+            
+            <!-- Top Tag: Panel de Control -->
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+              <p class="text-[10px] xs:text-xs font-mono font-semibold uppercase tracking-[0.25em]"
+                 [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+                Panel de Control
+              </p>
+            </div>
+
+            <!-- Greeting H2 (Buenos Días Santi / Buenas Tardes Santi / Buenas Noches Santi, + Frase Rotativa) -->
+            <h2 class="text-xl xs:text-2xl sm:text-3xl md:text-4xl font-headline font-bold leading-tight tracking-tight"
                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              Bienvenido, Santiago
+              <span>{{ greetingText }}, </span>
+              <span class="inline-block transition-all duration-300 ease-out"
+                    [class.opacity-0]="isPhraseFading"
+                    [class.-translate-y-1]="isPhraseFading"
+                    [class.opacity-100]="!isPhraseFading"
+                    [class.translate-y-0]="!isPhraseFading">
+                {{ currentRotatingPhrase }}
+              </span>
             </h2>
+
+            <!-- Fecha y Hora: Estilo de texto original sin cápsula -->
             <p class="text-[11px] xs:text-xs sm:text-sm mt-1 mb-3 xs:mb-4 sm:mb-5 flex items-baseline gap-1.5 xs:gap-2 font-headline"
                [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
                <span>{{ currentDate }}</span>
                <span class="text-xs xs:text-sm md:text-base font-semibold" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-700'">{{ currentTime }}</span>
             </p>
 
-            <!-- Quick chips (Optimized 2x2 Grid on Mobile) -->
-            <div class="grid grid-cols-2 gap-1.5 xs:gap-2 sm:flex sm:flex-wrap relative z-10">
-              <span class="text-[10px] xs:text-[11px] sm:text-xs font-headline font-semibold px-2.5 xs:px-3 py-1 xs:py-1.5 rounded-full border flex items-center justify-center sm:justify-start gap-1.5 tracking-wider truncate"
-                    [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80'">
-                <svg class="w-3 h-3 xs:w-3.5 xs:h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                <span class="truncate">{{ (metrics.homeViews || 0) + (metrics.linktreeViews || 0) }} Vistas</span>
+            <!-- Quick Chips (Vistas, Mensajes, Online, Sesión) perfectamente alineados -->
+            <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap items-center relative z-10">
+              <!-- 1. Vistas -->
+              <span class="h-8 px-3.5 rounded-full border inline-flex items-center justify-center sm:justify-start gap-2 text-xs font-semibold tracking-wide transition-all select-none"
+                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-neutral-300' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80'">
+                <svg class="w-3.5 h-3.5 shrink-0 opacity-70 block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                <span class="leading-none whitespace-nowrap">{{ (metrics.homeViews || 0) + (metrics.linktreeViews || 0) }} Vistas</span>
               </span>
-              <span class="text-[10px] xs:text-[11px] sm:text-xs font-headline font-semibold px-2.5 xs:px-3 py-1 xs:py-1.5 rounded-full border flex items-center justify-center sm:justify-start gap-1.5 tracking-wider truncate"
-                    [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80'">
-                <svg class="w-3 h-3 xs:w-3.5 xs:h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                <span class="truncate">{{ unreadMessages }} Mensajes</span>
+
+              <!-- 2. Mensajes -->
+              <span class="h-8 px-3.5 rounded-full border inline-flex items-center justify-center sm:justify-start gap-2 text-xs font-semibold tracking-wide transition-all select-none"
+                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-neutral-300' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80'">
+                <svg class="w-3.5 h-3.5 shrink-0 opacity-70 block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <span class="leading-none whitespace-nowrap">{{ unreadMessages }} Mensajes</span>
               </span>
-              <span class="text-[10px] xs:text-[11px] sm:text-xs font-headline font-semibold px-2.5 xs:px-3 py-1 xs:py-1.5 rounded-full border flex items-center justify-center sm:justify-start gap-1.5 tracking-wider truncate"
-                    [ngClass]="isDark ? 'border-blue-500/30 text-blue-400 bg-blue-500/10' : 'border-blue-200 text-blue-700 bg-blue-50'">
-                <svg class="w-3 h-3 xs:w-3.5 xs:h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-                <span class="truncate">Online</span>
+
+              <!-- 3. Online -->
+              <span class="h-8 px-3.5 rounded-full border inline-flex items-center justify-center sm:justify-start gap-2 text-xs font-semibold tracking-wide transition-all select-none"
+                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-neutral-200' : 'border-emerald-200 text-emerald-800 bg-emerald-50/80'">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0 block"></span>
+                <span class="leading-none whitespace-nowrap">Online</span>
               </span>
-              <span class="text-[10px] xs:text-[11px] sm:text-xs font-headline font-semibold px-2.5 xs:px-3 py-1 xs:py-1.5 rounded-full border flex items-center justify-center sm:justify-start gap-1.5 tracking-wider transition-all duration-300 truncate"
+
+              <!-- 4. Sesión -->
+              <span class="h-8 px-3.5 rounded-full border inline-flex items-center justify-center sm:justify-start gap-2 text-xs font-semibold tracking-wide transition-all select-none"
                     [ngClass]="sessionIsWarning ? 
                       (isDark ? 'border-amber-500/40 text-amber-400 bg-amber-500/10 animate-pulse' : 'border-amber-300 text-amber-800 bg-amber-50/80 animate-pulse') : 
-                      (isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800/50' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80')">
-                <svg class="w-3 h-3 xs:w-3.5 xs:h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <span class="truncate">{{ sessionTimeFormatted }}</span>
+                      (isDark ? 'bg-[#141419] border-neutral-800 text-neutral-300' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80')">
+                <svg class="w-3.5 h-3.5 shrink-0 opacity-70 block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="leading-none whitespace-nowrap">{{ sessionTimeFormatted }}</span>
               </span>
             </div>
+
           </div>
         </div>
 
@@ -804,18 +841,18 @@ import { Router } from '@angular/router';
       <div class="space-y-4 xs:space-y-5 sm:space-y-6 animate-pulse font-sans">
         
         <!-- 1. Welcome Banner Skeleton -->
-        <div class="relative overflow-hidden rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-8 md:p-9 min-h-[190px] xs:min-h-[210px] sm:min-h-[250px] flex flex-col justify-center"
-             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800/80' : 'bg-white border-neutral-200/80'">
+        <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl border p-5 xs:p-6 sm:p-8 md:p-9 min-h-[200px] xs:min-h-[220px] sm:min-h-[240px] flex flex-col justify-center"
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200/80'">
           <div class="space-y-3 max-w-[65%]">
             <div class="h-3 w-28 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
-            <div class="h-7 sm:h-9 w-48 sm:w-72 rounded-xl" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
-            <div class="h-3 w-40 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/70' : 'bg-neutral-200/70'"></div>
+            <div class="h-8 sm:h-10 w-52 sm:w-80 rounded-xl" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+            <div class="h-4 w-44 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/70' : 'bg-neutral-200/70'"></div>
             
             <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap pt-2">
-              <div *ngFor="let _ of [1,2,3,4]" class="h-7 w-24 sm:w-28 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/80' : 'bg-neutral-200/80'"></div>
+              <div *ngFor="let _ of [1,2,3,4]" class="h-8 w-24 sm:w-28 rounded-xl" [ngClass]="isDark ? 'bg-[#141419] border border-neutral-800' : 'bg-neutral-100'"></div>
             </div>
           </div>
-          <div class="absolute right-4 top-1/2 -translate-y-1/2 hidden sm:block w-36 h-36 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/30' : 'bg-neutral-100'"></div>
+          <div class="absolute right-4 top-1/2 -translate-y-1/2 hidden sm:block w-36 h-36 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/20' : 'bg-neutral-100'"></div>
         </div>
 
         <!-- 2. AI Command Center Skeleton -->
@@ -961,6 +998,41 @@ export class DashHomeComponent implements OnInit, OnDestroy {
 
   currentDate = '';
   currentTime = '';
+
+  get greetingText(): string {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) {
+      return 'Buenos Días Santi';
+    } else if (hour >= 12 && hour < 19) {
+      return 'Buenas Tardes Santi';
+    } else {
+      return 'Buenas Noches Santi';
+    }
+  }
+
+  get greetingPeriod(): 'morning' | 'afternoon' | 'night' {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return 'morning';
+    if (hour >= 12 && hour < 19) return 'afternoon';
+    return 'night';
+  }
+
+  rotatingPhrases: string[] = [
+    '¿qué haremos hoy?',
+    '¿ya estudiaste base de datos?',
+    '¿ya estudiaste inglés?',
+    '¿ya leíste arquitectura?',
+    '¿cómo van las finanzas?'
+  ];
+  currentPhraseIndex = 0;
+  isPhraseFading = false;
+  private phraseInterval: any;
+  private phraseTimeout: any;
+
+  get currentRotatingPhrase(): string {
+    return this.rotatingPhrases[this.currentPhraseIndex];
+  }
+
   isLoading = true;
   unreadMessages = 0;
   pendingLeads = 0;
@@ -1102,7 +1174,11 @@ export class DashHomeComponent implements OnInit, OnDestroy {
     // 8. Typewriter
     this.startTypewriter();
 
-    // 8. Session Countdown
+    // 9. Phrase Rotation (Inicio aleatorio para variar en cada visita)
+    this.currentPhraseIndex = Math.floor(Math.random() * this.rotatingPhrases.length);
+    this.startPhraseRotation();
+
+    // 10. Session Countdown
     this.sessionSub = this.sessionTimer.sessionTimeLeft$.subscribe(seconds => {
       if (seconds <= 0) {
         this.sessionTimeFormatted = 'Expirada';
@@ -1124,7 +1200,9 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     clearInterval(this.clockInterval);
     clearInterval(this.typeInterval);
+    clearInterval(this.phraseInterval);
     clearTimeout(this.pauseTimeout);
+    clearTimeout(this.phraseTimeout);
     if (this.sessionSub) this.sessionSub.unsubscribe();
     if (this.sessionExpiredSub) this.sessionExpiredSub.unsubscribe();
     this.voiceSubs.forEach(s => s.unsubscribe());
@@ -1371,9 +1449,10 @@ export class DashHomeComponent implements OnInit, OnDestroy {
 
   private updateClock() {
     const now = new Date();
-    this.currentDate = now.toLocaleDateString('es-CO', {
+    const rawDate = now.toLocaleDateString('es-CO', {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
+    this.currentDate = rawDate.charAt(0).toUpperCase() + rawDate.slice(1);
     this.currentTime = now.toLocaleTimeString('es-CO', {
       hour: '2-digit', minute: '2-digit', second: '2-digit'
     });
@@ -1450,5 +1529,15 @@ export class DashHomeComponent implements OnInit, OnDestroy {
         }, 2200);
       }
     }, 60);
+  }
+
+  private startPhraseRotation() {
+    this.phraseInterval = setInterval(() => {
+      this.isPhraseFading = true;
+      this.phraseTimeout = setTimeout(() => {
+        this.currentPhraseIndex = (this.currentPhraseIndex + 1) % this.rotatingPhrases.length;
+        this.isPhraseFading = false;
+      }, 300);
+    }, 10000);
   }
 }

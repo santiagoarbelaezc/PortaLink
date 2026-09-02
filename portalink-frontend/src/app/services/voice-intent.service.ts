@@ -16,7 +16,7 @@ export class VoiceIntentService {
   private readonly navigationMap: { keywords: string[]; tab: string }[] = [
     { keywords: ['biblioteca', 'apuntes', 'cuadernos', 'cuaderno', 'notas', 'libros'], tab: 'library' },
     { keywords: ['finanzas', 'factura', 'facturas', 'pagos', 'cobros', 'cartera', 'facturación'], tab: 'finances' },
-    { keywords: ['control financiero'], tab: 'financial-control' },
+    { keywords: ['control financiero'], tab: 'finances' },
     { keywords: ['agenda', 'calendario', 'tareas', 'itinerario', 'tarea'], tab: 'itinerary' },
     { keywords: ['analíticas', 'analítica', 'tráfico', 'métricas', 'visitas', 'estadísticas'], tab: 'analytics' },
     { keywords: ['mensajes', 'correos', 'contactos', 'bandeja'], tab: 'messages' },
