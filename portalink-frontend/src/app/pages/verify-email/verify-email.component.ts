@@ -1,6 +1,6 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -56,8 +56,8 @@ import { AuthService } from '../../services/auth.service';
             {{ message() || 'Tu dirección de correo electrónico ha sido confirmada con éxito. Ya puedes acceder a todas las funciones de tu cuenta.' }}
           </p>
 
-          <div class="pt-4">
-            <a routerLink="/login"
+          <div class="pt-4 space-y-2.5">
+            <a routerLink="/login" [queryParams]="{ verified: 'true' }"
                class="inline-flex items-center justify-center gap-2.5 w-full py-3.5 px-6 rounded-full font-headline font-semibold text-xs uppercase tracking-wider shadow-sm hover:opacity-90 active:scale-[0.99] transition-all no-underline cursor-pointer"
                style="background-color: #09090b !important; color: #ffffff !important;">
               <span style="color: #ffffff !important; font-weight: 600;">Iniciar Sesión</span>
@@ -65,6 +65,7 @@ import { AuthService } from '../../services/auth.service';
                 <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
               </svg>
             </a>
+            <p class="text-[11px] text-neutral-400 m-0">Redirigiéndote a inicio de sesión automáticamente...</p>
           </div>
         </div>
 
@@ -107,12 +108,14 @@ import { AuthService } from '../../services/auth.service';
     </div>
   `
 })
-export class VerifyEmailComponent implements OnInit {
+export class VerifyEmailComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private authService = inject(AuthService);
 
   status = signal<'loading' | 'success' | 'error'>('loading');
   message = signal<string>('');
+  private redirectTimeout: any;
 
   ngOnInit(): void {
     const token = this.route.snapshot.queryParamMap.get('token');
@@ -123,14 +126,23 @@ export class VerifyEmailComponent implements OnInit {
     }
 
     this.authService.verifyEmail(token).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         this.status.set('success');
         this.message.set(res.message || 'Tu cuenta ha sido activada correctamente.');
+        this.redirectTimeout = setTimeout(() => {
+          this.router.navigate(['/login'], { queryParams: { verified: 'true' } });
+        }, 2200);
       },
       error: (err) => {
         this.status.set('error');
         this.message.set(err.error?.message || 'El enlace de verificación expiró o es inválido.');
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.redirectTimeout) {
+      clearTimeout(this.redirectTimeout);
+    }
   }
 }

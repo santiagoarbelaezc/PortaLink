@@ -107,7 +107,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
           <!-- Login / Register Slider Container -->
           <div class="relative overflow-hidden w-full transition-[height] duration-300 ease-out"
-               [style.min-height]="activeTab === 'login' ? '280px' : '580px'">
+               [style.min-height]="activeTab === 'login' ? '280px' : '710px'">
             <div class="flex w-[200%] transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"
                  [style.transform]="activeTab === 'login' ? 'translateX(0)' : 'translateX(-50%)'">
               
@@ -221,6 +221,64 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                           <svg *ngIf="!showRegisterConfirmPassword" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                           <svg *ngIf="showRegisterConfirmPassword" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
                         </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Barra de Progreso y Control de Nivel de Seguridad (Registro) -->
+                  <div *ngIf="registerPassword" class="space-y-1.5 pt-0.5 pb-0.5 animate-slide-down">
+                    <div class="flex items-center justify-between text-[11px]">
+                      <span class="text-neutral-500 font-medium">Nivel de seguridad:</span>
+                      <span class="font-semibold text-xs transition-colors duration-300" [ngClass]="regStrengthTextColor">
+                        {{ regStrengthLabel }}
+                      </span>
+                    </div>
+
+                    <!-- Segmented Progress Bar -->
+                    <div class="grid grid-cols-4 gap-1.5 h-1.5 w-full">
+                      <div class="rounded-full transition-all duration-300"
+                           [ngClass]="regStrengthScore >= 1 ? regStrengthBgColor : 'bg-neutral-200'"></div>
+                      <div class="rounded-full transition-all duration-300"
+                           [ngClass]="regStrengthScore >= 2 ? regStrengthBgColor : 'bg-neutral-200'"></div>
+                      <div class="rounded-full transition-all duration-300"
+                           [ngClass]="regStrengthScore >= 3 ? regStrengthBgColor : 'bg-neutral-200'"></div>
+                      <div class="rounded-full transition-all duration-300"
+                           [ngClass]="regStrengthScore >= 4 ? regStrengthBgColor : 'bg-neutral-200'"></div>
+                    </div>
+
+                    <!-- Checklist de Requisitos -->
+                    <div class="grid grid-cols-2 gap-x-2 gap-y-1 pt-1 text-[10px] sm:text-[11px]">
+                      <div class="flex items-center gap-1.5 transition-colors duration-200"
+                           [ngClass]="regHasMinLength ? 'text-emerald-700 font-medium' : 'text-neutral-400'">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                          <path *ngIf="regHasMinLength" stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                          <circle *ngIf="!regHasMinLength" cx="12" cy="12" r="3.5" fill="currentColor"/>
+                        </svg>
+                        <span>Mínimo 6 caracteres</span>
+                      </div>
+                      <div class="flex items-center gap-1.5 transition-colors duration-200"
+                           [ngClass]="regHasUppercase ? 'text-emerald-700 font-medium' : 'text-neutral-400'">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                          <path *ngIf="regHasUppercase" stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                          <circle *ngIf="!regHasUppercase" cx="12" cy="12" r="3.5" fill="currentColor"/>
+                        </svg>
+                        <span>Una mayúscula (A-Z)</span>
+                      </div>
+                      <div class="flex items-center gap-1.5 transition-colors duration-200"
+                           [ngClass]="regHasNumber ? 'text-emerald-700 font-medium' : 'text-neutral-400'">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                          <path *ngIf="regHasNumber" stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                          <circle *ngIf="!regHasNumber" cx="12" cy="12" r="3.5" fill="currentColor"/>
+                        </svg>
+                        <span>Un número (0-9)</span>
+                      </div>
+                      <div class="flex items-center gap-1.5 transition-colors duration-200"
+                           [ngClass]="regHasSpecial ? 'text-emerald-700 font-medium' : 'text-neutral-400'">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                          <path *ngIf="regHasSpecial" stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                          <circle *ngIf="!regHasSpecial" cx="12" cy="12" r="3.5" fill="currentColor"/>
+                        </svg>
+                        <span>Carácter especial (!@#$)</span>
                       </div>
                     </div>
                   </div>
@@ -371,7 +429,87 @@ export class LoginComponent implements OnInit {
     this.switchTab('login');
   }
 
+  // Password Security Criteria for Register
+  get regHasMinLength(): boolean {
+    return this.registerPassword.length >= 6;
+  }
+
+  get regHasUppercase(): boolean {
+    return /[A-Z]/.test(this.registerPassword);
+  }
+
+  get regHasNumber(): boolean {
+    return /[0-9]/.test(this.registerPassword);
+  }
+
+  get regHasSpecial(): boolean {
+    return /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`!¡¿]/.test(this.registerPassword);
+  }
+
+  get regStrengthScore(): number {
+    let score = 0;
+    if (this.regHasMinLength) score++;
+    if (this.regHasUppercase) score++;
+    if (this.regHasNumber) score++;
+    if (this.regHasSpecial) score++;
+    return score;
+  }
+
+  get regIsPasswordValid(): boolean {
+    return this.regHasMinLength && this.regHasUppercase && this.regHasNumber && this.regHasSpecial;
+  }
+
+  get regStrengthLabel(): string {
+    switch (this.regStrengthScore) {
+      case 1: return 'Débil';
+      case 2: return 'Media';
+      case 3: return 'Buena';
+      case 4: return 'Fuerte y Segura ✨';
+      default: return 'Muy débil';
+    }
+  }
+
+  get regStrengthTextColor(): string {
+    switch (this.regStrengthScore) {
+      case 1: return 'text-rose-600';
+      case 2: return 'text-amber-600';
+      case 3: return 'text-blue-600';
+      case 4: return 'text-emerald-600';
+      default: return 'text-neutral-400';
+    }
+  }
+
+  get regStrengthBgColor(): string {
+    switch (this.regStrengthScore) {
+      case 1: return 'bg-rose-500';
+      case 2: return 'bg-amber-500';
+      case 3: return 'bg-blue-500';
+      case 4: return 'bg-emerald-500';
+      default: return 'bg-neutral-200';
+    }
+  }
+
   ngOnInit() {
+    // Manejar redirecciones de verificación de cuenta
+    const queryParams = this.route.snapshot.queryParams;
+    if (queryParams['verified'] === 'true' || queryParams['verified'] === '1') {
+      this.successMsg = '¡Cuenta verificada exitosamente! Ya puedes iniciar sesión con tus credenciales.';
+      this.activeTab = 'login';
+    } else if (queryParams['already_verified'] === 'true') {
+      this.successMsg = 'Tu cuenta ya fue verificada previamente. Puedes ingresar con tu contraseña.';
+      this.activeTab = 'login';
+    } else if (queryParams['verification_error']) {
+      const errCode = queryParams['verification_error'];
+      if (errCode === 'expired') {
+        this.error = 'El enlace de verificación ha expirado. Por favor solicita uno nuevo.';
+      } else if (errCode === 'already_used') {
+        this.error = 'Este enlace de verificación ya fue utilizado previamente.';
+      } else {
+        this.error = 'El enlace de verificación es inválido o no existe.';
+      }
+      this.activeTab = 'login';
+    }
+
     this.route.url.subscribe(urlSegments => {
       const path = urlSegments[0]?.path || '';
       const queryTab = this.route.snapshot.queryParams['tab'];
@@ -384,8 +522,10 @@ export class LoginComponent implements OnInit {
 
       if (this.activeTab !== targetTab || !this.captchaId) {
         this.activeTab = targetTab;
-        this.error = '';
-        this.successMsg = '';
+        if (!queryParams['verified'] && !queryParams['already_verified'] && !queryParams['verification_error']) {
+          this.error = '';
+          this.successMsg = '';
+        }
         this.captchaCode = '';
         this.loginCaptchaCode = '';
         this.loadCaptcha();
@@ -481,6 +621,11 @@ export class LoginComponent implements OnInit {
 
     if (this.registerPassword !== this.registerConfirmPassword) {
       this.showError('Las contraseñas no coinciden.');
+      return;
+    }
+
+    if (!this.regIsPasswordValid) {
+      this.showError('La contraseña debe tener al menos 6 caracteres, una mayúscula, un número y un carácter especial.');
       return;
     }
 
