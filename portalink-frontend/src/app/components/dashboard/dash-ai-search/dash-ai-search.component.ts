@@ -14,11 +14,12 @@ const TAB_LABELS: Record<string, string> = {
   itinerary: 'Calendario',
   library: 'Biblioteca',
   analytics: 'Analíticas',
-  stats: 'Estadísticas',
+  stats: 'Analíticas',
   messages: 'Mensajes',
   users: 'Usuarios',
-  reports: 'Reportes',
+  reports: 'Analíticas',
   config: 'Configuración',
+  'db-viewer': 'Visor de Base de Datos',
 };
 
 @Component({
@@ -55,18 +56,19 @@ const TAB_LABELS: Record<string, string> = {
         <!-- B. Rotbot English Coach Identity in Top Header -->
         <ng-container *ngIf="activeTab === 'rotbot'">
           <div class="flex items-center gap-3 min-w-0">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 shrink-0 shadow-xs">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0 shadow-xs"
+                 [ngClass]="theme === 'dark' ? 'bg-[#141419] border border-neutral-800 text-white' : 'bg-neutral-100 border border-neutral-200 text-neutral-900'">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
               </svg>
             </div>
             <div class="min-w-0">
               <h1 class="text-sm sm:text-base font-headline font-bold tracking-tight truncate leading-none"
                   [ngClass]="theme === 'dark' ? 'text-white' : 'text-neutral-900'">
-                Rotbot English Coach
+                Rotbot IA
               </h1>
               <p class="text-[11px] sm:text-xs text-neutral-500 dark:text-neutral-400 truncate mt-1 leading-none hidden sm:block">
-                Your AI English Teacher & Practice Partner
+                Coach de Idiomas & Tutor Inteligente
               </p>
             </div>
           </div>
@@ -101,14 +103,14 @@ const TAB_LABELS: Record<string, string> = {
           
           <!-- Mode Tabs (Chat, Learn, Listening, Study Plan) -->
           <div class="flex items-center gap-1 p-1 rounded-2xl border backdrop-blur-md"
-               [ngClass]="theme === 'dark' ? 'bg-neutral-950/90 border-neutral-800' : 'bg-neutral-100 border-neutral-200/90'">
+               [ngClass]="theme === 'dark' ? 'bg-[#141419] border-neutral-800' : 'bg-neutral-100 border-neutral-200'">
             
             <!-- Chat Tab -->
             <button (click)="rotbotModeChange.emit('charla')"
                     class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5"
                     [ngClass]="rotbotMode === 'charla'
-                      ? 'bg-cyan-500 text-black shadow-md shadow-cyan-500/25 font-bold'
-                      : (theme === 'dark' ? 'text-neutral-400 hover:text-white hover:bg-neutral-900' : 'text-neutral-600 hover:text-black hover:bg-white')">
+                      ? (theme === 'dark' ? 'bg-white text-black shadow-md font-bold' : 'bg-neutral-900 text-white shadow-md font-bold')
+                      : (theme === 'dark' ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-600 hover:text-black hover:bg-white')">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
@@ -119,8 +121,8 @@ const TAB_LABELS: Record<string, string> = {
             <button (click)="rotbotModeChange.emit('ensenanza')"
                     class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5"
                     [ngClass]="rotbotMode === 'ensenanza'
-                      ? 'bg-cyan-500 text-black shadow-md shadow-cyan-500/25 font-bold'
-                      : (theme === 'dark' ? 'text-neutral-400 hover:text-white hover:bg-neutral-900' : 'text-neutral-600 hover:text-black hover:bg-white')">
+                      ? (theme === 'dark' ? 'bg-white text-black shadow-md font-bold' : 'bg-neutral-900 text-white shadow-md font-bold')
+                      : (theme === 'dark' ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-600 hover:text-black hover:bg-white')">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
                 <path d="M8 7h8"/>
@@ -133,8 +135,8 @@ const TAB_LABELS: Record<string, string> = {
             <button (click)="rotbotModeChange.emit('escucha')"
                     class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5"
                     [ngClass]="rotbotMode === 'escucha'
-                      ? 'bg-cyan-500 text-black shadow-md shadow-cyan-500/25 font-bold'
-                      : (theme === 'dark' ? 'text-neutral-400 hover:text-white hover:bg-neutral-900' : 'text-neutral-600 hover:text-black hover:bg-white')">
+                      ? (theme === 'dark' ? 'bg-white text-black shadow-md font-bold' : 'bg-neutral-900 text-white shadow-md font-bold')
+                      : (theme === 'dark' ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-600 hover:text-black hover:bg-white')">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>
               </svg>
@@ -145,11 +147,11 @@ const TAB_LABELS: Record<string, string> = {
             <button (click)="rotbotModeChange.emit('study-plan')"
                     class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5 relative"
                     [ngClass]="rotbotMode === 'study-plan'
-                      ? 'bg-cyan-500 text-black shadow-md shadow-cyan-500/25 font-bold'
-                      : (theme === 'dark' ? 'text-neutral-400 hover:text-white hover:bg-neutral-900' : 'text-neutral-600 hover:text-black hover:bg-white')">
+                      ? (theme === 'dark' ? 'bg-white text-black shadow-md font-bold' : 'bg-neutral-900 text-white shadow-md font-bold')
+                      : (theme === 'dark' ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-600 hover:text-black hover:bg-white')">
               <span class="relative flex h-2 w-2" *ngIf="isStudyPlanActive">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
               </span>
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
@@ -164,9 +166,9 @@ const TAB_LABELS: Record<string, string> = {
                   class="px-3 py-2 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center gap-1.5 text-xs sm:text-sm font-semibold"
                   [ngClass]="rotbotMuted 
                     ? 'bg-red-500/10 border-red-500/30 text-red-500' 
-                    : (theme === 'dark' ? 'bg-neutral-950/80 border-neutral-800 text-neutral-300 hover:text-white' : 'bg-neutral-100 border-neutral-200 text-neutral-700 hover:text-black')"
-                  [title]="rotbotMuted ? 'Unmute audio' : 'Mute audio'">
-            <svg *ngIf="!rotbotMuted" class="w-4 h-4 text-cyan-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    : (theme === 'dark' ? 'bg-[#141419] border-neutral-800 text-neutral-300 hover:text-white hover:border-neutral-700' : 'bg-neutral-100 border-neutral-200 text-neutral-700 hover:text-black')"
+                  [title]="rotbotMuted ? 'Desactivar silencio' : 'Silenciar voz'">
+            <svg *ngIf="!rotbotMuted" class="w-4 h-4 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.414 0-.75-.336-.75-.75V8.25c0-.414.336-.75.75-.75h2.24z" />
             </svg>
             <svg *ngIf="rotbotMuted" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

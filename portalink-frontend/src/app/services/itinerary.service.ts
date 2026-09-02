@@ -11,6 +11,8 @@ export interface Task {
   type: 'work' | 'personal' | 'urgent';
   task_date: string; // YYYY-MM-DD
   task_time?: string; // HH:MM
+  reminder_email?: string;
+  reminder_sent?: boolean;
   completed: boolean;
   completed_at?: string;
   created_at?: string;
@@ -71,7 +73,11 @@ export class ItineraryService {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
-  // ── Notifications ──────────────────────────────────────────
+  // ── Reminders & Notifications ──────────────────────────────
+
+  checkReminders(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/reminders/check`, {});
+  }
 
   getToday(): Observable<any> {
     return this.http.get(`${this.apiUrl}/today`);

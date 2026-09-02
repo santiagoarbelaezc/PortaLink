@@ -41,10 +41,22 @@ interface ChatEntry {
 
         <!-- ─────────── LEFT COLUMN: LARGER 3D ROTBOT HEAD STAGE (Col 5) ─────────── -->
         <div class="lg:col-span-5 h-full flex flex-col justify-center items-center rounded-[24px] sm:rounded-[28px] border overflow-hidden transition-all duration-300 shadow-xl relative"
-             [ngClass]="isDark ? 'bg-[#030508] border-neutral-800' : 'bg-[#060910] border-neutral-800 text-white'">
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-neutral-900 border-neutral-800 text-white'">
           
-          <!-- Ambient Radial Cyan Core Backlight -->
-          <div class="absolute inset-0 bg-radial-gradient from-cyan-500/20 via-transparent to-transparent pointer-events-none"></div>
+          <!-- Subtle Executive Pedestal Glow -->
+          <div class="absolute inset-0 bg-radial-gradient from-white/[0.04] via-transparent to-transparent pointer-events-none"></div>
+
+          <!-- Top Stage Telemetry Badge -->
+          <div class="absolute top-4 sm:top-5 left-5 right-5 flex items-center justify-between z-20 pointer-events-none">
+            <div class="flex items-center gap-2 px-3 py-1.5 rounded-full border border-neutral-800 bg-[#141419]/90 backdrop-blur-md shadow-xs">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="text-[10px] font-headline font-bold uppercase tracking-widest text-neutral-300">Rotbot Core · En Línea</span>
+            </div>
+            <div class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-neutral-800 bg-[#141419]/90 text-[10px] font-mono text-neutral-400">
+              <span class="text-neutral-500">VOZ:</span>
+              <span class="text-neutral-200 font-bold">NEURAL HD</span>
+            </div>
+          </div>
 
           <!-- 3D Rotbot Head Stage (Enlarged & Prominent) -->
           <div class="w-full h-full relative flex items-center justify-center p-6 min-h-0 overflow-hidden select-none">
@@ -112,20 +124,20 @@ interface ChatEntry {
 
           </div>
 
-          <!-- Dynamic Speech & Thinking Floating Indicator (Visible ONLY when active) -->
+          <!-- Dynamic Speech & Thinking Floating Indicator (Monocromático Refinado) -->
           <div *ngIf="isSpeaking || isProcessing" 
-               class="absolute bottom-5 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full border bg-black/80 backdrop-blur-md border-cyan-500/30 shadow-[0_0_25px_rgba(0,240,255,0.2)] flex items-center gap-2 z-30 transition-all">
+               class="absolute bottom-5 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full border bg-[#141419]/95 backdrop-blur-md border-neutral-700 shadow-[0_12px_32px_rgba(0,0,0,0.8)] flex items-center gap-2.5 z-30 transition-all">
             <ng-container *ngIf="isSpeaking">
               <div class="flex items-center gap-1">
                 <span *ngFor="let _ of [1,2,3,4,5,6]" 
-                      class="w-1 bg-cyan-400 rounded-full animate-voice-bar" 
+                      class="w-1 bg-white rounded-full animate-voice-bar" 
                       [style.animation-delay]="(_ * 0.08) + 's'"></span>
               </div>
-              <span class="text-xs font-mono font-semibold text-cyan-300">Speaking...</span>
+              <span class="text-xs font-headline font-bold uppercase tracking-wider text-white">Hablando...</span>
             </ng-container>
             <ng-container *ngIf="!isSpeaking && isProcessing">
-              <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-              <span class="text-xs font-mono text-cyan-300">Thinking...</span>
+              <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+              <span class="text-xs font-headline font-bold uppercase tracking-wider text-neutral-300">Procesando...</span>
             </ng-container>
           </div>
 
@@ -133,100 +145,102 @@ interface ChatEntry {
 
         <!-- ─────────── RIGHT COLUMN: CONVERSATION & PRACTICE CONSOLE (Col 7) ─────────── -->
         <div class="lg:col-span-7 h-full flex flex-col rounded-[24px] sm:rounded-[28px] border overflow-hidden transition-all duration-300 shadow-xl"
-             [ngClass]="isDark ? 'bg-[#090b10]/90 border-neutral-800' : 'bg-white border-neutral-200/90'">
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
 
-          <!-- Chat Top Header -->
-          <div class="px-5 py-3 border-b flex items-center justify-between flex-shrink-0 relative z-30"
-               [ngClass]="isDark ? 'border-neutral-800/80 bg-neutral-950/50' : 'border-neutral-200/80 bg-neutral-50/70'">
-            <div class="flex items-center gap-2 min-w-0">
-              <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shrink-0"></span>
+          <!-- Chat Top Header (Monocromático Refinado) -->
+          <div class="px-5 py-3.5 border-b flex items-center justify-between flex-shrink-0 relative z-30"
+               [ngClass]="isDark ? 'border-neutral-800 bg-[#141419]/90 backdrop-blur-md' : 'border-neutral-200 bg-neutral-50/80'">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <span class="w-2 h-2 rounded-full bg-white animate-pulse shrink-0"></span>
               <span class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider truncate"
-                    [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">
+                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
                 {{ currentMode === 'charla' ? 'English Lounge' : (currentMode === 'ensenanza' ? 'Classroom' : 'Listening Lab') }}
+              </span>
+              <span class="px-2 py-0.5 rounded-md border border-neutral-700/80 bg-neutral-900 text-[10px] font-mono font-semibold text-neutral-400">
+                IA v2.5
               </span>
             </div>
 
             <!-- Right Header Controls: Reset Button -->
             <button (click)="clearChat()" 
-                    class="text-xs font-mono text-neutral-400 hover:text-red-400 transition-colors cursor-pointer flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-transparent hover:border-neutral-800 hover:bg-neutral-900/50"
+                    class="text-xs font-headline font-bold uppercase tracking-wider text-neutral-400 hover:text-white transition-all cursor-pointer flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-neutral-700/80 bg-neutral-900 hover:bg-neutral-800"
                     title="Reiniciar conversación">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
-              <span>Reset</span>
+              <span>Reiniciar</span>
             </button>
           </div>
 
           <!-- 📌 ACTIVE STUDY PLAN BANNER -->
           <div *ngIf="isStudyPlanActive && studyPlanText.trim()" 
-               class="mx-4 sm:mx-5 mt-3 px-3.5 py-2 rounded-xl border flex items-center justify-between text-xs transition-all shadow-xs"
-               [ngClass]="isDark ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300' : 'bg-cyan-50 border-cyan-200 text-cyan-900'">
+               class="mx-4 sm:mx-5 mt-3 px-3.5 py-2.5 rounded-xl border flex items-center justify-between text-xs transition-all shadow-xs"
+               [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
             <div class="flex items-center gap-2 min-w-0">
-              <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shrink-0"></span>
-              <span class="font-bold truncate">Daily Plan Grounded:</span>
-              <span class="truncate opacity-80 font-mono text-[11px]">{{ getStudyPlanPreview() }}</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse shrink-0"></span>
+              <span class="font-headline font-bold uppercase tracking-wider text-[10px]" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Plan Activo:</span>
+              <span class="truncate opacity-75 font-mono text-[11px]">{{ getStudyPlanPreview() }}</span>
             </div>
-            <button (click)="switchMode('study-plan')" class="underline hover:text-cyan-400 font-bold shrink-0 cursor-pointer ml-2">
-              Manage Plans
+            <button (click)="switchMode('study-plan')" class="text-[11px] font-bold text-neutral-300 hover:text-white underline shrink-0 cursor-pointer ml-2">
+              Gestionar
             </button>
           </div>
 
           <!-- 🎧 SPECIAL INTERACTIVE CARD FOR ESCUCHA (LISTENING & SPEAKING) MODE -->
           <div *ngIf="currentMode === 'escucha' && currentPhrase" 
                class="mx-4 sm:mx-5 mt-4 p-4 sm:p-5 rounded-2xl border transition-all duration-300 relative overflow-hidden"
-               [ngClass]="isDark ? 'bg-[#04121a] border-cyan-500/40 shadow-[0_0_25px_rgba(0,240,255,0.12)]' : 'bg-gradient-to-r from-cyan-50 to-sky-100/90 border-cyan-300 shadow-sm'">
+               [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white shadow-xl' : 'bg-neutral-50 border-neutral-200 shadow-sm'">
             
             <div class="flex items-center justify-between gap-2 mb-2">
               <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-                <span class="text-[11px] font-mono font-bold tracking-wider uppercase"
-                      [ngClass]="isDark ? 'text-cyan-400' : 'text-cyan-800'">
-                  Target Phrase
+                <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+                <span class="text-[10px] font-headline font-bold tracking-widest uppercase text-neutral-400">
+                  Frase Objetivo
                 </span>
               </div>
 
               <!-- Score Badge if available -->
               <div *ngIf="lastScore !== null" 
-                   class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs sm:text-sm font-mono font-bold border shadow-2xs"
+                   class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold border shadow-2xs"
                    [ngClass]="lastScore >= 80 
-                     ? (isDark ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-emerald-100 text-emerald-900 border-emerald-300') 
+                     ? (isDark ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' : 'bg-emerald-50 text-emerald-700 border-emerald-200') 
                      : (lastScore >= 60 
-                       ? (isDark ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-amber-100 text-amber-900 border-amber-300') 
-                       : (isDark ? 'bg-red-500/20 text-red-300 border-red-500/40' : 'bg-red-100 text-red-900 border-red-300'))">
+                       ? (isDark ? 'bg-amber-500/15 text-amber-300 border-amber-500/30' : 'bg-amber-50 text-amber-700 border-amber-200') 
+                       : (isDark ? 'bg-rose-500/15 text-rose-300 border-rose-500/30' : 'bg-rose-50 text-rose-700 border-rose-200'))">
                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span>Score: {{ lastScore }}%</span>
+                <span>Puntaje: {{ lastScore }}%</span>
               </div>
             </div>
 
             <!-- Target English Sentence Display (Enlarged) -->
             <p class="text-base sm:text-lg lg:text-xl font-headline font-bold leading-relaxed my-3"
-               [ngClass]="isDark ? 'text-cyan-50' : 'text-neutral-900'">
+               [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
               "{{ currentPhrase }}"
             </p>
 
             <!-- Action buttons: Listen again & Request new -->
             <div class="flex items-center justify-between gap-3 mt-3 pt-3"
-                 [ngClass]="isDark ? 'border-t border-cyan-500/20' : 'border-t border-cyan-200'">
+                 [ngClass]="isDark ? 'border-t border-neutral-800' : 'border-t border-neutral-200'">
               <div class="flex items-center gap-2">
                 <button (click)="pronouncePhrase(currentPhrase, lastPhraseAudio)" 
-                        class="px-4 py-2 rounded-xl border text-xs sm:text-sm font-mono font-bold flex items-center gap-2 transition-all cursor-pointer active:scale-95 shadow-2xs"
+                        class="px-4 py-2 rounded-xl text-xs sm:text-sm font-headline font-bold uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer active:scale-95 shadow-2xs"
                         [ngClass]="isDark 
-                          ? 'bg-cyan-500/20 hover:bg-cyan-500/30 border-cyan-500/40 text-cyan-300' 
-                          : 'bg-cyan-600 hover:bg-cyan-700 border-cyan-600 text-white shadow-xs'">
+                          ? 'bg-white text-black hover:bg-neutral-200 shadow-md' 
+                          : 'bg-neutral-900 text-white hover:bg-black shadow-sm'">
                   <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z" />
                   </svg>
-                  <span>Listen to Phrase</span>
+                  <span>Escuchar Pronunciación</span>
                 </button>
               </div>
 
               <button (click)="requestNewListeningPhrase()" 
                       [disabled]="isProcessing"
-                      class="text-xs sm:text-sm font-mono flex items-center gap-1.5 cursor-pointer transition-colors font-semibold disabled:opacity-40"
-                      [ngClass]="isDark ? 'text-neutral-300 hover:text-cyan-300' : 'text-neutral-700 hover:text-cyan-700'">
-                <span>Next Phrase</span>
+                      class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider flex items-center gap-1.5 cursor-pointer transition-colors disabled:opacity-40"
+                      [ngClass]="isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-600 hover:text-black'">
+                <span>Siguiente Frase</span>
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                 </svg>
@@ -244,27 +258,27 @@ interface ChatEntry {
               
               <!-- Sender Header -->
               <div class="flex items-center gap-2 mb-1.5 px-1">
-                <span class="text-[11px] font-mono uppercase tracking-wider font-bold"
-                      [ngClass]="entry.sender === 'user' ? (isDark ? 'text-neutral-400' : 'text-neutral-500') : (isDark ? 'text-cyan-400' : 'text-cyan-700')">
-                  {{ entry.sender === 'user' ? 'You' : 'Rotbot AI' }}
+                <span class="text-[10px] font-headline uppercase tracking-widest font-bold"
+                      [ngClass]="entry.sender === 'user' ? (isDark ? 'text-neutral-400' : 'text-neutral-500') : (isDark ? 'text-white' : 'text-neutral-900')">
+                  {{ entry.sender === 'user' ? 'Tú' : 'Rotbot IA' }}
                 </span>
                 <span *ngIf="entry.score !== null && entry.score !== undefined" 
                       class="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border"
                       [ngClass]="entry.score >= 80 
-                        ? (isDark ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' : 'bg-emerald-100 text-emerald-900 border-emerald-300') 
+                        ? (isDark ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' : 'bg-emerald-50 text-emerald-700 border-emerald-200') 
                         : (entry.score >= 60 
-                          ? (isDark ? 'bg-amber-500/15 text-amber-400 border-amber-500/30' : 'bg-amber-100 text-amber-900 border-amber-300') 
-                          : (isDark ? 'bg-red-500/15 text-red-400 border-red-500/30' : 'bg-red-100 text-red-900 border-red-300'))">
-                  Score: {{ entry.score }}%
+                          ? (isDark ? 'bg-amber-500/15 text-amber-400 border-amber-500/30' : 'bg-amber-50 text-amber-700 border-amber-200') 
+                          : (isDark ? 'bg-rose-500/15 text-rose-400 border-rose-500/30' : 'bg-rose-50 text-rose-700 border-rose-200'))">
+                  Puntaje: {{ entry.score }}%
                 </span>
-                <span class="text-[10px] text-neutral-400">{{ entry.time }}</span>
+                <span class="text-[10px] text-neutral-500 font-mono">{{ entry.time }}</span>
               </div>
 
               <!-- Message Bubble (Higher Font Size & Better Readability) -->
-              <div class="max-w-[92%] sm:max-w-[85%] rounded-2xl p-4 sm:p-4.5 text-[15px] sm:text-[16px] font-sans leading-relaxed shadow-sm transition-all"
+              <div class="max-w-[92%] sm:max-w-[85%] rounded-2xl p-4 sm:p-4.5 text-[14px] sm:text-[15px] font-sans leading-relaxed shadow-sm transition-all"
                    [ngClass]="entry.sender === 'user'
-                     ? (isDark ? 'bg-neutral-800 text-white rounded-tr-xs' : 'bg-neutral-900 text-white rounded-tr-xs')
-                     : (isDark ? 'bg-[#0d1017] border border-cyan-500/25 text-neutral-100 rounded-tl-xs shadow-[0_0_20px_rgba(0,229,255,0.06)]' : 'bg-cyan-50/70 border border-cyan-200/90 text-neutral-900 rounded-tl-xs')">
+                     ? (isDark ? 'bg-white text-black font-medium rounded-tr-xs' : 'bg-neutral-900 text-white rounded-tr-xs')
+                     : (isDark ? 'bg-[#141419] border border-neutral-800 text-neutral-100 rounded-tl-xs shadow-md' : 'bg-neutral-50 border border-neutral-200 text-neutral-900 rounded-tl-xs')">
                 
                 <p class="whitespace-pre-line m-0">{{ entry.text }}</p>
 
@@ -272,33 +286,32 @@ interface ChatEntry {
                 <div *ngIf="entry.phrase" 
                      class="mt-3.5 p-3.5 rounded-xl border flex flex-col gap-1.5 transition-all"
                      [ngClass]="isDark 
-                       ? 'bg-[#04121a] border-cyan-500/40 text-cyan-100 shadow-[0_0_20px_rgba(0,240,255,0.08)]' 
-                       : 'bg-gradient-to-r from-cyan-50 to-sky-100/80 border-cyan-300 text-neutral-900 shadow-2xs'">
-                  <div class="flex items-center gap-1.5 text-[11px] font-mono font-bold uppercase tracking-wider"
-                       [ngClass]="isDark ? 'text-cyan-400' : 'text-cyan-800'">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                       ? 'bg-[#0c0c0e] border-neutral-800 text-neutral-100 shadow-sm' 
+                       : 'bg-white border-neutral-200 text-neutral-900 shadow-2xs'">
+                  <div class="flex items-center gap-1.5 text-[10px] font-headline font-bold uppercase tracking-wider text-neutral-400">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15a3 3 0 01-3-3V4.5a3 3 0 116 0v7.5a3 3 0 01-3 3z" />
                     </svg>
-                    <span>Target phrase to practice:</span>
+                    <span>Frase para practicar:</span>
                   </div>
-                  <p class="font-headline font-bold text-[15px] sm:text-[17px] tracking-wide m-0"
-                     [ngClass]="isDark ? 'text-cyan-100' : 'text-neutral-900'">
+                  <p class="font-headline font-bold text-[14px] sm:text-[16px] tracking-wide m-0"
+                     [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
                     "{{ entry.phrase }}"
                   </p>
                 </div>
 
                 <!-- Replay Audio Button -->
                 <div *ngIf="entry.phrase || entry.audio" class="mt-3.5 pt-3 flex items-center justify-between"
-                     [ngClass]="isDark ? 'border-t border-cyan-500/20' : 'border-t border-cyan-200/80'">
+                     [ngClass]="isDark ? 'border-t border-neutral-800' : 'border-t border-neutral-200'">
                   <button (click)="entry.phrase ? pronouncePhrase(entry.phrase, entry.phrase_audio) : reproduceAudio(entry.audio!)" 
-                          class="px-4 py-1.5 rounded-xl border text-xs sm:text-sm font-mono font-bold transition-all duration-200 cursor-pointer flex items-center gap-2 active:scale-95 shadow-2xs"
+                          class="px-3.5 py-1.5 rounded-xl border text-xs font-headline font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer flex items-center gap-2 active:scale-95 shadow-2xs"
                           [ngClass]="isDark 
-                            ? 'bg-cyan-500/15 hover:bg-cyan-500/25 border-cyan-500/35 text-cyan-300' 
-                            : 'bg-cyan-600 hover:bg-cyan-700 border-cyan-600 text-white shadow-xs'">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            ? 'bg-neutral-900 hover:bg-neutral-800 border-neutral-700 text-white shadow-xs' 
+                            : 'bg-neutral-100 hover:bg-neutral-200 border-neutral-300 text-neutral-800 shadow-xs'">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M8 5v14l11-7z" />
                     </svg>
-                    <span>{{ entry.phrase ? 'Listen to Pronunciation' : 'Listen to Voice' }}</span>
+                    <span>{{ entry.phrase ? 'Escuchar Pronunciación' : 'Escuchar Voz' }}</span>
                   </button>
                 </div>
               </div>
@@ -309,7 +322,7 @@ interface ChatEntry {
 
           <!-- Bottom Message Input Bar (Fixed at bottom of Card) -->
           <div class="p-3.5 sm:p-4 border-t flex-shrink-0"
-               [ngClass]="isDark ? 'bg-neutral-950/80 border-neutral-800' : 'bg-neutral-50/90 border-neutral-200/90'">
+               [ngClass]="isDark ? 'bg-[#141419] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
             
             <div class="relative flex items-center gap-2.5">
               
@@ -318,13 +331,12 @@ interface ChatEntry {
                       [disabled]="isProcessing || isSpeaking"
                       class="w-12 h-12 rounded-2xl border transition-all duration-300 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center shrink-0 relative group"
                       [ngClass]="isVoiceRecording 
-                        ? 'bg-gradient-to-tr from-rose-600 to-red-500 text-white shadow-[0_0_25px_rgba(244,63,94,0.65)] border-rose-400 scale-105' 
-                        : (isDark ? 'bg-neutral-900 border-neutral-700/80 text-cyan-400 hover:bg-neutral-800 hover:border-cyan-500/50 hover:text-cyan-300 shadow-sm' : 'bg-white border-neutral-300 text-neutral-800 hover:bg-neutral-50 hover:border-cyan-500 shadow-xs')"
-                      [title]="isVoiceRecording ? 'Stop recording' : (currentMode === 'escucha' ? 'Speak the phrase' : 'Speak in English')">
+                        ? 'bg-rose-500 text-white shadow-[0_0_20px_rgba(244,63,94,0.5)] border-rose-400 scale-105' 
+                        : (isDark ? 'bg-neutral-900 border-neutral-700 text-white hover:bg-neutral-800 hover:border-neutral-600 shadow-xs' : 'bg-white border-neutral-300 text-neutral-800 hover:bg-neutral-100 shadow-xs')"
+                      [title]="isVoiceRecording ? 'Detener grabación' : 'Hablar'">
                 
                 <!-- Radar Ping Ripples while active -->
                 <span *ngIf="isVoiceRecording" class="absolute -inset-1 rounded-2xl bg-rose-500/40 animate-ping pointer-events-none"></span>
-                <span *ngIf="isVoiceRecording" class="absolute -inset-0.5 rounded-2xl bg-rose-400/30 animate-pulse pointer-events-none"></span>
 
                 <!-- Crisp SVG Microphone Vector Icon -->
                 <svg class="w-5 h-5 relative z-10 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -339,14 +351,14 @@ interface ChatEntry {
                      [disabled]="isProcessing || isSpeaking"
                      [placeholder]="getInputPlaceholder()"
                      class="flex-1 px-4 py-3 rounded-2xl border text-sm sm:text-base outline-none transition-all font-sans"
-                     [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 text-white focus:border-cyan-400/70 focus:ring-2 focus:ring-cyan-500/20' : 'bg-white border-neutral-300 text-neutral-900 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 shadow-xs'" />
+                     [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 text-white placeholder-neutral-500 focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500/20' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-400 shadow-xs'" />
 
               <!-- Send Button -->
               <button (click)="send(userMessage)"
                       [disabled]="isProcessing || isSpeaking || !userMessage.trim()"
                       class="px-5 sm:px-6 py-3 rounded-2xl font-headline font-bold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-md active:scale-95 flex items-center gap-1.5 shrink-0"
-                      [ngClass]="isDark ? 'bg-cyan-400 text-black hover:bg-cyan-300 hover:shadow-[0_0_20px_rgba(0,240,255,0.4)]' : 'bg-neutral-900 text-white hover:bg-neutral-800'">
-                <span>{{ isProcessing ? '...' : (currentMode === 'escucha' ? 'Evaluate' : 'Send') }}</span>
+                      [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-black'">
+                <span>{{ isProcessing ? '...' : (currentMode === 'escucha' ? 'Evaluar' : 'Enviar') }}</span>
                 <svg *ngIf="!isProcessing" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
                 </svg>
@@ -365,8 +377,8 @@ interface ChatEntry {
                   <span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
                 </span>
                 <div class="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-                  <span class="text-xs font-headline font-bold uppercase tracking-wider">Listening to microphone...</span>
-                  <span class="text-[11px] opacity-80 font-sans hidden sm:inline">{{ currentMode === 'escucha' ? 'Repeat target sentence now' : 'Speak clearly in English' }}</span>
+                  <span class="text-xs font-headline font-bold uppercase tracking-wider">Escuchando micrófono...</span>
+                  <span class="text-[11px] opacity-80 font-sans hidden sm:inline">{{ currentMode === 'escucha' ? 'Repite la frase ahora' : 'Habla claramente' }}</span>
                 </div>
               </div>
 

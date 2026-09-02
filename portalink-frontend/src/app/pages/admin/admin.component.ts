@@ -9,21 +9,21 @@ import { RotbotMode } from '../../services/robot-chat.service';
 // Dashboard Components
 import { DashAiSearchComponent } from '../../components/dashboard/dash-ai-search/dash-ai-search.component';
 import { DashHomeComponent } from '../../components/dashboard/dash-home/dash-home.component';
-import { DashAnalyticsComponent } from '../../components/dashboard/dash-analytics/dash-analytics.component';
-import { DashStatsComponent } from '../../components/dashboard/dash-stats/dash-stats.component';
+import { DashAnalyticsHubComponent } from '../../components/dashboard/dash-analytics-hub/dash-analytics-hub.component';
 import { DashMessagesComponent } from '../../components/dashboard/dash-messages/dash-messages.component';
 import { DashUsersComponent } from '../../components/dashboard/dash-users/dash-users.component';
 import { DashConfigComponent } from '../../components/dashboard/dash-config/dash-config.component';
-import { DashReportsComponent } from '../../components/dashboard/dash-reports/dash-reports.component';
 import { DashFinancesComponent } from '../../components/dashboard/dash-finances/dash-finances.component';
 import { DashFinancialControlComponent } from '../../components/dashboard/dash-financial-control/dash-financial-control.component';
 import { DashItineraryComponent } from '../../components/dashboard/dash-itinerary/dash-itinerary.component';
 import { DashLibraryComponent } from '../../components/dashboard/dash-library/dash-library.component';
 import { DashRotbotComponent } from '../../components/dashboard/dash-rotbot/dash-rotbot.component';
+import { DashDbViewerComponent } from '../../components/dashboard/dash-db-viewer/dash-db-viewer.component';
 
 interface Tab {
   id: string;
   name: string;
+  section?: string;
 }
 
 @Component({
@@ -35,16 +35,15 @@ interface Tab {
     DashAiSearchComponent,
     DashHomeComponent,
     DashRotbotComponent,
-    DashAnalyticsComponent,
-    DashStatsComponent,
+    DashAnalyticsHubComponent,
     DashMessagesComponent,
     DashUsersComponent,
     DashConfigComponent,
-    DashReportsComponent,
     DashFinancesComponent,
     DashFinancialControlComponent,
     DashItineraryComponent,
     DashLibraryComponent,
+    DashDbViewerComponent,
   ],
   template: `
     <div class="admin-shell fixed inset-0 h-[100dvh] w-full md:relative md:h-screen overflow-hidden flex font-sans"
@@ -89,14 +88,34 @@ interface Tab {
 
         <!-- Navigation -->
         <nav class="flex-grow p-3 space-y-0.5 overflow-y-auto sidebar-nav overflow-x-hidden no-scrollbar">
-          <button *ngFor="let tab of tabs"
-                  (click)="setTab(tab.id)"
-                  class="flex items-center rounded-xl text-sm font-semibold tracking-wide transition-all duration-200 cursor-pointer group relative w-full px-3 py-2.5 gap-3"
-                  [ngClass]="getNavClass(tab.id)">
+          <ng-container *ngFor="let tab of tabs; let i = index">
+            <!-- Section Header: Principal -->
+            <div *ngIf="i === 0 && !isSidebarCollapsed" class="pt-1 pb-1.5 px-3">
+              <span class="text-[10px] font-headline font-bold uppercase tracking-[0.2em]"
+                    [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">
+                Principal
+              </span>
+            </div>
 
-            <!-- Icon -->
-            <span class="w-[18px] h-[18px] flex-shrink-0 flex items-center justify-center">
-              <svg class="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+            <!-- Section Divider: Herramientas -->
+            <div *ngIf="tab.section === 'herramientas' && (i === 0 || tabs[i-1].section !== 'herramientas')"
+                 class="pt-5 pb-2 px-3">
+              <div class="flex items-center gap-2">
+                <span *ngIf="!isSidebarCollapsed" class="text-[10px] font-headline font-bold uppercase tracking-[0.2em]"
+                      [ngClass]="isDark ? 'text-cyan-400 font-bold' : 'text-cyan-600 font-bold'">
+                  Herramientas
+                </span>
+                <span class="flex-grow border-t" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'"></span>
+              </div>
+            </div>
+
+            <button (click)="setTab(tab.id)"
+                    class="flex items-center rounded-xl text-sm font-semibold tracking-wide transition-all duration-200 cursor-pointer group relative w-full px-3 py-2.5 gap-3"
+                    [ngClass]="getNavClass(tab.id)">
+
+              <!-- Icon -->
+              <span class="w-[18px] h-[18px] flex-shrink-0 flex items-center justify-center">
+                <svg class="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
                 <!-- Home / Dashboard -->
                 <ng-container *ngIf="tab.id === 'dashboard'">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
@@ -154,6 +173,10 @@ interface Tab {
                 <ng-container *ngIf="tab.id === 'finances'">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
                 </ng-container>
+                <!-- Visor BD -->
+                <ng-container *ngIf="tab.id === 'db-viewer'">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+                </ng-container>
               </svg>
             </span>
 
@@ -174,6 +197,7 @@ interface Tab {
               </span>
             </ng-container>
           </button>
+        </ng-container>
         </nav>
 
         <!-- Bottom: Logout -->
@@ -237,15 +261,11 @@ interface Tab {
               [theme]="currentTheme">
             </app-dash-itinerary>
 
-            <app-dash-analytics
-              *ngIf="activeTab === 'analytics'"
-              [theme]="currentTheme">
-            </app-dash-analytics>
-
-            <app-dash-stats
-              *ngIf="activeTab === 'stats'"
-              [theme]="currentTheme">
-            </app-dash-stats>
+            <app-dash-analytics-hub
+              *ngIf="activeTab === 'analytics' || activeTab === 'stats' || activeTab === 'reports'"
+              [theme]="currentTheme"
+              [defaultSubTab]="activeTab === 'reports' ? 'reports' : (activeTab === 'stats' ? 'stats' : 'analytics')">
+            </app-dash-analytics-hub>
 
             <app-dash-messages
               *ngIf="activeTab === 'messages'"
@@ -263,11 +283,6 @@ interface Tab {
               [theme]="currentTheme">
             </app-dash-config>
 
-            <app-dash-reports
-              *ngIf="activeTab === 'reports'"
-              [theme]="currentTheme">
-            </app-dash-reports>
-
             <app-dash-financial-control
               *ngIf="activeTab === 'financial-control'"
               [theme]="currentTheme">
@@ -282,6 +297,11 @@ interface Tab {
               *ngIf="activeTab === 'library'"
               [theme]="currentTheme">
             </app-dash-library>
+
+            <app-dash-db-viewer
+              *ngIf="activeTab === 'db-viewer'"
+              [theme]="currentTheme">
+            </app-dash-db-viewer>
 
           </div>
         </main>
@@ -325,9 +345,16 @@ interface Tab {
 
         <!-- All Tabs Grid List -->
         <div class="px-4 grid grid-cols-2 gap-2.5">
-          <button *ngFor="let tab of tabs"
-                  (click)="setTab(tab.id); isMobileDrawerOpen = false;"
-                  class="flex items-center gap-3 p-3 rounded-2xl text-xs font-semibold transition-all active:scale-95 text-left border"
+          <ng-container *ngFor="let tab of tabs; let i = index">
+            <!-- Herramientas Section Header in Mobile Drawer -->
+            <div *ngIf="tab.section === 'herramientas' && (i === 0 || tabs[i-1].section !== 'herramientas')"
+                 class="col-span-2 pt-3 pb-1 flex items-center gap-2">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-cyan-400">Herramientas</span>
+              <span class="flex-grow border-t" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'"></span>
+            </div>
+
+            <button (click)="setTab(tab.id); isMobileDrawerOpen = false;"
+                    class="flex items-center gap-3 p-3 rounded-2xl text-xs font-semibold transition-all active:scale-95 text-left border"
                   [ngClass]="activeTab === tab.id ? (isDark ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300 font-bold' : 'bg-emerald-50 border-emerald-200 text-emerald-700 font-bold') : (isDark ? 'bg-neutral-900/60 border-neutral-800/80 text-neutral-300 hover:bg-neutral-800' : 'bg-neutral-50 border-neutral-200/60 text-neutral-700 hover:bg-neutral-100')">
             <span class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
                   [ngClass]="activeTab === tab.id ? (isDark ? 'bg-emerald-500/30 text-emerald-300' : 'bg-emerald-500/20 text-emerald-700') : (isDark ? 'bg-neutral-800 text-neutral-400' : 'bg-white text-neutral-600')">
@@ -344,10 +371,12 @@ interface Tab {
                 <ng-container *ngIf="tab.id === 'library'"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25" /></ng-container>
                 <ng-container *ngIf="tab.id === 'config'"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></ng-container>
                 <ng-container *ngIf="tab.id === 'reports'"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></ng-container>
+                <ng-container *ngIf="tab.id === 'db-viewer'"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" /></ng-container>
               </svg>
             </span>
             <span class="truncate">{{ tab.name }}</span>
           </button>
+        </ng-container>
 
           <!-- Logout Button -->
           <button (click)="logout(); isMobileDrawerOpen = false;"
@@ -481,18 +510,17 @@ export class AdminComponent implements OnInit, OnDestroy {
   isStudyPlanActive = false;
 
   tabs: Tab[] = [
-    { id: 'dashboard', name: 'Inicio' },
-    { id: 'rotbot',    name: 'Rotbot IA' },
+    { id: 'dashboard',         name: 'Inicio' },
     { id: 'financial-control', name: 'Control Financiero' },
-    { id: 'finances',  name: 'Finanzas' },
-    { id: 'itinerary', name: 'Calendario' },
-    { id: 'library',   name: 'Biblioteca' },
-    { id: 'analytics', name: 'Analíticas' },
-    { id: 'stats',     name: 'Estadísticas' },
-    { id: 'messages',  name: 'Mensajes' },
-    { id: 'users',     name: 'Usuarios' },
-    { id: 'reports',   name: 'Reportes' },
-    { id: 'config',    name: 'Configuración' },
+    { id: 'finances',          name: 'Finanzas' },
+    { id: 'analytics',         name: 'Analíticas' },
+    { id: 'messages',          name: 'Mensajes' },
+    { id: 'users',             name: 'Usuarios' },
+    { id: 'config',            name: 'Configuración' },
+    { id: 'rotbot',            name: 'Rotbot IA',   section: 'herramientas' },
+    { id: 'itinerary',         name: 'Calendario',  section: 'herramientas' },
+    { id: 'library',           name: 'Biblioteca',  section: 'herramientas' },
+    { id: 'db-viewer',         name: 'Visor BD',    section: 'herramientas' },
   ];
 
   get isDark() { return this.currentTheme === 'dark'; }
@@ -501,7 +529,9 @@ export class AdminComponent implements OnInit, OnDestroy {
     const saved = localStorage.getItem('portalink_admin_theme');
     if (saved) this.currentTheme = saved;
     const savedTab = localStorage.getItem('portalink_admin_tab');
-    if (savedTab && this.tabs.some(t => t.id === savedTab)) {
+    if (savedTab === 'stats' || savedTab === 'reports') {
+      this.activeTab = 'analytics';
+    } else if (savedTab && this.tabs.some(t => t.id === savedTab)) {
       this.activeTab = savedTab;
     } else {
       this.activeTab = 'dashboard';
@@ -541,6 +571,7 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   setTab(id: string) {
     if (id === 'leads') id = 'messages';
+    if (id === 'stats' || id === 'reports') id = 'analytics';
     if (this.activeTab === id) return;
     
     this.activeTab = id;
@@ -558,6 +589,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       else if (id === 'itinerary') prompt = 'Agenda y tareas de hoy';
       else if (id === 'analytics') prompt = 'Rendimiento y visitas';
       else if (id === 'messages') prompt = 'Mensajes de contacto';
+      else if (id === 'db-viewer') prompt = 'Visor de base de datos y esquemas ERD';
 
       this.commandCenterService.logActivity(id, `Accedió a ${tabName}`, 'tab_view', null, prompt).subscribe({ error: () => {} });
     } catch {}

@@ -269,6 +269,8 @@ $router->get('/api/itinerary/today', [ItineraryController::class, 'getToday'], [
 $router->get('/api/itinerary/notifications', [ItineraryController::class, 'getNotifications'], [AuthMiddleware::class]);
 $router->post('/api/itinerary/notifications/:taskId/seen', [ItineraryController::class, 'markNotificationSeen'], [AuthMiddleware::class]);
 $router->post('/api/itinerary', [ItineraryController::class, 'createTask'], [AuthMiddleware::class]);
+$router->post('/api/itinerary/reminders/check', [ItineraryController::class, 'checkReminders'], [AuthMiddleware::class]);
+$router->get('/api/itinerary/reminders/check', [ItineraryController::class, 'checkReminders'], [AuthMiddleware::class]);
 $router->put('/api/itinerary/:id', [ItineraryController::class, 'updateTask'], [AuthMiddleware::class]);
 $router->patch('/api/itinerary/:id/toggle', [ItineraryController::class, 'toggleTask'], [AuthMiddleware::class]);
 $router->delete('/api/itinerary/:id', [ItineraryController::class, 'deleteTask'], [AuthMiddleware::class]);
