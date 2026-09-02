@@ -28,7 +28,7 @@ import { Router } from '@angular/router';
 
           <!-- Rotbot 3D Flotando con efecto premium -->
           <div class="absolute right-1 sm:right-2 md:right-8 top-0 bottom-0 hidden sm:flex items-center justify-center pointer-events-none select-none py-4 sm:py-6 w-[180px] sm:w-[220px] md:w-[320px]">
-            <img src="assets/images/rotbot4.png" class="h-full w-full object-contain opacity-60 sm:opacity-95 drop-shadow-[0_15px_35px_rgba(0,0,0,0.6)] transition-transform duration-500 group-hover:scale-[1.02]" alt="Rotbot">
+            <img src="assets/images/rotbot4.png" class="h-full w-full object-contain opacity-60 sm:opacity-95 transition-transform duration-500 group-hover:scale-[1.02]" alt="Rotbot">
           </div>
 
           <div class="relative z-10 max-w-full sm:max-w-[75%] md:max-w-[62%] space-y-3">
@@ -1019,7 +1019,7 @@ export class DashHomeComponent implements OnInit, OnDestroy {
 
   rotatingPhrases: string[] = [
     '¿qué haremos hoy?',
-    '¿ya estudiaste base de datos?',
+    '¿ya estudiaste sql?',
     '¿ya estudiaste inglés?',
     '¿ya leíste arquitectura?',
     '¿cómo van las finanzas?'
