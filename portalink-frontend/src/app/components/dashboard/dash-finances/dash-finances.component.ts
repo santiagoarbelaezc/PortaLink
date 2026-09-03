@@ -1007,8 +1007,17 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
               </div>
               <div class="border-t pt-3 flex justify-between"
                    [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-                <span class="text-xs font-bold uppercase tracking-wider" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Total</span>
-                <span class="text-base font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(editingInvoice.total || 0) }}</span>
+                <span class="text-xs font-bold uppercase tracking-wider" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">{{ (editingInvoice.paidAmount || editingInvoice.paid_amount || 0) > 0 ? 'Total Servicios' : 'Total' }}</span>
+                <span class="text-sm font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(editingInvoice.total || 0) }}</span>
+              </div>
+              <div *ngIf="(editingInvoice.paidAmount || editingInvoice.paid_amount || 0) > 0" class="flex justify-between text-xs text-emerald-500 font-semibold">
+                <span>Valor Ya Abonado</span>
+                <span class="font-sans">- {{ formatCOP(editingInvoice.paidAmount || editingInvoice.paid_amount || 0) }}</span>
+              </div>
+              <div *ngIf="(editingInvoice.paidAmount || editingInvoice.paid_amount || 0) > 0" class="border-t pt-2 flex justify-between"
+                   [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+                <span class="text-xs font-extrabold uppercase tracking-wider" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Total a Pagar</span>
+                <span class="text-base font-extrabold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(editingInvoice.pendingAmount !== undefined ? editingInvoice.pendingAmount : (editingInvoice.total || 0)) }}</span>
               </div>
             </div>
           </div>
@@ -2524,6 +2533,9 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
         const subtotal = Number(rawInv.subtotal || 0);
         const taxAmount = Number(rawInv.tax_amount || rawInv.taxAmount || 0);
         const taxRate = subtotal > 0 && taxAmount > 0 ? Math.round((taxAmount / subtotal) * 100) : 0;
+        const total = Number(rawInv.total_amount || rawInv.total || 0);
+        const paid = Number(rawInv.paid_amount !== undefined ? rawInv.paid_amount : (inv.paid_amount ?? inv.paidAmount ?? 0));
+        const pending = Number(rawInv.pending_amount !== undefined ? rawInv.pending_amount : (inv.pending_amount ?? inv.pendingAmount ?? Math.max(0, total - paid)));
         
         this.editingInvoice = {
           ...inv,
@@ -2539,7 +2551,13 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
           subtotal: subtotal,
           taxRate: taxRate,
           taxAmount: taxAmount,
-          total: Number(rawInv.total_amount || rawInv.total || 0),
+          total: total,
+          total_amount: total,
+          paidAmount: paid,
+          paid_amount: paid,
+          pendingAmount: pending,
+          pending_amount: pending,
+          payments: rawInv.payments || inv.payments || [],
           items: (rawInv.items || []).map((it: any) => {
              const qty = Number(it.quantity || 1);
              const uPrice = Number(it.unit_price || it.unitPrice || 0);
@@ -2596,9 +2614,16 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
     const subtotal = items.reduce((a, it) => a + (it.subtotal || 0), 0);
     const taxRate = this.editingInvoice.taxRate || 0;
     const taxAmount = Math.round(subtotal * taxRate / 100);
+    const total = subtotal + taxAmount;
+    const paid = Number(this.editingInvoice.paidAmount ?? this.editingInvoice.paid_amount ?? 0);
     this.editingInvoice.subtotal = subtotal;
     this.editingInvoice.taxAmount = taxAmount;
-    this.editingInvoice.total = subtotal + taxAmount;
+    this.editingInvoice.total = total;
+    this.editingInvoice.total_amount = total;
+    this.editingInvoice.paidAmount = paid;
+    this.editingInvoice.paid_amount = paid;
+    this.editingInvoice.pendingAmount = Math.max(0, total - paid);
+    this.editingInvoice.pending_amount = this.editingInvoice.pendingAmount;
   }
   async saveInvoice(status: Invoice['status']) {
     if (!this.editingInvoice?.clientId) { alert('Selecciona un cliente primero.'); return; }
@@ -2684,6 +2709,10 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
         const subtotal = Number(rawInv.subtotal || 0);
         const taxAmount = Number(rawInv.tax_amount || rawInv.taxAmount || 0);
         const taxRate = subtotal > 0 && taxAmount > 0 ? Math.round((taxAmount / subtotal) * 100) : 0;
+        const total = Number(rawInv.total_amount || rawInv.total || 0);
+        const paid = Number(rawInv.paid_amount !== undefined ? rawInv.paid_amount : (inv.paid_amount ?? inv.paidAmount ?? 0));
+        const pending = Number(rawInv.pending_amount !== undefined ? rawInv.pending_amount : (inv.pending_amount ?? inv.pendingAmount ?? Math.max(0, total - paid)));
+
         fullInv = {
           ...inv,
           id: String(rawInv.id),
@@ -2697,7 +2726,13 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
           subtotal: subtotal,
           taxRate: taxRate,
           taxAmount: taxAmount,
-          total: Number(rawInv.total_amount || rawInv.total || 0),
+          total: total,
+          total_amount: total,
+          paidAmount: paid,
+          paid_amount: paid,
+          pendingAmount: pending,
+          pending_amount: pending,
+          payments: rawInv.payments || inv.payments || [],
           items: (rawInv.items || []).map((it: any) => {
              const qty = Number(it.quantity || 1);
              const uPrice = Number(it.unit_price || it.unitPrice || 0);
@@ -2750,6 +2785,10 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
             const subtotal = Number(rawInv.subtotal || 0);
             const taxAmount = Number(rawInv.tax_amount || rawInv.taxAmount || 0);
             const taxRate = subtotal > 0 && taxAmount > 0 ? Math.round((taxAmount / subtotal) * 100) : 0;
+            const total = Number(rawInv.total_amount || rawInv.total || 0);
+            const paid = Number(rawInv.paid_amount !== undefined ? rawInv.paid_amount : (inv.paid_amount ?? inv.paidAmount ?? 0));
+            const pending = Number(rawInv.pending_amount !== undefined ? rawInv.pending_amount : (inv.pending_amount ?? inv.pendingAmount ?? Math.max(0, total - paid)));
+
             fullInv = {
               ...inv,
               id: String(rawInv.id),
@@ -2763,7 +2802,13 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
               subtotal: subtotal,
               taxRate: taxRate,
               taxAmount: taxAmount,
-              total: Number(rawInv.total_amount || rawInv.total || 0),
+              total: total,
+              total_amount: total,
+              paidAmount: paid,
+              paid_amount: paid,
+              pendingAmount: pending,
+              pending_amount: pending,
+              payments: rawInv.payments || inv.payments || [],
               items: (rawInv.items || []).map((it: any) => {
                  const qty = Number(it.quantity || 1);
                  const uPrice = Number(it.unit_price || it.unitPrice || 0);
@@ -2797,8 +2842,21 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
     this.pdfLoading = true;
     this.safeDetectChanges();
     try {
-      this.previewInvoiceTarget = this.editingInvoice as Invoice;
-      const url = await this.pdfService.downloadInvoicePdf(this.editingInvoice as Invoice, 'bloburl');
+      this.recalcInvoice();
+      const total = Number(this.editingInvoice.total || this.editingInvoice.total_amount || 0);
+      const paid = Number(this.editingInvoice.paidAmount ?? this.editingInvoice.paid_amount ?? 0);
+      const pending = Number(this.editingInvoice.pendingAmount ?? this.editingInvoice.pending_amount ?? Math.max(0, total - paid));
+      const fullInv: Invoice = {
+        ...(this.editingInvoice as Invoice),
+        total: total,
+        total_amount: total,
+        paidAmount: paid,
+        paid_amount: paid,
+        pendingAmount: pending,
+        pending_amount: pending
+      };
+      this.previewInvoiceTarget = fullInv;
+      const url = await this.pdfService.downloadInvoicePdf(fullInv, 'bloburl');
       this.previewPdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url as string);
       this.showPdfPreview = true;
     } catch (err) {
@@ -2812,10 +2870,22 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
   async downloadPreviewPdf() {
     if (!this.previewInvoiceTarget && !this.editingInvoice) return;
     const inv = this.previewInvoiceTarget || (this.editingInvoice as Invoice);
+    const total = Number(inv.total || inv.total_amount || 0);
+    const paid = Number(inv.paidAmount ?? inv.paid_amount ?? 0);
+    const pending = Number(inv.pendingAmount ?? inv.pending_amount ?? Math.max(0, total - paid));
+    const fullInv: Invoice = {
+      ...inv,
+      total: total,
+      total_amount: total,
+      paidAmount: paid,
+      paid_amount: paid,
+      pendingAmount: pending,
+      pending_amount: pending
+    };
     this.pdfLoading = true;
     this.safeDetectChanges();
     try {
-      await this.pdfService.downloadInvoicePdf(inv, 'save');
+      await this.pdfService.downloadInvoicePdf(fullInv, 'save');
     } catch (err) {
       console.error(err);
       alert('Error descargando PDF');
@@ -2838,7 +2908,19 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
     }
     if (this.previewInvoiceTarget || this.editingInvoice) {
       const inv = this.previewInvoiceTarget || (this.editingInvoice as Invoice);
-      this.pdfService.downloadInvoicePdf(inv, 'bloburl').then(url => {
+      const total = Number(inv.total || inv.total_amount || 0);
+      const paid = Number(inv.paidAmount ?? inv.paid_amount ?? 0);
+      const pending = Number(inv.pendingAmount ?? inv.pending_amount ?? Math.max(0, total - paid));
+      const fullInv: Invoice = {
+        ...inv,
+        total: total,
+        total_amount: total,
+        paidAmount: paid,
+        paid_amount: paid,
+        pendingAmount: pending,
+        pending_amount: pending
+      };
+      this.pdfService.downloadInvoicePdf(fullInv, 'bloburl').then(url => {
         if (typeof url === 'string') {
           const win = window.open(url, '_blank');
           if (win) {

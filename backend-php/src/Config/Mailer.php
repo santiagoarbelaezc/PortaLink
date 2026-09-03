@@ -27,11 +27,34 @@ class Mailer
     }
 
     /**
+     * Resuelve la URL base del frontend garantizando prioridad al dominio de producción https://santiagoarbelaez.me
+     */
+    public static function getFrontendUrl(): string
+    {
+        $envUrl = $_ENV['FRONTEND_URL'] ?? getenv('FRONTEND_URL');
+        if (!empty($envUrl) && !str_contains($envUrl, 'localhost') && !str_contains($envUrl, '127.0.0.1')) {
+            return rtrim($envUrl, '/');
+        }
+
+        $httpHost = $_SERVER['HTTP_HOST'] ?? '';
+        if (str_contains($httpHost, 'santiagoarbelaez.me') || str_contains($httpHost, 'hstgr.io')) {
+            return 'https://santiagoarbelaez.me';
+        }
+
+        $httpOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';
+        if (str_contains($httpOrigin, 'santiagoarbelaez.me')) {
+            return 'https://santiagoarbelaez.me';
+        }
+
+        return 'https://santiagoarbelaez.me';
+    }
+
+    /**
      * Envía un correo de verificación de cuenta al usuario recién registrado.
      */
     public static function sendVerificationEmail(string $email, string $nombre, string $token): bool
     {
-        $frontendUrl = $_ENV['FRONTEND_URL'] ?? getenv('FRONTEND_URL') ?: 'http://localhost:4200';
+        $frontendUrl = self::getFrontendUrl();
         $verifyUrl = "{$frontendUrl}/verify-email?token={$token}";
         $year = date('Y');
 
@@ -41,57 +64,100 @@ class Mailer
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Verifica tu cuenta de PortaLink</title>
+          <title>Verifica tu cuenta en PortaLink</title>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+            body, table, td, p, a, h1, h2, span {
+              font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+            }
+          </style>
         </head>
-        <body style="margin:0; padding:0; background-color:#0a0a0c; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#e5e5e5;">
-          <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#0a0a0c; padding: 40px 15px;">
+        <body style="margin:0; padding:0; background-color:#ffffff; font-family:'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color:#0a0a0a; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#ffffff; padding: 48px 20px;">
             <tr>
               <td align="center">
-                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:540px; background-color:#121217; border:1px solid #22222b; border-radius:16px; overflow:hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
-                  <!-- Header -->
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:560px; text-align:left;">
+                  
+                  <!-- Category Pill -->
                   <tr>
-                    <td style="padding: 32px 32px 24px; border-bottom:1px solid #1c1c24; text-align:center;">
-                      <span style="font-size:22px; font-weight:900; letter-spacing:3px; color:#ffffff; text-transform:uppercase;">PORTALINK</span>
-                      <div style="font-size:10px; font-weight:700; letter-spacing:2px; color:#00b4d8; text-transform:uppercase; margin-top:4px;">Verificación de Seguridad</div>
+                    <td style="padding-bottom: 20px;">
+                      <div style="display:inline-block; padding: 6px 14px; border-radius: 9999px; background-color: #f5f5f5; border: 1px solid #e5e5e5;">
+                        <table border="0" cellspacing="0" cellpadding="0" style="display:inline-table; vertical-align:middle;">
+                          <tr>
+                            <td style="width:7px; height:7px; border-radius:50%; background-color:#10b981; padding:0;"></td>
+                            <td style="padding-left:8px; font-size:11px; font-weight:600; letter-spacing:0.06em; color:#171717; text-transform:uppercase;">
+                              Verificación de Cuenta
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
                     </td>
                   </tr>
-                  <!-- Body -->
+
+                  <!-- Large Editorial Heading -->
                   <tr>
-                    <td style="padding: 36px 32px;">
-                      <h1 style="margin:0 0 16px; font-size:20px; font-weight:700; color:#ffffff;">¡Hola, {$nombre}! 👋</h1>
-                      <p style="margin:0 0 24px; font-size:14px; line-height:1.6; color:#a1a1aa;">
-                        Gracias por registrarte en <strong style="color:#ffffff;">PortaLink</strong>. Para activar tu cuenta y acceder a tu perfil, herramientas de IA y landing pages personalizadas, por favor verifica tu correo electrónico haciendo clic en el botón de abajo:
+                    <td style="padding-bottom: 22px;">
+                      <h1 style="margin:0; font-size:32px; font-weight:600; letter-spacing:-0.03em; line-height:1.18; color:#0a0a0a;">
+                        Confirma tu correo y activa tu cuenta en PortaLink
+                      </h1>
+                    </td>
+                  </tr>
+
+                  <!-- Description Paragraphs -->
+                  <tr>
+                    <td style="font-size:16px; line-height:1.75; color:#525252; font-weight:400; padding-bottom: 30px;">
+                      <p style="margin:0 0 16px;">
+                        Hola {$nombre}, gracias por unirte a <strong>PortaLink</strong>.
                       </p>
-                      
-                      <!-- Button -->
-                      <table border="0" cellspacing="0" cellpadding="0" style="margin: 32px 0;">
+                      <p style="margin:0;">
+                        Para activar tu cuenta y comenzar a utilizar tu panel, inteligencia artificial y herramientas de gestión, confirma tu correo electrónico:
+                      </p>
+                    </td>
+                  </tr>
+
+                  <!-- Action CTA Button -->
+                  <tr>
+                    <td style="padding-bottom: 34px;">
+                      <table border="0" cellspacing="0" cellpadding="0">
                         <tr>
-                          <td align="center" style="border-radius:12px; background:linear-gradient(135deg, #00b4d8, #0077b6);">
-                            <a href="{$verifyUrl}" target="_blank" style="display:inline-block; padding:15px 32px; font-size:14px; font-weight:700; color:#ffffff; text-decoration:none; text-transform:uppercase; letter-spacing:1px;">
-                              Verificar mi Cuenta
+                          <td style="border-radius:12px; background-color:#09090b;">
+                            <a href="{$verifyUrl}" target="_blank" style="display:inline-block; padding:14px 28px; font-size:13px; font-weight:500; letter-spacing:0.02em; color:#ffffff !important; text-decoration:none; border-radius:12px;">
+                              Verificar mi Cuenta &nbsp;&rarr;
                             </a>
                           </td>
                         </tr>
                       </table>
-
-                      <p style="margin:0 0 12px; font-size:12px; line-height:1.6; color:#71717a;">
-                        Si el botón no funciona, copia y pega el siguiente enlace en tu navegador:
-                      </p>
-                      <p style="margin:0 0 24px; font-size:11px; word-break:break-all; font-family:monospace; color:#00b4d8; background-color:#181820; padding:12px; border-radius:8px;">
-                        {$verifyUrl}
-                      </p>
-
-                      <p style="margin:0; font-size:12px; color:#71717a;">
-                        Este enlace expira en <strong>24 horas</strong>. Si no creaste esta cuenta, puedes ignorar este correo de forma segura.
-                      </p>
                     </td>
                   </tr>
-                  <!-- Footer -->
+
+                  <!-- Direct Link Fallback Box -->
                   <tr>
-                    <td style="padding: 20px 32px; background-color:#0d0d11; border-top:1px solid #1c1c24; text-align:center; font-size:11px; color:#52525b;">
-                      &copy; {$year} PortaLink. Todos los derechos reservados.
+                    <td style="padding-bottom: 30px;">
+                      <div style="padding:16px 20px; background-color:#fafafa; border:1px solid #eaeaea; border-radius:14px;">
+                        <p style="margin:0 0 8px; font-size:12px; font-weight:500; color:#737373;">
+                          O copia y pega este enlace directo en tu navegador:
+                        </p>
+                        <div style="font-size:12px; line-height:1.5; word-break:break-all; font-family:SFMono-Regular, Consolas, Menlo, monospace; color:#171717;">
+                          {$verifyUrl}
+                        </div>
+                      </div>
                     </td>
                   </tr>
+
+                  <!-- Notice -->
+                  <tr>
+                    <td style="font-size:13px; line-height:1.65; color:#a3a3a3; padding-bottom: 36px; border-bottom: 1px solid #f0f0f0;">
+                      Este enlace tiene una validez de <strong>24 horas</strong>. Si no solicitaste esta cuenta, puedes desestimar este mensaje con total seguridad.
+                    </td>
+                  </tr>
+
+                  <!-- Simple Brand Footer -->
+                  <tr>
+                    <td style="padding-top: 22px; font-size:12px; color:#a3a3a3; line-height:1.6;">
+                      &copy; {$year} PortaLink. Plataforma de Gestión y Enlaces.
+                    </td>
+                  </tr>
+
                 </table>
               </td>
             </tr>
@@ -103,7 +169,7 @@ HTML;
         try {
             $mail = self::getMailer();
             $mail->addAddress($email, $nombre);
-            $mail->Subject = '✨ Verifica tu cuenta en PortaLink';
+            $mail->Subject = 'Verifica tu cuenta en PortaLink';
             $mail->Body = $htmlContent;
             return $mail->send();
         } catch (MailException $e) {
@@ -117,7 +183,7 @@ HTML;
      */
     public static function sendPasswordResetEmail(string $email, string $nombre, string $token): bool
     {
-        $frontendUrl = $_ENV['FRONTEND_URL'] ?? getenv('FRONTEND_URL') ?: 'http://localhost:4200';
+        $frontendUrl = self::getFrontendUrl();
         $resetUrl = "{$frontendUrl}/reset-password?token={$token}";
         $year = date('Y');
 
@@ -127,57 +193,100 @@ HTML;
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Restablecer contraseña de PortaLink</title>
+          <title>Restablecer contraseña - PortaLink</title>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+            body, table, td, p, a, h1, h2, span {
+              font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+            }
+          </style>
         </head>
-        <body style="margin:0; padding:0; background-color:#0a0a0c; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#e5e5e5;">
-          <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#0a0a0c; padding: 40px 15px;">
+        <body style="margin:0; padding:0; background-color:#ffffff; font-family:'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color:#0a0a0a; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#ffffff; padding: 48px 20px;">
             <tr>
               <td align="center">
-                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:540px; background-color:#121217; border:1px solid #22222b; border-radius:16px; overflow:hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
-                  <!-- Header -->
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:560px; text-align:left;">
+                  
+                  <!-- Category Pill -->
                   <tr>
-                    <td style="padding: 32px 32px 24px; border-bottom:1px solid #1c1c24; text-align:center;">
-                      <span style="font-size:22px; font-weight:900; letter-spacing:3px; color:#ffffff; text-transform:uppercase;">PORTALINK</span>
-                      <div style="font-size:10px; font-weight:700; letter-spacing:2px; color:#f59e0b; text-transform:uppercase; margin-top:4px;">Seguridad de la Cuenta</div>
+                    <td style="padding-bottom: 20px;">
+                      <div style="display:inline-block; padding: 6px 14px; border-radius: 9999px; background-color: #f5f5f5; border: 1px solid #e5e5e5;">
+                        <table border="0" cellspacing="0" cellpadding="0" style="display:inline-table; vertical-align:middle;">
+                          <tr>
+                            <td style="width:7px; height:7px; border-radius:50%; background-color:#10b981; padding:0;"></td>
+                            <td style="padding-left:8px; font-size:11px; font-weight:600; letter-spacing:0.06em; color:#171717; text-transform:uppercase;">
+                              Seguridad & Acceso
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
                     </td>
                   </tr>
-                  <!-- Body -->
+
+                  <!-- Large Editorial Heading -->
                   <tr>
-                    <td style="padding: 36px 32px;">
-                      <h1 style="margin:0 0 16px; font-size:20px; font-weight:700; color:#ffffff;">Recuperación de Contraseña 🔐</h1>
-                      <p style="margin:0 0 24px; font-size:14px; line-height:1.6; color:#a1a1aa;">
-                        Hola {$nombre}, recibimos una solicitud para restablecer la contraseña de tu cuenta en <strong style="color:#ffffff;">PortaLink</strong>. Haz clic en el botón para crear una nueva contraseña:
+                    <td style="padding-bottom: 22px;">
+                      <h1 style="margin:0; font-size:32px; font-weight:600; letter-spacing:-0.03em; line-height:1.18; color:#0a0a0a;">
+                        Recuperar contraseña de acceso a tu cuenta
+                      </h1>
+                    </td>
+                  </tr>
+
+                  <!-- Description Paragraphs -->
+                  <tr>
+                    <td style="font-size:16px; line-height:1.75; color:#525252; font-weight:400; padding-bottom: 30px;">
+                      <p style="margin:0 0 16px;">
+                        Hola {$nombre}, recibimos una solicitud para restablecer la contraseña asociada a tu cuenta en <strong>PortaLink</strong>.
                       </p>
-                      
-                      <!-- Button -->
-                      <table border="0" cellspacing="0" cellpadding="0" style="margin: 32px 0;">
+                      <p style="margin:0;">
+                        Haz clic en el siguiente botón para continuar y definir una nueva contraseña segura:
+                      </p>
+                    </td>
+                  </tr>
+
+                  <!-- Action CTA Button -->
+                  <tr>
+                    <td style="padding-bottom: 34px;">
+                      <table border="0" cellspacing="0" cellpadding="0">
                         <tr>
-                          <td align="center" style="border-radius:12px; background:linear-gradient(135deg, #f59e0b, #d97706);">
-                            <a href="{$resetUrl}" target="_blank" style="display:inline-block; padding:15px 32px; font-size:14px; font-weight:700; color:#ffffff; text-decoration:none; text-transform:uppercase; letter-spacing:1px;">
-                              Restablecer mi Contraseña
+                          <td style="border-radius:12px; background-color:#09090b;">
+                            <a href="{$resetUrl}" target="_blank" style="display:inline-block; padding:14px 28px; font-size:13px; font-weight:500; letter-spacing:0.02em; color:#ffffff !important; text-decoration:none; border-radius:12px;">
+                              Restablecer mi Contraseña &nbsp;&rarr;
                             </a>
                           </td>
                         </tr>
                       </table>
-
-                      <p style="margin:0 0 12px; font-size:12px; line-height:1.6; color:#71717a;">
-                        O copia este enlace en tu navegador web:
-                      </p>
-                      <p style="margin:0 0 24px; font-size:11px; word-break:break-all; font-family:monospace; color:#f59e0b; background-color:#181820; padding:12px; border-radius:8px;">
-                        {$resetUrl}
-                      </p>
-
-                      <p style="margin:0; font-size:12px; color:#71717a;">
-                        Este enlace es válido por <strong>1 hora</strong>. Si no solicitaste restablecer tu contraseña, ignora este correo; tu contraseña actual seguirá siendo segura.
-                      </p>
                     </td>
                   </tr>
-                  <!-- Footer -->
+
+                  <!-- Direct Link Fallback Box -->
                   <tr>
-                    <td style="padding: 20px 32px; background-color:#0d0d11; border-top:1px solid #1c1c24; text-align:center; font-size:11px; color:#52525b;">
-                      &copy; {$year} PortaLink. Seguridad y Soporte.
+                    <td style="padding-bottom: 30px;">
+                      <div style="padding:16px 20px; background-color:#fafafa; border:1px solid #eaeaea; border-radius:14px;">
+                        <p style="margin:0 0 8px; font-size:12px; font-weight:500; color:#737373;">
+                          O copia y pega este enlace directo en tu navegador:
+                        </p>
+                        <div style="font-size:12px; line-height:1.5; word-break:break-all; font-family:SFMono-Regular, Consolas, Menlo, monospace; color:#171717;">
+                          {$resetUrl}
+                        </div>
+                      </div>
                     </td>
                   </tr>
+
+                  <!-- Security Note -->
+                  <tr>
+                    <td style="font-size:13px; line-height:1.65; color:#a3a3a3; padding-bottom: 36px; border-bottom: 1px solid #f0f0f0;">
+                      Este enlace tiene una validez de <strong>1 hora</strong>. Si no solicitaste este restablecimiento, puedes desestimar este mensaje; tu cuenta y contraseña actual continúan seguras.
+                    </td>
+                  </tr>
+
+                  <!-- Simple Brand Footer -->
+                  <tr>
+                    <td style="padding-top: 22px; font-size:12px; color:#a3a3a3; line-height:1.6;">
+                      &copy; {$year} PortaLink. Todos los derechos reservados.
+                    </td>
+                  </tr>
+
                 </table>
               </td>
             </tr>
@@ -189,7 +298,7 @@ HTML;
         try {
             $mail = self::getMailer();
             $mail->addAddress($email, $nombre);
-            $mail->Subject = '🔒 Restablece tu contraseña en PortaLink';
+            $mail->Subject = 'Restablece tu contraseña - PortaLink';
             $mail->Body = $htmlContent;
             return $mail->send();
         } catch (MailException $e) {
@@ -203,7 +312,7 @@ HTML;
      */
     public static function sendTaskReminderEmail(string $email, string $nombre, array $task, bool $isTwoHoursReminder = false): bool
     {
-        $frontendUrl = $_ENV['FRONTEND_URL'] ?? getenv('FRONTEND_URL') ?: 'http://localhost:4200';
+        $frontendUrl = self::getFrontendUrl();
         $calendarUrl = "{$frontendUrl}/admin";
         $year = date('Y');
 
@@ -213,42 +322,36 @@ HTML;
         $time = !empty($task['task_time']) ? substr($task['task_time'], 0, 5) : 'Sin hora especificada';
         $type = strtolower($task['type'] ?? 'work');
 
-        // Configuración de categoría con colores exactos (Trabajo: Azul, Personal: Verde, Urgente: Rosa)
         $categoryLabel = 'Trabajo';
-        $catColor = '#60a5fa';
-        $catBg = 'rgba(59, 130, 246, 0.15)';
-        $catBorder = 'rgba(59, 130, 246, 0.35)';
+        $catColor = '#1d4ed8';
+        $catBg = '#eff6ff';
+        $catBorder = '#bfdbfe';
 
         if ($type === 'personal') {
             $categoryLabel = 'Personal';
-            $catColor = '#34d399';
-            $catBg = 'rgba(16, 185, 129, 0.15)';
-            $catBorder = 'rgba(16, 185, 129, 0.35)';
+            $catColor = '#047857';
+            $catBg = '#ecfdf5';
+            $catBorder = '#a7f3d0';
         } elseif ($type === 'urgent') {
             $categoryLabel = 'Urgente';
-            $catColor = '#fb7185';
-            $catBg = 'rgba(244, 63, 94, 0.15)';
-            $catBorder = 'rgba(244, 63, 94, 0.35)';
+            $catColor = '#be123c';
+            $catBg = '#fff1f2';
+            $catBorder = '#fecdd3';
         }
 
         $badgeText = $isTwoHoursReminder ? 'Recordatorio en 2 Horas' : 'Confirmación de Actividad';
-        $badgeColor = $isTwoHoursReminder ? '#f59e0b' : '#34d399';
-
-        $headline = $isTwoHoursReminder
-            ? "Tu actividad comienza en aproximadamente 2 horas ⏰"
-            : "¡Actividad registrada con éxito en tu agenda! 📅";
 
         $explanation = $isTwoHoursReminder
             ? "Te enviamos este recordatorio previo para que puedas prepararte con anticipación. A continuación tienes los detalles de la actividad programada:"
-            : "Has creado una nueva actividad en tu calendario. Tienes programado un recordatorio automático por correo <strong>2 horas antes</strong> de la hora fijada:";
+            : "Has programado una nueva actividad en tu calendario. Tienes programado un recordatorio automático por correo 2 horas antes:";
 
         $subject = $isTwoHoursReminder
-            ? "⏰ Recordatorio en 2 Horas: {$title} | PortaLink"
-            : "📅 Actividad Agendada: {$title} | PortaLink";
+            ? "Recordatorio en 2 Horas: {$title} - PortaLink"
+            : "Actividad Agendada: {$title} - PortaLink";
 
         $descHtml = $desc ? "
-            <div style=\"margin-top:14px; padding-top:12px; border-top:1px solid #2a2a35; font-size:13px; color:#a1a1aa; line-height:1.5;\">
-              <strong style=\"color:#e5e5e5; display:block; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;\">Nota:</strong>
+            <div style=\"margin-top:16px; padding-top:14px; border-top:1px solid #eaeaea; font-size:14px; color:#525252; line-height:1.6;\">
+              <span style=\"color:#0a0a0a; display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:5px;\">Notas Adicionales:</span>
               {$desc}
             </div>
         " : "";
@@ -260,84 +363,111 @@ HTML;
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>{$subject}</title>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+            body, table, td, p, a, h1, h2, span {
+              font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+            }
+          </style>
         </head>
-        <body style="margin:0; padding:0; background-color:#0a0a0c; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#e5e5e5;">
-          <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#0a0a0c; padding: 40px 15px;">
+        <body style="margin:0; padding:0; background-color:#ffffff; font-family:'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color:#0a0a0a; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#ffffff; padding: 48px 20px;">
             <tr>
               <td align="center">
-                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:540px; background-color:#121217; border:1px solid #22222b; border-radius:16px; overflow:hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
-                  <!-- Header -->
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:560px; text-align:left;">
+                  
+                  <!-- Category Pill -->
                   <tr>
-                    <td style="padding: 32px 32px 24px; border-bottom:1px solid #1c1c24; text-align:center;">
-                      <span style="font-size:22px; font-weight:900; letter-spacing:3px; color:#ffffff; text-transform:uppercase;">PORTALINK</span>
-                      <div style="font-size:10px; font-weight:700; letter-spacing:2px; color:{$badgeColor}; text-transform:uppercase; margin-top:4px;">
-                        {$badgeText}
+                    <td style="padding-bottom: 20px;">
+                      <div style="display:inline-block; padding: 6px 14px; border-radius: 9999px; background-color: #f5f5f5; border: 1px solid #e5e5e5;">
+                        <table border="0" cellspacing="0" cellpadding="0" style="display:inline-table; vertical-align:middle;">
+                          <tr>
+                            <td style="width:7px; height:7px; border-radius:50%; background-color:#10b981; padding:0;"></td>
+                            <td style="padding-left:8px; font-size:11px; font-weight:600; letter-spacing:0.06em; color:#171717; text-transform:uppercase;">
+                              {$badgeText}
+                            </td>
+                          </tr>
+                        </table>
                       </div>
                     </td>
                   </tr>
-                  <!-- Body -->
+
+                  <!-- Large Editorial Heading -->
                   <tr>
-                    <td style="padding: 36px 32px;">
-                      <h1 style="margin:0 0 14px; font-size:20px; font-weight:700; color:#ffffff;">¡Hola, {$nombre}! 👋</h1>
-                      <p style="margin:0 0 22px; font-size:14px; line-height:1.6; color:#a1a1aa;">
+                    <td style="padding-bottom: 22px;">
+                      <h1 style="margin:0; font-size:32px; font-weight:600; letter-spacing:-0.03em; line-height:1.18; color:#0a0a0a;">
+                        {$title}
+                      </h1>
+                    </td>
+                  </tr>
+
+                  <!-- Description Paragraphs -->
+                  <tr>
+                    <td style="font-size:16px; line-height:1.75; color:#525252; font-weight:400; padding-bottom: 26px;">
+                      <p style="margin:0 0 16px;">
+                        Hola {$nombre},
+                      </p>
+                      <p style="margin:0;">
                         {$explanation}
                       </p>
+                    </td>
+                  </tr>
 
-                      <!-- Activity Card -->
-                      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#181820; border:1px solid #2a2a35; border-radius:14px; margin: 24px 0; overflow:hidden;">
+                  <!-- Activity Detail Card -->
+                  <tr>
+                    <td style="padding-bottom: 30px;">
+                      <div style="padding:20px 24px; background-color:#fafafa; border:1px solid #eaeaea; border-radius:14px;">
+                        <div style="display:inline-block; padding:4px 10px; border-radius:6px; background-color:{$catBg}; border:1px solid {$catBorder}; color:{$catColor}; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;">
+                          {$categoryLabel}
+                        </div>
+                        
+                        <table border="0" cellspacing="0" cellpadding="0">
+                          <tr>
+                            <td style="padding-right:24px;">
+                              <span style="font-size:11px; color:#737373; text-transform:uppercase; font-weight:600; letter-spacing:0.5px;">Fecha</span>
+                              <div style="font-size:14px; color:#0a0a0a; font-weight:600; margin-top:3px;">{$date}</div>
+                            </td>
+                            <td>
+                              <span style="font-size:11px; color:#737373; text-transform:uppercase; font-weight:600; letter-spacing:0.5px;">Hora</span>
+                              <div style="font-size:14px; color:#0a0a0a; font-weight:700; font-family:SFMono-Regular, Consolas, Menlo, monospace; background:#ffffff; border:1px solid #eaeaea; padding:3px 10px; border-radius:6px; margin-top:3px; display:inline-block;">{$time}</div>
+                            </td>
+                          </tr>
+                        </table>
+
+                        {$descHtml}
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- Action CTA Button -->
+                  <tr>
+                    <td style="padding-bottom: 34px;">
+                      <table border="0" cellspacing="0" cellpadding="0">
                         <tr>
-                          <td style="padding: 20px 22px;">
-                            <!-- Category Badge -->
-                            <div style="display:inline-block; padding:4px 10px; border-radius:6px; background-color:{$catBg}; border:1px solid {$catBorder}; color:{$catColor}; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:12px;">
-                              {$categoryLabel}
-                            </div>
-                            
-                            <!-- Title -->
-                            <div style="font-size:17px; font-weight:700; color:#ffffff; line-height:1.4; margin-bottom:12px;">
-                              {$title}
-                            </div>
-
-                            <!-- Date & Time Chips -->
-                            <table border="0" cellspacing="0" cellpadding="0" style="margin-top:6px;">
-                              <tr>
-                                <td style="padding-right:12px;">
-                                  <span style="font-size:12px; color:#71717a; text-transform:uppercase; font-weight:600; letter-spacing:0.5px;">Fecha:</span>
-                                  <strong style="font-size:13px; color:#ffffff; margin-left:4px;">{$date}</strong>
-                                </td>
-                                <td>
-                                  <span style="font-size:12px; color:#71717a; text-transform:uppercase; font-weight:600; letter-spacing:0.5px;">Hora:</span>
-                                  <strong style="font-size:13px; color:#34d399; font-family:monospace; margin-left:4px;">{$time}</strong>
-                                </td>
-                              </tr>
-                            </table>
-
-                            {$descHtml}
-                          </td>
-                        </tr>
-                      </table>
-
-                      <!-- Button CTA -->
-                      <table border="0" cellspacing="0" cellpadding="0" style="margin: 30px 0 10px;">
-                        <tr>
-                          <td align="center" style="border-radius:12px; background:#ffffff;">
-                            <a href="{$calendarUrl}" target="_blank" style="display:inline-block; padding:13px 30px; font-size:13px; font-weight:800; color:#000000; text-decoration:none; text-transform:uppercase; letter-spacing:1px;">
-                              Ver en mi Calendario
+                          <td style="border-radius:12px; background-color:#09090b;">
+                            <a href="{$calendarUrl}" target="_blank" style="display:inline-block; padding:14px 28px; font-size:13px; font-weight:500; letter-spacing:0.02em; color:#ffffff !important; text-decoration:none; border-radius:12px;">
+                              Ver en mi Calendario &nbsp;&rarr;
                             </a>
                           </td>
                         </tr>
                       </table>
+                    </td>
+                  </tr>
 
-                      <p style="margin:24px 0 0; font-size:12px; line-height:1.6; color:#71717a;">
-                        Este aviso ha sido enviado automáticamente según tu configuración de agenda en PortaLink a tu correo <strong>{$email}</strong>.
-                      </p>
-                    </td>
-                  </tr>
-                  <!-- Footer -->
+                  <!-- Footer Notice -->
                   <tr>
-                    <td style="padding: 20px 32px; background-color:#0d0d11; border-top:1px solid #1c1c24; text-align:center; font-size:11px; color:#52525b;">
-                      &copy; {$year} PortaLink. Módulo de Planificación & Agenda.
+                    <td style="font-size:13px; line-height:1.65; color:#a3a3a3; padding-bottom: 36px; border-bottom: 1px solid #f0f0f0;">
+                      Este aviso ha sido enviado automáticamente según tu configuración de agenda en PortaLink a tu correo {$email}.
                     </td>
                   </tr>
+
+                  <!-- Simple Brand Footer -->
+                  <tr>
+                    <td style="padding-top: 22px; font-size:12px; color:#a3a3a3; line-height:1.6;">
+                      &copy; {$year} PortaLink. Todos los derechos reservados.
+                    </td>
+                  </tr>
+
                 </table>
               </td>
             </tr>
@@ -358,4 +488,3 @@ HTML;
         }
     }
 }
-

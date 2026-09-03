@@ -366,7 +366,9 @@ class FinanceController
         try {
             $this->ensureInvoicePaymentColumns();
             $stmt = Database::query(
-                "SELECT i.*, COALESCE(c.name, 'Cliente') as client_name, c.email, c.phone, c.company, c.tax_id
+                "SELECT i.*, COALESCE(c.name, 'Cliente') as client_name, c.email, c.phone, c.company, c.tax_id,
+                        COALESCE((SELECT SUM(p.amount) FROM finance_invoice_payments p WHERE p.invoice_id = i.id), 
+                                 CASE WHEN i.status = 'PAGADA' THEN i.total_amount ELSE 0 END) AS paid_amount
                  FROM finance_invoices i
                  LEFT JOIN finance_clients c ON i.client_id = c.id
                  WHERE i.id = $1 AND i.user_id = $2",
@@ -376,6 +378,21 @@ class FinanceController
             if (!$invoice) {
                 $response->status(404)->json(['ok' => false, 'message' => 'Cuenta de cobro no encontrada']);
                 return;
+            }
+
+            $total = (float)($invoice['total_amount'] ?? 0);
+            $paid = (float)($invoice['paid_amount'] ?? 0);
+            $invoice['paid_amount'] = $paid;
+            $invoice['pending_amount'] = max(0, $total - $paid);
+
+            try {
+                $stmtPay = Database::query(
+                    "SELECT * FROM finance_invoice_payments WHERE invoice_id = $1 ORDER BY payment_date DESC, id DESC",
+                    [$invoice['id']]
+                );
+                $invoice['payments'] = $stmtPay->fetchAll();
+            } catch (\Throwable $pe) {
+                $invoice['payments'] = [];
             }
 
             $stmtItems = Database::query(

@@ -47,6 +47,18 @@ class AuthController
                   CONSTRAINT fk_email_verif_usuario FOREIGN KEY (user_id) REFERENCES usuarios (id) ON DELETE CASCADE
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
             ");
+            Database::query("
+                CREATE TABLE IF NOT EXISTS password_resets (
+                  id INT AUTO_INCREMENT PRIMARY KEY,
+                  email VARCHAR(255) NOT NULL,
+                  token VARCHAR(255) NOT NULL,
+                  expires_at DATETIME NOT NULL,
+                  used TINYINT(1) DEFAULT 0,
+                  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                  INDEX (email),
+                  INDEX (token)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            ");
             self::$schemaEnsured = true;
         } catch (Exception $err) {
             error_log('[AuthController] Error ensuring schema: ' . $err->getMessage());
@@ -209,6 +221,12 @@ class AuthController
 
             if (!password_verify(strtolower(trim($captchaCode)), $captchaRecord['codigo'])) {
                 $response->status(400)->json(['message' => 'El código captcha ingresado es incorrecto']);
+                return;
+            }
+
+            $pwdError = self::validatePasswordStrength($password);
+            if ($pwdError) {
+                $response->status(400)->json(['message' => $pwdError]);
                 return;
             }
 
@@ -380,46 +398,221 @@ class AuthController
         }
     }
 
+    private static function isBrowserHtmlRequest(): bool
+    {
+        $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+        return str_contains($accept, 'text/html') && !str_contains($accept, 'application/json');
+    }
+
+    /**
+     * Valida los requisitos de seguridad de contraseña:
+     * - Mínimo 6 caracteres
+     * - Al menos una letra mayúscula
+     * - Al menos un número
+     * - Al menos un carácter especial
+     */
+    private static function validatePasswordStrength(string $password): ?string
+    {
+        if (strlen($password) < 6) {
+            return 'La contraseña debe tener al menos 6 caracteres.';
+        }
+        if (!preg_match('/[A-Z]/', $password)) {
+            return 'La contraseña debe contener al menos una letra mayúscula.';
+        }
+        if (!preg_match('/[0-9]/', $password)) {
+            return 'La contraseña debe contener al menos un número.';
+        }
+        if (!preg_match('/[!@#$%^&*()_+\-=\[\]{};\':"\\\\|,.<>\/?~`!¡¿]/', $password)) {
+            return 'La contraseña debe contener al menos un carácter especial (@, #, $, %, etc.).';
+        }
+        return null;
+    }
+
     public function verifyEmail(Request $request, Response $response): void
     {
         self::ensureAuthSchema();
-        $token = $request->query['token'] ?? null;
-        if (!$token) {
-            $response->status(400)->json(['message' => 'Token de verificación faltante']);
+        $token = trim((string)($request->query['token'] ?? ''));
+
+        // Control de Seguridad 1: Validación estricta de formato del token (hexadecimal de 64 caracteres)
+        if (empty($token) || !preg_match('/^[a-f0-9]{64}$/', $token)) {
+            if (self::isBrowserHtmlRequest()) {
+                header('Location: https://santiagoarbelaez.me/login?verification_error=invalid_token');
+                exit;
+            }
+            $response->status(400)->json([
+                'status' => 'error',
+                'message' => 'El enlace de verificación no tiene un formato válido o ha sido alterado.'
+            ]);
             return;
         }
 
         try {
-            $stmt = Database::query('SELECT * FROM email_verifications WHERE token = $1', [$token]);
+            // Control de Seguridad 2: Búsqueda segura del token
+            $stmt = Database::query('SELECT * FROM email_verifications WHERE token = $1 LIMIT 1', [$token]);
             $verification = $stmt->fetch();
 
             if (!$verification) {
-                $response->status(400)->json(['message' => 'El enlace de verificación es inválido o no existe.']);
+                if (self::isBrowserHtmlRequest()) {
+                    header('Location: https://santiagoarbelaez.me/login?verification_error=not_found');
+                    exit;
+                }
+                $response->status(400)->json([
+                    'status' => 'error',
+                    'message' => 'El enlace de verificación es inválido o no existe.'
+                ]);
                 return;
             }
 
+            // Control de Seguridad 3: Idempotencia - Verificar si el usuario ya está activo
+            $userStmt = Database::query('SELECT id, verified, email FROM usuarios WHERE id = $1', [$verification['user_id']]);
+            $user = $userStmt->fetch();
+
+            if ($user && !empty($user['verified'])) {
+                if (self::isBrowserHtmlRequest()) {
+                    header('Location: https://santiagoarbelaez.me/login?already_verified=true');
+                    exit;
+                }
+                $response->json([
+                    'status' => 'success',
+                    'alreadyVerified' => true,
+                    'message' => 'Tu cuenta ya fue verificada con éxito previamente. Ya puedes iniciar sesión.',
+                    'redirect' => 'https://santiagoarbelaez.me/login?already_verified=true'
+                ]);
+                return;
+            }
+
+            // Control de Seguridad 4: Verificación de uso previo del token
             if (!empty($verification['used'])) {
-                $response->status(400)->json(['message' => 'Este correo ya fue verificado previamente.']);
+                if (self::isBrowserHtmlRequest()) {
+                    header('Location: https://santiagoarbelaez.me/login?verification_error=already_used');
+                    exit;
+                }
+                $response->status(400)->json([
+                    'status' => 'error',
+                    'message' => 'Este enlace de verificación ya fue utilizado.'
+                ]);
                 return;
             }
 
+            // Control de Seguridad 5: Comprobación estricta de expiración (24 horas)
             if (strtotime($verification['expires_at']) < time()) {
-                $response->status(400)->json(['message' => 'El enlace de verificación ha expirado.']);
+                if (self::isBrowserHtmlRequest()) {
+                    header('Location: https://santiagoarbelaez.me/login?verification_error=expired');
+                    exit;
+                }
+                $response->status(400)->json([
+                    'status' => 'error',
+                    'message' => 'El enlace de verificación ha expirado. Por favor solicita uno nuevo.'
+                ]);
                 return;
             }
 
-            Database::query('UPDATE usuarios SET verified = true WHERE id = $1', [$verification['user_id']]);
-            Database::query('UPDATE email_verifications SET used = true WHERE id = $1', [$verification['id']]);
+            // Control de Seguridad 6: Transacción atómica de base de datos (ACID)
+            $pdo = Database::getConnection();
+            $pdo->beginTransaction();
+            try {
+                // 1. Activar usuario
+                Database::query('UPDATE usuarios SET verified = 1 WHERE id = $1', [$verification['user_id']]);
+                // 2. Marcar token actual como usado
+                Database::query('UPDATE email_verifications SET used = 1 WHERE id = $1', [$verification['id']]);
+                // 3. Invalidar cualquier otro token pendiente para este usuario
+                Database::query(
+                    'UPDATE email_verifications SET used = 1 WHERE user_id = $1 AND id != $2 AND used = 0',
+                    [$verification['user_id'], $verification['id']]
+                );
+                $pdo->commit();
+            } catch (Exception $txErr) {
+                $pdo->rollBack();
+                throw $txErr;
+            }
 
-            $response->json(['message' => '¡Cuenta verificada exitosamente! Ya puedes iniciar sesión.']);
+            // Respuesta dual: Redirección inmediata para navegadores o JSON para clientes SPA/API
+            if (self::isBrowserHtmlRequest()) {
+                header('Location: https://santiagoarbelaez.me/login?verified=true');
+                exit;
+            }
+
+            $response->json([
+                'status' => 'success',
+                'verified' => true,
+                'message' => '¡Cuenta verificada exitosamente! Ya puedes iniciar sesión.',
+                'redirect' => 'https://santiagoarbelaez.me/login?verified=true'
+            ]);
         } catch (Exception $e) {
-            error_log('Error al verificar email: ' . $e->getMessage());
-            $response->status(500)->json(['message' => 'Error al procesar la verificación del correo']);
+            error_log('[AuthController] Error al verificar email: ' . $e->getMessage());
+            if (self::isBrowserHtmlRequest()) {
+                header('Location: https://santiagoarbelaez.me/login?verification_error=server_error');
+                exit;
+            }
+            $response->status(500)->json(['status' => 'error', 'message' => 'Error al procesar la verificación del correo']);
+        }
+    }
+
+    /**
+     * Reenvío seguro del correo de verificación con límite de frecuencia (2 min cooldown)
+     */
+    public function resendVerification(Request $request, Response $response): void
+    {
+        self::ensureAuthSchema();
+        $email = strtolower(trim((string)($request->body['email'] ?? '')));
+
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $response->status(400)->json(['message' => 'Por favor ingresa un correo electrónico válido']);
+            return;
+        }
+
+        try {
+            $stmt = Database::query('SELECT id, nombre, email, verified FROM usuarios WHERE email = $1', [$email]);
+            $user = $stmt->fetch();
+
+            if (!$user) {
+                // Mensaje neutral para prevenir enumeración de correos
+                $response->json(['message' => 'Si el correo está registrado y pendiente de verificación, se enviará un enlace.']);
+                return;
+            }
+
+            if (!empty($user['verified'])) {
+                $response->status(400)->json(['message' => 'Esta cuenta ya está verificada. Puedes iniciar sesión.']);
+                return;
+            }
+
+            // Control de frecuencia: mínimo 2 minutos entre reenvíos
+            $recentStmt = Database::query(
+                'SELECT created_at FROM email_verifications WHERE user_id = $1 ORDER BY id DESC LIMIT 1',
+                [$user['id']]
+            );
+            $recent = $recentStmt->fetch();
+            if ($recent && (time() - strtotime($recent['created_at'])) < 120) {
+                $wait = 120 - (time() - strtotime($recent['created_at']));
+                $response->status(429)->json([
+                    'message' => "Por favor espera {$wait} segundos antes de solicitar un nuevo enlace de verificación."
+                ]);
+                return;
+            }
+
+            // Invalidar tokens previos no usados
+            Database::query('UPDATE email_verifications SET used = 1 WHERE user_id = $1 AND used = 0', [$user['id']]);
+
+            $verificationToken = bin2hex(random_bytes(32));
+            $expiresAt = date('Y-m-d H:i:s', time() + (24 * 3600));
+
+            Database::query(
+                'INSERT INTO email_verifications (user_id, token, expires_at) VALUES ($1, $2, $3)',
+                [$user['id'], $verificationToken, $expiresAt]
+            );
+
+            Mailer::sendVerificationEmail($user['email'], $user['nombre'], $verificationToken);
+
+            $response->json(['message' => 'Se ha enviado un nuevo enlace de verificación a tu correo.']);
+        } catch (Exception $e) {
+            error_log('[AuthController] Error en resendVerification: ' . $e->getMessage());
+            $response->status(500)->json(['message' => 'Error al reenviar el correo de verificación']);
         }
     }
 
     public function forgotPassword(Request $request, Response $response): void
     {
+        self::ensureAuthSchema();
         $email = $request->body['email'] ?? null;
         if (!$email) {
             $response->status(400)->json(['message' => 'Por favor ingresa tu correo electrónico']);
@@ -435,6 +628,9 @@ class AuthController
                 $response->json(['message' => 'Si el correo está registrado, recibirás un enlace para restablecer tu contraseña en minutos.']);
                 return;
             }
+
+            // Invalidar tokens previos no usados para este correo
+            Database::query('UPDATE password_resets SET used = 1 WHERE email = $1 AND used = 0', [$user['email']]);
 
             $resetToken = bin2hex(random_bytes(32));
             $expiresAt = date('Y-m-d H:i:s', time() + 3600);
@@ -461,6 +657,7 @@ class AuthController
 
     public function resetPassword(Request $request, Response $response): void
     {
+        self::ensureAuthSchema();
         $token = $request->body['token'] ?? null;
         $newPassword = $request->body['newPassword'] ?? null;
 
@@ -469,8 +666,9 @@ class AuthController
             return;
         }
 
-        if (strlen($newPassword) < 6) {
-            $response->status(400)->json(['message' => 'La nueva contraseña debe tener al menos 6 caracteres']);
+        $pwdError = self::validatePasswordStrength($newPassword);
+        if ($pwdError) {
+            $response->status(400)->json(['message' => $pwdError]);
             return;
         }
 

@@ -248,6 +248,7 @@ $router->delete('/api/auth/users/:id', [AuthController::class, 'deleteUser'], [A
 $router->put('/api/auth/password', [AuthController::class, 'updatePassword'], [AuthMiddleware::class]);
 $router->put('/api/auth/profile', [AuthController::class, 'updateProfile'], [AuthMiddleware::class]);
 $router->get('/api/auth/verify-email', [AuthController::class, 'verifyEmail']);
+$router->post('/api/auth/resend-verification', [AuthController::class, 'resendVerification']);
 $router->post('/api/auth/forgot-password', [AuthController::class, 'forgotPassword']);
 $router->post('/api/auth/reset-password', [AuthController::class, 'resetPassword']);
 

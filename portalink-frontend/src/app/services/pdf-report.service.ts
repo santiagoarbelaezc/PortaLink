@@ -450,8 +450,14 @@ export class PdfReportService {
     const statusColor: Record<string, [number,number,number]> = {
       Borrador: [100, 100, 100],
       Enviada: [59, 130, 246],
+      Parcial: [217, 119, 6],
       Pagada: [34, 197, 94],
       Vencida: [239, 68, 68],
+      DRAFT: [100, 100, 100],
+      ENVIADA: [59, 130, 246],
+      PARCIAL: [217, 119, 6],
+      PAGADA: [34, 197, 94],
+      VENCIDA: [239, 68, 68],
     };
     const sc = statusColor[invoice.status] || [100, 100, 100];
     doc.setFontSize(7);
@@ -534,39 +540,129 @@ export class PdfReportService {
 
     y = (doc as any).lastAutoTable.finalY + 8;
 
+    // ── Totals and Balances calculation ──
+    const totalAmount = Number(invoice.total || invoice.total_amount || 0);
+    const paidAmount = Number(
+      invoice.paidAmount !== undefined
+        ? invoice.paidAmount
+        : (invoice.paid_amount !== undefined ? invoice.paid_amount : 0)
+    );
+    const pendingAmount = Number(
+      invoice.pendingAmount !== undefined
+        ? invoice.pendingAmount
+        : (invoice.pending_amount !== undefined ? invoice.pending_amount : Math.max(0, totalAmount - paidAmount))
+    );
+
     // ── Totals block (right aligned) ──
-    const blockX = 120;
-    const blockW = 76;
+    const blockX = 110;
+    const blockW = 86;
+    const hasTax = (invoice.taxRate || 0) > 0;
+    const boxHeight = hasTax ? 46 : 38;
 
     // Background for totals
     doc.setFillColor(249, 250, 251);
-    doc.roundedRect(blockX - 5, y - 4, blockW + 10, (invoice.taxRate || 0) > 0 ? 30 : 22, 3, 3, 'F');
+    doc.setDrawColor(220, 220, 225);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(blockX - 5, y - 4, blockW + 10, boxHeight, 3, 3, 'FD');
 
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(80, 80, 80);
-    doc.text('Subtotal:', blockX, y + 2);
-    doc.text(fmtCOP(invoice.subtotal || 0), blockX + blockW, y + 2, { align: 'right' });
+    let currentY = y + 2;
 
-    if ((invoice.taxRate || 0) > 0) {
-      y += 7;
-      doc.text(`IVA (${invoice.taxRate}%):`, blockX, y + 2);
-      doc.text(fmtCOP(invoice.taxAmount || 0), blockX + blockW, y + 2, { align: 'right' });
+    if (hasTax) {
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(90, 90, 90);
+      doc.text('Subtotal:', blockX, currentY);
+      doc.text(fmtCOP(invoice.subtotal || 0), blockX + blockW, currentY, { align: 'right' });
+      currentY += 5.5;
+
+      doc.text(`IVA (${invoice.taxRate}%):`, blockX, currentY);
+      doc.text(fmtCOP(invoice.taxAmount || 0), blockX + blockW, currentY, { align: 'right' });
+      currentY += 5.5;
+
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(40, 40, 40);
+      doc.text('Valor Total Factura:', blockX, currentY);
+      doc.text(fmtCOP(totalAmount), blockX + blockW, currentY, { align: 'right' });
+      currentY += 5.5;
+    } else {
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(90, 90, 90);
+      doc.text('Valor Total del Servicio:', blockX, currentY);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(40, 40, 40);
+      doc.text(fmtCOP(totalAmount), blockX + blockW, currentY, { align: 'right' });
+      currentY += 6;
     }
 
-    y += 8;
+    // Valor Ya Abonado
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(22, 101, 52); // Dark emerald green
+    doc.text('Valor Ya Abonado:', blockX, currentY);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`- ${fmtCOP(paidAmount)}`, blockX + blockW, currentY, { align: 'right' });
+    currentY += 6;
+
+    // Divider line
     doc.setDrawColor(200, 200, 200);
     doc.setLineWidth(0.3);
-    doc.line(blockX, y, blockX + blockW, y);
-    y += 6;
+    doc.line(blockX, currentY - 1, blockX + blockW, currentY - 1);
+    currentY += 5.5;
 
-    doc.setFontSize(12);
+    // TOTAL A PAGAR (Valor que falta por abonar)
+    doc.setFontSize(10.5);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(10, 10, 10);
-    doc.text('TOTAL:', blockX, y);
-    doc.text(fmtCOP(invoice.total || 0), blockX + blockW, y, { align: 'right' });
+    if (pendingAmount <= 0 && totalAmount > 0) {
+      doc.setTextColor(22, 163, 74);
+      doc.text('TOTAL A PAGAR:', blockX, currentY);
+      doc.text(fmtCOP(0), blockX + blockW, currentY, { align: 'right' });
+    } else {
+      doc.setTextColor(15, 23, 42);
+      doc.text('TOTAL A PAGAR:', blockX, currentY);
+      doc.text(fmtCOP(pendingAmount), blockX + blockW, currentY, { align: 'right' });
+    }
 
-    y += 10;
+    y += boxHeight + 4;
+
+    // ── Payment history table (if abonos exist) ──
+    if (invoice.payments && invoice.payments.length > 0) {
+      if (y > 205) { doc.addPage(); y = 20; }
+      
+      doc.setFontSize(8.5);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(40, 40, 40);
+      doc.text('Historial de Abonos Registrados', 14, y);
+      y += 4;
+
+      const paymentRows = invoice.payments.map((p, idx) => [
+        `Abono #${invoice.payments!.length - idx}`,
+        p.payment_date ? p.payment_date.split('T')[0] : '—',
+        (p.payment_method || 'Transferencia').toUpperCase(),
+        p.notes || 'Abono a cuenta',
+        fmtCOP(Number(p.amount || 0))
+      ]);
+
+      autoTable(doc, {
+        startY: y,
+        head: [['Registro', 'Fecha', 'Medio de Pago', 'Detalle / Referencia', 'Monto']],
+        body: paymentRows,
+        headStyles: { fillColor: [35, 35, 35], textColor: 255, fontStyle: 'bold', fontSize: 7.5 },
+        bodyStyles: { fontSize: 7.5, textColor: [60, 60, 60] },
+        alternateRowStyles: { fillColor: [248, 250, 252] },
+        columnStyles: {
+          0: { cellWidth: 24 },
+          1: { cellWidth: 26 },
+          2: { cellWidth: 32 },
+          4: { halign: 'right', fontStyle: 'bold', cellWidth: 32, textColor: [22, 101, 52] }
+        },
+        margin: { left: 14, right: 14 },
+        tableLineColor: [220, 220, 220],
+        tableLineWidth: 0.1,
+      });
+
+      y = (doc as any).lastAutoTable.finalY + 6;
+    }
 
     // ── Notes ──
     if (invoice.notes) {
