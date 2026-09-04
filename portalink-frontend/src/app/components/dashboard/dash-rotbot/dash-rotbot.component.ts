@@ -46,17 +46,6 @@ interface ChatEntry {
           <!-- Subtle Executive Pedestal Glow -->
           <div class="absolute inset-0 bg-radial-gradient from-white/[0.04] via-transparent to-transparent pointer-events-none"></div>
 
-          <!-- Top Stage Telemetry Badge -->
-          <div class="absolute top-4 sm:top-5 left-5 right-5 flex items-center justify-between z-20 pointer-events-none">
-            <div class="flex items-center gap-2 px-3 py-1.5 rounded-full border border-neutral-800 bg-[#141419]/90 backdrop-blur-md shadow-xs">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span class="text-[10px] font-headline font-bold uppercase tracking-widest text-neutral-300">Rotbot Core · En Línea</span>
-            </div>
-            <div class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-neutral-800 bg-[#141419]/90 text-[10px] font-mono text-neutral-400">
-              <span class="text-neutral-500">VOZ:</span>
-              <span class="text-neutral-200 font-bold">NEURAL HD</span>
-            </div>
-          </div>
 
           <!-- 3D Rotbot Head Stage (Enlarged & Prominent) -->
           <div class="w-full h-full relative flex items-center justify-center p-6 min-h-0 overflow-hidden select-none">
