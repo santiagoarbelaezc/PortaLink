@@ -136,6 +136,7 @@ export class DashLibraryComponent implements OnInit {
   activeFilter: 'all' | 'favorites' | 'pinned' = 'all';
 
   // ── Folder Filtering & Sorting Suite ──────────────────────────────────
+  showFolderFilters: boolean = false;
   folderSearchQuery: string = '';
   folderFilterStatus: 'all' | 'with-notebooks' | 'empty' | 'with-notes' = 'all';
   folderFilterColor: string = 'all';
