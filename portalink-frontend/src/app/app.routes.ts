@@ -1,60 +1,40 @@
 import { Routes } from '@angular/router';
-import { LinkComponent } from './pages/link/link.component';
-import { ProyectosComponent } from './pages/proyectos/proyectos.component';
-import { RotbotComponent } from './pages/rotbot/rotbot.component';
-import { PersonalizarComponent } from './pages/personalizar/personalizar.component';
-import { PlanesComponent } from './pages/planes/planes.component';
-import { PlanesGaleriaComponent } from './pages/planes-galeria/planes-galeria.component';
-import { AdminComponent } from './pages/admin/admin.component';
-import { LoginComponent } from './pages/login/login.component';
 import { authGuard } from './core/guards/auth.guard';
-import { PerfilComponent } from './pages/perfil/perfil.component';
-import { UserSiteComponent } from './pages/user-site/user-site.component';
-import { VerifyEmailComponent } from './pages/verify-email/verify-email.component';
-import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
-import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
-import { TerminosCondicionesComponent } from './pages/terminos-condiciones/terminos-condiciones.component';
-import { PoliticaPrivacidadComponent } from './pages/politica-privacidad/politica-privacidad.component';
-import { TratamientoDatosComponent } from './pages/tratamiento-datos/tratamiento-datos.component';
-import { DeslindeIaComponent } from './pages/deslinde-ia/deslinde-ia.component';
-import { DescripcionProyectoComponent } from './pages/descripcion-proyecto/descripcion-proyecto.component';
-import { DisenosComponent } from './pages/disenos/disenos.component';
-import { CertificadosComponent } from './pages/certificados/certificados.component';
 
 export const routes: Routes = [
   {
     path: 'certificados',
-    component: CertificadosComponent,
+    loadComponent: () => import('./pages/certificados/certificados.component').then(m => m.CertificadosComponent),
     data: { animation: 'CertificadosPage' }
   },
   {
     path: 'terminos',
-    component: TerminosCondicionesComponent,
+    loadComponent: () => import('./pages/terminos-condiciones/terminos-condiciones.component').then(m => m.TerminosCondicionesComponent),
     data: { animation: 'TerminosPage' }
   },
   {
     path: 'privacidad',
-    component: PoliticaPrivacidadComponent,
+    loadComponent: () => import('./pages/politica-privacidad/politica-privacidad.component').then(m => m.PoliticaPrivacidadComponent),
     data: { animation: 'PrivacidadPage' }
   },
   {
     path: 'tratamiento-datos',
-    component: TratamientoDatosComponent,
+    loadComponent: () => import('./pages/tratamiento-datos/tratamiento-datos.component').then(m => m.TratamientoDatosComponent),
     data: { animation: 'TratamientoDatosPage' }
   },
   {
     path: 'deslinde-ia',
-    component: DeslindeIaComponent,
+    loadComponent: () => import('./pages/deslinde-ia/deslinde-ia.component').then(m => m.DeslindeIaComponent),
     data: { animation: 'DeslindeIaPage' }
   },
   {
     path: 'prototipos',
-    component: DisenosComponent,
+    loadComponent: () => import('./pages/disenos/disenos.component').then(m => m.DisenosComponent),
     data: { animation: 'DisenosPage' }
   },
   { 
     path: '', 
-    component: ProyectosComponent, 
+    loadComponent: () => import('./pages/proyectos/proyectos.component').then(m => m.ProyectosComponent), 
     data: { animation: 'ProyectosPage' } 
   },
   { 
@@ -69,82 +49,82 @@ export const routes: Routes = [
   },
   { 
     path: 'links', 
-    component: LinkComponent, 
+    loadComponent: () => import('./pages/link/link.component').then(m => m.LinkComponent), 
     data: { animation: 'LinkPage' } 
   },
   {
     path: 'rotbot',
-    component: RotbotComponent,
+    loadComponent: () => import('./pages/rotbot/rotbot.component').then(m => m.RotbotComponent),
     data: { animation: 'RotbotPage' }
   },
   {
     path: 'planes',
-    component: PlanesComponent,
+    loadComponent: () => import('./pages/planes/planes.component').then(m => m.PlanesComponent),
     data: { animation: 'PlanesPage' }
   },
   {
     path: 'planes-galeria',
-    component: PlanesGaleriaComponent,
+    loadComponent: () => import('./pages/planes-galeria/planes-galeria.component').then(m => m.PlanesGaleriaComponent),
     data: { animation: 'PlanesGaleriaPage' }
   },
   {
     path: 'proyecto/:id',
-    component: DescripcionProyectoComponent,
+    loadComponent: () => import('./pages/descripcion-proyecto/descripcion-proyecto.component').then(m => m.DescripcionProyectoComponent),
     data: { animation: 'ProyectoDetallePage' }
   },
   {
     path: 'descripcion-proyecto/:id',
-    component: DescripcionProyectoComponent,
+    loadComponent: () => import('./pages/descripcion-proyecto/descripcion-proyecto.component').then(m => m.DescripcionProyectoComponent),
     data: { animation: 'ProyectoDetallePage' }
   },
   {
     path: 'personalizar',
-    component: PersonalizarComponent,
+    loadComponent: () => import('./pages/personalizar/personalizar.component').then(m => m.PersonalizarComponent),
     data: { animation: 'PersonalizarPage' }
   },
   {
     path: 'login',
-    component: LoginComponent,
+    loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent),
     data: { animation: 'LoginPage' }
   },
   {
     path: 'register',
-    component: LoginComponent,
+    loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent),
     data: { animation: 'LoginPage' }
   },
   {
     path: 'perfil',
-    component: PerfilComponent,
+    loadComponent: () => import('./pages/perfil/perfil.component').then(m => m.PerfilComponent),
     canActivate: [authGuard],
     data: { animation: 'PerfilPage' }
   },
-
   {
     path: 'admin',
-    component: AdminComponent,
+    loadComponent: () => import('./pages/admin/admin.component').then(m => m.AdminComponent),
     canActivate: [authGuard],
     data: { animation: 'AdminPage' }
   },
   {
     path: 'site/:slug',
-    component: UserSiteComponent,
+    loadComponent: () => import('./pages/user-site/user-site.component').then(m => m.UserSiteComponent),
     data: { animation: 'SitePage' }
   },
   {
     path: 'verify-email',
-    component: VerifyEmailComponent,
+    loadComponent: () => import('./pages/verify-email/verify-email.component').then(m => m.VerifyEmailComponent),
     data: { animation: 'VerifyEmailPage' }
   },
   {
     path: 'forgot-password',
-    component: ForgotPasswordComponent,
+    loadComponent: () => import('./pages/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent),
     data: { animation: 'ForgotPasswordPage' }
   },
   {
     path: 'reset-password',
-    component: ResetPasswordComponent,
+    loadComponent: () => import('./pages/reset-password/reset-password.component').then(m => m.ResetPasswordComponent),
     data: { animation: 'ResetPasswordPage' }
   },
   { path: '**', redirectTo: '' }
 ];
+
 

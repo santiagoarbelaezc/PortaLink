@@ -10,14 +10,19 @@ import { RouterModule } from '@angular/router';
     <footer id="footer" class="bg-white text-neutral-900 pt-16 pb-12 sm:pt-20 sm:pb-16 px-6 sm:px-12 lg:px-20 border-t border-neutral-100 font-sans selection:bg-neutral-900 selection:text-white">
       <div class="max-w-[1500px] mx-auto">
         
-        <!-- Top Grid: 4 Columns -->
+        <!-- Top Grid: 4 Columns (Layout Clásico Restaurado & Pulido) -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-12 pb-12 sm:pb-16 border-b border-neutral-100">
           
-          <!-- Col 1: Brand & Bio (4 Cols) -->
+          <!-- Col 1: Brand, Logo & Redes (4 Cols) -->
           <div class="lg:col-span-4 space-y-4">
-            <div class="space-y-1">
-              <h3 class="text-2xl sm:text-3xl font-headline font-bold tracking-tight" style="color: #0a0a0a !important;">
-                PORTALINK
+            <div class="flex items-center gap-3">
+              <a routerLink="/" class="inline-flex items-center no-underline group cursor-pointer shrink-0">
+                <img [src]="currentTheme === 'light' ? 'assets/icons/navbar-logolight.png' : 'assets/icons/navbar-logodark.png'" 
+                     alt="Santiago Arbelaez" 
+                     class="h-8 sm:h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105" />
+              </a>
+              <h3 class="text-xl sm:text-2xl font-headline font-bold tracking-tight text-[#0a0a0a] m-0" style="color: #0a0a0a !important;">
+                SANTIAGO ARBELAEZ
               </h3>
             </div>
             
@@ -25,9 +30,11 @@ import { RouterModule } from '@angular/router';
               Ingeniería de software a medida, desarrollo e-commerce e Inteligencia Artificial.
             </p>
 
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/60 text-emerald-800 text-[11px] font-headline font-medium">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span>Sistemas & IA Activos 24/7</span>
+            <!-- Redes Sociales integradas con la identidad -->
+            <div class="pt-2 flex items-center gap-2 flex-wrap">
+              <a href="https://www.tiktok.com/@santiarbelaezz" target="_blank" class="px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 text-xs font-headline font-medium transition-all no-underline">TikTok</a>
+              <a href="https://www.instagram.com/santiarbelaezz/" target="_blank" class="px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 text-xs font-headline font-medium transition-all no-underline">Instagram</a>
+              <a href="https://www.linkedin.com/in/santiago-arbelaez-contreras-9830b5290/" target="_blank" class="px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 text-xs font-headline font-medium transition-all no-underline">LinkedIn</a>
             </div>
           </div>
 
@@ -58,7 +65,7 @@ import { RouterModule } from '@angular/router';
             </ul>
           </div>
 
-          <!-- Col 4: Contacto & Redes (2 Cols) -->
+          <!-- Col 4: Contacto Directo (2 Cols) -->
           <div class="lg:col-span-2 space-y-4">
             <h4 class="text-sm font-headline font-semibold tracking-tight mb-5" style="color: #0a0a0a !important;">
               {{ getTranslation().contactTitle }}
@@ -70,12 +77,6 @@ import { RouterModule } from '@angular/router';
               <span style="color: #ffffff !important; font-weight: 600;">WhatsApp Oficial</span>
               <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
             </a>
-
-            <div class="pt-2 flex items-center gap-2 flex-wrap">
-              <a href="https://www.tiktok.com/@santiarbelaezz" target="_blank" class="px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 text-xs font-headline font-medium transition-all no-underline">TikTok</a>
-              <a href="https://www.instagram.com/santiarbelaezz/" target="_blank" class="px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 text-xs font-headline font-medium transition-all no-underline">Instagram</a>
-              <a href="https://www.linkedin.com/in/santiago-arbelaez-contreras-9830b5290/" target="_blank" class="px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 text-xs font-headline font-medium transition-all no-underline">LinkedIn</a>
-            </div>
           </div>
 
         </div>
@@ -83,7 +84,7 @@ import { RouterModule } from '@angular/router';
         <!-- Bottom Legal Bar -->
         <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-sans text-neutral-400">
           <div>
-            &copy; {{ currentYear }} Santiago Arbeláez — PortaLink. Todos los derechos reservados.
+            &copy; {{ currentYear }} Santiago Arbelaez. Todos los derechos reservados.
           </div>
           
           <div class="text-center sm:text-right max-w-lg text-[11px] leading-relaxed text-neutral-400">

@@ -1,6 +1,5 @@
 import { Component, inject, signal, OnInit, OnDestroy, effect, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NavbarComponent } from '../../components/navbar/navbar.component';
 
 import { HeroDesignComponent } from '../../components/hero-design/hero-design.component';
 import { AboutComponent } from '../../components/about/about.component';
@@ -9,7 +8,6 @@ import { FooterComponent } from '../../components/footer/footer.component';
 
 import { ScrollColorService } from '../../services/scroll-color.service';
 import { PortfolioConfigService } from '../../services/portfolio-config.service';
-import { AiChatFloatingComponent } from '../../components/ai-chat-floating/ai-chat-floating.component';
 import { Subscription } from 'rxjs';
 import { AnalyticsService } from '../../services/analytics.service';
 
@@ -31,7 +29,6 @@ import * as AOS from 'aos';
     <div class="dynamic-bg"></div>
     <main class="relative text-neutral-900">
       <app-hero-design></app-hero-design>
-      <!-- <app-hero-video></app-hero-video> -->
       
       <ng-container *ngIf="portfolioData(); else homeSkeleton">
       
@@ -167,7 +164,6 @@ import * as AOS from 'aos';
         </div>
       </section>
 
-      <!-- <app-portfolio [projects]="portfolioData().portfolio"></app-portfolio> -->
       <app-about [data]="portfolioData().about"></app-about>
       <app-contact [data]="portfolioData().contact"></app-contact>
       </ng-container>

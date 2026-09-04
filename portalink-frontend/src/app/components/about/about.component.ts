@@ -26,12 +26,6 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
           <!-- Right Side: Bio & Action CTAs -->
           <div class="lg:col-span-7 space-y-6 lg:pl-4">
             <div appReveal>
-              <!-- Category Pill -->
-              <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-neutral-100 text-neutral-900 text-xs font-headline font-semibold tracking-wider mb-4 border border-neutral-200/60">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                <span>Sobre mí</span>
-              </div>
-
               <h2 class="text-3xl sm:text-4xl lg:text-5xl font-headline font-semibold tracking-tight leading-[1.12]" 
                   style="color: #0a0a0a !important;">
                 Ingeniero de Sistemas, desarrollador web & creador digital
