@@ -731,12 +731,6 @@ export class NavbarComponent implements OnInit {
       return;
     }
 
-    if (this.router.url.includes('/personalizar')) {
-      this.activeSection = '/personalizar';
-      this.updatePillPosition();
-      return;
-    }
-
     if (this.router.url.includes('/perfil')) {
       this.activeSection = '/perfil';
       this.updatePillPosition();

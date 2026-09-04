@@ -15,7 +15,7 @@ export const authGuard: CanActivateFn = (route, state) => {
     const user = authService.currentUser();
     if (user && user.rol && user.rol.toLowerCase() !== 'admin' && user.rol.toLowerCase() !== 'administrador') {
       // Solo redirigir si el rol es explícitamente cliente normal sin permisos
-      return router.parseUrl('/personalizar');
+      return router.parseUrl('/perfil');
     }
   }
 

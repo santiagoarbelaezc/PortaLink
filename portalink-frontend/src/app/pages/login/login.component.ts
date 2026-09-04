@@ -72,7 +72,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
               {{ activeTab === 'login' ? 'Conéctate a tu cuenta' : 'Crea tu cuenta' }}
             </h2>
             <p class="text-xs font-sans text-neutral-500 max-w-xs mx-auto leading-relaxed m-0">
-              {{ activeTab === 'login' ? 'Ingresa tus credenciales para gestionar y personalizar tu sitio.' : 'Regístrate en segundos para empezar a diseñar tu plataforma única.' }}
+              {{ activeTab === 'login' ? 'Ingresa tus credenciales para acceder a tu cuenta.' : 'Regístrate en segundos para acceder a la plataforma.' }}
             </p>
           </div>
 
@@ -581,7 +581,7 @@ export class LoginComponent implements OnInit {
           localStorage.setItem('portalink_admin_tab', 'dashboard');
           this.router.navigate(['/admin']);
         } else {
-          this.router.navigate(['/personalizar']);
+          this.router.navigate(['/perfil']);
         }
       },
       error: (err) => {

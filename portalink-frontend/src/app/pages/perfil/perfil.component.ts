@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { SiteService, UserSite } from '../../services/site.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -183,37 +182,6 @@ import { Subscription } from 'rxjs';
               <div>
                 <p class="text-xs font-headline font-bold uppercase tracking-[0.2em] text-neutral-400">Resumen</p>
                 <h2 class="text-2xl sm:text-3xl font-headline font-bold tracking-tight text-neutral-900 mt-0.5">Información Personal</h2>
-              </div>
-
-              <!-- Landing Page Status Card -->
-              <div class="rounded-[28px] border p-6 sm:p-8 transition-all duration-300 relative overflow-hidden"
-                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white shadow-xl' : 'bg-white border-neutral-200/80 text-neutral-900 shadow-sm'">
-                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative z-10">
-                  <div class="space-y-1.5">
-                    <span class="px-3 py-1 rounded-full text-[10px] font-headline font-bold uppercase tracking-widest inline-block border"
-                          [ngClass]="isDark ? 'bg-white/10 text-cyan-400 border-white/10' : 'bg-neutral-100 text-neutral-600 border-neutral-200'">
-                      RotBot IA Landing Page
-                    </span>
-                    <h3 class="text-xl sm:text-2xl font-headline font-bold tracking-tight m-0"
-                        [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                      Tu Página Web Personal
-                    </h3>
-                    <p *ngIf="mySite" class="text-xs m-0" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">
-                      Tu sitio está publicado y disponible en tu dirección personalizada: <span class="font-mono font-semibold text-cyan-600 dark:text-cyan-400">/site/{{ mySite.slug }}</span>
-                    </p>
-                    <p *ngIf="!mySite" class="text-xs m-0" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">
-                      Crea tu landing page en segundos hablando con RotBot, el asistente de inteligencia artificial.
-                    </p>
-                  </div>
-
-                  <div *ngIf="mySite" class="flex items-center gap-3 shrink-0 w-full sm:w-auto">
-                    <a [routerLink]="['/site', mySite.slug]" target="_blank"
-                       class="px-6 py-3 rounded-full bg-cyan-400 text-black font-headline font-bold text-xs uppercase tracking-wider hover:bg-cyan-300 transition-all shadow-md flex items-center justify-center gap-2 no-underline">
-                      <span>Ver página pública</span>
-                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                    </a>
-                  </div>
-                </div>
               </div>
 
               <!-- Certificados Acreditados Card Banner -->
@@ -443,14 +411,12 @@ import { Subscription } from 'rxjs';
 })
 export class PerfilComponent implements OnInit, OnDestroy {
   authService = inject(AuthService);
-  private siteService = inject(SiteService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private querySub!: Subscription;
 
   activeTab: 'profile' | 'password' = 'profile';
   isMobileDrawerOpen = false;
-  mySite: UserSite | null = null;
 
   // Form Fields (Password)
   currentPassword = '';
@@ -495,17 +461,6 @@ export class PerfilComponent implements OnInit, OnDestroy {
       this.email = user.email || '';
       this.telefono = user.telefono || '';
     }
-
-    this.siteService.getMySite().subscribe({
-      next: (res) => {
-        if (res && res.site) {
-          this.mySite = res.site;
-        }
-      },
-      error: () => {
-        this.mySite = null;
-      }
-    });
   }
 
   goToCertificados(event?: Event) {
@@ -555,10 +510,6 @@ export class PerfilComponent implements OnInit, OnDestroy {
         ? 'bg-neutral-900 text-white font-bold shadow-sm'
         : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 font-semibold';
     }
-  }
-
-  goToPersonalizar() {
-    this.router.navigate(['/personalizar']);
   }
 
   getUserInitials(): string {

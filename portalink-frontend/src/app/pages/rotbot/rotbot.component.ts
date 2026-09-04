@@ -8,7 +8,6 @@ import { ChatLimitModalComponent } from '../../components/chat-limit-modal/chat-
 import { AiInfoModalComponent } from '../../components/ai-info-modal/ai-info-modal.component';
 import { MarkdownPipe } from '../../pipes/markdown-pipe';
 import { AuthService } from '../../services/auth.service';
-import { SiteService } from '../../services/site.service';
 
 @Component({
   selector: 'app-rotbot-page',
@@ -230,25 +229,6 @@ import { SiteService } from '../../services/site.service';
 
                       </div>
                     </div>
-
-                  <!-- Tarjeta interactiva para ir a personalizar con el JSON devuelto -->
-                  <div *ngIf="msg.role === 'assistant' && hasGeneratedSite(msg.content)" 
-                       class="mt-4 p-4 rounded-2xl border border-cyan-500/30 bg-cyan-500/10 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg animate-fade-in">
-                    <div class="flex items-center gap-3">
-                      <div class="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-300 text-lg">
-                        ✨
-                      </div>
-                      <div>
-                        <h4 class="text-sm font-bold text-white">¡Tu Landing Page está lista!</h4>
-                        <p class="text-xs text-neutral-300">Hemos estructurado tu sitio con los datos que nos diste.</p>
-                      </div>
-                    </div>
-                    <button (click)="customizeSiteFromMessage(msg.content)"
-                            class="px-5 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all shadow-md cursor-pointer whitespace-nowrap">
-                      <span>Personalizar Mi Sitio</span>
-                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
-                    </button>
-                  </div>
                 </div>
             </ng-container>
  
@@ -898,17 +878,8 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     private router: Router,
     private location: Location,
     private analyticsService: AnalyticsService,
-    public authService: AuthService,
-    private siteService: SiteService
-  ) {
-    effect(() => {
-      const site = this.chatService.lastGeneratedSite();
-      if (site) {
-        this.generatedSiteData = site.siteData;
-        this.generatedSlug = site.slug;
-      }
-    });
-  }
+    public authService: AuthService
+  ) {}
 
   ngOnInit() {
     this.analyticsService.incrementMetric('rotbotOpens');
@@ -1229,40 +1200,6 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     this.chatService.sendMessage(userText);
     setTimeout(() => this.scrollToBottom(), 80);
-  }
-
-  hasGeneratedSite(content: string): boolean {
-    return !!content && content.includes('===LANDING_JSON_START===');
-  }
-
-  customizeSiteFromMessage(content: string) {
-    try {
-      const match = content.match(/===LANDING_JSON_START===([\s\S]*?)===LANDING_JSON_END===/);
-      if (match && match[1]) {
-        const siteData = JSON.parse(match[1].trim());
-        localStorage.setItem('portalink_generated_site', JSON.stringify(siteData));
-        if (this.authService.hasToken()) {
-          this.siteService.saveMySite(siteData).subscribe();
-        }
-        this.router.navigate(['/personalizar'], { state: { siteData } });
-        return;
-      }
-    } catch (e) {
-      console.error('Error procesando JSON de landing page:', e);
-    }
-    this.customizeGeneratedSite();
-  }
-
-  customizeGeneratedSite() {
-    if (this.generatedSiteData) {
-      try {
-        localStorage.setItem('portalink_generated_site', JSON.stringify(this.generatedSiteData));
-        if (this.authService.hasToken()) {
-          this.siteService.saveMySite(this.generatedSiteData).subscribe();
-        }
-      } catch (e) { }
-    }
-    this.router.navigate(['/personalizar'], { state: { siteData: this.generatedSiteData } });
   }
 
   private scrollToBottom(): void {

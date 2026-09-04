@@ -205,6 +205,6 @@ export class ChatLimitModalComponent implements OnInit, OnDestroy {
 
   goToPlans() {
     this.chatService.dismissLimitModal();
-    this.router.navigate(['/personalizar']);
+    this.router.navigate(['/planes']);
   }
 }

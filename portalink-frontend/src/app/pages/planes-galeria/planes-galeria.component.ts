@@ -516,15 +516,11 @@ export class PlanesGaleriaComponent implements OnInit {
 
   selectDesign(project: GalleryProject) {
     this.closePreview();
-    if (project.category === 'E-commerce') {
-      this.router.navigate(['/personalizar']);
-    } else {
-      this.router.navigate(['/rotbot']).then(() => {
-        setTimeout(() => {
-          window.dispatchEvent(new CustomEvent('open-ai-chat', { detail: { message: project.rotbotPrompt } }));
-        }, 500);
-      });
-    }
+    this.router.navigate(['/rotbot']).then(() => {
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('open-ai-chat', { detail: { message: project.rotbotPrompt } }));
+      }, 500);
+    });
   }
 
   onImgError(event: Event) {

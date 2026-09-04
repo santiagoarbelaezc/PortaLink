@@ -489,8 +489,4 @@ export class PlanesComponent implements OnInit {
       }, 500);
     });
   }
-
-  routerToPersonalizar() {
-    this.router.navigate(['/personalizar']);
-  }
 }

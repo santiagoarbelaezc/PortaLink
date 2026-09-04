@@ -78,11 +78,6 @@ export const routes: Routes = [
     data: { animation: 'ProyectoDetallePage' }
   },
   {
-    path: 'personalizar',
-    loadComponent: () => import('./pages/personalizar/personalizar.component').then(m => m.PersonalizarComponent),
-    data: { animation: 'PersonalizarPage' }
-  },
-  {
     path: 'login',
     loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent),
     data: { animation: 'LoginPage' }
@@ -103,11 +98,6 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/admin/admin.component').then(m => m.AdminComponent),
     canActivate: [authGuard],
     data: { animation: 'AdminPage' }
-  },
-  {
-    path: 'site/:slug',
-    loadComponent: () => import('./pages/user-site/user-site.component').then(m => m.UserSiteComponent),
-    data: { animation: 'SitePage' }
   },
   {
     path: 'verify-email',
