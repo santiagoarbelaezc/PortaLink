@@ -424,6 +424,10 @@ export class DashLibraryComponent implements OnInit {
     content = content.replace(/\[red\](.*?)\[\/red\]/gi, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
     content = content.replace(/&lt;red&gt;(.*?)&lt;\/red&gt;/gi, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
     
+    // Convertir etiquetas legadas [b]...[/b] y [i]...[/i]
+    content = content.replace(/\[b\](.*?)\[\/b\]/gi, '<strong class="font-bold">$1</strong>');
+    content = content.replace(/\[i\](.*?)\[\/i\]/gi, '<em class="italic">$1</em>');
+    
     return this.sanitizer.bypassSecurityTrustHtml(content);
   }
 
@@ -434,8 +438,8 @@ export class DashLibraryComponent implements OnInit {
     this.syncBlocksToContent();
   }
 
-  // ── Atajo para Colorear Texto en Rojo (Ctrl + Shift + D) ──────────────
-  applyRedTextColorToSelection(block?: NoteBlock) {
+  // ── Formateo de Texto Enriquecido: Negrilla, Cursiva y Rojo ──────────────
+  applyTextStyleToSelection(type: 'bold' | 'italic' | 'red', block?: NoteBlock) {
     const selection = window.getSelection();
     if (!selection || selection.rangeCount === 0) {
       this.showToast('Selecciona el texto con el cursor primero');
@@ -445,47 +449,106 @@ export class DashLibraryComponent implements OnInit {
     const range = selection.getRangeAt(0);
     const selectedText = selection.toString();
 
-    // Comprobar si el texto seleccionado o su ancestro ya está coloreado en rojo
     let container = range.commonAncestorContainer as HTMLElement;
     if (container.nodeType === Node.TEXT_NODE) {
       container = container.parentElement as HTMLElement;
     }
 
-    const redElement = container?.closest('.text-red-500, [style*="239, 68, 68"], [style*="#ef4444"], red') as HTMLElement | null;
+    if (type === 'bold') {
+      const boldElement = container?.closest('strong, b, .font-bold') as HTMLElement | null;
+      if (boldElement) {
+        // Deshacer negrilla
+        const plainText = boldElement.innerText || boldElement.textContent || '';
+        const textNode = document.createTextNode(plainText);
+        boldElement.parentNode?.replaceChild(textNode, boldElement);
+        this.showToast('Negrilla removida');
+      } else if (selectedText && selectedText.trim().length > 0) {
+        const strong = document.createElement('strong');
+        strong.className = 'font-bold';
+        try {
+          range.surroundContents(strong);
+        } catch (e) {
+          const fragment = range.extractContents();
+          strong.appendChild(fragment);
+          range.insertNode(strong);
+        }
+        this.showToast('Texto en negrilla');
+      } else {
+        const strong = document.createElement('strong');
+        strong.className = 'font-bold';
+        strong.textContent = 'texto en negrilla';
+        range.insertNode(strong);
 
-    if (redElement) {
-      // Toggle: Deshacer color rojo
-      const plainText = redElement.innerText || redElement.textContent || '';
-      const textNode = document.createTextNode(plainText);
-      redElement.parentNode?.replaceChild(textNode, redElement);
-      this.showToast('Color rojo removido');
-    } else if (selectedText && selectedText.trim().length > 0) {
-      // Aplicar color rojo real al fragmento seleccionado
-      const span = document.createElement('span');
-      span.className = 'text-red-500 font-bold';
-      span.style.color = '#ef4444';
-
-      try {
-        range.surroundContents(span);
-      } catch (e) {
-        const fragment = range.extractContents();
-        span.appendChild(fragment);
-        range.insertNode(span);
+        const newRange = document.createRange();
+        newRange.selectNodeContents(strong);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+        this.showToast('Negrilla insertada');
       }
-      this.showToast('Texto colocado en rojo');
-    } else {
-      // Si no hay selección, insertar ejemplo en rojo
-      const span = document.createElement('span');
-      span.className = 'text-red-500 font-bold';
-      span.style.color = '#ef4444';
-      span.textContent = 'texto en rojo';
-      range.insertNode(span);
+    } else if (type === 'italic') {
+      const italicElement = container?.closest('em, i, .italic') as HTMLElement | null;
+      if (italicElement) {
+        // Deshacer cursiva
+        const plainText = italicElement.innerText || italicElement.textContent || '';
+        const textNode = document.createTextNode(plainText);
+        italicElement.parentNode?.replaceChild(textNode, italicElement);
+        this.showToast('Cursiva removida');
+      } else if (selectedText && selectedText.trim().length > 0) {
+        const em = document.createElement('em');
+        em.className = 'italic';
+        try {
+          range.surroundContents(em);
+        } catch (e) {
+          const fragment = range.extractContents();
+          em.appendChild(fragment);
+          range.insertNode(em);
+        }
+        this.showToast('Texto en cursiva');
+      } else {
+        const em = document.createElement('em');
+        em.className = 'italic';
+        em.textContent = 'texto en cursiva';
+        range.insertNode(em);
 
-      const newRange = document.createRange();
-      newRange.selectNodeContents(span);
-      selection.removeAllRanges();
-      selection.addRange(newRange);
-      this.showToast('Texto en rojo insertado');
+        const newRange = document.createRange();
+        newRange.selectNodeContents(em);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+        this.showToast('Cursiva insertada');
+      }
+    } else if (type === 'red') {
+      const redElement = container?.closest('.text-red-500, [style*="239, 68, 68"], [style*="#ef4444"], red') as HTMLElement | null;
+      if (redElement) {
+        // Toggle: Deshacer color rojo
+        const plainText = redElement.innerText || redElement.textContent || '';
+        const textNode = document.createTextNode(plainText);
+        redElement.parentNode?.replaceChild(textNode, redElement);
+        this.showToast('Color rojo removido');
+      } else if (selectedText && selectedText.trim().length > 0) {
+        const span = document.createElement('span');
+        span.className = 'text-red-500 font-bold';
+        span.style.color = '#ef4444';
+        try {
+          range.surroundContents(span);
+        } catch (e) {
+          const fragment = range.extractContents();
+          span.appendChild(fragment);
+          range.insertNode(span);
+        }
+        this.showToast('Texto colocado en rojo');
+      } else {
+        const span = document.createElement('span');
+        span.className = 'text-red-500 font-bold';
+        span.style.color = '#ef4444';
+        span.textContent = 'texto en rojo';
+        range.insertNode(span);
+
+        const newRange = document.createRange();
+        newRange.selectNodeContents(span);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+        this.showToast('Texto en rojo insertado');
+      }
     }
 
     // Sincronizar bloque activo
@@ -499,17 +562,46 @@ export class DashLibraryComponent implements OnInit {
     }
   }
 
+  // Métodos puente para compatibilidad
+  applyRedTextColorToSelection(block?: NoteBlock) {
+    this.applyTextStyleToSelection('red', block);
+  }
+
   applyRedTextToActiveBlock() {
-    this.applyRedTextColorToSelection();
+    this.applyTextStyleToSelection('red');
+  }
+
+  applyBoldTextToActiveBlock(block?: NoteBlock) {
+    this.applyTextStyleToSelection('bold', block);
+  }
+
+  applyItalicTextToActiveBlock(block?: NoteBlock) {
+    this.applyTextStyleToSelection('italic', block);
   }
 
   @HostListener('window:keydown', ['$event'])
   onGlobalTypeMenuKeydown(event: KeyboardEvent) {
-    // Atajo global Ctrl + Shift + D / Cmd + Shift + D
+    // Atajo global Ctrl + Shift + D / Cmd + Shift + D (Rojo)
     if ((event.ctrlKey || event.metaKey) && event.shiftKey && (event.key === 'D' || event.key === 'd')) {
       event.preventDefault();
       event.stopPropagation();
-      this.applyRedTextColorToSelection();
+      this.applyTextStyleToSelection('red');
+      return;
+    }
+
+    // Atajo global Ctrl + B / Cmd + B (Negrilla)
+    if ((event.ctrlKey || event.metaKey) && (event.key === 'B' || event.key === 'b') && !event.shiftKey && !event.altKey) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.applyTextStyleToSelection('bold');
+      return;
+    }
+
+    // Atajo global Ctrl + I / Cmd + I (Cursiva)
+    if ((event.ctrlKey || event.metaKey) && (event.key === 'I' || event.key === 'i') && !event.shiftKey && !event.altKey) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.applyTextStyleToSelection('italic');
       return;
     }
 
@@ -1346,6 +1438,22 @@ export class DashLibraryComponent implements OnInit {
       event.preventDefault();
       event.stopPropagation();
       this.applyRedTextColorToSelection(block);
+      return;
+    }
+
+    // Atajo Ctrl + B / Cmd + B para Negrilla
+    if ((event.ctrlKey || event.metaKey) && (event.key === 'B' || event.key === 'b') && !event.shiftKey && !event.altKey) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.applyBoldTextToActiveBlock(block);
+      return;
+    }
+
+    // Atajo Ctrl + I / Cmd + I para Cursiva
+    if ((event.ctrlKey || event.metaKey) && (event.key === 'I' || event.key === 'i') && !event.shiftKey && !event.altKey) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.applyItalicTextToActiveBlock(block);
       return;
     }
 

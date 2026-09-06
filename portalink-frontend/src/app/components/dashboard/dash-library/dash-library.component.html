@@ -1242,14 +1242,37 @@
 
                 <span class="opacity-30 text-xs shrink-0">|</span>
 
-                <!-- BOTÓN TEXTO EN ROJO (Ctrl + Shift + D) -->
-                <button type="button" 
-                        (click)="applyRedTextToActiveBlock()" 
-                        title="Colorear texto seleccionado en rojo (Ctrl + Shift + D)" 
-                        class="hover:scale-105 p-1 sm:p-1.5 rounded-md hover:bg-red-500/20 shrink-0 text-red-400 transition-all flex items-center gap-1 cursor-pointer">
-                  <span class="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0 shadow-xs shadow-red-500/50"></span>
-                  <span class="text-[10px] font-bold hidden sm:inline text-red-400">Rojo</span>
-                </button>
+                <!-- BOTONES DE FORMATO DE TEXTO: NEGRILLA, CURSIVA, ROJO -->
+                <div class="flex items-center gap-0.5 shrink-0">
+                  <!-- BOTÓN NEGRILLA (Ctrl + B) -->
+                  <button type="button" 
+                          (click)="applyBoldTextToActiveBlock()" 
+                          title="Texto en negrilla (Ctrl + B)" 
+                          class="hover:scale-105 p-1 sm:p-1.5 rounded-md transition-all flex items-center gap-1 cursor-pointer"
+                          [ngClass]="isDark ? 'hover:bg-neutral-800 text-neutral-300 hover:text-white' : 'hover:bg-neutral-200 text-neutral-700 hover:text-black'">
+                    <span class="text-xs font-black font-serif px-0.5">B</span>
+                    <span class="text-[10px] font-bold hidden xl:inline">Negrilla</span>
+                  </button>
+
+                  <!-- BOTÓN CURSIVA (Ctrl + I) -->
+                  <button type="button" 
+                          (click)="applyItalicTextToActiveBlock()" 
+                          title="Texto en cursiva (Ctrl + I)" 
+                          class="hover:scale-105 p-1 sm:p-1.5 rounded-md transition-all flex items-center gap-1 cursor-pointer"
+                          [ngClass]="isDark ? 'hover:bg-neutral-800 text-neutral-300 hover:text-white' : 'hover:bg-neutral-200 text-neutral-700 hover:text-black'">
+                    <span class="text-xs font-serif italic px-0.5 font-bold">I</span>
+                    <span class="text-[10px] font-bold hidden xl:inline">Cursiva</span>
+                  </button>
+
+                  <!-- BOTÓN TEXTO EN ROJO (Ctrl + Shift + D) -->
+                  <button type="button" 
+                          (click)="applyRedTextToActiveBlock()" 
+                          title="Colorear texto seleccionado en rojo (Ctrl + Shift + D)" 
+                          class="hover:scale-105 p-1 sm:p-1.5 rounded-md hover:bg-red-500/20 shrink-0 text-red-400 transition-all flex items-center gap-1 cursor-pointer">
+                    <span class="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0 shadow-xs shadow-red-500/50"></span>
+                    <span class="text-[10px] font-bold hidden sm:inline text-red-400">Rojo</span>
+                  </button>
+                </div>
 
                 <span class="opacity-30 text-xs shrink-0">|</span>
 
