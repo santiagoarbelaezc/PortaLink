@@ -2074,7 +2074,7 @@ export class DashLibraryComponent implements OnInit {
   }
 
   getNotebookColor(): string {
-    return this.selectedNotebook?.color || '#10b981';
+    return this.selectedNotebook?.color || '#737373';
   }
 
   formatMarkdown(content: string, darkTheme: boolean = this.isDark): string {
@@ -2082,7 +2082,7 @@ export class DashLibraryComponent implements OnInit {
     const headingTextClass = darkTheme ? 'text-white' : 'text-neutral-900';
     const borderClass = darkTheme ? 'border-neutral-800/80' : 'border-neutral-200';
     const codeBgClass = darkTheme ? 'bg-[#09090b]' : 'bg-neutral-100 text-neutral-900';
-    const codeTextClass = darkTheme ? 'text-emerald-400 font-bold' : 'text-emerald-700 font-bold';
+    const codeTextClass = darkTheme ? 'text-neutral-200 font-bold' : 'text-neutral-800 font-bold';
 
     let html = content
       .replace(/&/g, '&amp;')
@@ -2090,9 +2090,9 @@ export class DashLibraryComponent implements OnInit {
       .replace(/>/g, '&gt;');
 
     // Headings (COMPACT & ELEGANT NOTION SPACING WITH DYNAMIC DARK/LIGHT TEXT COLOR)
-    html = html.replace(/^### (.*$)/gim, `<h3 class="text-base sm:text-lg font-bold mt-2.5 mb-1 text-emerald-500 font-headline">$1</h3>`);
+    html = html.replace(/^### (.*$)/gim, `<h3 class="text-base sm:text-lg font-bold mt-2.5 mb-1 ${headingTextClass} font-headline">$1</h3>`);
     html = html.replace(/^## (.*$)/gim, `<h2 class="text-lg sm:text-xl font-bold mt-3 mb-1.5 pb-1 border-b ${borderClass} font-headline ${headingTextClass}">$1</h2>`);
-    html = html.replace(/^# (.*$)/gim, `<h1 class="text-xl sm:text-2xl font-black mt-4 mb-2 ${headingTextClass} font-headline tracking-tight border-b pb-1 border-emerald-500/30">$1</h1>`);
+    html = html.replace(/^# (.*$)/gim, `<h1 class="text-xl sm:text-2xl font-black mt-4 mb-2 ${headingTextClass} font-headline tracking-tight border-b pb-1 ${borderClass}">$1</h1>`);
 
     // Horizontal Divider ---
     html = html.replace(/^---$/gim, `<hr class="my-3 ${borderClass}">`);
@@ -2104,18 +2104,18 @@ export class DashLibraryComponent implements OnInit {
     html = html.replace(/&lt;\[red\]&gt;(.*?)&lt;\[\/red\]&gt;/gim, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
 
     // Bold & Italics
-    html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-emerald-500">$1</strong>');
+    html = html.replace(/\*\*(.*?)\*\*/g, `<strong class="font-bold ${headingTextClass}">$1</strong>`);
     html = html.replace(/\*(.*?)\*/g, '<em class="italic opacity-80">$1</em>');
 
     // Callouts / Blockquotes
-    html = html.replace(/^> (.*$)/gim, `<blockquote class="p-3 my-2 rounded-xl bg-emerald-500/10 border-l-4 border-emerald-500 text-xs sm:text-sm ${headingTextClass} font-medium flex items-start gap-2 shadow-sm">$1</blockquote>`);
+    html = html.replace(/^> (.*$)/gim, `<blockquote class="p-3 my-2 rounded-xl bg-neutral-800/40 border-l-4 border-neutral-600 text-xs sm:text-sm ${headingTextClass} font-medium flex items-start gap-2 shadow-sm">$1</blockquote>`);
 
     // Code blocks
     html = html.replace(/```([a-z]*)\n([\s\S]*?)```/gim, `<pre class="p-4 my-2.5 rounded-xl ${codeBgClass} border ${borderClass} ${codeTextClass} font-mono text-xs sm:text-sm overflow-x-auto shadow-inner relative group"><code>$2</code></pre>`);
 
     // Checkboxes
-    html = html.replace(/- \[ \]/g, ' <input type="checkbox" disabled class="mr-2 rounded text-emerald-500 w-3.5 h-3.5">');
-    html = html.replace(/- \[x\]/g, ' <input type="checkbox" checked disabled class="mr-2 rounded text-emerald-500 w-3.5 h-3.5">');
+    html = html.replace(/- \[ \]/g, ' <input type="checkbox" disabled class="mr-2 rounded text-neutral-500 w-3.5 h-3.5">');
+    html = html.replace(/- \[x\]/g, ' <input type="checkbox" checked disabled class="mr-2 rounded text-neutral-500 w-3.5 h-3.5">');
 
     // Line breaks conversion
     html = html.replace(/\n/g, '<br>');
