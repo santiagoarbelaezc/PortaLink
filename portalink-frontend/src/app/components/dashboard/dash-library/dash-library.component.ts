@@ -149,6 +149,8 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
   isLoading = false;
   searchQuery = '';
   searchResults: any[] = [];
+  isSearching = false;
+  private searchDebounceTimer: any = null;
   isPreviewMode = false;
   activeFilter: 'all' | 'favorites' | 'pinned' = 'all';
 
@@ -2042,24 +2044,104 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
 
   // ── BUSCADOR & UTILIDADES ───────────────────────────────────────
   onSearchInput() {
-    if (this.searchQuery.trim().length === 0) {
+    if (this.searchDebounceTimer) {
+      clearTimeout(this.searchDebounceTimer);
+    }
+
+    const q = this.searchQuery.trim();
+    if (q.length === 0) {
       this.searchResults = [];
+      this.isSearching = false;
       return;
     }
-    this.libraryService.search(this.searchQuery).subscribe({
-      next: (res) => {
-        if (res.ok) this.searchResults = res.data;
-      }
-    });
+
+    this.isSearching = true;
+    this.searchDebounceTimer = setTimeout(() => {
+      this.libraryService.search(q).subscribe({
+        next: (res) => {
+          this.isSearching = false;
+          if (res.ok) {
+            this.searchResults = res.data || [];
+          }
+        },
+        error: () => {
+          this.isSearching = false;
+          this.showToast('Error al buscar en la biblioteca', 'error');
+        }
+      });
+    }, 220);
+  }
+
+  clearSearch() {
+    this.searchQuery = '';
+    this.searchResults = [];
+    this.isSearching = false;
+    if (this.searchDebounceTimer) {
+      clearTimeout(this.searchDebounceTimer);
+    }
+  }
+
+  getSearchSnippet(content: string, query: string): string {
+    if (!content) return 'Sin contenido adicional';
+    if (!query) return content.replace(/[#*`_>]/g, '').trim().slice(0, 140);
+
+    const q = query.trim().toLowerCase();
+    const lowerContent = content.toLowerCase();
+    const idx = lowerContent.indexOf(q);
+
+    if (idx === -1) {
+      const clean = content.replace(/[#*`_>]/g, '').trim();
+      return clean.slice(0, 140) + (clean.length > 140 ? '...' : '');
+    }
+
+    const start = Math.max(0, idx - 45);
+    const end = Math.min(content.length, idx + q.length + 65);
+    let snippet = content.substring(start, end).replace(/\n/g, ' ');
+    if (start > 0) snippet = '...' + snippet;
+    if (end < content.length) snippet = snippet + '...';
+    return snippet;
+  }
+
+  isCodeMatch(content: string, query: string): boolean {
+    if (!content || !query) return false;
+    const lowerContent = content.toLowerCase();
+    const q = query.trim().toLowerCase();
+    return content.includes('```') || lowerContent.includes('select') || lowerContent.includes('join') || lowerContent.includes('table') || lowerContent.includes('from');
   }
 
   selectSearchResult(item: any) {
-    this.searchQuery = '';
-    this.searchResults = [];
-    this.selectedFolder = { id: item.folder_id, name: item.folder_name, color: '#10b981', icon: 'folder' };
-    this.selectedNotebook = { id: item.notebook_id, folder_id: item.folder_id, title: item.notebook_title, color: item.notebook_color || '#3b82f6', icon: 'book' };
+    this.clearSearch();
+
+    // 1. Sincronizar carpeta
+    const existingFolder = this.folders.find(f => f.id === item.folder_id);
+    this.selectedFolder = existingFolder || { 
+      id: item.folder_id, 
+      name: item.folder_name, 
+      color: '#737373', 
+      icon: 'folder' 
+    };
+
+    if (item.folder_id) {
+      this.libraryService.getNotebooks(item.folder_id).subscribe({
+        next: (res) => {
+          if (res.ok) this.notebooks = res.data;
+        }
+      });
+    }
+
+    // 2. Sincronizar cuaderno
+    this.selectedNotebook = { 
+      id: item.notebook_id, 
+      folder_id: item.folder_id, 
+      title: item.notebook_title, 
+      color: item.notebook_color || '#737373', 
+      icon: 'book' 
+    };
+
+    // 3. Cargar páginas y seleccionar el apunte
     this.loadPages(item.notebook_id, item.page_id);
     this.saveStateInLocalStorage();
+    this.showToast(`Apunte "${item.page_title}" abierto`);
   }
 
   goToBreadcrumb(target: 'root' | 'folder') {

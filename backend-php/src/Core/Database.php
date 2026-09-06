@@ -75,20 +75,21 @@ class Database
     {
         $pdo = self::getConnection();
 
-        // 1. Convertir marcadores posicionales $1, $2 a parámetros de PDO :pg_param_1, :pg_param_2
+        // 1. Convertir marcadores posicionales $1, $2 a parámetros de PDO con nombres únicos por ocurrencia
         if (!empty($params) && preg_match('/\$[0-9]+/', $sql)) {
-            $sql = preg_replace_callback('/\$([0-9]+)/', function ($matches) {
-                return ':pg_param_' . $matches[1];
+            $newParams = [];
+            $paramCounts = [];
+            $paramValues = array_values($params);
+            $sql = preg_replace_callback('/\$([0-9]+)/', function ($matches) use (&$newParams, &$paramCounts, $paramValues) {
+                $num = $matches[1];
+                $idx = (int)$num - 1;
+                $val = $paramValues[$idx] ?? null;
+                $count = ($paramCounts[$num] = ($paramCounts[$num] ?? 0) + 1);
+                $pName = ':pg_p_' . $num . '_' . $count;
+                $newParams[$pName] = $val;
+                return $pName;
             }, $sql);
 
-            $newParams = [];
-            foreach ($params as $key => $val) {
-                if (is_int($key)) {
-                    $newParams[':pg_param_' . ($key + 1)] = $val;
-                } else {
-                    $newParams[$key] = $val;
-                }
-            }
             $params = $newParams;
         }
 

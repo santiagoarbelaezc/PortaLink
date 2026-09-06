@@ -289,7 +289,8 @@ interface Tab {
 
             <app-dash-library
               *ngIf="activeTab === 'library'"
-              [theme]="currentTheme">
+              [theme]="currentTheme"
+              (inNotesViewChange)="onNotesViewChange($event)">
             </app-dash-library>
 
             <app-dash-db-viewer
@@ -387,7 +388,10 @@ interface Tab {
            MATERIAL DESIGN 3 MOBILE BOTTOM NAV BAR
       ══════════════════════════════════════ -->
       <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur-2xl select-none px-2 pt-1 pb-1 transition-all duration-300 shadow-[0_-4px_25px_rgba(0,0,0,0.08)]"
-           [ngClass]="isDark ? 'bg-[#09090d]/95 border-neutral-800/80 text-neutral-400' : 'bg-white/95 border-neutral-200/90 text-neutral-600'"
+           [ngClass]="[
+             isDark ? 'bg-[#09090d]/95 border-neutral-800/80 text-neutral-400' : 'bg-white/95 border-neutral-200/90 text-neutral-600',
+             isNotesView ? 'hidden' : ''
+           ]"
            style="padding-bottom: env(safe-area-inset-bottom, 0px);">
         <div class="flex items-center justify-around max-w-md mx-auto">
           
@@ -498,6 +502,8 @@ export class AdminComponent implements OnInit, OnDestroy {
   isMobileDrawerOpen = false;
   unreadMessages = 0;
   pendingLeads = 0;
+  isNotesView = false;
+  private previousSidebarState: boolean | null = null;
 
   rotbotMode: RotbotMode = 'charla';
   rotbotMuted = false;
@@ -552,7 +558,28 @@ export class AdminComponent implements OnInit, OnDestroy {
       this.isMobileDrawerOpen = !this.isMobileDrawerOpen;
     } else {
       this.isSidebarCollapsed = !this.isSidebarCollapsed;
+      if (!this.isNotesView) {
+        this.previousSidebarState = null;
+      }
     }
+  }
+
+  onNotesViewChange(inNotes: boolean) {
+    this.isNotesView = inNotes;
+    if (inNotes) {
+      if (this.previousSidebarState === null) {
+        this.previousSidebarState = this.isSidebarCollapsed;
+      }
+      this.isSidebarCollapsed = true;
+    } else {
+      if (this.previousSidebarState !== null) {
+        this.isSidebarCollapsed = this.previousSidebarState;
+        this.previousSidebarState = null;
+      }
+    }
+    try {
+      this.cdr.markForCheck();
+    } catch {}
   }
 
   reloadDashboard() {
@@ -569,6 +596,12 @@ export class AdminComponent implements OnInit, OnDestroy {
     if (id === 'stats' || id === 'reports') id = 'analytics';
     if (this.activeTab === id) return;
     
+    if (this.activeTab === 'library' && id !== 'library' && this.previousSidebarState !== null) {
+      this.isSidebarCollapsed = this.previousSidebarState;
+      this.previousSidebarState = null;
+      this.isNotesView = false;
+    }
+
     this.activeTab = id;
     this.isMobileDrawerOpen = false;
     if (typeof localStorage !== 'undefined') {

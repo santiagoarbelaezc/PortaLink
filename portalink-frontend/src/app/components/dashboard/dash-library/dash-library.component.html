@@ -125,7 +125,7 @@
     <div class="flex items-center gap-3 flex-wrap">
       
       <!-- BUSCADOR EXECUTIVE -->
-      <div class="relative min-w-[200px] sm:min-w-[260px]">
+      <div class="relative min-w-[200px] sm:min-w-[280px]">
         <input 
           type="text"
           [(ngModel)]="searchQuery"
@@ -134,12 +134,21 @@
           autocorrect="off"
           autocapitalize="off"
           placeholder="Buscar apunte o código..."
-          class="w-full pl-9 pr-4 py-2 text-xs rounded-full border transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-neutral-500/50"
+          class="w-full pl-9 pr-8 py-2 text-xs rounded-full border transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-neutral-400/50"
           [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800 text-white placeholder:text-neutral-500' : 'bg-neutral-100/80 border-neutral-200 text-neutral-900 placeholder:text-neutral-400'"
         />
         <svg class="w-4 h-4 absolute left-3 top-2.5 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
         </svg>
+
+        <!-- INDICADOR / BOTÓN LIMPIAR -->
+        <div class="absolute right-2.5 top-2.5 flex items-center">
+          <span *ngIf="isSearching" class="w-3.5 h-3.5 border-2 border-neutral-400 border-t-transparent rounded-full animate-spin"></span>
+          <button *ngIf="!isSearching && searchQuery" (click)="clearSearch()" title="Limpiar búsqueda"
+                  class="w-4 h-4 flex items-center justify-center rounded-full opacity-60 hover:opacity-100 cursor-pointer text-xs transition-opacity">
+            ✕
+          </button>
+        </div>
       </div>
 
 
@@ -187,35 +196,102 @@
     <button (click)="toastMessage = ''" class="text-xs opacity-70 hover:opacity-100">✕</button>
   </div>
 
-  <!-- RESULTADOS BÚSQUEDA GLOBAL -->
-  <div *ngIf="searchQuery.trim().length > 0" class="space-y-3">
-    <h3 class="text-xs font-headline font-bold uppercase tracking-widest opacity-60">
-      Resultados de Búsqueda ({{ searchResults.length }})
-    </h3>
-    <div *ngIf="searchResults.length === 0" class="p-8 text-center rounded-[24px] border text-xs opacity-60"
-         [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
-      No se encontraron apuntes o cuadernos que coincidan con "{{ searchQuery }}"
+  <!-- RESULTADOS BÚSQUEDA GLOBAL & EN APUNTES -->
+  <div *ngIf="searchQuery.trim().length > 0" class="space-y-4">
+    <div class="flex items-center justify-between">
+      <h3 class="text-xs font-headline font-bold uppercase tracking-widest opacity-70 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full" [ngClass]="isDark ? 'bg-white' : 'bg-neutral-900'"></span>
+        <span>Resultados de Búsqueda</span>
+        <span *ngIf="!isSearching" class="px-2 py-0.5 rounded-full border text-[10px]"
+              [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
+          {{ searchResults.length }} {{ searchResults.length === 1 ? 'coincidencia' : 'coincidencias' }}
+        </span>
+      </h3>
+
+      <button (click)="clearSearch()" class="text-xs font-semibold cursor-pointer underline opacity-70 hover:opacity-100"
+              [ngClass]="isDark ? 'text-neutral-300 hover:text-white' : 'text-neutral-600 hover:text-black'">
+        Cerrar búsqueda
+      </button>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+    <!-- ESTADO CARGANDO -->
+    <div *ngIf="isSearching" class="p-8 text-center rounded-[24px] border text-xs opacity-70 flex items-center justify-center gap-3"
+         [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+      <span class="w-4 h-4 border-2 border-neutral-400 border-t-transparent rounded-full animate-spin"></span>
+      <span>Buscando en apuntes y bloques de código...</span>
+    </div>
+
+    <!-- ESTADO SIN RESULTADOS -->
+    <div *ngIf="!isSearching && searchResults.length === 0" class="p-8 text-center rounded-[24px] border text-xs opacity-80 space-y-2"
+         [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+      <div class="text-sm font-headline font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+        No se encontraron coincidencias para "{{ searchQuery }}"
+      </div>
+      <p class="text-[11px] opacity-60">
+        Prueba con palabras clave, términos de SQL (SELECT, JOIN, WHERE), comandos o temas de estudio.
+      </p>
+    </div>
+
+    <!-- LISTA DE COINCIDENCIAS -->
+    <div *ngIf="!isSearching && searchResults.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div 
         *ngFor="let item of searchResults"
         (click)="selectSearchResult(item)"
-        class="p-5 rounded-[24px] border cursor-pointer transition-all duration-300 hover:shadow-lg flex flex-col justify-between"
-        [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800 hover:border-neutral-600' : 'bg-white border-neutral-200 hover:border-neutral-400'"
+        class="group/res p-5 rounded-[24px] border cursor-pointer transition-all duration-200 hover:shadow-xl flex flex-col justify-between hover:scale-[1.01]"
+        [ngClass]="isDark ? 'bg-[#111114] border-neutral-800 hover:border-neutral-600' : 'bg-white border-neutral-200 hover:border-neutral-400 shadow-xs'"
       >
         <div>
-          <div class="flex items-center gap-2 text-[10px] font-headline font-bold mb-1.5"
-               [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">
-            <span>{{ item.folder_name }}</span>
-            <span>➔</span>
-            <span>{{ item.notebook_title }}</span>
+          <!-- Header de ruta con badges informativos -->
+          <div class="flex items-center justify-between gap-2 mb-2">
+            <div class="flex items-center gap-1.5 text-[11px] font-headline font-semibold truncate"
+                 [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+              <span>{{ item.folder_name }}</span>
+              <span class="opacity-40">/</span>
+              <span class="font-bold truncate" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">{{ item.notebook_title }}</span>
+            </div>
+            
+            <div class="flex items-center gap-1.5 shrink-0">
+              <span *ngIf="selectedNotebook?.id === item.notebook_id" 
+                    class="px-2 py-0.5 rounded-full text-[9px] font-bold border tracking-wider uppercase"
+                    [ngClass]="isDark ? 'bg-white/10 border-white/20 text-neutral-200' : 'bg-black/5 border-black/10 text-neutral-800'">
+                Cuaderno actual
+              </span>
+              <span *ngIf="isCodeMatch(item.page_content, searchQuery)" 
+                    class="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold border"
+                    [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-neutral-300' : 'bg-neutral-100 border-neutral-300 text-neutral-800'">
+                &lt;/&gt; Código
+              </span>
+            </div>
           </div>
-          <h4 class="text-sm font-headline font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ item.page_title }}</h4>
-          <p class="text-xs opacity-70 line-clamp-2 mt-1">{{ item.page_content }}</p>
+
+          <!-- Título del Apunte -->
+          <h4 class="text-sm font-headline font-bold mb-1.5 transition-colors group-hover/res:text-white"
+              [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+            {{ item.page_title }}
+          </h4>
+
+          <!-- Snippet contextual con fragmento de código o texto -->
+          <p class="text-xs opacity-75 font-mono leading-relaxed p-2.5 rounded-xl border line-clamp-3"
+             [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800/80 text-neutral-300' : 'bg-neutral-50 border-neutral-200/80 text-neutral-700'">
+            {{ getSearchSnippet(item.page_content, searchQuery) }}
+          </p>
         </div>
-        <div *ngIf="item.tags" class="mt-3 flex flex-wrap gap-1.5">
-          <span *ngFor="let tag of getTagsArray(item.tags)" class="px-2.5 py-0.5 rounded-full border text-[10px] font-mono"
-                [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-neutral-300' : 'bg-neutral-100 border-neutral-300 text-neutral-700'">#{{ tag }}</span>
+
+        <div class="mt-3 flex items-center justify-between pt-2.5 border-t"
+             [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span *ngFor="let tag of getTagsArray(item.tags)" class="px-2 py-0.5 rounded-full border text-[9.5px] font-mono"
+                  [ngClass]="isDark ? 'bg-neutral-800/60 border-neutral-700/60 text-neutral-400' : 'bg-neutral-100 border-neutral-200 text-neutral-600'">
+              #{{ tag }}
+            </span>
+          </div>
+          <span class="text-[11px] font-headline font-semibold flex items-center gap-1 opacity-70 group-hover/res:opacity-100 transition-opacity"
+                [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+            <span>Abrir apunte</span>
+            <svg class="w-3 h-3 transition-transform group-hover/res:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </span>
         </div>
       </div>
     </div>

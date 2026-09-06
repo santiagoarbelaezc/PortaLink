@@ -476,7 +476,39 @@ class LibraryController
                 return;
             }
 
+            $userId = $request->user->id ?? null;
             $searchTerm = '%' . $query . '%';
+
+            // Dividir en términos si hay varias palabras
+            $rawWords = preg_split('/\s+/', $query);
+            $words = array_values(array_filter($rawWords, fn($w) => mb_strlen($w) >= 2));
+
+            $conditions = [];
+            $params = [];
+            $pIdx = 1;
+
+            // Condición 1: coincidencia con la frase completa
+            $conditions[] = "(p.title LIKE $" . $pIdx . " OR p.content LIKE $" . $pIdx . " OR p.tags LIKE $" . $pIdx . " OR m.title LIKE $" . $pIdx . " OR f.name LIKE $" . $pIdx . ")";
+            $params[] = $searchTerm;
+            $pIdx++;
+
+            // Condición 2: si hay varias palabras, encontrar apuntes que contengan todas las palabras clave
+            if (count($words) > 1 && count($words) <= 5) {
+                $wordConds = [];
+                foreach ($words as $word) {
+                    $wordConds[] = "(p.title LIKE $" . $pIdx . " OR p.content LIKE $" . $pIdx . " OR p.tags LIKE $" . $pIdx . ")";
+                    $params[] = '%' . $word . '%';
+                    $pIdx++;
+                }
+                $conditions[] = "(" . implode(' AND ', $wordConds) . ")";
+            }
+
+            $whereClause = "(" . implode(' OR ', $conditions) . ")";
+            if ($userId) {
+                $whereClause = "(f.user_id = $" . $pIdx . " OR f.user_id IS NULL) AND " . $whereClause;
+                $params[] = $userId;
+                $pIdx++;
+            }
 
             $sql = "
                 SELECT 
@@ -484,6 +516,7 @@ class LibraryController
                     p.title AS page_title,
                     p.content AS page_content,
                     p.tags,
+                    p.updated_at,
                     m.id AS notebook_id,
                     m.title AS notebook_title,
                     m.color AS notebook_color,
@@ -492,18 +525,21 @@ class LibraryController
                 FROM notebook_pages p
                 JOIN notebook_modules m ON m.id = p.notebook_id
                 JOIN notebook_folders f ON f.id = m.folder_id
-                WHERE p.title LIKE $1 OR p.content LIKE $1 OR p.tags LIKE $1 OR m.title LIKE $1 OR f.name LIKE $1
-                ORDER BY p.updated_at DESC
-                LIMIT 30
+                WHERE {$whereClause}
+                ORDER BY 
+                    (CASE WHEN p.title LIKE $" . 1 . " THEN 1 ELSE 0 END) DESC,
+                    (CASE WHEN p.content LIKE $" . 1 . " THEN 1 ELSE 0 END) DESC,
+                    p.updated_at DESC
+                LIMIT 40
             ";
 
-            $stmt = Database::query($sql, [$searchTerm]);
+            $stmt = Database::query($sql, $params);
             $results = $stmt->fetchAll();
 
             $response->json(['ok' => true, 'data' => $results]);
         } catch (Exception $e) {
             error_log('[LibraryController] searchLibrary error: ' . $e->getMessage());
-            $response->status(500)->json(['ok' => false, 'message' => 'Error al realizar la búsqueda']);
+            $response->status(500)->json(['ok' => false, 'message' => 'Error al realizar la búsqueda: ' . $e->getMessage()]);
         }
     }
 }
