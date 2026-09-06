@@ -24,8 +24,8 @@
         
         <!-- INDICADOR ACTIVO CON GLOW Y COLOR DEL CUADERNO -->
         <span class="w-2 h-2 rounded-full shrink-0 transition-all" 
-              [style.backgroundColor]="tab.color || '#10b981'"
-              [style.boxShadow]="activeTabId === tab.id ? '0 0 8px ' + (tab.color || '#10b981') : 'none'"
+              [style.backgroundColor]="tab.color || '#737373'"
+              [style.boxShadow]="activeTabId === tab.id ? '0 0 8px ' + (tab.color || '#737373') : 'none'"
               [class.animate-pulse]="activeTabId === tab.id"></span>
         
         <!-- TÍTULO DE LA PESTAÑA -->
@@ -134,7 +134,7 @@
           autocorrect="off"
           autocapitalize="off"
           placeholder="Buscar apunte o código..."
-          class="w-full pl-9 pr-4 py-2 text-xs rounded-full border transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+          class="w-full pl-9 pr-4 py-2 text-xs rounded-full border transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-neutral-500/50"
           [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800 text-white placeholder:text-neutral-500' : 'bg-neutral-100/80 border-neutral-200 text-neutral-900 placeholder:text-neutral-400'"
         />
         <svg class="w-4 h-4 absolute left-3 top-2.5 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -179,9 +179,9 @@
 
   <!-- TOAST FEEDBACK NOTIFICATION -->
   <div *ngIf="toastMessage" class="p-4 rounded-2xl border flex items-center justify-between shadow-lg transition-all"
-       [ngClass]="toastType === 'error' ? 'bg-red-500/10 border-red-500/30 text-red-400' : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'">
+       [ngClass]="toastType === 'error' ? 'bg-red-500/10 border-red-500/30 text-red-400' : (isDark ? 'bg-neutral-800/90 border-neutral-700 text-white' : 'bg-neutral-100 border-neutral-300 text-neutral-900')">
     <div class="flex items-center gap-3">
-      <span class="w-2 h-2 rounded-full" [ngClass]="toastType === 'error' ? 'bg-red-400' : 'bg-emerald-400'"></span>
+      <span class="w-2 h-2 rounded-full" [ngClass]="toastType === 'error' ? 'bg-red-400' : (isDark ? 'bg-white' : 'bg-neutral-900')"></span>
       <span class="text-xs font-headline font-bold uppercase tracking-wider">{{ toastMessage }}</span>
     </div>
     <button (click)="toastMessage = ''" class="text-xs opacity-70 hover:opacity-100">✕</button>
@@ -501,7 +501,7 @@
           <!-- Color Swatches -->
           <div *ngIf="availableFolderColors.length > 1" class="flex items-center gap-1.5 p-1 px-2.5 rounded-xl border"
                [ngClass]="isDark ? 'bg-neutral-950/80 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
-            <svg class="w-3.5 h-3.5 opacity-60 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <svg class="w-3.5 h-3.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4.098 19.902a3.75 3.75 0 005.304 0l6.401-6.402M6.75 21A3.75 3.75 0 013 17.25V4.125C3 3.504 3.504 3 4.125 3h5.25c.621 0 1.125.504 1.125 1.125v4.072M6.75 21a3.75 3.75 0 003.75-3.75V8.197M6.75 21h13.125c.621 0 1.125-.504 1.125-1.125v-5.25c0-.621-.504-1.125-1.125-1.125h-4.072"/>
             </svg>
             <button (click)="folderFilterColor = 'all'" 
@@ -516,7 +516,7 @@
                       (click)="folderFilterColor = c"
                       class="w-4 h-4 rounded-full transition-all cursor-pointer shadow-xs"
                       [style.backgroundColor]="c"
-                      [ngClass]="folderFilterColor.toLowerCase() === c.toLowerCase() ? 'ring-2 ring-offset-2 ring-emerald-400 scale-125' : 'opacity-70 hover:opacity-100 hover:scale-110'"
+                      [ngClass]="folderFilterColor.toLowerCase() === c.toLowerCase() ? 'ring-2 ring-offset-2 ring-neutral-400 scale-125' : 'opacity-70 hover:opacity-100 hover:scale-110'"
                       [title]="'Filtrar por color ' + c">
               </button>
             </div>
@@ -524,7 +524,8 @@
 
           <!-- Reset Button -->
           <button *ngIf="isFolderFilterActive" (click)="resetFolderFilters()"
-                  class="px-3 py-1.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 cursor-pointer flex items-center gap-1.5 transition-all shadow-xs"
+                  class="px-3 py-1.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border cursor-pointer flex items-center gap-1.5 transition-all shadow-xs"
+                  [ngClass]="isDark ? 'border-neutral-700 bg-neutral-900 text-neutral-300 hover:text-white' : 'border-neutral-200 bg-white text-neutral-600 hover:text-black'"
                   title="Restablecer todos los filtros de carpetas">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/>
@@ -543,7 +544,8 @@
     <!-- ESTADO VACÍO CARPETAS (TOTAL O POR FILTRO) -->
     <div *ngIf="displayedFolders.length === 0 && !isLoading" class="p-12 text-center rounded-[28px] border my-4"
          [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
-      <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shadow-inner">
+      <div class="w-14 h-14 mx-auto mb-3 rounded-2xl flex items-center justify-center shadow-inner"
+           [ngClass]="isDark ? 'bg-neutral-800 text-neutral-500' : 'bg-neutral-200 text-neutral-400'">
         <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/></svg>
       </div>
       <h3 class="text-base font-headline font-bold">
@@ -570,8 +572,8 @@
       <div 
         *ngFor="let folder of displayedFolders"
         (click)="selectFolder(folder)"
-        class="group relative p-6 rounded-[24px] border transition-all duration-300 hover:border-emerald-500/50 hover:shadow-xl cursor-pointer overflow-hidden hover:scale-[1.01] flex flex-col justify-between"
-        [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800' : 'bg-white border-neutral-200/90'"
+        class="group relative p-6 rounded-[24px] border transition-all duration-300 hover:shadow-xl cursor-pointer overflow-hidden hover:scale-[1.01] flex flex-col justify-between"
+        [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200/90 hover:border-neutral-300'"
       >
         <!-- TOP ACCENT BAR (Monocromática, sutil y elegante) -->
         <div class="absolute top-0 left-0 right-0 h-1 transition-colors"
@@ -711,7 +713,8 @@
     <!-- ESTADO VACÍO CUADERNOS -->
     <div *ngIf="notebooks.length === 0 && !isLoading" class="p-12 text-center rounded-[28px] border my-6"
          [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
-      <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+      <div class="w-14 h-14 mx-auto mb-3 rounded-2xl flex items-center justify-center"
+           [ngClass]="isDark ? 'bg-neutral-800 text-neutral-500' : 'bg-neutral-200 text-neutral-400'">
         <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25"/></svg>
       </div>
       <h3 class="text-base font-headline font-bold">No hay cuadernos en {{ selectedFolder.name }}</h3>
@@ -730,8 +733,8 @@
       <div 
         *ngFor="let nb of notebooks"
         (click)="selectNotebook(nb)"
-        class="group relative p-6 rounded-[24px] border transition-all duration-300 hover:border-emerald-500/50 hover:shadow-xl cursor-pointer flex flex-col justify-between overflow-hidden hover:scale-[1.01]"
-        [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800' : 'bg-white border-neutral-200/90'"
+        class="group relative p-6 rounded-[24px] border transition-all duration-300 hover:shadow-xl cursor-pointer flex flex-col justify-between overflow-hidden hover:scale-[1.01]"
+        [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200/90 hover:border-neutral-300'"
       >
         <!-- LEFT SPINE MONOCHROMATIC ACCENT -->
         <div class="absolute top-0 left-0 bottom-0 w-1 transition-colors"
@@ -748,7 +751,7 @@
               <button (click)="$event.stopPropagation(); toggleFavoriteNotebook(nb)" class="p-1 text-xs hover:scale-125 transition-transform">
                 <svg class="w-4 h-4" [ngClass]="nb.is_favorite ? 'text-amber-400 fill-amber-400' : 'text-neutral-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385c.116.488-.42.877-.84.629l-4.706-2.785a.563.563 0 00-.573 0l-4.706 2.785c-.42.248-.956-.141-.84-.629l1.285-5.385a.563.563 0 00-.182-.557l-4.204-3.602c-.38-.325-.178-.948.32-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
               </button>
-              <button (click)="openNotebookInNewTab(nb, $event)" class="p-1 text-xs opacity-0 group-hover:opacity-100 hover:text-emerald-400 transition-opacity" title="Abrir en nueva pestaña">
+              <button (click)="openNotebookInNewTab(nb, $event)" class="p-1 text-xs opacity-0 group-hover:opacity-100 hover:text-white transition-opacity" title="Abrir en nueva pestaña">
                 <svg class="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                 </svg>
@@ -2085,7 +2088,7 @@
               autocorrect="off"
               autocapitalize="off"
               placeholder="ej. Inglés, Bases de Datos, Desarrollo Web"
-              class="w-full p-3.5 rounded-2xl border font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
+              class="w-full p-3.5 rounded-2xl border font-medium focus:outline-none focus:ring-2 focus:ring-neutral-500/50 transition-all"
               [ngClass]="isDark ? 'bg-neutral-800/80 border-neutral-700 text-white placeholder:text-neutral-500' : 'bg-neutral-100 border-neutral-200 text-neutral-900 placeholder:text-neutral-400'" 
             />
           </div>
@@ -2099,7 +2102,7 @@
               autocorrect="off"
               autocapitalize="off"
               placeholder="ej. Vocabulario A1-B2, consultas SQL y modelos ER..."
-              class="w-full p-3.5 rounded-2xl border font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all resize-none"
+              class="w-full p-3.5 rounded-2xl border font-medium focus:outline-none focus:ring-2 focus:ring-neutral-500/50 transition-all resize-none"
               [ngClass]="isDark ? 'bg-neutral-800/80 border-neutral-700 text-white placeholder:text-neutral-500' : 'bg-neutral-100 border-neutral-200 text-neutral-900 placeholder:text-neutral-400'"
             ></textarea>
           </div>
@@ -2135,7 +2138,7 @@
                 type="button"
                 (click)="selectFolderIcon(iconKey)"
                 class="w-9 h-9 rounded-xl flex items-center justify-center border transition-all cursor-pointer hover:scale-110"
-                [ngClass]="folderForm.icon === iconKey ? 'border-emerald-500 bg-emerald-500/20 text-emerald-400 shadow-sm' : (isDark ? 'border-neutral-800 bg-neutral-900/60 text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-200 bg-white text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100')"
+                [ngClass]="folderForm.icon === iconKey ? (isDark ? 'border-neutral-500 bg-neutral-800 text-white shadow-sm' : 'border-neutral-900 bg-neutral-200 text-neutral-900 shadow-sm') : (isDark ? 'border-neutral-800 bg-neutral-900/60 text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-200 bg-white text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100')"
               >
                 <svg *ngIf="iconKey === 'folder'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/></svg>
                 <svg *ngIf="iconKey === 'book'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25"/></svg>
@@ -2171,7 +2174,8 @@
                     <svg *ngIf="folderForm.icon === 'book'" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25"/></svg>
                     <svg *ngIf="!folderForm.icon || ['code','database','book'].indexOf(folderForm.icon) === -1" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/></svg>
                   </div>
-                  <span class="text-[10px] font-headline font-semibold px-2.5 py-0.5 rounded-full border border-emerald-500/30 text-emerald-400 bg-emerald-500/10">
+                  <span class="text-[10px] font-headline font-semibold px-2.5 py-0.5 rounded-full border"
+                        [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 bg-neutral-800' : 'border-neutral-300 text-neutral-700 bg-neutral-100'">
                     Vista Previa
                   </span>
                 </div>
@@ -2251,7 +2255,7 @@
               autocorrect="off"
               autocapitalize="off"
               placeholder="ej. Cuaderno - A1, Consultas SQL Avanzadas..."
-              class="w-full p-3.5 rounded-2xl border font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
+              class="w-full p-3.5 rounded-2xl border font-medium focus:outline-none focus:ring-2 focus:ring-neutral-400/50 transition-all"
               [ngClass]="isDark ? 'bg-neutral-800/80 border-neutral-700 text-white placeholder:text-neutral-500' : 'bg-neutral-100 border-neutral-200 text-neutral-900 placeholder:text-neutral-400'" 
             />
           </div>
@@ -2265,7 +2269,7 @@
               autocorrect="off"
               autocapitalize="off"
               placeholder="ej. Gramática básica, verbos regulares e irregulares..."
-              class="w-full p-3.5 rounded-2xl border font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all resize-none"
+              class="w-full p-3.5 rounded-2xl border font-medium focus:outline-none focus:ring-2 focus:ring-neutral-400/50 transition-all resize-none"
               [ngClass]="isDark ? 'bg-neutral-800/80 border-neutral-700 text-white placeholder:text-neutral-500' : 'bg-neutral-100 border-neutral-200 text-neutral-900 placeholder:text-neutral-400'"
             ></textarea>
           </div>

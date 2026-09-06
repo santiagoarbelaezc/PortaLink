@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild, ElementRef, inject, HostListener, Directive, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ViewChild, ElementRef, inject, HostListener, Directive, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -87,7 +87,7 @@ export class ContentEditableDirective implements OnChanges {
   templateUrl: './dash-library.component.html',
   host: { class: 'block w-full' }
 })
-export class DashLibraryComponent implements OnInit {
+export class DashLibraryComponent implements OnInit, OnDestroy {
   @ViewChild('editorTextarea') editorTextarea?: ElementRef<HTMLTextAreaElement>;
   @ViewChild('copilotMessagesContainer') copilotMessagesContainer?: ElementRef<HTMLDivElement>;
   @ViewChild('copilotTextarea') copilotTextareaElement?: ElementRef<HTMLTextAreaElement>;
@@ -126,7 +126,24 @@ export class DashLibraryComponent implements OnInit {
   pages: NotebookPage[] = [];
 
   selectedFolder: NotebookFolder | null = null;
-  selectedNotebook: NotebookModule | null = null;
+  private _selectedNotebook: NotebookModule | null = null;
+
+  @Output() inNotesViewChange = new EventEmitter<boolean>();
+
+  get selectedNotebook(): NotebookModule | null {
+    return this._selectedNotebook;
+  }
+  set selectedNotebook(val: NotebookModule | null) {
+    const wasInNotes = !!this._selectedNotebook;
+    this._selectedNotebook = val;
+    const nowInNotes = !!val;
+    if (wasInNotes !== nowInNotes) {
+      setTimeout(() => {
+        this.inNotesViewChange.emit(nowInNotes);
+      }, 0);
+    }
+  }
+
   selectedPage: NotebookPage | null = null;
 
   isLoading = false;
@@ -788,6 +805,12 @@ export class DashLibraryComponent implements OnInit {
     this.loadFolders();
   }
 
+  ngOnDestroy() {
+    if (this._selectedNotebook) {
+      this.inNotesViewChange.emit(false);
+    }
+  }
+
   // ── MULTI-TAB WORKSPACE NAVIGATION ──────────────────────────
   tabs: LibraryTab[] = [];
   activeTabId: string = '';
@@ -814,7 +837,7 @@ export class DashLibraryComponent implements OnInit {
       id: 'tab_' + Date.now(),
       title: 'Biblioteca',
       icon: 'folder',
-      color: '#10b981',
+      color: '#737373',
       folderId: null,
       notebookId: null,
       pageId: null
@@ -843,7 +866,7 @@ export class DashLibraryComponent implements OnInit {
     tab.pageId = this.selectedPage?.id || null;
     tab.pageTitle = this.selectedPage?.title;
 
-    tab.color = this.selectedNotebook?.color || this.selectedFolder?.color || '#10b981';
+    tab.color = this.selectedNotebook?.color || this.selectedFolder?.color || '#737373';
     tab.icon = this.selectedNotebook?.icon || this.selectedFolder?.icon || 'folder';
 
     if (this.selectedPage && this.selectedPage.title) {
@@ -864,7 +887,7 @@ export class DashLibraryComponent implements OnInit {
 
     const newTabId = 'tab_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
     let title = 'Nueva Pestaña';
-    let color = '#10b981';
+    let color = '#737373';
     let icon = 'folder';
 
     if (notebookId && this.notebooks.length > 0) {
