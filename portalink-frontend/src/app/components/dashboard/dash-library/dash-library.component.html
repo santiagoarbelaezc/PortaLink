@@ -89,7 +89,8 @@
       <div class="flex items-center gap-3 mt-1 flex-wrap">
         <h2 class="text-2xl sm:text-3xl font-headline font-bold tracking-tight flex items-center gap-3"
             [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-          <span class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+          <span class="w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 transition-colors"
+                [ngClass]="isDark ? 'bg-neutral-800/60 border-neutral-700/60 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25" />
             </svg>
@@ -101,19 +102,21 @@
       <!-- BREADCRUMB PATH TRAIL -->
       <div class="flex items-center gap-2 text-xs font-semibold mt-2"
            [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
-        <button (click)="goToBreadcrumb('root')" class="hover:text-emerald-400 cursor-pointer flex items-center gap-1.5 transition-colors">
+        <button (click)="goToBreadcrumb('root')" class="cursor-pointer flex items-center gap-1.5 transition-colors"
+                [ngClass]="isDark ? 'hover:text-white' : 'hover:text-black'">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
           <span>Biblioteca</span>
         </button>
         <ng-container *ngIf="selectedFolder">
           <span>/</span>
-          <button (click)="goToBreadcrumb('folder')" class="hover:text-emerald-400 cursor-pointer flex items-center gap-1 transition-colors">
+          <button (click)="goToBreadcrumb('folder')" class="cursor-pointer flex items-center gap-1 transition-colors"
+                  [ngClass]="isDark ? 'hover:text-white text-neutral-300' : 'hover:text-black text-neutral-700'">
             <span>{{ selectedFolder.name }}</span>
           </button>
         </ng-container>
         <ng-container *ngIf="selectedNotebook">
           <span>/</span>
-          <span class="font-bold text-emerald-400">{{ selectedNotebook.title }}</span>
+          <span class="font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ selectedNotebook.title }}</span>
         </ng-container>
       </div>
     </div>
@@ -566,8 +569,9 @@
         class="group relative p-6 rounded-[24px] border transition-all duration-300 hover:border-emerald-500/50 hover:shadow-xl cursor-pointer overflow-hidden hover:scale-[1.01] flex flex-col justify-between"
         [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800' : 'bg-white border-neutral-200/90'"
       >
-        <!-- TOP ACCENT BAR -->
-        <div class="absolute top-0 left-0 right-0 h-1.5" [style.backgroundColor]="folder.color"></div>
+        <!-- TOP ACCENT BAR (Monocromática, sutil y elegante) -->
+        <div class="absolute top-0 left-0 right-0 h-1 transition-colors"
+             [ngClass]="isDark ? 'bg-neutral-800 group-hover:bg-neutral-700' : 'bg-neutral-200 group-hover:bg-neutral-300'"></div>
         
         <div>
           <div class="flex items-start justify-between gap-3 mb-4">
@@ -594,7 +598,8 @@
             </div>
           </div>
 
-          <h3 class="text-lg font-headline font-bold group-hover:text-emerald-400 transition-colors" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+          <h3 class="text-lg font-headline font-bold transition-colors" 
+              [ngClass]="isDark ? 'text-white group-hover:text-neutral-200' : 'text-neutral-900 group-hover:text-black'">
             {{ folder.name }}
           </h3>
           <p class="text-xs opacity-60 line-clamp-2 mt-1 h-8">
@@ -638,8 +643,8 @@
 
             <div class="min-w-0">
               <div class="flex items-center gap-2">
-                <h4 class="text-sm font-headline font-bold truncate group-hover:text-emerald-400 transition-colors"
-                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                <h4 class="text-sm font-headline font-bold truncate transition-colors"
+                    [ngClass]="isDark ? 'text-white group-hover:text-neutral-200' : 'text-neutral-900 group-hover:text-black'">
                   {{ folder.name }}
                 </h4>
                 <span class="w-2 h-2 rounded-full shrink-0" [style.backgroundColor]="folder.color"></span>
@@ -690,9 +695,12 @@
   ══════════════════════════════════════ -->
   <div *ngIf="selectedFolder && !selectedNotebook && searchQuery.trim().length === 0" class="space-y-4">
     
-    <div class="flex items-center justify-between">
-      <button (click)="selectFolder(null)" class="text-xs font-headline font-bold text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer">
-        ← Volver a todas las carpetas
+    <div class="flex items-center justify-between pb-1">
+      <button (click)="selectFolder(null)" 
+              class="px-3 py-1.5 rounded-xl border text-xs font-headline font-semibold flex items-center gap-2 cursor-pointer transition-all duration-200"
+              [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900/60 text-neutral-300 hover:text-white hover:border-neutral-700 hover:bg-neutral-800' : 'border-neutral-200 bg-neutral-50 text-neutral-600 hover:text-black hover:border-neutral-300 hover:bg-neutral-100'">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
+        <span>Volver a materias</span>
       </button>
     </div>
 
@@ -721,13 +729,16 @@
         class="group relative p-6 rounded-[24px] border transition-all duration-300 hover:border-emerald-500/50 hover:shadow-xl cursor-pointer flex flex-col justify-between overflow-hidden hover:scale-[1.01]"
         [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800' : 'bg-white border-neutral-200/90'"
       >
-        <!-- LEFT SPINE COLOR ACCENT -->
-        <div class="absolute top-0 left-0 bottom-0 w-2.5" [style.backgroundColor]="nb.color"></div>
+        <!-- LEFT SPINE MONOCHROMATIC ACCENT -->
+        <div class="absolute top-0 left-0 bottom-0 w-1 transition-colors"
+             [ngClass]="isDark ? 'bg-neutral-800 group-hover:bg-neutral-700' : 'bg-neutral-200 group-hover:bg-neutral-300'"></div>
         
         <div>
           <div class="flex items-center justify-between gap-2 mb-3 pl-2">
-            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-headline font-bold text-white shadow-sm" [style.backgroundColor]="nb.color">
-              Cuaderno
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-headline font-bold border transition-colors flex items-center gap-1.5"
+                  [ngClass]="isDark ? 'bg-neutral-800/80 border-neutral-700/60 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
+              <span class="w-1.5 h-1.5 rounded-full shrink-0" [style.backgroundColor]="nb.color"></span>
+              <span>Cuaderno</span>
             </span>
             <div class="flex items-center gap-1">
               <button (click)="$event.stopPropagation(); toggleFavoriteNotebook(nb)" class="p-1 text-xs hover:scale-125 transition-transform">
@@ -748,7 +759,8 @@
           </div>
 
           <div class="pl-2">
-            <h3 class="text-base font-headline font-bold group-hover:text-emerald-400 transition-colors" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+            <h3 class="text-base font-headline font-bold transition-colors" 
+                [ngClass]="isDark ? 'text-white group-hover:text-neutral-200' : 'text-neutral-900 group-hover:text-black'">
               {{ nb.title }}
             </h3>
             <p class="text-xs opacity-60 line-clamp-2 mt-1 h-8">
@@ -758,9 +770,10 @@
         </div>
 
         <div class="mt-5 pt-3 border-t pl-2 flex items-center justify-between text-xs font-semibold opacity-70"
-             [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+             [ngClass]="isDark ? 'border-neutral-800/80 text-neutral-400' : 'border-neutral-100 text-neutral-500'">
           <span>{{ nb.pages_count || 0 }} apuntes</span>
-          <span class="text-emerald-400 group-hover:translate-x-1 transition-transform">Abrir →</span>
+          <span class="group-hover:translate-x-1 transition-transform"
+                [ngClass]="isDark ? 'text-neutral-300 group-hover:text-white' : 'text-neutral-600 group-hover:text-black'">Abrir →</span>
         </div>
       </div>
     </div>
