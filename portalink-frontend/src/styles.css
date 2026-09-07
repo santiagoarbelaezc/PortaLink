@@ -244,6 +244,11 @@
   color: var(--text-primary) !important;
 }
 
+/* Preserve strict white text inside modal backdrops for dark buttons/elements */
+.modal-backdrop .text-white {
+  color: #ffffff !important;
+}
+
 /* Technological Creative Additions for Red Theme */
 .theme-red .dynamic-bg::after {
   content: '';
