@@ -229,7 +229,7 @@ interface Tab {
         </app-dash-ai-search>
 
         <!-- Content -->
-        <main class="flex-1 min-h-0 transition-all duration-300 no-scrollbar"
+        <main class="flex-1 min-h-0 relative z-[50] transition-all duration-300 no-scrollbar"
               [ngClass]="[
                 isDark ? 'bg-[#020204]' : 'bg-white',
                 activeTab === 'rotbot' && rotbotMode !== 'study-plan'
@@ -469,13 +469,13 @@ interface Tab {
   `,
   styles: [`
     @keyframes adminFadeIn {
-      0% { opacity: 0; transform: scale(0.97) translateY(10px); }
-      100% { opacity: 1; transform: scale(1) translateY(0); }
+      0% { opacity: 0; }
+      100% { opacity: 1; }
     }
 
     .admin-shell { 
       font-family: 'Inter Tight', sans-serif; 
-      animation: adminFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: adminFadeIn 0.3s ease-out forwards;
     }
 
     /* Hide sidebar scrollbar */

@@ -2130,8 +2130,8 @@
   <!-- ══════════════════════════════════════
        MODAL CARPETAS (DIVIDIDO EN 2 SECCIONES ANCHAS max-w-4xl)
   ══════════════════════════════════════ -->
-  <div *ngIf="isFolderModalOpen" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-    <div class="rounded-[32px] p-7 w-full max-w-4xl border shadow-2xl space-y-6 my-8 animate-fade-in"
+  <div *ngIf="isFolderModalOpen" appTeleportToBody class="modal-backdrop fixed inset-0 w-screen h-screen z-[9999] bg-black/80 backdrop-blur-xl flex items-center justify-center p-4 overflow-y-auto">
+    <div class="rounded-[32px] p-7 w-full max-w-4xl border shadow-2xl space-y-6 my-8 animate-fade-in sm:-translate-y-6 md:-translate-y-8 transition-all"
          [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
       
       <!-- MODAL HEADER -->
@@ -2299,8 +2299,8 @@
   <!-- ══════════════════════════════════════
        MODAL CUADERNOS
   ══════════════════════════════════════ -->
-  <div *ngIf="isNotebookModalOpen" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-    <div class="rounded-[32px] p-7 w-full max-w-3xl border shadow-2xl space-y-6 my-8 animate-fade-in"
+  <div *ngIf="isNotebookModalOpen" appTeleportToBody class="modal-backdrop fixed inset-0 w-screen h-screen z-[9999] bg-black/80 backdrop-blur-xl flex items-center justify-center p-4 overflow-y-auto">
+    <div class="rounded-[32px] p-7 w-full max-w-3xl border shadow-2xl space-y-6 my-8 animate-fade-in sm:-translate-y-6 md:-translate-y-8 transition-all"
          [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
       
       <div class="flex items-center justify-between pb-4 border-b" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
@@ -2416,8 +2416,8 @@
   <!-- ══════════════════════════════════════
        MODAL DE CONFIRMACIÓN DE ELIMINACIÓN
   ══════════════════════════════════════ -->
-  <div *ngIf="isDeleteModalOpen" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="rounded-[32px] p-7 w-full max-w-md border shadow-2xl space-y-5 animate-fade-in"
+  <div *ngIf="isDeleteModalOpen" appTeleportToBody class="modal-backdrop fixed inset-0 w-screen h-screen z-[9999] bg-black/80 backdrop-blur-xl flex items-center justify-center p-4">
+    <div class="rounded-[32px] p-7 w-full max-w-md border shadow-2xl space-y-5 animate-fade-in sm:-translate-y-6 md:-translate-y-8 transition-all"
          [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
       
       <!-- ICONO ADVERTENCIA -->

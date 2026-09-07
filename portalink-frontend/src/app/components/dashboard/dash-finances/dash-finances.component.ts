@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FinanceService, Client, Service, Invoice, InvoiceItem } from '../../../services/finance.service';
 import { PdfReportService } from '../../../services/pdf-report.service';
+import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-body.directive';
 import { firstValueFrom } from 'rxjs';
 
 type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
@@ -11,7 +12,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
 @Component({
   selector: 'app-dash-finances',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TeleportToBodyDirective],
   template: `
     <div class="space-y-5 tab-enter">
 
@@ -1628,8 +1629,8 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
       <!-- ══════════════════ MODALES GLOBALMENTE DISPONIBLES EN TODAS LAS PESTAÑAS ══════════════════ -->
 
       <!-- PDF Preview Modal -->
-      <div *ngIf="showPdfPreview" class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md animate-fadeIn">
-        <div class="w-full max-w-4xl h-[90vh] rounded-3xl flex flex-col overflow-hidden shadow-2xl border modal-enter my-auto"
+      <div *ngIf="showPdfPreview" appTeleportToBody class="modal-backdrop fixed inset-0 w-screen h-screen z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-xl animate-fadeIn">
+        <div class="w-full max-w-4xl h-[90vh] rounded-3xl flex flex-col overflow-hidden shadow-2xl border modal-enter my-auto sm:-translate-y-4 md:-translate-y-6 transition-all"
              [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800 text-white shadow-black/80' : 'bg-white border-neutral-200 text-neutral-900 shadow-xl'">
           <div class="px-6 py-4 border-b flex justify-between items-center shrink-0" [ngClass]="isDark ? 'border-neutral-800 bg-[#141419]' : 'border-neutral-200 bg-neutral-50/90'">
             <div class="flex items-center gap-3">

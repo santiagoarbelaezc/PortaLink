@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { LibraryService, NotebookFolder, NotebookModule, NotebookPage } from '../../../services/library.service';
 import { LibraryAiService } from '../../../services/library-ai.service';
+import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-body.directive';
 
 export interface SlashCommandItem {
   key: string;
@@ -83,7 +84,7 @@ export class ContentEditableDirective implements OnChanges {
 @Component({
   selector: 'app-dash-library',
   standalone: true,
-  imports: [CommonModule, FormsModule, ContentEditableDirective],
+  imports: [CommonModule, FormsModule, ContentEditableDirective, TeleportToBodyDirective],
   templateUrl: './dash-library.component.html',
   host: { class: 'block w-full' }
 })

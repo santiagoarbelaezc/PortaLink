@@ -816,7 +816,7 @@ import { Router } from '@angular/router';
       </div>
 
       <!-- Modal de Sesión Expirada -->
-      <div *ngIf="showSessionExpiredModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 backdrop-blur-md bg-black/60">
+      <div *ngIf="showSessionExpiredModal" class="modal-backdrop fixed inset-0 w-screen h-screen z-[9999] flex items-center justify-center p-4 backdrop-blur-md bg-black/60">
         <div class="w-full max-w-md rounded-2xl border p-6 md:p-8 text-center shadow-2xl scale-in"
              [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
           <div class="w-16 h-16 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mx-auto mb-4 border border-red-500/20">

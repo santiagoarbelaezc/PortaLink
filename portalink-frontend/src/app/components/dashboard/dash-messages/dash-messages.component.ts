@@ -2,11 +2,12 @@ import { Component, Input, Output, EventEmitter, OnInit, inject } from '@angular
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessagesService, ContactMessage } from '../../../services/messages.service';
+import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-body.directive';
 
 @Component({
   selector: 'app-dash-messages',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TeleportToBodyDirective],
   providers: [DatePipe],
   template: `
     <div class="space-y-6 tab-enter font-sans">
@@ -397,8 +398,8 @@ import { MessagesService, ContactMessage } from '../../../services/messages.serv
       <!-- ══════════════════════════════════════
            MODAL DE CONFIRMACIÓN DE ELIMINACIÓN
       ══════════════════════════════════════ -->
-      <div *ngIf="showDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
-        <div class="w-full max-w-md rounded-[28px] border p-6 space-y-5 shadow-2xl transition-all"
+      <div *ngIf="showDeleteModal" appTeleportToBody class="modal-backdrop fixed inset-0 w-screen h-screen z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-fadeIn">
+        <div class="w-full max-w-md rounded-[28px] border p-6 space-y-5 shadow-2xl transition-all sm:-translate-y-6 md:-translate-y-8"
              [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
           
           <div class="flex items-center gap-3 text-red-400">

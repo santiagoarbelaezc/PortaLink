@@ -2,6 +2,7 @@ import { Component, Input, HostListener, OnInit, OnDestroy, inject, ChangeDetect
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ItineraryService, Task as ApiTask } from '../../../services/itinerary.service';
+import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-body.directive';
 
 export interface Task {
   id: number;
@@ -36,7 +37,7 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
 @Component({
   selector: 'app-dash-itinerary',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TeleportToBodyDirective],
   template: `
     <div class="animate-fade-in space-y-5 relative font-sans" (click)="onRootClick($event)">
 
@@ -474,9 +475,10 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
 
       <!-- ══════════ MODAL (MONOCROMÁTICO CON COLOR SOLO EN CATEGORÍAS) ══════════ -->
       <div *ngIf="showModal"
-           class="modal-backdrop fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-xs"
+           appTeleportToBody
+           class="modal-backdrop fixed inset-0 w-screen h-screen z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-xl"
            (click)="closeModal()">
-        <div class="modal-card w-full max-w-3xl rounded-t-[28px] sm:rounded-2xl border shadow-2xl overflow-hidden max-h-[92vh] sm:max-h-[85vh] flex flex-col transition-all duration-300"
+        <div class="modal-card w-full max-w-3xl rounded-t-[28px] sm:rounded-2xl border shadow-2xl overflow-hidden max-h-[92vh] sm:max-h-[85vh] flex flex-col transition-all duration-300 sm:-translate-y-8 md:-translate-y-10"
              [ngClass]="isDark ? 'bg-[#111116] border-neutral-800' : 'bg-white border-neutral-200'"
              (click)="$event.stopPropagation()">
 
@@ -760,7 +762,7 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
       border-color: rgba(255, 255, 255, 0.25) !important;
       box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5) !important;
     }
-    .modal-backdrop { background: rgba(0,0,0,0.65); backdrop-filter: blur(8px); }
+    .modal-backdrop { background: rgba(0,0,0,0.8); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
     .modal-card, .calendar-dropdown { animation: popIn 0.2s cubic-bezier(0.16,1,0.3,1) forwards; }
     .context-menu { animation: popIn 0.15s cubic-bezier(0.16,1,0.3,1) forwards; }
     @keyframes popIn {
