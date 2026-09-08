@@ -101,7 +101,7 @@ const TAB_LABELS: Record<string, string> = {
         <!-- B. Rotbot Action: Mode Tabs & Voice Toggle -->
         <ng-container *ngIf="activeTab === 'rotbot'">
           
-          <!-- Mode Tabs (Chat, Learn, Listening, Study Plan) -->
+          <!-- Mode Tabs (Chat & Study Plan) -->
           <div class="flex items-center gap-1 p-1 rounded-2xl border backdrop-blur-md"
                [ngClass]="theme === 'dark' ? 'bg-[#141419] border-neutral-800' : 'bg-neutral-100 border-neutral-200'">
             
@@ -115,32 +115,6 @@ const TAB_LABELS: Record<string, string> = {
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
               <span class="hidden sm:inline">Chat</span>
-            </button>
-
-            <!-- Learn Tab -->
-            <button (click)="rotbotModeChange.emit('ensenanza')"
-                    class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5"
-                    [ngClass]="rotbotMode === 'ensenanza'
-                      ? (theme === 'dark' ? 'bg-white text-black shadow-md font-bold' : 'bg-neutral-900 text-white shadow-md font-bold')
-                      : (theme === 'dark' ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-600 hover:text-black hover:bg-white')">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-                <path d="M8 7h8"/>
-                <path d="M8 11h6"/>
-              </svg>
-              <span class="hidden sm:inline">Learn</span>
-            </button>
-
-            <!-- Listening Tab -->
-            <button (click)="rotbotModeChange.emit('escucha')"
-                    class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5"
-                    [ngClass]="rotbotMode === 'escucha'
-                      ? (theme === 'dark' ? 'bg-white text-black shadow-md font-bold' : 'bg-neutral-900 text-white shadow-md font-bold')
-                      : (theme === 'dark' ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-600 hover:text-black hover:bg-white')">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>
-              </svg>
-              <span class="hidden sm:inline">Listening</span>
             </button>
 
             <!-- Study Plan Tab -->

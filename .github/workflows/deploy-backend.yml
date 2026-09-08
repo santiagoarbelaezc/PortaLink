@@ -1,0 +1,101 @@
+name: Deploy Backend PHP a Hostinger (camascotas.com/api2)
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'backend-php/**'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-backend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy-backend:
+    name: Build & Deploy Backend (api2/)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: 🐘 Configurar PHP 8.2 y Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+
+      - name: 📦 Instalar dependencias de Composer (Producción)
+        working-directory: backend-php
+        run: |
+          if [ -f "composer.json" ]; then
+            composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
+          fi
+
+      - name: 🚀 Desplegar Backend a camascotas.com/public_html/api2/ vía SSH / rsync
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '65002' }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+        run: |
+          sudo apt-get update && sudo apt-get install -y sshpass rsync
+
+          # Configurar autenticación SSH (Llave privada o Contraseña)
+          if [ -n "$SSH_KEY" ]; then
+            mkdir -p ~/.ssh
+            echo "$SSH_KEY" > ~/.ssh/id_hostinger
+            chmod 600 ~/.ssh/id_hostinger
+            SSH_CMD="ssh -p $SSH_PORT -i ~/.ssh/id_hostinger -o StrictHostKeyChecking=no"
+            SSH_EXEC="ssh -p $SSH_PORT -i ~/.ssh/id_hostinger -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST"
+            RSYNC_PREFIX=""
+          else
+            SSH_CMD="ssh -p $SSH_PORT -o StrictHostKeyChecking=no"
+            SSH_EXEC="sshpass -p $SSH_PASSWORD ssh -p $SSH_PORT -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST"
+            RSYNC_PREFIX="sshpass -p $SSH_PASSWORD"
+          fi
+
+          # Detectar la ruta raíz del dominio en Hostinger
+          if $SSH_EXEC "[ -d domains/camascotas.com/public_html ]"; then
+            TARGET_API="domains/camascotas.com/public_html/api2/"
+          else
+            TARGET_API="public_html/api2/"
+          fi
+
+          echo "📍 Destino del Backend en Hostinger: $TARGET_API"
+
+          # Asegurar que la carpeta api2/ exista en Hostinger
+          $SSH_EXEC "mkdir -p $TARGET_API"
+
+          # Sincronizar ÚNICAMENTE el contenido de backend-php/ hacia api2/
+          # GARANTÍAS DE SEGURIDAD:
+          # - El destino es estrictamente api2/, por lo que NUNCA toca api/ (el otro backend) ni el frontend de camascotas.com
+          # - --filter='protect .env*' y --exclude=".env*" protegen el archivo .env con credenciales de producción
+          # - Se protegen logs/ y uploads/ existentes en el servidor
+          $RSYNC_PREFIX rsync -avz --delete \
+            --filter='protect .env' \
+            --filter='protect .env.*' \
+            --filter='protect logs/**' \
+            --filter='protect uploads/**' \
+            --exclude=".env" \
+            --exclude=".env.*" \
+            --exclude="logs/**" \
+            --exclude="uploads/**" \
+            --exclude="*.log" \
+            --exclude="backend-php.zip" \
+            --exclude=".git*" \
+            -e "$SSH_CMD" \
+            backend-php/ \
+            "$SSH_USER@$SSH_HOST:$TARGET_API"
+
+          # Ajustar permisos adecuados en Hostinger
+          $SSH_EXEC "find $TARGET_API -type d -exec chmod 755 {} + 2>/dev/null || true"
+          $SSH_EXEC "find $TARGET_API -type f -exec chmod 644 {} + 2>/dev/null || true"
+          $SSH_EXEC "chmod 600 ${TARGET_API}.env 2>/dev/null || true"
+
+          echo "✅ Backend API desplegado con éxito en $TARGET_API"

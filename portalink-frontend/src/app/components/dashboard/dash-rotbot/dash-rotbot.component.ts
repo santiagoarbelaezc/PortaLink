@@ -13,9 +13,6 @@ interface ChatEntry {
   text: string;
   emotion?: string;
   audio?: string | null;
-  phrase?: string | null;
-  phrase_audio?: string | null;
-  score?: number | null;
   time: string;
 }
 
@@ -143,7 +140,7 @@ interface ChatEntry {
               <span class="w-2 h-2 rounded-full bg-white animate-pulse shrink-0"></span>
               <span class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider truncate"
                     [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                {{ currentMode === 'charla' ? 'English Lounge' : (currentMode === 'ensenanza' ? 'Classroom' : 'Listening Lab') }}
+                English Lounge
               </span>
               <span class="px-2 py-0.5 rounded-md border border-neutral-700/80 bg-neutral-900 text-[10px] font-mono font-semibold text-neutral-400">
                 IA v2.5
@@ -175,69 +172,6 @@ interface ChatEntry {
             </button>
           </div>
 
-          <!-- 🎧 SPECIAL INTERACTIVE CARD FOR ESCUCHA (LISTENING & SPEAKING) MODE -->
-          <div *ngIf="currentMode === 'escucha' && currentPhrase" 
-               class="mx-4 sm:mx-5 mt-4 p-4 sm:p-5 rounded-2xl border transition-all duration-300 relative overflow-hidden"
-               [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white shadow-xl' : 'bg-neutral-50 border-neutral-200 shadow-sm'">
-            
-            <div class="flex items-center justify-between gap-2 mb-2">
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
-                <span class="text-[10px] font-headline font-bold tracking-widest uppercase text-neutral-400">
-                  Frase Objetivo
-                </span>
-              </div>
-
-              <!-- Score Badge if available -->
-              <div *ngIf="lastScore !== null" 
-                   class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold border shadow-2xs"
-                   [ngClass]="lastScore >= 80 
-                     ? (isDark ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' : 'bg-emerald-50 text-emerald-700 border-emerald-200') 
-                     : (lastScore >= 60 
-                       ? (isDark ? 'bg-amber-500/15 text-amber-300 border-amber-500/30' : 'bg-amber-50 text-amber-700 border-amber-200') 
-                       : (isDark ? 'bg-rose-500/15 text-rose-300 border-rose-500/30' : 'bg-rose-50 text-rose-700 border-rose-200'))">
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>Puntaje: {{ lastScore }}%</span>
-              </div>
-            </div>
-
-            <!-- Target English Sentence Display (Enlarged) -->
-            <p class="text-base sm:text-lg lg:text-xl font-headline font-bold leading-relaxed my-3"
-               [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              "{{ currentPhrase }}"
-            </p>
-
-            <!-- Action buttons: Listen again & Request new -->
-            <div class="flex items-center justify-between gap-3 mt-3 pt-3"
-                 [ngClass]="isDark ? 'border-t border-neutral-800' : 'border-t border-neutral-200'">
-              <div class="flex items-center gap-2">
-                <button (click)="pronouncePhrase(currentPhrase, lastPhraseAudio)" 
-                        class="px-4 py-2 rounded-xl text-xs sm:text-sm font-headline font-bold uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer active:scale-95 shadow-2xs"
-                        [ngClass]="isDark 
-                          ? 'bg-white text-black hover:bg-neutral-200 shadow-md' 
-                          : 'bg-neutral-900 text-white hover:bg-black shadow-sm'">
-                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                  <span>Escuchar Pronunciación</span>
-                </button>
-              </div>
-
-              <button (click)="requestNewListeningPhrase()" 
-                      [disabled]="isProcessing"
-                      class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider flex items-center gap-1.5 cursor-pointer transition-colors disabled:opacity-40"
-                      [ngClass]="isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-600 hover:text-black'">
-                <span>Siguiente Frase</span>
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                </svg>
-              </button>
-            </div>
-
-          </div>
-
           <!-- Chat Message Thread (Internal Scrollable Area) -->
           <div #chatContainer class="flex-1 p-4 sm:p-6 overflow-y-auto space-y-5 no-scrollbar min-h-0">
             
@@ -251,15 +185,6 @@ interface ChatEntry {
                       [ngClass]="entry.sender === 'user' ? (isDark ? 'text-neutral-400' : 'text-neutral-500') : (isDark ? 'text-white' : 'text-neutral-900')">
                   {{ entry.sender === 'user' ? 'Tú' : 'Rotbot IA' }}
                 </span>
-                <span *ngIf="entry.score !== null && entry.score !== undefined" 
-                      class="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border"
-                      [ngClass]="entry.score >= 80 
-                        ? (isDark ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' : 'bg-emerald-50 text-emerald-700 border-emerald-200') 
-                        : (entry.score >= 60 
-                          ? (isDark ? 'bg-amber-500/15 text-amber-400 border-amber-500/30' : 'bg-amber-50 text-amber-700 border-amber-200') 
-                          : (isDark ? 'bg-rose-500/15 text-rose-400 border-rose-500/30' : 'bg-rose-50 text-rose-700 border-rose-200'))">
-                  Puntaje: {{ entry.score }}%
-                </span>
                 <span class="text-[10px] text-neutral-500 font-mono">{{ entry.time }}</span>
               </div>
 
@@ -271,28 +196,10 @@ interface ChatEntry {
                 
                 <p class="whitespace-pre-line m-0">{{ entry.text }}</p>
 
-                <!-- High-Contrast Target Phrase Box in chat -->
-                <div *ngIf="entry.phrase" 
-                     class="mt-3.5 p-3.5 rounded-xl border flex flex-col gap-1.5 transition-all"
-                     [ngClass]="isDark 
-                       ? 'bg-[#0c0c0e] border-neutral-800 text-neutral-100 shadow-sm' 
-                       : 'bg-white border-neutral-200 text-neutral-900 shadow-2xs'">
-                  <div class="flex items-center gap-1.5 text-[10px] font-headline font-bold uppercase tracking-wider text-neutral-400">
-                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15a3 3 0 01-3-3V4.5a3 3 0 116 0v7.5a3 3 0 01-3 3z" />
-                    </svg>
-                    <span>Frase para practicar:</span>
-                  </div>
-                  <p class="font-headline font-bold text-[14px] sm:text-[16px] tracking-wide m-0"
-                     [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                    "{{ entry.phrase }}"
-                  </p>
-                </div>
-
                 <!-- Replay Audio Button -->
-                <div *ngIf="entry.phrase || entry.audio" class="mt-3.5 pt-3 flex items-center justify-between"
+                <div *ngIf="entry.audio" class="mt-3.5 pt-3 flex items-center justify-between"
                      [ngClass]="isDark ? 'border-t border-neutral-800' : 'border-t border-neutral-200'">
-                  <button (click)="entry.phrase ? pronouncePhrase(entry.phrase, entry.phrase_audio) : reproduceAudio(entry.audio!)" 
+                  <button (click)="reproduceAudio(entry.audio!)" 
                           class="px-3.5 py-1.5 rounded-xl border text-xs font-headline font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer flex items-center gap-2 active:scale-95 shadow-2xs"
                           [ngClass]="isDark 
                             ? 'bg-neutral-900 hover:bg-neutral-800 border-neutral-700 text-white shadow-xs' 
@@ -300,7 +207,7 @@ interface ChatEntry {
                     <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M8 5v14l11-7z" />
                     </svg>
-                    <span>{{ entry.phrase ? 'Escuchar Pronunciación' : 'Escuchar Voz' }}</span>
+                    <span>Escuchar Voz</span>
                   </button>
                 </div>
               </div>
@@ -347,7 +254,7 @@ interface ChatEntry {
                       [disabled]="isProcessing || isSpeaking || !userMessage.trim()"
                       class="px-5 sm:px-6 py-3 rounded-2xl font-headline font-bold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-md active:scale-95 flex items-center gap-1.5 shrink-0"
                       [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-black'">
-                <span>{{ isProcessing ? '...' : (currentMode === 'escucha' ? 'Evaluar' : 'Enviar') }}</span>
+                <span>{{ isProcessing ? '...' : 'Enviar' }}</span>
                 <svg *ngIf="!isProcessing" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
                 </svg>
@@ -367,7 +274,7 @@ interface ChatEntry {
                 </span>
                 <div class="flex flex-col sm:flex-row sm:items-center sm:gap-2">
                   <span class="text-xs font-headline font-bold uppercase tracking-wider">Escuchando micrófono...</span>
-                  <span class="text-[11px] opacity-80 font-sans hidden sm:inline">{{ currentMode === 'escucha' ? 'Repite la frase ahora' : 'Habla claramente' }}</span>
+                  <span class="text-[11px] opacity-80 font-sans hidden sm:inline">Habla claramente</span>
                 </div>
               </div>
 
@@ -500,10 +407,7 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
   isProcessing = false;
   isVoiceRecording = false;
 
-  currentPhrase: string = '';
-  lastScore: number | null = null;
   lastAudio: string | null = null;
-  lastPhraseAudio: string | null = null;
 
   studyPlanText = '';
 
@@ -514,7 +418,7 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
     {
       id: 'welcome',
       sender: 'rotbot',
-      text: 'Hey! Ready to practice English? Talk to me about anything — we can chat, learn grammar, or practice pronunciation.',
+      text: "Hey! Ready to practice English? Let's have a conversation — you can talk to me via microphone or write anything in English.",
       emotion: 'happy',
       time: 'Just now'
     }
@@ -567,8 +471,6 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
         sender: entry.sender,
         text: entry.text,
         emotion: entry.emotion,
-        phrase: entry.phrase,
-        score: entry.score,
         time: entry.time
       }));
       localStorage.setItem(`rotbot_chat_${this.currentMode}`, JSON.stringify(toSave));
@@ -594,39 +496,16 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
     return false;
   }
 
-  private initDefaultChat(mode: RotbotMode) {
-    if (mode === 'charla') {
-      this.chatHistory = [
-        {
-          id: 'welcome_' + Date.now(),
-          sender: 'rotbot',
-          text: "Welcome to English Chat mode! I'll talk with you like a native friend. What's on your mind today?",
-          emotion: 'happy',
-          time: 'Just now'
-        }
-      ];
-    } else if (mode === 'ensenanza') {
-      this.chatHistory = [
-        {
-          id: 'welcome_' + Date.now(),
-          sender: 'rotbot',
-          text: 'Welcome to Grammar & Lesson mode! Ask me about grammar rules, vocabulary distinctions, verb tenses, idioms, or sentence structures.',
-          emotion: 'happy',
-          time: 'Just now'
-        }
-      ];
-    } else if (mode === 'escucha') {
-      this.chatHistory = [
-        {
-          id: 'welcome_' + Date.now(),
-          sender: 'rotbot',
-          text: 'Welcome to Listening & Pronunciation mode! I will give you practical English sentences to listen to and repeat via microphone. Let’s practice!',
-          emotion: 'happy',
-          time: 'Just now'
-        }
-      ];
-      this.requestNewListeningPhrase();
-    }
+  private initDefaultChat(mode: RotbotMode = 'charla') {
+    this.chatHistory = [
+      {
+        id: 'welcome_' + Date.now(),
+        sender: 'rotbot',
+        text: "Welcome to English Chat! I'm your native conversation partner. Talk or write to me in English about anything you'd like to practice!",
+        emotion: 'happy',
+        time: 'Just now'
+      }
+    ];
     this.saveChatToStorage();
   }
 
@@ -683,10 +562,7 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
       this.currentModeChange.emit(mode);
     }
     this.stopAudio();
-    this.currentPhrase = '';
-    this.lastScore = null;
     this.lastAudio = null;
-    this.lastPhraseAudio = null;
 
     const loaded = this.loadChatFromStorage(mode);
     if (!loaded) {
@@ -705,51 +581,7 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
   }
 
   getInputPlaceholder(): string {
-    if (this.currentMode === 'charla') return 'Write or speak to Rotbot in English...';
-    if (this.currentMode === 'ensenanza') return 'Ask Rotbot (e.g., When should I use "make" vs "do"?)...';
-    return this.currentPhrase ? 'Repeat the phrase via microphone or type it...' : 'Request a practice sentence...';
-  }
-
-  requestNewListeningPhrase() {
-    this.isProcessing = true;
-    this.currentEmotion = 'thinking';
-
-    const activePlan = (this.isStudyPlanActive && this.studyPlanText.trim()) ? this.studyPlanText.trim() : undefined;
-
-    this.robotService.sendMessage('Give me a new practice phrase', this.selectedVoiceId, [], 'escucha', undefined, activePlan).subscribe({
-      next: (res: RobotChatResponse) => {
-        this.isProcessing = false;
-        this.currentEmotion = res.emotion || 'happy';
-        this.currentPhrase = res.phrase || 'Practice makes perfect.';
-        this.lastScore = null;
-        this.lastAudio = res.audio || null;
-        this.lastPhraseAudio = res.phrase_audio || null;
-
-        this.chatHistory.push({
-          id: 'bot_' + Date.now(),
-          sender: 'rotbot',
-          text: res.reply,
-          phrase: res.phrase,
-          phrase_audio: res.phrase_audio,
-          emotion: res.emotion,
-          audio: res.audio,
-          time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-        });
-        this.saveChatToStorage();
-        this.scrollToBottom();
-
-        // Rotbot habla en voz alta su mensaje de instrucción/bienvenida automáticamente
-        if (res.audio && !this.isMuted) {
-          this.reproduceAudio(res.audio);
-        } else if (!this.isMuted && (res.phrase || res.reply)) {
-          this.pronouncePhrase(res.phrase || res.reply);
-        }
-      },
-      error: () => {
-        this.isProcessing = false;
-        this.currentEmotion = 'neutral';
-      }
-    });
+    return 'Write or speak to Rotbot in English...';
   }
 
   send(msg: string) {
@@ -776,24 +608,14 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
       content: entry.text
     }));
 
-    const phraseToEvaluate = (this.currentMode === 'escucha' && this.currentPhrase) ? this.currentPhrase : undefined;
     const activePlan = (this.isStudyPlanActive && this.studyPlanText.trim()) ? this.studyPlanText.trim() : undefined;
 
-    this.robotService.sendMessage(text, this.selectedVoiceId, history, this.currentMode, phraseToEvaluate, activePlan).subscribe({
+    this.robotService.sendMessage(text, this.selectedVoiceId, history, 'charla', activePlan).subscribe({
       next: (res: RobotChatResponse) => {
         this.isProcessing = false;
         this.currentEmotion = res.emotion || 'happy';
-        if (res.phrase) {
-          this.currentPhrase = res.phrase;
-        }
-        if (res.score !== null && res.score !== undefined) {
-          this.lastScore = res.score;
-        }
         if (res.audio) {
           this.lastAudio = res.audio;
-        }
-        if (res.phrase_audio) {
-          this.lastPhraseAudio = res.phrase_audio;
         }
 
         // Guardar mensaje de Rotbot
@@ -801,9 +623,6 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
           id: 'bot_' + Date.now(),
           sender: 'rotbot',
           text: res.reply,
-          phrase: res.phrase,
-          phrase_audio: res.phrase_audio,
-          score: res.score,
           emotion: res.emotion,
           audio: res.audio,
           time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
@@ -900,7 +719,7 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
       return;
     }
 
-    const rawText = (phrase || this.currentPhrase || '').trim();
+    const rawText = (phrase || '').trim();
     if (!rawText) return;
     const textToSpeak = this.cleanSpeechText(rawText);
     if (!textToSpeak) return;

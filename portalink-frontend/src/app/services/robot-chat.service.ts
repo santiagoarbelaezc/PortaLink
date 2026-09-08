@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 
-export type RotbotMode = 'charla' | 'ensenanza' | 'escucha' | 'study-plan';
+export type RotbotMode = 'charla' | 'study-plan';
 export type CEFRLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1';
 export type MaterialCategory = 'grammar' | 'vocabulary' | 'reading' | 'songs' | 'syllabus';
 
@@ -59,13 +59,9 @@ export class RobotChatService {
     voiceId = 'iP95p4xoKVk53GoZ742B',
     history: { role: string; content: string }[] = [],
     mode: RotbotMode = 'charla',
-    phraseToEvaluate?: string,
     studyPlan?: string
   ): Observable<RobotChatResponse> {
     const payload: any = { message, voice_id: voiceId, history, mode };
-    if (phraseToEvaluate) {
-      payload.phrase_to_evaluate = phraseToEvaluate;
-    }
     const finalPlan = studyPlan ?? this.cachedActiveMaterial?.content;
     if (finalPlan && finalPlan.trim()) {
       payload.study_plan = finalPlan.trim();

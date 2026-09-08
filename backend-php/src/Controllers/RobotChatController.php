@@ -19,11 +19,9 @@ class RobotChatController
         $body = $request->body;
         $userMessage = trim($body['message'] ?? '');
         $history = $body['history'] ?? [];
-        $mode = $body['mode'] ?? 'charla';
-        $phraseToEvaluate = trim($body['phrase_to_evaluate'] ?? '');
         $studyPlan = trim($body['study_plan'] ?? '');
 
-        if (empty($userMessage) && empty($phraseToEvaluate)) {
+        if (empty($userMessage)) {
             $response->status(400)->json([
                 'ok' => false,
                 'error' => 'El mensaje no puede estar vacío'
@@ -38,12 +36,10 @@ class RobotChatController
         ]);
         $voiceId = $body['voice_id'] ?? getenv('ELEVENLABS_VOICE_ID') ?: ($_ENV['ELEVENLABS_VOICE_ID'] ?? 'bIHbv24MWmeRgasZH58o');
 
-        // 1. Obtener respuesta inteligente según el modo de inglés y plan de estudios
-        $aiResult = $this->generateRobotReply($userMessage, $history, $mode, $phraseToEvaluate, $studyPlan);
+        // 1. Obtener respuesta conversacional inteligente con contexto de plan de estudio
+        $aiResult = $this->generateRobotReply($userMessage, $history, $studyPlan);
         $replyText = $aiResult['reply'];
         $emotion = $aiResult['emotion'];
-        $phrase = $aiResult['phrase'] ?? null;
-        $score = $aiResult['score'] ?? null;
 
         // 2. Limpiar el texto para que ElevenLabs hable 100% fluido
         $speechText = $this->cleanTextForSpeech($replyText);
@@ -59,26 +55,11 @@ class RobotChatController
             $audioBase64 = $this->callNeuralFallbackTTS($speechText, 'en-US');
         }
 
-        // 4. Si hay una frase objetivo, generar audio EXCLUSIVAMENTE para la frase en inglés
-        $phraseAudioBase64 = null;
-        if (!empty($phrase)) {
-            $cleanPhrase = $this->cleanTextForSpeech($phrase);
-            if (!empty($elevenKeys) && !empty($voiceId)) {
-                $phraseAudioBase64 = $this->callElevenLabsTTS($cleanPhrase, $voiceId, $elevenKeys);
-            }
-            if (empty($phraseAudioBase64) && !empty($cleanPhrase)) {
-                $phraseAudioBase64 = $this->callNeuralFallbackTTS($cleanPhrase, 'en-US');
-            }
-        }
-
         $response->json([
             'ok' => true,
             'reply' => $replyText,
             'emotion' => $emotion,
-            'phrase' => $phrase,
-            'score' => $score,
             'audio' => $audioBase64,
-            'phrase_audio' => $phraseAudioBase64,
             'sources' => $aiResult['sources'] ?? []
         ]);
     }
@@ -198,21 +179,12 @@ class RobotChatController
     }
 
     /**
-     * Genera respuesta conversacional como Profesor/Tutor de Inglés según el modo seleccionado y plan de estudio.
+     * Genera respuesta conversacional como Compañero/Tutor de Inglés en modo charla, incorporando el plan de estudio activo si existe.
      */
-    private function generateRobotReply(string $userMessage, array $history = [], string $mode = 'charla', string $phraseToEvaluate = '', string $studyPlan = ''): array
+    private function generateRobotReply(string $userMessage, array $history = [], string $studyPlan = ''): array
     {
-        $systemPrompt = $this->buildSystemPrompt($mode, $phraseToEvaluate, $studyPlan);
+        $systemPrompt = $this->buildSystemPrompt($studyPlan);
         $promptMessage = $userMessage;
-
-        if ($mode === 'escucha' && !empty($phraseToEvaluate)) {
-            $promptMessage = "TARGET PHRASE: \"{$phraseToEvaluate}\"\nUSER ATTEMPT (from speech recognition): \"{$userMessage}\"\nEvaluate the user's accuracy from 0 to 100%, give brief encouraging feedback, and propose the NEXT sentence to practice.";
-        } elseif ($mode === 'escucha' && empty($phraseToEvaluate)) {
-            $promptMessage = "The user is starting listening/speaking practice. Propose a natural, practical English sentence for them to listen to and repeat.";
-            if (!empty($studyPlan)) {
-                $promptMessage .= " Choose or adapt a sentence directly related to the active Study Plan / Syllabus.";
-            }
-        }
 
         // 1. SIEMPRE intentar Gemini primero (con failover de keys y modelos)
         try {
@@ -242,81 +214,26 @@ class RobotChatController
             return $groqFallback;
         }
 
-        // 3. Respuesta de emergencia según el modo
-        if ($mode === 'escucha') {
-            return [
-                'reply' => 'Great effort! Let us try this next phrase together.',
-                'phrase' => 'Practice makes progress every single day.',
-                'score' => 85,
-                'emotion' => 'happy'
-            ];
-        }
-
+        // 3. Respuesta de emergencia
         return [
-            'reply' => 'I am here to help you master English. What would you like to practice today?',
+            'reply' => 'I am here to help you master English. What would you like to talk about today?',
             'emotion' => 'happy'
         ];
     }
 
     /**
-     * Construye el System Prompt especializado según el modo de inglés y plan de estudio.
+     * Construye el System Prompt conversacional de inglés incorporando fuentes/planes de estudio.
      */
-    private function buildSystemPrompt(string $mode, string $phraseToEvaluate = '', string $studyPlan = ''): string
+    private function buildSystemPrompt(string $studyPlan = ''): string
     {
         $planDirective = '';
         if (!empty($studyPlan)) {
-            $planDirective = "\n\nCRITICAL CONTEXT — ACTIVE DAILY STUDY PLAN / SYLLABUS:\n\"\"\"\n{$studyPlan}\n\"\"\"\n"
+            $planDirective = "\n\nCRITICAL CONTEXT — ACTIVE DAILY STUDY PLAN / SYLLABUS / STUDY SOURCES:\n\"\"\"\n{$studyPlan}\n\"\"\"\n"
                            . "MANDATORY SYLLABUS INSTRUCTION:\n"
-                           . "- Strictly ground your teachings, dialogue scenarios, vocabulary questions, examples, and listening sentences on this Daily Study Plan.\n"
-                           . "- Help the user thoroughly understand, practice, and master the grammar rules, vocabulary terms, readings, and songs present in this syllabus.\n";
+                           . "- Strictly ground your conversation, dialogue scenarios, vocabulary questions, examples, and discussion on this Daily Study Plan.\n"
+                           . "- Help the user thoroughly practice, discuss, and master the grammar rules, vocabulary terms, readings, and songs present in this syllabus.\n";
         }
 
-        if ($mode === 'ensenanza') {
-            return <<<PROMPT
-You are Rotbot, an expert, encouraging English teacher.
-YOUR OBJECTIVE: Teach English concepts, grammar rules, vocabulary distinctions, verb tenses, idioms, and pronunciation nuances.
-{$planDirective}
-RULES:
-1. Provide structured, clear explanations in English (concise and easy to understand).
-2. Always give practical English example sentences with clear usage notes.
-3. For complex words, include phonetic pronunciation guides in brackets (e.g., [kəm-ˈpyuː-tər]).
-4. Conclude your explanation with a quick mini-challenge or question for the user to practice.
-5. ZERO emojis. Professional, warm, and highly motivating tone.
-6. Always return your response in strict JSON:
-{
-  "reply": "Your clear structured English lesson with practical examples",
-  "emotion": "happy" | "neutral" | "thinking"
-}
-PROMPT;
-        }
-
-        if ($mode === 'escucha') {
-            return <<<PROMPT
-You are Rotbot, an interactive English pronunciation and listening coach.
-YOUR OBJECTIVE: Train the user's listening comprehension and spoken pronunciation through English sentences that the user listens to and repeats via microphone.
-{$planDirective}
-RULES:
-1. ALL your instructions, feedback, and greetings MUST be 100% in natural English.
-2. If TARGET PHRASE and USER ATTEMPT are provided:
-   - Compare the user's speech recognition attempt against the target phrase for accuracy and phonetic similarity.
-   - Assign an accuracy "score" from 0 to 100.
-   - Give brief, encouraging feedback in English highlighting what was pronounced well and any specific words to refine.
-   - Propose the NEXT practical English sentence ("phrase") to practice (prioritizing vocabulary from the active study plan if available).
-3. If NO TARGET PHRASE is provided (initial practice request):
-   - Greet the user in English and propose the first clear, useful English sentence ("phrase") to repeat.
-   - Set "score" to null.
-4. ZERO emojis.
-5. Always return your response in strict JSON:
-{
-  "reply": "English guidance or evaluation feedback for the user",
-  "phrase": "The exact English sentence to repeat",
-  "score": 90,
-  "emotion": "happy" | "neutral" | "surprised" | "thinking"
-}
-PROMPT;
-        }
-
-        // Mode 'charla' (Default)
         return <<<PROMPT
 You are Rotbot, a native English-speaking close friend and conversational partner.
 YOUR OBJECTIVE: Maintain a natural, 100% English conversation to help the user build fluency, confidence, and real-world vocabulary.
