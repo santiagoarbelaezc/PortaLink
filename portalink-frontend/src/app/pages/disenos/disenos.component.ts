@@ -385,7 +385,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Mobiliario Pets & Catálogo',
       description: 'E-commerce completo de muebles y accesorios para mascotas con catálogo, carrito y panel de administración.',
       iconClass: 'fa-solid fa-paw',
-      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973369/proyecto-camascotas_qcmstp.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838773/mascotas_mdnpry.png',
       tags: ['Mascotas', 'E-Commerce', 'En Vivo'],
       liveUrl: 'https://camascotas.com/'
     },
@@ -397,7 +397,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Catálogo Digital Inteligente',
       description: 'Plataforma de catálogo digital con IA integrada, analítica en tiempo real e inventario multi-línea.',
       iconClass: 'fa-solid fa-book-open',
-      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786974186/proyecto-catalogodigital_obh8fu.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838762/catalogodigital_pdolry.png',
       tags: ['Catálogo', 'IA', 'En Vivo'],
       liveUrl: 'https://catalogoplaxtilineas.com/catalogo'
     },
@@ -409,7 +409,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Descanso Premium & WhatsApp',
       description: 'Tienda e-commerce de colchones con catálogo completo, ficha de producto y consulta directa por WhatsApp.',
       iconClass: 'fa-solid fa-store',
-      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973662/proyecto-colchonesdistricol_wlk93j.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838766/colchones_xqhgbv.png',
       tags: ['Colchones', 'E-Commerce', 'En Vivo'],
       liveUrl: 'https://colchonesdistricol.com/'
     },
@@ -421,7 +421,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Gestión CAD & Arquitectura',
       description: 'Portal directivo para gestión de proyectos de arquitectura, diseños CAD y cotizaciones.',
       iconClass: 'fa-solid fa-compass-drafting',
-      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973770/proyecto-sysmiconarquitectura_jxfoju.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838762/arquitectura_rp3lfq.png',
       tags: ['Arquitectura', 'CAD', 'En Vivo'],
       liveUrl: 'https://sysmicon.com/'
     },
@@ -457,7 +457,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Boutique & Copiloto IA',
       description: 'Comercio electrónico para moda íntima con asistente inteligente e inventario en tiempo real.',
       iconClass: 'fa-solid fa-shirt',
-      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1786973903/proyecto-tiendaintima_oahugr.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838772/tiendaropa_kx1e2j.png',
       tags: ['Moda', 'IA', 'En Vivo'],
       liveUrl: 'https://tiendaintima.com/'
     },
@@ -471,7 +471,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Oscuro & Deportivo',
       description: 'Landing page de alto impacto para gimnasios, entrenadores personales y centros de alto rendimiento.',
       iconClass: 'fa-solid fa-dumbbell',
-      image: 'assets/images/diseños/gym.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838764/gym_rbwkeo.png',
       tags: ['Gimnasio', 'Fitness', 'Deporte']
     },
     {
@@ -482,7 +482,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Gourmet & Moderno',
       description: 'Diseño apetecible para restaurantes, bares y negocios gastronómicos con menú interactivo.',
       iconClass: 'fa-solid fa-utensils',
-      image: 'assets/images/diseños/restaurante.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838772/restaurante_y36vzi.png',
       tags: ['Restaurante', 'Gastronomía', 'Menú']
     },
     {
@@ -493,7 +493,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Corporativo & Serio',
       description: 'Sitio web profesional de alta confianza para firmas de abogados y consultores jurídicos.',
       iconClass: 'fa-solid fa-scale-balanced',
-      image: 'assets/images/diseños/abogado.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838773/abogado_if9psc.png',
       tags: ['Legal', 'Abogados', 'Consultoría']
     },
     {
@@ -504,7 +504,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Alto Rendimiento',
       description: 'Diseño dinámico para estudios de crossfit, artes marciales y centros deportivos integrales.',
       iconClass: 'fa-solid fa-dumbbell',
-      image: 'assets/images/diseños/gym2.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838767/gym2_kqulvb.png',
       tags: ['Crossfit', 'Deporte', 'Fitness']
     },
     {
@@ -515,7 +515,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Limpio & Clínico',
       description: 'Diseño médico impecable para clínicas, especialistas en salud y consultorios privados.',
       iconClass: 'fa-solid fa-stethoscope',
-      image: 'assets/images/diseños/medico.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838771/medico_tjxnb4.png',
       tags: ['Salud', 'Médico', 'Citas']
     },
     {
@@ -526,7 +526,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Agendamiento Inteligente',
       description: 'Portal intuitivo para agendamiento de turnos, gestión de clientes y servicios profesionales.',
       iconClass: 'fa-solid fa-calendar-check',
-      image: 'assets/images/diseños/agendamiento-citas.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838777/agendamiento-citas_efiliy.png',
       tags: ['Citas', 'Agenda', 'Servicios']
     },
     {
@@ -537,7 +537,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Minimalista & Estructural',
       description: 'Showcase visual para estudios de arquitectura, diseño de interiores y portafolios de proyectos.',
       iconClass: 'fa-solid fa-compass-drafting',
-      image: 'assets/images/diseños/arquitecto.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838777/arquitecto_kjj7n5.png',
       tags: ['Arquitectura', 'Diseño', 'Portafolio']
     },
     {
@@ -548,7 +548,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Showcase de Productos',
       description: 'Plantilla de catálogo dinámico para exhibición comercial de productos y pedidos directos.',
       iconClass: 'fa-solid fa-book-open',
-      image: 'assets/images/diseños/catalogo-digital.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838764/catalogo-digital_pnn8dg.png',
       tags: ['Catálogo', 'Productos', 'Comercial']
     },
     {
@@ -559,7 +559,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Industrial & Solidez',
       description: 'Sitio corporativo para empresas de construcción, proyectos inmobiliarios y desarrollo de obras.',
       iconClass: 'fa-solid fa-hard-hat',
-      image: 'assets/images/diseños/construccion.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838764/construccion_uofur9.png',
       tags: ['Construcción', 'Obras', 'Ingeniería']
     },
     {
@@ -570,7 +570,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Ventas Online & Checkout',
       description: 'E-commerce moderno con carrito multi-moneda, pasarela de pago y pasarela rápida.',
       iconClass: 'fa-solid fa-cart-shopping',
-      image: 'assets/images/diseños/e-commerce.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838764/e-commerce_lenwty.png',
       tags: ['E-Commerce', 'Ventas', 'Online']
     },
     {
@@ -581,7 +581,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Innovador & Disruptivo',
       description: 'Landing page para startups, consultoras de innovación y nuevos modelos de negocio.',
       iconClass: 'fa-solid fa-rocket',
-      image: 'assets/images/diseños/emprendimiento.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838764/emprendimiento_meszjg.png',
       tags: ['Startup', 'Emprendimiento', 'Innovación']
     },
     {
@@ -592,7 +592,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Visual & Engagement',
       description: 'Portal de marca personal para creadores de contenido, mentores, coaches y profesionales.',
       iconClass: 'fa-solid fa-star',
-      image: 'assets/images/diseños/influencer.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838770/influencer_bbuq4j.png',
       tags: ['Marca Personal', 'Creadores', 'Perfil']
     },
     {
@@ -603,7 +603,7 @@ export class DisenosComponent implements OnInit {
       styleName: 'Exclusivo & A Medida',
       description: 'Plataforma a medida para proyectos con requerimientos especiales y desarrollos únicos.',
       iconClass: 'fa-solid fa-wand-magic-sparkles',
-      image: 'assets/images/diseños/personaliza.png',
+      image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838771/personaliza_vvvbc6.png',
       tags: ['A Medida', 'Exclusivo', 'Desarrollo']
     }
   ];
@@ -630,7 +630,7 @@ export class DisenosComponent implements OnInit {
 
   onImageError(event: any) {
     if (event && event.target) {
-      event.target.src = 'assets/images/diseños/gym.png';
+      event.target.src = 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838764/gym_rbwkeo.png';
     }
   }
 

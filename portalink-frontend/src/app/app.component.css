@@ -1,6 +1,5 @@
 /* ===============================================================
    DYNAMIC BACKGROUND — Fills the entire viewport behind all content
-   The background color is interpolated by ScrollColorService
 ================================================================ */
 .dynamic-bg {
   position: fixed;

@@ -6,9 +6,7 @@ import { AboutComponent } from '../../components/about/about.component';
 import { ContactComponent } from '../../components/contact/contact.component';
 import { FooterComponent } from '../../components/footer/footer.component';
 
-import { ScrollColorService } from '../../services/scroll-color.service';
 import { PortfolioConfigService } from '../../services/portfolio-config.service';
-import { Subscription } from 'rxjs';
 import { AnalyticsService } from '../../services/analytics.service';
 
 import { Router, RouterModule } from '@angular/router';
@@ -187,14 +185,11 @@ import * as AOS from 'aos';
   encapsulation: ViewEncapsulation.None
 })
 export class ProyectosComponent implements OnInit, OnDestroy {
-  private scrollColorService = inject(ScrollColorService);
   private configService = inject(PortfolioConfigService);
   private analyticsService = inject(AnalyticsService);
 
-  currentBackground = '#000000';
   portfolioData = signal<any>(null);
   currentLanguage = 'es';
-  private sub?: Subscription;
   private observer?: IntersectionObserver;
   private videoEl?: HTMLVideoElement;
 
@@ -324,15 +319,11 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       const data = this.configService.data();
       if (data) {
         this.portfolioData.set(data);
-        // Force recalculation after DOM renders
-        setTimeout(() => this.scrollColorService.recalculate(), 100);
       }
     });
   }
 
   ngOnInit() {
-    this.sub = this.scrollColorService.currentColor$.subscribe(c => this.currentBackground = c);
-
     // Listen for live preview updates from parent dashboard
     window.addEventListener('message', this.handleMessage);
 
@@ -394,8 +385,6 @@ export class ProyectosComponent implements OnInit, OnDestroy {
   handleMessage = (event: MessageEvent) => {
     if (event.data.type === 'PORTFOLIO_PREVIEW_UPDATE') {
       this.portfolioData.set(event.data.payload);
-      // Force recalculation after preview update
-      setTimeout(() => this.scrollColorService.recalculate(), 100);
     }
   }
 
@@ -404,7 +393,6 @@ export class ProyectosComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.sub?.unsubscribe();
     window.removeEventListener('message', this.handleMessage);
     if (this.observer) {
       this.observer.disconnect();
