@@ -30,6 +30,13 @@ export class MarkdownPipe implements PipeTransform {
     // Numbered lists (1. 2. 3.)
     html = html.replace(/^[\s]*\d+\.\s+(.*)/gm, '<li class="ml-4 list-decimal mb-1">$1</li>');
 
+    // Markdown Images ![Alt](URL) -> Responsive image card
+    html = html.replace(/!\[(.*?)\]\((.*?)\)/g, (match, alt, url) => {
+      const u = url.trim();
+      const a = alt ? alt.trim() : '';
+      return `<figure class="my-3 rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900/50 shadow-sm max-w-2xl mx-auto"><img src="${u}" alt="${a}" class="w-full h-auto max-h-[500px] object-contain rounded-xl" loading="lazy" />${a ? `<figcaption class="text-center text-xs font-mono opacity-70 py-1.5 px-3 border-t border-neutral-200/60 dark:border-neutral-800/60">${a}</figcaption>` : ''}</figure>`;
+    });
+
     // Markdown Links [Text](URL) -> Action Button Chips
     html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, label, url) => {
       const u = url.trim();

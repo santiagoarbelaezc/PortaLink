@@ -1088,6 +1088,7 @@
                   <svg *ngIf="block.type === 'codigo'" class="w-3.5 h-3.5 sm:w-4 sm:h-4" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
                   <svg *ngIf="block.type === 'alerta'" class="w-3.5 h-3.5 sm:w-4 sm:h-4" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.438a3.75 3.75 0 01-7.5 0m7.5 0v1.875a1.875 1.875 0 01-1.875 1.875h-3.75A1.875 1.875 0 018.25 21.75V19.875m3.75-14.625a6.002 6.002 0 00-5.467 3.527C6.082 9.879 6 10.932 6 12c0 2.257.94 4.3 2.457 5.74m7.086 0A8.966 8.966 0 0018 12c0-1.068-.082-2.121-.533-3.223a6.002 6.002 0 00-5.467-3.527z"/></svg>
                   <svg *ngIf="block.type === 'texto'" class="w-3.5 h-3.5 sm:w-4 sm:h-4" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+                  <svg *ngIf="block.type === 'imagen'" class="w-3.5 h-3.5 sm:w-4 sm:h-4" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
                   <span>{{ getBlockTypeLabel(block.type) }}</span>
                 </span>
 
@@ -1164,6 +1165,16 @@
                           <span>2 Columnas</span>
                         </div>
                         <kbd class="px-1.5 py-0.5 text-[9px] font-mono font-bold rounded border uppercase opacity-60" [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-300' : 'bg-neutral-100 border-neutral-300 text-neutral-700'">2</kbd>
+                      </button>
+
+                      <button type="button" (mousedown)="$event.stopPropagation(); $event.preventDefault()" (click)="selectBlockType(block, 'imagen', $event)"
+                              class="w-full px-3 py-2 rounded-xl text-left text-xs font-headline font-bold flex items-center justify-between transition-all cursor-pointer"
+                              [ngClass]="block.type === 'imagen' ? (isDark ? 'bg-neutral-800 text-white border border-neutral-700' : 'bg-neutral-100 text-neutral-900 font-bold border border-neutral-300') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100 hover:text-black')">
+                        <div class="flex items-center gap-2.5">
+                          <svg class="w-4 h-4" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
+                          <span>Imagen</span>
+                        </div>
+                        <kbd class="px-1.5 py-0.5 text-[9px] font-mono font-bold rounded border uppercase opacity-60" [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-300' : 'bg-neutral-100 border-neutral-300 text-neutral-700'">I</kbd>
                       </button>
                     </div>
                   </div>
@@ -1515,6 +1526,188 @@
                 class="w-full bg-transparent text-base sm:text-lg leading-snug py-0.5 outline-none transition-all empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.5em]"
                 [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-800'"
               ></div>
+            </div>
+
+            <!-- 🖼️ BLOQUE DE IMAGEN CLOUDINARY MONOCROMÁTICO Y ELEGANTE -->
+            <div *ngIf="block.type === 'imagen'" class="my-3 transition-all" [id]="'block-' + block.id">
+              
+              <!-- Input nativo oculto para selección de archivo -->
+              <input 
+                type="file" 
+                [id]="'image-file-input-' + block.id" 
+                class="hidden" 
+                accept="image/*" 
+                (change)="onImageFileSelected(block, $event)"
+              />
+
+              <!-- ESTADO 1: SUBIENDO A CLOUDINARY (SKELETON ANIMADO ELEGANTE) -->
+              <div *ngIf="block.isUploading" 
+                   class="rounded-2xl border p-6 sm:p-8 flex flex-col items-center justify-center gap-3 text-center animate-pulse"
+                   [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800 text-neutral-300' : 'bg-neutral-100/80 border-neutral-300 text-neutral-700'">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center border animate-spin"
+                     [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-white' : 'bg-white border-neutral-300 text-black'">
+                  <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>
+                </div>
+                <div>
+                  <h4 class="text-sm font-headline font-bold">Subiendo imagen a Cloudinary...</h4>
+                  <p class="text-xs opacity-60 mt-0.5">Optimizando y almacenando en la nube de alta disponibilidad</p>
+                </div>
+              </div>
+
+              <!-- ESTADO 2: SIN IMAGEN (ZONA DROPZONE Y SELECCIÓN) -->
+              <div *ngIf="!block.imageUrl && !block.isUploading" 
+                   (dragover)="$event.preventDefault()"
+                   (drop)="onImageDrop(block, $event)"
+                   class="rounded-2xl border-2 border-dashed p-6 sm:p-8 flex flex-col items-center justify-center gap-3 text-center transition-all group/dropzone"
+                   [ngClass]="isDark ? 'border-neutral-800 bg-[#0e0e11]/60 hover:border-neutral-600 hover:bg-neutral-900/40' : 'border-neutral-300 bg-neutral-50 hover:border-neutral-400 hover:bg-neutral-100/70'">
+                
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center border transition-transform group-hover/dropzone:scale-105"
+                     [ngClass]="isDark ? 'bg-neutral-800/80 border-neutral-700 text-neutral-300' : 'bg-white border-neutral-200 text-neutral-600'">
+                  <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                  </svg>
+                </div>
+
+                <div class="space-y-1">
+                  <h4 class="text-sm font-headline font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                    Inserta una imagen en tu apunte
+                  </h4>
+                  <p class="text-xs max-w-sm" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+                    Arrastra y suelta tu archivo aquí, pega desde el portapapeles (<kbd class="px-1 py-0.5 rounded border text-[10px] font-mono">Ctrl+V</kbd>), o explora tu dispositivo
+                  </p>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-center gap-2 pt-1">
+                  <button type="button" 
+                          (click)="triggerImageUpload(block.id)"
+                          class="px-4 py-2 rounded-xl text-xs font-headline font-bold flex items-center gap-2 transition-all cursor-pointer shadow-sm"
+                          [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-neutral-800'">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
+                    <span>Subir a Cloudinary</span>
+                  </button>
+                </div>
+
+                <!-- Entrada opcional de URL directa -->
+                <div class="w-full max-w-md pt-2 border-t mt-1" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+                  <div class="flex items-center gap-1.5">
+                    <input 
+                      #directUrlInput
+                      type="url" 
+                      placeholder="O pega el enlace directo de una imagen..." 
+                      class="flex-1 px-3 py-1.5 rounded-xl text-xs outline-none border transition-all"
+                      [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-600 focus:border-neutral-600' : 'bg-white border-neutral-300 text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-400'"
+                      (keydown.enter)="setDirectImageUrl(block, directUrlInput.value)"
+                    />
+                    <button type="button" 
+                            (click)="setDirectImageUrl(block, directUrlInput.value)"
+                            class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer"
+                            [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800 text-neutral-200 hover:text-white' : 'border-neutral-300 bg-neutral-100 text-neutral-800 hover:text-black'">
+                      Insertar
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- ESTADO 3: IMAGEN CARGADA Y LISTA -->
+              <div *ngIf="block.imageUrl && !block.isUploading" 
+                   class="transition-all"
+                   [ngClass]="{
+                     'max-w-sm sm:max-w-md mx-auto': block.imageSize === 'sm',
+                     'max-w-xl sm:max-w-2xl mx-auto': block.imageSize === 'md',
+                     'w-full max-w-5xl sm:max-w-6xl mx-auto': block.imageSize === 'lg',
+                     'w-full max-w-full mx-auto': !block.imageSize || block.imageSize === 'full'
+                   }">
+                
+                <div class="group/imgcard relative rounded-2xl border overflow-hidden transition-all shadow-sm"
+                     [ngClass]="isDark ? 'bg-black/60 border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200 hover:border-neutral-300'">
+                  
+                  <!-- OVERLAY DE ACCIONES RÁPIDAS (HOVER Y FOCUS) -->
+                  <div class="absolute top-2 right-2 z-20 flex items-center gap-1 p-1 rounded-xl backdrop-blur-xl border opacity-0 group-hover/imgcard:opacity-100 transition-all duration-200 shadow-xl"
+                       [ngClass]="isDark ? 'bg-black/80 border-neutral-800 text-neutral-300' : 'bg-white/90 border-neutral-200 text-neutral-700'">
+                    
+                    <!-- SELECTOR DE ANCHO -->
+                    <div class="flex items-center gap-0.5 border-r pr-1 mr-0.5" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+                      <button type="button" (click)="setImageSize(block, 'sm')" title="Ancho pequeño (40%)"
+                              class="px-1.5 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer"
+                              [ngClass]="block.imageSize === 'sm' ? (isDark ? 'bg-white text-black font-extrabold' : 'bg-neutral-900 text-white font-extrabold') : (isDark ? 'hover:text-white' : 'hover:text-black')">
+                        P
+                      </button>
+                      <button type="button" (click)="setImageSize(block, 'md')" title="Ancho mediano (65%)"
+                              class="px-1.5 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer"
+                              [ngClass]="block.imageSize === 'md' ? (isDark ? 'bg-white text-black font-extrabold' : 'bg-neutral-900 text-white font-extrabold') : (isDark ? 'hover:text-white' : 'hover:text-black')">
+                        M
+                      </button>
+                      <button type="button" (click)="setImageSize(block, 'lg')" title="Ancho grande (85%)"
+                              class="px-1.5 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer"
+                              [ngClass]="block.imageSize === 'lg' ? (isDark ? 'bg-white text-black font-extrabold' : 'bg-neutral-900 text-white font-extrabold') : (isDark ? 'hover:text-white' : 'hover:text-black')">
+                        G
+                      </button>
+                      <button type="button" (click)="setImageSize(block, 'full')" title="Ancho completo (100%)"
+                              class="px-1.5 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer"
+                              [ngClass]="(!block.imageSize || block.imageSize === 'full') ? (isDark ? 'bg-white text-black font-extrabold' : 'bg-neutral-900 text-white font-extrabold') : (isDark ? 'hover:text-white' : 'hover:text-black')">
+                        Full
+                      </button>
+                    </div>
+
+                    <!-- CAMBIAR IMAGEN -->
+                    <button type="button" (click)="triggerImageUpload(block.id)" title="Cambiar imagen"
+                            class="p-1 rounded-lg transition-all cursor-pointer"
+                            [ngClass]="isDark ? 'hover:bg-neutral-800 hover:text-white' : 'hover:bg-neutral-100 hover:text-black'">
+                      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>
+                    </button>
+
+                    <!-- COPIAR URL -->
+                    <button type="button" (click)="copyImageUrl(block.imageUrl)" title="Copiar enlace directo"
+                            class="p-1 rounded-lg transition-all cursor-pointer"
+                            [ngClass]="isDark ? 'hover:bg-neutral-800 hover:text-white' : 'hover:bg-neutral-100 hover:text-black'">
+                      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" /></svg>
+                    </button>
+
+                    <!-- ZOOM MODAL / PANTALLA COMPLETA -->
+                    <button type="button" (click)="openImageLightbox(block.imageUrl)" title="Ver en pantalla completa"
+                            class="p-1 rounded-lg transition-all cursor-pointer"
+                            [ngClass]="isDark ? 'hover:bg-neutral-800 hover:text-white' : 'hover:bg-neutral-100 hover:text-black'">
+                      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" /></svg>
+                    </button>
+
+                    <!-- ELIMINAR -->
+                    <button type="button" (click)="removeBlock(i)" title="Eliminar bloque de imagen"
+                            class="p-1 rounded-lg hover:bg-red-500/20 hover:text-red-400 transition-all cursor-pointer">
+                      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                    </button>
+                  </div>
+
+                  <!-- IMAGEN -->
+                  <div class="overflow-hidden flex items-center justify-center p-1 sm:p-2"
+                       [ngClass]="isDark ? 'bg-neutral-950/80' : 'bg-neutral-100/60'">
+                    <img 
+                      [src]="block.imageUrl" 
+                      [alt]="block.content || 'Imagen de apunte'" 
+                      (click)="openImageLightbox(block.imageUrl)"
+                      loading="lazy"
+                      class="w-full h-auto max-h-[850px] sm:max-h-[950px] lg:max-h-[1100px] object-contain rounded-xl select-none cursor-zoom-in transition-transform duration-300 hover:scale-[1.005]"
+                    />
+                  </div>
+
+                  <!-- PIE DE FOTO / LEYENDA EDITABLE -->
+                  <div class="px-3 py-2 border-t" [ngClass]="isDark ? 'border-neutral-800/80 bg-[#0c0c0e]' : 'border-neutral-200/80 bg-neutral-50'">
+                    <div 
+                      contenteditable="true"
+                      [id]="'block-caption-' + block.id"
+                      [(appContentEditable)]="block.content"
+                      (appContentEditableChange)="syncBlocksToContent()"
+                      (focus)="activeBlockId = block.id"
+                      placeholder="Añade un pie de foto o descripción de la imagen..."
+                      class="w-full text-center text-xs sm:text-sm outline-none transition-all empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.4em]"
+                      [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'"
+                    ></div>
+                  </div>
+
+                </div>
+
+              </div>
+
             </div>
 
             <!-- ◫ 2 COLUMNAS PARALELAS CON AJUSTE DINÁMICO DE ANCHO -->
@@ -2064,6 +2257,12 @@
               <span class="text-sm">◫</span>
               <span>2 Columnas Paralelas</span>
             </button>
+            <button type="button" (click)="addBlock('imagen')"
+                    class="px-3.5 py-1.5 rounded-xl text-xs font-headline font-bold border transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+                    [ngClass]="isDark ? 'border-neutral-700 bg-neutral-900 text-neutral-300 hover:bg-neutral-800 hover:text-white' : 'border-neutral-300 bg-white text-neutral-800 hover:bg-neutral-100 hover:text-black'">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
+              <span>Imagen</span>
+            </button>
           </div>
 
         </div>
@@ -2104,6 +2303,13 @@
               <svg class="w-4 h-4 text-neutral-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.438a3.75 3.75 0 01-7.5 0m7.5 0v1.875a1.875 1.875 0 01-1.875 1.875h-3.75A1.875 1.875 0 018.25 21.75V19.875m3.75-14.625a6.002 6.002 0 00-5.467 3.527C6.082 9.879 6 10.932 6 12c0 2.257.94 4.3 2.457 5.74m7.086 0A8.966 8.966 0 0018 12c0-1.068-.082-2.121-.533-3.223a6.002 6.002 0 00-5.467-3.527z"/></svg>
             </span>
             <span>Alerta</span>
+          </button>
+
+          <button type="button" (click)="addBlock('imagen')" class="flex flex-col items-center gap-0.5 p-1 text-[10px] font-bold text-neutral-300 hover:text-white active:scale-95 transition-all">
+            <span class="p-2 rounded-xl bg-neutral-900 border border-neutral-800 shadow-inner">
+              <svg class="w-4 h-4 text-neutral-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
+            </span>
+            <span>Imagen</span>
           </button>
 
           <button type="button" (click)="addBlock('texto')" class="flex flex-col items-center gap-0.5 p-1 text-[10px] font-bold text-neutral-300 hover:text-white active:scale-95 transition-all">
@@ -2704,6 +2910,59 @@
           <span>Shift + Enter para salto de línea</span>
           <span>Powered by Google Gemini ⚡</span>
         </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       MODAL VISTA PREVIA DE IMAGEN (DISEÑO COHERENTE CON MODALES PORTALINK)
+  ══════════════════════════════════════ -->
+  <div *ngIf="lightboxImageUrl" appTeleportToBody 
+       (click)="closeImageLightbox()"
+       class="modal-backdrop fixed inset-0 w-screen h-screen z-[9999] bg-black/80 backdrop-blur-xl flex items-center justify-center p-2 sm:p-3 overflow-y-auto">
+    <div (click)="$event.stopPropagation()"
+         class="rounded-[28px] sm:rounded-[32px] p-2.5 sm:p-3.5 w-full max-w-[95vw] max-h-[96vh] border shadow-2xl animate-fade-in transition-all flex flex-col my-auto"
+         [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
+      
+      <!-- MODAL HEADER COMPACTO CON ACCIONES Y ESC -->
+      <div class="flex items-center justify-between pb-2 mb-1 border-b shrink-0 px-1" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl flex items-center justify-center shadow-inner bg-blue-500/15 text-blue-500">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-sm sm:text-base font-headline font-black leading-tight">Vista Previa de Imagen</h3>
+            <p class="text-[10px] opacity-60 leading-tight">Visualización en alta resolución</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <a [href]="lightboxImageUrl" target="_blank" rel="noopener" 
+             class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs hover:scale-105 active:scale-95"
+             [ngClass]="isDark ? 'bg-neutral-800 hover:bg-neutral-700 text-white' : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-800'">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+            <span>Abrir original</span>
+          </a>
+          <button (click)="closeImageLightbox()" 
+                  class="px-2.5 h-8 rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs hover:scale-105 active:scale-95 text-xs font-bold shrink-0"
+                  [ngClass]="isDark ? 'bg-neutral-800 hover:bg-neutral-700 text-white' : 'bg-[#09090b] hover:bg-neutral-800 text-white'"
+                  style="color: #ffffff !important;"
+                  title="Cerrar modal (Esc)">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            <span class="text-[10px] font-mono text-white/70">Esc</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- CONTENEDOR DE LA IMAGEN EXPANDIDO AL MÁXIMO -->
+      <div class="flex-1 min-h-0 rounded-2xl overflow-hidden flex items-center justify-center border p-1"
+           [ngClass]="isDark ? 'bg-black/60 border-neutral-800/80' : 'bg-neutral-50 border-neutral-200'">
+        <img [src]="lightboxImageUrl" 
+             class="max-w-full max-h-[85vh] w-auto h-auto object-contain rounded-xl shadow-md select-none" 
+             alt="Vista previa completa">
       </div>
 
     </div>

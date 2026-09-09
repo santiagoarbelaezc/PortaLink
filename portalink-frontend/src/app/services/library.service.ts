@@ -115,4 +115,21 @@ export class LibraryService {
     const params = new HttpParams().set('q', query);
     return this.http.get<{ ok: boolean; data: any[] }>(`${this.apiUrl}/search`, { params });
   }
+
+  // ── Subida de Imágenes a Cloudinary ──────────────────────
+  uploadImage(file: File): Observable<{ ok: boolean; url: string; secure_url?: string; public_id?: string; message?: string }> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    return this.http.post<{ ok: boolean; url: string; secure_url?: string; public_id?: string; message?: string }>(
+      `${this.apiUrl}/upload-image`,
+      formData
+    );
+  }
+
+  uploadImageBase64(base64Data: string, fileName?: string): Observable<{ ok: boolean; url: string; secure_url?: string; public_id?: string; message?: string }> {
+    return this.http.post<{ ok: boolean; url: string; secure_url?: string; public_id?: string; message?: string }>(
+      `${this.apiUrl}/upload-image`,
+      { image: base64Data, name: fileName }
+    );
+  }
 }

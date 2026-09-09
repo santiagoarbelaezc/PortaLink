@@ -362,6 +362,9 @@ $router->delete('/api/library/pages/:id', [LibraryController::class, 'deletePage
 // Buscador Global
 $router->get('/api/library/search', [LibraryController::class, 'searchLibrary'], [OptionalAuthMiddleware::class]);
 
+// Subida de imágenes a Cloudinary para notas
+$router->post('/api/library/upload-image', [LibraryController::class, 'uploadImage'], [OptionalAuthMiddleware::class]);
+
 // ──────────────────────────────────────────────────────────────
 //  RUTAS DE CENTRO DE COMANDO IA (/api/command-center)
 // ──────────────────────────────────────────────────────────────

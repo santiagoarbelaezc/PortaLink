@@ -10,6 +10,7 @@ class Request
     public array $body = [];
     public array $params = [];
     public array $headers = [];
+    public array $files = [];
     public ?object $user = null;
 
     public function __construct()
@@ -97,6 +98,9 @@ class Request
                 }
             }
         }
+
+        // Parse uploaded files ($_FILES)
+        $this->files = $_FILES ?? [];
     }
 
     public function getHeader(string $name): ?string

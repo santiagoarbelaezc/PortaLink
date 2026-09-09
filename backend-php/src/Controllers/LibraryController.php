@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Database;
+use App\Config\Cloudinary;
 use Exception;
 
 class LibraryController
@@ -540,6 +541,125 @@ class LibraryController
         } catch (Exception $e) {
             error_log('[LibraryController] searchLibrary error: ' . $e->getMessage());
             $response->status(500)->json(['ok' => false, 'message' => 'Error al realizar la búsqueda: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Subir imagen a Cloudinary para notas y apuntes de la biblioteca
+     */
+    public function uploadImage(Request $request, Response $response): void
+    {
+        try {
+            $fileInput = null;
+
+            // 1. Detectar si el tamaño total de la petición superó post_max_size
+            $contentLength = (int)($_SERVER['CONTENT_LENGTH'] ?? 0);
+            if (empty($_FILES) && empty($_POST) && $contentLength > 0 && !str_contains($request->getHeader('content-type') ?? '', 'application/json')) {
+                $postMaxSize = ini_get('post_max_size') ?: '30M';
+                $response->status(400)->json([
+                    'ok' => false,
+                    'message' => "El tamaño del archivo supera el límite de subida del servidor (post_max_size: {$postMaxSize})."
+                ]);
+                return;
+            }
+
+            // 2. Revisar si viene vía multipart/form-data en $_FILES o $request->files
+            $uploadedFile = $request->files['file'] ?? $_FILES['file'] ?? $request->files['image'] ?? $_FILES['image'] ?? null;
+
+            if ($uploadedFile && is_array($uploadedFile)) {
+                $error = $uploadedFile['error'] ?? UPLOAD_ERR_OK;
+                if ($error !== UPLOAD_ERR_OK) {
+                    $maxUpload = ini_get('upload_max_filesize') ?: '25M';
+                    $msg = match ($error) {
+                        UPLOAD_ERR_INI_SIZE => "El archivo supera el tamaño máximo permitido por el servidor ({$maxUpload}).",
+                        UPLOAD_ERR_FORM_SIZE => "El archivo supera el tamaño máximo permitido por el formulario.",
+                        UPLOAD_ERR_PARTIAL => "El archivo se transfirió solo parcialmente. Intenta de nuevo.",
+                        UPLOAD_ERR_NO_FILE => "No se recibió ningún archivo.",
+                        UPLOAD_ERR_NO_TMP_DIR => "Falta la carpeta temporal en el servidor para almacenar la subida.",
+                        UPLOAD_ERR_CANT_WRITE => "No se pudo escribir el archivo en el disco del servidor.",
+                        UPLOAD_ERR_EXTENSION => "Una extensión del servidor detuvo la subida del archivo.",
+                        default => "Error al transferir el archivo (código de error: {$error})"
+                    };
+                    $response->status(400)->json([
+                        'ok' => false,
+                        'message' => $msg
+                    ]);
+                    return;
+                }
+
+                if (!empty($uploadedFile['tmp_name']) && file_exists($uploadedFile['tmp_name'])) {
+                    $fileInput = $uploadedFile;
+                }
+            }
+
+            // 3. Revisar si viene como Base64 Data URI o URL en el JSON body
+            if (empty($fileInput)) {
+                if (!empty($request->body['image'])) {
+                    $fileInput = (string)$request->body['image'];
+                } elseif (!empty($request->body['file'])) {
+                    $fileInput = (string)$request->body['file'];
+                }
+            }
+
+            if (empty($fileInput)) {
+                $response->status(400)->json([
+                    'ok' => false,
+                    'message' => 'No se proporcionó ningún archivo o imagen para subir.'
+                ]);
+                return;
+            }
+
+            // Validar archivo temporal si es multipart
+            if (is_array($fileInput)) {
+                // Validar tamaño máximo (20MB)
+                $size = $fileInput['size'] ?? 0;
+                if ($size > 20 * 1024 * 1024) {
+                    $response->status(400)->json([
+                        'ok' => false,
+                        'message' => 'El archivo supera el tamaño máximo permitido de 20 MB.'
+                    ]);
+                    return;
+                }
+
+                // Validar extensión / mime type si finfo está disponible
+                if (function_exists('finfo_open') && !empty($fileInput['tmp_name'])) {
+                    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                    $mimeType = finfo_file($finfo, $fileInput['tmp_name']);
+                    finfo_close($finfo);
+
+                    $allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'image/bmp', 'image/avif'];
+                    if (!in_array($mimeType, $allowedMimes)) {
+                        $response->status(400)->json([
+                            'ok' => false,
+                            'message' => 'Formato no permitido. Solo se aceptan imágenes (JPG, PNG, WEBP, GIF, SVG, AVIF).'
+                        ]);
+                        return;
+                    }
+                }
+            }
+
+            // Subir a Cloudinary
+            $uploadResult = Cloudinary::upload($fileInput, [
+                'folder' => 'portalink_library_notes'
+            ]);
+
+            $response->status(200)->json([
+                'ok' => true,
+                'message' => 'Imagen subida exitosamente a Cloudinary',
+                'url' => $uploadResult['secure_url'],
+                'secure_url' => $uploadResult['secure_url'],
+                'public_id' => $uploadResult['public_id'],
+                'width' => $uploadResult['width'],
+                'height' => $uploadResult['height'],
+                'format' => $uploadResult['format'],
+                'bytes' => $uploadResult['bytes']
+            ]);
+        } catch (Exception $e) {
+            error_log('[LibraryController] uploadImage error: ' . $e->getMessage());
+            $response->status(500)->json([
+                'ok' => false,
+                'message' => 'Error al subir la imagen: ' . $e->getMessage()
+            ]);
         }
     }
 }

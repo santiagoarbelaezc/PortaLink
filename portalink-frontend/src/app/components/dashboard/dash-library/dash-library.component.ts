@@ -28,18 +28,24 @@ export interface LibraryTab {
 
 export interface NoteBlockColumn {
   id: string;
-  type: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto';
+  type: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'imagen';
   content: string;
   language?: string;
+  imageUrl?: string;
+  isUploading?: boolean;
 }
 
 export interface NoteBlock {
   id: string;
-  type: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'columnas';
+  type: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'columnas' | 'imagen';
   content: string;
   language?: string;
   columns?: NoteBlockColumn[];
   columnRatio?: '50-50' | '33-66' | '66-33' | '40-60' | '60-40';
+  imageUrl?: string;
+  imageSize?: 'sm' | 'md' | 'lg' | 'full';
+  isUploading?: boolean;
+  uploadProgress?: number;
 }
 
 @Directive({
@@ -109,6 +115,10 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
   isAiLoading = false;
   aiResultPreview = '';
   aiError = '';
+
+  // Image block & Lightbox modal state
+  lightboxImageUrl: string | null = null;
+  imageUploadError: string | null = null;
 
   // Floating Copilot State
   isCopilotOpen = false;
@@ -601,6 +611,16 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
 
   @HostListener('window:keydown', ['$event'])
   onGlobalTypeMenuKeydown(event: KeyboardEvent) {
+    // Cerrar lightbox de imagen con tecla Escape
+    if (event.key === 'Escape' || event.key === 'Esc') {
+      if (this.lightboxImageUrl) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.closeImageLightbox();
+        return;
+      }
+    }
+
     // Atajo global Ctrl + Shift + D / Cmd + Shift + D (Rojo)
     if ((event.ctrlKey || event.metaKey) && event.shiftKey && (event.key === 'D' || event.key === 'd')) {
       event.preventDefault();
@@ -652,6 +672,10 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
       event.preventDefault();
       event.stopPropagation();
       this.selectBlockType(block, 'texto');
+    } else if (key === 'i') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.selectBlockType(block, 'imagen');
     } else if (key === 'escape') {
       event.preventDefault();
       event.stopPropagation();
@@ -667,6 +691,7 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
       case 'alerta': return 'Alerta';
       case 'texto': return 'Texto Normal';
       case 'columnas': return '2 Columnas';
+      case 'imagen': return 'Imagen';
       default: return 'Texto Normal';
     }
   }
@@ -681,7 +706,8 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
     { key: 'codigo', title: 'Código / Tabla', desc: 'Bloque de código o tabla estructurada', icon: '</>' },
     { key: 'alerta', title: 'Alerta / Nota', desc: 'Caja destacada con consejo o idea', icon: '!' },
     { key: 'texto', title: 'Texto normal', desc: 'Párrafo de texto libre', icon: 'T' },
-    { key: 'columnas', title: '2 Columnas Paralelas', desc: 'Colocar dos tablas o bloques lado a lado', icon: '◫' }
+    { key: 'columnas', title: '2 Columnas Paralelas', desc: 'Colocar dos tablas o bloques lado a lado', icon: '◫' },
+    { key: 'imagen', title: 'Imagen', desc: 'Subir foto o captura con Cloudinary', icon: '🖼️' }
   ];
 
   // Color Swatches Palette
@@ -1213,18 +1239,28 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
         const colBlocks: NoteBlockColumn[] = [];
         i++; // avanzar después de :::columns
 
-        let currentColType: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' = 'texto';
+        let currentColType: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'imagen' = 'texto';
         let currentColLang: string | undefined = undefined;
         let currentColLines: string[] = [];
         let hasActiveCol = false;
 
         const flushCol = () => {
           if (hasActiveCol) {
+            let imgUrl: string | undefined = undefined;
+            let colContent = currentColLines.join('\n');
+            if (currentColType === 'imagen') {
+              const matchImg = colContent.match(/!\[(.*?)\]\((.*?)\)/);
+              if (matchImg) {
+                colContent = matchImg[1];
+                imgUrl = matchImg[2];
+              }
+            }
             colBlocks.push({
               id: this.generateBlockId(),
               type: currentColType,
               language: currentColLang,
-              content: currentColLines.join('\n')
+              content: colContent,
+              imageUrl: imgUrl
             });
             currentColLines = [];
             currentColType = 'texto';
@@ -1239,7 +1275,7 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
             flushCol();
             hasActiveCol = true;
             const typeMatch = l.trim().match(/type=([a-z]+)/);
-            if (typeMatch && ['titulo', 'subtitulo', 'codigo', 'alerta', 'texto'].includes(typeMatch[1])) {
+            if (typeMatch && ['titulo', 'subtitulo', 'codigo', 'alerta', 'texto', 'imagen'].includes(typeMatch[1])) {
               currentColType = typeMatch[1] as any;
             }
             const langMatch = l.trim().match(/language=([a-zA-Z0-9_-]+)/);
@@ -1338,6 +1374,27 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
         continue;
       }
 
+      // Imagen: ![caption](url) o ![caption|size=md](url)
+      const imgMatch = line.trim().match(/^!\[(.*?)\]\((.*?)\)/);
+      if (imgMatch) {
+        let rawCaption = imgMatch[1] || '';
+        let size: 'sm' | 'md' | 'lg' | 'full' = 'lg';
+        if (rawCaption.includes('|size=')) {
+          const parts = rawCaption.split('|size=');
+          rawCaption = parts[0];
+          size = (parts[1] as any) || 'lg';
+        }
+        blocks.push({
+          id: this.generateBlockId(),
+          type: 'imagen',
+          content: rawCaption,
+          imageUrl: imgMatch[2] || '',
+          imageSize: size
+        });
+        i++;
+        continue;
+      }
+
       // Skip blank lines outside blocks
       if (line.trim() === '') {
         i++;
@@ -1355,6 +1412,7 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
         !lines[i].startsWith('### ') &&
         !lines[i].startsWith('#### ') &&
         !lines[i].startsWith('> ') &&
+        !lines[i].trim().startsWith('![') &&
         lines[i].trim() !== ''
       ) {
         textLines.push(lines[i]);
@@ -1392,10 +1450,16 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
       } else if (b.type === 'alerta') {
         const lines = (b.content || '').split('\n');
         return lines.map(l => `> 💡 ${l}`).join('\n');
+      } else if (b.type === 'imagen') {
+        const sizeAttr = b.imageSize && b.imageSize !== 'lg' ? `|size=${b.imageSize}` : '';
+        return `![${rawContent}${sizeAttr}](${b.imageUrl || ''})`;
       } else if (b.type === 'columnas') {
         const ratio = b.columnRatio || '50-50';
         const cols = (b.columns || []).slice(0, 2);
         const colsStr = cols.map(c => {
+          if (c.type === 'imagen') {
+            return `:::column type=imagen\n![${(c.content || '').trim()}](${c.imageUrl || ''})`;
+          }
           const langAttr = c.language ? ` language=${c.language}` : '';
           return `:::column type=${c.type || 'texto'}${langAttr}\n${c.content || ''}`;
         }).join('\n');
@@ -1501,8 +1565,8 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
   }
 
   addBlock(type: string, index?: number) {
-    const validTypes: ('titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'columnas')[] = [
-      'titulo', 'subtitulo', 'codigo', 'alerta', 'texto', 'columnas'
+    const validTypes: ('titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'columnas' | 'imagen')[] = [
+      'titulo', 'subtitulo', 'codigo', 'alerta', 'texto', 'columnas', 'imagen'
     ];
     const blockType = validTypes.includes(type as any) ? (type as any) : 'texto';
 
@@ -1527,6 +1591,14 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
             content: ''
           }
         ]
+      };
+    } else if (blockType === 'imagen') {
+      newBlock = {
+        id: this.generateBlockId(),
+        type: 'imagen',
+        content: '',
+        imageUrl: '',
+        imageSize: 'lg'
       };
     } else {
       newBlock = {
@@ -1616,6 +1688,8 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
       id: this.generateBlockId(),
       type: target.type,
       content: target.content,
+      imageUrl: target.imageUrl,
+      imageSize: target.imageSize,
       language: target.language,
       columnRatio: target.columnRatio,
       columns: target.columns ? target.columns.map(c => ({ ...c, id: this.generateBlockId() })) : undefined
@@ -1629,12 +1703,15 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
       this.convertToColumns(block);
       return;
     }
-    const validTypes: ('titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto')[] = [
-      'titulo', 'subtitulo', 'codigo', 'alerta', 'texto'
+    const validTypes: ('titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'imagen')[] = [
+      'titulo', 'subtitulo', 'codigo', 'alerta', 'texto', 'imagen'
     ];
     block.type = validTypes.includes(newType as any) ? (newType as any) : 'texto';
     if (block.type === 'codigo' && !block.language) {
       block.language = 'typescript';
+    }
+    if (block.type === 'imagen' && !block.imageSize) {
+      block.imageSize = 'lg';
     }
     // Si viene de columnas, limpiar estructura de columnas
     if (block.columns) {
@@ -1679,12 +1756,15 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
   }
 
   setColumnType(col: NoteBlockColumn, newType: string) {
-    const validTypes: ('titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto')[] = [
-      'titulo', 'subtitulo', 'codigo', 'alerta', 'texto'
+    const validTypes: ('titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'imagen')[] = [
+      'titulo', 'subtitulo', 'codigo', 'alerta', 'texto', 'imagen'
     ];
     col.type = validTypes.includes(newType as any) ? (newType as any) : 'texto';
     if (col.type === 'codigo' && !col.language) {
       col.language = 'sql';
+    }
+    if (col.type === 'imagen') {
+      col.imageUrl = col.imageUrl || '';
     }
     this.syncBlocksToContent();
   }
@@ -1701,6 +1781,227 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
       navigator.clipboard.writeText(content || '').then(() => {
         this.showToast('Código copiado al portapapeles');
+      });
+    }
+  }
+
+  // ── GESTIÓN DE IMÁGENES & CLOUDINARY ─────────────────────────
+
+  @HostListener('paste', ['$event'])
+  onEditorPaste(event: ClipboardEvent) {
+    if (!this.selectedPage) return;
+    const items = event.clipboardData?.items;
+    if (!items) return;
+
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        const file = items[i].getAsFile();
+        if (file) {
+          event.preventDefault();
+          event.stopPropagation();
+
+          const newBlock: NoteBlock = {
+            id: this.generateBlockId(),
+            type: 'imagen',
+            content: '',
+            imageUrl: '',
+            imageSize: 'lg',
+            isUploading: true
+          };
+
+          const activeIndex = this.activeBlockId ? this.blocks.findIndex(b => b.id === this.activeBlockId) : -1;
+          if (activeIndex >= 0) {
+            this.blocks.splice(activeIndex + 1, 0, newBlock);
+          } else {
+            this.blocks.push(newBlock);
+          }
+
+          this.activeBlockId = newBlock.id;
+          this.syncBlocksToContent();
+          this.uploadImageFile(file, newBlock);
+          break;
+        }
+      }
+    }
+  }
+
+  /**
+   * Optimiza imágenes pesadas antes de subirlas para evitar superar límites de red o PHP.
+   * Si es SVG o GIF (animado) o pesa menos de 1.5MB con dimensiones razonables, la deja intacta.
+   */
+  private async optimizeImageFile(file: File): Promise<File> {
+    if (!file.type.startsWith('image/') || file.type === 'image/svg+xml' || file.type === 'image/gif') {
+      return file;
+    }
+
+    if (file.size <= 1.5 * 1024 * 1024) {
+      return file;
+    }
+
+    try {
+      const bitmap = await createImageBitmap(file);
+      const maxDim = 1920;
+      let width = bitmap.width;
+      let height = bitmap.height;
+
+      if (width > maxDim || height > maxDim) {
+        if (width > height) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        } else {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return file;
+
+      ctx.drawImage(bitmap, 0, 0, width, height);
+
+      const mimeType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+      const quality = 0.85;
+
+      const blob = await new Promise<Blob | null>((resolve) => {
+        canvas.toBlob(resolve, mimeType, quality);
+      });
+
+      if (blob && blob.size < file.size) {
+        return new File([blob], file.name.replace(/\.[^/.]+$/, '') + (mimeType === 'image/png' ? '.png' : '.jpg'), {
+          type: mimeType,
+          lastModified: Date.now()
+        });
+      }
+
+      return file;
+    } catch {
+      return file;
+    }
+  }
+
+  /**
+   * Convierte un archivo File a Data URI Base64
+   */
+  private fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (err) => reject(err);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async uploadImageFile(file: File, block: NoteBlock) {
+    block.isUploading = true;
+    this.imageUploadError = null;
+
+    const fileToUpload = await this.optimizeImageFile(file);
+
+    this.libraryService.uploadImage(fileToUpload).subscribe({
+      next: (res) => {
+        block.isUploading = false;
+        if (res && (res.url || res.secure_url)) {
+          block.imageUrl = res.secure_url || res.url;
+          this.syncBlocksToContent();
+          this.showToast('Imagen subida a Cloudinary');
+        } else {
+          this.imageUploadError = res?.message || 'Error al obtener la URL de Cloudinary';
+          this.showToast(this.imageUploadError, 'error');
+        }
+      },
+      error: async (err) => {
+        console.warn('Fallo upload multipart, intentando fallback Base64...', err);
+        // Fallback: Si multipart falla o es rechazado por límites del servidor, enviar como Base64
+        try {
+          const base64 = await this.fileToBase64(fileToUpload);
+          this.libraryService.uploadImageBase64(base64, fileToUpload.name).subscribe({
+            next: (res) => {
+              block.isUploading = false;
+              if (res && (res.url || res.secure_url)) {
+                block.imageUrl = res.secure_url || res.url;
+                this.syncBlocksToContent();
+                this.showToast('Imagen subida a Cloudinary');
+              } else {
+                this.imageUploadError = res?.message || 'Error al obtener la URL de Cloudinary';
+                this.showToast(this.imageUploadError, 'error');
+              }
+            },
+            error: (fallbackErr) => {
+              block.isUploading = false;
+              console.error('Error al subir imagen a Cloudinary (fallback):', fallbackErr);
+              const errMsg = fallbackErr?.error?.message || err?.error?.message || 'Error al subir la imagen a Cloudinary';
+              this.imageUploadError = errMsg;
+              this.showToast(errMsg, 'error');
+            }
+          });
+        } catch {
+          block.isUploading = false;
+          console.error('Error al subir imagen a Cloudinary:', err);
+          const errMsg = err?.error?.message || 'Error de conexión al subir la imagen';
+          this.imageUploadError = errMsg;
+          this.showToast(errMsg, 'error');
+        }
+      }
+    });
+  }
+
+  onImageFileSelected(block: NoteBlock, event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input && input.files && input.files[0]) {
+      const file = input.files[0];
+      this.uploadImageFile(file, block);
+      input.value = '';
+    }
+  }
+
+  triggerImageUpload(blockId: string) {
+    const fileInput = document.getElementById('image-file-input-' + blockId) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  }
+
+  onImageDrop(block: NoteBlock, event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]) {
+      const file = event.dataTransfer.files[0];
+      if (file.type.startsWith('image/')) {
+        this.uploadImageFile(file, block);
+      }
+    }
+  }
+
+  setImageSize(block: NoteBlock, size: 'sm' | 'md' | 'lg' | 'full') {
+    block.imageSize = size;
+    this.syncBlocksToContent();
+  }
+
+  openImageLightbox(url: string) {
+    if (!url) return;
+    this.lightboxImageUrl = url;
+  }
+
+  closeImageLightbox() {
+    this.lightboxImageUrl = null;
+  }
+
+  setDirectImageUrl(block: NoteBlock, url: string) {
+    if (url && url.trim()) {
+      block.imageUrl = url.trim();
+      this.syncBlocksToContent();
+      this.showToast('Enlace de imagen guardado');
+    }
+  }
+
+  copyImageUrl(url: string) {
+    if (!url) return;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(() => {
+        this.showToast('Enlace de imagen copiado');
       });
     }
   }
@@ -1838,18 +2139,20 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const validTypes: ('titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto')[] = [
-      'titulo', 'subtitulo', 'codigo', 'alerta', 'texto'
+    const validTypes: ('titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'imagen')[] = [
+      'titulo', 'subtitulo', 'codigo', 'alerta', 'texto', 'imagen'
     ];
-    const targetType = validTypes.includes(cmdKey as any) ? (cmdKey as 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto') : 'texto';
+    const targetType = validTypes.includes(cmdKey as any) ? (cmdKey as 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'imagen') : 'texto';
 
     if (this.activeBlockId) {
       const targetBlock = this.blocks.find(b => b.id === this.activeBlockId);
       if (targetBlock) {
-        if (targetBlock.content.startsWith('/')) {
-          targetBlock.content = targetBlock.content.substring(1);
-        }
+        targetBlock.content = targetBlock.content.replace(/^\/[a-zA-Z0-9_-]*/, '').trim();
         targetBlock.type = targetType;
+        if (targetType === 'imagen') {
+          targetBlock.imageUrl = targetBlock.imageUrl || '';
+          targetBlock.imageSize = targetBlock.imageSize || 'lg';
+        }
       } else {
         this.addBlock(targetType);
       }
