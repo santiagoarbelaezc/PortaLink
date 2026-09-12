@@ -177,6 +177,8 @@ export class AppComponent implements OnInit {
     return this.router.url.includes('/perfil');
   }
 
+  private loadingSafetyTimeout: any;
+
   showNavbar(): boolean {
     return !this.isAdminRoute() && !this.router.url.includes('/rotbot') && !this.router.url.includes('/perfil');
   }
@@ -186,11 +188,17 @@ export class AppComponent implements OnInit {
       if (event instanceof NavigationStart) {
         this.isLoading = true;
         this.isFinished = false;
+        if (this.loadingSafetyTimeout) clearTimeout(this.loadingSafetyTimeout);
+        this.loadingSafetyTimeout = setTimeout(() => {
+          this.isLoading = false;
+          this.isFinished = false;
+        }, 1500);
       } else if (
         event instanceof NavigationEnd ||
         event instanceof NavigationCancel ||
         event instanceof NavigationError
       ) {
+        if (this.loadingSafetyTimeout) clearTimeout(this.loadingSafetyTimeout);
         // Smoothly finish loading
         this.isFinished = true;
         setTimeout(() => {

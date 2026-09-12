@@ -5,6 +5,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { LibraryService, NotebookFolder, NotebookModule, NotebookPage } from '../../../services/library.service';
 import { LibraryAiService } from '../../../services/library-ai.service';
 import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-body.directive';
+import { StreakService } from '../../../services/streak.service';
 
 export interface SlashCommandItem {
   key: string;
@@ -106,6 +107,7 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
 
   private libraryService = inject(LibraryService);
   private libraryAiService = inject(LibraryAiService);
+  private streakService = inject(StreakService);
   private sanitizer = inject(DomSanitizer);
 
   // Block-level AI action state
@@ -2073,6 +2075,7 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
 
   autoSavePage() {
     if (!this.selectedPage || !this.selectedPage.id || typeof this.selectedPage.id === 'number' && this.selectedPage.id > 1000000000000) return;
+    this.streakService.completeAction('library');
     this.libraryService.updatePage(this.selectedPage.id, {
       title: this.selectedPage.title,
       content: this.selectedPage.content,

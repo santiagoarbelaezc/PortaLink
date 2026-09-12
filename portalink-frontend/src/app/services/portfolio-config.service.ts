@@ -90,7 +90,7 @@ export class PortfolioConfigService {
     const key = this.getConfigKey();
     const savedDraft = localStorage.getItem(key);
     
-    this.http.get('/assets/portfolio.json').subscribe({
+    this.http.get<any>('/assets/portfolio.json').subscribe({
       next: (originalData) => {
         const normOriginal = this.normalizeImages(originalData);
         this._originalConfig.set(normOriginal);
@@ -105,7 +105,30 @@ export class PortfolioConfigService {
           this._config.set(JSON.parse(JSON.stringify(normOriginal)));
         }
       },
-      error: (err) => console.error('Error loading portfolio config:', err)
+      error: (err) => {
+        console.warn('Could not load /assets/portfolio.json, trying fallback:', err);
+        this.http.get<any>('assets/portfolio.json').subscribe({
+          next: (fallbackData) => {
+            const norm = this.normalizeImages(fallbackData);
+            this._originalConfig.set(norm);
+            this._config.set(norm);
+          },
+          error: () => {
+            if (savedDraft) {
+              try {
+                this._config.set(JSON.parse(savedDraft));
+                return;
+              } catch {}
+            }
+            // Minimal fallback object so UI renders immediately
+            this._config.set({
+              general: { authorName: 'Santiago Arbeláez' },
+              about: { text: '', visible: true },
+              contact: { formActive: true }
+            });
+          }
+        });
+      }
     });
   }
 

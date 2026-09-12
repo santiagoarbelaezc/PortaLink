@@ -9,7 +9,7 @@ import { CommandCenterService, CommandCenterResponse, RadarResponse, RadarInsigh
 import { AudioRecorderService, RecordedAudio } from '../../../services/audio-recorder.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-
+import { StreakService, DailyStreakData, WeekDayStreak, MonthDayStreak, MonthStreakData } from '../../../services/streak.service';
 @Component({
   selector: 'app-dash-home',
   standalone: true,
@@ -103,6 +103,220 @@ import { Router } from '@angular/router';
             </div>
 
           </div>
+        </div>
+
+        <!-- ═══════════════════════ RACHA DEL DÍA (ELEGANTE & MOTIVACIONAL) ═══════════════════════ -->
+        <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-6 md:p-7 transition-all duration-300 relative overflow-hidden space-y-4"
+             [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800 shadow-[0_10px_35px_rgba(0,0,0,0.4)]' : 'bg-white border-neutral-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.03)]'">
+          
+
+          <!-- Header Racha -->
+          <div class="flex items-center justify-between flex-wrap gap-3 relative z-10">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center relative bg-gradient-to-br from-amber-500/15 to-orange-500/10 border border-amber-500/25 shadow-2xs shrink-0">
+                <span class="text-xl select-none">🔥</span>
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <h3 class="text-base xs:text-lg sm:text-xl font-headline font-bold tracking-tight m-0 leading-tight"
+                      [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                    Racha del Día
+                  </h3>
+                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/15 text-amber-500 border border-amber-500/30">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                    {{ streakData?.streakCount || 1 }} {{ (streakData?.streakCount === 1) ? 'día' : 'días' }}
+                  </span>
+                </div>
+                <p class="text-[11px] xs:text-xs sm:text-[13px] font-sans text-neutral-400 dark:text-neutral-500 m-0 mt-0.5">
+                  Mantén tu constancia diaria completando las 3 actividades clave
+                </p>
+              </div>
+            </div>
+
+            <button type="button" 
+                    (click)="openStreakModal()"
+                    class="h-8 px-3 rounded-xl border text-xs font-headline font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95"
+                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-neutral-300 hover:text-white hover:border-neutral-700' : 'bg-neutral-100/80 border-neutral-200 text-neutral-700 hover:text-neutral-900 hover:bg-neutral-200/70'">
+              <span>Ver Racha</span>
+              <svg class="w-3.5 h-3.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Main Grid: Metas (Izquierda) + Calendario Semanal & Métricas (Derecha) -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 relative z-10 pt-1">
+            
+            <!-- Columna Izquierda: Checklist de las 3 Metas Diarias (7 cols) -->
+            <div class="lg:col-span-7 space-y-2.5">
+              <div class="flex items-center justify-between text-xs font-headline font-semibold text-neutral-400 px-0.5">
+                <span>Progreso de hoy ({{ completedStreakGoals }}/3)</span>
+                <span class="font-mono text-[11px] text-amber-500 font-bold">
+                  {{ (completedStreakGoals === 3) ? '¡100% Completado!' : ((completedStreakGoals / 3) * 100 | number:'1.0-0') + '%' }}
+                </span>
+              </div>
+
+              <!-- Barra de Progreso -->
+              <div class="w-full h-1.5 rounded-full overflow-hidden" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-100'">
+                <div class="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-amber-500 to-emerald-500"
+                     [style.width.%]="(completedStreakGoals / 3) * 100"></div>
+              </div>
+
+              <!-- Meta 1: Login -->
+              <div class="flex items-center justify-between p-3 rounded-xl border transition-all"
+                   [ngClass]="isDark ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-300' : 'bg-emerald-50/80 border-emerald-200 text-emerald-800'">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                    </svg>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-xs font-headline font-semibold truncate m-0">1. Primer ingreso diario al Dashboard</p>
+                    <p class="text-[10px] opacity-75 m-0 font-sans">Registrado automáticamente hoy</p>
+                  </div>
+                </div>
+                <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shrink-0">
+                  Hecho
+                </span>
+              </div>
+
+              <!-- Meta 2: Rotbot IA -->
+              <div class="flex items-center justify-between p-3 rounded-xl border transition-all"
+                   [ngClass]="streakData?.actions?.robot ? 
+                     (isDark ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-300' : 'bg-emerald-50/80 border-emerald-200 text-emerald-800') : 
+                     (isDark ? 'bg-neutral-950/40 border-neutral-800 text-neutral-300 hover:border-neutral-700' : 'bg-neutral-50/80 border-neutral-200/90 text-neutral-700 hover:border-neutral-300')">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0"
+                       [ngClass]="streakData?.actions?.robot ? 'bg-emerald-500 text-white' : (isDark ? 'bg-neutral-800 text-neutral-400' : 'bg-neutral-200 text-neutral-500')">
+                    <svg *ngIf="streakData?.actions?.robot" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                    </svg>
+                    <span *ngIf="!streakData?.actions?.robot" class="text-xs font-bold">2</span>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-xs font-headline font-semibold truncate m-0">2. Conversación con Rotbot IA</p>
+                    <p class="text-[10px] opacity-75 m-0 font-sans">Practica inglés o hazle consultas al bot</p>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2 shrink-0">
+                  <button *ngIf="!streakData?.actions?.robot" 
+                          type="button"
+                          (click)="tabChange.emit('rotbot')"
+                          class="px-2.5 py-1 rounded-lg text-[10px] font-headline font-semibold bg-neutral-200 hover:bg-neutral-300 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 transition-colors cursor-pointer border-none">
+                    Ir a Rotbot
+                  </button>
+                  <span *ngIf="streakData?.actions?.robot" class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    Hecho
+                  </span>
+                </div>
+              </div>
+
+              <!-- Meta 3: Biblioteca -->
+              <div class="flex items-center justify-between p-3 rounded-xl border transition-all"
+                   [ngClass]="streakData?.actions?.library ? 
+                     (isDark ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-300' : 'bg-emerald-50/80 border-emerald-200 text-emerald-800') : 
+                     (isDark ? 'bg-neutral-950/40 border-neutral-800 text-neutral-300 hover:border-neutral-700' : 'bg-neutral-50/80 border-neutral-200/90 text-neutral-700 hover:border-neutral-300')">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0"
+                       [ngClass]="streakData?.actions?.library ? 'bg-emerald-500 text-white' : (isDark ? 'bg-neutral-800 text-neutral-400' : 'bg-neutral-200 text-neutral-500')">
+                    <svg *ngIf="streakData?.actions?.library" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                    </svg>
+                    <span *ngIf="!streakData?.actions?.library" class="text-xs font-bold">3</span>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-xs font-headline font-semibold truncate m-0">3. Estudiar o escribir en Biblioteca</p>
+                    <p class="text-[10px] opacity-75 m-0 font-sans">Crea o repasa tus apuntes de estudio</p>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2 shrink-0">
+                  <button *ngIf="!streakData?.actions?.library" 
+                          type="button"
+                          (click)="tabChange.emit('library')"
+                          class="px-2.5 py-1 rounded-lg text-[10px] font-headline font-semibold bg-neutral-200 hover:bg-neutral-300 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 transition-colors cursor-pointer border-none">
+                    Ir a Biblioteca
+                  </button>
+                  <span *ngIf="streakData?.actions?.library" class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    Hecho
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Columna Derecha: Calendario Semanal & Tarjetas de Racha (5 cols) -->
+            <div class="lg:col-span-5 flex flex-col justify-between space-y-3">
+              
+              <!-- Barra de Consistencia: Semana y Botón Modal Mes -->
+              <div class="p-3.5 rounded-2xl border transition-all"
+                   [ngClass]="isDark ? 'bg-[#121217] border-neutral-800' : 'bg-neutral-50 border-neutral-200/80'">
+                
+                <!-- Encabezado con título y botón para abrir modal de mes -->
+                <div class="flex items-center justify-between mb-2.5 px-0.5">
+                  <div class="flex items-center gap-1.5 min-w-0">
+                    <span class="text-[10px] font-mono uppercase tracking-wider text-neutral-400 truncate">
+                      Esta semana
+                    </span>
+                    <span class="text-[10px] font-headline font-semibold text-neutral-500">Lun — Dom</span>
+                  </div>
+                  
+                  <!-- Botón Ver Mes (Abre el Modal) -->
+                  <button type="button"
+                          (click)="openStreakMonthModal()"
+                          class="px-2.5 py-1 rounded-lg text-[10px] font-headline font-semibold flex items-center gap-1.5 transition-all cursor-pointer border shadow-2xs hover:scale-105 active:scale-95"
+                          [ngClass]="isDark ? 'bg-[#181820] border-neutral-700 text-amber-400 hover:text-amber-300 hover:border-amber-500/40' : 'bg-white border-neutral-200 text-amber-700 hover:text-amber-800 hover:bg-neutral-50'">
+                    <svg class="w-3.5 h-3.5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span>Ver Mes</span>
+                  </button>
+                </div>
+                
+                <!-- VISTA SEMANA (7 Días) -->
+                <div class="grid grid-cols-7 gap-1 sm:gap-1.5 text-center">
+                  <div *ngFor="let day of streakWeekDays" 
+                       class="flex flex-col items-center p-1.5 rounded-xl transition-all"
+                       [ngClass]="day.isCompleted ? 
+                         (isDark ? 'bg-amber-500/15 border border-amber-500/30 text-amber-400' : 'bg-amber-50 border border-amber-300 text-amber-800') : 
+                         (day.isToday ? 
+                           (isDark ? 'border border-dashed border-neutral-700 bg-neutral-900/50 text-white' : 'border border-dashed border-neutral-300 bg-white text-neutral-900') : 
+                           (isDark ? 'text-neutral-500' : 'text-neutral-400'))">
+                    <span class="text-[10px] font-headline font-bold uppercase">{{ day.name }}</span>
+                    <span class="text-xs font-mono font-semibold mt-0.5">{{ day.dayNumber }}</span>
+                    <span class="text-[11px] mt-1 select-none">
+                      {{ day.isCompleted ? '🔥' : (day.isToday ? '⏳' : '·') }}
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Mini Stats Racha Actual y Récord -->
+              <div class="grid grid-cols-2 gap-2.5">
+                <div class="p-3 rounded-xl border text-center"
+                     [ngClass]="isDark ? 'bg-[#121217] border-neutral-800' : 'bg-neutral-50 border-neutral-200/80'">
+                  <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Racha Actual</span>
+                  <div class="text-lg sm:text-xl font-headline font-extrabold text-amber-500">
+                    🔥 {{ streakData?.streakCount || 1 }}d
+                  </div>
+                </div>
+
+                <div class="p-3 rounded-xl border text-center"
+                     [ngClass]="isDark ? 'bg-[#121217] border-neutral-800' : 'bg-neutral-50 border-neutral-200/80'">
+                  <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Mejor Racha</span>
+                  <div class="text-lg sm:text-xl font-headline font-extrabold"
+                       [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-700'">
+                    🏆 {{ streakData?.longestStreak || 1 }}d
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
         </div>
 
         <!-- ═══════════════════════ 2. CENTRO DE COMANDO IA (DISEÑO ORIGINAL ELEVADO) ═══════════════════════ -->
@@ -833,6 +1047,155 @@ import { Router } from '@angular/router';
             Iniciar sesión de nuevo
           </button>
         </div>
+        <!-- ═══════════════════════ MODAL RACHA MENSUAL (CALENDARIO COMPLETO) ═══════════════════════ -->
+        <div *ngIf="isStreakMonthModalOpen"
+             class="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 md:p-8 bg-black/80 backdrop-blur-md transition-all duration-300 animate-fadeIn"
+             (click)="closeStreakMonthModal()">
+          
+          <div class="relative w-full max-w-xl sm:max-w-2xl rounded-[28px] sm:rounded-[36px] p-6 sm:p-8 border shadow-2xl overflow-hidden transition-all duration-300 transform animate-scaleUp"
+               [ngClass]="isDark ? 'bg-[#0c0c10] border-neutral-800 text-white shadow-[0_30px_70px_rgba(0,0,0,0.9)]' : 'bg-white border-neutral-200 text-neutral-900 shadow-[0_30px_70px_rgba(0,0,0,0.14)]'"
+               (click)="$event.stopPropagation()">
+            
+            <!-- Botón de Cerrar (X) -->
+            <button type="button" 
+                    (click)="closeStreakMonthModal()"
+                    class="absolute top-5 right-5 w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer border border-transparent z-20"
+                    [ngClass]="isDark ? 'text-neutral-400 hover:text-white hover:bg-white/10' : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100'"
+                    title="Cerrar">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            <!-- Header del Modal -->
+            <div class="flex items-start justify-between flex-wrap gap-4 pr-10 mb-5">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-transparent border border-amber-500/30 shadow-[0_0_20px_rgba(245,158,11,0.15)] shrink-0">
+                  <span class="text-2xl select-none">📅</span>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <h3 class="text-xl sm:text-2xl font-headline font-bold tracking-tight m-0"
+                        [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                      Calendario Mensual
+                    </h3>
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-headline font-bold bg-amber-500/15 text-amber-500 border border-amber-500/30">
+                      {{ streakMonthData?.activeCount || 0 }}d activos
+                    </span>
+                  </div>
+                  <p class="text-xs font-sans text-neutral-400 m-0 mt-1">
+                    Visualiza tu constancia y días completados a lo largo del mes
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Barra de Controles de Mes (Anterior / Siguiente / Hoy) -->
+            <div class="flex items-center justify-between p-2.5 sm:p-3 rounded-2xl border mb-4"
+                 [ngClass]="isDark ? 'bg-[#121218] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+              
+              <div class="flex items-center gap-2">
+                <button type="button" 
+                        (click)="prevStreakMonth()"
+                        class="w-8 h-8 rounded-xl flex items-center justify-center border transition-colors cursor-pointer"
+                        [ngClass]="isDark ? 'border-neutral-800 bg-[#1a1a24] text-neutral-300 hover:text-white hover:border-neutral-700' : 'border-neutral-200 bg-white text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100'"
+                        title="Mes anterior">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                  </svg>
+                </button>
+                <button type="button" 
+                        (click)="nextStreakMonth()"
+                        class="w-8 h-8 rounded-xl flex items-center justify-center border transition-colors cursor-pointer"
+                        [ngClass]="isDark ? 'border-neutral-800 bg-[#1a1a24] text-neutral-300 hover:text-white hover:border-neutral-700' : 'border-neutral-200 bg-white text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100'"
+                        title="Mes siguiente">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </button>
+                
+                <span class="text-sm sm:text-base font-headline font-bold capitalize ml-1.5"
+                      [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                  {{ streakMonthData?.monthName }}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button type="button"
+                        (click)="resetToCurrentMonth()"
+                        class="px-3 py-1 rounded-xl text-xs font-mono font-semibold border transition-colors cursor-pointer"
+                        [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900 text-neutral-300 hover:text-white hover:border-neutral-700' : 'border-neutral-200 bg-white text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100'">
+                  Hoy
+                </button>
+              </div>
+            </div>
+
+            <!-- Encabezados de Días de la Semana -->
+            <div class="grid grid-cols-7 gap-1.5 sm:gap-2 text-center mb-1.5">
+              <span class="text-xs font-headline font-bold text-neutral-500 uppercase py-1">Lun</span>
+              <span class="text-xs font-headline font-bold text-neutral-500 uppercase py-1">Mar</span>
+              <span class="text-xs font-headline font-bold text-neutral-500 uppercase py-1">Mié</span>
+              <span class="text-xs font-headline font-bold text-neutral-500 uppercase py-1">Jue</span>
+              <span class="text-xs font-headline font-bold text-neutral-500 uppercase py-1">Vie</span>
+              <span class="text-xs font-headline font-bold text-neutral-500 uppercase py-1">Sáb</span>
+              <span class="text-xs font-headline font-bold text-neutral-500 uppercase py-1">Dom</span>
+            </div>
+
+            <!-- Matriz de Días del Mes -->
+            <div class="grid grid-cols-7 gap-1.5 sm:gap-2 text-center mb-6">
+              <div *ngFor="let day of streakMonthData?.days"
+                   class="h-10 sm:h-12 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center relative text-xs sm:text-sm font-mono transition-all"
+                   [ngClass]="day.isCompleted ? 
+                     (isDark ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold shadow-[0_0_12px_rgba(245,158,11,0.2)]' : 'bg-amber-100 text-amber-900 border border-amber-300 font-bold shadow-2xs') : 
+                     (day.isToday ? 
+                       (isDark ? 'border-2 border-dashed border-amber-400 text-white font-bold bg-amber-500/10' : 'border-2 border-dashed border-amber-500 text-neutral-900 font-bold bg-amber-50') : 
+                       (day.isCurrentMonth ? 
+                         (isDark ? 'bg-[#14141c] text-neutral-300 border border-neutral-800/80 hover:border-neutral-700' : 'bg-neutral-50 text-neutral-700 border border-neutral-200 hover:border-neutral-300') : 
+                         (isDark ? 'text-neutral-700 opacity-25 border border-transparent' : 'text-neutral-300 opacity-30 border border-transparent')))"
+                   [title]="day.dateStr + (day.isCompleted ? ' - Racha completada 🔥' : '')">
+                
+                <span class="leading-none">{{ day.dayNumber }}</span>
+                
+                <span *ngIf="day.isCompleted" class="text-[10px] sm:text-[11px] leading-none mt-1 select-none">
+                  🔥
+                </span>
+                <span *ngIf="day.isToday && !day.isCompleted" class="text-[10px] leading-none mt-1 select-none">
+                  ⏳
+                </span>
+              </div>
+            </div>
+
+            <!-- Leyenda y Métricas al pie del Modal -->
+            <div class="flex items-center justify-between flex-wrap gap-3 pt-3.5 border-t"
+                 [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+              
+              <div class="flex items-center gap-4 text-xs font-sans text-neutral-400">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-3 h-3 rounded-md bg-amber-500/25 border border-amber-500/40 inline-block"></span>
+                  <span>Completado 🔥</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="w-3 h-3 rounded-md border border-dashed border-amber-500 inline-block"></span>
+                  <span>Hoy ⏳</span>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <div class="text-xs font-headline font-semibold" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
+                  Racha actual: <span class="text-amber-500 font-mono font-bold">{{ streakData?.streakCount || 1 }}d</span>
+                </div>
+                <span class="opacity-30">•</span>
+                <div class="text-xs font-headline font-semibold" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
+                  Récord: <span class="font-mono font-bold">{{ streakData?.longestStreak || 1 }}d</span>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
     </ng-container>
 
@@ -981,6 +1344,14 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   private commandCenterService = inject(CommandCenterService);
   private audioRecorder = inject(AudioRecorderService);
   private router = inject(Router);
+  private streakService = inject(StreakService);
+
+  streakData: DailyStreakData | null = null;
+  streakWeekDays: WeekDayStreak[] = [];
+  streakMonthData: MonthStreakData | null = null;
+  currentCalendarMonthDate = new Date();
+  isStreakMonthModalOpen = false;
+  private streakSub: Subscription | null = null;
 
   metrics: SystemMetrics = {
     homeViews: 0,
@@ -1120,6 +1491,13 @@ export class DashHomeComponent implements OnInit, OnDestroy {
     this.updateClock();
     this.clockInterval = setInterval(() => this.updateClock(), 1000);
 
+    // Racha del Día
+    this.streakSub = this.streakService.streak$.subscribe(data => {
+      this.streakData = data;
+      this.streakWeekDays = this.streakService.getWeekDays();
+      this.updateStreakMonth();
+    });
+
     // 1. Cargar Radar y Accesos Recientes
     this.loadRadarData();
 
@@ -1203,6 +1581,7 @@ export class DashHomeComponent implements OnInit, OnDestroy {
     clearInterval(this.phraseInterval);
     clearTimeout(this.pauseTimeout);
     clearTimeout(this.phraseTimeout);
+    if (this.streakSub) this.streakSub.unsubscribe();
     if (this.sessionSub) this.sessionSub.unsubscribe();
     if (this.sessionExpiredSub) this.sessionExpiredSub.unsubscribe();
     this.voiceSubs.forEach(s => s.unsubscribe());
@@ -1539,5 +1918,49 @@ export class DashHomeComponent implements OnInit, OnDestroy {
         this.isPhraseFading = false;
       }, 300);
     }, 10000);
+  }
+
+  openStreakModal(): void {
+    this.streakService.openModalManual();
+  }
+
+  get completedStreakGoals(): number {
+    return this.streakService.getCompletedActionsCount();
+  }
+
+  updateStreakMonth(): void {
+    this.streakMonthData = this.streakService.getMonthData(this.currentCalendarMonthDate);
+  }
+
+  prevStreakMonth(): void {
+    this.currentCalendarMonthDate = new Date(
+      this.currentCalendarMonthDate.getFullYear(),
+      this.currentCalendarMonthDate.getMonth() - 1,
+      1
+    );
+    this.updateStreakMonth();
+  }
+
+  nextStreakMonth(): void {
+    this.currentCalendarMonthDate = new Date(
+      this.currentCalendarMonthDate.getFullYear(),
+      this.currentCalendarMonthDate.getMonth() + 1,
+      1
+    );
+    this.updateStreakMonth();
+  }
+
+  resetToCurrentMonth(): void {
+    this.currentCalendarMonthDate = new Date();
+    this.updateStreakMonth();
+  }
+
+  openStreakMonthModal(): void {
+    this.updateStreakMonth();
+    this.isStreakMonthModalOpen = true;
+  }
+
+  closeStreakMonthModal(): void {
+    this.isStreakMonthModalOpen = false;
   }
 }

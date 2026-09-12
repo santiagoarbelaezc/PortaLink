@@ -76,6 +76,7 @@ use App\Controllers\ChatAdminController;
 use App\Controllers\CommandCenterController;
 use App\Controllers\RobotChatController;
 use App\Controllers\StudyPlanController;
+use App\Controllers\StreakController;
 
 $request = new Request();
 $response = new Response();
@@ -391,6 +392,12 @@ $router->put('/api/robot/study-plans/:id', [StudyPlanController::class, 'update'
 $router->delete('/api/robot/study-plans/:id', [StudyPlanController::class, 'delete'], [OptionalAuthMiddleware::class]);
 $router->post('/api/robot/study-plans/:id/activate', [StudyPlanController::class, 'activate'], [OptionalAuthMiddleware::class]);
 $router->get('/api/robot/study-plans/active', [StudyPlanController::class, 'getActive'], [OptionalAuthMiddleware::class]);
+
+// ──────────────────────────────────────────────────────────────
+//  RUTAS DE RACHA DIARIA (/api/streak)
+// ──────────────────────────────────────────────────────────────
+$router->get('/api/streak', [StreakController::class, 'getStreak'], [OptionalAuthMiddleware::class]);
+$router->post('/api/streak/action', [StreakController::class, 'recordAction'], [OptionalAuthMiddleware::class]);
 
 // Despachar la petición protegido contra errores fatales no capturados
 try {

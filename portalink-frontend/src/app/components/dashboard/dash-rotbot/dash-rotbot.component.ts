@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RobotChatService, RobotChatResponse, RotbotMode } from '../../../services/robot-chat.service';
 import { AudioRecorderService, RecordedAudio } from '../../../services/audio-recorder.service';
 import { CommandCenterService } from '../../../services/command-center.service';
+import { StreakService } from '../../../services/streak.service';
 import { Subscription } from 'rxjs';
 import { DashStudyPlanComponent } from './dash-study-plan.component';
 
@@ -399,6 +400,7 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
   private robotService = inject(RobotChatService);
   private audioRecorder = inject(AudioRecorderService);
   private commandCenter = inject(CommandCenterService);
+  private streakService = inject(StreakService);
 
   @ViewChild('chatContainer') private chatContainer!: ElementRef;
 
@@ -601,6 +603,9 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
     });
     this.saveChatToStorage();
     this.scrollToBottom();
+
+    // Registrar acción de racha diaria con Rotbot IA
+    this.streakService.completeAction('robot');
 
     // Construir historial reciente para memoria conversacional
     const history = this.chatHistory.slice(-8).map(entry => ({

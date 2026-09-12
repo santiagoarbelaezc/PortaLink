@@ -21,8 +21,16 @@ export class MessagesService {
   private readonly LOCAL_STORAGE_KEY = 'portalink_contact_messages';
 
   sendMessage(data: { nombre: string; correo: string; mensaje: string }): Observable<any> {
-    // Intenta enviar al backend HTTP; si falla (ej. 404 o error de red), guarda en localStorage y responde con éxito
-    return this.http.post<any>(this.apiUrl, data).pipe(
+    const payload = {
+      nombre: data.nombre,
+      correo: data.correo,
+      mensaje: data.mensaje,
+      name: data.nombre,
+      email: data.correo,
+      message: data.mensaje,
+      subject: 'Contacto desde PortaLink Web'
+    };
+    return this.http.post<any>(this.apiUrl, payload).pipe(
       catchError(() => {
         this.saveLocalMessage(data);
         return of({ success: true, message: 'Mensaje enviado correctamente (local)', fallback: true });

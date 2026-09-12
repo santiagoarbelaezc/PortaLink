@@ -18,15 +18,49 @@ class MessagesController
 
     public function sendMessage(Request $request, Response $response): void
     {
-        $name = $request->body['name'] ?? null;
-        $email = $request->body['email'] ?? null;
-        $subject = $request->body['subject'] ?? null;
-        $message = $request->body['message'] ?? null;
+        $name = trim($request->body['name'] ?? $request->body['nombre'] ?? '');
+        $email = trim($request->body['email'] ?? $request->body['correo'] ?? '');
+        $subject = trim($request->body['subject'] ?? $request->body['asunto'] ?? 'Contacto desde PortaLink Web');
+        $message = trim($request->body['message'] ?? $request->body['mensaje'] ?? '');
 
-        if (!$name || !$email || !$subject || !$message) {
+        if (!$name || !$email || !$message) {
             $response->status(400)->json([
                 'ok' => false,
-                'message' => 'Todos los campos son obligatorios'
+                'message' => 'Por favor completa todos los campos obligatorios'
+            ]);
+            return;
+        }
+
+        if (mb_strlen($name) < 2) {
+            $response->status(400)->json([
+                'ok' => false,
+                'message' => 'El nombre debe tener al menos 2 caracteres'
+            ]);
+            return;
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $response->status(400)->json([
+                'ok' => false,
+                'message' => 'El formato del correo electrónico es inválido'
+            ]);
+            return;
+        }
+
+        $domain = strtolower(substr(strrchr($email, "@"), 1));
+        $allowedDomains = ['gmail.com', 'hotmail.com', 'hotmail.es', 'outlook.com', 'outlook.es', 'yahoo.com', 'yahoo.es', 'icloud.com', 'live.com'];
+        if (!in_array($domain, $allowedDomains, true)) {
+            $response->status(400)->json([
+                'ok' => false,
+                'message' => 'Solo se admiten correos con dominios válidos (@gmail.com, @hotmail.com, @outlook.com, etc.)'
+            ]);
+            return;
+        }
+
+        if (mb_strlen($message) < 10) {
+            $response->status(400)->json([
+                'ok' => false,
+                'message' => 'El mensaje debe tener al menos 10 caracteres'
             ]);
             return;
         }
@@ -36,7 +70,7 @@ class MessagesController
             $stmt = Database::query(
                 "INSERT INTO contact_messages (name, email, subject, message, status) 
                  VALUES ($1, $2, $3, $4, 'UNREAD')",
-                [trim($name), trim($email), trim($subject), trim($message)]
+                [$name, $email, $subject, $message]
             );
 
             $response->status(201)->json([

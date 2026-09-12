@@ -32,9 +32,10 @@ import { RouterModule } from '@angular/router';
 
             <!-- Redes Sociales integradas con la identidad -->
             <div class="pt-2 flex items-center gap-2 flex-wrap">
-              <a href="https://www.tiktok.com/@santiarbelaezz" target="_blank" class="px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 text-xs font-headline font-medium transition-all no-underline">TikTok</a>
-              <a href="https://www.instagram.com/santiarbelaezz/" target="_blank" class="px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 text-xs font-headline font-medium transition-all no-underline">Instagram</a>
-              <a href="https://www.linkedin.com/in/santiago-arbelaez-contreras-9830b5290/" target="_blank" class="px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 text-xs font-headline font-medium transition-all no-underline">LinkedIn</a>
+              <a href="https://github.com/santiagoarbelaezc" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 text-xs font-headline font-medium transition-all no-underline">GitHub</a>
+              <a href="https://www.linkedin.com/in/santiago-arbelaez-contreras-9830b5290/" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 text-xs font-headline font-medium transition-all no-underline">LinkedIn</a>
+              <a href="https://www.instagram.com/santiarbelaezz/" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 text-xs font-headline font-medium transition-all no-underline">Instagram</a>
+              <a href="https://www.tiktok.com/@santiarbelaezz" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 text-xs font-headline font-medium transition-all no-underline">TikTok</a>
             </div>
           </div>
 

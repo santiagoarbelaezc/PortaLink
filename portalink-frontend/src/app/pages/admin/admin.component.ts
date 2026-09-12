@@ -18,6 +18,8 @@ import { DashItineraryComponent } from '../../components/dashboard/dash-itinerar
 import { DashLibraryComponent } from '../../components/dashboard/dash-library/dash-library.component';
 import { DashRotbotComponent } from '../../components/dashboard/dash-rotbot/dash-rotbot.component';
 import { DashDbViewerComponent } from '../../components/dashboard/dash-db-viewer/dash-db-viewer.component';
+import { DashStreakModalComponent } from '../../components/dashboard/dash-streak-modal/dash-streak-modal.component';
+import { StreakService } from '../../services/streak.service';
 
 interface Tab {
   id: string;
@@ -42,6 +44,7 @@ interface Tab {
     DashItineraryComponent,
     DashLibraryComponent,
     DashDbViewerComponent,
+    DashStreakModalComponent,
   ],
   template: `
     <div class="admin-shell fixed inset-0 h-[100dvh] w-full md:relative md:h-screen overflow-hidden flex font-sans"
@@ -465,6 +468,9 @@ interface Tab {
         </div>
       </nav>
 
+      <!-- Modal de Racha Diaria Flotante -->
+      <app-dash-streak-modal [theme]="isDark ? 'dark' : 'light'"></app-dash-streak-modal>
+
     </div>
   `,
   styles: [`
@@ -494,6 +500,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   private messagesService = inject(MessagesService);
   private authService = inject(AuthService);
   private commandCenterService = inject(CommandCenterService);
+  private streakService = inject(StreakService);
   private cdr = inject(ChangeDetectorRef);
 
   activeTab = 'dashboard';
@@ -525,6 +532,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   get isDark() { return this.currentTheme === 'dark'; }
 
   ngOnInit() {
+    this.streakService.initStreak();
     const saved = localStorage.getItem('portalink_admin_theme');
     if (saved) this.currentTheme = saved;
     const savedTab = localStorage.getItem('portalink_admin_tab');

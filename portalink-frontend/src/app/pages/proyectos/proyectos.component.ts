@@ -33,7 +33,7 @@ import * as AOS from 'aos';
       <!-- ═══════════════════════════════════════════════════════════ -->
       <!-- GALERÍA DE PROYECTOS REALIZADOS (ESTILO APPLE ULTRALIMPIO)   -->
       <!-- ═══════════════════════════════════════════════════════════ -->
-      <section class="projects-showcase-section relative py-12 md:py-20 px-6 sm:px-12 lg:px-20 overflow-hidden bg-white text-neutral-900 transition-colors duration-500">
+      <section id="proyectos" class="projects-showcase-section relative py-12 md:py-20 px-6 sm:px-12 lg:px-20 overflow-hidden bg-white text-neutral-900 transition-colors duration-500">
 
         <!-- Encabezado Editorial -->
         <div class="max-w-[1500px] mx-auto mb-12 sm:mb-16">
@@ -315,12 +315,28 @@ export class ProyectosComponent implements OnInit, OnDestroy {
 
   constructor() {
     // Initial sync with service
+    const initial = this.configService.data();
+    if (initial) {
+      this.portfolioData.set(initial);
+    }
+
     effect(() => {
       const data = this.configService.data();
       if (data) {
         this.portfolioData.set(data);
       }
     });
+
+    // Failsafe: if data is taking long or failed, unblock home so user can interact
+    setTimeout(() => {
+      if (!this.portfolioData()) {
+        this.portfolioData.set({
+          general: { authorName: 'Santiago Arbeláez' },
+          about: { text: '', visible: true },
+          contact: { formActive: true }
+        });
+      }
+    }, 400);
   }
 
   ngOnInit() {
