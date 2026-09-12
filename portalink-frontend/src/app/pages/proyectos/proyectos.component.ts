@@ -29,14 +29,24 @@ import * as AOS from 'aos';
       <app-hero-design></app-hero-design>
       
       <ng-container *ngIf="portfolioData(); else homeSkeleton">
+
+      <!-- ═══════════════════════════════════════════════════════════ -->
+      <!-- 1. CONTACTO                                                 -->
+      <!-- ═══════════════════════════════════════════════════════════ -->
+      <app-contact [data]="portfolioData().contact"></app-contact>
+
+      <!-- ═══════════════════════════════════════════════════════════ -->
+      <!-- 2. SOBRE MÍ                                                 -->
+      <!-- ═══════════════════════════════════════════════════════════ -->
+      <app-about [data]="portfolioData().about"></app-about>
       
       <!-- ═══════════════════════════════════════════════════════════ -->
-      <!-- GALERÍA DE PROYECTOS REALIZADOS (ESTILO APPLE ULTRALIMPIO)   -->
+      <!-- 3. GALERÍA DE PROYECTOS REALIZADOS (ESTILO APPLE ULTRALIMPIO)-->
       <!-- ═══════════════════════════════════════════════════════════ -->
-      <section id="proyectos" class="projects-showcase-section relative py-12 md:py-20 px-6 sm:px-12 lg:px-20 overflow-hidden bg-white text-neutral-900 transition-colors duration-500">
+      <section id="proyectos" class="projects-showcase-section relative py-8 md:py-14 px-6 sm:px-12 lg:px-20 overflow-hidden bg-white text-neutral-900 transition-colors duration-500">
 
         <!-- Encabezado Editorial -->
-        <div class="max-w-[1500px] mx-auto mb-12 sm:mb-16">
+        <div class="max-w-[1500px] mx-auto mb-8 sm:mb-12">
           <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
             <div class="space-y-2">
               <h2 class="text-4xl sm:text-5xl lg:text-6xl font-headline font-semibold tracking-tight leading-[1.08]" style="color: #0a0a0a !important;">
@@ -120,7 +130,7 @@ import * as AOS from 'aos';
       </section>
 
       <!-- ═══════════════════════════════════════════════════════════ -->
-      <!-- BANNER ROTBOT VIDEO (ESTILO ULTRALIMPIO APPLE)               -->
+      <!-- 4. BANNER ROTBOT VIDEO (ESTILO ULTRALIMPIO APPLE)            -->
       <!-- ═══════════════════════════════════════════════════════════ -->
       <section class="rotbot-banner relative overflow-hidden py-16 md:py-24 px-6 sm:px-12 lg:px-20">
         <video #robotVideo autoplay [muted]="true" onvolumechange="this.muted=true; this.volume=0;" volume="0" loop playsinline class="video-bg">
@@ -162,8 +172,6 @@ import * as AOS from 'aos';
         </div>
       </section>
 
-      <app-about [data]="portfolioData().about"></app-about>
-      <app-contact [data]="portfolioData().contact"></app-contact>
       </ng-container>
 
       <ng-template #homeSkeleton>

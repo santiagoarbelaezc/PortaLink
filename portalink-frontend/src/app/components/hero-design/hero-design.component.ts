@@ -78,6 +78,7 @@ import { ErpDiagramComponent } from '../erp-diagram/erp-diagram.component';
                     </svg>
                   </a>
                   <a *ngIf="!btn.isRouter"
+                     (click)="handleButtonClick(btn, $event)"
                      [href]="btn.link"
                      class="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 xs:px-4 sm:px-6 py-2.5 xs:py-3 sm:py-3.5 rounded-full font-headline font-semibold text-[11px] xs:text-xs uppercase tracking-wider transition-all duration-300 shadow-sm no-underline cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
                      [style.backgroundColor]="btn.isPrimary ? '#09090b' : '#f4f4f5'"
@@ -96,6 +97,7 @@ import { ErpDiagramComponent } from '../erp-diagram/erp-diagram.component';
                    class="flex items-center justify-center"
                    [ngClass]="slide.isReversed ? 'md:justify-end' : 'md:justify-start'">
                 <a *ngIf="slide.link"
+                   (click)="handleSlideLink(slide.link, $event)"
                    [href]="slide.link"
                    class="inline-flex items-center gap-2 px-6 xs:px-7 sm:px-8 py-3 sm:py-3.5 rounded-full font-headline font-semibold text-[11px] xs:text-xs uppercase tracking-wider hover:opacity-90 active:scale-[0.99] transition-opacity duration-300 shadow-sm no-underline cursor-pointer"
                    style="background-color: #09090b !important; color: #ffffff !important;">
@@ -239,7 +241,7 @@ export class HeroDesignComponent implements OnInit, OnDestroy {
       buttons: [
         { text: 'Proyectos realizados', link: '/prototipos', isRouter: true, isPrimary: false },
         { text: 'Contacto', link: '#contact', isRouter: false, isPrimary: false },
-        { text: 'Escríbeme ya', link: '#contact', isRouter: false, isPrimary: true }
+        { text: 'Escríbenos ya', link: '#contact', isRouter: false, isPrimary: true }
       ],
       mobileImages: [
         'https://res.cloudinary.com/doxdjiyvi/image/upload/q_auto:eco,f_auto,w_600/v1787579497/portalink1_xxzxts.png',
@@ -263,7 +265,7 @@ export class HeroDesignComponent implements OnInit, OnDestroy {
       buttons: [
         { text: 'Proyectos realizados', link: '/prototipos', isRouter: true, isPrimary: false },
         { text: 'Contacto', link: '#contact', isRouter: false, isPrimary: false },
-        { text: 'Escríbeme ya', link: '#contact', isRouter: false, isPrimary: true }
+        { text: 'Escríbenos ya', link: '#contact', isRouter: false, isPrimary: true }
       ],
       image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/q_auto:eco,f_auto,w_1300/v1787585777/e_p-hero2_q31svn.png',
       ctaText: 'Escríbenos ya',
@@ -327,6 +329,37 @@ export class HeroDesignComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.stopAutoplay();
+  }
+
+  scrollToContact(event?: Event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    if (typeof document !== 'undefined') {
+      const element = document.getElementById('contact');
+      if (element) {
+        const offset = 80;
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - offset;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }
+  }
+
+  handleButtonClick(btn: any, event: Event) {
+    if (!btn.isRouter && (btn.link === '#contact' || btn.link?.includes('contact'))) {
+      this.scrollToContact(event);
+    }
+  }
+
+  handleSlideLink(link: string, event: Event) {
+    if (link === '#contact' || link?.includes('contact')) {
+      this.scrollToContact(event);
+    }
   }
 
   onTouchStart(e: TouchEvent) {

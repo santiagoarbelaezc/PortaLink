@@ -16,11 +16,11 @@ interface SocialLink {
   imports: [CommonModule, RouterModule, FormsModule, RevealDirective],
   encapsulation: ViewEncapsulation.None,
   template: `
-    <section id="contact" class="relative py-16 md:py-24 px-6 sm:px-12 lg:px-20 bg-white text-neutral-900 transition-colors duration-500">
+    <section id="contact" class="relative py-10 md:py-16 px-6 sm:px-12 lg:px-20 bg-white text-neutral-900 transition-colors duration-500">
       <div class="max-w-[1500px] mx-auto">
         
         <!-- Grand Showcase Container -->
-        <div class="w-full rounded-[28px] sm:rounded-[40px] border border-neutral-200/80 bg-white p-8 sm:p-14 lg:p-20 shadow-[0_10px_35px_rgba(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] relative overflow-hidden" appReveal>
+        <div class="w-full rounded-[28px] sm:rounded-[40px] border border-neutral-200/80 bg-white px-8 py-8 sm:px-12 sm:py-12 lg:px-16 lg:py-14 shadow-[0_10px_35px_rgba(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] relative overflow-hidden" appReveal>
           
           <form *ngIf="isFormActive" (ngSubmit)="onSubmit()" novalidate class="w-full m-0 p-0">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-x-12 lg:gap-x-16 gap-y-8 lg:gap-y-10 items-end">

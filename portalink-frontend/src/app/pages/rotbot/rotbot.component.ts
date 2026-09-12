@@ -956,20 +956,21 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   designCategories = [
-    { id: 'gym', label: 'Gym & Fitness', iconClass: 'fa-solid fa-dumbbell', keywords: ['gym', 'gimnasio', 'fitness', 'entrenamiento'], image: 'assets/images/diseños/gym.png' },
-    { id: 'tiendaropa', label: 'Tienda de Ropa', iconClass: 'fa-solid fa-shirt', keywords: ['ropa', 'moda', 'vestuario', 'indumentaria', 'boutique', 'tiendaropa'], image: 'assets/images/diseños/tiendaropa.png', liveUrl: 'https://tiendaintima.com' },
-    { id: 'restaurante', label: 'Restaurante / Comida', iconClass: 'fa-solid fa-utensils', keywords: ['restaurante', 'comida', 'gastronomia', 'bar', 'cafeteria'], image: 'assets/images/diseños/restaurante.png' },
-    { id: 'abogado', label: 'Abogado / Legal', iconClass: 'fa-solid fa-scale-balanced', keywords: ['abogado', 'legal', 'juridico', 'leyes', 'firma'], image: 'assets/images/diseños/abogado.png' },
-    { id: 'arquitectura', label: 'Arquitectura / Diseño', iconClass: 'fa-solid fa-compass-drafting', keywords: ['arquitectura', 'arquitecto', 'construccion', 'obra', 'diseño interior'], image: 'assets/images/diseños/arquitectura.png', liveUrl: 'https://sysmicon.com' },
-    { id: 'medico', label: 'Médico / Salud', iconClass: 'fa-solid fa-stethoscope', keywords: ['medico', 'salud', 'doctor', 'clinica', 'odontologia'], image: 'assets/images/diseños/medico.png' },
-    { id: 'mascotas', label: 'Mascotas / Pet Care', iconClass: 'fa-solid fa-paw', keywords: ['mascotas', 'pet', 'perros', 'gatos', 'veterinaria'], image: 'assets/images/diseños/mascotas.png', liveUrl: 'https://camascotas.com' },
-    { id: 'catalogodigital', label: 'Catálogo Digital', iconClass: 'fa-solid fa-book-open', keywords: ['catalogo', 'catalogo digital', 'menu digital'], image: 'assets/images/diseños/catalogodigital.png', liveUrl: 'https://catalogoplaxtilineas.com' },
-    { id: 'ecommerce', label: 'E-Commerce / Tienda', iconClass: 'fa-solid fa-store', keywords: ['e-commerce', 'ecommerce', 'tienda virtual', 'vender online'], image: 'assets/images/diseños/e-commerce.png' },
-    { id: 'agendamiento', label: 'Agendamiento de Citas', iconClass: 'fa-solid fa-calendar-check', keywords: ['agendamiento', 'citas', 'reserva', 'turnos'], image: 'assets/images/diseños/agendamiento-citas.png' },
-    { id: 'influencer', label: 'Influencer / Personal', iconClass: 'fa-solid fa-star', keywords: ['influencer', 'marca personal', 'creador', 'streamer'], image: 'assets/images/diseños/influencer.png' },
-    { id: 'colchones', label: 'Colchones / Hogar', iconClass: 'fa-solid fa-couch', keywords: ['colchones', 'hogar', 'muebles', 'cama'], image: 'assets/images/diseños/colchones.png' },
-    { id: 'emprendimiento', label: 'Emprendimiento', iconClass: 'fa-solid fa-rocket', keywords: ['emprendimiento', 'startup', 'negocio'], image: 'assets/images/diseños/emprendimiento.png' },
-    { id: 'otro', label: 'Sistema a Medida (Otro)', iconClass: 'fa-solid fa-wand-magic-sparkles', keywords: ['otro', 'personalizado', 'medida', 'sistema'], image: 'assets/images/diseños/personaliza.png' }
+    { id: 'tiendaropa', label: 'Tienda de Ropa / Moda', iconClass: 'fa-solid fa-shirt', keywords: ['ropa', 'moda', 'vestuario', 'indumentaria', 'boutique', 'tiendaropa'], image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838772/tiendaropa_kx1e2j.png', liveUrl: 'https://tiendaintima.com' },
+    { id: 'gym', label: 'Gym & Fitness', iconClass: 'fa-solid fa-dumbbell', keywords: ['gym', 'gimnasio', 'fitness', 'entrenamiento'], image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838764/gym_rbwkeo.png' },
+    { id: 'restaurante', label: 'Restaurante / Comida', iconClass: 'fa-solid fa-utensils', keywords: ['restaurante', 'comida', 'gastronomia', 'bar', 'cafeteria'], image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838772/restaurante_y36vzi.png' },
+    { id: 'ecommerce', label: 'E-Commerce / Tienda', iconClass: 'fa-solid fa-store', keywords: ['e-commerce', 'ecommerce', 'tienda virtual', 'vender online'], image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838764/e-commerce_lenwty.png' },
+    { id: 'abogado', label: 'Firma Legal & Abogados', iconClass: 'fa-solid fa-scale-balanced', keywords: ['abogado', 'legal', 'juridico', 'leyes', 'firma'], image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838773/abogado_if9psc.png' },
+    { id: 'arquitectura', label: 'Arquitectura & Diseño CAD', iconClass: 'fa-solid fa-compass-drafting', keywords: ['arquitectura', 'arquitecto', 'construccion', 'obra', 'diseño interior'], image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838777/arquitecto_kjj7n5.png', liveUrl: 'https://sysmicon.com' },
+    { id: 'medico', label: 'Centro Médico & Salud', iconClass: 'fa-solid fa-stethoscope', keywords: ['medico', 'salud', 'doctor', 'clinica', 'odontologia'], image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838771/medico_tjxnb4.png' },
+    { id: 'mascotas', label: 'Mascotas & Pet Care', iconClass: 'fa-solid fa-paw', keywords: ['mascotas', 'pet', 'perros', 'gatos', 'veterinaria'], image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838773/mascotas_mdnpry.png', liveUrl: 'https://camascotas.com' },
+    { id: 'catalogodigital', label: 'Catálogo Digital Interactivo', iconClass: 'fa-solid fa-book-open', keywords: ['catalogo', 'catalogo digital', 'menu digital'], image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838762/catalogodigital_pdolry.png', liveUrl: 'https://catalogoplaxtilineas.com' },
+    { id: 'agendamiento', label: 'Sistema de Citas & Agenda', iconClass: 'fa-solid fa-calendar-check', keywords: ['agendamiento', 'citas', 'reserva', 'turnos'], image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838777/agendamiento-citas_efiliy.png' },
+    { id: 'construccion', label: 'Constructora & Obras Civiles', iconClass: 'fa-solid fa-hard-hat', keywords: ['construccion', 'obra', 'obras', 'constructora', 'civil', 'inmobiliaria'], image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838764/construccion_uofur9.png' },
+    { id: 'emprendimiento', label: 'Startup & Emprendimiento', iconClass: 'fa-solid fa-rocket', keywords: ['emprendimiento', 'startup', 'negocio', 'innovacion'], image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838764/emprendimiento_meszjg.png' },
+    { id: 'influencer', label: 'Marca Personal / Influencer', iconClass: 'fa-solid fa-star', keywords: ['influencer', 'marca personal', 'creador', 'streamer'], image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838770/influencer_bbuq4j.png' },
+    { id: 'colchones', label: 'Colchones & Descanso', iconClass: 'fa-solid fa-couch', keywords: ['colchones', 'hogar', 'muebles', 'cama', 'descanso'], image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838766/colchones_xqhgbv.png', liveUrl: 'https://colchonesdistricol.com' },
+    { id: 'otro', label: 'Proyecto A Medida', iconClass: 'fa-solid fa-wand-magic-sparkles', keywords: ['otro', 'personalizado', 'medida', 'sistema', 'proyecto a medida'], image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838771/personaliza_vvvbc6.png' }
   ];
 
   frequentDesigns = [
@@ -1008,7 +1009,7 @@ export class RotbotComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.selectCategory({
         id: item.id || 'personalizado',
         label: item.label,
-        image: 'assets/images/diseños/personaliza.png'
+        image: 'https://res.cloudinary.com/doxdjiyvi/image/upload/v1788838771/personaliza_vvvbc6.png'
       });
     }
   }
