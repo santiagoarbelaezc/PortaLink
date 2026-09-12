@@ -89,7 +89,7 @@ import { RouterModule } from '@angular/router';
           </div>
           
           <div class="text-center sm:text-right max-w-lg text-[11px] leading-relaxed text-neutral-400">
-            RotBot opera mediante modelos de IA generativa (Groq / Llama). Respuestas y cotizaciones son orientativas.
+            RotBot opera mediante modelos de IA generativa (Groq / openai/gpt-oss-120b). Respuestas y cotizaciones son orientativas.
           </div>
         </div>
 

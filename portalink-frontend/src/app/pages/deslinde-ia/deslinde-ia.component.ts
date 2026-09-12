@@ -34,8 +34,48 @@ import { FooterComponent } from '../../components/footer/footer.component';
           <div>
             <h3 class="text-base font-headline font-bold text-amber-950 tracking-tight mb-1">Aviso Importante sobre Inteligencia Artificial</h3>
             <p class="text-xs sm:text-sm text-amber-900/90 leading-relaxed font-sans m-0">
-              El asistente virtual <strong>RotBot</strong> utiliza modelos probabilísticos avanzados a través de la infraestructura de <strong>Groq API</strong> y arquitecturas de lenguaje de código abierto <strong>Llama 3</strong>. Las respuestas son automatizadas y no deben tomarse como asesoría legal, financiera o comercial vinculante.
+              El asistente virtual <strong>RotBot</strong> utiliza modelos probabilísticos avanzados a través de la infraestructura de alta velocidad de <strong>Groq API</strong> y la arquitectura de razonamiento <strong>openai/gpt-oss-120b</strong> (con esfuerzo de razonamiento adaptativo). Las respuestas son automatizadas y no deben tomarse como asesoría legal, financiera o comercial vinculante.
             </p>
+          </div>
+        </div>
+
+        <!-- Technical Specification Card (Transparencia Algorítmica) -->
+        <div class="bg-neutral-50/80 border border-neutral-200/80 rounded-[24px] sm:rounded-[32px] p-6 sm:p-8 mb-6 shadow-[0_10px_35px_rgba(0,0,0,0.03)]">
+          <div class="flex items-center gap-2.5 mb-3">
+            <span class="w-2.5 h-2.5 rounded-full bg-neutral-900"></span>
+            <h2 class="text-base sm:text-lg font-headline font-bold text-neutral-900 m-0" style="color: #0a0a0a !important;">
+              Ficha Técnica del Modelo Activo
+            </h2>
+          </div>
+          <p class="text-xs sm:text-sm text-neutral-500 font-sans mb-5 leading-relaxed">
+            En conformidad con las buenas prácticas de transparencia tecnológica y uso ético de IA, se detallan los parámetros de inferencia en producción para RotBot:
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div class="bg-white border border-neutral-200 rounded-2xl p-4 shadow-2xs">
+              <span class="block text-[11px] font-headline uppercase font-semibold text-neutral-400 tracking-wider mb-1">Infraestructura</span>
+              <span class="font-headline font-bold text-neutral-900 text-xs sm:text-sm flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Groq LPU™ Cloud
+              </span>
+            </div>
+            <div class="bg-white border border-neutral-200 rounded-2xl p-4 shadow-2xs">
+              <span class="block text-[11px] font-headline uppercase font-semibold text-neutral-400 tracking-wider mb-1">Modelo Neuronal</span>
+              <span class="font-mono font-semibold text-neutral-900 text-xs break-all">
+                openai/gpt-oss-120b
+              </span>
+            </div>
+            <div class="bg-white border border-neutral-200 rounded-2xl p-4 shadow-2xs">
+              <span class="block text-[11px] font-headline uppercase font-semibold text-neutral-400 tracking-wider mb-1">Nivel de Razonamiento</span>
+              <span class="font-headline font-bold text-neutral-900 text-xs sm:text-sm">
+                Medium (Medio)
+              </span>
+            </div>
+            <div class="bg-white border border-neutral-200 rounded-2xl p-4 shadow-2xs">
+              <span class="block text-[11px] font-headline uppercase font-semibold text-neutral-400 tracking-wider mb-1">Procesamiento</span>
+              <span class="font-headline font-bold text-neutral-900 text-xs sm:text-sm">
+                Streaming en Tiempo Real
+              </span>
+            </div>
           </div>
         </div>
 
