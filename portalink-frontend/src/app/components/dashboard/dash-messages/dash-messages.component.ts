@@ -19,7 +19,7 @@ import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-
            [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
         <div>
           <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em]"
                [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Módulo de Comunicación</p>
           </div>
@@ -42,7 +42,7 @@ import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-
 
           <button *ngIf="unreadCount > 0" (click)="markAllAsRead()"
                   class="px-4.5 py-2 rounded-full text-xs font-headline font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center gap-2 shadow-sm hover:scale-[1.02] active:scale-[0.98]"
-                  [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'">
+                  [ngClass]="isDark ? 'bg-emerald-500 text-black hover:bg-emerald-400 font-bold' : 'bg-emerald-600 text-white hover:bg-emerald-700'">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
             </svg>
@@ -53,9 +53,9 @@ import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-
 
       <!-- Feedback Toast Notification -->
       <div *ngIf="toastMessage" class="p-4 rounded-2xl border flex items-center justify-between shadow-lg transition-all animate-fadeIn"
-           [ngClass]="toastType === 'error' ? 'bg-red-500/10 border-red-500/30 text-red-400' : (toastType === 'info' ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400')">
+           [ngClass]="toastType === 'error' ? 'bg-red-500/10 border-red-500/30 text-red-400' : (toastType === 'info' ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400')">
         <div class="flex items-center gap-3">
-          <span class="w-2 h-2 rounded-full" [ngClass]="toastType === 'error' ? 'bg-red-400' : (toastType === 'info' ? 'bg-blue-400' : 'bg-emerald-400')"></span>
+          <span class="w-2 h-2 rounded-full" [ngClass]="toastType === 'error' ? 'bg-red-400' : (toastType === 'info' ? 'bg-amber-400' : 'bg-emerald-400')"></span>
           <span class="text-xs font-headline font-bold uppercase tracking-wider">{{ toastMessage }}</span>
         </div>
         <button (click)="toastMessage = ''" class="text-xs opacity-70 hover:opacity-100 p-1">✕</button>
@@ -67,31 +67,31 @@ import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
 
         <!-- 1. Nuevos Sin Leer -->
-        <div class="rounded-[24px] border p-6 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+        <div class="rounded-[24px] border p-6 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-amber-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
              [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
           <div class="flex items-center justify-between">
             <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Mensajes Nuevos</span>
             <span class="text-[10px] font-headline font-semibold px-2.5 py-0.5 rounded-full border tracking-wider"
-                  [ngClass]="unreadCount > 0 ? 'border-blue-500/30 text-blue-400 bg-blue-500/10' : 'border-neutral-700 text-neutral-400 bg-neutral-800/40'">
+                  [ngClass]="unreadCount > 0 ? 'border-amber-500/30 text-amber-400 bg-amber-500/10' : 'border-neutral-700 text-neutral-400 bg-neutral-800/40'">
               {{ unreadCount > 0 ? 'Pendientes' : 'Al Día' }}
             </span>
           </div>
           <div class="space-y-1">
             <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight"
-               [ngClass]="unreadCount > 0 ? 'text-blue-400' : (isDark ? 'text-white' : 'text-neutral-900')">
+               [ngClass]="unreadCount > 0 ? 'text-amber-400' : (isDark ? 'text-white' : 'text-neutral-900')">
               {{ unreadCount }}
             </p>
             <p class="text-xs opacity-50 font-normal">Requieren atención o lectura</p>
           </div>
           <div class="pt-2">
             <div class="w-full bg-neutral-800/60 rounded-full h-1.5 overflow-hidden">
-              <div class="bg-blue-500 h-1.5 rounded-full transition-all duration-700" [style.width.%]="(unreadCount / (messagesList.length || 1)) * 100"></div>
+              <div class="bg-amber-400 h-1.5 rounded-full transition-all duration-700" [style.width.%]="(unreadCount / (messagesList.length || 1)) * 100"></div>
             </div>
           </div>
         </div>
 
         <!-- 2. Tasa de Respuesta -->
-        <div class="rounded-[24px] border p-6 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+        <div class="rounded-[24px] border p-6 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-emerald-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
              [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
           <div class="flex items-center justify-between">
             <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Tasa de Respuesta</span>
@@ -103,7 +103,7 @@ import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-
             <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight text-emerald-400">
               {{ responseRate }}%
             </p>
-            <p class="text-xs opacity-50 font-normal">Mensajes contestados</p>
+            <p class="text-xs opacity-50 font-normal">{{ repliedCount }} de {{ messagesList.length }} atendidos</p>
           </div>
           <div class="pt-2">
             <div class="w-full bg-neutral-800/60 rounded-full h-1.5 overflow-hidden">
@@ -113,19 +113,19 @@ import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-
         </div>
 
         <!-- 3. Mensajes Respondidos -->
-        <div class="rounded-[24px] border p-6 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+        <div class="rounded-[24px] border p-6 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-emerald-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
              [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Respondidos</span>
+            <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Estado de Flujo</span>
             <span class="text-[10px] font-headline font-semibold px-2.5 py-0.5 rounded-full border border-emerald-500/30 text-emerald-400 bg-emerald-500/10 tracking-wider">
-              Completados
+              Activo
             </span>
           </div>
           <div class="space-y-1">
-            <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              {{ repliedCount }}
+            <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight text-emerald-400">
+              Sincronizado
             </p>
-            <p class="text-xs opacity-50 font-normal">Con seguimiento o respuesta enviada</p>
+            <p class="text-xs opacity-50 font-normal">Base de datos & LocalStorage</p>
           </div>
           <div class="pt-2">
             <svg class="w-full h-7 stroke-current text-emerald-400/40 opacity-70 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 100 25">
@@ -151,7 +151,7 @@ import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-
           </div>
           <div class="pt-2 flex items-center justify-between text-xs font-medium opacity-70">
             <span>Leídos: {{ readCount }}</span>
-            <span>Nuevos: {{ unreadCount }}</span>
+            <span class="text-amber-400">Nuevos: {{ unreadCount }}</span>
           </div>
         </div>
 
@@ -177,7 +177,7 @@ import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-
                   (click)="activeFilter = f.id"
                   class="px-4 py-2 rounded-xl text-[11px] font-headline font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer border"
                   [ngClass]="activeFilter === f.id
-                    ? (isDark ? 'bg-white text-black border-white shadow-sm' : 'bg-[#09090b] text-white border-[#09090b] shadow-sm')
+                    ? (isDark ? 'bg-emerald-500 text-black border-emerald-400 font-bold shadow-sm' : 'bg-emerald-600 text-white border-emerald-600 font-bold shadow-sm')
                     : (isDark ? 'border-neutral-800 text-neutral-400 hover:text-white hover:bg-neutral-800 bg-neutral-900/60' : 'border-neutral-200 text-neutral-600 bg-neutral-50 hover:bg-neutral-100')">
             {{ f.label }}
           </button>
@@ -196,7 +196,7 @@ import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-
           <div class="px-5 py-3.5 border-b flex items-center justify-between text-xs font-headline font-bold uppercase tracking-wider"
                [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 bg-neutral-950/40' : 'border-neutral-200 text-neutral-500 bg-neutral-50'">
             <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
               <span>Mensajes ({{ filtered.length }})</span>
             </div>
             <span class="font-mono text-[10px] opacity-60">Más recientes primero</span>
@@ -211,14 +211,14 @@ import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-
                    selectedMessage?.id === msg.id 
                      ? (isDark ? 'bg-neutral-800/90' : 'bg-neutral-100') 
                      : (isDark ? 'hover:bg-neutral-800/40' : 'hover:bg-neutral-50'),
-                   msg.status === 'unread' ? 'border-l-4 border-l-blue-500' : 'border-l-4 border-l-transparent'
+                   msg.status === 'unread' ? 'border-l-4 border-l-amber-400' : 'border-l-4 border-l-transparent'
                  ]">
 
               <div class="flex items-start gap-3">
                 <!-- Avatar Initials -->
                 <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-xs font-bold shrink-0 border"
                      [ngClass]="msg.status === 'unread' 
-                       ? (isDark ? 'bg-blue-500/20 text-blue-400 border-blue-500/40' : 'bg-blue-50 text-blue-700 border-blue-200')
+                       ? (isDark ? 'bg-amber-500/20 text-amber-400 border-amber-500/40' : 'bg-amber-50 text-amber-700 border-amber-200')
                        : (isDark ? 'bg-neutral-800 text-neutral-300 border-neutral-700' : 'bg-neutral-100 text-neutral-700 border-neutral-200')">
                   {{ msg.nombre ? msg.nombre.charAt(0).toUpperCase() : 'U' }}
                 </div>
@@ -244,7 +244,7 @@ import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-
 
                   <!-- Status badges -->
                   <div class="flex items-center gap-2 mt-2.5">
-                    <span *ngIf="msg.status === 'unread'" class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                    <span *ngIf="msg.status === 'unread'" class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
                       Nuevo
                     </span>
                     <span *ngIf="msg.status === 'replied'" class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">

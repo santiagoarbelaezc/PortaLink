@@ -504,7 +504,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
 
   activeTab = 'dashboard';
-  currentTheme = 'light';
+  currentTheme = 'dark';
   isSidebarCollapsed = false;
   isMobileDrawerOpen = false;
   unreadMessages = 0;
@@ -534,17 +534,16 @@ export class AdminComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.streakService.initStreak();
     const saved = localStorage.getItem('portalink_admin_theme');
-    if (saved) this.currentTheme = saved;
-    const savedTab = localStorage.getItem('portalink_admin_tab');
-    if (savedTab === 'stats' || savedTab === 'reports') {
-      this.activeTab = 'analytics';
-    } else if (savedTab === 'financial-control') {
-      this.activeTab = 'finances';
-    } else if (savedTab && this.tabs.some(t => t.id === savedTab)) {
-      this.activeTab = savedTab;
+    // Siempre modo oscuro por defecto al ingresar, a menos que el usuario lo haya cambiado a 'light'
+    if (saved === 'light') {
+      this.currentTheme = 'light';
     } else {
-      this.activeTab = 'dashboard';
+      this.currentTheme = 'dark';
+      localStorage.setItem('portalink_admin_theme', 'dark');
     }
+    // Siempre ingresar al dashboard por defecto
+    this.activeTab = 'dashboard';
+    localStorage.setItem('portalink_admin_tab', 'dashboard');
     this.applyAdminTheme();
     try {
       this.refreshBadges();

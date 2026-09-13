@@ -64,7 +64,7 @@ export type FinancesSubTab = 'finances' | 'control';
   `
 })
 export class DashFinancesHubComponent implements OnInit {
-  @Input() theme: string = 'light';
+  @Input() theme: string = 'dark';
   @Input() defaultSubTab: FinancesSubTab = 'finances';
 
   activeSubTab: FinancesSubTab = 'finances';

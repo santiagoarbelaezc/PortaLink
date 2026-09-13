@@ -244,7 +244,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
 
             <!-- Monochromatic Donut Simulation -->
             <div class="flex items-center justify-center py-2 relative">
-              <div class="w-32 h-32 rounded-full border-8 border-neutral-800 border-t-white flex items-center justify-center relative shadow-inner">
+              <div class="w-32 h-32 rounded-full border-8 border-neutral-800 border-t-emerald-400 border-r-sky-400 border-b-rose-500/50 flex items-center justify-center relative shadow-inner">
                 <div class="text-center">
                   <span class="text-xl font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ paidPercentage }}%</span>
                   <p class="text-[9px] uppercase tracking-wider opacity-50 font-normal">Cobrado</p>
@@ -255,24 +255,24 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
             <div class="space-y-2.5 text-xs">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-white"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
                   <span class="font-medium">Pagadas</span>
                 </div>
-                <span class="font-semibold">{{ paidPercentage }}%</span>
+                <span class="font-semibold text-emerald-400">{{ paidPercentage }}%</span>
               </div>
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-neutral-400"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>
                   <span class="font-medium">Enviadas / Pendientes</span>
                 </div>
-                <span class="font-semibold">{{ pendingPercentage }}%</span>
+                <span class="font-semibold text-sky-400">{{ pendingPercentage }}%</span>
               </div>
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-neutral-600"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
                   <span class="font-medium">Vencidas</span>
                 </div>
-                <span class="font-semibold">{{ overduePercentage }}%</span>
+                <span class="font-semibold text-rose-400">{{ overduePercentage }}%</span>
               </div>
             </div>
           </div>
@@ -1716,7 +1716,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
   `]
 })
 export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() theme = 'light';
+  @Input() theme = 'dark';
 
   private financeService = inject(FinanceService);
   private pdfService = inject(PdfReportService);
@@ -2237,9 +2237,9 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
       
       this.kpis = [
         { label: 'Total Facturado', value: this.formatCOP(kpi.total_facturado || 0) },
-        { label: 'Pagado', value: this.formatCOP(kpi.total_pagado || 0), color: 'text-emerald-500' },
-        { label: 'Por Cobrar', value: this.formatCOP(kpi.total_por_cobrar || 0), color: 'text-amber-500' },
-        { label: 'Clientes Facturados', value: String(kpi.clientes_facturados || 0) },
+        { label: 'Pagado', value: this.formatCOP(kpi.total_pagado || 0), color: 'text-emerald-400' },
+        { label: 'Por Cobrar', value: this.formatCOP(kpi.total_por_cobrar || 0), color: 'text-amber-400' },
+        { label: 'Clientes Facturados', value: String(kpi.clientes_facturados || 0), color: 'text-sky-400' },
       ];
 
       this.recentInvoices = (dashboardRes?.ledger || []).map((i: any) => {

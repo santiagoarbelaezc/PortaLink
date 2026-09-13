@@ -328,8 +328,11 @@ $router->put('/api/config/settings', [ConfigController::class, 'updateSettings']
 //  RUTAS DE MENSAJES DE CONTACTO (/api/messages)
 // ──────────────────────────────────────────────────────────────
 $router->post('/api/messages/send', [MessagesController::class, 'sendMessage']);
+$router->post('/api/messages', [MessagesController::class, 'sendMessage']);
 $router->get('/api/messages', [MessagesController::class, 'getMessages'], [AuthMiddleware::class]);
 $router->put('/api/messages/:id/status', [MessagesController::class, 'updateStatus'], [AuthMiddleware::class]);
+$router->put('/api/messages/:id/read', [MessagesController::class, 'updateStatus'], [AuthMiddleware::class]);
+$router->put('/api/messages/:id', [MessagesController::class, 'updateStatus'], [AuthMiddleware::class]);
 $router->delete('/api/messages/:id', [MessagesController::class, 'deleteMessage'], [AuthMiddleware::class]);
 
 // ──────────────────────────────────────────────────────────────

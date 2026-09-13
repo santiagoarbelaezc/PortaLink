@@ -79,7 +79,7 @@ export type AnalyticsSubTab = 'analytics' | 'stats' | 'reports';
   `
 })
 export class DashAnalyticsHubComponent implements OnInit {
-  @Input() theme: string = 'light';
+  @Input() theme: string = 'dark';
   @Input() defaultSubTab: AnalyticsSubTab = 'analytics';
 
   activeSubTab: AnalyticsSubTab = 'analytics';

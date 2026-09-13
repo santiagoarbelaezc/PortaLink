@@ -26,7 +26,7 @@ export type PdfType = 'finance' | 'analytics' | 'users' | 'health' | 'contacts';
            [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
         <div>
           <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em]"
                [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Módulo de Exportación & Auditoría</p>
           </div>
@@ -50,9 +50,9 @@ export type PdfType = 'finance' | 'analytics' | 'users' | 'health' | 'contacts';
 
       <!-- Feedback Toast Notification -->
       <div *ngIf="toastMessage" class="p-4 rounded-2xl border flex items-center justify-between shadow-lg transition-all animate-fadeIn"
-           [ngClass]="toastType === 'error' ? 'bg-red-500/10 border-red-500/30 text-red-400' : (toastType === 'info' ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400')">
+           [ngClass]="toastType === 'error' ? 'bg-orange-500/10 border-orange-500/30 text-orange-400' : (toastType === 'info' ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400')">
         <div class="flex items-center gap-3">
-          <span class="w-2 h-2 rounded-full" [ngClass]="toastType === 'error' ? 'bg-red-400' : (toastType === 'info' ? 'bg-blue-400' : 'bg-emerald-400')"></span>
+          <span class="w-2 h-2 rounded-full" [ngClass]="toastType === 'error' ? 'bg-orange-400' : (toastType === 'info' ? 'bg-amber-400' : 'bg-emerald-400')"></span>
           <span class="text-xs font-headline font-bold uppercase tracking-wider">{{ toastMessage }}</span>
         </div>
         <button (click)="toastMessage = ''" class="text-xs opacity-70 hover:opacity-100 p-1">✕</button>
@@ -64,29 +64,29 @@ export type PdfType = 'finance' | 'analytics' | 'users' | 'health' | 'contacts';
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
 
         <!-- 1. Módulos Disponibles -->
-        <div class="rounded-[24px] border p-6 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+        <div class="rounded-[24px] border p-6 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-amber-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
              [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
           <div class="flex items-center justify-between">
             <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Informes Oficiales</span>
-            <span class="text-[10px] font-headline font-semibold px-2.5 py-0.5 rounded-full border border-red-500/30 text-red-400 bg-red-500/10 tracking-wider">
+            <span class="text-[10px] font-headline font-semibold px-2.5 py-0.5 rounded-full border border-amber-500/30 text-amber-400 bg-amber-500/10 tracking-wider">
               5 Módulos
             </span>
           </div>
           <div class="space-y-1">
-            <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+            <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight text-amber-400">
               PDF Premium
             </p>
             <p class="text-xs opacity-50 font-normal">Estilo oficial tipo cuenta de cobro</p>
           </div>
           <div class="pt-2">
             <div class="w-full bg-neutral-800/60 rounded-full h-1.5 overflow-hidden">
-              <div class="bg-red-500 h-1.5 rounded-full" style="width: 100%"></div>
+              <div class="bg-amber-400 h-1.5 rounded-full" style="width: 100%"></div>
             </div>
           </div>
         </div>
 
         <!-- 2. Rendimiento Promedio -->
-        <div class="rounded-[24px] border p-6 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+        <div class="rounded-[24px] border p-6 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-emerald-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
              [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
           <div class="flex items-center justify-between">
             <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Velocidad Promedio</span>
@@ -108,44 +108,44 @@ export type PdfType = 'finance' | 'analytics' | 'users' | 'health' | 'contacts';
         </div>
 
         <!-- 3. Salud del Sistema -->
-        <div class="rounded-[24px] border p-6 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+        <div class="rounded-[24px] border p-6 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-emerald-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
              [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
           <div class="flex items-center justify-between">
             <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Score de Salud</span>
-            <span class="text-[10px] font-headline font-semibold px-2.5 py-0.5 rounded-full border border-blue-500/30 text-blue-400 bg-blue-500/10 tracking-wider">
+            <span class="text-[10px] font-headline font-semibold px-2.5 py-0.5 rounded-full border border-emerald-500/30 text-emerald-400 bg-emerald-500/10 tracking-wider">
               En Vivo
             </span>
           </div>
           <div class="space-y-1">
-            <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight text-blue-400">
+            <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight text-emerald-400">
               {{ healthScore }}%
             </p>
             <p class="text-xs opacity-50 font-normal">{{ healthStatus }}</p>
           </div>
           <div class="pt-2">
             <div class="w-full bg-neutral-800/60 rounded-full h-1.5 overflow-hidden">
-              <div class="bg-blue-500 h-1.5 rounded-full transition-all duration-700" [style.width.%]="healthScore"></div>
+              <div class="bg-emerald-400 h-1.5 rounded-full transition-all duration-700" [style.width.%]="healthScore"></div>
             </div>
           </div>
         </div>
 
         <!-- 4. Auditoría de Eventos -->
-        <div class="rounded-[24px] border p-6 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+        <div class="rounded-[24px] border p-6 space-y-3 relative overflow-hidden transition-all duration-300 group hover:border-amber-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
              [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
           <div class="flex items-center justify-between">
             <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Log Registrados</span>
-            <span class="text-[10px] font-headline font-semibold px-2.5 py-0.5 rounded-full border border-neutral-700 text-neutral-300 bg-neutral-800/40 tracking-wider">
+            <span class="text-[10px] font-headline font-semibold px-2.5 py-0.5 rounded-full border border-amber-500/30 text-amber-400 bg-amber-500/10 tracking-wider">
               Auditoría
             </span>
           </div>
           <div class="space-y-1">
-            <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+            <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight text-amber-400">
               {{ activityLog.length }}
             </p>
             <p class="text-xs opacity-50 font-normal">Eventos del sistema guardados</p>
           </div>
           <div class="pt-2">
-            <svg class="w-full h-7 stroke-current text-red-500/40 opacity-70 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 100 25">
+            <svg class="w-full h-7 stroke-current text-amber-500/40 opacity-70 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 100 25">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M0 22 L 25 15 L 50 18 L 75 5 L 100 2" />
             </svg>
           </div>
@@ -168,8 +168,8 @@ export type PdfType = 'finance' | 'analytics' | 'users' | 'health' | 'contacts';
               Genera informes formales con datos reales sincronizados en tiempo real
             </p>
           </div>
-          <div *ngIf="pdfLoading" class="flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold animate-pulse bg-red-500/10 text-red-400 border border-red-500/20">
-            <span class="w-2 h-2 rounded-full bg-red-400"></span>
+          <div *ngIf="pdfLoading" class="flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold animate-pulse bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
             <span>Generando PDF...</span>
           </div>
         </div>
@@ -180,9 +180,9 @@ export type PdfType = 'finance' | 'analytics' | 'users' | 'health' | 'contacts';
           <button (click)="previewPdf('finance')"
                   [disabled]="pdfLoading"
                   class="flex flex-col items-start p-4 rounded-2xl border text-xs font-headline font-bold transition-all duration-300 cursor-pointer group hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
-                  [ngClass]="currentPdfType === 'finance' ? 'border-red-500 bg-red-500/10 text-red-400 shadow-md' : (isDark ? 'border-neutral-800 text-neutral-300 hover:border-neutral-600 bg-neutral-900/40' : 'border-neutral-200 text-neutral-700 hover:border-neutral-400 bg-neutral-50')">
+                  [ngClass]="currentPdfType === 'finance' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400 shadow-md' : (isDark ? 'border-neutral-800 text-neutral-300 hover:border-emerald-500/50 bg-neutral-900/40' : 'border-neutral-200 text-neutral-700 hover:border-neutral-400 bg-neutral-50')">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center mb-3 transition-colors"
-                 [ngClass]="currentPdfType === 'finance' ? 'bg-red-500/20 text-red-400' : (isDark ? 'bg-neutral-800 text-neutral-300 group-hover:bg-neutral-700' : 'bg-neutral-200/80 text-neutral-800 group-hover:bg-neutral-300')">
+                 [ngClass]="currentPdfType === 'finance' ? 'bg-emerald-500/20 text-emerald-400' : (isDark ? 'bg-neutral-800 text-emerald-400/70 group-hover:bg-neutral-700' : 'bg-neutral-200/80 text-neutral-800 group-hover:bg-neutral-300')">
               <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-3l3 3 3-3M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22" />
               </svg>
@@ -195,9 +195,9 @@ export type PdfType = 'finance' | 'analytics' | 'users' | 'health' | 'contacts';
           <button (click)="previewPdf('analytics')"
                   [disabled]="pdfLoading"
                   class="flex flex-col items-start p-4 rounded-2xl border text-xs font-headline font-bold transition-all duration-300 cursor-pointer group hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
-                  [ngClass]="currentPdfType === 'analytics' ? 'border-red-500 bg-red-500/10 text-red-400 shadow-md' : (isDark ? 'border-neutral-800 text-neutral-300 hover:border-neutral-600 bg-neutral-900/40' : 'border-neutral-200 text-neutral-700 hover:border-neutral-400 bg-neutral-50')">
+                  [ngClass]="currentPdfType === 'analytics' ? 'border-amber-500 bg-amber-500/10 text-amber-400 shadow-md' : (isDark ? 'border-neutral-800 text-neutral-300 hover:border-amber-500/50 bg-neutral-900/40' : 'border-neutral-200 text-neutral-700 hover:border-neutral-400 bg-neutral-50')">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center mb-3 transition-colors"
-                 [ngClass]="currentPdfType === 'analytics' ? 'bg-red-500/20 text-red-400' : (isDark ? 'bg-neutral-800 text-neutral-300 group-hover:bg-neutral-700' : 'bg-neutral-200/80 text-neutral-800 group-hover:bg-neutral-300')">
+                 [ngClass]="currentPdfType === 'analytics' ? 'bg-amber-500/20 text-amber-400' : (isDark ? 'bg-neutral-800 text-amber-400/70 group-hover:bg-neutral-700' : 'bg-neutral-200/80 text-neutral-800 group-hover:bg-neutral-300')">
               <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
               </svg>
@@ -206,13 +206,13 @@ export type PdfType = 'finance' | 'analytics' | 'users' | 'health' | 'contacts';
             <span class="text-[10px] font-normal opacity-50 mt-1">Tráfico & Secciones</span>
           </button>
 
-          <!-- 3. PDF: Usuarios -->
+          <!-- 3. PDF: Usuarios (SKY BLUE ACCENT) -->
           <button (click)="previewPdf('users')"
                   [disabled]="pdfLoading"
                   class="flex flex-col items-start p-4 rounded-2xl border text-xs font-headline font-bold transition-all duration-300 cursor-pointer group hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
-                  [ngClass]="currentPdfType === 'users' ? 'border-red-500 bg-red-500/10 text-red-400 shadow-md' : (isDark ? 'border-neutral-800 text-neutral-300 hover:border-neutral-600 bg-neutral-900/40' : 'border-neutral-200 text-neutral-700 hover:border-neutral-400 bg-neutral-50')">
+                  [ngClass]="currentPdfType === 'users' ? 'border-sky-500 bg-sky-500/10 text-sky-400 shadow-md' : (isDark ? 'border-neutral-800 text-neutral-300 hover:border-sky-500/50 bg-neutral-900/40' : 'border-neutral-200 text-neutral-700 hover:border-neutral-400 bg-neutral-50')">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center mb-3 transition-colors"
-                 [ngClass]="currentPdfType === 'users' ? 'bg-red-500/20 text-red-400' : (isDark ? 'bg-neutral-800 text-neutral-300 group-hover:bg-neutral-700' : 'bg-neutral-200/80 text-neutral-800 group-hover:bg-neutral-300')">
+                 [ngClass]="currentPdfType === 'users' ? 'bg-sky-500/20 text-sky-400' : (isDark ? 'bg-neutral-800 text-sky-400/70 group-hover:bg-neutral-700' : 'bg-neutral-200/80 text-neutral-800 group-hover:bg-neutral-300')">
               <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
               </svg>
@@ -221,13 +221,13 @@ export type PdfType = 'finance' | 'analytics' | 'users' | 'health' | 'contacts';
             <span class="text-[10px] font-normal opacity-50 mt-1">Cuentas & Roles</span>
           </button>
 
-          <!-- 4. PDF: Salud del Sistema -->
+          <!-- 4. PDF: Salud del Sistema (ROSE RED ACCENT) -->
           <button (click)="previewPdf('health')"
                   [disabled]="pdfLoading"
                   class="flex flex-col items-start p-4 rounded-2xl border text-xs font-headline font-bold transition-all duration-300 cursor-pointer group hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
-                  [ngClass]="currentPdfType === 'health' ? 'border-red-500 bg-red-500/10 text-red-400 shadow-md' : (isDark ? 'border-neutral-800 text-neutral-300 hover:border-neutral-600 bg-neutral-900/40' : 'border-neutral-200 text-neutral-700 hover:border-neutral-400 bg-neutral-50')">
+                  [ngClass]="currentPdfType === 'health' ? 'border-rose-500 bg-rose-500/10 text-rose-400 shadow-md' : (isDark ? 'border-neutral-800 text-neutral-300 hover:border-rose-500/50 bg-neutral-900/40' : 'border-neutral-200 text-neutral-700 hover:border-neutral-400 bg-neutral-50')">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center mb-3 transition-colors"
-                 [ngClass]="currentPdfType === 'health' ? 'bg-red-500/20 text-red-400' : (isDark ? 'bg-neutral-800 text-neutral-300 group-hover:bg-neutral-700' : 'bg-neutral-200/80 text-neutral-800 group-hover:bg-neutral-300')">
+                 [ngClass]="currentPdfType === 'health' ? 'bg-rose-500/20 text-rose-400' : (isDark ? 'bg-neutral-800 text-rose-400/70 group-hover:bg-neutral-700' : 'bg-neutral-200/80 text-neutral-800 group-hover:bg-neutral-300')">
               <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
               </svg>
@@ -240,9 +240,9 @@ export type PdfType = 'finance' | 'analytics' | 'users' | 'health' | 'contacts';
           <button (click)="previewPdf('contacts')"
                   [disabled]="pdfLoading"
                   class="flex flex-col items-start p-4 rounded-2xl border text-xs font-headline font-bold transition-all duration-300 cursor-pointer group hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
-                  [ngClass]="currentPdfType === 'contacts' ? 'border-red-500 bg-red-500/10 text-red-400 shadow-md' : (isDark ? 'border-neutral-800 text-neutral-300 hover:border-neutral-600 bg-neutral-900/40' : 'border-neutral-200 text-neutral-700 hover:border-neutral-400 bg-neutral-50')">
+                  [ngClass]="currentPdfType === 'contacts' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400 shadow-md' : (isDark ? 'border-neutral-800 text-neutral-300 hover:border-emerald-500/50 bg-neutral-900/40' : 'border-neutral-200 text-neutral-700 hover:border-neutral-400 bg-neutral-50')">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center mb-3 transition-colors"
-                 [ngClass]="currentPdfType === 'contacts' ? 'bg-red-500/20 text-red-400' : (isDark ? 'bg-neutral-800 text-neutral-300 group-hover:bg-neutral-700' : 'bg-neutral-200/80 text-neutral-800 group-hover:bg-neutral-300')">
+                 [ngClass]="currentPdfType === 'contacts' ? 'bg-emerald-500/20 text-emerald-400' : (isDark ? 'bg-neutral-800 text-emerald-400/70 group-hover:bg-neutral-700' : 'bg-neutral-200/80 text-neutral-800 group-hover:bg-neutral-300')">
               <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
               </svg>
@@ -263,10 +263,10 @@ export type PdfType = 'finance' | 'analytics' | 'users' | 'health' | 'contacts';
         <div class="px-6 py-4 border-b flex justify-between items-center"
              [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
           <div class="flex items-center gap-3">
-            <span class="w-3 h-3 rounded-full bg-red-500"></span>
+            <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
             <h3 class="text-xs font-headline font-bold uppercase tracking-wider"
                 [ngClass]="isDark ? 'text-neutral-100' : 'text-neutral-900'">
-              Previsualización de Documento PDF: <span class="text-red-400 font-bold ml-1">{{ currentPdfName }}</span>
+              Previsualización de Documento PDF: <span class="text-emerald-400 font-bold ml-1">{{ currentPdfName }}</span>
             </h3>
           </div>
           
@@ -278,7 +278,7 @@ export type PdfType = 'finance' | 'analytics' | 'users' | 'health' | 'contacts';
             </button>
             <button (click)="downloadCurrentPdf()"
                     class="flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer shadow-md hover:scale-[1.02] active:scale-[0.98]"
-                    [ngClass]="isDark ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-red-600 hover:bg-red-700 text-white'">
+                    [ngClass]="isDark ? 'bg-emerald-500 hover:bg-emerald-400 text-black font-bold' : 'bg-emerald-600 hover:bg-emerald-500 text-white font-bold'">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
               </svg>
@@ -302,10 +302,19 @@ export type PdfType = 'finance' | 'analytics' | 'users' | 'health' | 'contacts';
               [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">Resumen Sintético del Sistema</h3>
 
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div *ngFor="let s of executiveSummary; trackBy: trackBySummary"
-                 class="rounded-2xl p-4 text-center border transition-all hover:border-neutral-500"
-                 [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800' : 'bg-neutral-50 border-neutral-200/60'">
-              <p class="text-2xl sm:text-3xl font-headline font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ s.value }}</p>
+            <div *ngFor="let s of executiveSummary; let idx = index; trackBy: trackBySummary"
+                 class="rounded-2xl p-4 text-center border transition-all"
+                 [ngClass]="idx === 0 
+                   ? (isDark ? 'bg-neutral-950/60 border-emerald-500/30 hover:border-emerald-500/60' : 'bg-emerald-50/40 border-emerald-200 hover:border-emerald-300')
+                   : (idx === 1 
+                     ? (isDark ? 'bg-neutral-950/60 border-sky-500/30 hover:border-sky-500/60' : 'bg-sky-50/40 border-sky-200 hover:border-sky-300')
+                     : (idx === 2 
+                       ? (isDark ? 'bg-neutral-950/60 border-amber-500/30 hover:border-amber-500/60' : 'bg-amber-50/40 border-amber-200 hover:border-amber-300')
+                       : (isDark ? 'bg-neutral-950/60 border-rose-500/30 hover:border-rose-500/60' : 'bg-rose-50/40 border-rose-200 hover:border-rose-300')))">
+              <p class="text-2xl sm:text-3xl font-headline font-bold"
+                 [ngClass]="idx === 0 ? 'text-emerald-400' : (idx === 1 ? 'text-sky-400' : (idx === 2 ? 'text-amber-400' : 'text-rose-400'))">
+                {{ s.value }}
+              </p>
               <p class="text-[10px] uppercase tracking-widest font-headline font-semibold mt-1.5 opacity-60">{{ s.label }}</p>
             </div>
           </div>
@@ -323,7 +332,7 @@ export type PdfType = 'finance' | 'analytics' | 'users' | 'health' | 'contacts';
           <div class="space-y-3">
             <button (click)="exportAnalytics()"
                     class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-headline font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer border hover:scale-[1.01]"
-                    [ngClass]="isDark ? 'bg-white text-black border-white hover:bg-neutral-200' : 'bg-black text-white border-black hover:bg-neutral-800'">
+                    [ngClass]="isDark ? 'bg-emerald-500 text-black border-emerald-400 hover:bg-emerald-400 font-bold' : 'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700'">
               <svg class="w-4 h-4 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
               </svg>
@@ -332,7 +341,7 @@ export type PdfType = 'finance' | 'analytics' | 'users' | 'health' | 'contacts';
 
             <button (click)="exportConfig()"
                     class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-headline font-semibold uppercase tracking-wider border transition-all duration-200 cursor-pointer hover:scale-[1.01]"
-                    [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:bg-neutral-800 bg-neutral-900/60' : 'border-neutral-200 text-neutral-700 hover:bg-neutral-100 bg-neutral-50'">
+                    [ngClass]="isDark ? 'border-amber-500/40 text-amber-300 hover:bg-amber-500/10 bg-neutral-900/40' : 'border-neutral-200 text-neutral-700 hover:bg-neutral-100 bg-neutral-50'">
               <svg class="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 13.5l3 3m0 0l3-3m-3 3v-6m1.06-4.19l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
               </svg>
@@ -393,7 +402,7 @@ export type PdfType = 'finance' | 'analytics' | 'users' | 'health' | 'contacts';
               <div *ngFor="let t of loadTimes; trackBy: trackByTime"
                    class="flex-1 rounded-t-lg transition-all duration-500 hover:opacity-100 cursor-pointer"
                    [style.height.%]="loadMax > 0 ? Math.max(12, (t / loadMax) * 100) : 10"
-                   [ngClass]="t < 1000 ? 'bg-emerald-500/70' : (t < 2000 ? 'bg-blue-500/70' : 'bg-red-500/70')"
+                   [ngClass]="t < 800 ? 'bg-emerald-500/80' : (t < 1600 ? 'bg-sky-500/80' : (t < 2600 ? 'bg-amber-500/80' : 'bg-rose-500/80'))"
                    [title]="t + ' ms'"></div>
             </div>
           </div>
@@ -418,7 +427,7 @@ export type PdfType = 'finance' | 'analytics' | 'users' | 'health' | 'contacts';
   `]
 })
 export class DashReportsComponent implements OnInit {
-  @Input() theme = 'light';
+  @Input() theme = 'dark';
 
   private analyticsService = inject(AnalyticsService);
   private configService = inject(PortfolioConfigService);

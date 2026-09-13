@@ -17,12 +17,12 @@ class ReportsController
         try {
             Database::query("
                 CREATE TABLE IF NOT EXISTS system_activity_logs (
-                    id SERIAL PRIMARY KEY,
-                    user_id INTEGER,
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    user_id INT NULL,
                     action VARCHAR(255) NOT NULL,
-                    details JSONB,
+                    details LONGTEXT NULL,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
             ");
             self::$tableEnsured = true;
         } catch (Exception $err) {
@@ -41,7 +41,16 @@ class ReportsController
                 ORDER BY l.created_at DESC 
                 LIMIT 50
             ");
-            $response->json(['logs' => $stmt->fetchAll()]);
+            $logs = $stmt->fetchAll();
+            foreach ($logs as &$log) {
+                if (isset($log['details']) && is_string($log['details'])) {
+                    $decoded = json_decode($log['details'], true);
+                    if (json_last_error() === JSON_ERROR_NONE) {
+                        $log['details'] = $decoded;
+                    }
+                }
+            }
+            $response->json(['logs' => $logs]);
         } catch (Exception $err) {
             error_log('[Reports] getActivityLogs error: ' . $err->getMessage());
             $response->status(500)->json(['message' => 'Error al obtener registros de actividad']);
@@ -62,7 +71,7 @@ class ReportsController
             }
 
             Database::query(
-                "INSERT INTO system_activity_logs (user_id, action, details) VALUES ($1, $2, $3)",
+                "INSERT INTO system_activity_logs (user_id, action, details) VALUES (?, ?, ?)",
                 [$userId ?: null, $action, json_encode($details, JSON_UNESCAPED_UNICODE)]
             );
 

@@ -10,6 +10,7 @@ import { AudioRecorderService, RecordedAudio } from '../../../services/audio-rec
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { StreakService, DailyStreakData, WeekDayStreak, MonthDayStreak, MonthStreakData } from '../../../services/streak.service';
+import { MessagesService } from '../../../services/messages.service';
 @Component({
   selector: 'app-dash-home',
   standalone: true,
@@ -75,12 +76,22 @@ import { StreakService, DailyStreakData, WeekDayStreak, MonthDayStreak, MonthStr
               </span>
 
               <!-- 2. Mensajes -->
-              <span class="h-8 px-3.5 rounded-full border inline-flex items-center justify-center sm:justify-start gap-2 text-xs font-semibold tracking-wide transition-all select-none"
-                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-neutral-300' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80'">
-                <svg class="w-3.5 h-3.5 shrink-0 opacity-70 block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <span (click)="navigateToTab('messages')"
+                    class="h-8 px-3.5 rounded-full border inline-flex items-center justify-center sm:justify-start gap-2 text-xs font-semibold tracking-wide transition-all select-none cursor-pointer hover:scale-[1.02] active:scale-95"
+                    [ngClass]="unreadMessages > 0 ? 
+                      (isDark ? 'border-amber-500/50 text-amber-400 bg-amber-500/15 shadow-sm shadow-amber-500/10 hover:bg-amber-500/25' : 'border-amber-300 text-amber-800 bg-amber-50 shadow-sm shadow-amber-200/50 hover:bg-amber-100/80') : 
+                      (isDark ? 'bg-[#141419] border-neutral-800 text-neutral-300 hover:border-neutral-700' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80 hover:border-neutral-300')"
+                    [title]="unreadMessages > 0 ? 'Tienes ' + unreadMessages + ' mensaje(s) sin leer. Haz clic para verlos.' : 'Bandeja de mensajes al día. Haz clic para abrir.'">
+                <span *ngIf="unreadMessages > 0" class="relative flex h-2 w-2 shrink-0">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                </span>
+                <svg *ngIf="unreadMessages === 0" class="w-3.5 h-3.5 shrink-0 opacity-70 block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                <span class="leading-none whitespace-nowrap">{{ unreadMessages }} Mensajes</span>
+                <span class="leading-none whitespace-nowrap" [class.font-bold]="unreadMessages > 0">
+                  {{ unreadMessages > 0 ? (unreadMessages + (unreadMessages === 1 ? ' Mensaje Nuevo' : ' Mensajes Nuevos')) : '0 Mensajes' }}
+                </span>
               </span>
 
               <!-- 3. Online -->
@@ -1345,6 +1356,7 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   private audioRecorder = inject(AudioRecorderService);
   private router = inject(Router);
   private streakService = inject(StreakService);
+  private messagesService = inject(MessagesService);
 
   streakData: DailyStreakData | null = null;
   streakWeekDays: WeekDayStreak[] = [];
@@ -1393,7 +1405,7 @@ export class DashHomeComponent implements OnInit, OnDestroy {
     '¿ya estudiaste sql?',
     '¿ya estudiaste inglés?',
     '¿ya leíste arquitectura?',
-    '¿cómo van las finanzas?'
+    '¿y las finanzas?'
   ];
   currentPhraseIndex = 0;
   isPhraseFading = false;
@@ -1839,11 +1851,24 @@ export class DashHomeComponent implements OnInit, OnDestroy {
 
   private loadBadges() {
     try {
-      const msgs = JSON.parse(localStorage.getItem('portalink_admin_messages') || '[]');
       const leads = JSON.parse(localStorage.getItem('portalink_admin_leads') || '[]');
-      this.unreadMessages = msgs.filter((m: any) => !m.read).length;
       this.pendingLeads = leads.filter((l: any) => l.status === 'Pendiente').length;
     } catch { }
+
+    this.messagesService.getMessages().subscribe({
+      next: (msgs) => {
+        const list = msgs || [];
+        this.unreadMessages = list.filter(m => (m.status || '').toLowerCase() === 'unread').length;
+      },
+      error: () => {
+        try {
+          const local = JSON.parse(localStorage.getItem('portalink_contact_messages') || '[]');
+          this.unreadMessages = local.filter((m: any) => (m.status || '').toLowerCase() === 'unread').length;
+        } catch {
+          this.unreadMessages = 0;
+        }
+      }
+    });
   }
 
   resetMetrics() {

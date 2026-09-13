@@ -13,7 +13,23 @@ class MessagesController
 
     private function ensureMessagesTable(): void
     {
-        // Ya creado por schema_mysql.sql
+        if (self::$tableEnsured) return;
+        try {
+            Database::query("
+                CREATE TABLE IF NOT EXISTS contact_messages (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    name VARCHAR(255) NOT NULL,
+                    email VARCHAR(255) NOT NULL,
+                    subject VARCHAR(255) DEFAULT 'Contacto desde PortaLink Web',
+                    message TEXT NOT NULL,
+                    status VARCHAR(50) DEFAULT 'UNREAD',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            ");
+            self::$tableEnsured = true;
+        } catch (Exception $err) {
+            error_log('[Messages] Error ensuring messages table: ' . $err->getMessage());
+        }
     }
 
     public function sendMessage(Request $request, Response $response): void
@@ -67,9 +83,9 @@ class MessagesController
 
         try {
             $this->ensureMessagesTable();
-            $stmt = Database::query(
+            Database::query(
                 "INSERT INTO contact_messages (name, email, subject, message, status) 
-                 VALUES ($1, $2, $3, $4, 'UNREAD')",
+                 VALUES (?, ?, ?, ?, 'UNREAD')",
                 [$name, $email, $subject, $message]
             );
 
@@ -90,14 +106,37 @@ class MessagesController
     {
         try {
             $user = $request->user;
-            if (!$user || strtolower($user->rol ?? '') !== 'admin') {
+            $userRol = strtolower($user->rol ?? '');
+            if (!$user || ($userRol !== 'admin' && $userRol !== 'administrador')) {
                 $response->status(403)->json(['ok' => false, 'message' => 'Acceso denegado. Se requieren permisos de administrador.']);
                 return;
             }
 
             $this->ensureMessagesTable();
             $stmt = Database::query("SELECT * FROM contact_messages ORDER BY created_at DESC");
-            $response->json($stmt->fetchAll());
+            $raw = $stmt->fetchAll();
+
+            $messages = array_map(function($m) {
+                $rawStatus = strtoupper($m['status'] ?? 'UNREAD');
+                $st = strtolower($rawStatus);
+                if ($st === 'responded') $st = 'replied';
+
+                return [
+                    'id' => (int)$m['id'],
+                    'nombre' => $m['name'] ?? $m['nombre'] ?? 'Anónimo',
+                    'correo' => $m['email'] ?? $m['correo'] ?? '',
+                    'asunto' => $m['subject'] ?? $m['asunto'] ?? 'Contacto desde PortaLink Web',
+                    'mensaje' => $m['message'] ?? $m['mensaje'] ?? '',
+                    'name' => $m['name'] ?? '',
+                    'email' => $m['email'] ?? '',
+                    'subject' => $m['subject'] ?? '',
+                    'message' => $m['message'] ?? '',
+                    'status' => $st,
+                    'created_at' => $m['created_at'] ?? date('c')
+                ];
+            }, $raw);
+
+            $response->json($messages);
         } catch (Exception $err) {
             error_log('[Messages] getMessages error: ' . $err->getMessage());
             $response->status(500)->json([]);
@@ -108,35 +147,31 @@ class MessagesController
     {
         try {
             $user = $request->user;
-            if (!$user || strtolower($user->rol ?? '') !== 'admin') {
+            $userRol = strtolower($user->rol ?? '');
+            if (!$user || ($userRol !== 'admin' && $userRol !== 'administrador')) {
                 $response->status(403)->json(['ok' => false, 'message' => 'Acceso denegado']);
                 return;
             }
 
             $id = (int)($request->params['id'] ?? 0);
-            $status = $request->body['status'] ?? null;
+            $rawStatus = strtoupper($request->body['status'] ?? 'READ');
+            if ($rawStatus === 'REPLIED') $rawStatus = 'RESPONDED';
 
-            if (!$status || !in_array($status, ['UNREAD', 'READ', 'RESPONDED', 'ARCHIVED'])) {
+            if (!in_array($rawStatus, ['UNREAD', 'READ', 'RESPONDED', 'ARCHIVED'])) {
                 $response->status(400)->json(['ok' => false, 'message' => 'Estado inválido']);
                 return;
             }
 
             $this->ensureMessagesTable();
-            $stmt = Database::query(
-                "UPDATE contact_messages SET status = $1 WHERE id = $2 RETURNING *",
-                [$status, $id]
+            Database::query(
+                "UPDATE contact_messages SET status = ? WHERE id = ?",
+                [$rawStatus, $id]
             );
-            $msg = $stmt->fetch();
-
-            if (!$msg) {
-                $response->status(404)->json(['ok' => false, 'message' => 'Mensaje no encontrado']);
-                return;
-            }
 
             $response->json([
                 'ok' => true,
                 'message' => 'Estado actualizado',
-                'data' => $msg
+                'status' => strtolower($rawStatus === 'RESPONDED' ? 'replied' : $rawStatus)
             ]);
         } catch (Exception $err) {
             error_log('[Messages] updateStatus error: ' . $err->getMessage());
@@ -151,19 +186,15 @@ class MessagesController
     {
         try {
             $user = $request->user;
-            if (!$user || strtolower($user->rol ?? '') !== 'admin') {
+            $userRol = strtolower($user->rol ?? '');
+            if (!$user || ($userRol !== 'admin' && $userRol !== 'administrador')) {
                 $response->status(403)->json(['ok' => false, 'message' => 'Acceso denegado']);
                 return;
             }
 
             $id = (int)($request->params['id'] ?? 0);
             $this->ensureMessagesTable();
-            $stmt = Database::query("DELETE FROM contact_messages WHERE id = $1 RETURNING id", [$id]);
-
-            if (!$stmt->fetch()) {
-                $response->status(404)->json(['ok' => false, 'message' => 'Mensaje no encontrado']);
-                return;
-            }
+            Database::query("DELETE FROM contact_messages WHERE id = ?", [$id]);
 
             $response->json([
                 'ok' => true,

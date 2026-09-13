@@ -60,68 +60,7 @@ class StreakController
         $today = ($clientToday && preg_match('/^\d{4}-\d{2}-\d{2}$/', $clientToday)) ? $clientToday : date('Y-m-d');
 
         try {
-            $record = Database::queryOne(
-                "SELECT * FROM daily_streaks WHERE user_id = ?",
-                [$userId]
-            );
-
-            if (!$record) {
-                // Primer registro
-                Database::query(
-                    "INSERT INTO daily_streaks (user_id, streak_count, longest_streak, last_active_date, login_done, robot_talk_done, library_study_done, history_json) 
-                     VALUES (?, 1, 1, ?, 1, 0, 0, ?)",
-                    [$userId, $today, json_encode([$today])]
-                );
-                $record = Database::queryOne("SELECT * FROM daily_streaks WHERE user_id = ?", [$userId]);
-            } else {
-                $lastDate = $record['last_active_date'];
-                
-                if ($lastDate !== $today) {
-                    $diffDays = (int)round((strtotime($today . ' 00:00:00 UTC') - strtotime($lastDate . ' 00:00:00 UTC')) / 86400);
-                    $history = json_decode($record['history_json'] ?? '[]', true) ?: [];
-                    if (!in_array($today, $history)) {
-                        $history[] = $today;
-                        if (count($history) > 400) {
-                            array_shift($history);
-                        }
-                    }
-
-                    if ($diffDays === 1) {
-                        // Día consecutivo: racha continúa
-                        $newStreak = (int)$record['streak_count'] + 1;
-                        $newLongest = max($newStreak, (int)$record['longest_streak']);
-                        Database::query(
-                            "UPDATE daily_streaks 
-                             SET streak_count = ?, longest_streak = ?, last_active_date = ?, login_done = 1, robot_talk_done = 0, library_study_done = 0, history_json = ? 
-                             WHERE user_id = ?",
-                            [$newStreak, $newLongest, $today, json_encode(array_values(array_unique($history))), $userId]
-                        );
-                    } else if ($diffDays > 1) {
-                        // Racha rota: vuelve a 1
-                        $newStreak = 1;
-                        Database::query(
-                            "UPDATE daily_streaks 
-                             SET streak_count = ?, last_active_date = ?, login_done = 1, robot_talk_done = 0, library_study_done = 0, history_json = ? 
-                             WHERE user_id = ?",
-                            [$newStreak, $today, json_encode(array_values(array_unique($history))), $userId]
-                        );
-                    }
-                    $record = Database::queryOne("SELECT * FROM daily_streaks WHERE user_id = ?", [$userId]);
-                } else {
-                    // Mismo día: asegurar que hoy esté en el historial y login_done esté en 1
-                    $history = json_decode($record['history_json'] ?? '[]', true) ?: [];
-                    if (!in_array($today, $history) || !(bool)$record['login_done']) {
-                        if (!in_array($today, $history)) {
-                            $history[] = $today;
-                        }
-                        Database::query(
-                            "UPDATE daily_streaks SET history_json = ?, login_done = 1 WHERE user_id = ?",
-                            [json_encode(array_values(array_unique($history))), $userId]
-                        );
-                        $record = Database::queryOne("SELECT * FROM daily_streaks WHERE user_id = ?", [$userId]);
-                    }
-                }
-            }
+            $record = $this->syncUserStreak($userId, $today);
 
             $res->json([
                 'ok' => true,
@@ -138,7 +77,8 @@ class StreakController
                     'history' => json_decode($record['history_json'] ?? '[]', true) ?: []
                 ]
             ]);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
+            error_log('[StreakController] Error al obtener racha: ' . $e->getMessage());
             $res->status(500)->json([
                 'ok' => false,
                 'message' => 'Error al obtener racha: ' . $e->getMessage()
@@ -165,15 +105,8 @@ class StreakController
         }
 
         try {
-            // Asegurar que exista
-            $record = Database::queryOne("SELECT * FROM daily_streaks WHERE user_id = ?", [$userId]);
-            if (!$record) {
-                Database::query(
-                    "INSERT INTO daily_streaks (user_id, streak_count, longest_streak, last_active_date, login_done, robot_talk_done, library_study_done, history_json) 
-                     VALUES (?, 1, 1, ?, 1, 0, 0, ?)",
-                    [$userId, $today, json_encode([$today])]
-                );
-            }
+            // Sincronizar fecha y racha primero
+            $record = $this->syncUserStreak($userId, $today);
 
             $column = match($action) {
                 'login' => 'login_done',
@@ -181,14 +114,9 @@ class StreakController
                 'library' => 'library_study_done',
             };
 
-            $history = json_decode($record['history_json'] ?? '[]', true) ?: [];
-            if (!in_array($today, $history)) {
-                $history[] = $today;
-            }
-
             Database::query(
-                "UPDATE daily_streaks SET {$column} = 1, last_active_date = ?, history_json = ? WHERE user_id = ?",
-                [$today, json_encode(array_values(array_unique($history))), $userId]
+                "UPDATE daily_streaks SET {$column} = 1 WHERE user_id = ?",
+                [$userId]
             );
 
             $updated = Database::queryOne("SELECT * FROM daily_streaks WHERE user_id = ?", [$userId]);
@@ -209,11 +137,88 @@ class StreakController
                     'history' => json_decode($updated['history_json'] ?? '[]', true) ?: []
                 ]
             ]);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
+            error_log('[StreakController] Error al registrar acción: ' . $e->getMessage());
             $res->status(500)->json([
                 'ok' => false,
                 'message' => 'Error al registrar acción: ' . $e->getMessage()
             ]);
+        }
+    }
+
+    private function syncUserStreak(int $userId, string $today): array
+    {
+        $record = Database::queryOne(
+            "SELECT * FROM daily_streaks WHERE user_id = ?",
+            [$userId]
+        );
+
+        if (!$record) {
+            // Primer registro
+            Database::query(
+                "INSERT INTO daily_streaks (user_id, streak_count, longest_streak, last_active_date, login_done, robot_talk_done, library_study_done, history_json) 
+                 VALUES (?, 1, 1, ?, 1, 0, 0, ?)",
+                [$userId, $today, json_encode([$today])]
+            );
+            return Database::queryOne("SELECT * FROM daily_streaks WHERE user_id = ?", [$userId]);
+        }
+
+        $lastDate = $record['last_active_date'];
+        $history = json_decode($record['history_json'] ?? '[]', true) ?: [];
+
+        if ($lastDate !== $today) {
+            $diffDays = (int)round((strtotime($today . ' 00:00:00 UTC') - strtotime($lastDate . ' 00:00:00 UTC')) / 86400);
+
+            if (!in_array($today, $history)) {
+                $history[] = $today;
+                sort($history);
+                if (count($history) > 400) {
+                    array_shift($history);
+                }
+            }
+
+            if ($diffDays === 1) {
+                // Día consecutivo: racha continúa
+                $newStreak = (int)$record['streak_count'] + 1;
+                $newLongest = max($newStreak, (int)$record['longest_streak']);
+                Database::query(
+                    "UPDATE daily_streaks 
+                     SET streak_count = ?, longest_streak = ?, last_active_date = ?, login_done = 1, robot_talk_done = 0, library_study_done = 0, history_json = ? 
+                     WHERE user_id = ?",
+                    [$newStreak, $newLongest, $today, json_encode(array_values(array_unique($history))), $userId]
+                );
+            } else if ($diffDays > 1) {
+                // Racha rota: vuelve a 1
+                $newStreak = 1;
+                Database::query(
+                    "UPDATE daily_streaks 
+                     SET streak_count = ?, last_active_date = ?, login_done = 1, robot_talk_done = 0, library_study_done = 0, history_json = ? 
+                     WHERE user_id = ?",
+                    [$newStreak, $today, json_encode(array_values(array_unique($history))), $userId]
+                );
+            }
+            return Database::queryOne("SELECT * FROM daily_streaks WHERE user_id = ?", [$userId]);
+        } else {
+            // Mismo día: asegurar que hoy esté en el historial y login_done esté en 1
+            $needsUpdate = false;
+            if (!in_array($today, $history)) {
+                $history[] = $today;
+                sort($history);
+                $needsUpdate = true;
+            }
+            if (!(bool)$record['login_done']) {
+                $needsUpdate = true;
+            }
+
+            if ($needsUpdate) {
+                Database::query(
+                    "UPDATE daily_streaks SET history_json = ?, login_done = 1 WHERE user_id = ?",
+                    [json_encode(array_values(array_unique($history))), $userId]
+                );
+                return Database::queryOne("SELECT * FROM daily_streaks WHERE user_id = ?", [$userId]);
+            }
+
+            return $record;
         }
     }
 }

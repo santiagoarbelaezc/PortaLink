@@ -119,10 +119,11 @@ export class StreakService {
     const lastDateStr = current.lastActiveDate;
 
     if (lastDateStr !== today) {
-      const lastDate = new Date(lastDateStr + 'T00:00:00');
-      const nowDate = new Date(today + 'T00:00:00');
-      const diffTime = nowDate.getTime() - lastDate.getTime();
-      const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+      const [ly, lm, ld] = lastDateStr.split('-').map(Number);
+      const [ny, nm, nd] = today.split('-').map(Number);
+      const lastUtc = Date.UTC(ly, lm - 1, ld);
+      const nowUtc = Date.UTC(ny, nm - 1, nd);
+      const diffDays = Math.round((nowUtc - lastUtc) / (1000 * 60 * 60 * 24));
 
       if (diffDays === 1) {
         // Día consecutivo: racha continúa

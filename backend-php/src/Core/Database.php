@@ -160,4 +160,23 @@ class Database
         $stmt->execute($params);
         return $stmt;
     }
+
+    /**
+     * Ejecuta una consulta y retorna una única fila como array asociativo o null si no existe
+     */
+    public static function queryOne(string $sql, array $params = []): ?array
+    {
+        $stmt = self::query($sql, $params);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $row ?: null;
+    }
+
+    /**
+     * Ejecuta una consulta y retorna todas las filas como array de arrays asociativos
+     */
+    public static function queryAll(string $sql, array $params = []): array
+    {
+        $stmt = self::query($sql, $params);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
 }

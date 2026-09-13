@@ -35,7 +35,7 @@ export interface SalesStatsSummary {
            [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
         <div>
           <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em]"
                [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Auditoría & Desempeño</p>
           </div>
@@ -50,17 +50,17 @@ export interface SalesStatsSummary {
              [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800' : 'bg-neutral-100/80 border-neutral-200'">
           <button (click)="activeSectionFilter = 'all'"
                   class="px-4 py-1.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider transition-all duration-300 cursor-pointer"
-                  [ngClass]="activeSectionFilter === 'all' ? (isDark ? 'bg-white text-black shadow-sm' : 'bg-[#09090b] text-white shadow-sm') : 'opacity-60'">
+                  [ngClass]="activeSectionFilter === 'all' ? (isDark ? 'bg-emerald-500 text-black font-bold shadow-sm' : 'bg-emerald-600 text-white shadow-sm') : 'opacity-60'">
             Todas
           </button>
           <button (click)="activeSectionFilter = 'site'"
                   class="px-4 py-1.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider transition-all duration-300 cursor-pointer"
-                  [ngClass]="activeSectionFilter === 'site' ? (isDark ? 'bg-white text-black shadow-sm' : 'bg-[#09090b] text-white shadow-sm') : 'opacity-60'">
+                  [ngClass]="activeSectionFilter === 'site' ? (isDark ? 'bg-sky-500 text-black font-bold shadow-sm' : 'bg-sky-600 text-white shadow-sm') : 'opacity-60'">
             Sitio Web
           </button>
           <button (click)="activeSectionFilter = 'sales'"
                   class="px-4 py-1.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider transition-all duration-300 cursor-pointer"
-                  [ngClass]="activeSectionFilter === 'sales' ? (isDark ? 'bg-white text-black shadow-sm' : 'bg-[#09090b] text-white shadow-sm') : 'opacity-60'">
+                  [ngClass]="activeSectionFilter === 'sales' ? (isDark ? 'bg-amber-500 text-black font-bold shadow-sm' : 'bg-amber-600 text-white shadow-sm') : 'opacity-60'">
             Ventas & Finanzas
           </button>
         </div>
@@ -72,7 +72,7 @@ export interface SalesStatsSummary {
       <div *ngIf="activeSectionFilter === 'all' || activeSectionFilter === 'site'" class="space-y-5">
         <div class="flex items-center justify-between border-b pb-3" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
           <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
             <h3 class="text-base font-headline font-bold uppercase tracking-wider" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
               Tráfico & Enganche del Sitio Web
             </h3>
@@ -82,25 +82,25 @@ export interface SalesStatsSummary {
 
         <!-- Site Metrics KPI Grid -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5">
-          <div class="rounded-[24px] border p-5 space-y-2 transition-all duration-300 hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+          <div class="rounded-[24px] border p-5 space-y-2 transition-all duration-300 hover:border-emerald-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
                [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
             <p class="text-[10px] font-headline font-semibold uppercase tracking-wider opacity-60">Visitas Totales</p>
-            <p class="text-2xl sm:text-3xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+            <p class="text-2xl sm:text-3xl font-headline font-bold tracking-tight text-emerald-400">
               {{ (metrics.homeViews || 0) + (metrics.linktreeViews || 0) }}
             </p>
             <p class="text-[11px] opacity-50">Home: {{ metrics.homeViews || 0 }} | Links: {{ metrics.linktreeViews || 0 }}</p>
           </div>
 
-          <div class="rounded-[24px] border p-5 space-y-2 transition-all duration-300 hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+          <div class="rounded-[24px] border p-5 space-y-2 transition-all duration-300 hover:border-amber-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
                [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
             <p class="text-[10px] font-headline font-semibold uppercase tracking-wider opacity-60">Clics en Enlaces</p>
-            <p class="text-2xl sm:text-3xl font-headline font-bold tracking-tight text-blue-400">
+            <p class="text-2xl sm:text-3xl font-headline font-bold tracking-tight text-amber-400">
               {{ metrics.totalClicks || 0 }}
             </p>
             <p class="text-[11px] opacity-50">Interacción en canales sociales</p>
           </div>
 
-          <div class="rounded-[24px] border p-5 space-y-2 transition-all duration-300 hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+          <div class="rounded-[24px] border p-5 space-y-2 transition-all duration-300 hover:border-emerald-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
                [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
             <p class="text-[10px] font-headline font-semibold uppercase tracking-wider opacity-60">Tasa de Clics (CTR)</p>
             <p class="text-2xl sm:text-3xl font-headline font-bold tracking-tight text-emerald-400">
@@ -109,10 +109,10 @@ export interface SalesStatsSummary {
             <p class="text-[11px] opacity-50">Conversión de visitantes a clics</p>
           </div>
 
-          <div class="rounded-[24px] border p-5 space-y-2 transition-all duration-300 hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+          <div class="rounded-[24px] border p-5 space-y-2 transition-all duration-300 hover:border-sky-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
                [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
             <p class="text-[10px] font-headline font-semibold uppercase tracking-wider opacity-60">Consultas IA Rotbot</p>
-            <p class="text-2xl sm:text-3xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+            <p class="text-2xl sm:text-3xl font-headline font-bold tracking-tight text-sky-400">
               {{ metrics.rotbotOpens || 0 }}
             </p>
             <p class="text-[11px] opacity-50">{{ metrics.rotbotMessagesSent || 0 }} mensajes enviados</p>
@@ -150,14 +150,14 @@ export interface SalesStatsSummary {
                 <div class="col-span-3 flex items-center gap-3">
                   <div class="flex-grow h-1.5 rounded-full overflow-hidden" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-100'">
                     <div class="h-full rounded-full transition-all duration-700" [style.width.%]="row.pct"
-                         [ngClass]="isDark ? 'bg-white' : 'bg-neutral-900'"></div>
+                         [ngClass]="i === 0 ? 'bg-emerald-400' : 'bg-amber-400'"></div>
                   </div>
                   <span class="text-xs font-mono opacity-60 w-9 text-right">{{ row.pct | number:'1.0-0' }}%</span>
                 </div>
 
                 <div class="col-span-2 text-center">
                   <span class="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full border"
-                        [ngClass]="i === 0 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-neutral-500/10 border-neutral-500/30 text-neutral-400'">
+                        [ngClass]="i === 0 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-amber-500/10 border-amber-500/30 text-amber-400'">
                     {{ i === 0 ? 'Líder' : 'Activo' }}
                   </span>
                 </div>
@@ -169,7 +169,7 @@ export interface SalesStatsSummary {
                    [ngClass]="isDark ? 'border-neutral-800 bg-neutral-950/40' : 'border-neutral-100 bg-neutral-50'">
                 <div class="flex items-center justify-between">
                   <span>Auditoría de Tráfico para "{{ translateName(row.name) }}":</span>
-                  <span class="font-mono font-bold">{{ row.views }} Impresiones Registradas</span>
+                  <span class="font-mono font-bold text-emerald-400">{{ row.views }} Impresiones Registradas</span>
                 </div>
               </div>
             </div>
@@ -200,17 +200,17 @@ export interface SalesStatsSummary {
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           
           <!-- Facturación Bruta -->
-          <div class="rounded-[24px] border p-5 space-y-2 transition-all duration-300 hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+          <div class="rounded-[24px] border p-5 space-y-2 transition-all duration-300 hover:border-emerald-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
                [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
             <p class="text-[10px] font-headline font-semibold uppercase tracking-wider opacity-60">Facturación Acumulada</p>
-            <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+            <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight text-emerald-400">
               {{ formatCOP(salesSummary.arr_total) }}
             </p>
             <p class="text-[11px] opacity-50">Suma total de facturas y ventas directas</p>
           </div>
 
           <!-- Recaudo Efectivo -->
-          <div class="rounded-[24px] border p-5 space-y-2 transition-all duration-300 hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+          <div class="rounded-[24px] border p-5 space-y-2 transition-all duration-300 hover:border-emerald-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
                [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
             <p class="text-[10px] font-headline font-semibold uppercase tracking-wider opacity-60">Recaudo Efectivo</p>
             <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight text-emerald-400">
@@ -220,20 +220,20 @@ export interface SalesStatsSummary {
           </div>
 
           <!-- Utilidad y Margen -->
-          <div class="rounded-[24px] border p-5 space-y-2 transition-all duration-300 hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+          <div class="rounded-[24px] border p-5 space-y-2 transition-all duration-300 hover:border-amber-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
                [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
             <p class="text-[10px] font-headline font-semibold uppercase tracking-wider opacity-60">Margen de Utilidad</p>
-            <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight text-emerald-400">
+            <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight text-amber-400">
               {{ salesSummary.margen_neto_pct }}%
             </p>
             <p class="text-[11px] opacity-50">Utilidad Neta: {{ formatCOP(salesSummary.utilidad_neta) }}</p>
           </div>
 
           <!-- Egresos Operativos -->
-          <div class="rounded-[24px] border p-5 space-y-2 transition-all duration-300 hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+          <div class="rounded-[24px] border p-5 space-y-2 transition-all duration-300 hover:border-rose-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
                [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
             <p class="text-[10px] font-headline font-semibold uppercase tracking-wider opacity-60">Egresos Totales</p>
-            <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight text-red-400">
+            <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight text-rose-400">
               -{{ formatCOP(salesSummary.egresos_total) }}
             </p>
             <p class="text-[11px] opacity-50">Clientes Activos: {{ salesSummary.clientes_activos }}</p>
@@ -274,10 +274,10 @@ export interface SalesStatsSummary {
             <div class="space-y-2">
               <div class="flex items-center justify-between text-xs">
                 <span class="font-medium opacity-70">Enviadas / Pendientes</span>
-                <span class="font-bold text-blue-400">{{ salesPendingPct }}%</span>
+                <span class="font-bold text-sky-400">{{ salesPendingPct }}%</span>
               </div>
               <div class="w-full h-2 rounded-full overflow-hidden bg-neutral-800">
-                <div class="bg-blue-400 h-full rounded-full transition-all duration-700" [style.width.%]="salesPendingPct"></div>
+                <div class="bg-sky-400 h-full rounded-full transition-all duration-700" [style.width.%]="salesPendingPct"></div>
               </div>
             </div>
 
@@ -285,10 +285,10 @@ export interface SalesStatsSummary {
             <div class="space-y-2">
               <div class="flex items-center justify-between text-xs">
                 <span class="font-medium opacity-70">Vencidas (En Riesgo)</span>
-                <span class="font-bold text-red-400">{{ salesOverduePct }}%</span>
+                <span class="font-bold text-rose-400">{{ salesOverduePct }}%</span>
               </div>
               <div class="w-full h-2 rounded-full overflow-hidden bg-neutral-800">
-                <div class="bg-red-400 h-full rounded-full transition-all duration-700" [style.width.%]="salesOverduePct"></div>
+                <div class="bg-rose-500 h-full rounded-full transition-all duration-700" [style.width.%]="salesOverduePct"></div>
               </div>
             </div>
           </div>
@@ -307,7 +307,7 @@ export interface SalesStatsSummary {
   `]
 })
 export class DashStatsComponent implements OnInit, OnDestroy {
-  @Input() theme = 'light';
+  @Input() theme = 'dark';
   private analyticsService = inject(AnalyticsService);
   private financeService = inject(FinanceService);
   private destroy$ = new Subject<void>();

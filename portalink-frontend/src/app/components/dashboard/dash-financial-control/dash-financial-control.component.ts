@@ -136,7 +136,7 @@ export interface ControlSummary {
              [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200/80'">
           <div class="flex items-center justify-between">
             <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Promedio Mensual (MRR)</span>
-            <span class="text-[10px] font-headline font-semibold px-2.5 py-0.5 rounded-full border border-blue-500/30 text-blue-400 bg-blue-500/10 tracking-wider">
+            <span class="text-[10px] font-headline font-semibold px-2.5 py-0.5 rounded-full border border-amber-500/30 text-amber-400 bg-amber-500/10 tracking-wider">
               En Tiempo Real
             </span>
           </div>
@@ -147,7 +147,7 @@ export interface ControlSummary {
             <p class="text-xs opacity-50 font-normal">Promedio de ingresos mensuales</p>
           </div>
           <div class="pt-2">
-            <svg class="w-full h-7 stroke-current text-blue-400/40 opacity-70 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 100 25">
+            <svg class="w-full h-7 stroke-current text-amber-500/40 opacity-70 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 100 25">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M0 22 L 20 18 L 40 14 L 60 8 L 80 5 L 100 2" />
             </svg>
           </div>
@@ -180,19 +180,19 @@ export interface ControlSummary {
              [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200/80'">
           <div class="flex items-center justify-between">
             <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Egresos Totales</span>
-            <span class="text-[10px] font-headline font-semibold px-2.5 py-0.5 rounded-full border border-red-500/30 text-red-400 bg-red-500/10 tracking-wider">
+            <span class="text-[10px] font-headline font-semibold px-2.5 py-0.5 rounded-full border border-rose-500/30 text-rose-400 bg-rose-500/10 tracking-wider">
               Gastos
             </span>
           </div>
           <div class="space-y-1">
-            <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight text-red-400">
+            <p class="text-xl sm:text-2xl font-headline font-bold tracking-tight text-rose-400">
               -{{ formatValue(summary.egresos_total) }}
             </p>
             <p class="text-xs opacity-50 font-normal">Licencias, hosting y operaciones</p>
           </div>
-          <div class="pt-2 flex items-center justify-between text-xs font-medium opacity-70">
-            <span>Clientes Activos: {{ summary.clientes_activos }}</span>
-            <span>Facturas: {{ formatValue(summary.facturas_pagadas_total) }}</span>
+          <div class="pt-2 flex items-center justify-between text-xs font-medium">
+            <span class="px-2 py-0.5 rounded-full border border-sky-500/30 text-sky-400 bg-sky-500/10 text-[10px] font-bold tracking-wider">Clientes: {{ summary.clientes_activos }}</span>
+            <span class="text-amber-400 font-semibold">Facturas: {{ formatValue(summary.facturas_pagadas_total) }}</span>
           </div>
         </div>
 
@@ -207,7 +207,7 @@ export interface ControlSummary {
         <!-- Header (Coincide con Nueva Cuenta de Cobro) -->
         <div class="flex items-center justify-between border-b pb-4" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
           <div class="flex items-center gap-2.5">
-            <span class="w-2.5 h-2.5 rounded-full" [ngClass]="editingTx.type === 'INGRESO' ? 'bg-emerald-400' : 'bg-red-400'"></span>
+            <span class="w-2.5 h-2.5 rounded-full" [ngClass]="editingTx.type === 'INGRESO' ? 'bg-emerald-400' : 'bg-rose-500'"></span>
             <h3 class="text-sm font-bold uppercase tracking-wide" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
               {{ editingTx.id ? 'Editar Transacción #' + editingTx.id : 'Nueva Transacción' }}
             </h3>
@@ -235,7 +235,7 @@ export interface ControlSummary {
               <button type="button" (click)="editingTx.type = 'EGRESO'"
                       class="px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 shadow-xs"
                       [ngClass]="editingTx.type === 'EGRESO' 
-                        ? (isDark ? 'bg-red-500/20 border-red-500/50 text-red-400 font-extrabold' : 'bg-red-500 border-red-600 text-white font-extrabold') 
+                        ? (isDark ? 'bg-rose-500/20 border-rose-500/50 text-rose-400 font-extrabold' : 'bg-rose-500 border-rose-600 text-white font-extrabold') 
                         : (isDark ? 'border-neutral-700 bg-neutral-800/40 text-neutral-400 hover:text-white' : 'border-neutral-300 bg-white text-neutral-600 hover:text-black')">
                 <span>Egreso (-)</span>
               </button>
@@ -346,7 +346,7 @@ export interface ControlSummary {
              [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
           <div>
             <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               <h3 class="text-base font-headline font-bold uppercase tracking-wider" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
                 Libro de Transacciones Reales
               </h3>
@@ -358,11 +358,11 @@ export interface ControlSummary {
           <div class="flex items-center gap-2">
             <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="loadTransactions()" placeholder="Buscar concepto o cliente..."
                    class="px-3.5 py-2 rounded-xl text-xs border outline-none bg-transparent transition-colors"
-                   [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'border-neutral-200 text-neutral-900'">
+                   [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-emerald-500' : 'border-neutral-200 text-neutral-900 focus:border-emerald-600'">
 
             <select [(ngModel)]="typeFilter" (change)="loadTransactions()"
                     class="px-3.5 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider border outline-none cursor-pointer transition-colors"
-                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white' : 'bg-neutral-50 border-neutral-200 text-neutral-900'">
+                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white focus:border-emerald-500' : 'bg-neutral-50 border-neutral-200 text-neutral-900 focus:border-emerald-600'">
               <option value="">Todos los Tipos</option>
               <option value="INGRESO">Ingresos (+)</option>
               <option value="EGRESO">Egresos (-)</option>
@@ -378,7 +378,7 @@ export interface ControlSummary {
         <!-- Empty State -->
         <div *ngIf="!isLoading && transactions.length === 0" class="py-12 text-center space-y-3">
           <p class="text-xs font-headline font-medium opacity-60">No se encontraron transacciones registradas.</p>
-          <button (click)="openNewModal()" class="px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-white text-black hover:bg-neutral-200 transition-all">
+          <button (click)="openNewModal()" class="px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500 text-black hover:bg-emerald-400 transition-all cursor-pointer">
             + Crear Primera Transacción
           </button>
         </div>
@@ -405,7 +405,7 @@ export interface ControlSummary {
                 <!-- Tipo Badge -->
                 <td class="py-3.5 px-3 whitespace-nowrap">
                   <span class="px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider border"
-                        [ngClass]="tx.type === 'INGRESO' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-red-500/10 border-red-500/30 text-red-400'">
+                        [ngClass]="tx.type === 'INGRESO' ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400' : 'bg-rose-500/15 border-rose-500/30 text-rose-400'">
                     {{ tx.type }}
                   </span>
                 </td>
@@ -416,17 +416,20 @@ export interface ControlSummary {
                 <!-- Categoría -->
                 <td class="py-3.5 px-3 whitespace-nowrap">
                   <span class="px-2.5 py-1 rounded-full text-[10px] font-medium uppercase tracking-wider border"
-                        [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
+                        [ngClass]="(tx.category || '').toLowerCase().includes('facturación') || (tx.category || '').toLowerCase().includes('facturacion') 
+                          ? (isDark ? 'bg-sky-500/15 border-sky-500/30 text-sky-400' : 'bg-sky-50 border-sky-200 text-sky-700')
+                          : (isDark ? 'bg-[#141419] border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700')">
                     {{ tx.category }}
                   </span>
                 </td>
                 <!-- Cliente -->
-                <td class="py-3.5 px-3 opacity-80 whitespace-nowrap">
-                  {{ tx.client_name || 'General' }}
+                <td class="py-3.5 px-3 whitespace-nowrap flex items-center gap-1.5 pt-4">
+                  <span class="w-1.5 h-1.5 rounded-full bg-sky-400/80"></span>
+                  <span class="opacity-90 font-medium">{{ tx.client_name || 'General' }}</span>
                 </td>
                 <!-- Monto -->
                 <td class="py-3.5 px-3 text-right font-bold text-sm whitespace-nowrap"
-                    [ngClass]="tx.type === 'INGRESO' ? 'text-emerald-400' : 'text-red-400'">
+                    [ngClass]="tx.type === 'INGRESO' ? 'text-emerald-400' : 'text-rose-400'">
                   {{ tx.type === 'INGRESO' ? '+' : '-' }}{{ formatValue(tx.amount_cop) }}
                 </td>
                 <!-- Acciones -->
@@ -434,7 +437,7 @@ export interface ControlSummary {
                   <button (click)="openEditModal(tx)" class="p-1.5 rounded-lg hover:bg-neutral-800 text-neutral-400 hover:text-white cursor-pointer transition-colors" title="Editar">
                     ✎
                   </button>
-                  <button (click)="deleteTransaction(tx)" class="p-1.5 rounded-lg hover:bg-red-500/20 text-neutral-400 hover:text-red-400 cursor-pointer transition-colors" title="Eliminar">
+                  <button (click)="deleteTransaction(tx)" class="p-1.5 rounded-lg hover:bg-rose-500/20 text-neutral-400 hover:text-rose-400 cursor-pointer transition-colors" title="Eliminar">
                     ✕
                   </button>
                 </td>
@@ -523,7 +526,7 @@ export interface ControlSummary {
   `]
 })
 export class DashFinancialControlComponent implements OnInit, OnDestroy {
-  @Input() theme = 'light';
+  @Input() theme = 'dark';
   private financeService = inject(FinanceService);
   private destroy$ = new Subject<void>();
 

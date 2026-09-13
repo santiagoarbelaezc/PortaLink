@@ -8,6 +8,10 @@ export interface ContactMessage {
   nombre: string;
   correo: string;
   mensaje: string;
+  asunto?: string;
+  name?: string;
+  email?: string;
+  message?: string;
   status?: string;
   created_at?: string;
 }
@@ -20,15 +24,16 @@ export class MessagesService {
   private apiUrl = `${environment.apiUrl}/messages`;
   private readonly LOCAL_STORAGE_KEY = 'portalink_contact_messages';
 
-  sendMessage(data: { nombre: string; correo: string; mensaje: string }): Observable<any> {
+  sendMessage(data: { nombre: string; correo: string; mensaje: string; asunto?: string }): Observable<any> {
     const payload = {
       nombre: data.nombre,
       correo: data.correo,
       mensaje: data.mensaje,
+      asunto: data.asunto || 'Contacto desde PortaLink Web',
       name: data.nombre,
       email: data.correo,
       message: data.mensaje,
-      subject: 'Contacto desde PortaLink Web'
+      subject: data.asunto || 'Contacto desde PortaLink Web'
     };
     return this.http.post<any>(this.apiUrl, payload).pipe(
       catchError(() => {
@@ -39,13 +44,31 @@ export class MessagesService {
   }
 
   getMessages(): Observable<ContactMessage[]> {
-    return this.http.get<ContactMessage[]>(this.apiUrl).pipe(
+    return this.http.get<any[]>(this.apiUrl).pipe(
       map(remoteMsgs => {
         const localMsgs = this.getLocalMessages();
-        const combined = [...localMsgs, ...(remoteMsgs || [])];
+        const mappedRemote: ContactMessage[] = (remoteMsgs || []).map(m => {
+          const rawSt = (m.status || 'unread').toLowerCase();
+          const st = rawSt === 'responded' ? 'replied' : rawSt;
+          return {
+            id: m.id,
+            nombre: m.nombre || m.name || 'Anónimo',
+            correo: m.correo || m.email || '',
+            mensaje: m.mensaje || m.message || '',
+            asunto: m.asunto || m.subject || 'Contacto',
+            status: st,
+            created_at: m.created_at || new Date().toISOString()
+          };
+        });
+
+        // Sincronizar en segundo plano mensajes que quedaron en localStorage si los hay
+        this.syncLocalMessages(localMsgs, mappedRemote);
+
+        const combined = [...localMsgs, ...mappedRemote];
         return this.deduplicateMessages(combined);
       }),
-      catchError(() => {
+      catchError((err) => {
+        console.warn('[MessagesService] Error al obtener mensajes remotos, usando locales:', err);
         return of(this.getLocalMessages());
       })
     );
@@ -53,7 +76,7 @@ export class MessagesService {
 
   updateStatus(id: number, status: 'read' | 'unread' | 'replied'): Observable<any> {
     this.updateLocalStatus(id, status);
-    return this.http.put<any>(`${this.apiUrl}/${id}/read`, { status }).pipe(
+    return this.http.put<any>(`${this.apiUrl}/${id}/status`, { status }).pipe(
       catchError(() => of({ success: true }))
     );
   }
@@ -69,13 +92,22 @@ export class MessagesService {
     if (typeof localStorage === 'undefined') return [];
     try {
       const stored = localStorage.getItem(this.LOCAL_STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
+      const parsed = stored ? JSON.parse(stored) : [];
+      return (parsed || []).map((m: any) => ({
+        id: m.id,
+        nombre: m.nombre || m.name || 'Anónimo',
+        correo: m.correo || m.email || '',
+        mensaje: m.mensaje || m.message || '',
+        asunto: m.asunto || m.subject || 'Contacto',
+        status: (m.status || 'unread').toLowerCase() === 'responded' ? 'replied' : (m.status || 'unread').toLowerCase(),
+        created_at: m.created_at || new Date().toISOString()
+      }));
     } catch {
       return [];
     }
   }
 
-  private saveLocalMessage(data: { nombre: string; correo: string; mensaje: string }) {
+  private saveLocalMessage(data: { nombre: string; correo: string; mensaje: string; asunto?: string }) {
     if (typeof localStorage === 'undefined') return;
     try {
       const messages = this.getLocalMessages();
@@ -84,6 +116,7 @@ export class MessagesService {
         nombre: data.nombre,
         correo: data.correo,
         mensaje: data.mensaje,
+        asunto: data.asunto || 'Contacto',
         status: 'unread',
         created_at: new Date().toISOString()
       };
@@ -91,6 +124,37 @@ export class MessagesService {
       localStorage.setItem(this.LOCAL_STORAGE_KEY, JSON.stringify(messages));
     } catch (e) {
       console.error('Error guardando mensaje local:', e);
+    }
+  }
+
+  private syncLocalMessages(localMsgs: ContactMessage[], remoteMsgs: ContactMessage[]) {
+    const unsynced = localMsgs.filter(lm => typeof lm.id === 'number' && lm.id > 1000000000);
+    if (unsynced.length === 0) return;
+
+    for (const msg of unsynced) {
+      const alreadyInRemote = remoteMsgs.some(rm =>
+        (rm.correo || '').toLowerCase() === (msg.correo || '').toLowerCase() &&
+        (rm.mensaje || '').trim() === (msg.mensaje || '').trim()
+      );
+
+      if (!alreadyInRemote) {
+        this.http.post<any>(this.apiUrl, {
+          nombre: msg.nombre,
+          correo: msg.correo,
+          mensaje: msg.mensaje,
+          name: msg.nombre,
+          email: msg.correo,
+          message: msg.mensaje,
+          subject: msg.asunto || 'Contacto desde PortaLink Web'
+        }).subscribe({
+          next: () => {
+            if (msg.id) this.deleteLocalMessage(msg.id);
+          },
+          error: () => {}
+        });
+      } else {
+        if (msg.id) this.deleteLocalMessage(msg.id);
+      }
     }
   }
 
@@ -121,7 +185,9 @@ export class MessagesService {
   private deduplicateMessages(messages: ContactMessage[]): ContactMessage[] {
     const seen = new Set<string>();
     return messages.filter(m => {
-      const key = `${m.id}-${m.correo}-${m.created_at}`;
+      const email = (m.correo || '').trim().toLowerCase();
+      const content = (m.mensaje || '').trim().substring(0, 40).toLowerCase();
+      const key = m.id ? `id-${m.id}` : `${email}-${content}`;
       if (seen.has(key)) return false;
       seen.add(key);
       return true;

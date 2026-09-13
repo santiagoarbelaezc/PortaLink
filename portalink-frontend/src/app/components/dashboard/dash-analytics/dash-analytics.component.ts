@@ -33,70 +33,70 @@ import { PdfReportService } from '../../../services/pdf-report.service';
         </button>
       </div>
 
-      <!-- Link KPIs Summary (Monochromatic Executive Cards) -->
+      <!-- Link KPIs Summary (Executive Orange & Green Cards) -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5" *ngIf="metrics">
         <!-- Card 1: Visitas al Link -->
-        <div class="rounded-[24px] border p-6 flex flex-col justify-between transition-all duration-300 hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+        <div class="rounded-[24px] border p-6 flex flex-col justify-between transition-all duration-300 hover:border-emerald-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
              [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200/80'">
           <div class="flex items-center justify-between mb-3">
             <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Visitas al Link</span>
-            <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-white/10 text-white">
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
             </div>
           </div>
           <div>
-            <h3 class="text-2xl sm:text-3xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ metrics.linktreeViews || 0 }}</h3>
+            <h3 class="text-2xl sm:text-3xl font-headline font-bold tracking-tight text-emerald-400">{{ metrics.linktreeViews || 0 }}</h3>
             <p class="text-xs mt-1 opacity-50 flex items-center gap-1.5 font-normal">
               <span>Home: {{ metrics.homeViews || 0 }} visitas</span>
             </p>
           </div>
         </div>
 
-        <!-- Card 2: Total Clics -->
-        <div class="rounded-2xl border p-5 flex flex-col justify-between transition-all duration-300 hover:border-neutral-600"
+        <!-- Card 2: Total Clics (BLUE ACCENT) -->
+        <div class="rounded-[24px] border p-5 flex flex-col justify-between transition-all duration-300 hover:border-sky-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
              [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
           <div class="flex items-center justify-between mb-3">
-            <span class="text-xs font-medium uppercase tracking-wider opacity-60">Clics en Enlaces</span>
-            <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-white/10 text-white">
+            <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Clics en Enlaces</span>
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-sky-500/15 text-sky-400 border border-sky-500/30">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
             </div>
           </div>
           <div>
-            <h3 class="text-2xl sm:text-3xl font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ metrics.totalClicks || 0 }}</h3>
-            <p class="text-xs mt-1 opacity-60 font-normal text-emerald-400">
+            <h3 class="text-2xl sm:text-3xl font-headline font-bold tracking-tight text-sky-400">{{ metrics.totalClicks || 0 }}</h3>
+            <p class="text-xs mt-1 opacity-60 font-normal text-sky-400/80">
               Interacción total en canales
             </p>
           </div>
         </div>
 
         <!-- Card 3: CTR del Link -->
-        <div class="rounded-2xl border p-5 flex flex-col justify-between transition-all duration-300 hover:border-neutral-600"
+        <div class="rounded-[24px] border p-5 flex flex-col justify-between transition-all duration-300 hover:border-emerald-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
              [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
           <div class="flex items-center justify-between mb-3">
-            <span class="text-xs font-medium uppercase tracking-wider opacity-60">Tasa de Clics (CTR)</span>
-            <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-white/10 text-white">
+            <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Tasa de Clics (CTR)</span>
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
             </div>
           </div>
           <div>
-            <h3 class="text-2xl sm:text-3xl font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ metrics.linkCtr || 0 }}%</h3>
+            <h3 class="text-2xl sm:text-3xl font-headline font-bold tracking-tight text-emerald-400">{{ metrics.linkCtr || 0 }}%</h3>
             <p class="text-xs mt-1 opacity-50 font-normal">
               Conversión de visitantes
             </p>
           </div>
         </div>
 
-        <!-- Card 4: Enlace Más Popular -->
-        <div class="rounded-2xl border p-5 flex flex-col justify-between transition-all duration-300 hover:border-neutral-600"
+        <!-- Card 4: Enlace Más Popular (ROSE / RED ACCENT) -->
+        <div class="rounded-[24px] border p-5 flex flex-col justify-between transition-all duration-300 hover:border-rose-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
              [ngClass]="isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200'">
           <div class="flex items-center justify-between mb-3">
-            <span class="text-xs font-medium uppercase tracking-wider opacity-60">Enlace Principal</span>
-            <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-white/10 text-white">
+            <span class="text-xs font-headline font-semibold uppercase tracking-wider opacity-60">Enlace Principal</span>
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-rose-500/15 text-rose-400 border border-rose-500/30">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
             </div>
           </div>
           <div>
-            <h3 class="text-xl sm:text-2xl font-bold tracking-tight truncate" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'" [title]="metrics.topLink?.name || 'Ninguno'">{{ metrics.topLink?.name || 'Ninguno' }}</h3>
+            <h3 class="text-xl sm:text-2xl font-headline font-bold tracking-tight truncate text-rose-400" [title]="metrics.topLink?.name || 'Ninguno'">{{ metrics.topLink?.name || 'Ninguno' }}</h3>
             <p class="text-xs mt-1 font-normal opacity-70">
               {{ metrics.topLink?.count || 0 }} clics registrados
             </p>
@@ -320,7 +320,7 @@ import { PdfReportService } from '../../../services/pdf-report.service';
                 <span class="font-semibold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ themeTotal === 0 ? 0 : ((metrics.themeSelections.dark / themeTotal) * 100 | number:'1.0-0') }}%</span>
               </div>
               <div class="h-2 rounded-full overflow-hidden" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-100'">
-                <div class="h-full rounded-full transition-all duration-1000 bg-white"
+                <div class="h-full rounded-full transition-all duration-1000 bg-emerald-400"
                      [style.width.%]="themeTotal === 0 ? 0 : (metrics.themeSelections.dark / themeTotal) * 100"></div>
               </div>
               <p class="text-[11px] opacity-50 font-normal">{{ metrics.themeSelections.dark }} selecciones</p>
@@ -330,13 +330,13 @@ import { PdfReportService } from '../../../services/pdf-report.service';
               <div class="flex justify-between text-xs font-medium uppercase tracking-wider"
                    [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
                 <div class="flex items-center gap-2">
-                  <svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                  <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                   <span>Tema Claro</span>
                 </div>
                 <span class="font-semibold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ themeTotal === 0 ? 0 : ((metrics.themeSelections.light / themeTotal) * 100 | number:'1.0-0') }}%</span>
               </div>
               <div class="h-2 rounded-full overflow-hidden" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-100'">
-                <div class="h-full rounded-full transition-all duration-1000 bg-neutral-500"
+                <div class="h-full rounded-full transition-all duration-1000 bg-amber-400"
                      [style.width.%]="themeTotal === 0 ? 0 : (metrics.themeSelections.light / themeTotal) * 100"></div>
               </div>
               <p class="text-[11px] opacity-50 font-normal">{{ metrics.themeSelections.light }} selecciones</p>
@@ -353,7 +353,7 @@ import { PdfReportService } from '../../../services/pdf-report.service';
         <div class="flex items-center justify-between border-b pb-4" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 rounded-xl flex items-center justify-center border"
-                 [ngClass]="isDark ? 'bg-white text-black border-white' : 'bg-black text-white border-black'">
+                 [ngClass]="isDark ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' : 'bg-emerald-50 text-emerald-800 border-emerald-300'">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/>
               </svg>
@@ -365,25 +365,38 @@ import { PdfReportService } from '../../../services/pdf-report.service';
               <p class="text-xs font-sans font-normal opacity-60">Rendimiento de interacciones inteligentes</p>
             </div>
           </div>
-          <span class="text-[10px] font-headline font-semibold uppercase tracking-wider px-3 py-1 rounded-full border border-blue-500/30 text-blue-400 bg-blue-500/10">
+          <span class="text-[10px] font-headline font-semibold uppercase tracking-wider px-3 py-1 rounded-full border border-amber-500/30 text-amber-400 bg-amber-500/10">
             IA Activa
           </span>
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div *ngFor="let stat of rotbotStats"
+          <div *ngFor="let stat of rotbotStats; let idx = index"
                class="rounded-[24px] border p-5 flex flex-col justify-between transition-all duration-300 hover:scale-[1.02] shadow-sm"
-               [ngClass]="isDark ? 'bg-neutral-950/70 border-neutral-800/80 hover:border-neutral-700' : 'bg-neutral-50/80 border-neutral-200/80 hover:border-neutral-300'">
+               [ngClass]="idx === 0 
+                 ? (isDark ? 'bg-neutral-950/70 border-sky-500/30 hover:border-sky-500/60' : 'bg-sky-50/40 border-sky-200 hover:border-sky-300')
+                 : (idx === 1 
+                   ? (isDark ? 'bg-neutral-950/70 border-emerald-500/30 hover:border-emerald-500/60' : 'bg-emerald-50/40 border-emerald-200 hover:border-emerald-300')
+                   : (idx === 2 
+                     ? (isDark ? 'bg-neutral-950/70 border-amber-500/30 hover:border-amber-500/60' : 'bg-amber-50/40 border-amber-200 hover:border-amber-300')
+                     : (isDark ? 'bg-neutral-950/70 border-rose-500/30 hover:border-rose-500/60' : 'bg-rose-50/40 border-rose-200 hover:border-rose-300')))">
             <div class="flex items-center justify-between mb-4">
               <span class="text-xs font-sans font-normal opacity-70" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">
                 {{ stat.label }}
               </span>
               <div class="w-10 h-10 rounded-2xl flex items-center justify-center border shadow-xs transition-colors shrink-0"
-                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700/80 text-white' : 'bg-white border-neutral-200 text-neutral-900'"
+                   [ngClass]="idx === 0 
+                     ? (isDark ? 'bg-sky-500/10 border-sky-500/30 text-sky-400' : 'bg-sky-50 border-sky-200 text-sky-700')
+                     : (idx === 1 
+                       ? (isDark ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-700')
+                       : (idx === 2 
+                         ? (isDark ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-700')
+                         : (isDark ? 'bg-rose-500/10 border-rose-500/30 text-rose-400' : 'bg-rose-50 border-rose-200 text-rose-700')))"
                    [innerHTML]="stat.icon"></div>
             </div>
             <div>
-              <p class="text-2xl sm:text-3xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              <p class="text-2xl sm:text-3xl font-headline font-bold tracking-tight"
+                 [ngClass]="idx === 0 ? 'text-sky-400' : (idx === 1 ? 'text-emerald-400' : (idx === 2 ? 'text-amber-400' : 'text-rose-400'))">
                 {{ stat.value }}
               </p>
             </div>
@@ -410,7 +423,7 @@ import { PdfReportService } from '../../../services/pdf-report.service';
   `]
 })
 export class DashAnalyticsComponent implements OnInit {
-  @Input() theme = 'light';
+  @Input() theme = 'dark';
   private analyticsService = inject(AnalyticsService);
   private pdfService = inject(PdfReportService);
   private sanitizer = inject(DomSanitizer);
@@ -455,41 +468,41 @@ export class DashAnalyticsComponent implements OnInit {
       icon: 'mobile', 
       name: 'Mobile', 
       pct: 58, 
-      color: '#ffffff',
+      color: '#10b981',
       svg: this.sanitizer.bypassSecurityTrustHtml('<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>')
     },
     { 
       icon: 'desktop', 
       name: 'Desktop', 
       pct: 35, 
-      color: '#a3a3a3',
+      color: '#38bdf8',
       svg: this.sanitizer.bypassSecurityTrustHtml('<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>')
     },
     { 
       icon: 'tablet', 
       name: 'Tablet', 
       pct: 7, 
-      color: '#525252',
+      color: '#f43f5e',
       svg: this.sanitizer.bypassSecurityTrustHtml('<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>')
     },
   ];
 
   rotbotStats: { label: string; value: any; icon: SafeHtml }[] = [];
 
-  // --- MONOCHROMATIC ELEGANT CHART.JS CONFIGURATIONS --- //
+  // --- EXECUTIVE ORANGE & GREEN CHART.JS CONFIGURATIONS --- //
 
-  // 1. Line Chart (Weekly Trend) - Pure Monochromatic Glow Curve
+  // 1. Line Chart (Weekly Trend) - Emerald Glow Curve
   public lineChartData: ChartConfiguration['data'] = {
     datasets: [
       {
         data: [120, 280, 190, 460, 310, 580, 790],
         label: 'Visitas',
-        backgroundColor: 'rgba(255, 255, 255, 0.12)',
-        borderColor: '#ffffff',
-        pointBackgroundColor: '#ffffff',
+        backgroundColor: 'rgba(16, 185, 129, 0.15)',
+        borderColor: '#10b981',
+        pointBackgroundColor: '#10b981',
         pointBorderColor: '#07070a',
         pointHoverBackgroundColor: '#07070a',
-        pointHoverBorderColor: '#ffffff',
+        pointHoverBorderColor: '#10b981',
         fill: 'origin',
         tension: 0.4
       }
@@ -520,14 +533,14 @@ export class DashAnalyticsComponent implements OnInit {
   };
   public lineChartType: ChartType = 'line';
 
-  // 2. Bar Chart (Traffic Sources) - Grayscale Bars
+  // 2. Bar Chart (Traffic Sources) - Emerald & Amber Bars
   public barChartData: ChartData<'bar'> = {
     labels: [ 'Directo', 'Google', 'LinkedIn', 'Instagram', 'Otros' ],
     datasets: [
       { 
         data: [ 450, 320, 210, 150, 80 ],
         label: 'Sesiones',
-        backgroundColor: [ '#ffffff', '#e5e5e5', '#d4d4d4', '#a3a3a3', '#737373' ],
+        backgroundColor: [ '#10b981', '#f59e0b', '#059669', '#d97706', '#34d399' ],
         borderRadius: 6
       }
     ]
@@ -552,16 +565,16 @@ export class DashAnalyticsComponent implements OnInit {
     }
   };
 
-  // 3. Radar Chart (Engagement) - Monochromatic Web
+  // 3. Radar Chart (Engagement) - Orange & Green Web
   public radarChartData: ChartData<'radar'> = {
     labels: [ 'Skills', 'Proyectos', 'Contacto', 'Sobre Mí', 'Experiencia' ],
     datasets: [
       { 
         data: [ 85, 95, 70, 80, 60 ],
         label: 'Nivel de Interés',
-        borderColor: '#ffffff',
-        backgroundColor: 'rgba(255, 255, 255, 0.15)',
-        pointBackgroundColor: '#ffffff',
+        borderColor: '#f59e0b',
+        backgroundColor: 'rgba(245, 158, 11, 0.2)',
+        pointBackgroundColor: '#10b981',
         pointBorderColor: '#07070a',
       }
     ]
@@ -693,7 +706,7 @@ export class DashAnalyticsComponent implements OnInit {
           data: entries.map(e => e[1]),
           label: 'Clics Registrados',
           backgroundColor: entries.map((_, i) => {
-            const colors = ['#ffffff', '#e5e5e5', '#d4d4d4', '#a3a3a3', '#737373', '#525252', '#404040'];
+            const colors = ['#10b981', '#f59e0b', '#059669', '#d97706', '#34d399', '#fbbf24', '#047857'];
             return colors[i % colors.length];
           })
         }]
@@ -704,7 +717,7 @@ export class DashAnalyticsComponent implements OnInit {
         datasets: [{
           ...this.barChartData.datasets[0],
           data: [0, 0, 0, 0, 0],
-          backgroundColor: ['#ffffff', '#e5e5e5', '#d4d4d4', '#a3a3a3', '#737373']
+          backgroundColor: ['#10b981', '#f59e0b', '#059669', '#d97706', '#34d399']
         }]
       };
     }
