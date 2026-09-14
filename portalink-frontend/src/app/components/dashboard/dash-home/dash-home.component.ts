@@ -1058,7 +1058,9 @@ import { MessagesService } from '../../../services/messages.service';
             Iniciar sesión de nuevo
           </button>
         </div>
-        <!-- ═══════════════════════ MODAL RACHA MENSUAL (CALENDARIO COMPLETO) ═══════════════════════ -->
+      </div>
+
+      <!-- ═══════════════════════ MODAL RACHA MENSUAL (CALENDARIO COMPLETO) ═══════════════════════ -->
         <div *ngIf="isStreakMonthModalOpen"
              class="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 md:p-8 bg-black/80 backdrop-blur-md transition-all duration-300 animate-fadeIn"
              (click)="closeStreakMonthModal()">
@@ -1206,8 +1208,6 @@ import { MessagesService } from '../../../services/messages.service';
           </div>
 
         </div>
-
-      </div>
     </ng-container>
 
     <!-- ═══════════════════════ SKELETON LOADER (1:1 PIXEL-PERFECT MATCH) ═══════════════════════ -->
