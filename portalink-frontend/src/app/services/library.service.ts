@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject, Subject } from 'rxjs';
 
 export interface NotebookFolder {
   id?: number;
@@ -47,12 +47,77 @@ export interface NotebookPage {
   updated_at?: string;
 }
 
+export interface LibraryTab {
+  id: string;
+  title: string;
+  icon?: string;
+  color?: string;
+  folderId?: number | null;
+  folderTitle?: string;
+  notebookId?: number | null;
+  notebookTitle?: string;
+  pageId?: number | null;
+  pageTitle?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class LibraryService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/library`;
+
+  // ── Shared Workspace State for Top Bar ──
+  tabs$ = new BehaviorSubject<LibraryTab[]>([]);
+  activeTabId$ = new BehaviorSubject<string>('');
+  selectedNotebook$ = new BehaviorSubject<NotebookModule | null>(null);
+  selectedFolder$ = new BehaviorSubject<NotebookFolder | null>(null);
+  searchQuery$ = new BehaviorSubject<string>('');
+
+  // ── Actions from Top Bar to Library ──
+  switchTab$ = new Subject<string>();
+  closeTab$ = new Subject<{ id: string; event?: Event }>();
+  openNewTab$ = new Subject<void>();
+  closeOtherTabs$ = new Subject<string>();
+  createNewNote$ = new Subject<void>();
+  breadcrumbNav$ = new Subject<'root' | 'folder'>();
+
+  setTabs(tabs: LibraryTab[]) {
+    this.tabs$.next(tabs);
+  }
+  setActiveTabId(id: string) {
+    this.activeTabId$.next(id);
+  }
+  setSelectedNotebook(nb: NotebookModule | null) {
+    this.selectedNotebook$.next(nb);
+  }
+  setSelectedFolder(f: NotebookFolder | null) {
+    this.selectedFolder$.next(f);
+  }
+  setSearchQuery(q: string) {
+    this.searchQuery$.next(q);
+  }
+
+  triggerSwitchTab(id: string) {
+    this.switchTab$.next(id);
+  }
+  triggerCloseTab(id: string, event?: Event) {
+    if (event) event.stopPropagation();
+    this.closeTab$.next({ id, event });
+  }
+  triggerOpenNewTab() {
+    this.openNewTab$.next();
+  }
+  triggerCloseOtherTabs(id: string, event?: Event) {
+    if (event) event.stopPropagation();
+    this.closeOtherTabs$.next(id);
+  }
+  triggerCreateNewNote() {
+    this.createNewNote$.next();
+  }
+  triggerBreadcrumb(level: 'root' | 'folder') {
+    this.breadcrumbNav$.next(level);
+  }
 
   // ── Carpetas (Nivel 1) ──────────────────────────────────
   getFolders(): Observable<{ ok: boolean; data: NotebookFolder[] }> {

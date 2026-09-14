@@ -2,6 +2,7 @@ import { Component, Input, OnInit, OnDestroy, ViewChild, ElementRef, inject, Hos
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Subscription } from 'rxjs';
 import { LibraryService, NotebookFolder, NotebookModule, NotebookPage } from '../../../services/library.service';
 import { LibraryAiService } from '../../../services/library-ai.service';
 import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-body.directive';
@@ -138,7 +139,17 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
   notebooks: NotebookModule[] = [];
   pages: NotebookPage[] = [];
 
-  selectedFolder: NotebookFolder | null = null;
+  private subs = new Subscription();
+
+  private _selectedFolder: NotebookFolder | null = null;
+  get selectedFolder(): NotebookFolder | null {
+    return this._selectedFolder;
+  }
+  set selectedFolder(val: NotebookFolder | null) {
+    this._selectedFolder = val;
+    this.libraryService.setSelectedFolder(val);
+  }
+
   private _selectedNotebook: NotebookModule | null = null;
 
   @Output() inNotesViewChange = new EventEmitter<boolean>();
@@ -149,6 +160,7 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
   set selectedNotebook(val: NotebookModule | null) {
     const wasInNotes = !!this._selectedNotebook;
     this._selectedNotebook = val;
+    this.libraryService.setSelectedNotebook(val);
     const nowInNotes = !!val;
     if (wasInNotes !== nowInNotes) {
       setTimeout(() => {
@@ -834,9 +846,37 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
     } catch {}
     this.initTabs();
     this.loadFolders();
+
+    this.subs.add(
+      this.libraryService.switchTab$.subscribe(id => this.switchTab(id))
+    );
+    this.subs.add(
+      this.libraryService.closeTab$.subscribe(({ id, event }) => this.closeTab(id, event))
+    );
+    this.subs.add(
+      this.libraryService.openNewTab$.subscribe(() => this.openNewTab())
+    );
+    this.subs.add(
+      this.libraryService.closeOtherTabs$.subscribe(id => this.closeOtherTabs(id))
+    );
+    this.subs.add(
+      this.libraryService.createNewNote$.subscribe(() => this.createNewPage())
+    );
+    this.subs.add(
+      this.libraryService.breadcrumbNav$.subscribe(level => this.goToBreadcrumb(level))
+    );
+    this.subs.add(
+      this.libraryService.searchQuery$.subscribe(q => {
+        if (this.searchQuery !== q) {
+          this.searchQuery = q;
+          this.onSearchInput();
+        }
+      })
+    );
   }
 
   ngOnDestroy() {
+    this.subs.unsubscribe();
     if (this._selectedNotebook) {
       this.inNotesViewChange.emit(false);
     }
@@ -857,6 +897,8 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
           this.activeTabId = (savedActiveTabId && this.tabs.some(t => t.id === savedActiveTabId)) 
             ? savedActiveTabId 
             : this.tabs[0].id;
+          this.libraryService.setTabs(this.tabs);
+          this.libraryService.setActiveTabId(this.activeTabId);
           return;
         }
       }
@@ -884,6 +926,8 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
       localStorage.setItem('portalink_lib_tabs', JSON.stringify(this.tabs));
       localStorage.setItem('portalink_lib_active_tab_id', this.activeTabId);
     } catch (e) {}
+    this.libraryService.setTabs(this.tabs);
+    this.libraryService.setActiveTabId(this.activeTabId);
   }
 
   syncActiveTabMeta() {
@@ -1619,6 +1663,12 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
 
     this.activeBlockId = newBlock.id;
     this.syncBlocksToContent();
+    setTimeout(() => {
+      const el = document.getElementById('block-' + newBlock.id);
+      if (el) {
+        el.focus();
+      }
+    }, 60);
   }
 
   removeBlock(index: number) {

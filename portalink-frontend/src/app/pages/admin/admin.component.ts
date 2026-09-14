@@ -223,6 +223,7 @@ interface Tab {
         <app-dash-ai-search
           [theme]="currentTheme"
           [activeTab]="activeTab"
+          [isNotesView]="isNotesView"
           [(rotbotMode)]="rotbotMode"
           [(rotbotMuted)]="rotbotMuted"
           [isStudyPlanActive]="isStudyPlanActive"
@@ -237,7 +238,9 @@ interface Tab {
                 isDark ? 'bg-[#020204]' : 'bg-white',
                 activeTab === 'rotbot' && rotbotMode !== 'study-plan'
                   ? 'overflow-hidden flex flex-col justify-center items-center h-full p-3 sm:p-4 md:p-5 lg:p-6' 
-                  : 'overflow-y-auto overflow-x-hidden overscroll-contain md:overscroll-auto md:scroll-smooth p-4 sm:p-6 md:p-8 pb-20 md:pb-8'
+                  : (activeTab === 'library' && isNotesView
+                      ? 'overflow-y-auto overflow-x-hidden overscroll-contain md:overscroll-auto md:scroll-smooth p-3 sm:p-4 md:p-6 pb-20 md:pb-8'
+                      : 'overflow-y-auto overflow-x-hidden overscroll-contain md:overscroll-auto md:scroll-smooth p-4 sm:p-6 md:p-8 pb-20 md:pb-8')
               ]">
           <div class="transition-all duration-300"
                [ngClass]="activeTab === 'rotbot' && rotbotMode !== 'study-plan' ? 'w-full h-full flex flex-col justify-center items-center my-auto' : 'w-full'">
