@@ -1,0 +1,458 @@
+<main class="min-h-screen bg-white text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white pt-20 sm:pt-24 md:pt-28">
+
+  <!-- ═════════════════════════════════════════════════════════════════════ -->
+  <!-- 1. HERO - FOTO + DESCRIPCIÓN (NOMBRE COMPLETO & MINIMALISTA)          -->
+  <!-- ═════════════════════════════════════════════════════════════════════ -->
+  <section id="hero" class="relative py-8 sm:py-12 md:py-16 px-6 sm:px-12 lg:px-20">
+    <div class="max-w-[1500px] mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+
+        <!-- Columna Izquierda: Información Editorial (7 cols) -->
+        <div class="lg:col-span-7 space-y-6" data-aos="fade-up" data-aos-duration="700">
+          
+          <div class="space-y-2">
+            <!-- Nombre Completo Solicitado -->
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-headline font-semibold tracking-tight text-[#0a0a0a] leading-[1.08]">
+              Santiago Arbelaez Contreras
+            </h1>
+            <p class="text-xl sm:text-2xl font-headline font-normal text-neutral-500 tracking-tight">
+              Ingeniero de Sistemas y Computación · Desarrollador de Software
+            </p>
+          </div>
+
+          <!-- Descripción Formal Solicitada -->
+          <div class="rounded-2xl border border-neutral-200/80 bg-neutral-50/70 p-6 sm:p-7 space-y-3">
+            <p class="text-sm sm:text-base font-sans font-normal text-neutral-700 leading-relaxed m-0">
+              Soy estudiante de Ingeniería de Sistemas y Computación de último semestre. Tengo conocimientos en <strong class="text-neutral-950 font-semibold">Python, Spring Boot, Angular, Node.js, TypeScript y CSS</strong>, así como con bases de datos relacionales <strong class="text-neutral-950 font-semibold">MySQL</strong>.
+            </p>
+            <p class="text-sm sm:text-base font-sans font-normal text-neutral-700 leading-relaxed m-0">
+              He trabajado como freelance durante 8 meses para empresas de Colombia, en el rol de desarrollador de software e infraestructura digital de su negocio, además de realizar proyectos personales con el fin de aprender nuevas tecnologías y académicos con el fin de culminar mi carrera universitaria de manera íntegra. Me caracterizo por mi aprendizaje autodirigido, curiosidad tecnológica y compromiso con la mejora continua.
+            </p>
+          </div>
+
+          <!-- Ubicaciones Clave -->
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-headline font-medium bg-neutral-100 text-neutral-700 border border-neutral-200/70">
+              Armenia, Quindío
+            </span>
+            <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-headline font-medium bg-neutral-100 text-neutral-700 border border-neutral-200/70">
+              Medellín, Antioquia
+            </span>
+            <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-headline font-medium bg-neutral-100 text-neutral-700 border border-neutral-200/70">
+              Universidad del Quindío
+            </span>
+          </div>
+
+          <!-- Botones de Acción Estilo Apple -->
+          <div class="flex flex-wrap items-center gap-3 pt-1">
+            <button (click)="scrollTo('proyectos')"
+                    class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-headline font-medium text-xs uppercase tracking-wider transition-all duration-300 shadow-sm cursor-pointer hover:scale-[1.02] active:scale-[0.98] border-none"
+                    style="background-color: #09090b !important; color: #ffffff !important;">
+              <span style="color: #ffffff !important;">Proyectos</span>
+              <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
+            </button>
+
+            <button (click)="scrollTo('contact')"
+                    class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-headline font-medium text-xs uppercase tracking-wider transition-all duration-300 shadow-sm cursor-pointer hover:scale-[1.02] active:scale-[0.98] border border-neutral-200 bg-neutral-100 hover:bg-neutral-200 text-neutral-900">
+              <span>Contacto</span>
+            </button>
+
+            <a href="https://wa.me/573054078225" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full font-headline font-medium text-xs uppercase tracking-wider transition-all duration-300 shadow-sm cursor-pointer hover:scale-[1.02] active:scale-[0.98] bg-emerald-50 text-emerald-800 border border-emerald-200/80 hover:bg-emerald-100 no-underline">
+              <span>WhatsApp</span>
+            </a>
+
+            <a href="assets/documents/Santiago Arbelaez Contreras - CV 2026-6.pdf" 
+               download="Santiago Arbelaez Contreras - CV 2026.pdf"
+               class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full font-headline font-medium text-xs uppercase tracking-wider transition-all duration-300 shadow-sm cursor-pointer hover:scale-[1.02] active:scale-[0.98] bg-blue-50 text-blue-800 border border-blue-200/80 hover:bg-blue-100 no-underline">
+              <svg class="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              <span>Descargar CV</span>
+            </a>
+          </div>
+
+        </div>
+
+        <!-- Columna Derecha: Foto de Santiago (5 cols) -->
+        <div class="lg:col-span-5 flex justify-center" data-aos="fade-up" data-aos-duration="700" data-aos-delay="100">
+          <div class="w-full max-w-[430px] rounded-3xl border border-neutral-200/80 bg-white p-2.5 shadow-[0_10px_35px_rgba(0,0,0,0.04)] overflow-hidden">
+            <div class="relative w-full aspect-[4/5] rounded-2xl overflow-hidden bg-neutral-100">
+              <img *ngIf="!imageError" 
+                   [src]="profileImage" 
+                   (error)="onImageError()"
+                   alt="Santiago Arbelaez Contreras" 
+                   class="w-full h-full object-cover object-top">
+
+              <div *ngIf="imageError" class="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-neutral-50">
+                <div class="w-20 h-20 rounded-full bg-neutral-900 text-white flex items-center justify-center text-2xl font-headline font-bold mb-2">
+                  SAC
+                </div>
+                <h3 class="text-lg font-headline font-semibold text-neutral-900">Santiago Arbelaez Contreras</h3>
+                <p class="text-xs font-mono text-neutral-500">Ingeniería de Sistemas</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════════════════════════════ -->
+  <!-- 2. EXPERIENCIA (TEXTO 100% VISIBLE & SIN TECNOLOGÍAS)                 -->
+  <!-- ═════════════════════════════════════════════════════════════════════ -->
+  <section id="experiencia" class="relative py-12 md:py-16 px-6 sm:px-12 lg:px-20 bg-neutral-50/50 border-t border-b border-neutral-200/70">
+    <div class="max-w-[1500px] mx-auto">
+      
+      <div class="mb-8 sm:mb-10" data-aos="fade-up">
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-headline font-semibold tracking-tight text-[#0a0a0a]">
+          Experiencia
+        </h2>
+      </div>
+
+      <!-- Tarjetas de Experiencia con texto 100% visible y legible -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div *ngFor="let exp of experiences; let i = index" 
+             class="rounded-2xl border border-neutral-200/90 bg-white p-6 sm:p-7 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-start"
+             data-aos="fade-up"
+             [attr.data-aos-delay]="i * 80">
+          
+          <div class="space-y-3 w-full">
+            <!-- Header de Tarjeta: Estilo Mejorado para Fechas y Ubicación -->
+            <div class="flex items-center justify-between gap-3 flex-wrap">
+              
+              <!-- Badge de Fecha Activa / Duración con Diseño Premium -->
+              <div *ngIf="exp.current" 
+                   class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-50 border border-emerald-200/90 shadow-2xs">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-60"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
+                </span>
+                <span class="text-xs font-headline font-semibold tracking-tight text-emerald-950">
+                  {{ exp.period }}
+                </span>
+              </div>
+
+              <div *ngIf="!exp.current" 
+                   class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-neutral-100/90 border border-neutral-200/90 shadow-2xs">
+                <span class="w-2 h-2 rounded-full bg-neutral-400"></span>
+                <span class="text-xs font-headline font-semibold tracking-tight text-neutral-800">
+                  {{ exp.period }}
+                </span>
+              </div>
+
+              <!-- Ubicación con Icono Sutil -->
+              <span class="inline-flex items-center gap-1.5 text-xs font-sans text-neutral-500 font-medium">
+                <svg class="w-3.5 h-3.5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
+                </svg>
+                {{ exp.location }}
+              </span>
+
+            </div>
+
+            <div>
+              <h3 class="text-lg sm:text-xl font-headline font-semibold text-neutral-900 leading-snug">
+                {{ exp.role }}
+              </h3>
+              <p class="text-xs sm:text-sm font-headline font-medium text-neutral-500 mt-0.5">
+                {{ exp.company }}
+              </p>
+            </div>
+
+            <!-- Descripción completa sin cortes ni límites -->
+            <p class="text-sm font-sans font-normal text-neutral-700 leading-relaxed pt-1 m-0">
+              {{ exp.description }}
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════════════════════════════ -->
+  <!-- 3. PROYECTOS (CARRUSEL PANORÁMICO, TARJETAS ANCHAS, SCROLL LATERAL)   -->
+  <!-- ═════════════════════════════════════════════════════════════════════ -->
+  <section id="proyectos" class="relative py-14 sm:py-20 px-6 sm:px-12 lg:px-20 overflow-hidden bg-white">
+    <div class="max-w-[1500px] mx-auto">
+      
+      <!-- Encabezado con Controles Normales + Indicador de Scroll -->
+      <div class="flex items-center justify-between gap-4 mb-8 sm:mb-10" data-aos="fade-up">
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-headline font-semibold tracking-tight text-[#0a0a0a]">
+          Proyectos
+        </h2>
+
+        <!-- Controles Normales de Navegación + Indicador de Scroll -->
+        <div class="flex items-center gap-3">
+          <span class="text-xs font-sans text-neutral-400 hidden sm:inline-flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l4-4 4 4m0 6l-4 4-4-4"/>
+            </svg>
+            Scroll o arrastre lateral
+          </span>
+
+          <div class="flex items-center gap-2">
+            <button (click)="prevProject()" 
+                    title="Anterior"
+                    class="w-10 h-10 rounded-full border border-neutral-200 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+            </button>
+            
+            <span class="text-xs font-mono text-neutral-500 px-2 font-medium">
+              {{ activeProjectIndex + 1 }} / {{ cardCount }}
+            </span>
+
+            <button (click)="nextProject()" 
+                    title="Siguiente"
+                    class="w-10 h-10 rounded-full border border-neutral-200 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARRUSEL NORMAL DE TARJETAS ANCHAS CON SCROLL LATERAL Y DRAG -->
+      <div class="relative overflow-hidden rounded-[28px] sm:rounded-[36px] select-none cursor-default"
+           (wheel)="onWheel($event)"
+           (mousedown)="onMouseDown($event)"
+           (mousemove)="onMouseMove($event)"
+           (mouseup)="onMouseUp()"
+           (mouseleave)="onMouseUp()"
+           (touchstart)="onTouchStart($event)"
+           (touchend)="onTouchEnd($event)">
+        
+        <div class="flex transition-transform duration-500 ease-out"
+             [style.transform]="'translateX(-' + (activeProjectIndex * 100) + '%)'">
+          
+          <div *ngFor="let p of projects" class="w-full shrink-0">
+            
+            <!-- Tarjeta Ancha Horizontal con Imágenes Panorámicas (Wide Card) -->
+            <div class="rounded-[28px] sm:rounded-[36px] border border-neutral-200/90 bg-white p-5 sm:p-7 lg:p-8 shadow-[0_10px_35px_rgba(0,0,0,0.04)] grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 items-center">
+              
+              <!-- Imagen Panorámica Ancha (7 columnas en lg, 8 en xl) -->
+              <div class="lg:col-span-7 xl:col-span-8 rounded-2xl overflow-hidden aspect-[16/9] bg-neutral-100 border border-neutral-100 group">
+                <img [src]="p.image" [alt]="p.title" class="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105 pointer-events-none">
+              </div>
+
+              <!-- Contenido: Nombre del Proyecto, Descripción y Botones (5 cols en lg, 4 en xl) -->
+              <div class="lg:col-span-5 xl:col-span-4 flex flex-col justify-center space-y-4">
+                
+                <h3 class="text-2xl sm:text-3xl font-headline font-semibold text-neutral-900 tracking-tight leading-tight m-0">
+                  {{ p.title }}
+                </h3>
+
+                <!-- Descripción del Proyecto Solicitada -->
+                <p class="text-sm font-sans font-normal text-neutral-600 leading-relaxed m-0">
+                  {{ p.description }}
+                </p>
+
+                <!-- Botones de Acción -->
+                <div class="pt-1 flex items-center flex-wrap gap-3">
+                  <a *ngIf="p.detailUrl" 
+                     [routerLink]="p.detailUrl" 
+                     class="inline-flex items-center gap-2 px-6 py-3 rounded-full font-headline font-semibold text-xs uppercase tracking-wider transition-all duration-300 shadow-sm cursor-pointer hover:scale-[1.02] active:scale-[0.98] no-underline border-none"
+                     style="background-color: #09090b !important; color: #ffffff !important;">
+                    <span style="color: #ffffff !important;">Ver Detalles</span>
+                    <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+                    </svg>
+                  </a>
+
+                  <a *ngIf="p.liveUrl && p.liveUrl !== '#'" 
+                     [href]="p.liveUrl" 
+                     target="_blank" 
+                     rel="noopener noreferrer"
+                     class="inline-flex items-center gap-2 px-5 py-3 rounded-full font-headline font-semibold text-xs uppercase tracking-wider transition-all duration-300 border border-neutral-200 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 no-underline">
+                    <span>Visitar Web</span>
+                    <svg class="w-3.5 h-3.5 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                    </svg>
+                  </a>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Paginación de Puntos Sutil -->
+      <div class="flex items-center justify-center gap-2 mt-6">
+        <button *ngFor="let p of projects; let idx = index" 
+                (click)="selectProject(idx)"
+                class="transition-all duration-300 rounded-full cursor-pointer border-none"
+                [ngClass]="activeProjectIndex === idx ? 'w-8 h-2 bg-neutral-900' : 'w-2 h-2 bg-neutral-200 hover:bg-neutral-300'">
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════════════════════════════ -->
+  <!-- 4. TECNOLOGÍAS (REORGANIZADO, ICONOS GRANDES)                        -->
+  <!-- ═════════════════════════════════════════════════════════════════════ -->
+  <section id="tecnologias" class="relative py-12 md:py-16 px-6 sm:px-12 lg:px-20 bg-neutral-50/50 border-t border-b border-neutral-200/70">
+    <div class="max-w-[1500px] mx-auto">
+      
+      <div class="mb-8 sm:mb-10" data-aos="fade-up">
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-headline font-semibold tracking-tight text-[#0a0a0a]">
+          Tecnologías
+        </h2>
+      </div>
+
+      <!-- Grid de Tecnologías con Iconos Grandes -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Frontend -->
+        <div class="rounded-2xl border border-neutral-200/80 bg-white p-6 sm:p-8 shadow-xs hover:shadow-md transition-all duration-300" data-aos="fade-up">
+          <h3 class="text-base font-headline font-semibold text-neutral-900 mb-5 uppercase tracking-wider">Frontend</h3>
+          <div class="flex flex-wrap gap-4 items-center justify-center">
+            <img src="https://skillicons.dev/icons?i=angular" alt="Angular" class="h-14 w-14" />
+            <img src="https://skillicons.dev/icons?i=ts" alt="TypeScript" class="h-14 w-14" />
+            <img src="https://skillicons.dev/icons?i=js" alt="JavaScript" class="h-14 w-14" />
+            <img src="https://skillicons.dev/icons?i=css" alt="CSS3" class="h-14 w-14" />
+            <img src="https://skillicons.dev/icons?i=html" alt="HTML5" class="h-14 w-14" />
+          </div>
+        </div>
+
+        <!-- Backend -->
+        <div class="rounded-2xl border border-neutral-200/80 bg-white p-6 sm:p-8 shadow-xs hover:shadow-md transition-all duration-300" data-aos="fade-up" data-aos-delay="80">
+          <h3 class="text-base font-headline font-semibold text-neutral-900 mb-5 uppercase tracking-wider">Backend</h3>
+          <div class="flex flex-wrap gap-4 items-center justify-center">
+            <img src="https://skillicons.dev/icons?i=spring" alt="Spring Boot" class="h-14 w-14" />
+            <img src="https://skillicons.dev/icons?i=nodejs" alt="Node.js" class="h-14 w-14" />
+            <img src="https://skillicons.dev/icons?i=python" alt="Python" class="h-14 w-14" />
+            <img src="https://skillicons.dev/icons?i=java" alt="Java" class="h-14 w-14" />
+          </div>
+        </div>
+
+        <!-- Database & Cloud -->
+        <div class="rounded-2xl border border-neutral-200/80 bg-white p-6 sm:p-8 shadow-xs hover:shadow-md transition-all duration-300" data-aos="fade-up" data-aos-delay="160">
+          <h3 class="text-base font-headline font-semibold text-neutral-900 mb-5 uppercase tracking-wider">Database & Cloud</h3>
+          <div class="flex flex-wrap gap-4 items-center justify-center">
+            <img src="https://skillicons.dev/icons?i=mysql" alt="MySQL" class="h-14 w-14" />
+            <img src="https://skillicons.dev/icons?i=aws" alt="AWS" class="h-14 w-14" />
+            <img src="https://skillicons.dev/icons?i=firebase" alt="Firebase" class="h-14 w-14" />
+            <img src="https://skillicons.dev/icons?i=docker" alt="Docker" class="h-14 w-14" />
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════════════════════════════ -->
+  <!-- 5. ESTUDIOS & CERTIFICACIONES (MINIMALISTA)                           -->
+  <!-- ═════════════════════════════════════════════════════════════════════ -->
+  <section id="estudios" class="relative py-12 md:py-16 px-6 sm:px-12 lg:px-20 bg-white">
+    <div class="max-w-[1500px] mx-auto">
+      
+      <div class="mb-8 sm:mb-10" data-aos="fade-up">
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-headline font-semibold tracking-tight text-[#0a0a0a]">
+          Educación & Certificaciones
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- Tarjeta Universidad del Quindío (5 cols) -->
+        <div class="lg:col-span-5 rounded-2xl border border-neutral-200/80 bg-neutral-50/70 p-6 sm:p-7 shadow-xs" data-aos="fade-up">
+          <span class="text-[10px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-white text-neutral-800 border border-neutral-200">
+            PREGRADO UNIVERSITARIO
+          </span>
+
+          <h3 class="text-xl sm:text-2xl font-headline font-semibold text-neutral-900 mt-3 leading-tight">
+            Ingeniería de Sistemas y Computación
+          </h3>
+          <p class="text-sm font-headline font-medium text-neutral-500 mt-0.5">
+            Facultad de Ingeniería · Universidad del Quindío, Armenia
+          </p>
+
+          <div class="mt-6 pt-5 border-t border-neutral-200/80 space-y-2 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="text-neutral-500 font-sans">Periodo:</span>
+              <span class="text-neutral-900 font-semibold font-mono">2021 – Presente</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-neutral-500 font-sans">Estado:</span>
+              <span class="text-emerald-700 font-semibold font-headline">Último Semestre</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-neutral-500 font-sans">Título:</span>
+              <span class="text-neutral-900 font-semibold font-headline">Ingeniero de Sistemas</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjetas Certificaciones freeCodeCamp (7 cols) -->
+        <div class="lg:col-span-7 space-y-3" data-aos="fade-up" data-aos-delay="80">
+          <div *ngFor="let cert of certifications" 
+               class="rounded-xl border border-neutral-200/80 bg-white p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            
+            <div class="space-y-0.5">
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] font-mono uppercase tracking-wider text-neutral-500 font-semibold">{{ cert.issuer }}</span>
+                <span class="text-xs text-neutral-300">•</span>
+                <span class="text-xs font-mono text-neutral-400">{{ cert.completedDate }}</span>
+              </div>
+              <h4 class="text-base font-headline font-semibold text-neutral-900">
+                {{ cert.title }}
+              </h4>
+              <div class="flex items-center gap-2 pt-0.5">
+                <span class="text-xs font-mono text-neutral-400">ID:</span>
+                <code class="text-xs font-mono px-2 py-0.5 rounded bg-neutral-100 text-neutral-800">
+                  {{ cert.credentialId }}
+                </code>
+                <button (click)="copyCredentialId(cert.credentialId)" 
+                        title="Copiar ID"
+                        class="px-2 py-0.5 rounded text-[11px] font-headline font-semibold bg-neutral-100 hover:bg-neutral-200 text-neutral-700 transition-colors cursor-pointer border border-neutral-200/60">
+                  <span>{{ copiedId === cert.credentialId ? 'Copiado' : 'Copiar' }}</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="shrink-0 flex items-center">
+              <a [href]="cert.verificationUrl" target="_blank" rel="noopener noreferrer"
+                 class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-headline font-medium bg-neutral-100 hover:bg-neutral-200 text-neutral-800 border border-neutral-200/80 transition-all no-underline">
+                <span>Verificar</span>
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </a>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════════════════════════════ -->
+  <!-- 6. CONTACTO (REUTILIZACIÓN DIRECTA DEL COMPONENTE DE CONTACTO)        -->
+  <!-- ═════════════════════════════════════════════════════════════════════ -->
+  <app-contact [data]="portfolioConfigService.data()?.contact"></app-contact>
+
+  <!-- ═════════════════════════════════════════════════════════════════════ -->
+  <!-- 7. FOOTER (REUTILIZACIÓN DIRECTA DEL COMPONENTE DE FOOTER)            -->
+  <!-- ═════════════════════════════════════════════════════════════════════ -->
+  <app-footer></app-footer>
+
+  <!-- Toast Flotante de Credencial Copiada -->
+  <div *ngIf="copiedToast" 
+       class="fixed bottom-6 right-6 z-50 px-4 py-2.5 rounded-full bg-neutral-950 text-white text-xs font-headline font-semibold shadow-xl flex items-center gap-2 animate-bounce border border-neutral-800">
+    <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+    <span>ID copiado al portapapeles</span>
+  </div>
+
+</main>

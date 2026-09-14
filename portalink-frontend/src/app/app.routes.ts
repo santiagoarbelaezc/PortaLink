@@ -3,6 +3,16 @@ import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
+    path: 'cv-digital-software-enginering',
+    loadComponent: () => import('./pages/cv-web/cv-web.component').then(m => m.CvWebComponent),
+    data: { animation: 'CvWebPage' }
+  },
+  {
+    path: 'cv-web',
+    redirectTo: 'cv-digital-software-enginering',
+    pathMatch: 'full'
+  },
+  {
     path: 'certificados',
     loadComponent: () => import('./pages/certificados/certificados.component').then(m => m.CertificadosComponent),
     data: { animation: 'CertificadosPage' }
