@@ -332,6 +332,11 @@ export class ProyectosComponent implements OnInit, OnDestroy {
       const data = this.configService.data();
       if (data) {
         this.portfolioData.set(data);
+        setTimeout(() => {
+          if (typeof window !== 'undefined') {
+            AOS.refresh();
+          }
+        }, 60);
       }
     });
 
@@ -343,6 +348,11 @@ export class ProyectosComponent implements OnInit, OnDestroy {
           about: { text: '', visible: true },
           contact: { formActive: true }
         });
+        setTimeout(() => {
+          if (typeof window !== 'undefined') {
+            AOS.refresh();
+          }
+        }, 60);
       }
     }, 400);
   }
@@ -353,10 +363,15 @@ export class ProyectosComponent implements OnInit, OnDestroy {
 
     if (typeof window !== 'undefined') {
       AOS.init({
-        duration: 900,
+        duration: 700,
+        offset: 40,
         once: true,
         easing: 'ease-out-cubic'
       });
+
+      setTimeout(() => {
+        AOS.refresh();
+      }, 150);
 
       this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
       window.addEventListener('portfolio-language-change', this.onLanguageChange);
@@ -409,6 +424,11 @@ export class ProyectosComponent implements OnInit, OnDestroy {
   handleMessage = (event: MessageEvent) => {
     if (event.data.type === 'PORTFOLIO_PREVIEW_UPDATE') {
       this.portfolioData.set(event.data.payload);
+      setTimeout(() => {
+        if (typeof window !== 'undefined') {
+          AOS.refresh();
+        }
+      }, 60);
     }
   }
 

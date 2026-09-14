@@ -1,8 +1,8 @@
-import { Component, Input, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, AfterViewInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { RevealDirective } from '../../shared/directives/reveal.directive';
+import * as AOS from 'aos';
 import { MessagesService } from '../../services/messages.service';
 
 interface SocialLink {
@@ -13,14 +13,18 @@ interface SocialLink {
 @Component({
   selector: 'app-contact',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, RevealDirective],
+  imports: [CommonModule, RouterModule, FormsModule],
   encapsulation: ViewEncapsulation.None,
   template: `
     <section id="contact" class="relative py-10 md:py-16 px-6 sm:px-12 lg:px-20 bg-white text-neutral-900 transition-colors duration-500">
       <div class="max-w-[1500px] mx-auto">
         
-        <!-- Grand Showcase Container -->
-        <div class="w-full rounded-[28px] sm:rounded-[40px] border border-neutral-200/80 bg-white px-8 py-8 sm:px-12 sm:py-12 lg:px-16 lg:py-14 shadow-[0_10px_35px_rgba(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] relative overflow-hidden" appReveal>
+        <!-- Grand Showcase Container con AOS rápido y responsivo -->
+        <div class="w-full rounded-[28px] sm:rounded-[40px] border border-neutral-200/80 bg-white px-8 py-8 sm:px-12 sm:py-12 lg:px-16 lg:py-14 shadow-[0_10px_35px_rgba(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] relative overflow-hidden"
+             data-aos="fade-up"
+             data-aos-duration="550"
+             data-aos-offset="20"
+             data-aos-once="true">
           
           <form *ngIf="isFormActive" (ngSubmit)="onSubmit()" novalidate class="w-full m-0 p-0">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-x-12 lg:gap-x-16 gap-y-8 lg:gap-y-10 items-end">
@@ -393,7 +397,7 @@ interface SocialLink {
     }
   `]
 })
-export class ContactComponent implements OnInit, OnDestroy {
+export class ContactComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() data: any;
 
   currentLanguage = 'es';
@@ -479,6 +483,14 @@ export class ContactComponent implements OnInit, OnDestroy {
       this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
       this.updateTranslations();
       window.addEventListener('portfolio-language-change', this.onLanguageChange);
+    }
+  }
+
+  ngAfterViewInit() {
+    if (typeof window !== 'undefined') {
+      setTimeout(() => {
+        AOS.refresh();
+      }, 50);
     }
   }
 
