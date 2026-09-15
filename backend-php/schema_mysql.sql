@@ -143,9 +143,32 @@ CREATE TABLE IF NOT EXISTS `finance_services` (
   `name` VARCHAR(255) NOT NULL,
   `description` TEXT NULL,
   `price` DECIMAL(15, 2) DEFAULT 0.00,
+  `category` VARCHAR(50) DEFAULT 'desarrollo',
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   INDEX (`user_id`),
   CONSTRAINT `fk_finance_services_usuario` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------------------------------------------------------
+-- 8b. Tabla: finance_software_proposals (Adquisiciones de Software)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `finance_software_proposals` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NOT NULL,
+  `service_id` INT NULL,
+  `project_title` VARCHAR(255) NOT NULL,
+  `client_name` VARCHAR(255) NOT NULL,
+  `client_company` VARCHAR(255) NULL,
+  `client_email` VARCHAR(255) NULL,
+  `client_phone` VARCHAR(100) NULL,
+  `total_amount` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+  `payment_terms` VARCHAR(255) NULL,
+  `delivery_time` VARCHAR(255) NULL,
+  `warranty` VARCHAR(255) NULL,
+  `items` LONGTEXT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX (`user_id`),
+  INDEX (`service_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------

@@ -5,6 +5,28 @@ import { Invoice } from './finance.service';
 // jsPDF type declarations
 declare var require: any;
 
+export interface SoftwareProposalItem {
+  title: string;
+  description: string;
+  included: boolean;
+}
+
+export interface SoftwareProposal {
+  projectTitle: string;
+  clientName: string;
+  clientCompany?: string;
+  clientEmail?: string;
+  clientPhone?: string;
+  issuedAt?: string;
+  validUntil?: string;
+  deliveryTime?: string;
+  warranty?: string;
+  paymentTerms?: string;
+  notes?: string;
+  totalAmount: number;
+  items: SoftwareProposalItem[];
+}
+
 interface User {
   id: number;
   name: string;
@@ -98,6 +120,22 @@ export class PdfReportService {
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(160, 160, 160);
       const footerText = `Generado por PortaLink Dashboard • ${new Date().toLocaleDateString('es-CO')} • Página ${i} de ${pageCount}`;
+      const fw = doc.getStringUnitWidth(footerText) * 7 / doc.internal.scaleFactor;
+      doc.text(footerText, (210 - fw) / 2, 290);
+      doc.setDrawColor(220, 220, 220);
+      doc.setLineWidth(0.2);
+      doc.line(14, 287, 196, 287);
+    }
+  }
+
+  private addProposalFooter(doc: any) {
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(7);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(160, 160, 160);
+      const footerText = `Propuesta Comercial de Software • ${new Date().toLocaleDateString('es-CO')} • Página ${i} de ${pageCount}`;
       const fw = doc.getStringUnitWidth(footerText) * 7 / doc.internal.scaleFactor;
       doc.text(footerText, (210 - fw) / 2, 290);
       doc.setDrawColor(220, 220, 220);
@@ -983,4 +1021,276 @@ export class PdfReportService {
       doc.save(`portalink_reporte_contactos_${this.getDateSlug()}.pdf`);
     }
   }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // REPORT 7: SOFTWARE ACQUISITION PROPOSAL (PROPUESTA DE ADQUISICIÓN DE SOFTWARE)
+  // ─────────────────────────────────────────────────────────────────────────
+  async downloadSoftwareProposalPdf(proposal: SoftwareProposal, action: 'save' | 'bloburl' = 'save'): Promise<string | void> {
+    const { jsPDF, autoTable } = await this.getJsPDF();
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+    const fmtCOP = (v: number) =>
+      new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v || 0);
+
+    const issueDate = proposal.issuedAt || new Date().toISOString().split('T')[0];
+    const proposalCode = `PROP-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    // ── Header band ──
+    doc.setFillColor(10, 10, 12);
+    doc.rect(0, 0, 210, 32, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.setCharSpace(1.2);
+    doc.text('PROPUESTA COMERCIAL DE SOFTWARE', 14, 17);
+    doc.setCharSpace(0);
+
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(180, 185, 195);
+    doc.text('DESARROLLO A MEDIDA & SOLUCIONES DIGITALES', 14, 24);
+
+    // Right Side: Code & Date
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(255, 255, 255);
+    doc.text(proposalCode, 196, 14, { align: 'right' });
+
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(16, 185, 129); // Emerald
+    doc.text('OFERTA TÉCNICA OFICIAL', 196, 21, { align: 'right' });
+
+    doc.setFontSize(7);
+    doc.setTextColor(180, 185, 195);
+    doc.text(`Fecha: ${issueDate}`, 196, 28, { align: 'right' });
+
+    // ── Client & Provider Info Section ──
+    let y = 42;
+
+    // Emisor Box (Left)
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(120, 120, 120);
+    doc.text('DESARROLLADO & PRESENTADO POR', 14, y);
+
+    // Cliente Box (Right)
+    doc.text('DESTINATARIO / CLIENTE', 110, y);
+
+    y += 5;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9.5);
+    doc.setTextColor(15, 23, 42);
+    doc.text('Santiago Arbelaez Contreras', 14, y);
+    doc.text(proposal.clientName || 'Cliente Particular / Corporativo', 110, y);
+
+    y += 4.5;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(71, 85, 105);
+    doc.text('Ingeniero de Sistemas & Desarrollador Web', 14, y);
+    if (proposal.clientCompany) {
+      doc.text(`Empresa: ${proposal.clientCompany}`, 110, y);
+    } else {
+      doc.text('Empresa / Razón Social: No especificada', 110, y);
+    }
+
+    y += 4.5;
+    doc.text('NIT / CC: 1001361185', 14, y);
+    doc.text(proposal.clientEmail ? `Email: ${proposal.clientEmail}` : 'Email: En acuerdo directo', 110, y);
+
+    y += 4.5;
+    doc.text('Email: arbelaezz.c11@gmail.com', 14, y);
+    doc.text(proposal.clientPhone ? `Contacto: ${proposal.clientPhone}` : 'Contacto: Canal de comunicación directo', 110, y);
+
+    y += 4.5;
+    doc.text('Medellín, Colombia • Desarrollo a Medida', 14, y);
+    if (proposal.validUntil) {
+      doc.text(`Vigencia de la oferta: ${proposal.validUntil}`, 110, y);
+    } else {
+      doc.text('Vigencia: 30 días calendario a partir de emisión', 110, y);
+    }
+
+    y += 6;
+    doc.setDrawColor(226, 232, 240);
+    doc.setLineWidth(0.3);
+    doc.line(14, y, 196, y);
+
+    // ── Project Banner ──
+    y += 5;
+    doc.setFillColor(248, 250, 252);
+    doc.roundedRect(14, y, 182, 18, 3, 3, 'F');
+    doc.setDrawColor(226, 232, 240);
+    doc.setLineWidth(0.2);
+    doc.roundedRect(14, y, 182, 18, 3, 3, 'D');
+
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(100, 116, 139);
+    doc.text('ALCANCE GENERAL DEL PROYECTO', 18, y + 5.5);
+
+    doc.setFontSize(10.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(15, 23, 42);
+    const pTitle = proposal.projectTitle || 'Propuesta Comercial y Desarrollo de Software a Medida';
+    doc.text(pTitle.length > 70 ? pTitle.substring(0, 70) + '...' : pTitle, 18, y + 12);
+
+    y += 24;
+
+    // ── Items Table ──
+    doc.setFontSize(9.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(15, 23, 42);
+    doc.text('Detalle de Módulos & Entregables de Adquisición', 14, y);
+
+    const activeItems = (proposal.items || []).filter(it => it.included !== false);
+    const tableBody = activeItems.map((item, idx) => [
+      String(idx + 1).padStart(2, '0'),
+      item.title || 'Módulo de Software',
+      item.description || 'Especificaciones acordadas para la entrega del software.',
+      'INCLUIDO [OK]'
+    ]);
+
+    autoTable(doc, {
+      startY: y + 4,
+      head: [['#', 'Módulo / Servicio', 'Especificaciones Técnicas & Alcance', 'Estado']],
+      body: tableBody.length ? tableBody : [['01', 'Adquisición General de Software', 'Desarrollo, configuración y entrega completa de plataforma.', 'INCLUIDO [OK]']],
+      headStyles: {
+        fillColor: [15, 23, 42],
+        textColor: 255,
+        fontStyle: 'bold',
+        fontSize: 8,
+        cellPadding: 3
+      },
+      bodyStyles: {
+        fontSize: 7.8,
+        textColor: [51, 65, 85],
+        cellPadding: 3.2
+      },
+      alternateRowStyles: {
+        fillColor: [248, 250, 252]
+      },
+      columnStyles: {
+        0: { cellWidth: 10, halign: 'center', fontStyle: 'bold' },
+        1: { cellWidth: 55, fontStyle: 'bold', textColor: [15, 23, 42] },
+        2: { cellWidth: 92 },
+        3: { cellWidth: 25, halign: 'center', fontStyle: 'bold', textColor: [16, 120, 70] }
+      },
+      margin: { left: 14, right: 14 },
+      tableLineColor: [226, 232, 240],
+      tableLineWidth: 0.2
+    });
+
+    let currentY = (doc as any).lastAutoTable ? (doc as any).lastAutoTable.finalY + 8 : y + 40;
+
+    // Check if we need a new page for the economic summary
+    if (currentY + 65 > 280) {
+      doc.addPage();
+      currentY = 22;
+    }
+
+    // ── Investment & Total Price Box ──
+    doc.setFillColor(248, 250, 252);
+    doc.roundedRect(14, currentY, 182, 38, 3, 3, 'F');
+    doc.setDrawColor(203, 213, 225);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(14, currentY, 182, 38, 3, 3, 'D');
+
+    // Left Column in Investment Box
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(100, 116, 139);
+    doc.text('RESUMEN DE INVERSIÓN TOTAL', 20, currentY + 7);
+
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(15, 23, 42); // Clean dark
+    doc.text(`${fmtCOP(proposal.totalAmount || 0)} COP`, 20, currentY + 16);
+
+    doc.setFontSize(7.2);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 116, 139);
+    doc.text('100% de entregables incluidos bajo acuerdo comercial.', 20, currentY + 24);
+
+    // Right Column in Investment Box: Payment terms & delivery
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(15, 23, 42);
+    const pTerms = (proposal.paymentTerms || '').trim();
+    if (pTerms) {
+      doc.text('Condiciones de Pago:', 105, currentY + 7);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(71, 85, 105);
+      const splitTerms = doc.splitTextToSize(pTerms, 85);
+      doc.text(splitTerms, 105, currentY + 12);
+    }
+
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(15, 23, 42);
+    doc.text('Tiempo de Entrega:', 105, currentY + (pTerms ? 22 : 10));
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(71, 85, 105);
+    doc.text(proposal.deliveryTime || '3 a 4 semanas', 133, currentY + (pTerms ? 22 : 10));
+
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(15, 23, 42);
+    doc.text('Garantía & Soporte:', 105, currentY + (pTerms ? 28 : 18));
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(71, 85, 105);
+    doc.text(proposal.warranty || '12 meses de soporte técnico y corrección de incidencias', 135, currentY + (pTerms ? 28 : 18));
+
+    currentY += 44;
+
+    // Check space for signature section
+    if (currentY + 36 > 280) {
+      doc.addPage();
+      currentY = 25;
+    }
+
+    // ── Signatures & Conformity ──
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(100, 116, 139);
+    doc.text('CONFORMIDAD & ACEPTACIÓN DE PROPUESTA', 14, currentY);
+
+    currentY += 15;
+
+    // Signature 1: Provider
+    doc.setDrawColor(148, 163, 184);
+    doc.setLineWidth(0.4);
+    doc.line(18, currentY, 90, currentY);
+
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(15, 23, 42);
+    doc.text('Santiago Arbelaez Contreras', 18, currentY + 4);
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 116, 139);
+    doc.text('Desarrollador Líder & Proveedor de Software', 18, currentY + 8);
+    doc.text('cc: 1001361185', 18, currentY + 12);
+
+    // Signature 2: Client
+    doc.line(114, currentY, 186, currentY);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(15, 23, 42);
+    doc.text(proposal.clientName || 'Aceptado por el Cliente', 114, currentY + 4);
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 116, 139);
+    doc.text(proposal.clientCompany ? `Representante Legal: ${proposal.clientCompany}` : 'Firma de Aceptación y Compromiso', 114, currentY + 8);
+    doc.text('Fecha de Aprobación: ________________________', 114, currentY + 12);
+
+    this.addProposalFooter(doc);
+
+    const safeFileName = (proposal.clientName || 'Cliente').replace(/[^a-zA-Z0-9]/g, '_');
+    if (action === 'bloburl') {
+      return doc.output('bloburl').toString();
+    } else {
+      doc.save(`Propuesta_Comercial_Software_${safeFileName}_${this.getDateSlug()}.pdf`);
+    }
+  }
 }
+

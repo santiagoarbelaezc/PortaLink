@@ -234,9 +234,65 @@ class FinanceController
     // ════════════════════════════════════════════════════════════
     // SERVICIOS
     // ════════════════════════════════════════════════════════════
+    private function ensureServicesTable(): void
+    {
+        try {
+            $pdo = Database::getConnection();
+            $pdo->exec("
+                CREATE TABLE IF NOT EXISTS `finance_services` (
+                  `id` INT AUTO_INCREMENT PRIMARY KEY,
+                  `user_id` INT NOT NULL,
+                  `name` VARCHAR(255) NOT NULL,
+                  `description` TEXT NULL,
+                  `price` DECIMAL(15, 2) DEFAULT 0.00,
+                  `category` VARCHAR(50) DEFAULT 'desarrollo',
+                  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                  INDEX (`user_id`),
+                  CONSTRAINT `fk_finance_services_usuario` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            ");
+            $stmt = $pdo->query("SHOW COLUMNS FROM `finance_services` LIKE 'category'");
+            if (!$stmt->fetch()) {
+                $pdo->exec("ALTER TABLE `finance_services` ADD COLUMN `category` VARCHAR(50) DEFAULT 'desarrollo' AFTER `price`");
+            }
+        } catch (\Throwable $e) {
+            error_log('[Finance] ensureServicesTable error: ' . $e->getMessage());
+        }
+    }
+
+    private function ensureSoftwareProposalsTable(): void
+    {
+        try {
+            $pdo = Database::getConnection();
+            $pdo->exec("
+                CREATE TABLE IF NOT EXISTS `finance_software_proposals` (
+                  `id` INT AUTO_INCREMENT PRIMARY KEY,
+                  `user_id` INT NOT NULL,
+                  `service_id` INT NULL,
+                  `project_title` VARCHAR(255) NOT NULL,
+                  `client_name` VARCHAR(255) NOT NULL,
+                  `client_company` VARCHAR(255) NULL,
+                  `client_email` VARCHAR(255) NULL,
+                  `client_phone` VARCHAR(100) NULL,
+                  `total_amount` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+                  `payment_terms` VARCHAR(255) NULL,
+                  `delivery_time` VARCHAR(255) NULL,
+                  `warranty` VARCHAR(255) NULL,
+                  `items` LONGTEXT NULL,
+                  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                  INDEX (`user_id`),
+                  INDEX (`service_id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            ");
+        } catch (\Throwable $e) {
+            error_log('[Finance] ensureSoftwareProposalsTable error: ' . $e->getMessage());
+        }
+    }
+
     public function getServices(Request $request, Response $response): void
     {
         try {
+            $this->ensureServicesTable();
             $pdo = Database::getConnection();
             $stmt = $pdo->prepare('SELECT * FROM finance_services WHERE user_id = ? ORDER BY name ASC');
             $stmt->execute([$request->user->id]);
@@ -249,14 +305,16 @@ class FinanceController
 
     public function createService(Request $request, Response $response): void
     {
+        $this->ensureServicesTable();
         $name = $request->body['name'] ?? null;
         $description = $request->body['description'] ?? null;
         $price = $request->body['price'] ?? $request->body['unitPrice'] ?? 0;
+        $category = $request->body['category'] ?? 'desarrollo';
 
         try {
             $pdo = Database::getConnection();
-            $stmt = $pdo->prepare("INSERT INTO finance_services (user_id, name, description, price) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$request->user->id, $name, $description, (float)$price]);
+            $stmt = $pdo->prepare("INSERT INTO finance_services (user_id, name, description, price, category) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$request->user->id, $name, $description, (float)$price, $category]);
             $id = $pdo->lastInsertId();
 
             $stmtFetch = $pdo->prepare("SELECT * FROM finance_services WHERE id = ?");
@@ -272,15 +330,17 @@ class FinanceController
 
     public function updateService(Request $request, Response $response): void
     {
+        $this->ensureServicesTable();
         $id = $request->params['id'] ?? null;
         $name = $request->body['name'] ?? null;
         $description = $request->body['description'] ?? null;
         $price = $request->body['price'] ?? $request->body['unitPrice'] ?? 0;
+        $category = $request->body['category'] ?? 'desarrollo';
 
         try {
             $pdo = Database::getConnection();
-            $stmt = $pdo->prepare("UPDATE finance_services SET name = ?, description = ?, price = ? WHERE id = ? AND user_id = ?");
-            $stmt->execute([$name, $description, (float)$price, $id, $request->user->id]);
+            $stmt = $pdo->prepare("UPDATE finance_services SET name = ?, description = ?, price = ?, category = ? WHERE id = ? AND user_id = ?");
+            $stmt->execute([$name, $description, (float)$price, $category, $id, $request->user->id]);
 
             $stmtFetch = $pdo->prepare("SELECT * FROM finance_services WHERE id = ? AND user_id = ?");
             $stmtFetch->execute([$id, $request->user->id]);
@@ -294,6 +354,150 @@ class FinanceController
         } catch (\Throwable $error) {
             error_log('Error al actualizar servicio: ' . $error->getMessage());
             $response->status(500)->json(['ok' => false, 'message' => 'Error al actualizar servicio: ' . $error->getMessage()]);
+        }
+    }
+
+    // ════════════════════════════════════════════════════════════
+    // PROPUESTAS COMERCIALES DE SOFTWARE (ADQUISICIONES)
+    // ════════════════════════════════════════════════════════════
+    public function getSoftwareProposals(Request $request, Response $response): void
+    {
+        try {
+            $this->ensureSoftwareProposalsTable();
+            $pdo = Database::getConnection();
+            $stmt = $pdo->prepare('SELECT * FROM finance_software_proposals WHERE user_id = ? ORDER BY created_at DESC');
+            $stmt->execute([$request->user->id]);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $proposals = array_map(function ($row) {
+                if (isset($row['items']) && is_string($row['items'])) {
+                    $row['items'] = json_decode($row['items'], true) ?: [];
+                }
+                return $row;
+            }, $rows);
+
+            $response->json(['ok' => true, 'proposals' => $proposals]);
+        } catch (\Throwable $error) {
+            error_log('Error al obtener propuestas de software: ' . $error->getMessage());
+            $response->status(500)->json(['ok' => false, 'message' => 'Error al obtener propuestas: ' . $error->getMessage()]);
+        }
+    }
+
+    public function createSoftwareProposal(Request $request, Response $response): void
+    {
+        $this->ensureServicesTable();
+        $this->ensureSoftwareProposalsTable();
+
+        $projectTitle = trim($request->body['projectTitle'] ?? $request->body['project_title'] ?? 'Ecosistema Digital PortaLink');
+        $clientName = trim($request->body['clientName'] ?? $request->body['client_name'] ?? 'Cliente');
+        $clientCompany = trim($request->body['clientCompany'] ?? $request->body['client_company'] ?? '');
+        $clientEmail = trim($request->body['clientEmail'] ?? $request->body['client_email'] ?? '');
+        $clientPhone = trim($request->body['clientPhone'] ?? $request->body['client_phone'] ?? '');
+        $totalAmount = (float)($request->body['totalAmount'] ?? $request->body['total_amount'] ?? 0);
+        $paymentTerms = trim($request->body['paymentTerms'] ?? $request->body['payment_terms'] ?? '');
+        $deliveryTime = trim($request->body['deliveryTime'] ?? $request->body['delivery_time'] ?? '');
+        $warranty = trim($request->body['warranty'] ?? '');
+        $items = $request->body['items'] ?? [];
+
+        try {
+            $pdo = Database::getConnection();
+
+            // 1. Resumen de entregables para la descripción del servicio
+            $activeItems = [];
+            if (is_array($items)) {
+                foreach ($items as $it) {
+                    if (!isset($it['included']) || $it['included'] !== false) {
+                        if (!empty($it['title'])) {
+                            $activeItems[] = $it['title'];
+                        }
+                    }
+                }
+            }
+            $itemsSummary = !empty($activeItems) ? ' • Entregables: ' . implode(', ', $activeItems) : '';
+            $companyStr = !empty($clientCompany) ? " ({$clientCompany})" : '';
+            $paymentStr = !empty($paymentTerms) ? " • Pago: {$paymentTerms}" : '';
+            $timeStr = !empty($deliveryTime) ? " • Tiempo: {$deliveryTime}" : '';
+
+            $serviceDesc = "[Adquisición de Software] Propuesta para {$clientName}{$companyStr}{$paymentStr}{$timeStr}{$itemsSummary}";
+            $serviceName = "[Adquisición] {$projectTitle}";
+
+            // 2. Insertar en finance_services (para que aparezca en el catálogo con categoría 'adquisicion')
+            $stmtService = $pdo->prepare("
+                INSERT INTO finance_services (user_id, name, description, price, category) 
+                VALUES (?, ?, ?, ?, 'adquisicion')
+            ");
+            $stmtService->execute([$request->user->id, $serviceName, $serviceDesc, $totalAmount]);
+            $serviceId = $pdo->lastInsertId();
+
+            $stmtFetchS = $pdo->prepare("SELECT * FROM finance_services WHERE id = ?");
+            $stmtFetchS->execute([$serviceId]);
+            $savedService = $stmtFetchS->fetch(PDO::FETCH_ASSOC);
+
+            // 3. Insertar en finance_software_proposals
+            $stmtProposal = $pdo->prepare("
+                INSERT INTO finance_software_proposals 
+                (user_id, service_id, project_title, client_name, client_company, client_email, client_phone, total_amount, payment_terms, delivery_time, warranty, items)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ");
+            $stmtProposal->execute([
+                $request->user->id,
+                $serviceId,
+                $projectTitle,
+                $clientName,
+                $clientCompany,
+                $clientEmail,
+                $clientPhone,
+                $totalAmount,
+                $paymentTerms,
+                $deliveryTime,
+                $warranty,
+                json_encode($items, JSON_UNESCAPED_UNICODE)
+            ]);
+            $proposalId = $pdo->lastInsertId();
+
+            $response->status(201)->json([
+                'ok' => true,
+                'message' => 'Propuesta comercial guardada exitosamente en la base de datos',
+                'proposalId' => $proposalId,
+                'serviceId' => $serviceId,
+                'service' => $savedService
+            ]);
+        } catch (\Throwable $error) {
+            error_log('Error al guardar propuesta de software en backend: ' . $error->getMessage());
+            $response->status(500)->json([
+                'ok' => false,
+                'message' => 'Error al guardar la propuesta de software: ' . $error->getMessage()
+            ]);
+        }
+    }
+
+    public function deleteSoftwareProposal(Request $request, Response $response): void
+    {
+        $id = $request->params['id'] ?? null;
+        try {
+            $pdo = Database::getConnection();
+            $stmtCheck = $pdo->prepare("SELECT id, service_id FROM finance_software_proposals WHERE id = ? AND user_id = ?");
+            $stmtCheck->execute([$id, $request->user->id]);
+            $prop = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+
+            if (!$prop) {
+                $response->status(404)->json(['ok' => false, 'message' => 'Propuesta no encontrada']);
+                return;
+            }
+
+            // Opcional: Eliminar servicio asociado si existe
+            if (!empty($prop['service_id'])) {
+                $delService = $pdo->prepare("DELETE FROM finance_services WHERE id = ? AND user_id = ?");
+                $delService->execute([$prop['service_id'], $request->user->id]);
+            }
+
+            $delProp = $pdo->prepare("DELETE FROM finance_software_proposals WHERE id = ? AND user_id = ?");
+            $delProp->execute([$id, $request->user->id]);
+
+            $response->json(['ok' => true, 'message' => 'Propuesta eliminada correctamente']);
+        } catch (\Throwable $error) {
+            error_log('Error al eliminar propuesta de software: ' . $error->getMessage());
+            $response->status(500)->json(['ok' => false, 'message' => 'Error al eliminar propuesta: ' . $error->getMessage()]);
         }
     }
 

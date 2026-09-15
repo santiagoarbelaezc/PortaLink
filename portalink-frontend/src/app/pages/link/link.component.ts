@@ -593,10 +593,8 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         this.deferredPrompt = e;
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(navigator.userAgent) || window.innerWidth <= 768;
-        if (isMobile && !this.isStandalone) {
-          this.showInstallModal = true;
-        }
+        // Modal de PWA desactivado
+        this.showInstallModal = false;
       });
 
       this.currentLanguage = localStorage.getItem('portfolio-language') || 'es';
@@ -714,19 +712,8 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
                         (navigator as any).standalone === true;
     
-    if (this.isStandalone) {
-      this.showInstallModal = false;
-      return;
-    }
-    
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(navigator.userAgent) || window.innerWidth <= 768;
-    if (isMobile) {
-      setTimeout(() => {
-        if (!this.isStandalone) {
-          this.showInstallModal = true;
-        }
-      }, 600);
-    }
+    // Modal de PWA desactivado
+    this.showInstallModal = false;
   }
 
   installPWA() {

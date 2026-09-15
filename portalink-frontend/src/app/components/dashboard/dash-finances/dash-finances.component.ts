@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FinanceService, Client, Service, Invoice, InvoiceItem } from '../../../services/finance.service';
-import { PdfReportService } from '../../../services/pdf-report.service';
+import { PdfReportService, SoftwareProposal, SoftwareProposalItem } from '../../../services/pdf-report.service';
 import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-body.directive';
 import { firstValueFrom } from 'rxjs';
 
@@ -56,6 +56,13 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
             </svg>
             <span>Nuevo Cliente</span>
+          </button>
+          <button *ngIf="subTab === 'servicios'" (click)="openSoftwareProposalModal()"
+                  class="px-4 sm:px-5 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider text-white bg-emerald-600 hover:bg-emerald-500 shadow-md hover:shadow-emerald-600/30 active:scale-95 transition-all cursor-pointer flex items-center gap-2 border-0">
+            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+            </svg>
+            <span>Propuesta Comercial de Software</span>
           </button>
           <button *ngIf="subTab === 'servicios'" (click)="openNewService()"
                   class="px-5 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider text-black bg-white hover:bg-neutral-200 shadow-md active:scale-95 transition-all cursor-pointer flex items-center gap-2">
@@ -664,26 +671,8 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
 
       <!-- ══════════════════ SERVICIOS ══════════════════ -->
       <ng-container *ngIf="subTab === 'servicios'">
-        
-        <!-- Header Controls Bar -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl border shadow-sm"
-             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
-          <div>
-            <h3 class="text-base font-headline font-bold uppercase tracking-wider" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              Catálogo de Servicios
-            </h3>
-            <p class="text-xs font-sans font-normal opacity-60">Gestión de tarifas y paquetes de soluciones</p>
-          </div>
 
-          <div class="flex items-center gap-3">
-            <button (click)="openNewService()"
-                    class="px-5 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md flex items-center gap-2 active:scale-95"
-                    [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-              <span>Nuevo Servicio</span>
-            </button>
-          </div>
-        </div>
+
 
         <!-- Form modal / drawer -->
         <div *ngIf="showServiceForm" class="rounded-2xl border p-6 space-y-4 shadow-sm transition-all"
@@ -709,6 +698,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
               <select [(ngModel)]="editingService!.category" [style.color-scheme]="isDark ? 'dark' : 'light'"
                       class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none cursor-pointer transition-colors font-medium"
                       [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black'">
+                <option value="adquisicion">Propuesta Software</option>
                 <option value="desarrollo">Desarrollo Software</option>
                 <option value="diseño">Diseño UI/UX</option>
                 <option value="marketing">Marketing & Growth</option>
@@ -718,7 +708,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
             </div>
             <div class="flex flex-col gap-1.5">
               <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Precio Unitario (COP) *</label>
-              <input type="number" [(ngModel)]="editingService!.unitPrice" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="0"
+              <input type="number" [(ngModel)]="editingService!.unitPrice" (wheel)="$event.preventDefault()" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="0"
                      class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none transition-colors font-mono font-bold" [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
               
               <!-- Indicador Dinámico de Precio COP -->
@@ -764,33 +754,53 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
 
         <!-- Services Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div *ngFor="let s of paginatedServices" class="rounded-2xl border p-6 flex flex-col justify-between transition-all duration-300 hover:border-neutral-700 shadow-sm"
-               [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
+          <div *ngFor="let s of paginatedServices" 
+               class="rounded-2xl border p-6 flex flex-col justify-between transition-all duration-300 shadow-sm relative overflow-hidden"
+               [ngClass]="[
+                 isAcquisition(s)
+                   ? (isDark ? 'bg-emerald-950/20 border-emerald-500/50 hover:border-emerald-400 shadow-emerald-950/30' : 'bg-emerald-50/70 border-emerald-300 hover:border-emerald-400 shadow-emerald-100/50')
+                   : (isDark ? 'bg-[#0c0c0e] border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200 hover:border-neutral-300')
+               ]">
             
             <div>
               <div class="flex items-start justify-between gap-3 mb-4">
                 <div class="flex items-center gap-3">
                   <!-- Category Icon -->
                   <div class="w-10 h-10 rounded-xl flex items-center justify-center border shrink-0"
-                       [ngClass]="isDark ? 'bg-[#141419] text-white border-neutral-800' : 'bg-neutral-100 text-black border-neutral-200'">
+                       [ngClass]="isAcquisition(s)
+                         ? (isDark ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-emerald-600 text-white border-emerald-600')
+                         : (isDark ? 'bg-[#141419] text-white border-neutral-800' : 'bg-neutral-100 text-black border-neutral-200')">
                     
+                    <!-- Icon for Adquisición de Software -->
+                    <svg *ngIf="isAcquisition(s)" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+                    </svg>
+
                     <!-- Code for desarrollo -->
-                    <svg *ngIf="s.category === 'desarrollo'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+                    <svg *ngIf="!isAcquisition(s) && s.category === 'desarrollo'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
                     <!-- Palette for diseño -->
-                    <svg *ngIf="s.category === 'diseño'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.098 19.902a3.75 3.75 0 005.304 0l6.401-6.402M6.75 21A3.75 3.75 0 013 17.25V4.125C3 3.504 3.504 3 4.125 3h5.25c.621 0 1.125.504 1.125 1.125v4.072M6.75 21a3.75 3.75 0 003.75-3.75V8.197M6.75 21h13.125c.621 0 1.125-.504 1.125-1.125v-5.25c0-.621-.504-1.125-1.125-1.125h-4.072"/></svg>
+                    <svg *ngIf="!isAcquisition(s) && s.category === 'diseño'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.098 19.902a3.75 3.75 0 005.304 0l6.401-6.402M6.75 21A3.75 3.75 0 013 17.25V4.125C3 3.504 3.504 3 4.125 3h5.25c.621 0 1.125.504 1.125 1.125v4.072M6.75 21a3.75 3.75 0 003.75-3.75V8.197M6.75 21h13.125c.621 0 1.125-.504 1.125-1.125v-5.25c0-.621-.504-1.125-1.125-1.125h-4.072"/></svg>
                     <!-- Megaphone for marketing -->
-                    <svg *ngIf="s.category === 'marketing'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H5.25A2.25 2.25 0 013 13.5v-3c0-1.242 1.008-2.25 2.25-2.25h3c.704 0 1.402-.03 2.09-.09l.481-.042A3.748 3.748 0 0113.8 6.16l2.368-1.579A1.125 1.125 0 0118 5.517v12.966a1.125 1.125 0 01-1.832.864l-2.368-1.579a3.748 3.748 0 01-2.979-1.948l-.481-.042z"/></svg>
+                    <svg *ngIf="!isAcquisition(s) && s.category === 'marketing'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H5.25A2.25 2.25 0 013 13.5v-3c0-1.242 1.008-2.25 2.25-2.25h3c.704 0 1.402-.03 2.09-.09l.481-.042A3.748 3.748 0 0113.8 6.16l2.368-1.579A1.125 1.125 0 0118 5.517v12.966a1.125 1.125 0 01-1.832.864l-2.368-1.579a3.748 3.748 0 01-2.979-1.948l-.481-.042z"/></svg>
                     <!-- Briefcase for consultoria -->
-                    <svg *ngIf="s.category === 'consultoria'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+                    <svg *ngIf="!isAcquisition(s) && s.category === 'consultoria'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
                     <!-- Cube for otros -->
-                    <svg *ngIf="s.category !== 'desarrollo' && s.category !== 'diseño' && s.category !== 'marketing' && s.category !== 'consultoria'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/></svg>
+                    <svg *ngIf="!isAcquisition(s) && s.category !== 'desarrollo' && s.category !== 'diseño' && s.category !== 'marketing' && s.category !== 'consultoria'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/></svg>
                   </div>
                   <div>
-                    <span class="text-[9px] font-headline font-bold uppercase tracking-[0.2em] px-2.5 py-0.5 rounded-full border mb-1 inline-block"
+                    <span *ngIf="isAcquisition(s)"
+                          class="text-[9px] font-headline font-bold uppercase tracking-[0.2em] px-2.5 py-0.5 rounded-full border mb-1 inline-flex items-center gap-1.5"
+                          [ngClass]="isDark ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300' : 'bg-emerald-100 border-emerald-300 text-emerald-800'">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                      <span>PROPUESTA SOFTWARE</span>
+                    </span>
+                    <span *ngIf="!isAcquisition(s)"
+                          class="text-[9px] font-headline font-bold uppercase tracking-[0.2em] px-2.5 py-0.5 rounded-full border mb-1 inline-block"
                           [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
                       {{ s.category }}
                     </span>
-                    <h4 class="text-base font-headline font-bold leading-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                    <h4 class="text-base font-headline font-bold leading-tight" 
+                        [ngClass]="isAcquisition(s) ? (isDark ? 'text-emerald-300' : 'text-emerald-950') : (isDark ? 'text-white' : 'text-neutral-900')">
                       {{ s.name }}
                     </h4>
                   </div>
@@ -812,9 +822,12 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
             </div>
 
             <div class="pt-4 border-t flex items-center justify-between mt-auto"
-                 [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
-              <span class="text-[10px] font-headline font-bold uppercase tracking-widest opacity-60">Tarifa Base</span>
-              <span class="text-lg font-headline font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                 [ngClass]="isAcquisition(s) ? (isDark ? 'border-emerald-500/30' : 'border-emerald-200') : (isDark ? 'border-neutral-800' : 'border-neutral-100')">
+              <span class="text-[10px] font-headline font-bold uppercase tracking-widest opacity-60">
+                {{ isAcquisition(s) ? 'Inversión Proyecto' : 'Tarifa Base' }}
+              </span>
+              <span class="text-lg font-headline font-bold" 
+                    [ngClass]="isAcquisition(s) ? (isDark ? 'text-emerald-400 font-mono' : 'text-emerald-600 font-mono') : (isDark ? 'text-white' : 'text-neutral-900')">
                 {{ formatCOP(s.unitPrice || 0) }}
               </span>
             </div>
@@ -1635,7 +1648,9 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
           <div class="px-6 py-4 border-b flex justify-between items-center shrink-0" [ngClass]="isDark ? 'border-neutral-800 bg-[#141419]' : 'border-neutral-200 bg-neutral-50/90'">
             <div class="flex items-center gap-3">
               <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-              <h3 class="text-sm font-bold uppercase tracking-wider">Vista Previa de Cuenta de Cobro</h3>
+              <h3 class="text-sm font-bold uppercase tracking-wider">
+                {{ showProposalModal ? 'Vista Previa: Propuesta de Adquisición de Software' : 'Vista Previa de Cuenta de Cobro' }}
+              </h3>
             </div>
             <div class="flex items-center gap-2">
               <button (click)="downloadPreviewPdf()" [disabled]="pdfLoading" class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 shadow-md active:scale-95"
@@ -1657,6 +1672,327 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
           <div class="flex-grow bg-neutral-950/40 relative">
             <iframe *ngIf="previewPdfUrl" [src]="previewPdfUrl" class="w-full h-full border-0"></iframe>
           </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════ -->
+      <!-- MODAL: ARMAR PDF DE ADQUISICIÓN DE SOFTWARE                   -->
+      <!-- ══════════════════════════════════════════════════════════════ -->
+      <div *ngIf="showProposalModal" appTeleportToBody class="modal-backdrop fixed inset-0 w-screen h-screen z-[9999] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-xl animate-fadeIn">
+        <div class="w-full max-w-6xl 2xl:max-w-7xl max-h-[92vh] rounded-3xl flex flex-col overflow-hidden shadow-2xl border modal-enter my-auto transition-all"
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800 text-white shadow-black/80' : 'bg-white border-neutral-200 text-neutral-900 shadow-2xl'">
+          
+          <!-- Modal Header Minimalista -->
+          <div class="px-6 py-3.5 border-b flex justify-between items-center shrink-0"
+               [ngClass]="isDark ? 'border-neutral-800 bg-[#141419]' : 'border-neutral-200 bg-neutral-50/90'">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm"
+                   [ngClass]="isDark ? 'bg-white/10 text-white border border-neutral-700' : 'bg-black text-white border border-neutral-900'">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-sm font-headline font-bold uppercase tracking-wide">
+                  Propuesta Comercial de Software
+                </h3>
+                <p class="text-[11px] opacity-60">Configuración de entregables, valor acordado y exportación oficial</p>
+              </div>
+            </div>
+
+            <button (click)="closeSoftwareProposalModal()" class="p-2 rounded-xl border opacity-60 hover:opacity-100 transition-all cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white' : 'border-neutral-200 text-neutral-500 hover:text-black'">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          <!-- Modal Body en 2 Secciones Horizontales (Menos Scroll) -->
+          <div class="p-5 sm:p-6 overflow-y-auto max-h-[calc(92vh-125px)]">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
+              <!-- COLUMNA 1: Información del Proyecto & Precio/Condiciones -->
+              <div class="lg:col-span-5 space-y-4">
+                
+                <!-- Datos del Cliente & Proyecto -->
+                <div class="rounded-2xl border p-4 sm:p-5 space-y-3.5"
+                     [ngClass]="isDark ? 'bg-[#101014] border-neutral-800' : 'bg-neutral-50/70 border-neutral-200'">
+                  
+                  <div class="flex items-center justify-between border-b pb-2.5"
+                       [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+                    <span class="text-xs font-headline font-bold uppercase tracking-wider flex items-center gap-2"
+                          [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                      <span class="w-1.5 h-1.5 rounded-full" [ngClass]="isDark ? 'bg-white' : 'bg-black'"></span>
+                      <span>Cliente & Proyecto</span>
+                    </span>
+
+                    <select *ngIf="clients.length > 0"
+                            (change)="onProposalClientSelect($any($event.target).value)"
+                            class="px-2.5 py-1 rounded-lg text-[11px] border outline-none cursor-pointer font-medium"
+                            [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white' : 'bg-white border-neutral-300 text-neutral-900'">
+                      <option value="">Autocompletar cliente...</option>
+                      <option *ngFor="let c of clients" [value]="c.id">{{ c.name }}</option>
+                    </select>
+                  </div>
+
+                  <div class="space-y-3">
+                    <div class="flex flex-col gap-1">
+                      <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Título del Proyecto *</label>
+                      <input type="text" [(ngModel)]="proposalData.projectTitle" placeholder="Nombre del software o proyecto"
+                             class="w-full px-3 py-2 rounded-xl text-xs border outline-none transition-colors"
+                             [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div class="flex flex-col gap-1">
+                        <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Cliente Destinatario *</label>
+                        <input type="text" [(ngModel)]="proposalData.clientName" placeholder="Nombre del cliente"
+                               class="w-full px-3 py-2 rounded-xl text-xs border outline-none transition-colors"
+                               [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+                      </div>
+
+                      <div class="flex flex-col gap-1">
+                        <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Empresa</label>
+                        <input type="text" [(ngModel)]="proposalData.clientCompany" placeholder="Razón social (opcional)"
+                               class="w-full px-3 py-2 rounded-xl text-xs border outline-none transition-colors"
+                               [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div class="flex flex-col gap-1">
+                        <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Correo Electrónico</label>
+                        <input type="email" [(ngModel)]="proposalData.clientEmail" placeholder="correo@empresa.com"
+                               class="w-full px-3 py-2 rounded-xl text-xs border outline-none transition-colors"
+                               [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+                      </div>
+
+                      <div class="flex flex-col gap-1">
+                        <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Teléfono / WhatsApp</label>
+                        <input type="text" [(ngModel)]="proposalData.clientPhone" placeholder="+57 300 000 0000"
+                               class="w-full px-3 py-2 rounded-xl text-xs border outline-none transition-colors"
+                               [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Inversión y Condiciones (Un solo precio normal, sin desglose invasivo) -->
+                <div class="rounded-2xl border p-4 sm:p-5 space-y-3.5"
+                     [ngClass]="isDark ? 'bg-[#101014] border-neutral-800' : 'bg-neutral-50/70 border-neutral-200'">
+                  
+                  <div class="border-b pb-2.5" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+                    <span class="text-xs font-headline font-bold uppercase tracking-wider flex items-center gap-2"
+                          [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                      <span class="w-1.5 h-1.5 rounded-full" [ngClass]="isDark ? 'bg-white' : 'bg-black'"></span>
+                      <span>Inversión & Condiciones</span>
+                    </span>
+                  </div>
+
+                  <div class="space-y-3">
+                    <!-- Precio Total Único (Estilo normal de la página) -->
+                    <div class="flex flex-col gap-1.5">
+                      <div class="flex items-center justify-between">
+                        <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+                          Precio Total del Proyecto (COP) *
+                        </label>
+                        <span *ngIf="proposalData.totalAmount" class="text-xs font-sans font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                          {{ formatCOP(proposalData.totalAmount) }} COP
+                        </span>
+                      </div>
+                      <input type="number" [(ngModel)]="proposalData.totalAmount" (wheel)="$event.preventDefault()" min="0" placeholder="0"
+                             class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none transition-colors font-mono font-medium"
+                             [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+                    </div>
+
+                    <!-- Tiempo & Garantía -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div class="flex flex-col gap-1">
+                        <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Tiempo Estimado</label>
+                        <input type="text" [(ngModel)]="proposalData.deliveryTime" placeholder="Ej: 3 a 4 semanas"
+                               class="w-full px-3 py-2 rounded-xl text-xs border outline-none transition-colors"
+                               [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+                      </div>
+
+                      <div class="flex flex-col gap-1">
+                        <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Garantía & Soporte</label>
+                        <input type="text" [(ngModel)]="proposalData.warranty" placeholder="Ej: 12 meses de soporte"
+                               class="w-full px-3 py-2 rounded-xl text-xs border outline-none transition-colors"
+                               [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+              <!-- COLUMNA 2: Entregables & Paquetes -->
+              <div class="lg:col-span-7">
+                <div class="rounded-2xl border p-4 sm:p-5 space-y-3.5 flex flex-col justify-between"
+                     [ngClass]="isDark ? 'bg-[#101014] border-neutral-800' : 'bg-neutral-50/70 border-neutral-200'">
+                  
+                  <!-- Header Entregables -->
+                  <div class="flex items-center justify-between border-b pb-2.5 gap-2 flex-wrap"
+                       [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+                    <div class="flex items-center gap-2">
+                      <span class="w-1.5 h-1.5 rounded-full" [ngClass]="isDark ? 'bg-white' : 'bg-black'"></span>
+                      <span class="text-xs font-headline font-bold uppercase tracking-wider" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                        Entregables Incluidos
+                      </span>
+                      <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border"
+                            [ngClass]="proposalData.items.length > 0 ? (isDark ? 'bg-white/10 text-neutral-200 border-neutral-700' : 'bg-neutral-100 text-neutral-800 border-neutral-300') : (isDark ? 'bg-neutral-800 text-neutral-400 border-neutral-700' : 'bg-neutral-200 text-neutral-600 border-neutral-300')">
+                        {{ proposalData.items.length > 0 ? (getActiveProposalItemsCount() + ' de ' + proposalData.items.length) : '0' }}
+                      </span>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                      <button *ngIf="proposalData.items.length > 0"
+                              (click)="clearProposalItems()"
+                              class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border cursor-pointer transition-colors"
+                              [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-rose-400' : 'border-neutral-300 text-neutral-600 hover:text-rose-600'"
+                              title="Limpiar lista">
+                        Vaciar
+                      </button>
+
+                      <button (click)="resetProposalItemsToDefault()"
+                              class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border cursor-pointer transition-colors"
+                              [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-300 hover:text-white' : 'border-neutral-300 text-neutral-700 hover:text-black'"
+                              title="Cargar paquetes sugeridos">
+                        {{ proposalData.items.length === 0 ? '+ Cargar Sugerencias' : 'Restablecer' }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Estado Vacío -->
+                  <div *ngIf="proposalData.items.length === 0"
+                       class="py-10 px-4 rounded-xl border border-dashed text-center flex flex-col items-center justify-center gap-2.5"
+                       [ngClass]="isDark ? 'border-neutral-800 bg-[#0e0e12]/60 text-neutral-400' : 'border-neutral-300 bg-white/70 text-neutral-500'">
+                    <span class="text-xs font-semibold" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
+                      Sin entregables agregados
+                    </span>
+                    <span class="text-[11px] opacity-70">Agrega un módulo a continuación o carga la plantilla sugerida.</span>
+                    <button (click)="resetProposalItemsToDefault()"
+                            class="mt-1 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider border cursor-pointer transition-all active:scale-95"
+                            [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800 text-white hover:bg-neutral-700' : 'border-neutral-300 bg-white text-black hover:bg-neutral-100'">
+                      + Cargar Sugerencias
+                    </button>
+                  </div>
+
+                  <!-- Lista Dinámica de Entregables (Scroll Interno) -->
+                  <div *ngIf="proposalData.items.length > 0"
+                       class="max-h-[350px] overflow-y-auto space-y-2 pr-1">
+                    <div *ngFor="let item of proposalData.items; let idx = index"
+                         class="p-3 rounded-xl border transition-all"
+                         [ngClass]="[
+                           item.included !== false 
+                             ? (isDark ? 'bg-[#141419] border-neutral-700/80' : 'bg-white border-neutral-300 shadow-2xs') 
+                             : (isDark ? 'bg-[#0e0e12]/60 border-neutral-800/60 opacity-50' : 'bg-neutral-100/60 border-neutral-200 opacity-60')
+                         ]">
+                      <div class="flex items-start gap-2.5">
+                        <input type="checkbox" [(ngModel)]="item.included" class="mt-1 w-3.5 h-3.5 rounded cursor-pointer accent-black dark:accent-white shrink-0">
+                        
+                        <div class="flex-grow space-y-1">
+                          <div class="flex items-center justify-between gap-2">
+                            <input type="text" [(ngModel)]="item.title" placeholder="Título del entregable"
+                                   class="w-full text-xs font-headline font-bold bg-transparent border-0 outline-none p-0 focus:underline"
+                                   [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                            <button (click)="removeProposalItem(idx)" class="p-1 rounded text-neutral-400 hover:text-red-500 cursor-pointer border-0 bg-transparent shrink-0" title="Eliminar">
+                              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                          </div>
+                          <textarea [(ngModel)]="item.description" rows="1" placeholder="Descripción breve del alcance..."
+                                    class="w-full text-[11px] font-sans bg-transparent border-0 outline-none p-0 resize-none opacity-70 focus:opacity-100"
+                                    [ngClass]="isDark ? 'text-neutral-300 placeholder-neutral-600' : 'text-neutral-700 placeholder-neutral-400'"></textarea>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Formulario Compacto para Agregar Entregable -->
+                  <div class="p-3 rounded-xl border border-dashed flex flex-col gap-2"
+                       [ngClass]="isDark ? 'border-neutral-800 bg-[#0e0e12]' : 'border-neutral-300 bg-white/60'">
+                    <span class="text-[10px] font-bold uppercase tracking-widest opacity-60">Agregar Entregable</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                      <input type="text" [(ngModel)]="proposalItemNewTitle" placeholder="Título (ej: Pasarela de Pagos)"
+                             class="sm:col-span-5 px-3 py-1.5 rounded-xl text-xs border outline-none"
+                             [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white' : 'bg-white border-neutral-300 text-neutral-900'">
+                      <input type="text" [(ngModel)]="proposalItemNewDesc" placeholder="Detalle técnico..."
+                             class="sm:col-span-5 px-3 py-1.5 rounded-xl text-xs border outline-none"
+                             [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white' : 'bg-white border-neutral-300 text-neutral-900'">
+                      <button (click)="addProposalItem()"
+                              class="sm:col-span-2 px-3 py-1.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider cursor-pointer transition-all border shadow-xs active:scale-95"
+                              [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200 border-white' : 'bg-black text-white hover:bg-neutral-800 border-black'">
+                        + Agregar
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- Resumen Económico Monocromático Ajustado al Diseño -->
+                <div class="mt-4 rounded-2xl border p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all shadow-sm"
+                     [ngClass]="isDark ? 'bg-[#101014] border-neutral-800' : 'bg-neutral-50/80 border-neutral-200'">
+                  <div class="space-y-0.5">
+                    <div class="flex items-center gap-2">
+                      <span class="w-1.5 h-1.5 rounded-full" [ngClass]="isDark ? 'bg-white' : 'bg-black'"></span>
+                      <span class="text-xs font-headline font-bold uppercase tracking-wider"
+                            [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                        Inversión Total Acordada
+                      </span>
+                    </div>
+                    <p class="text-[11px] opacity-60">Valor total acordado para propuesta comercial y contrato</p>
+                  </div>
+
+                  <div class="flex items-baseline gap-2 sm:justify-end">
+                    <span class="text-2xl sm:text-3xl font-extrabold font-sans tracking-tight"
+                          [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                      {{ formatCOP(proposalData.totalAmount || 0) }}
+                    </span>
+                    <span class="text-xs sm:text-sm font-bold font-sans tracking-wider"
+                          [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+                      COP
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Modal Footer Minimalista -->
+          <div class="px-6 py-3.5 border-t flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0"
+               [ngClass]="isDark ? 'border-neutral-800 bg-[#141419]' : 'border-neutral-200 bg-neutral-50'">
+            <button (click)="closeSoftwareProposalModal()"
+                    class="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border cursor-pointer transition-colors"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#0c0c0e] text-neutral-400 hover:text-white' : 'border-neutral-300 text-neutral-600 hover:text-black'">
+              Cancelar
+            </button>
+
+            <div class="flex items-center gap-2.5 w-full sm:w-auto justify-end flex-wrap">
+              <button (click)="generateProposalPreview()" [disabled]="proposalSubmitting"
+                      class="px-4 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border transition-all cursor-pointer flex items-center gap-2 shadow-xs active:scale-95"
+                      [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800 text-neutral-200 hover:bg-neutral-700' : 'border-neutral-300 bg-white text-neutral-800 hover:bg-neutral-100'">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <span>Vista Previa PDF</span>
+              </button>
+
+              <button (click)="saveOnlyAcquisition()" [disabled]="proposalSubmitting"
+                      class="px-4 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border transition-all cursor-pointer flex items-center gap-2 shadow-xs active:scale-95"
+                      [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800 text-white hover:bg-neutral-700' : 'border-neutral-300 bg-white text-black hover:bg-neutral-100'">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                <span>Guardar en Catálogo</span>
+              </button>
+
+              <button (click)="downloadSoftwareProposal()" [disabled]="proposalSubmitting"
+                      class="px-5 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider shadow-md active:scale-95 transition-all cursor-pointer flex items-center gap-2 border-0"
+                      [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                <span>{{ proposalSubmitting ? 'Guardando y Generando...' : 'Guardar & Descargar PDF' }}</span>
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -1824,6 +2160,237 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
     message: string;
     type: 'create' | 'edit' | 'delete' | 'success';
   } | null = null;
+
+  // ─── SOFTWARE ACQUISITION PROPOSAL ──────────────────────────────
+  showProposalModal = false;
+  proposalSubmitting = false;
+  proposalItemNewTitle = '';
+  proposalItemNewDesc = '';
+
+  defaultProposalItems: SoftwareProposalItem[] = [
+    {
+      title: 'Dominio y administración por 2 años',
+      description: 'Registro de dominio oficial (.com / .co / .net), administración técnica de DNS, certificados SSL y soporte de administración cloud por 24 meses.',
+      included: true
+    },
+    {
+      title: 'Landing Page para clientes',
+      description: 'Página web moderna de alto impacto y conversión, diseño responsivo ultra rápido, llamados a la acción (CTA) y formulario de captura.',
+      included: true
+    },
+    {
+      title: 'Diseño móvil e instalación para usuarios',
+      description: 'Adaptabilidad táctil para smartphones/tablets, arquitectura PWA instalable sin tiendas con acceso directo en pantalla de inicio.',
+      included: true
+    },
+    {
+      title: 'Bases de datos, una para uso, otra de respaldo',
+      description: 'Base de datos principal de alto rendimiento en producción + réplica y sistema automatizado de backups periódicos para máxima seguridad.',
+      included: true
+    },
+    {
+      title: 'Panel Administrativo Directivo (Dashboard)',
+      description: 'Módulo privado de gestión con control de datos, reportes financieros y monitoreo en tiempo real.',
+      included: true
+    },
+    {
+      title: 'Infraestructura Cloud, Hosting & Certificado SSL',
+      description: 'Alojamiento en la nube de alta disponibilidad, encriptación HTTPS de extremo a extremo y optimización de velocidad.',
+      included: true
+    }
+  ];
+
+  proposalData: SoftwareProposal = {
+    projectTitle: 'Ecosistema Digital & Plataforma de Software a Medida',
+    clientName: '',
+    clientCompany: '',
+    clientEmail: '',
+    clientPhone: '',
+    issuedAt: new Date().toISOString().split('T')[0],
+    validUntil: new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString().split('T')[0],
+    deliveryTime: '3 a 4 semanas',
+    warranty: '12 meses de soporte técnico y corrección de incidencias',
+    paymentTerms: '',
+    notes: 'Incluye despliegue en servidores de producción, capacitación administrativa y código fuente.',
+    totalAmount: 0,
+    items: []
+  };
+
+  openSoftwareProposalModal() {
+    if (!this.proposalData.items) {
+      this.proposalData.items = [];
+    }
+    this.showProposalModal = true;
+    this.safeDetectChanges();
+  }
+
+  closeSoftwareProposalModal() {
+    this.showProposalModal = false;
+    this.safeDetectChanges();
+  }
+
+  onProposalClientSelect(clientId: string) {
+    if (!clientId) return;
+    const client = this.clients.find(c => String(c.id) === String(clientId));
+    if (client) {
+      this.proposalData.clientName = client.name || '';
+      this.proposalData.clientCompany = client.company || '';
+      this.proposalData.clientEmail = client.email || '';
+      this.proposalData.clientPhone = client.phone || '';
+      this.safeDetectChanges();
+    }
+  }
+
+  getActiveProposalItemsCount(): number {
+    return (this.proposalData.items || []).filter(it => it.included !== false).length;
+  }
+
+  addProposalItem() {
+    if (!this.proposalItemNewTitle.trim()) {
+      alert('Por favor escribe el nombre del entregable.');
+      return;
+    }
+    this.proposalData.items.push({
+      title: this.proposalItemNewTitle.trim(),
+      description: this.proposalItemNewDesc.trim() || 'Especificaciones técnicas acordadas.',
+      included: true
+    });
+    this.proposalItemNewTitle = '';
+    this.proposalItemNewDesc = '';
+    this.safeDetectChanges();
+  }
+
+  removeProposalItem(index: number) {
+    this.proposalData.items.splice(index, 1);
+    this.safeDetectChanges();
+  }
+
+  resetProposalItemsToDefault() {
+    this.proposalData.items = JSON.parse(JSON.stringify(this.defaultProposalItems));
+    this.safeDetectChanges();
+  }
+
+  clearProposalItems() {
+    this.proposalData.items = [];
+    this.safeDetectChanges();
+  }
+
+  async generateProposalPreview() {
+    if (!this.proposalData.clientName?.trim()) {
+      alert('Por favor ingresa el nombre del cliente destinatario.');
+      return;
+    }
+    this.proposalSubmitting = true;
+    this.safeDetectChanges();
+    try {
+      const url = await this.pdfService.downloadSoftwareProposalPdf(this.proposalData, 'bloburl');
+      this.previewPdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url as string);
+      this.showPdfPreview = true;
+    } catch (e) {
+      console.error(e);
+      alert('Error generando vista previa del PDF');
+    } finally {
+      this.proposalSubmitting = false;
+      this.safeDetectChanges();
+    }
+  }
+
+  isAcquisition(s?: Service | null): boolean {
+    if (!s) return false;
+    const name = (s.name || '').toLowerCase();
+    const desc = (s.description || '').toLowerCase();
+    const cat = (s.category || '').toLowerCase();
+    return cat === 'adquisicion' || 
+           name.startsWith('[adquisición]') || 
+           name.startsWith('[adquisicion]') || 
+           name.includes('adquisición') ||
+           name.includes('adquisicion') ||
+           desc.includes('[adquisición') || 
+           desc.includes('[adquisicion');
+  }
+
+  async saveAcquisitionAsService(): Promise<any> {
+    try {
+      const res = await firstValueFrom(this.financeService.saveSoftwareProposal(this.proposalData));
+      await this.refresh();
+      return res;
+    } catch (err) {
+      console.warn('Error en saveSoftwareProposal, intentando fallback saveService:', err);
+      const title = this.proposalData.projectTitle?.trim() || 'Desarrollo de Solución de Software a Medida';
+      const client = this.proposalData.clientName?.trim() || 'Cliente';
+      const company = this.proposalData.clientCompany?.trim() ? ` (${this.proposalData.clientCompany.trim()})` : '';
+      
+      const activeItems = (this.proposalData.items || [])
+        .filter(it => it.included !== false)
+        .map(it => it.title)
+        .filter(Boolean);
+      
+      const itemsSummary = activeItems.length > 0 
+        ? ` • Entregables: ${activeItems.join(', ')}`
+        : '';
+      
+      const paymentInfo = this.proposalData.paymentTerms ? ` • Pago: ${this.proposalData.paymentTerms}` : '';
+      const timeInfo = this.proposalData.deliveryTime ? ` • Tiempo: ${this.proposalData.deliveryTime}` : '';
+
+      const description = `[Adquisición de Software] Propuesta para ${client}${company}${paymentInfo}${timeInfo}${itemsSummary}`;
+
+      const newService: Service = {
+        name: `[Adquisición] ${title}`,
+        description: description,
+        price: Number(this.proposalData.totalAmount || 0),
+        unitPrice: Number(this.proposalData.totalAmount || 0),
+        category: 'adquisicion'
+      };
+
+      const res = await firstValueFrom(this.financeService.saveService(newService));
+      await this.refresh();
+      return res;
+    }
+  }
+
+  async saveOnlyAcquisition() {
+    if (!this.proposalData.clientName?.trim()) {
+      alert('Por favor ingresa el nombre del cliente destinatario.');
+      return;
+    }
+    this.proposalSubmitting = true;
+    this.safeDetectChanges();
+    try {
+      await this.saveAcquisitionAsService();
+      this.showGadget('¡Adquisición guardada con éxito en el catálogo de servicios!', 'success');
+      this.closeSoftwareProposalModal();
+    } catch (e) {
+      console.error(e);
+      alert('Error al guardar la adquisición en la base de datos');
+    } finally {
+      this.proposalSubmitting = false;
+      this.safeDetectChanges();
+    }
+  }
+
+  async downloadSoftwareProposal() {
+    if (!this.proposalData.clientName?.trim()) {
+      alert('Por favor ingresa el nombre del cliente destinatario.');
+      return;
+    }
+    this.proposalSubmitting = true;
+    this.safeDetectChanges();
+    try {
+      // 1. Guardar automáticamente en la base de datos
+      await this.saveAcquisitionAsService();
+      
+      // 2. Generar y descargar el documento PDF
+      await this.pdfService.downloadSoftwareProposalPdf(this.proposalData, 'save');
+      this.showGadget('¡Propuesta comercial guardada en catálogo y PDF descargado!', 'success');
+      this.closeSoftwareProposalModal();
+    } catch (e) {
+      console.error(e);
+      alert('Error al procesar y guardar la propuesta comercial');
+    } finally {
+      this.proposalSubmitting = false;
+      this.safeDetectChanges();
+    }
+  }
 
   openPaymentModal(inv: Invoice) {
     this.paymentInvoiceTarget = { ...inv };
@@ -2017,7 +2584,10 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
 
   get filteredServices(): Service[] {
     if (this.filterCategory === 'all') return this.allServices;
-    return this.allServices.filter(s => s.category === this.filterCategory);
+    if (this.filterCategory === 'adquisicion') {
+      return this.allServices.filter(s => this.isAcquisition(s));
+    }
+    return this.allServices.filter(s => !this.isAcquisition(s) && s.category === this.filterCategory);
   }
 
   get totalServicePages(): number {
@@ -2088,6 +2658,7 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
   editingService: Partial<Service> | null = null;
   serviceCategories = [
     { id: 'all', label: 'Todos' },
+    { id: 'adquisicion', label: 'Propuestas' },
     { id: 'desarrollo', label: 'Desarrollo' },
     { id: 'diseño', label: 'Diseño' },
     { id: 'marketing', label: 'Marketing' },
@@ -2869,6 +3440,10 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   async downloadPreviewPdf() {
+    if (this.showProposalModal || (!this.previewInvoiceTarget && !this.editingInvoice)) {
+      await this.downloadSoftwareProposal();
+      return;
+    }
     if (!this.previewInvoiceTarget && !this.editingInvoice) return;
     const inv = this.previewInvoiceTarget || (this.editingInvoice as Invoice);
     const total = Number(inv.total || inv.total_amount || 0);

@@ -289,6 +289,9 @@ $router->get('/api/finance/services', [FinanceController::class, 'getServices'],
 $router->post('/api/finance/services', [FinanceController::class, 'createService'], [AuthMiddleware::class]);
 $router->put('/api/finance/services/:id', [FinanceController::class, 'updateService'], [AuthMiddleware::class]);
 $router->delete('/api/finance/services/:id', [FinanceController::class, 'deleteService'], [AuthMiddleware::class]);
+$router->get('/api/finance/software-proposals', [FinanceController::class, 'getSoftwareProposals'], [AuthMiddleware::class]);
+$router->post('/api/finance/software-proposals', [FinanceController::class, 'createSoftwareProposal'], [AuthMiddleware::class]);
+$router->delete('/api/finance/software-proposals/:id', [FinanceController::class, 'deleteSoftwareProposal'], [AuthMiddleware::class]);
 $router->get('/api/finance/invoices', [FinanceController::class, 'getInvoices'], [AuthMiddleware::class]);
 $router->get('/api/finance/invoices/:id', [FinanceController::class, 'getInvoiceDetails'], [AuthMiddleware::class]);
 $router->post('/api/finance/invoices', [FinanceController::class, 'createInvoice'], [AuthMiddleware::class]);

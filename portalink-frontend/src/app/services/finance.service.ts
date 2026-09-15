@@ -22,7 +22,7 @@ export interface Service {
   description: string;
   price?: number; // Backend uses price, not unitPrice
   unitPrice?: number; // Keep for compatibility with old interface during refactor
-  category?: 'desarrollo' | 'diseño' | 'marketing' | 'consultoria' | 'otro';
+  category?: 'desarrollo' | 'diseño' | 'marketing' | 'consultoria' | 'otro' | 'adquisicion' | string;
 }
 
 export interface InvoiceItem {
@@ -138,6 +138,19 @@ export class FinanceService {
 
   deleteService(id: string): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/services/${id}`);
+  }
+
+  // ─── SOFTWARE PROPOSALS (ADQUISICIONES) ────────────────────
+  saveSoftwareProposal(proposal: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/software-proposals`, proposal);
+  }
+
+  getSoftwareProposals(): Observable<{ ok: boolean, proposals: any[] }> {
+    return this.http.get<any>(`${this.apiUrl}/software-proposals`);
+  }
+
+  deleteSoftwareProposal(id: string | number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/software-proposals/${id}`);
   }
 
   // ─── INVOICES ─────────────────────────────────────────────
