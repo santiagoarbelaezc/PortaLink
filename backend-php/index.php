@@ -1,5 +1,6 @@
 <?php
 
+// Trigger de despliegue continuo - PortaLink Backend API (Hostinger)
 // Cuando el servidor built-in de PHP solicita un archivo que existe en disco, lo sirve directamente
 // sin pasar por el router MVC
 if (PHP_SAPI === 'cli-server') {
