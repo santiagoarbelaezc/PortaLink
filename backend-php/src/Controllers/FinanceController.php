@@ -293,10 +293,37 @@ class FinanceController
     {
         try {
             $this->ensureServicesTable();
+            $this->ensureSoftwareProposalsTable();
             $pdo = Database::getConnection();
-            $stmt = $pdo->prepare('SELECT * FROM finance_services WHERE user_id = ? ORDER BY name ASC');
+            $stmt = $pdo->prepare('
+                SELECT s.*, 
+                       p.id AS proposal_id, 
+                       p.project_title, 
+                       p.client_name, 
+                       p.client_company, 
+                       p.client_email, 
+                       p.client_phone, 
+                       p.total_amount AS proposal_total_amount, 
+                       p.payment_terms, 
+                       p.delivery_time, 
+                       p.warranty, 
+                       p.items AS proposal_items
+                FROM finance_services s
+                LEFT JOIN finance_software_proposals p ON p.service_id = s.id AND p.user_id = s.user_id
+                WHERE s.user_id = ? 
+                ORDER BY s.id DESC
+            ');
             $stmt->execute([$request->user->id]);
-            $response->json(['ok' => true, 'services' => $stmt->fetchAll()]);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $services = array_map(function ($row) {
+                if (isset($row['proposal_items']) && is_string($row['proposal_items'])) {
+                    $row['proposal_items'] = json_decode($row['proposal_items'], true) ?: [];
+                }
+                return $row;
+            }, $rows);
+
+            $response->json(['ok' => true, 'services' => $services]);
         } catch (\Throwable $error) {
             error_log('Error al obtener servicios: ' . $error->getMessage());
             $response->status(500)->json(['ok' => false, 'message' => 'Error al obtener servicios: ' . $error->getMessage()]);
@@ -471,6 +498,117 @@ class FinanceController
         }
     }
 
+    public function updateSoftwareProposal(Request $request, Response $response): void
+    {
+        $id = $request->params['id'] ?? null;
+        $this->ensureServicesTable();
+        $this->ensureSoftwareProposalsTable();
+
+        $projectTitle = trim($request->body['projectTitle'] ?? $request->body['project_title'] ?? 'Ecosistema Digital PortaLink');
+        $clientName = trim($request->body['clientName'] ?? $request->body['client_name'] ?? 'Cliente');
+        $clientCompany = trim($request->body['clientCompany'] ?? $request->body['client_company'] ?? '');
+        $clientEmail = trim($request->body['clientEmail'] ?? $request->body['client_email'] ?? '');
+        $clientPhone = trim($request->body['clientPhone'] ?? $request->body['client_phone'] ?? '');
+        $totalAmount = (float)($request->body['totalAmount'] ?? $request->body['total_amount'] ?? 0);
+        $paymentTerms = trim($request->body['paymentTerms'] ?? $request->body['payment_terms'] ?? '');
+        $deliveryTime = trim($request->body['deliveryTime'] ?? $request->body['delivery_time'] ?? '');
+        $warranty = trim($request->body['warranty'] ?? '');
+        $items = $request->body['items'] ?? [];
+
+        try {
+            $pdo = Database::getConnection();
+
+            // 1. Resumen de entregables para la descripción
+            $activeItems = [];
+            if (is_array($items)) {
+                foreach ($items as $it) {
+                    if (!isset($it['included']) || $it['included'] !== false) {
+                        if (!empty($it['title'])) {
+                            $activeItems[] = $it['title'];
+                        }
+                    }
+                }
+            }
+            $itemsSummary = !empty($activeItems) ? ' • Entregables: ' . implode(', ', $activeItems) : '';
+            $companyStr = !empty($clientCompany) ? " ({$clientCompany})" : '';
+            $paymentStr = !empty($paymentTerms) ? " • Pago: {$paymentTerms}" : '';
+            $timeStr = !empty($deliveryTime) ? " • Tiempo: {$deliveryTime}" : '';
+
+            $serviceDesc = "[Adquisición de Software] Propuesta para {$clientName}{$companyStr}{$paymentStr}{$timeStr}{$itemsSummary}";
+            $serviceName = "[Adquisición] {$projectTitle}";
+
+            // 2. Buscar propuesta por id o por service_id
+            $stmtCheck = $pdo->prepare("SELECT id, service_id FROM finance_software_proposals WHERE id = ? AND user_id = ?");
+            $stmtCheck->execute([$id, $request->user->id]);
+            $prop = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+
+            if (!$prop) {
+                $stmtCheckS = $pdo->prepare("SELECT id, service_id FROM finance_software_proposals WHERE service_id = ? AND user_id = ?");
+                $stmtCheckS->execute([$id, $request->user->id]);
+                $prop = $stmtCheckS->fetch(PDO::FETCH_ASSOC);
+            }
+
+            if ($prop) {
+                $propId = $prop['id'];
+                $serviceId = $prop['service_id'];
+
+                $stmtUp = $pdo->prepare("
+                    UPDATE finance_software_proposals 
+                    SET project_title = ?, client_name = ?, client_company = ?, client_email = ?, client_phone = ?,
+                        total_amount = ?, payment_terms = ?, delivery_time = ?, warranty = ?, items = ?, updated_at = NOW()
+                    WHERE id = ? AND user_id = ?
+                ");
+                $stmtUp->execute([
+                    $projectTitle, $clientName, $clientCompany, $clientEmail, $clientPhone,
+                    $totalAmount, $paymentTerms, $deliveryTime, $warranty, json_encode($items, JSON_UNESCAPED_UNICODE),
+                    $propId, $request->user->id
+                ]);
+
+                if (!empty($serviceId)) {
+                    $stmtS = $pdo->prepare("
+                        UPDATE finance_services 
+                        SET name = ?, description = ?, price = ?, category = 'adquisicion'
+                        WHERE id = ? AND user_id = ?
+                    ");
+                    $stmtS->execute([$serviceName, $serviceDesc, $totalAmount, $serviceId, $request->user->id]);
+                }
+            } else {
+                // Si solo existía en finance_services con ID $id
+                $stmtS = $pdo->prepare("
+                    UPDATE finance_services 
+                    SET name = ?, description = ?, price = ?, category = 'adquisicion'
+                    WHERE id = ? AND user_id = ?
+                ");
+                $stmtS->execute([$serviceName, $serviceDesc, $totalAmount, $id, $request->user->id]);
+
+                $stmtProposal = $pdo->prepare("
+                    INSERT INTO finance_software_proposals 
+                    (user_id, service_id, project_title, client_name, client_company, client_email, client_phone, total_amount, payment_terms, delivery_time, warranty, items)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ");
+                $stmtProposal->execute([
+                    $request->user->id,
+                    $id,
+                    $projectTitle,
+                    $clientName,
+                    $clientCompany,
+                    $clientEmail,
+                    $clientPhone,
+                    $totalAmount,
+                    $paymentTerms,
+                    $deliveryTime,
+                    $warranty,
+                    json_encode($items, JSON_UNESCAPED_UNICODE)
+                ]);
+            }
+
+            $response->json(['ok' => true, 'message' => 'Propuesta comercial actualizada correctamente']);
+        } catch (\Throwable $error) {
+            error_log('Error al actualizar propuesta de software: ' . $error->getMessage());
+            $response->status(500)->json(['ok' => false, 'message' => 'Error al actualizar propuesta: ' . $error->getMessage()]);
+        }
+    }
+
     public function deleteSoftwareProposal(Request $request, Response $response): void
     {
         $id = $request->params['id'] ?? null;
@@ -485,7 +623,7 @@ class FinanceController
                 return;
             }
 
-            // Opcional: Eliminar servicio asociado si existe
+            // Eliminar servicio asociado si existe
             if (!empty($prop['service_id'])) {
                 $delService = $pdo->prepare("DELETE FROM finance_services WHERE id = ? AND user_id = ?");
                 $delService->execute([$prop['service_id'], $request->user->id]);
@@ -512,6 +650,10 @@ class FinanceController
                 $response->status(404)->json(['ok' => false, 'message' => 'Servicio no encontrado']);
                 return;
             }
+
+            // Eliminar propuesta de software asociada si existiese
+            $delProp = $pdo->prepare("DELETE FROM finance_software_proposals WHERE service_id = ? AND user_id = ?");
+            $delProp->execute([$id, $request->user->id]);
 
             $stmtDel = $pdo->prepare("DELETE FROM finance_services WHERE id = ? AND user_id = ?");
             $stmtDel->execute([$id, $request->user->id]);

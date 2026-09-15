@@ -12,6 +12,8 @@ export interface SoftwareProposalItem {
 }
 
 export interface SoftwareProposal {
+  id?: string | number;
+  serviceId?: string | number;
   projectTitle: string;
   clientName: string;
   clientCompany?: string;

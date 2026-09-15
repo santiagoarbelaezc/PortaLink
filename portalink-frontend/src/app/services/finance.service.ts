@@ -23,6 +23,17 @@ export interface Service {
   price?: number; // Backend uses price, not unitPrice
   unitPrice?: number; // Keep for compatibility with old interface during refactor
   category?: 'desarrollo' | 'diseño' | 'marketing' | 'consultoria' | 'otro' | 'adquisicion' | string;
+  proposal_id?: number | string;
+  project_title?: string;
+  client_name?: string;
+  client_company?: string;
+  client_email?: string;
+  client_phone?: string;
+  delivery_time?: string;
+  warranty?: string;
+  payment_terms?: string;
+  proposal_items?: any[];
+  proposal_total_amount?: number;
 }
 
 export interface InvoiceItem {
@@ -143,6 +154,10 @@ export class FinanceService {
   // ─── SOFTWARE PROPOSALS (ADQUISICIONES) ────────────────────
   saveSoftwareProposal(proposal: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/software-proposals`, proposal);
+  }
+
+  updateSoftwareProposal(id: string | number, proposal: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/software-proposals/${id}`, proposal);
   }
 
   getSoftwareProposals(): Observable<{ ok: boolean, proposals: any[] }> {

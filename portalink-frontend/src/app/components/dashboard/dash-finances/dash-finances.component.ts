@@ -807,6 +807,18 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
                 </div>
 
                 <div class="flex items-center gap-1 shrink-0">
+                  <!-- Botón Descargar PDF de la Propuesta / Adquisición -->
+                  <button *ngIf="isAcquisition(s)" 
+                          (click)="downloadProposalPdfFromService(s)"
+                          [disabled]="pdfLoading"
+                          class="p-2 rounded-xl cursor-pointer transition-colors"
+                          [ngClass]="isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-500 hover:text-black hover:bg-neutral-100'" 
+                          title="Descargar PDF de Propuesta">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                  </button>
+
                   <button (click)="editService(s)" class="p-2 rounded-xl cursor-pointer transition-colors" [ngClass]="isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-500 hover:text-black hover:bg-neutral-100'" title="Editar Servicio">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                   </button>
@@ -827,7 +839,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
                 {{ isAcquisition(s) ? 'Inversión Proyecto' : 'Tarifa Base' }}
               </span>
               <span class="text-lg font-headline font-bold" 
-                    [ngClass]="isAcquisition(s) ? (isDark ? 'text-emerald-400 font-mono' : 'text-emerald-600 font-mono') : (isDark ? 'text-white' : 'text-neutral-900')">
+                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
                 {{ formatCOP(s.unitPrice || 0) }}
               </span>
             </div>
@@ -1694,9 +1706,11 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
               </div>
               <div>
                 <h3 class="text-sm font-headline font-bold uppercase tracking-wide">
-                  Propuesta Comercial de Software
+                  {{ editingProposalServiceId ? 'Editar Propuesta Comercial de Software' : 'Propuesta Comercial de Software' }}
                 </h3>
-                <p class="text-[11px] opacity-60">Configuración de entregables, valor acordado y exportación oficial</p>
+                <p class="text-[11px] opacity-60">
+                  {{ editingProposalServiceId ? 'Actualización de entregables, condiciones y valor acordado' : 'Configuración de entregables, valor acordado y exportación oficial' }}
+                </p>
               </div>
             </div>
 
@@ -1981,14 +1995,14 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
                       class="px-4 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border transition-all cursor-pointer flex items-center gap-2 shadow-xs active:scale-95"
                       [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800 text-white hover:bg-neutral-700' : 'border-neutral-300 bg-white text-black hover:bg-neutral-100'">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                <span>Guardar en Catálogo</span>
+                <span>{{ editingProposalServiceId ? 'Actualizar en Catálogo' : 'Guardar en Catálogo' }}</span>
               </button>
 
               <button (click)="downloadSoftwareProposal()" [disabled]="proposalSubmitting"
                       class="px-5 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider shadow-md active:scale-95 transition-all cursor-pointer flex items-center gap-2 border-0"
                       [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                <span>{{ proposalSubmitting ? 'Guardando y Generando...' : 'Guardar & Descargar PDF' }}</span>
+                <span>{{ proposalSubmitting ? 'Guardando y Generando...' : (editingProposalServiceId ? 'Actualizar & Descargar PDF' : 'Guardar & Descargar PDF') }}</span>
               </button>
             </div>
           </div>
@@ -2200,6 +2214,9 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
     }
   ];
 
+  editingProposalServiceId: string | number | null = null;
+  editingProposalId: string | number | null = null;
+
   proposalData: SoftwareProposal = {
     projectTitle: 'Ecosistema Digital & Plataforma de Software a Medida',
     clientName: '',
@@ -2217,15 +2234,31 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
   };
 
   openSoftwareProposalModal() {
-    if (!this.proposalData.items) {
-      this.proposalData.items = [];
-    }
+    this.editingProposalServiceId = null;
+    this.editingProposalId = null;
+    this.proposalData = {
+      projectTitle: 'Ecosistema Digital & Plataforma de Software a Medida',
+      clientName: '',
+      clientCompany: '',
+      clientEmail: '',
+      clientPhone: '',
+      issuedAt: new Date().toISOString().split('T')[0],
+      validUntil: new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString().split('T')[0],
+      deliveryTime: '3 a 4 semanas',
+      warranty: '12 meses de soporte técnico y corrección de incidencias',
+      paymentTerms: '',
+      notes: 'Incluye despliegue en servidores de producción, capacitación administrativa y código fuente.',
+      totalAmount: 0,
+      items: JSON.parse(JSON.stringify(this.defaultProposalItems))
+    };
     this.showProposalModal = true;
     this.safeDetectChanges();
   }
 
   closeSoftwareProposalModal() {
     this.showProposalModal = false;
+    this.editingProposalServiceId = null;
+    this.editingProposalId = null;
     this.safeDetectChanges();
   }
 
@@ -2309,9 +2342,111 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
            desc.includes('[adquisicion');
   }
 
+  buildProposalFromService(s: any): SoftwareProposal {
+    // 1. Título del Proyecto
+    let title = s.project_title || s.name || '';
+    title = title.replace(/^\[(Adquisición|Adquisicion)\]\s*/i, '').trim();
+
+    // 2. Cliente, Empresa, Tiempos
+    let clientName = s.client_name || '';
+    let clientCompany = s.client_company || '';
+    let time = s.delivery_time || '';
+    let warranty = s.warranty || '12 meses de soporte técnico y corrección de incidencias';
+    let payment = s.payment_terms || '';
+
+    // Extracción de respaldo desde la descripción si no vienen los campos unidos
+    const desc = s.description || '';
+    if (!clientName) {
+      const matchClient = desc.match(/Propuesta para\s+([^•(]+)/i);
+      if (matchClient) clientName = matchClient[1].trim();
+    }
+    if (!clientCompany) {
+      const matchComp = desc.match(/\(([^)]+)\)/);
+      if (matchComp) clientCompany = matchComp[1].trim();
+    }
+    if (!time) {
+      const matchTime = desc.match(/• Tiempo:\s*([^•]+)/i);
+      if (matchTime) time = matchTime[1].trim();
+    }
+    if (!payment) {
+      const matchPay = desc.match(/• Pago:\s*([^•]+)/i);
+      if (matchPay) payment = matchPay[1].trim();
+    }
+
+    // 3. Entregables / Módulos
+    let items: any[] = [];
+    if (Array.isArray(s.proposal_items) && s.proposal_items.length > 0) {
+      items = JSON.parse(JSON.stringify(s.proposal_items));
+    } else {
+      const matchItems = desc.match(/• Entregables:\s*([^•$]+)/i);
+      if (matchItems) {
+        const itemNames = matchItems[1].split(',').map((x: string) => x.trim()).filter(Boolean);
+        items = itemNames.map((name: string) => {
+          const matchDefault = this.defaultProposalItems.find(d => d.title.toLowerCase() === name.toLowerCase());
+          return {
+            title: name,
+            description: matchDefault ? matchDefault.description : 'Solución y alcance técnico incluido en el proyecto acordado.',
+            included: true
+          };
+        });
+      }
+    }
+    if (!items || items.length === 0) {
+      items = JSON.parse(JSON.stringify(this.defaultProposalItems));
+    }
+
+    return {
+      id: s.proposal_id || undefined,
+      serviceId: s.id || undefined,
+      projectTitle: title || 'Ecosistema Digital & Plataforma de Software a Medida',
+      clientName: clientName || '',
+      clientCompany: clientCompany || '',
+      clientEmail: s.client_email || '',
+      clientPhone: s.client_phone || '',
+      issuedAt: new Date().toISOString().split('T')[0],
+      validUntil: new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString().split('T')[0],
+      deliveryTime: time || '3 a 4 semanas',
+      warranty: warranty || '12 meses de soporte técnico y corrección de incidencias',
+      paymentTerms: payment || '',
+      notes: 'Incluye despliegue en servidores de producción, capacitación administrativa y código fuente.',
+      totalAmount: Number(s.proposal_total_amount || s.unitPrice || s.price || 0),
+      items: items
+    };
+  }
+
+  editAcquisitionProposal(s: any) {
+    this.editingProposalServiceId = s.id || null;
+    this.editingProposalId = s.proposal_id || null;
+    this.proposalData = this.buildProposalFromService(s);
+    this.showProposalModal = true;
+    this.safeDetectChanges();
+  }
+
+  async downloadProposalPdfFromService(s: any) {
+    const proposal = this.buildProposalFromService(s);
+    try {
+      this.pdfLoading = true;
+      this.safeDetectChanges();
+      await this.pdfService.downloadSoftwareProposalPdf(proposal, 'save');
+      this.showGadget('¡PDF de la propuesta comercial descargado con éxito!', 'success');
+    } catch (e) {
+      console.error(e);
+      alert('Error al descargar el PDF de la propuesta comercial');
+    } finally {
+      this.pdfLoading = false;
+      this.safeDetectChanges();
+    }
+  }
+
   async saveAcquisitionAsService(): Promise<any> {
     try {
-      const res = await firstValueFrom(this.financeService.saveSoftwareProposal(this.proposalData));
+      let res;
+      if (this.editingProposalId || this.editingProposalServiceId) {
+        const targetId = this.editingProposalId || this.editingProposalServiceId;
+        res = await firstValueFrom(this.financeService.updateSoftwareProposal(targetId!, this.proposalData));
+      } else {
+        res = await firstValueFrom(this.financeService.saveSoftwareProposal(this.proposalData));
+      }
       await this.refresh();
       return res;
     } catch (err) {
@@ -2335,6 +2470,7 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
       const description = `[Adquisición de Software] Propuesta para ${client}${company}${paymentInfo}${timeInfo}${itemsSummary}`;
 
       const newService: Service = {
+        id: this.editingProposalServiceId ? String(this.editingProposalServiceId) : undefined,
         name: `[Adquisición] ${title}`,
         description: description,
         price: Number(this.proposalData.totalAmount || 0),
@@ -2356,8 +2492,9 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
     this.proposalSubmitting = true;
     this.safeDetectChanges();
     try {
+      const isEdit = !!(this.editingProposalId || this.editingProposalServiceId);
       await this.saveAcquisitionAsService();
-      this.showGadget('¡Adquisición guardada con éxito en el catálogo de servicios!', 'success');
+      this.showGadget(isEdit ? '¡Propuesta comercial actualizada con éxito!' : '¡Adquisición guardada con éxito en el catálogo de servicios!', isEdit ? 'edit' : 'success');
       this.closeSoftwareProposalModal();
     } catch (e) {
       console.error(e);
@@ -2376,12 +2513,13 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
     this.proposalSubmitting = true;
     this.safeDetectChanges();
     try {
+      const isEdit = !!(this.editingProposalId || this.editingProposalServiceId);
       // 1. Guardar automáticamente en la base de datos
       await this.saveAcquisitionAsService();
       
       // 2. Generar y descargar el documento PDF
       await this.pdfService.downloadSoftwareProposalPdf(this.proposalData, 'save');
-      this.showGadget('¡Propuesta comercial guardada en catálogo y PDF descargado!', 'success');
+      this.showGadget(isEdit ? '¡Propuesta comercial actualizada y PDF descargado!' : '¡Propuesta comercial guardada en catálogo y PDF descargado!', 'success');
       this.closeSoftwareProposalModal();
     } catch (e) {
       console.error(e);
@@ -3029,7 +3167,15 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
 
   // ─── SERVICES ──────────────────────────────
   openNewService() { this.editingService = { id: '', name: '', description: '', unitPrice: 0, category: 'desarrollo' }; this.showServiceForm = true; this.safeDetectChanges(); }
-  editService(s: Service) { this.editingService = { ...s }; this.showServiceForm = true; this.safeDetectChanges(); }
+  editService(s: Service) {
+    if (this.isAcquisition(s)) {
+      this.editAcquisitionProposal(s);
+      return;
+    }
+    this.editingService = { ...s };
+    this.showServiceForm = true;
+    this.safeDetectChanges();
+  }
   async saveService() {
     if (!this.editingService?.name) {
       alert('El nombre del servicio es obligatorio.');
