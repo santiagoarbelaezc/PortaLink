@@ -695,7 +695,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
             </div>
             <div class="flex flex-col gap-1.5">
               <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Categoría</label>
-              <select [(ngModel)]="editingService!.category" [style.color-scheme]="isDark ? 'dark' : 'light'"
+              <select [(ngModel)]="editingService!.category" (ngModelChange)="onServiceCategoryChange($event)" [style.color-scheme]="isDark ? 'dark' : 'light'"
                       class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none cursor-pointer transition-colors font-medium"
                       [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black'">
                 <option value="adquisicion">Propuesta Software</option>
@@ -2342,6 +2342,26 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
            desc.includes('[adquisicion');
   }
 
+  onServiceCategoryChange(category: string) {
+    if (category === 'adquisicion') {
+      const currentName = this.editingService?.name || '';
+      const currentPrice = this.editingService?.unitPrice || 0;
+      const currentId = this.editingService?.id || null;
+      this.showServiceForm = false;
+      this.openSoftwareProposalModal();
+      if (currentName) {
+        this.proposalData.projectTitle = currentName.replace(/^\[(Adquisición|Adquisicion)\]\s*/i, '').trim();
+      }
+      if (currentPrice) {
+        this.proposalData.totalAmount = currentPrice;
+      }
+      if (currentId) {
+        this.editingProposalServiceId = currentId;
+      }
+      this.safeDetectChanges();
+    }
+  }
+
   buildProposalFromService(s: any): SoftwareProposal {
     // 1. Título del Proyecto
     let title = s.project_title || s.name || '';
@@ -2350,6 +2370,8 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
     // 2. Cliente, Empresa, Tiempos
     let clientName = s.client_name || '';
     let clientCompany = s.client_company || '';
+    let clientEmail = s.client_email || '';
+    let clientPhone = s.client_phone || '';
     let time = s.delivery_time || '';
     let warranty = s.warranty || '12 meses de soporte técnico y corrección de incidencias';
     let payment = s.payment_terms || '';
@@ -2373,27 +2395,68 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
       if (matchPay) payment = matchPay[1].trim();
     }
 
-    // 3. Entregables / Módulos
+    // 3. Entregables / Módulos (soporta array directo o parseo de JSON string)
     let items: any[] = [];
-    if (Array.isArray(s.proposal_items) && s.proposal_items.length > 0) {
-      items = JSON.parse(JSON.stringify(s.proposal_items));
-    } else {
-      const matchItems = desc.match(/• Entregables:\s*([^•$]+)/i);
-      if (matchItems) {
-        const itemNames = matchItems[1].split(',').map((x: string) => x.trim()).filter(Boolean);
-        items = itemNames.map((name: string) => {
-          const matchDefault = this.defaultProposalItems.find(d => d.title.toLowerCase() === name.toLowerCase());
-          return {
-            title: name,
-            description: matchDefault ? matchDefault.description : 'Solución y alcance técnico incluido en el proyecto acordado.',
-            included: true
-          };
-        });
+    let rawItems = s.proposal_items;
+    if (typeof rawItems === 'string' && rawItems.trim()) {
+      try {
+        rawItems = JSON.parse(rawItems);
+      } catch (e) {
+        rawItems = null;
       }
     }
+    if (Array.isArray(rawItems) && rawItems.length > 0) {
+      items = JSON.parse(JSON.stringify(rawItems));
+    }
+
+    // EXTRAER Y SINCRONIZAR ENTREGABLES DESDE LA DESCRIPCIÓN
+    const matchItems = desc.match(/• Entregables:\s*([^•$]+)/i);
+    if (matchItems) {
+      const descItemsText = matchItems[1].trim();
+      let itemNames = descItemsText.split(',').map((x: string) => x.trim()).filter(Boolean);
+      
+      // Re-unir 'Caja, Gastos y Auditoría' si fue separada por la coma
+      const recombined: string[] = [];
+      for (let i = 0; i < itemNames.length; i++) {
+        if (itemNames[i].toLowerCase() === 'caja' && itemNames[i + 1] && itemNames[i + 1].toLowerCase().startsWith('gastos')) {
+          recombined.push(itemNames[i] + ', ' + itemNames[i + 1]);
+          i++;
+        } else {
+          recombined.push(itemNames[i]);
+        }
+      }
+      itemNames = recombined;
+
+      if (items.length === 0 || itemNames.length > items.length) {
+        const mergedItems: any[] = [];
+        for (const name of itemNames) {
+          const existing = items.find(it => it.title && it.title.trim().toLowerCase() === name.toLowerCase());
+          if (existing) {
+            mergedItems.push(existing);
+          } else {
+            const matchDefault = this.defaultProposalItems.find(d => d.title.toLowerCase() === name.toLowerCase());
+            mergedItems.push({
+              title: name,
+              description: matchDefault ? matchDefault.description : 'Especificaciones técnicas acordadas.',
+              included: true
+            });
+          }
+        }
+        // Conservar items que ya estaban en items
+        for (const it of items) {
+          if (!mergedItems.some(m => m.title && m.title.trim().toLowerCase() === (it.title || '').trim().toLowerCase())) {
+            mergedItems.push(it);
+          }
+        }
+        items = mergedItems;
+      }
+    }
+
     if (!items || items.length === 0) {
       items = JSON.parse(JSON.stringify(this.defaultProposalItems));
     }
+
+    const finalAmount = Number(s.unitPrice ?? s.price ?? s.proposal_total_amount ?? 0);
 
     return {
       id: s.proposal_id || undefined,
@@ -2401,15 +2464,15 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
       projectTitle: title || 'Ecosistema Digital & Plataforma de Software a Medida',
       clientName: clientName || '',
       clientCompany: clientCompany || '',
-      clientEmail: s.client_email || '',
-      clientPhone: s.client_phone || '',
+      clientEmail: clientEmail,
+      clientPhone: clientPhone,
       issuedAt: new Date().toISOString().split('T')[0],
       validUntil: new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString().split('T')[0],
       deliveryTime: time || '3 a 4 semanas',
       warranty: warranty || '12 meses de soporte técnico y corrección de incidencias',
       paymentTerms: payment || '',
       notes: 'Incluye despliegue en servidores de producción, capacitación administrativa y código fuente.',
-      totalAmount: Number(s.proposal_total_amount || s.unitPrice || s.price || 0),
+      totalAmount: finalAmount,
       items: items
     };
   }
@@ -2440,12 +2503,20 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
 
   async saveAcquisitionAsService(): Promise<any> {
     try {
-      let res;
+      let res: any;
       if (this.editingProposalId || this.editingProposalServiceId) {
         const targetId = this.editingProposalId || this.editingProposalServiceId;
         res = await firstValueFrom(this.financeService.updateSoftwareProposal(targetId!, this.proposalData));
       } else {
         res = await firstValueFrom(this.financeService.saveSoftwareProposal(this.proposalData));
+      }
+      if (res && res.proposalId) {
+        this.editingProposalId = res.proposalId;
+        this.proposalData.id = res.proposalId;
+      }
+      if (res && res.serviceId) {
+        this.editingProposalServiceId = res.serviceId;
+        this.proposalData.serviceId = res.serviceId;
       }
       await this.refresh();
       return res;
@@ -2517,7 +2588,7 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
       // 1. Guardar automáticamente en la base de datos
       await this.saveAcquisitionAsService();
       
-      // 2. Generar y descargar el documento PDF
+      // 2. Generar y descargar el documento PDF con los datos exactos
       await this.pdfService.downloadSoftwareProposalPdf(this.proposalData, 'save');
       this.showGadget(isEdit ? '¡Propuesta comercial actualizada y PDF descargado!' : '¡Propuesta comercial guardada en catálogo y PDF descargado!', 'success');
       this.closeSoftwareProposalModal();

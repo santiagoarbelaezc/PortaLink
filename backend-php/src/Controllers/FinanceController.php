@@ -280,10 +280,15 @@ class FinanceController
                   `warranty` VARCHAR(255) NULL,
                   `items` LONGTEXT NULL,
                   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                  `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                   INDEX (`user_id`),
                   INDEX (`service_id`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
             ");
+            $stmt = $pdo->query("SHOW COLUMNS FROM `finance_software_proposals` LIKE 'updated_at'");
+            if (!$stmt->fetch()) {
+                $pdo->exec("ALTER TABLE `finance_software_proposals` ADD COLUMN `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+            }
         } catch (\Throwable $e) {
             error_log('[Finance] ensureSoftwareProposalsTable error: ' . $e->getMessage());
         }
@@ -309,7 +314,11 @@ class FinanceController
                        p.warranty, 
                        p.items AS proposal_items
                 FROM finance_services s
-                LEFT JOIN finance_software_proposals p ON p.service_id = s.id AND p.user_id = s.user_id
+                LEFT JOIN finance_software_proposals p ON p.id = (
+                    SELECT p2.id FROM finance_software_proposals p2 
+                    WHERE p2.service_id = s.id AND p2.user_id = s.user_id 
+                    ORDER BY p2.id DESC LIMIT 1
+                )
                 WHERE s.user_id = ? 
                 ORDER BY s.id DESC
             ');
@@ -344,6 +353,17 @@ class FinanceController
             $stmt->execute([$request->user->id, $name, $description, (float)$price, $category]);
             $id = $pdo->lastInsertId();
 
+            if ($category === 'adquisicion') {
+                $this->ensureSoftwareProposalsTable();
+                $cleanTitle = preg_replace('/^\[(Adquisición|Adquisicion)\]\s*/i', '', $name);
+                $stmtProp = $pdo->prepare("
+                    INSERT INTO finance_software_proposals 
+                    (user_id, service_id, project_title, client_name, total_amount, items)
+                    VALUES (?, ?, ?, 'Cliente Particular / Corporativo', ?, '[]')
+                ");
+                $stmtProp->execute([$request->user->id, $id, $cleanTitle ?: 'Propuesta Comercial de Software', (float)$price]);
+            }
+
             $stmtFetch = $pdo->prepare("SELECT * FROM finance_services WHERE id = ?");
             $stmtFetch->execute([$id]);
             $service = $stmtFetch->fetch(PDO::FETCH_ASSOC);
@@ -368,6 +388,25 @@ class FinanceController
             $pdo = Database::getConnection();
             $stmt = $pdo->prepare("UPDATE finance_services SET name = ?, description = ?, price = ?, category = ? WHERE id = ? AND user_id = ?");
             $stmt->execute([$name, $description, (float)$price, $category, $id, $request->user->id]);
+
+            if ($category === 'adquisicion') {
+                $this->ensureSoftwareProposalsTable();
+                $cleanTitle = preg_replace('/^\[(Adquisición|Adquisicion)\]\s*/i', '', $name);
+                $stmtCheck = $pdo->prepare("SELECT id FROM finance_software_proposals WHERE service_id = ? AND user_id = ?");
+                $stmtCheck->execute([$id, $request->user->id]);
+                $propRow = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+                if ($propRow) {
+                    $stmtUpP = $pdo->prepare("UPDATE finance_software_proposals SET project_title = ?, total_amount = ? WHERE id = ? AND user_id = ?");
+                    $stmtUpP->execute([$cleanTitle ?: 'Propuesta Comercial de Software', (float)$price, $propRow['id'], $request->user->id]);
+                } else {
+                    $stmtInP = $pdo->prepare("
+                        INSERT INTO finance_software_proposals 
+                        (user_id, service_id, project_title, client_name, total_amount, items)
+                        VALUES (?, ?, ?, 'Cliente Particular / Corporativo', ?, '[]')
+                    ");
+                    $stmtInP->execute([$request->user->id, $id, $cleanTitle ?: 'Propuesta Comercial de Software', (float)$price]);
+                }
+            }
 
             $stmtFetch = $pdo->prepare("SELECT * FROM finance_services WHERE id = ? AND user_id = ?");
             $stmtFetch->execute([$id, $request->user->id]);
@@ -550,12 +589,12 @@ class FinanceController
 
             if ($prop) {
                 $propId = $prop['id'];
-                $serviceId = $prop['service_id'];
+                $serviceId = !empty($prop['service_id']) ? $prop['service_id'] : $id;
 
                 $stmtUp = $pdo->prepare("
                     UPDATE finance_software_proposals 
                     SET project_title = ?, client_name = ?, client_company = ?, client_email = ?, client_phone = ?,
-                        total_amount = ?, payment_terms = ?, delivery_time = ?, warranty = ?, items = ?, updated_at = NOW()
+                        total_amount = ?, payment_terms = ?, delivery_time = ?, warranty = ?, items = ?
                     WHERE id = ? AND user_id = ?
                 ");
                 $stmtUp->execute([
@@ -574,12 +613,26 @@ class FinanceController
                 }
             } else {
                 // Si solo existía en finance_services con ID $id
-                $stmtS = $pdo->prepare("
-                    UPDATE finance_services 
-                    SET name = ?, description = ?, price = ?, category = 'adquisicion'
-                    WHERE id = ? AND user_id = ?
-                ");
-                $stmtS->execute([$serviceName, $serviceDesc, $totalAmount, $id, $request->user->id]);
+                $stmtCheckServ = $pdo->prepare("SELECT id FROM finance_services WHERE id = ? AND user_id = ?");
+                $stmtCheckServ->execute([$id, $request->user->id]);
+                $hasService = $stmtCheckServ->fetch(PDO::FETCH_ASSOC);
+
+                if ($hasService) {
+                    $serviceId = $id;
+                    $stmtS = $pdo->prepare("
+                        UPDATE finance_services 
+                        SET name = ?, description = ?, price = ?, category = 'adquisicion'
+                        WHERE id = ? AND user_id = ?
+                    ");
+                    $stmtS->execute([$serviceName, $serviceDesc, $totalAmount, $serviceId, $request->user->id]);
+                } else {
+                    $stmtInS = $pdo->prepare("
+                        INSERT INTO finance_services (user_id, name, description, price, category) 
+                        VALUES (?, ?, ?, ?, 'adquisicion')
+                    ");
+                    $stmtInS->execute([$request->user->id, $serviceName, $serviceDesc, $totalAmount]);
+                    $serviceId = $pdo->lastInsertId();
+                }
 
                 $stmtProposal = $pdo->prepare("
                     INSERT INTO finance_software_proposals 
@@ -588,7 +641,7 @@ class FinanceController
                 ");
                 $stmtProposal->execute([
                     $request->user->id,
-                    $id,
+                    $serviceId,
                     $projectTitle,
                     $clientName,
                     $clientCompany,
@@ -600,9 +653,15 @@ class FinanceController
                     $warranty,
                     json_encode($items, JSON_UNESCAPED_UNICODE)
                 ]);
+                $propId = $pdo->lastInsertId();
             }
 
-            $response->json(['ok' => true, 'message' => 'Propuesta comercial actualizada correctamente']);
+            $response->json([
+                'ok' => true,
+                'message' => 'Propuesta comercial actualizada correctamente',
+                'proposalId' => $propId,
+                'serviceId' => $serviceId ?? null
+            ]);
         } catch (\Throwable $error) {
             error_log('Error al actualizar propuesta de software: ' . $error->getMessage());
             $response->status(500)->json(['ok' => false, 'message' => 'Error al actualizar propuesta: ' . $error->getMessage()]);
