@@ -59,8 +59,12 @@ import { MessagesService } from '../../../services/messages.service';
             <!-- Fecha y Hora: Estilo de texto original sin cápsula -->
             <p class="text-[11px] xs:text-xs sm:text-sm mt-1 mb-3 xs:mb-4 sm:mb-5 flex items-baseline gap-1.5 xs:gap-2 font-headline"
                [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
-               <span>{{ currentDate }}</span>
-               <span class="text-xs xs:text-sm md:text-base font-semibold" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-700'">{{ currentTime }}</span>
+               <span class="hidden sm:inline">{{ currentDate }}</span>
+               <span class="sm:hidden">{{ currentDateShort }}</span>
+               <span class="text-xs xs:text-sm md:text-base font-semibold" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-700'">
+                 <span class="hidden sm:inline">{{ currentTime }}</span>
+                 <span class="sm:hidden">{{ currentTimeShort }}</span>
+               </span>
             </p>
 
             <!-- Quick Chips (Vistas, Mensajes, Online, Sesión) perfectamente alineados -->
@@ -138,7 +142,7 @@ import { MessagesService } from '../../../services/messages.service';
                     {{ streakData?.streakCount || 1 }} {{ (streakData?.streakCount === 1) ? 'día' : 'días' }}
                   </span>
                 </div>
-                <p class="text-[11px] xs:text-xs sm:text-[13px] font-sans text-neutral-400 dark:text-neutral-500 m-0 mt-0.5">
+                <p class="hidden sm:block text-[11px] xs:text-xs sm:text-[13px] font-sans text-neutral-400 dark:text-neutral-500 m-0 mt-0.5">
                   Mantén tu constancia diaria completando las 3 actividades clave
                 </p>
               </div>
@@ -183,8 +187,11 @@ import { MessagesService } from '../../../services/messages.service';
                     </svg>
                   </div>
                   <div class="min-w-0">
-                    <p class="text-xs font-headline font-semibold truncate m-0">1. Primer ingreso diario al Dashboard</p>
-                    <p class="text-[10px] opacity-75 m-0 font-sans">Registrado automáticamente hoy</p>
+                    <p class="text-xs font-headline font-semibold truncate m-0">
+                      <span class="hidden sm:inline">1. Primer ingreso diario al Dashboard</span>
+                      <span class="sm:hidden">1. Ingreso diario</span>
+                    </p>
+                    <p class="hidden sm:block text-[10px] opacity-75 m-0 font-sans">Registrado automáticamente hoy</p>
                   </div>
                 </div>
                 <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shrink-0">
@@ -206,8 +213,11 @@ import { MessagesService } from '../../../services/messages.service';
                     <span *ngIf="!streakData?.actions?.robot" class="text-xs font-bold">2</span>
                   </div>
                   <div class="min-w-0">
-                    <p class="text-xs font-headline font-semibold truncate m-0">2. Conversación con Rotbot IA</p>
-                    <p class="text-[10px] opacity-75 m-0 font-sans">Practica inglés o hazle consultas al bot</p>
+                    <p class="text-xs font-headline font-semibold truncate m-0">
+                      <span class="hidden sm:inline">2. Conversación con Rotbot IA</span>
+                      <span class="sm:hidden">2. Práctica con Rotbot</span>
+                    </p>
+                    <p class="hidden sm:block text-[10px] opacity-75 m-0 font-sans">Practica inglés o hazle consultas al bot</p>
                   </div>
                 </div>
 
@@ -238,8 +248,11 @@ import { MessagesService } from '../../../services/messages.service';
                     <span *ngIf="!streakData?.actions?.library" class="text-xs font-bold">3</span>
                   </div>
                   <div class="min-w-0">
-                    <p class="text-xs font-headline font-semibold truncate m-0">3. Estudiar o escribir en Biblioteca</p>
-                    <p class="text-[10px] opacity-75 m-0 font-sans">Crea o repasa tus apuntes de estudio</p>
+                    <p class="text-xs font-headline font-semibold truncate m-0">
+                      <span class="hidden sm:inline">3. Estudiar o escribir en Biblioteca</span>
+                      <span class="sm:hidden">3. Apuntes de Biblioteca</span>
+                    </p>
+                    <p class="hidden sm:block text-[10px] opacity-75 m-0 font-sans">Crea o repasa tus apuntes de estudio</p>
                   </div>
                 </div>
 
@@ -270,7 +283,7 @@ import { MessagesService } from '../../../services/messages.service';
                     <span class="text-[10px] font-mono uppercase tracking-wider text-neutral-400 truncate">
                       Esta semana
                     </span>
-                    <span class="text-[10px] font-headline font-semibold text-neutral-500">Lun — Dom</span>
+                    <span class="text-[10px] font-headline font-semibold text-neutral-500 hidden sm:inline">Lun — Dom</span>
                   </div>
                   
                   <!-- Botón Ver Mes (Abre el Modal) -->
@@ -342,7 +355,7 @@ import { MessagesService } from '../../../services/messages.service';
                 <h3 class="text-base xs:text-lg sm:text-xl font-headline font-bold tracking-tight m-0 leading-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
                   Centro de Comando IA
                 </h3>
-                <p class="text-[11px] xs:text-xs sm:text-[13px] font-sans text-neutral-400 dark:text-neutral-500 m-0 mt-0.5">
+                <p class="hidden sm:block text-[11px] xs:text-xs sm:text-[13px] font-sans text-neutral-400 dark:text-neutral-500 m-0 mt-0.5">
                   Pregúntale a nuestro motor inteligente para analizar métricas, finanzas o navegar el dashboard
                 </p>
               </div>
@@ -459,7 +472,7 @@ import { MessagesService } from '../../../services/messages.service';
                  class="group rounded-[18px] xs:rounded-[20px] sm:rounded-[22px] border p-3.5 xs:p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 hover:border-neutral-400 dark:hover:border-neutral-600 hover:shadow-md cursor-pointer active:scale-98"
                  [ngClass]="isDark ? 'bg-neutral-950/70 border-neutral-800' : 'bg-white border-neutral-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.02)]'">
               <div class="flex items-center justify-between">
-                <span class="text-[9px] xs:text-[10px] sm:text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 truncate">
+                <span class="hidden sm:inline text-[9px] xs:text-[10px] sm:text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 truncate">
                   Finanzas & Cobros
                 </span>
                 <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shrink-0 border"
@@ -475,7 +488,7 @@ import { MessagesService } from '../../../services/messages.service';
                   Finanzas
                 </h4>
               </div>
-              <div class="flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400 dark:text-neutral-500 font-sans pt-1 border-t"
+              <div class="hidden sm:flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400 dark:text-neutral-500 font-sans pt-1 border-t"
                    [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
                 <span class="truncate">Cartera & Facturación</span>
                 <span class="font-headline font-bold text-neutral-900 dark:text-white group-hover:translate-x-0.5 transition-transform ml-1">→</span>
@@ -487,7 +500,7 @@ import { MessagesService } from '../../../services/messages.service';
                  class="group rounded-[18px] xs:rounded-[20px] sm:rounded-[22px] border p-3.5 xs:p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 hover:border-neutral-400 dark:hover:border-neutral-600 hover:shadow-md cursor-pointer active:scale-98"
                  [ngClass]="isDark ? 'bg-neutral-950/70 border-neutral-800' : 'bg-white border-neutral-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.02)]'">
               <div class="flex items-center justify-between">
-                <span class="text-[9px] xs:text-[10px] sm:text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 truncate">
+                <span class="hidden sm:inline text-[9px] xs:text-[10px] sm:text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 truncate">
                   Biblioteca
                 </span>
                 <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shrink-0 border"
@@ -503,7 +516,7 @@ import { MessagesService } from '../../../services/messages.service';
                   Biblioteca
                 </h4>
               </div>
-              <div class="flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400 dark:text-neutral-500 font-sans pt-1 border-t"
+              <div class="hidden sm:flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400 dark:text-neutral-500 font-sans pt-1 border-t"
                    [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
                 <span class="truncate">Cuadernos & Apuntes</span>
                 <span class="font-headline font-bold text-neutral-900 dark:text-white group-hover:translate-x-0.5 transition-transform ml-1">→</span>
@@ -515,7 +528,7 @@ import { MessagesService } from '../../../services/messages.service';
                  class="group rounded-[18px] xs:rounded-[20px] sm:rounded-[22px] border p-3.5 xs:p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 hover:border-neutral-400 dark:hover:border-neutral-600 hover:shadow-md cursor-pointer active:scale-98"
                  [ngClass]="isDark ? 'bg-neutral-950/70 border-neutral-800' : 'bg-white border-neutral-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.02)]'">
               <div class="flex items-center justify-between">
-                <span class="text-[9px] xs:text-[10px] sm:text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 truncate">
+                <span class="hidden sm:inline text-[9px] xs:text-[10px] sm:text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 truncate">
                   Agenda & Tareas
                 </span>
                 <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shrink-0 border"
@@ -531,7 +544,7 @@ import { MessagesService } from '../../../services/messages.service';
                   Itinerario
                 </h4>
               </div>
-              <div class="flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400 dark:text-neutral-500 font-sans pt-1 border-t"
+              <div class="hidden sm:flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400 dark:text-neutral-500 font-sans pt-1 border-t"
                    [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
                 <span class="truncate">Tareas & Calendario</span>
                 <span class="font-headline font-bold text-neutral-900 dark:text-white group-hover:translate-x-0.5 transition-transform ml-1">→</span>
@@ -543,7 +556,7 @@ import { MessagesService } from '../../../services/messages.service';
                  class="group rounded-[18px] xs:rounded-[20px] sm:rounded-[22px] border p-3.5 xs:p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 hover:border-neutral-400 dark:hover:border-neutral-600 hover:shadow-md cursor-pointer active:scale-98"
                  [ngClass]="isDark ? 'bg-neutral-950/70 border-neutral-800' : 'bg-white border-neutral-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.02)]'">
               <div class="flex items-center justify-between">
-                <span class="text-[9px] xs:text-[10px] sm:text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 truncate">
+                <span class="hidden sm:inline text-[9px] xs:text-[10px] sm:text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 truncate">
                   Analíticas & Tráfico
                 </span>
                 <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shrink-0 border"
@@ -559,7 +572,7 @@ import { MessagesService } from '../../../services/messages.service';
                   Analíticas
                 </h4>
               </div>
-              <div class="flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400 dark:text-neutral-500 font-sans pt-1 border-t"
+              <div class="hidden sm:flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400 dark:text-neutral-500 font-sans pt-1 border-t"
                    [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
                 <span class="truncate">Métricas & Visitas</span>
                 <span class="font-headline font-bold text-neutral-900 dark:text-white group-hover:translate-x-0.5 transition-transform ml-1">→</span>
@@ -735,7 +748,7 @@ import { MessagesService } from '../../../services/messages.service';
                 </h3>
                 <span class="text-[9px] xs:text-[10px] sm:text-[11px] font-bold text-emerald-500 bg-emerald-500/10 px-1 xs:px-1.5 py-0.5 rounded-full">+18.4%</span>
               </div>
-              <p class="text-[10px] xs:text-xs mt-0.5 xs:mt-1 opacity-50 font-normal truncate">Visitas registradas</p>
+              <p class="hidden sm:block text-[10px] xs:text-xs mt-0.5 xs:mt-1 opacity-50 font-normal truncate">Visitas registradas</p>
             </div>
           </div>
 
@@ -755,7 +768,7 @@ import { MessagesService } from '../../../services/messages.service';
                   {{ formatCurrency(financeTotalPaid) }}
                 </h3>
               </div>
-              <p class="text-[10px] xs:text-xs mt-0.5 xs:mt-1 opacity-60 font-normal truncate">
+              <p class="hidden sm:block text-[10px] xs:text-xs mt-0.5 xs:mt-1 opacity-60 font-normal truncate">
                 Pend: <span class="font-semibold text-amber-500">{{ formatCurrency(financeTotalPending) }}</span>
               </p>
             </div>
@@ -778,7 +791,7 @@ import { MessagesService } from '../../../services/messages.service';
                 </h3>
                 <span class="text-[9px] xs:text-[10px] sm:text-[11px] font-medium text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded-full">Finanzas</span>
               </div>
-              <p class="text-[10px] xs:text-xs mt-0.5 xs:mt-1 opacity-50 font-normal truncate">Cartera en Finanzas</p>
+              <p class="hidden sm:block text-[10px] xs:text-xs mt-0.5 xs:mt-1 opacity-50 font-normal truncate">Cartera en Finanzas</p>
             </div>
           </div>
 
@@ -799,7 +812,7 @@ import { MessagesService } from '../../../services/messages.service';
                 </h3>
                 <span class="text-[9px] xs:text-[10px] opacity-60">Uptime</span>
               </div>
-              <p class="text-[10px] xs:text-xs mt-0.5 xs:mt-1 opacity-50 font-normal truncate">Latencia: 42ms</p>
+              <p class="hidden sm:block text-[10px] xs:text-xs mt-0.5 xs:mt-1 opacity-50 font-normal truncate">Latencia: 42ms</p>
             </div>
           </div>
 
@@ -819,7 +832,7 @@ import { MessagesService } from '../../../services/messages.service';
                     <h4 class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider"
                         [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Rendimiento & Tráfico</h4>
                   </div>
-                  <p class="text-[10px] xs:text-xs opacity-60">Últimos 7 días</p>
+                  <p class="hidden sm:block text-[10px] xs:text-xs opacity-60">Últimos 7 días</p>
                 </div>
                 <button (click)="navigateToTab('analytics')" 
                         class="text-[9px] xs:text-[10px] font-headline font-semibold uppercase tracking-wider px-2.5 xs:px-3 py-1 rounded-full border transition-colors hover:scale-105 cursor-pointer shrink-0"
@@ -892,7 +905,7 @@ import { MessagesService } from '../../../services/messages.service';
                     <h4 class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider"
                         [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Flujo Financiero</h4>
                   </div>
-                  <p class="text-[10px] xs:text-xs opacity-60">Histórico de facturación mensual</p>
+                  <p class="hidden sm:block text-[10px] xs:text-xs opacity-60">Histórico de facturación mensual</p>
                 </div>
                 <button (click)="navigateToTab('finances')" 
                         class="text-[9px] xs:text-[10px] font-headline font-semibold uppercase tracking-wider px-2.5 xs:px-3 py-1 rounded-full border transition-colors hover:scale-105 cursor-pointer shrink-0"
@@ -1381,6 +1394,8 @@ export class DashHomeComponent implements OnInit, OnDestroy {
 
   currentDate = '';
   currentTime = '';
+  currentDateShort = '';
+  currentTimeShort = '';
 
   get greetingText(): string {
     const hour = new Date().getHours();
@@ -1846,6 +1861,13 @@ export class DashHomeComponent implements OnInit, OnDestroy {
     this.currentDate = rawDate.charAt(0).toUpperCase() + rawDate.slice(1);
     this.currentTime = now.toLocaleTimeString('es-CO', {
       hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+    const rawShort = now.toLocaleDateString('es-CO', {
+      day: 'numeric', month: 'short', year: 'numeric'
+    });
+    this.currentDateShort = rawShort.charAt(0).toUpperCase() + rawShort.slice(1);
+    this.currentTimeShort = now.toLocaleTimeString('es-CO', {
+      hour: '2-digit', minute: '2-digit'
     });
   }
 

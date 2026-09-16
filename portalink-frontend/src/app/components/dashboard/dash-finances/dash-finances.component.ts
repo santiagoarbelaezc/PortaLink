@@ -74,11 +74,11 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
         </div>
       </div>
 
-      <!-- Sub-tabs Dock (Estilo Dash Calendar Filter Dock) -->
-      <div class="flex items-center gap-1.5 p-1 rounded-2xl border backdrop-blur-md overflow-x-auto no-scrollbar"
+      <!-- Sub-tabs Dock (Estilo Dash Calendar Filter Dock / iOS Segmented Control) -->
+      <div class="flex items-center gap-1 p-1 rounded-2xl border backdrop-blur-xl overflow-x-auto no-scrollbar"
            [ngClass]="isDark ? 'bg-[#141419] border-neutral-800' : 'bg-neutral-100 border-neutral-200'">
         <button *ngFor="let t of subTabs" (click)="subTab = t.id"
-                class="whitespace-nowrap px-4 py-2 text-xs font-headline font-semibold uppercase tracking-wider rounded-xl transition-all duration-200 cursor-pointer shrink-0 active:scale-95"
+                class="flex-1 sm:flex-initial text-center whitespace-nowrap px-4 py-2.5 sm:py-2 text-xs font-headline font-semibold uppercase tracking-wider rounded-xl transition-all duration-200 cursor-pointer shrink-0 active:scale-95"
                 [ngClass]="subTab === t.id
                   ? 'bg-white text-black font-bold shadow-md'
                   : (isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-800/40' : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200/60')">
@@ -144,9 +144,9 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
            </div>
         </div>
 
-        <!-- KPI cards (Trading panel style) -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div *ngFor="let kpi of kpis" class="relative rounded-2xl border p-5 overflow-hidden group transition-all duration-300 hover:border-neutral-700 shadow-sm"
+        <!-- KPI cards (Trading panel style / Apple Card carousel on mobile) -->
+        <div class="flex md:grid overflow-x-auto md:overflow-visible snap-x snap-mandatory gap-3 pb-2 md:pb-0 no-scrollbar md:grid-cols-4">
+          <div *ngFor="let kpi of kpis" class="min-w-[72vw] sm:min-w-[220px] md:min-w-0 snap-start flex-shrink-0 md:flex-shrink relative rounded-2xl border p-4 sm:p-5 overflow-hidden group transition-all duration-300 hover:border-neutral-700 shadow-sm"
                [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
             <p class="text-xs font-medium uppercase tracking-wider mb-2 opacity-60"
                [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ kpi.label }}</p>
@@ -1647,33 +1647,35 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5" /></svg>
             </button>
           </div>
-
         </div>
+
       </ng-container>
 
-      <!-- ══════════════════ MODALES GLOBALMENTE DISPONIBLES EN TODAS LAS PESTAÑAS ══════════════════ -->
-
-      <!-- PDF Preview Modal -->
-      <div *ngIf="showPdfPreview" appTeleportToBody class="modal-backdrop fixed inset-0 w-screen h-screen z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-xl animate-fadeIn">
-        <div class="w-full max-w-4xl h-[90vh] rounded-3xl flex flex-col overflow-hidden shadow-2xl border modal-enter my-auto sm:-translate-y-4 md:-translate-y-6 transition-all"
+      <!-- PDF Preview Modal (iOS Bottom Sheet on Mobile / Centered on Desktop) -->
+      <div *ngIf="showPdfPreview" appTeleportToBody class="modal-backdrop fixed inset-0 w-screen h-screen z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-6 bg-black/80 backdrop-blur-xl animate-fadeIn">
+        <div class="w-full max-w-4xl h-[94vh] sm:h-[90vh] rounded-t-[32px] sm:rounded-3xl flex flex-col overflow-hidden shadow-2xl border-t sm:border modal-enter my-0 sm:my-auto sm:-translate-y-4 md:-translate-y-6 transition-all"
              [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800 text-white shadow-black/80' : 'bg-white border-neutral-200 text-neutral-900 shadow-xl'">
-          <div class="px-6 py-4 border-b flex justify-between items-center shrink-0" [ngClass]="isDark ? 'border-neutral-800 bg-[#141419]' : 'border-neutral-200 bg-neutral-50/90'">
+          
+          <!-- Mobile Pull Handle -->
+          <div class="w-10 h-1.5 rounded-full bg-neutral-600/40 mx-auto my-2.5 sm:hidden shrink-0"></div>
+
+          <div class="px-5 sm:px-6 py-3 sm:py-4 border-b flex justify-between items-center shrink-0" [ngClass]="isDark ? 'border-neutral-800 bg-[#141419]' : 'border-neutral-200 bg-neutral-50/90'">
             <div class="flex items-center gap-3">
               <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-              <h3 class="text-sm font-bold uppercase tracking-wider">
-                {{ showProposalModal ? 'Vista Previa: Propuesta de Adquisición de Software' : 'Vista Previa de Cuenta de Cobro' }}
+              <h3 class="text-sm font-bold uppercase tracking-wider truncate">
+                {{ showProposalModal ? 'Vista Previa: Propuesta' : 'Vista Previa' }}
               </h3>
             </div>
             <div class="flex items-center gap-2">
-              <button (click)="downloadPreviewPdf()" [disabled]="pdfLoading" class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 shadow-md active:scale-95"
+              <button (click)="downloadPreviewPdf()" [disabled]="pdfLoading" class="px-3 sm:px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 shadow-md active:scale-95"
                       [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                Descargar PDF
+                <span class="hidden xs:inline">Descargar PDF</span>
               </button>
-              <button (click)="printPreviewPdf()" class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all cursor-pointer flex items-center gap-1.5"
+              <button (click)="printPreviewPdf()" class="hidden sm:flex px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all cursor-pointer items-center gap-1.5"
                       [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-300 hover:text-white hover:bg-neutral-800' : 'border-neutral-300 text-neutral-700 hover:text-black hover:bg-neutral-100'">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                Imprimir
+                <span>Imprimir</span>
               </button>
               <button (click)="closePreview()" class="p-2 rounded-xl transition-all duration-200 cursor-pointer border ml-1"
                       [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-200 text-neutral-500 hover:text-black hover:bg-neutral-100'">
@@ -1688,18 +1690,21 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
       </div>
 
       <!-- ══════════════════════════════════════════════════════════════ -->
-      <!-- MODAL: ARMAR PDF DE ADQUISICIÓN DE SOFTWARE                   -->
+      <!-- MODAL: ARMAR PDF DE ADQUISICIÓN DE SOFTWARE (iOS Bottom Sheet) -->
       <!-- ══════════════════════════════════════════════════════════════ -->
-      <div *ngIf="showProposalModal" appTeleportToBody class="modal-backdrop fixed inset-0 w-screen h-screen z-[9999] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-xl animate-fadeIn">
-        <div class="w-full max-w-6xl 2xl:max-w-7xl max-h-[92vh] rounded-3xl flex flex-col overflow-hidden shadow-2xl border modal-enter my-auto transition-all"
+      <div *ngIf="showProposalModal" appTeleportToBody class="modal-backdrop fixed inset-0 w-screen h-screen z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-6 bg-black/80 backdrop-blur-xl animate-fadeIn">
+        <div class="w-full max-w-6xl 2xl:max-w-7xl max-h-[94vh] sm:max-h-[92vh] rounded-t-[32px] sm:rounded-3xl flex flex-col overflow-hidden shadow-2xl border-t sm:border modal-enter my-0 sm:my-auto transition-all"
              [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800 text-white shadow-black/80' : 'bg-white border-neutral-200 text-neutral-900 shadow-2xl'">
           
+          <!-- Mobile Pull Handle -->
+          <div class="w-10 h-1.5 rounded-full bg-neutral-600/40 mx-auto my-2.5 sm:hidden shrink-0"></div>
+
           <!-- Modal Header Minimalista -->
-          <div class="px-6 py-3.5 border-b flex justify-between items-center shrink-0"
+          <div class="px-5 sm:px-6 py-3 sm:py-3.5 border-b flex justify-between items-center shrink-0"
                [ngClass]="isDark ? 'border-neutral-800 bg-[#141419]' : 'border-neutral-200 bg-neutral-50/90'">
             <div class="flex items-center gap-3">
               <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm"
-                   [ngClass]="isDark ? 'bg-white/10 text-white border border-neutral-700' : 'bg-black text-white border border-neutral-900'">
+                    [ngClass]="isDark ? 'bg-white/10 text-white border border-neutral-700' : 'bg-black text-white border border-neutral-900'">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                 </svg>
@@ -1974,35 +1979,35 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
             </div>
           </div>
 
-          <!-- Modal Footer Minimalista -->
-          <div class="px-6 py-3.5 border-t flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0"
-               [ngClass]="isDark ? 'border-neutral-800 bg-[#141419]' : 'border-neutral-200 bg-neutral-50'">
+          <!-- Modal Footer Minimalista / Sticky iOS Bottom Bar on mobile -->
+          <div class="px-5 sm:px-6 py-3 sm:py-3.5 border-t flex flex-col-reverse sm:flex-row items-center justify-between gap-2.5 shrink-0 sticky bottom-0 z-20 backdrop-blur-xl"
+               [ngClass]="isDark ? 'border-neutral-800 bg-[#141419]/95' : 'border-neutral-200 bg-neutral-50/95'">
             <button (click)="closeSoftwareProposalModal()"
-                    class="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border cursor-pointer transition-colors"
+                    class="w-full sm:w-auto px-4 py-2.5 sm:py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border cursor-pointer transition-colors text-center"
                     [ngClass]="isDark ? 'border-neutral-800 bg-[#0c0c0e] text-neutral-400 hover:text-white' : 'border-neutral-300 text-neutral-600 hover:text-black'">
               Cancelar
             </button>
 
-            <div class="flex items-center gap-2.5 w-full sm:w-auto justify-end flex-wrap">
+            <div class="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap sm:flex-nowrap">
               <button (click)="generateProposalPreview()" [disabled]="proposalSubmitting"
-                      class="px-4 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border transition-all cursor-pointer flex items-center gap-2 shadow-xs active:scale-95"
+                      class="flex-1 sm:flex-initial px-3 sm:px-4 py-2.5 sm:py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-xs active:scale-95"
                       [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800 text-neutral-200 hover:bg-neutral-700' : 'border-neutral-300 bg-white text-neutral-800 hover:bg-neutral-100'">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                <span>Vista Previa PDF</span>
+                <span class="truncate">Vista Previa</span>
               </button>
 
               <button (click)="saveOnlyAcquisition()" [disabled]="proposalSubmitting"
-                      class="px-4 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border transition-all cursor-pointer flex items-center gap-2 shadow-xs active:scale-95"
+                      class="flex-1 sm:flex-initial px-3 sm:px-4 py-2.5 sm:py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-xs active:scale-95"
                       [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800 text-white hover:bg-neutral-700' : 'border-neutral-300 bg-white text-black hover:bg-neutral-100'">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                <span>{{ editingProposalServiceId ? 'Actualizar en Catálogo' : 'Guardar en Catálogo' }}</span>
+                <span class="truncate">{{ editingProposalServiceId ? 'Actualizar' : 'Guardar' }}</span>
               </button>
 
               <button (click)="downloadSoftwareProposal()" [disabled]="proposalSubmitting"
-                      class="px-5 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider shadow-md active:scale-95 transition-all cursor-pointer flex items-center gap-2 border-0"
+                      class="w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider shadow-md active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 border-0 shrink-0"
                       [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                <span>{{ proposalSubmitting ? 'Guardando y Generando...' : (editingProposalServiceId ? 'Actualizar & Descargar PDF' : 'Guardar & Descargar PDF') }}</span>
+                <span class="truncate">{{ proposalSubmitting ? 'Guardando...' : (editingProposalServiceId ? 'Actualizar & PDF' : 'Guardar & PDF') }}</span>
               </button>
             </div>
           </div>
@@ -2048,6 +2053,26 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
           <div class="h-full gadget-progress-bar"
                [ngClass]="gadgetToast.type === 'create' || gadgetToast.type === 'success' ? 'bg-emerald-500' : (gadgetToast.type === 'edit' ? 'bg-blue-500' : 'bg-rose-500')"></div>
         </div>
+      </div>
+      <!-- ══════════════════════════════════════
+           iOS MOBILE FLOATING ACTION BUTTON (FAB)
+      ══════════════════════════════════════ -->
+      <div class="sm:hidden fixed bottom-6 right-5 z-40">
+        <button *ngIf="subTab === 'facturas'" (click)="openNewInvoice()"
+                class="w-13 h-13 rounded-full shadow-2xl flex items-center justify-center cursor-pointer active:scale-90 transition-all border border-white/20 bg-white text-black shadow-black/40"
+                title="Nueva Cuenta de Cobro">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        </button>
+        <button *ngIf="subTab === 'servicios'" (click)="openSoftwareProposalModal()"
+                class="w-13 h-13 rounded-full shadow-2xl flex items-center justify-center cursor-pointer active:scale-90 transition-all border border-emerald-400 bg-emerald-500 text-white shadow-emerald-600/40"
+                title="Propuesta Comercial de Software">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        </button>
+        <button *ngIf="subTab === 'clientes'" (click)="openNewClient()"
+                class="w-13 h-13 rounded-full shadow-2xl flex items-center justify-center cursor-pointer active:scale-90 transition-all border border-white/20 bg-white text-black shadow-black/40"
+                title="Nuevo Cliente">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        </button>
       </div>
 
     </div>

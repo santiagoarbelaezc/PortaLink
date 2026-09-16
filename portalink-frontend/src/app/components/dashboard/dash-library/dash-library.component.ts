@@ -2724,6 +2724,9 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
   toggleCopilot() {
     this.isCopilotOpen = !this.isCopilotOpen;
     if (this.isCopilotOpen) {
+      if (this.isMobileScreen) {
+        this.isCopilotCustomPositioned = false;
+      }
       this.scrollToBottomCopilot();
     }
   }
@@ -2909,6 +2912,7 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
   }
 
   startDragCopilot(event: MouseEvent | TouchEvent) {
+    if (this.isMobileScreen) return;
     const target = event.target as HTMLElement;
     if (target.closest('button')) return;
 

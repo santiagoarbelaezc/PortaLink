@@ -233,14 +233,14 @@ interface Tab {
         </app-dash-ai-search>
 
         <!-- Content -->
-        <main class="flex-1 min-h-0 relative z-[50] transition-all duration-300 no-scrollbar"
+        <main class="flex-1 min-h-0 relative z-10 transition-all duration-300 no-scrollbar"
               [ngClass]="[
                 isDark ? 'bg-[#020204]' : 'bg-white',
                 activeTab === 'rotbot' && rotbotMode !== 'study-plan'
                   ? 'overflow-hidden flex flex-col justify-center items-center h-full p-3 sm:p-4 md:p-5 lg:p-6' 
                   : (activeTab === 'library' && isNotesView
-                      ? 'overflow-y-auto overflow-x-hidden overscroll-contain md:overscroll-auto md:scroll-smooth p-3 sm:p-4 md:p-6 pb-20 md:pb-8'
-                      : 'overflow-y-auto overflow-x-hidden overscroll-contain md:overscroll-auto md:scroll-smooth p-4 sm:p-6 md:p-8 pb-20 md:pb-8')
+                      ? 'overflow-y-auto overflow-x-hidden overscroll-contain md:overscroll-auto md:scroll-smooth p-3 sm:p-4 md:p-6 pb-28 md:pb-8'
+                      : 'overflow-y-auto overflow-x-hidden overscroll-contain md:overscroll-auto md:scroll-smooth p-4 sm:p-6 md:p-8 pb-28 md:pb-8')
               ]">
           <div class="transition-all duration-300"
                [ngClass]="activeTab === 'rotbot' && rotbotMode !== 'study-plan' ? 'w-full h-full flex flex-col justify-center items-center my-auto' : 'w-full'">
@@ -393,78 +393,78 @@ interface Tab {
       <!-- ══════════════════════════════════════
            MATERIAL DESIGN 3 MOBILE BOTTOM NAV BAR
       ══════════════════════════════════════ -->
-      <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur-2xl select-none px-2 pt-1 pb-1 transition-all duration-300 shadow-[0_-4px_25px_rgba(0,0,0,0.08)]"
+      <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur-2xl select-none px-2 pt-2 pb-2 transition-all duration-300 shadow-[0_-4px_25px_rgba(0,0,0,0.08)]"
            [ngClass]="[
              isDark ? 'bg-[#09090d]/95 border-neutral-800/80 text-neutral-400' : 'bg-white/95 border-neutral-200/90 text-neutral-600',
              isNotesView ? 'hidden' : ''
            ]"
-           style="padding-bottom: env(safe-area-inset-bottom, 0px);">
-        <div class="flex items-center justify-around max-w-md mx-auto">
+           style="padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.35rem);">
+        <div class="grid grid-cols-5 items-center w-full max-w-md mx-auto">
           
           <!-- Inicio -->
           <button (click)="setTab('dashboard')"
-                  class="flex flex-col items-center justify-center py-1 px-2 transition-all duration-200 active:scale-90 cursor-pointer group">
-            <div class="w-[60px] h-9 rounded-full flex items-center justify-center transition-all duration-300 relative"
+                  class="flex flex-col items-center justify-center py-1 transition-all duration-200 active:scale-90 cursor-pointer group min-w-0 w-full text-center">
+            <div class="w-14 h-9 rounded-full flex items-center justify-center transition-all duration-300 relative mx-auto"
                  [ngClass]="activeTab === 'dashboard' ? (isDark ? 'bg-emerald-500/20 text-emerald-400 font-bold scale-105' : 'bg-emerald-500/15 text-emerald-600 font-bold scale-105') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">
               <svg class="w-[22px] h-[22px] transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
               </svg>
             </div>
-            <span class="text-[10.5px] font-bold tracking-tight transition-colors mt-1"
+            <span class="text-[11px] font-bold tracking-tight transition-colors mt-1 truncate max-w-full text-center"
                   [ngClass]="activeTab === 'dashboard' ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-neutral-400' : 'text-neutral-500')">Inicio</span>
           </button>
 
           <!-- Finanzas -->
           <button (click)="setTab('finances')"
-                  class="flex flex-col items-center justify-center py-1 px-2 transition-all duration-200 active:scale-90 cursor-pointer group">
-            <div class="w-[60px] h-9 rounded-full flex items-center justify-center transition-all duration-300 relative"
+                  class="flex flex-col items-center justify-center py-1 transition-all duration-200 active:scale-90 cursor-pointer group min-w-0 w-full text-center">
+            <div class="w-14 h-9 rounded-full flex items-center justify-center transition-all duration-300 relative mx-auto"
                  [ngClass]="activeTab === 'finances' ? (isDark ? 'bg-emerald-500/20 text-emerald-400 font-bold scale-105' : 'bg-emerald-500/15 text-emerald-600 font-bold scale-105') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">
               <svg class="w-[22px] h-[22px] transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
               </svg>
             </div>
-            <span class="text-[10.5px] font-bold tracking-tight transition-colors mt-1"
+            <span class="text-[11px] font-bold tracking-tight transition-colors mt-1 truncate max-w-full text-center"
                   [ngClass]="activeTab === 'finances' ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-neutral-400' : 'text-neutral-500')">Finanzas</span>
           </button>
 
           <!-- Analíticas -->
           <button (click)="setTab('analytics')"
-                  class="flex flex-col items-center justify-center py-1 px-2 transition-all duration-200 active:scale-90 cursor-pointer group">
-            <div class="w-[60px] h-9 rounded-full flex items-center justify-center transition-all duration-300 relative"
+                  class="flex flex-col items-center justify-center py-1 transition-all duration-200 active:scale-90 cursor-pointer group min-w-0 w-full text-center">
+            <div class="w-14 h-9 rounded-full flex items-center justify-center transition-all duration-300 relative mx-auto"
                  [ngClass]="activeTab === 'analytics' ? (isDark ? 'bg-emerald-500/20 text-emerald-400 font-bold scale-105' : 'bg-emerald-500/15 text-emerald-600 font-bold scale-105') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">
               <svg class="w-[22px] h-[22px] transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
               </svg>
             </div>
-            <span class="text-[10.5px] font-bold tracking-tight transition-colors mt-1"
+            <span class="text-[11px] font-bold tracking-tight transition-colors mt-1 truncate max-w-full text-center"
                   [ngClass]="activeTab === 'analytics' ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-neutral-400' : 'text-neutral-500')">Analíticas</span>
           </button>
 
           <!-- Mensajes -->
           <button (click)="setTab('messages')"
-                  class="flex flex-col items-center justify-center py-1 px-2 transition-all duration-200 active:scale-90 cursor-pointer group">
-            <div class="w-[60px] h-9 rounded-full flex items-center justify-center transition-all duration-300 relative"
+                  class="flex flex-col items-center justify-center py-1 transition-all duration-200 active:scale-90 cursor-pointer group min-w-0 w-full text-center">
+            <div class="w-14 h-9 rounded-full flex items-center justify-center transition-all duration-300 relative mx-auto"
                  [ngClass]="activeTab === 'messages' ? (isDark ? 'bg-emerald-500/20 text-emerald-400 font-bold scale-105' : 'bg-emerald-500/15 text-emerald-600 font-bold scale-105') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">
-              <span *ngIf="unreadMessages > 0" class="absolute top-1 right-3 w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-              <span *ngIf="unreadMessages > 0" class="absolute top-1 right-3 w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span *ngIf="unreadMessages > 0" class="absolute top-1 right-2 w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+              <span *ngIf="unreadMessages > 0" class="absolute top-1 right-2 w-2 h-2 rounded-full bg-emerald-500"></span>
               <svg class="w-[22px] h-[22px] transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
               </svg>
             </div>
-            <span class="text-[10.5px] font-bold tracking-tight transition-colors mt-1"
+            <span class="text-[11px] font-bold tracking-tight transition-colors mt-1 truncate max-w-full text-center"
                   [ngClass]="activeTab === 'messages' ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-neutral-400' : 'text-neutral-500')">Mensajes</span>
           </button>
 
           <!-- Menú -->
           <button (click)="isMobileDrawerOpen = !isMobileDrawerOpen"
-                  class="flex flex-col items-center justify-center py-1 px-2 transition-all duration-200 active:scale-90 cursor-pointer group">
-            <div class="w-[60px] h-9 rounded-full flex items-center justify-center transition-all duration-300 relative"
+                  class="flex flex-col items-center justify-center py-1 transition-all duration-200 active:scale-90 cursor-pointer group min-w-0 w-full text-center">
+            <div class="w-14 h-9 rounded-full flex items-center justify-center transition-all duration-300 relative mx-auto"
                  [ngClass]="isMobileDrawerOpen ? (isDark ? 'bg-emerald-500/20 text-emerald-400 font-bold scale-105' : 'bg-emerald-500/15 text-emerald-600 font-bold scale-105') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">
               <svg class="w-[22px] h-[22px] transition-transform duration-200" [class.rotate-90]="isMobileDrawerOpen" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
               </svg>
             </div>
-            <span class="text-[10.5px] font-bold tracking-tight transition-colors mt-1"
+            <span class="text-[11px] font-bold tracking-tight transition-colors mt-1 truncate max-w-full text-center"
                   [ngClass]="isMobileDrawerOpen ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-neutral-400' : 'text-neutral-500')">Menú</span>
           </button>
 
