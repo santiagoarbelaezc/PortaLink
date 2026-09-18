@@ -24,11 +24,23 @@ export class AuthService {
   private readonly TOKEN_KEY = 'portalink_jwt_token';
   private readonly USER_KEY = 'portalink_user';
 
+  private isRedirectingToLogin = false;
+
   // State
   isAuthenticated = signal<boolean>(this.hasToken());
   currentUser = signal<any>(this.getUser());
 
-  constructor() {}
+  constructor() {
+    this.validateSessionOnBoot();
+  }
+
+  /** Ensures invalid or expired tokens in localStorage are cleared upon app startup */
+  private validateSessionOnBoot(): void {
+    const rawToken = this.getRawToken();
+    if (rawToken && this.isTokenExpired(rawToken)) {
+      this.clearSession(false);
+    }
+  }
 
   login(payload: any): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${environment.apiUrl}/auth/login`, payload).pipe(
@@ -62,28 +74,51 @@ export class AuthService {
     return this.http.get<{ id: string; svg: string }>(`${environment.apiUrl}/auth/captcha`);
   }
 
-  logout(): void {
-    console.warn('🔴 LOGOUT CALLED - navigating to /login');
-    console.trace('🔴 LOGOUT STACK TRACE:');
-    if (typeof localStorage !== 'undefined') {
-      localStorage.removeItem(this.TOKEN_KEY);
-      localStorage.removeItem(this.USER_KEY);
-      window.dispatchEvent(new CustomEvent('auth-change'));
+  logout(redirect = true, queryParams?: any): void {
+    this.clearSession(true);
+    if (redirect) {
+      this.router.navigate(['/login'], queryParams ? { queryParams } : undefined);
     }
-    this.isAuthenticated.set(false);
-    this.currentUser.set(null);
-    this.router.navigate(['/login']);
   }
 
-  /** Clears auth state without forcing navigation to /login */
+  /** Clears auth state and storage without forcing navigation */
   logoutSilent(): void {
+    this.clearSession(true);
+  }
+
+  /** Clears token and user state from localStorage and reactive signals */
+  clearSession(notify = true): void {
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem(this.TOKEN_KEY);
       localStorage.removeItem(this.USER_KEY);
-      window.dispatchEvent(new CustomEvent('auth-change'));
+      if (notify) {
+        window.dispatchEvent(new CustomEvent('auth-change'));
+      }
     }
     this.isAuthenticated.set(false);
     this.currentUser.set(null);
+  }
+
+  /** Handles session expiration with debounced redirection when in protected views */
+  handleSessionExpiration(): void {
+    this.clearSession(true);
+    const currentUrl = this.router.url;
+
+    if (this.isProtectedRoute(currentUrl) && !this.isRedirectingToLogin) {
+      this.isRedirectingToLogin = true;
+      this.router.navigate(['/login'], {
+        queryParams: { expired: '1', returnUrl: currentUrl }
+      }).finally(() => {
+        setTimeout(() => {
+          this.isRedirectingToLogin = false;
+        }, 1200);
+      });
+    }
+  }
+
+  isProtectedRoute(url?: string): boolean {
+    const checkUrl = url || this.router.url;
+    return checkUrl.includes('/admin') || checkUrl.includes('/perfil');
   }
 
   private setSession(token: string, user: any): void {
@@ -96,18 +131,44 @@ export class AuthService {
     this.currentUser.set(user);
   }
 
-  getToken(): string | null {
+  /** Direct read from localStorage without validation */
+  getRawToken(): string | null {
     if (typeof localStorage !== 'undefined') {
       return localStorage.getItem(this.TOKEN_KEY);
     }
     return null;
   }
 
+  /** Returns valid JWT token or null if missing/expired (auto-purges if expired) */
+  getToken(): string | null {
+    const token = this.getRawToken();
+    if (!token) {
+      return null;
+    }
+    if (this.isTokenExpired(token)) {
+      this.clearSession(false);
+      return null;
+    }
+    return token;
+  }
+
+  /** Checks whether a valid, non-expired token exists */
   hasToken(): boolean {
     return !!this.getToken();
   }
 
+  /** Alias for hasToken with explicit name */
+  hasValidToken(): boolean {
+    return this.hasToken();
+  }
+
   private getUser(): any {
+    if (!this.hasToken()) {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem(this.USER_KEY);
+      }
+      return null;
+    }
     if (typeof localStorage !== 'undefined') {
       const userStr = localStorage.getItem(this.USER_KEY);
       if (userStr) {
@@ -147,8 +208,8 @@ export class AuthService {
     return null;
   }
 
-  getTokenExpiry(): number | null {
-    const token = this.getToken();
+  getTokenExpiry(rawToken?: string | null): number | null {
+    const token = rawToken !== undefined ? rawToken : this.getRawToken();
     if (!token) return null;
     try {
       const parts = token.split('.');
@@ -162,10 +223,20 @@ export class AuthService {
           .join('')
       );
       const payload = JSON.parse(jsonPayload);
-      return payload.exp ? payload.exp : null;
+      return typeof payload.exp === 'number' ? payload.exp : null;
     } catch {
       return null;
     }
+  }
+
+  isTokenExpired(rawToken?: string | null): boolean {
+    const token = rawToken !== undefined ? rawToken : this.getRawToken();
+    if (!token) return true;
+    const exp = this.getTokenExpiry(token);
+    if (!exp) return true;
+    const now = Math.floor(Date.now() / 1000);
+    // Buffer de 5 segundos para prevenir condiciones de carrera en tránsito
+    return exp <= (now + 5);
   }
 
   getUsers(): Observable<any[]> {

@@ -32,7 +32,7 @@ export class SessionTimerService implements OnDestroy {
   }
 
   private checkSession(): void {
-    if (!this.authService.hasToken()) {
+    if (!this.authService.hasValidToken()) {
       this.sessionTimeLeft$.next(0);
       return;
     }
@@ -49,7 +49,7 @@ export class SessionTimerService implements OnDestroy {
     if (timeLeft <= 0) {
       this.sessionTimeLeft$.next(0);
       this.stop();
-      this.authService.logoutSilent();
+      this.authService.handleSessionExpiration();
       this.sessionExpired$.next();
     } else {
       this.sessionTimeLeft$.next(timeLeft);

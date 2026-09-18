@@ -1,10 +1,12 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { catchError, throwError } from 'rxjs';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
+  const router = inject(Router);
   const token = authService.getToken();
 
   let authReq = req;
@@ -19,7 +21,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401 || error.status === 403) {
-        authService.logoutSilent();
+        const hadAuthHeader = req.headers.has('Authorization');
+        const isCurrentRouteProtected = authService.isProtectedRoute(router.url);
+
+        if (hadAuthHeader || isCurrentRouteProtected) {
+          authService.handleSessionExpiration();
+        } else {
+          authService.clearSession(false);
+        }
       }
       return throwError(() => error);
     })

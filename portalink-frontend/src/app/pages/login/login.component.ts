@@ -490,9 +490,30 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Manejar redirecciones de verificación de cuenta
     const queryParams = this.route.snapshot.queryParams;
-    if (queryParams['verified'] === 'true' || queryParams['verified'] === '1') {
+
+    // Si ya existe una sesión activa y válida, redirigir automáticamente al panel adecuado
+    if (this.authService.hasValidToken()) {
+      const user = this.authService.currentUser();
+      const returnUrl = queryParams['returnUrl'];
+      if (returnUrl && returnUrl !== '/login') {
+        this.router.navigateByUrl(returnUrl);
+        return;
+      }
+      if (user && (user.rol?.toLowerCase() === 'admin' || user.rol?.toLowerCase() === 'administrador')) {
+        this.router.navigate(['/admin']);
+        return;
+      } else if (user) {
+        this.router.navigate(['/perfil']);
+        return;
+      }
+    }
+
+    // Manejar expiración de sesión y mensajes
+    if (queryParams['expired'] === '1' || queryParams['expired'] === 'true') {
+      this.error = 'Tu sesión ha expirado por seguridad. Por favor ingresa nuevamente.';
+      this.activeTab = 'login';
+    } else if (queryParams['verified'] === 'true' || queryParams['verified'] === '1') {
       this.successMsg = '¡Cuenta verificada exitosamente! Ya puedes iniciar sesión con tus credenciales.';
       this.activeTab = 'login';
     } else if (queryParams['already_verified'] === 'true') {
@@ -522,7 +543,7 @@ export class LoginComponent implements OnInit {
 
       if (this.activeTab !== targetTab || !this.captchaId) {
         this.activeTab = targetTab;
-        if (!queryParams['verified'] && !queryParams['already_verified'] && !queryParams['verification_error']) {
+        if (!queryParams['verified'] && !queryParams['already_verified'] && !queryParams['verification_error'] && !queryParams['expired']) {
           this.error = '';
           this.successMsg = '';
         }
@@ -577,6 +598,11 @@ export class LoginComponent implements OnInit {
       next: () => {
         this.isLoading.set(false);
         const user = this.authService.currentUser();
+        const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+        if (returnUrl && returnUrl !== '/login') {
+          this.router.navigateByUrl(returnUrl);
+          return;
+        }
         if (user && (user.rol?.toLowerCase() === 'admin' || user.rol?.toLowerCase() === 'administrador')) {
           localStorage.setItem('portalink_admin_tab', 'dashboard');
           localStorage.setItem('portalink_admin_theme', 'dark');

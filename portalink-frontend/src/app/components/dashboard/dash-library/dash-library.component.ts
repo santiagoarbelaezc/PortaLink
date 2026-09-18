@@ -2270,9 +2270,15 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
         next: () => {
           this.pages = this.pages.filter(p => p.id !== page.id);
           if (this.selectedPage?.id === page.id) {
-            this.selectedPage = null;
-            this.blocks = [];
-            this.activeBlockId = null;
+            if (this.pages.length > 0) {
+              this.selectedPage = this.pages[0];
+              this.blocks = this.parseContentToBlocks(this.selectedPage.content || '');
+              this.activeBlockId = null;
+            } else {
+              this.selectedPage = null;
+              this.blocks = [];
+              this.activeBlockId = null;
+            }
           }
           this.showToast('Apunte eliminado correctamente');
           this.closeDeleteModal();

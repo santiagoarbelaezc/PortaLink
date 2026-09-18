@@ -20,6 +20,8 @@ import { DashRotbotComponent } from '../../components/dashboard/dash-rotbot/dash
 import { DashDbViewerComponent } from '../../components/dashboard/dash-db-viewer/dash-db-viewer.component';
 import { DashStreakModalComponent } from '../../components/dashboard/dash-streak-modal/dash-streak-modal.component';
 import { StreakService } from '../../services/streak.service';
+import { SessionTimerService } from '../../services/session-timer.service';
+import { Subscription } from 'rxjs';
 
 interface Tab {
   id: string;
@@ -504,7 +506,9 @@ export class AdminComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private commandCenterService = inject(CommandCenterService);
   private streakService = inject(StreakService);
+  private sessionTimer = inject(SessionTimerService);
   private cdr = inject(ChangeDetectorRef);
+  private sessionSub: Subscription | null = null;
 
   activeTab = 'dashboard';
   currentTheme = 'dark';
@@ -535,6 +539,16 @@ export class AdminComponent implements OnInit, OnDestroy {
   get isDark() { return this.currentTheme === 'dark'; }
 
   ngOnInit() {
+    // Si la sesión ya expiró, expulsar inmediatamente a login sin intentar cargar widgets
+    if (!this.authService.hasValidToken()) {
+      this.authService.handleSessionExpiration();
+      return;
+    }
+
+    this.sessionSub = this.sessionTimer.sessionExpired$.subscribe(() => {
+      this.authService.handleSessionExpiration();
+    });
+
     this.streakService.initStreak();
     const saved = localStorage.getItem('portalink_admin_theme');
     // Siempre modo oscuro por defecto al ingresar, a menos que el usuario lo haya cambiado a 'light'
@@ -654,6 +668,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.sessionSub?.unsubscribe();
     if (typeof document !== 'undefined') {
       const root = document.documentElement;
       root.classList.remove('theme-dark', 'theme-red');

@@ -32,7 +32,7 @@ class AuthMiddleware
             $request->user = $decoded;
             return true;
         } catch (Exception $e) {
-            $response->status(403)->json(['message' => 'Token inválido o expirado']);
+            $response->status(401)->json(['message' => 'Token inválido o expirado', 'expired' => true]);
             return false;
         }
     }

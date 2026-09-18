@@ -136,13 +136,22 @@ const TAB_LABELS: Record<string, string> = {
             </button>
           </div>
 
-          <!-- TÍTULO MÓVIL ELEGANTE (sm:hidden) -->
-          <div class="flex sm:hidden items-center gap-2 min-w-0 flex-1">
+          <!-- TÍTULO MÓVIL ELEGANTE (sm:hidden) CON BOTÓN VOLVER -->
+          <div class="flex sm:hidden items-center gap-1.5 min-w-0 flex-1">
+            <button type="button"
+                    (click)="libraryService.triggerBreadcrumb('folder')"
+                    title="Volver a los cuadernos"
+                    class="w-7 h-7 -ml-1 rounded-xl border flex items-center justify-center transition-all cursor-pointer shrink-0 active:scale-90"
+                    [ngClass]="theme === 'dark' ? 'border-neutral-800 bg-neutral-900/80 text-neutral-300 active:bg-neutral-800' : 'border-neutral-200 bg-neutral-100 text-neutral-700 active:bg-neutral-200'">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+            </button>
             <ng-container *ngIf="(selectedNotebook$ | async) as notebook; else defaultNotesMobileTitle">
               <span class="w-2.5 h-2.5 rounded-full shrink-0"
                     [style.backgroundColor]="notebook.color || '#3b82f6'"
                     [style.boxShadow]="'0 0 8px ' + (notebook.color || '#3b82f6')"></span>
-              <span class="font-headline font-bold text-xs tracking-tight truncate max-w-[130px]"
+              <span class="font-headline font-bold text-xs tracking-tight truncate max-w-[120px]"
                     [ngClass]="theme === 'dark' ? 'text-white' : 'text-neutral-900'">
                 {{ notebook.title }}
               </span>
