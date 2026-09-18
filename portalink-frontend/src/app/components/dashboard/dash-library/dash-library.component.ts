@@ -2537,8 +2537,372 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
     this.showToast('Archivo Markdown exportado');
   }
 
+  isGeneratingPdf: boolean = false;
+
+  private cleanTextForPdf(raw: string): string {
+    if (!raw) return '';
+    let str = raw;
+    str = str.replace(/<red>(.*?)<\/red>/gi, '$1');
+    str = str.replace(/\[red\](.*?)\[\/red\]/gi, '$1');
+    str = str.replace(/<span[^>]*>(.*?)<\/span>/gi, '$1');
+    str = str.replace(/<br\s*[\/]?>/gi, '\n');
+    str = str.replace(/<\/p>/gi, '\n');
+    str = str.replace(/<p[^>]*>/gi, '');
+    str = str.replace(/<\/div>/gi, '\n');
+    str = str.replace(/<div[^>]*>/gi, '');
+    str = str.replace(/<[^>]+>/g, '');
+    str = str.replace(/&nbsp;/g, ' ');
+    str = str.replace(/&amp;/g, '&');
+    str = str.replace(/&lt;/g, '<');
+    str = str.replace(/&gt;/g, '>');
+    str = str.replace(/&quot;/g, '"');
+    return str.trim();
+  }
+
+  private async getImageBase64(url: string): Promise<{ data: string; format: string; width: number; height: number } | null> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth || img.width;
+          canvas.height = img.naturalHeight || img.height;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) { resolve(null); return; }
+          ctx.drawImage(img, 0, 0);
+          const data = canvas.toDataURL('image/jpeg', 0.85);
+          resolve({ data, format: 'JPEG', width: canvas.width, height: canvas.height });
+        } catch {
+          resolve(null);
+        }
+      };
+      img.onerror = () => resolve(null);
+      img.src = url;
+      setTimeout(() => resolve(null), 3000);
+    });
+  }
+
+  async exportPageToPdf() {
+    if (!this.selectedPage) {
+      this.showToast('No hay ningún apunte abierto para exportar', 'error');
+      return;
+    }
+
+    this.isGeneratingPdf = true;
+    this.showToast('Generando PDF...', 'success');
+
+    try {
+      const { jsPDF } = await import('jspdf');
+      const doc: any = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      const pageWidth = 210;
+      const pageHeight = 297;
+      const marginX = 18;
+      const contentWidth = pageWidth - (marginX * 2); // 174mm
+      let y = 24;
+
+      const checkPageBreak = (neededHeight: number) => {
+        if (y + neededHeight > pageHeight - 24) {
+          doc.addPage();
+          y = 24;
+          return true;
+        }
+        return false;
+      };
+
+      // 1. ENCABEZADO SUPERIOR DE MARCA Y CUADERNO
+      const notebookName = this.selectedNotebook?.title || 'Cuaderno de Estudio';
+      const folderName = this.selectedFolder?.name ? `${this.selectedFolder.name} • ` : '';
+      
+      doc.setFontSize(8.5);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(115, 115, 115);
+      doc.text(`${folderName}${notebookName}`.toUpperCase(), marginX, y);
+
+      const dateStr = new Date().toLocaleDateString('es-CO', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      });
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(160, 160, 160);
+      const dateWidth = doc.getStringUnitWidth(dateStr) * 8 / doc.internal.scaleFactor;
+      doc.text(dateStr, pageWidth - marginX - dateWidth, y);
+
+      y += 4;
+      doc.setDrawColor(229, 231, 235);
+      doc.setLineWidth(0.3);
+      doc.line(marginX, y, pageWidth - marginX, y);
+
+      y += 10;
+
+      // 2. TÍTULO DEL APUNTE
+      const noteTitle = this.selectedPage.title || 'Apunte sin título';
+      doc.setFontSize(22);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(17, 24, 39);
+      
+      const titleLines = doc.splitTextToSize(noteTitle, contentWidth);
+      doc.text(titleLines, marginX, y);
+      y += (titleLines.length * 8.5) + 6;
+
+      // 3. RENDERIZADO DE BLOQUES
+      const blocksToRender = (this.blocks && this.blocks.length > 0)
+        ? this.blocks
+        : this.parseContentToBlocks(this.selectedPage.content || '');
+
+      for (const block of blocksToRender) {
+        if (!block) continue;
+
+        if (block.type === 'titulo') {
+          const rawText = this.cleanTextForPdf(block.content);
+          if (!rawText) continue;
+          checkPageBreak(16);
+          y += 3;
+          doc.setFontSize(14);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(17, 24, 39);
+          const lines = doc.splitTextToSize(rawText, contentWidth);
+          doc.text(lines, marginX, y);
+          y += (lines.length * 6) + 2;
+          doc.setDrawColor(220, 220, 225);
+          doc.setLineWidth(0.2);
+          doc.line(marginX, y, marginX + contentWidth, y);
+          y += 5;
+
+        } else if (block.type === 'subtitulo') {
+          const rawText = this.cleanTextForPdf(block.content);
+          if (!rawText) continue;
+          checkPageBreak(13);
+          y += 2;
+          doc.setFontSize(11.5);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(55, 65, 81);
+          const lines = doc.splitTextToSize(rawText, contentWidth);
+          doc.text(lines, marginX, y);
+          y += (lines.length * 5) + 4;
+
+        } else if (block.type === 'texto') {
+          const rawText = this.cleanTextForPdf(block.content);
+          if (!rawText) {
+            y += 2;
+            continue;
+          }
+          doc.setFontSize(9.5);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(31, 41, 55);
+          const paragraphs = rawText.split('\n');
+          for (const para of paragraphs) {
+            if (!para.trim()) {
+              y += 3;
+              continue;
+            }
+            const lines = doc.splitTextToSize(para, contentWidth);
+            for (const line of lines) {
+              checkPageBreak(5);
+              doc.text(line, marginX, y);
+              y += 4.8;
+            }
+            y += 1.5;
+          }
+          y += 2;
+
+        } else if (block.type === 'alerta') {
+          const rawText = this.cleanTextForPdf(block.content);
+          if (!rawText) continue;
+          
+          doc.setFontSize(9);
+          doc.setFont('helvetica', 'normal');
+          const lines = doc.splitTextToSize(rawText, contentWidth - 10);
+          const boxHeight = (lines.length * 4.6) + 8;
+          checkPageBreak(boxHeight + 4);
+
+          doc.setFillColor(248, 250, 252);
+          doc.setDrawColor(226, 232, 240);
+          doc.setLineWidth(0.2);
+          doc.roundedRect(marginX, y, contentWidth, boxHeight, 2, 2, 'FD');
+
+          doc.setFillColor(79, 70, 229);
+          doc.rect(marginX, y, 2.5, boxHeight, 'F');
+
+          doc.setTextColor(30, 41, 59);
+          doc.setFont('helvetica', 'italic');
+          doc.text(lines, marginX + 6, y + 5.5);
+
+          y += boxHeight + 4;
+
+        } else if (block.type === 'codigo') {
+          const rawCode = block.content || '';
+          if (!rawCode.trim()) continue;
+
+          const lang = (block.language || 'CÓDIGO').toUpperCase();
+          const codeLines = rawCode.split('\n');
+          const headerHeight = 6;
+          const bodyHeight = (codeLines.length * 4.2) + 6;
+          const totalBoxHeight = headerHeight + bodyHeight;
+
+          checkPageBreak(Math.min(totalBoxHeight, 50));
+
+          doc.setFillColor(24, 24, 27);
+          doc.roundedRect(marginX, y, contentWidth, totalBoxHeight, 2, 2, 'F');
+
+          doc.setFontSize(7.5);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(161, 161, 170);
+          doc.text(lang, marginX + 4, y + 4.5);
+
+          doc.setFont('courier', 'normal');
+          doc.setFontSize(8);
+          doc.setTextColor(244, 244, 245);
+
+          let codeY = y + headerHeight + 3.5;
+          for (const cLine of codeLines) {
+            if (codeY > pageHeight - 24) {
+              doc.addPage();
+              codeY = 24;
+              doc.setFillColor(24, 24, 27);
+              doc.roundedRect(marginX, codeY - 4, contentWidth, pageHeight - codeY - 20, 2, 2, 'F');
+            }
+            doc.text(cLine.substring(0, 95), marginX + 4, codeY);
+            codeY += 4.2;
+          }
+
+          y = codeY + 4;
+
+        } else if (block.type === 'columnas') {
+          if (block.columns && block.columns.length > 0) {
+            checkPageBreak(25);
+            const colWidth = (contentWidth - 6) / 2;
+            let maxColY = y;
+
+            block.columns.forEach((col, cIdx) => {
+              const colX = marginX + (cIdx * (colWidth + 6));
+              let currentY = y;
+
+              doc.setFontSize(8);
+              doc.setFont('helvetica', 'bold');
+              doc.setTextColor(100, 116, 139);
+              doc.text(`COLUMNA ${cIdx + 1}`, colX, currentY);
+              currentY += 4;
+
+              const colText = this.cleanTextForPdf(col.content);
+              if (colText) {
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(31, 41, 55);
+                const colLines = doc.splitTextToSize(colText, colWidth);
+                doc.text(colLines, colX, currentY);
+                currentY += (colLines.length * 4.5) + 2;
+              }
+
+              if (currentY > maxColY) maxColY = currentY;
+            });
+
+            y = maxColY + 4;
+          }
+
+        } else if (block.type === 'imagen') {
+          if (block.imageUrl) {
+            const imgInfo = await this.getImageBase64(block.imageUrl);
+            if (imgInfo) {
+              let imgW = contentWidth;
+              let imgH = (imgInfo.height / imgInfo.width) * imgW;
+              if (imgH > 100) {
+                imgH = 100;
+                imgW = (imgInfo.width / imgInfo.height) * imgH;
+              }
+              checkPageBreak(imgH + 10);
+              try {
+                doc.addImage(imgInfo.data, imgInfo.format, marginX, y, imgW, imgH);
+                y += imgH + 4;
+              } catch (imgErr) {
+                console.warn('Error embedding image in PDF:', imgErr);
+              }
+            }
+          }
+        }
+      }
+
+      // 4. PIE DE PÁGINA EN TODAS LAS PÁGINAS
+      const totalPages = doc.internal.getNumberOfPages();
+      for (let p = 1; p <= totalPages; p++) {
+        doc.setPage(p);
+        doc.setFontSize(7.5);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(160, 160, 160);
+
+        doc.setDrawColor(229, 231, 235);
+        doc.setLineWidth(0.2);
+        doc.line(marginX, pageHeight - 16, pageWidth - marginX, pageHeight - 16);
+
+        const footerLeft = `PortaLink Biblioteca • ${notebookName}`;
+        doc.text(footerLeft, marginX, pageHeight - 11);
+
+        const footerRight = `Página ${p} de ${totalPages}`;
+        const frWidth = doc.getStringUnitWidth(footerRight) * 7.5 / doc.internal.scaleFactor;
+        doc.text(footerRight, pageWidth - marginX - frWidth, pageHeight - 11);
+      }
+
+      // 5. EXPORTACIÓN COMPATIBLE CON IPHONE ARCHIVOS (WEB SHARE API) Y DESKTOP
+      const cleanTitle = (this.selectedPage.title || 'apunte')
+        .replace(/[^a-zA-Z0-9áéíóúñÁÉÍÓÚÑ_-]/g, '_')
+        .replace(/_+/g, '_')
+        .trim()
+        .toLowerCase() || 'apunte';
+      const fileName = `${cleanTitle}.pdf`;
+
+      const pdfBlob = doc.output('blob');
+      const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+
+      // En iPhone / Safari móvil, navigator.share con files abre directamente el menú nativo con "Guardar en Archivos"
+      if (typeof navigator !== 'undefined' && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+        try {
+          await navigator.share({
+            files: [pdfFile],
+            title: this.selectedPage.title || 'Apunte PDF',
+            text: `Apunte: ${this.selectedPage.title || ''}`
+          });
+          this.showToast('¡Apunte listo! Puedes guardarlo en Archivos');
+          this.isGeneratingPdf = false;
+          return;
+        } catch (shareErr: any) {
+          if (shareErr && shareErr.name === 'AbortError') {
+            this.isGeneratingPdf = false;
+            return;
+          }
+          console.warn('Share API falló o se canceló, aplicando descarga directa:', shareErr);
+        }
+      }
+
+      // Descarga directa para Desktop o navegadores móviles sin Web Share File API
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      const downloadLink = document.createElement('a');
+      downloadLink.href = blobUrl;
+      downloadLink.download = fileName;
+      downloadLink.target = '_blank';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 15000);
+
+      this.showToast('PDF descargado correctamente');
+      this.isGeneratingPdf = false;
+
+    } catch (error: any) {
+      console.error('Error generando PDF:', error);
+      this.showToast('Error al generar el PDF. Puedes intentar imprimirlo.', 'error');
+      this.isGeneratingPdf = false;
+    }
+  }
+
   printPage() {
-    window.print();
+    this.exportPageToPdf();
   }
 
   getNotebookColor(): string {
