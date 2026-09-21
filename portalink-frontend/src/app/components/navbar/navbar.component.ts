@@ -1,4 +1,4 @@
-import { Component, inject, HostListener, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, inject, HostListener, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { AnalyticsService } from '../../services/analytics.service';
@@ -17,7 +17,7 @@ import { AuthService } from '../../services/auth.service';
            currentTheme === 'light' 
              ? 'bg-white/90 border-b border-neutral-200/80 text-neutral-900 shadow-sm' 
              : 'bg-black/90 border-b border-neutral-800/80 text-white shadow-md',
-           isNavbarHiddenAtTop ? 'opacity-0 pointer-events-none -translate-y-full' : 'opacity-100 pointer-events-auto translate-y-0'
+           (isNavbarHiddenAtTop && !forceShow) ? 'opacity-0 pointer-events-none -translate-y-full' : 'opacity-100 pointer-events-auto translate-y-0'
          ]">
       <div class="w-full flex items-center justify-between">
 
@@ -527,6 +527,7 @@ export class NavbarComponent implements OnInit {
   currentTheme = 'light';
   activeSection = '#hero';
 
+  @Input() forceShow: boolean = true;
   isNavbarHiddenAtTop = false;
   isMouseNearTop = false;
 

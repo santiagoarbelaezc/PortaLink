@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { RouterOutlet, Router, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
+import { RouterOutlet, Router, ActivatedRoute, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { AiChatFloatingComponent } from './components/ai-chat-floating/ai-chat-floating.component';
@@ -22,7 +22,7 @@ import { CookieConsentComponent } from './components/cookie-consent/cookie-conse
     </div>
 
     <!-- Persistent Header & Chatbot (hidden on admin, login, link page, and perfil page) -->
-    <app-navbar *ngIf="showNavbar()"></app-navbar>
+    <app-navbar *ngIf="showNavbar()" [forceShow]="true"></app-navbar>
     <app-ai-chat-floating *ngIf="!isAdminRoute() && !isLoginRoute() && !isLinkRoute() && !isPerfilRoute()"></app-ai-chat-floating>
 
     <!-- Cookie Consent Banner & Legal Preferences Modal -->
@@ -157,6 +157,7 @@ import { CookieConsentComponent } from './components/cookie-consent/cookie-conse
 })
 export class AppComponent implements OnInit {
   private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
 
   isLoading = false;
   isFinished = false;
@@ -180,7 +181,24 @@ export class AppComponent implements OnInit {
   private loadingSafetyTimeout: any;
 
   showNavbar(): boolean {
-    return !this.isAdminRoute() && !this.router.url.includes('/rotbot') && !this.router.url.includes('/perfil');
+    // 1. Prioridad: Verificar si la ruta activa tiene la propiedad 'showNavbar' definida en su data
+    let currentRoute = this.activatedRoute;
+    while (currentRoute.firstChild) {
+      currentRoute = currentRoute.firstChild;
+    }
+    const routeShowNavbar = currentRoute.snapshot?.data?.['showNavbar'];
+    if (typeof routeShowNavbar === 'boolean') {
+      return routeShowNavbar;
+    }
+
+    // 2. Si es la ruta raíz o proyectos (Home), obligar a mostrar siempre
+    const url = this.router.url || '';
+    if (url === '' || url === '/' || url.startsWith('/#') || url.startsWith('/?')) {
+      return true;
+    }
+
+    // 3. Fallback para exclusiones si no estuviera explícito en data (login y register sí llevan navbar)
+    return !this.isAdminRoute() && !this.isLinkRoute() && !this.isPerfilRoute() && !url.includes('/rotbot');
   }
 
   ngOnInit() {

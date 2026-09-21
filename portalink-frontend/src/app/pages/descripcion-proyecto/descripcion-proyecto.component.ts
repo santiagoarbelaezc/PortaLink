@@ -1,7 +1,6 @@
 import { Component, OnInit, inject, ViewEncapsulation } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { FooterComponent } from '../../components/footer/footer.component';
 
 export interface ProjectDetail {
@@ -30,13 +29,10 @@ export interface ProjectDetail {
 @Component({
   selector: 'app-descripcion-proyecto',
   standalone: true,
-  imports: [CommonModule, RouterModule, NavbarComponent, FooterComponent],
+  imports: [CommonModule, RouterModule, FooterComponent],
   encapsulation: ViewEncapsulation.None,
   template: `
     <div class="min-h-screen w-full flex flex-col font-sans bg-white text-neutral-900">
-      <!-- Standard Navigation Bar -->
-      <app-navbar></app-navbar>
-
       <!-- Main Project Content -->
       <main class="flex-grow w-full pt-14 sm:pt-16 lg:pt-20 pb-20 relative z-10" *ngIf="project">
         

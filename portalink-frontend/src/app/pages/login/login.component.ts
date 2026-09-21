@@ -106,9 +106,9 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
           </div>
 
           <!-- Login / Register Slider Container -->
-          <div class="relative overflow-hidden w-full transition-[height] duration-300 ease-out"
-               [style.min-height]="activeTab === 'login' ? '280px' : '710px'">
-            <div class="flex w-[200%] transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"
+          <div class="relative overflow-hidden w-full transition-all duration-300 ease-out"
+               [style.max-height]="activeTab === 'login' ? '280px' : 'none'">
+            <div class="flex items-start w-[200%] transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"
                  [style.transform]="activeTab === 'login' ? 'translateX(0)' : 'translateX(-50%)'">
               
               <!-- Login Form (1/2 width) -->
@@ -156,6 +156,12 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                     </svg>
                     <span style="color: #ffffff !important; font-weight: 600;">{{ isLoading() ? 'Autenticando...' : 'Iniciar sesión' }}</span>
                   </button>
+
+                  <!-- Política de Tratamiento de Datos -->
+                  <p class="text-center text-[11px] font-sans text-neutral-500 mt-2.5 m-0 leading-normal">
+                    Al ingresar, aceptas nuestra 
+                    <a routerLink="/tratamiento-datos" class="text-neutral-900 font-semibold underline hover:text-black transition-colors">Política de Tratamiento de Datos</a>.
+                  </p>
                 </form>
               </div>
 
@@ -316,16 +322,22 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                     </svg>
                     <span style="color: #ffffff !important; font-weight: 600;">{{ isLoading() ? 'Registrando...' : 'Crear mi cuenta' }}</span>
                   </button>
+
+                  <!-- Política de Tratamiento de Datos -->
+                  <p class="text-center text-[11px] font-sans text-neutral-500 mt-2.5 m-0 leading-normal">
+                    Al registrarte, aceptas nuestra 
+                    <a routerLink="/tratamiento-datos" class="text-neutral-900 font-semibold underline hover:text-black transition-colors">Política de Tratamiento de Datos</a>.
+                  </p>
                 </form>
               </div>
 
             </div>
           </div>
-          </div> <!-- Close my-auto py-2 wrapper -->
 
-          <p class="text-center text-[11px] font-sans text-neutral-400 mt-6 pb-4 shrink-0">
+          <p class="text-center text-[11px] font-sans text-neutral-400 mt-5 sm:mt-6 pb-2 shrink-0">
             &copy; 2026 PortaLink. Todos los derechos reservados.
           </p>
+          </div> <!-- Close my-auto py-2 wrapper -->
 
         </div>
       </div>
