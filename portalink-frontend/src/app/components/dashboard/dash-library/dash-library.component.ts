@@ -2062,21 +2062,23 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
     if (!this.selectedNotebook || !this.selectedNotebook.id) return;
 
     const tempId = Date.now();
-    const sampleContent = '# Título de la Lección de Estudio\n\nEste es un párrafo de texto normal. Escribe tus apuntes sin código markdown visible.\n\n### Subtítulo de Conceptos\n\n> 💡 **Nota:** Utiliza únicamente los 5 tipos de texto: Título, Subtítulo, Código, Alerta y Texto Normal.\n\n```typescript\n// Ejemplo de código fuente\nconst mensaje = "PortaLink - Apuntes Inteligentes";\nconsole.log(mensaje);\n```\n';
 
     const tempPage: NotebookPage = {
       id: tempId,
       notebook_id: this.selectedNotebook.id,
-      title: 'Nuevo Apunte de Estudio',
-      content: sampleContent,
-      tags: 'apuntes,estudio',
+      title: 'Nuevo Apunte',
+      content: '',
+      tags: '',
       is_pinned: false
     };
 
     // ⚡ INSTANT OPTIMISTIC CREATION IN UI (0 ms)
     this.pages.unshift(tempPage);
     this.selectedPage = tempPage;
-    this.blocks = this.parseContentToBlocks(tempPage.content || '');
+    this.blocks = this.parseContentToBlocks('');
+    if (this.blocks.length > 0) {
+      this.activeBlockId = this.blocks[0].id;
+    }
     this.showToast('Apunte creado exitosamente');
 
     this.libraryService.createPage({
