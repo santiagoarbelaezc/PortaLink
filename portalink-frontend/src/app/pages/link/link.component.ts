@@ -15,7 +15,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
     RouterModule
   ],
   template: `
-    <div class="min-h-screen bg-white text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white pt-[28px] sm:pt-24 pb-16 px-4 sm:px-8 lg:px-12">
+    <div class="min-h-screen bg-white text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white pt-[28px] sm:pt-24 pb-24 sm:pb-16 px-4 sm:px-8 lg:px-12">
       <div class="max-w-[1500px] mx-auto">
         
         <!-- SKELETON LOADER FOR LINKS -->

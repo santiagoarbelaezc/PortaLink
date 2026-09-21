@@ -197,8 +197,8 @@ export class AppComponent implements OnInit {
       return true;
     }
 
-    // 3. Fallback para exclusiones si no estuviera explícito en data (login y register sí llevan navbar)
-    return !this.isAdminRoute() && !this.isLinkRoute() && !this.isPerfilRoute() && !url.includes('/rotbot');
+    // 3. Fallback para exclusiones si no estuviera explícito en data (links, login y register sí llevan navbar)
+    return !this.isAdminRoute() && !this.isPerfilRoute() && !url.includes('/rotbot');
   }
 
   ngOnInit() {

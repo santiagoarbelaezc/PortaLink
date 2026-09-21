@@ -60,7 +60,7 @@ export const routes: Routes = [
   { 
     path: 'links', 
     loadComponent: () => import('./pages/link/link.component').then(m => m.LinkComponent), 
-    data: { animation: 'LinkPage', showNavbar: false } 
+    data: { animation: 'LinkPage', showNavbar: true } 
   },
   {
     path: 'rotbot',
