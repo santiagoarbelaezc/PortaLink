@@ -65,12 +65,6 @@ export class CvWebComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.getProfileImage();
   }
 
-  onAiIconError(event: Event) {
-    const img = event.target as HTMLImageElement;
-    if (img) {
-      img.src = 'https://skillicons.dev/icons?i=py,tensorflow,pytorch,opencv,scikitlearn,pandas,numpy,jupyter';
-    }
-  }
 
   // Credential copied toast
   copiedId: string | null = null;
@@ -195,7 +189,7 @@ export class CvWebComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   ];
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   ngAfterViewInit(): void {
     if (typeof window !== 'undefined') {
@@ -209,7 +203,7 @@ export class CvWebComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void { }
 
   // ══════════════════ CONTROLES DEL CARRUSEL ══════════════════
   get cardCount(): number {
