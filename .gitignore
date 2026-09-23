@@ -53,3 +53,12 @@ Thumbs.db
 *.tar.gz
 *.7z
 
+# Database backups
+backups/
+backend-php/backups/
+backup_*.sql
+*backup*.sql
+backend-php/backup_*.sql
+*.dump
+*.sql.gz
+

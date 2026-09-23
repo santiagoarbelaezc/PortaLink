@@ -18,7 +18,8 @@ class AuthController
     {
         if (self::$schemaEnsured) return;
         try {
-            Database::query("
+            $db = Database::getConnection();
+            $db->exec("
                 CREATE TABLE IF NOT EXISTS usuarios (
                   id INT AUTO_INCREMENT PRIMARY KEY,
                   nombre VARCHAR(255) NOT NULL,
@@ -33,8 +34,14 @@ class AuthController
                   reset_token_expires DATETIME NULL,
                   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-            ");
-            Database::query("
+
+                CREATE TABLE IF NOT EXISTS captchas (
+                  id VARCHAR(100) PRIMARY KEY,
+                  codigo VARCHAR(255) NOT NULL,
+                  expires_at DATETIME NOT NULL,
+                  INDEX (expires_at)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
                 CREATE TABLE IF NOT EXISTS email_verifications (
                   id INT AUTO_INCREMENT PRIMARY KEY,
                   user_id INT NOT NULL,
@@ -46,8 +53,7 @@ class AuthController
                   INDEX (token),
                   CONSTRAINT fk_email_verif_usuario FOREIGN KEY (user_id) REFERENCES usuarios (id) ON DELETE CASCADE
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-            ");
-            Database::query("
+
                 CREATE TABLE IF NOT EXISTS password_resets (
                   id INT AUTO_INCREMENT PRIMARY KEY,
                   email VARCHAR(255) NOT NULL,
@@ -168,6 +174,7 @@ class AuthController
     public function getCaptcha(Request $request, Response $response): void
     {
         try {
+            self::ensureAuthSchema();
             Database::query('DELETE FROM captchas WHERE expires_at < NOW()');
 
             $captchaData = $this->generateCaptcha();
@@ -195,6 +202,7 @@ class AuthController
 
     public function register(Request $request, Response $response): void
     {
+        self::ensureAuthSchema();
         $nombre = $request->body['nombre'] ?? null;
         $email = $request->body['email'] ?? null;
         $password = $request->body['password'] ?? null;

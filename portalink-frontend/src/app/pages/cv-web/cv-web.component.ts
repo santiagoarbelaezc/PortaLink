@@ -65,6 +65,13 @@ export class CvWebComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.getProfileImage();
   }
 
+  onAiIconError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    if (img) {
+      img.src = 'https://skillicons.dev/icons?i=py,tensorflow,pytorch,opencv,scikitlearn,pandas,numpy,jupyter';
+    }
+  }
+
   // Credential copied toast
   copiedId: string | null = null;
   copiedToast = false;

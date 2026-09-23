@@ -105,9 +105,9 @@ $router->get('/api/setup-db', function (Request $req, Response $res) {
     $dbConnection = $_ENV['DB_CONNECTION'] ?? getenv('DB_CONNECTION') ?? 'mysql';
     $host = $_ENV['DB_HOST'] ?? getenv('DB_HOST') ?? 'srv1660.hstgr.io';
     $port = $_ENV['DB_PORT'] ?? getenv('DB_PORT') ?? '3306';
-    $dbname = $_ENV['DB_DATABASE'] ?? getenv('DB_DATABASE') ?? '';
-    $user = $_ENV['DB_USERNAME'] ?? getenv('DB_USERNAME') ?? '';
-    $pass = $_ENV['DB_PASSWORD'] ?? getenv('DB_PASSWORD') ?? '';
+    $dbname = $_ENV['DB_NAME'] ?? getenv('DB_NAME') ?? $_ENV['DB_DATABASE'] ?? getenv('DB_DATABASE') ?? '';
+    $user = $_ENV['DB_USER'] ?? getenv('DB_USER') ?? $_ENV['DB_USERNAME'] ?? getenv('DB_USERNAME') ?? '';
+    $pass = $_ENV['DB_PASS'] ?? getenv('DB_PASS') ?? $_ENV['DB_PASSWORD'] ?? getenv('DB_PASSWORD') ?? '';
 
     // Limpiar comillas del .env si las hay
     $pass = trim($pass, '"\'');
@@ -116,9 +116,9 @@ $router->get('/api/setup-db', function (Request $req, Response $res) {
     $log[] = "   DB_CONNECTION = {$dbConnection}";
     $log[] = "   DB_HOST = {$host}";
     $log[] = "   DB_PORT = {$port}";
-    $log[] = "   DB_DATABASE = {$dbname}";
-    $log[] = "   DB_USERNAME = {$user}";
-    $log[] = "   DB_PASSWORD = " . (strlen($pass) > 0 ? str_repeat('*', strlen($pass)) : '(vacía)');
+    $log[] = "   DB_DATABASE / DB_NAME = {$dbname}";
+    $log[] = "   DB_USERNAME / DB_USER = {$user}";
+    $log[] = "   DB_PASSWORD / DB_PASS = " . (strlen($pass) > 0 ? str_repeat('*', strlen($pass)) : '(vacía)');
 
     // 2. Probar conexión
     $pdo = null;

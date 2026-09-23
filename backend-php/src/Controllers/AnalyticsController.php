@@ -16,7 +16,8 @@ class AnalyticsController
     {
         if (self::$tableEnsured) return;
         try {
-            Database::query("
+            $db = Database::getConnection();
+            $db->exec("
                 CREATE TABLE IF NOT EXISTS `analytics_events` (
                   `id` INT AUTO_INCREMENT PRIMARY KEY,
                   `session_id` VARCHAR(100) NULL,
@@ -89,7 +90,7 @@ class AnalyticsController
             $response->status(200)->json(['ok' => true]);
         } catch (Exception $err) {
             error_log('[Analytics] Error tracking event: ' . $err->getMessage());
-            $response->status(500)->json(['ok' => false, 'message' => 'Error tracking events']);
+            $response->status(200)->json(['ok' => false, 'message' => 'Error tracking events']);
         }
     }
 

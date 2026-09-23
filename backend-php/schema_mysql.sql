@@ -398,4 +398,18 @@ CREATE TABLE IF NOT EXISTS `notebook_pages` (
   CONSTRAINT `fk_notebook_page_notebook` FOREIGN KEY (`notebook_id`) REFERENCES `notebook_modules` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ----------------------------------------------------------------------------
+-- 20. Tabla: analytics_events (Métricas y Telemetría del Sistema)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `analytics_events` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `session_id` VARCHAR(100) NULL,
+  `event_category` VARCHAR(100) NOT NULL,
+  `event_label` VARCHAR(255) NULL,
+  `event_value` VARCHAR(255) NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX (`session_id`),
+  INDEX (`event_category`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;

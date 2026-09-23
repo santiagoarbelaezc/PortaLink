@@ -58,8 +58,8 @@ export class AnalyticsService {
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
       this.initSession();
-      // Enviar eventos cada 5 segundos
-      this.batchInterval = setInterval(() => this.flushEvents(), 5000);
+      // Enviar eventos cada 30 segundos en lote
+      this.batchInterval = setInterval(() => this.flushEvents(), 30000);
       
       // Enviar eventos antes de cerrar
       window.addEventListener('beforeunload', () => this.flushEvents());
