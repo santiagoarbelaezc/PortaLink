@@ -10,6 +10,7 @@ class Cors
     private static array $allowedOrigins = [
         'https://santiagoarbelaez.me',
         'https://santiagoarbelaezc.github.io',
+        'https://colchonesdistricol.com',
         'http://localhost:4200',
         'http://127.0.0.1:4200',
         'http://localhost:8000',

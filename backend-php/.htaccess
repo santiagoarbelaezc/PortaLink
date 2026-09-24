@@ -36,8 +36,8 @@ Options -Indexes -MultiViews
     Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
     Header always set Vary "Origin"
 
-    # CORS Seguro con Whitelist (santiagoarbelaez.me, santiagoarbelaezc.github.io, localhost, 127.0.0.1)
-    SetEnvIf Origin "^(https:\/\/(santiagoarbelaez\.me|santiagoarbelaezc\.github\.io)|http:\/\/(localhost|127\.0\.0\.1)(:[0-9]+)?)$" CORS_ALLOWED_ORIGIN=$1
+    # CORS Seguro con Whitelist (santiagoarbelaez.me, santiagoarbelaezc.github.io, colchonesdistricol.com, localhost, 127.0.0.1)
+    SetEnvIf Origin "^(https:\/\/(santiagoarbelaez\.me|santiagoarbelaezc\.github\.io|colchonesdistricol\.com)|http:\/\/(localhost|127\.0\.0\.1)(:[0-9]+)?)$" CORS_ALLOWED_ORIGIN=$1
     Header always set Access-Control-Allow-Origin "%{CORS_ALLOWED_ORIGIN}e" env=CORS_ALLOWED_ORIGIN
     Header always set Access-Control-Allow-Credentials "true" env=CORS_ALLOWED_ORIGIN
     Header always set Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"

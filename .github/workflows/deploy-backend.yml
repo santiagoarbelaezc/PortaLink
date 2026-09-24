@@ -1,4 +1,4 @@
-name: Deploy Backend PHP a Hostinger (camascotas.com/api2)
+name: Deploy Backend PHP a Hostinger (colchonesdistricol.com/api2)
 
 on:
   push:
@@ -36,11 +36,11 @@ jobs:
             composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
           fi
 
-      - name: 🚀 Desplegar Backend a camascotas.com/public_html/api2/ vía SSH / rsync
+      - name: 🚀 Desplegar Backend a colchonesdistricol.com/public_html/api2/ vía SSH / rsync
         env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_HOST: ${{ secrets.SSH_HOST || '147.93.14.220' }}
           SSH_PORT: ${{ secrets.SSH_PORT || '65002' }}
-          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_USER: ${{ secrets.SSH_USER || 'u870397049' }}
           SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
           SSH_KEY: ${{ secrets.SSH_KEY }}
         run: |
@@ -61,10 +61,12 @@ jobs:
           fi
 
           # Detectar la ruta raíz del dominio en Hostinger
-          if $SSH_EXEC "[ -d domains/camascotas.com/public_html ]"; then
-            TARGET_API="domains/camascotas.com/public_html/api2/"
-          else
+          if $SSH_EXEC "[ -d domains/colchonesdistricol.com/public_html ]"; then
+            TARGET_API="domains/colchonesdistricol.com/public_html/api2/"
+          elif $SSH_EXEC "[ -d public_html ]"; then
             TARGET_API="public_html/api2/"
+          else
+            TARGET_API="domains/colchonesdistricol.com/public_html/api2/"
           fi
 
           echo "📍 Destino del Backend en Hostinger: $TARGET_API"
@@ -74,7 +76,7 @@ jobs:
 
           # Sincronizar ÚNICAMENTE el contenido de backend-php/ hacia api2/
           # GARANTÍAS DE SEGURIDAD:
-          # - El destino es estrictamente api2/, por lo que NUNCA toca api/ (el otro backend) ni el frontend de camascotas.com
+          # - El destino es estrictamente api2/, por lo que NUNCA toca otros archivos ni el frontend de colchonesdistricol.com
           # - --filter='protect .env*' y --exclude=".env*" protegen el archivo .env con credenciales de producción
           # - Se protegen logs/ y uploads/ existentes en el servidor
           $RSYNC_PREFIX rsync -avz --delete \
