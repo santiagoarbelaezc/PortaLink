@@ -449,6 +449,29 @@ class FinanceController
         }
     }
 
+    private function sanitizeProposalItems($items): array
+    {
+        $dedupedItems = [];
+        $seenTitles = [];
+        if (is_array($items)) {
+            foreach ($items as $it) {
+                if (!is_array($it)) continue;
+                $t = trim($it['title'] ?? '');
+                $key = mb_strtolower($t);
+                if ($key === '') continue;
+                if (!isset($seenTitles[$key])) {
+                    $seenTitles[$key] = true;
+                    $dedupedItems[] = [
+                        'title' => $t,
+                        'description' => trim($it['description'] ?? 'Especificaciones técnicas acordadas.'),
+                        'included' => !isset($it['included']) || $it['included'] !== false
+                    ];
+                }
+            }
+        }
+        return $dedupedItems;
+    }
+
     public function createSoftwareProposal(Request $request, Response $response): void
     {
         $this->ensureServicesTable();
@@ -468,18 +491,15 @@ class FinanceController
         try {
             $pdo = Database::getConnection();
 
-            // 1. Resumen de entregables para la descripción del servicio
+            // 1. Resumen de entregables desduplicados para la descripción del servicio
+            $dedupedItems = $this->sanitizeProposalItems($items);
             $activeItems = [];
-            if (is_array($items)) {
-                foreach ($items as $it) {
-                    if (!isset($it['included']) || $it['included'] !== false) {
-                        if (!empty($it['title'])) {
-                            $activeItems[] = $it['title'];
-                        }
-                    }
+            foreach ($dedupedItems as $it) {
+                if ($it['included'] && !empty($it['title'])) {
+                    $activeItems[] = $it['title'];
                 }
             }
-            $itemsSummary = !empty($activeItems) ? ' • Entregables: ' . implode(', ', $activeItems) : '';
+            $itemsSummary = !empty($activeItems) ? ' • Entregables: ' . implode(' | ', $activeItems) : '';
             $companyStr = !empty($clientCompany) ? " ({$clientCompany})" : '';
             $paymentStr = !empty($paymentTerms) ? " • Pago: {$paymentTerms}" : '';
             $timeStr = !empty($deliveryTime) ? " • Tiempo: {$deliveryTime}" : '';
@@ -499,7 +519,7 @@ class FinanceController
             $stmtFetchS->execute([$serviceId]);
             $savedService = $stmtFetchS->fetch(PDO::FETCH_ASSOC);
 
-            // 3. Insertar en finance_software_proposals
+            // 3. Insertar en finance_software_proposals con entregables validados
             $stmtProposal = $pdo->prepare("
                 INSERT INTO finance_software_proposals 
                 (user_id, service_id, project_title, client_name, client_company, client_email, client_phone, total_amount, payment_terms, delivery_time, warranty, items)
@@ -517,7 +537,7 @@ class FinanceController
                 $paymentTerms,
                 $deliveryTime,
                 $warranty,
-                json_encode($items, JSON_UNESCAPED_UNICODE)
+                json_encode($dedupedItems, JSON_UNESCAPED_UNICODE)
             ]);
             $proposalId = $pdo->lastInsertId();
 
@@ -557,18 +577,15 @@ class FinanceController
         try {
             $pdo = Database::getConnection();
 
-            // 1. Resumen de entregables para la descripción
+            // 1. Resumen de entregables desduplicados para la descripción
+            $dedupedItems = $this->sanitizeProposalItems($items);
             $activeItems = [];
-            if (is_array($items)) {
-                foreach ($items as $it) {
-                    if (!isset($it['included']) || $it['included'] !== false) {
-                        if (!empty($it['title'])) {
-                            $activeItems[] = $it['title'];
-                        }
-                    }
+            foreach ($dedupedItems as $it) {
+                if ($it['included'] && !empty($it['title'])) {
+                    $activeItems[] = $it['title'];
                 }
             }
-            $itemsSummary = !empty($activeItems) ? ' • Entregables: ' . implode(', ', $activeItems) : '';
+            $itemsSummary = !empty($activeItems) ? ' • Entregables: ' . implode(' | ', $activeItems) : '';
             $companyStr = !empty($clientCompany) ? " ({$clientCompany})" : '';
             $paymentStr = !empty($paymentTerms) ? " • Pago: {$paymentTerms}" : '';
             $timeStr = !empty($deliveryTime) ? " • Tiempo: {$deliveryTime}" : '';
@@ -582,7 +599,7 @@ class FinanceController
             $prop = $stmtCheck->fetch(PDO::FETCH_ASSOC);
 
             if (!$prop) {
-                $stmtCheckS = $pdo->prepare("SELECT id, service_id FROM finance_software_proposals WHERE service_id = ? AND user_id = ?");
+                $stmtCheckS = $pdo->prepare("SELECT id, service_id FROM finance_software_proposals WHERE service_id = ? AND user_id = ? ORDER BY id DESC LIMIT 1");
                 $stmtCheckS->execute([$id, $request->user->id]);
                 $prop = $stmtCheckS->fetch(PDO::FETCH_ASSOC);
             }
@@ -599,7 +616,7 @@ class FinanceController
                 ");
                 $stmtUp->execute([
                     $projectTitle, $clientName, $clientCompany, $clientEmail, $clientPhone,
-                    $totalAmount, $paymentTerms, $deliveryTime, $warranty, json_encode($items, JSON_UNESCAPED_UNICODE),
+                    $totalAmount, $paymentTerms, $deliveryTime, $warranty, json_encode($dedupedItems, JSON_UNESCAPED_UNICODE),
                     $propId, $request->user->id
                 ]);
 
@@ -651,7 +668,7 @@ class FinanceController
                     $paymentTerms,
                     $deliveryTime,
                     $warranty,
-                    json_encode($items, JSON_UNESCAPED_UNICODE)
+                    json_encode($dedupedItems, JSON_UNESCAPED_UNICODE)
                 ]);
                 $propId = $pdo->lastInsertId();
             }

@@ -161,6 +161,7 @@ export class AppComponent implements OnInit {
 
   isLoading = false;
   isFinished = false;
+  private loadingSafetyTimeout: any;
 
   isAdminRoute(): boolean {
     return this.router.url.includes('/admin');
@@ -178,9 +179,26 @@ export class AppComponent implements OnInit {
     return this.router.url.includes('/perfil');
   }
 
-  private loadingSafetyTimeout: any;
+  isHomeRoute(): boolean {
+    const url = this.router.url || '';
+    if (url === '' || url === '/' || url.startsWith('/#') || url.startsWith('/?') || url.startsWith('/proyectos') || url.startsWith('/portfolio')) {
+      return true;
+    }
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname || '';
+      if (path === '/' || path === '' || path === '/proyectos' || path === '/portfolio') {
+        return true;
+      }
+    }
+    return false;
+  }
 
   showNavbar(): boolean {
+    // REGLA OBLIGATORIA: En el Home (carga inicial, raíz, proyectos o hash), el navbar SIEMPRE debe salir sí o sí
+    if (this.isHomeRoute()) {
+      return true;
+    }
+
     // 1. Prioridad: Verificar si la ruta activa tiene la propiedad 'showNavbar' definida en su data
     let currentRoute = this.activatedRoute;
     while (currentRoute.firstChild) {
@@ -191,14 +209,9 @@ export class AppComponent implements OnInit {
       return routeShowNavbar;
     }
 
-    // 2. Si es la ruta raíz o proyectos (Home), obligar a mostrar siempre
+    // 2. Fallback para exclusiones si no estuviera explícito en data (links, login y register sí llevan navbar)
     const url = this.router.url || '';
-    if (url === '' || url === '/' || url.startsWith('/#') || url.startsWith('/?')) {
-      return true;
-    }
-
-    // 3. Fallback para exclusiones si no estuviera explícito en data (links, login y register sí llevan navbar)
-    return !this.isAdminRoute() && !this.isPerfilRoute() && !url.includes('/rotbot');
+    return !this.isAdminRoute() && !this.isPerfilRoute() && !url.includes('/rotbot') && !url.includes('/verify-email') && !url.includes('/forgot-password') && !url.includes('/reset-password');
   }
 
   ngOnInit() {

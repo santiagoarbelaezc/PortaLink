@@ -241,7 +241,7 @@ interface Tab {
                 activeTab === 'rotbot' && rotbotMode !== 'study-plan'
                   ? 'overflow-hidden flex flex-col justify-center items-center h-full p-3 sm:p-4 md:p-5 lg:p-6' 
                   : (activeTab === 'library' && isNotesView
-                      ? 'overflow-y-auto overflow-x-hidden overscroll-contain md:overscroll-auto md:scroll-smooth p-3 sm:p-4 md:p-6 pb-28 md:pb-8'
+                      ? 'overflow-y-auto overflow-x-hidden overscroll-contain md:overscroll-auto md:scroll-smooth px-2 py-2 sm:p-4 md:p-6 pb-28 md:pb-8'
                       : 'overflow-y-auto overflow-x-hidden overscroll-contain md:overscroll-auto md:scroll-smooth p-4 sm:p-6 md:p-8 pb-28 md:pb-8')
               ]">
           <div class="transition-all duration-300"

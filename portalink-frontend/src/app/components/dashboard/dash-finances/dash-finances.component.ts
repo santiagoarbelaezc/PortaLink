@@ -2304,12 +2304,20 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   addProposalItem() {
-    if (!this.proposalItemNewTitle.trim()) {
+    const title = this.proposalItemNewTitle.trim();
+    if (!title) {
       alert('Por favor escribe el nombre del entregable.');
       return;
     }
+    const alreadyExists = (this.proposalData.items || []).some(
+      it => (it.title || '').trim().toLowerCase() === title.toLowerCase()
+    );
+    if (alreadyExists) {
+      alert('Ya existe un entregable con ese nombre en la lista.');
+      return;
+    }
     this.proposalData.items.push({
-      title: this.proposalItemNewTitle.trim(),
+      title: title,
       description: this.proposalItemNewDesc.trim() || 'Especificaciones técnicas acordadas.',
       included: true
     });
@@ -2420,7 +2428,7 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
       if (matchPay) payment = matchPay[1].trim();
     }
 
-    // 3. Entregables / Módulos (soporta array directo o parseo de JSON string)
+    // 3. Entregables / Módulos (soporta array directo o parseo de JSON string desde la BD)
     let items: any[] = [];
     let rawItems = s.proposal_items;
     if (typeof rawItems === 'string' && rawItems.trim()) {
@@ -2430,50 +2438,78 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
         rawItems = null;
       }
     }
-    if (Array.isArray(rawItems) && rawItems.length > 0) {
-      items = JSON.parse(JSON.stringify(rawItems));
-    }
 
-    // EXTRAER Y SINCRONIZAR ENTREGABLES DESDE LA DESCRIPCIÓN
-    const matchItems = desc.match(/• Entregables:\s*([^•$]+)/i);
-    if (matchItems) {
-      const descItemsText = matchItems[1].trim();
-      let itemNames = descItemsText.split(',').map((x: string) => x.trim()).filter(Boolean);
-      
-      // Re-unir 'Caja, Gastos y Auditoría' si fue separada por la coma
-      const recombined: string[] = [];
-      for (let i = 0; i < itemNames.length; i++) {
-        if (itemNames[i].toLowerCase() === 'caja' && itemNames[i + 1] && itemNames[i + 1].toLowerCase().startsWith('gastos')) {
-          recombined.push(itemNames[i] + ', ' + itemNames[i + 1]);
-          i++;
-        } else {
-          recombined.push(itemNames[i]);
+    if (Array.isArray(rawItems) && rawItems.length > 0) {
+      // La base de datos es la fuente de verdad. Sanitizamos y desduplicamos por título.
+      const seenTitles = new Set<string>();
+      for (const it of rawItems) {
+        if (!it || !it.title) continue;
+        const norm = it.title.trim().toLowerCase();
+        if (!norm) continue;
+        if (!seenTitles.has(norm)) {
+          seenTitles.add(norm);
+          items.push({
+            title: it.title.trim(),
+            description: (it.description || '').trim() || 'Especificaciones técnicas acordadas.',
+            included: it.included !== false
+          });
         }
       }
-      itemNames = recombined;
+    }
 
-      if (items.length === 0 || itemNames.length > items.length) {
-        const mergedItems: any[] = [];
+    // EXTRAER DESDE LA DESCRIPCIÓN ÚNICAMENTE COMO RESPALDO SI LA BD NO TIENE ENTREGABLES
+    if (items.length === 0) {
+      const matchItems = desc.match(/• Entregables:\s*([^•$]+)/i);
+      if (matchItems) {
+        const descItemsText = matchItems[1].trim();
+        let itemNames: string[] = [];
+
+        if (descItemsText.includes(' | ')) {
+          itemNames = descItemsText.split(' | ').map((x: string) => x.trim()).filter(Boolean);
+        } else if (descItemsText.includes(' ; ')) {
+          itemNames = descItemsText.split(' ; ').map((x: string) => x.trim()).filter(Boolean);
+        } else {
+          // Respaldo para servicios antiguos guardados con comas
+          const parts = descItemsText.split(',').map((x: string) => x.trim()).filter(Boolean);
+          const recombined: string[] = [];
+          for (let i = 0; i < parts.length; i++) {
+            const cur = parts[i];
+            const next = parts[i + 1] || '';
+            const curLower = cur.toLowerCase();
+            const nextLower = next.toLowerCase();
+            if (curLower.includes('bases de datos') && nextLower.includes('una para uso')) {
+              const nextNext = parts[i + 2] || '';
+              recombined.push(`${cur}, ${next}, ${nextNext}`);
+              i += 2;
+            } else if (curLower.includes('infraestructura cloud') && nextLower.includes('hosting')) {
+              recombined.push(`${cur}, ${next}`);
+              i++;
+            } else if (curLower === 'caja' && nextLower.startsWith('gastos')) {
+              recombined.push(`${cur}, ${next}`);
+              i++;
+            } else if (curLower.includes('pedidos entrantes') && nextLower.includes('notificacion')) {
+              recombined.push(`${cur}, ${next}`);
+              i++;
+            } else {
+              recombined.push(cur);
+            }
+          }
+          itemNames = recombined;
+        }
+
+        const seenFallback = new Set<string>();
         for (const name of itemNames) {
-          const existing = items.find(it => it.title && it.title.trim().toLowerCase() === name.toLowerCase());
-          if (existing) {
-            mergedItems.push(existing);
-          } else {
-            const matchDefault = this.defaultProposalItems.find(d => d.title.toLowerCase() === name.toLowerCase());
-            mergedItems.push({
-              title: name,
-              description: matchDefault ? matchDefault.description : 'Especificaciones técnicas acordadas.',
-              included: true
-            });
-          }
+          const norm = name.trim().toLowerCase();
+          if (!norm || seenFallback.has(norm)) continue;
+          seenFallback.add(norm);
+
+          const matchDefault = this.defaultProposalItems.find(d => d.title.toLowerCase() === norm);
+          items.push({
+            title: name.trim(),
+            description: matchDefault ? matchDefault.description : 'Especificaciones técnicas acordadas.',
+            included: true
+          });
         }
-        // Conservar items que ya estaban en items
-        for (const it of items) {
-          if (!mergedItems.some(m => m.title && m.title.trim().toLowerCase() === (it.title || '').trim().toLowerCase())) {
-            mergedItems.push(it);
-          }
-        }
-        items = mergedItems;
       }
     }
 
@@ -2528,6 +2564,24 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
 
   async saveAcquisitionAsService(): Promise<any> {
     try {
+      // 1. Limpiar y desduplicar entregables estrictamente antes de persistir
+      const cleanItems: SoftwareProposalItem[] = [];
+      const seenTitles = new Set<string>();
+      for (const it of (this.proposalData.items || [])) {
+        if (!it || !it.title) continue;
+        const norm = it.title.trim().toLowerCase();
+        if (!norm) continue;
+        if (!seenTitles.has(norm)) {
+          seenTitles.add(norm);
+          cleanItems.push({
+            title: it.title.trim(),
+            description: (it.description || '').trim() || 'Especificaciones técnicas acordadas.',
+            included: it.included !== false
+          });
+        }
+      }
+      this.proposalData.items = cleanItems;
+
       let res: any;
       if (this.editingProposalId || this.editingProposalServiceId) {
         const targetId = this.editingProposalId || this.editingProposalServiceId;
@@ -2553,11 +2607,11 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
       
       const activeItems = (this.proposalData.items || [])
         .filter(it => it.included !== false)
-        .map(it => it.title)
+        .map(it => it.title.trim())
         .filter(Boolean);
       
       const itemsSummary = activeItems.length > 0 
-        ? ` • Entregables: ${activeItems.join(', ')}`
+        ? ` • Entregables: ${activeItems.join(' | ')}`
         : '';
       
       const paymentInfo = this.proposalData.paymentTerms ? ` • Pago: ${this.proposalData.paymentTerms}` : '';

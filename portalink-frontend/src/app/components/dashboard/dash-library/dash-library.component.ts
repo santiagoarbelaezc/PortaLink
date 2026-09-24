@@ -562,36 +562,64 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
       }
     } else if (type === 'red') {
       const redElement = container?.closest('.text-red-500, [style*="239, 68, 68"], [style*="#ef4444"], red') as HTMLElement | null;
-      if (redElement) {
-        // Toggle: Deshacer color rojo
-        const plainText = redElement.innerText || redElement.textContent || '';
-        const textNode = document.createTextNode(plainText);
-        redElement.parentNode?.replaceChild(textNode, redElement);
-        this.showToast('Color rojo removido');
-      } else if (selectedText && selectedText.trim().length > 0) {
-        const span = document.createElement('span');
-        span.className = 'text-red-500 font-bold';
-        span.style.color = '#ef4444';
-        try {
-          range.surroundContents(span);
-        } catch (e) {
-          const fragment = range.extractContents();
-          span.appendChild(fragment);
-          range.insertNode(span);
+      
+      if (selectedText && selectedText.trim().length > 0) {
+        if (redElement) {
+          // Toggle: Deshacer color rojo en la selección
+          const plainText = redElement.innerText || redElement.textContent || '';
+          const textNode = document.createTextNode(plainText);
+          redElement.parentNode?.replaceChild(textNode, redElement);
+          this.showToast('Color rojo removido');
+        } else {
+          // Aplicar color rojo al texto seleccionado
+          const span = document.createElement('span');
+          span.className = 'text-red-500 font-bold';
+          span.style.color = '#ef4444';
+          try {
+            range.surroundContents(span);
+          } catch (e) {
+            const fragment = range.extractContents();
+            span.appendChild(fragment);
+            range.insertNode(span);
+          }
+          const keepRange = document.createRange();
+          keepRange.selectNodeContents(span);
+          selection.removeAllRanges();
+          selection.addRange(keepRange);
+          this.showToast('Texto en rojo');
         }
-        this.showToast('Texto colocado en rojo');
       } else {
-        const span = document.createElement('span');
-        span.className = 'text-red-500 font-bold';
-        span.style.color = '#ef4444';
-        span.textContent = 'texto en rojo';
-        range.insertNode(span);
+        // MODO IPHONE NOTES: Si no hay texto seleccionado, alternar modo de escritura
+        if (redElement) {
+          // Salir del modo rojo para escribir normal
+          const zeroWidth = document.createTextNode('\u200B');
+          if (redElement.nextSibling) {
+            redElement.parentNode?.insertBefore(zeroWidth, redElement.nextSibling);
+          } else {
+            redElement.parentNode?.appendChild(zeroWidth);
+          }
+          const afterRange = document.createRange();
+          afterRange.setStart(zeroWidth, 1);
+          afterRange.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(afterRange);
+          this.showToast('Color normal activado');
+        } else {
+          // Entrar en modo rojo: lo siguiente que se escriba será rojo
+          const span = document.createElement('span');
+          span.className = 'text-red-500 font-bold';
+          span.style.color = '#ef4444';
+          const zeroWidth = document.createTextNode('\u200B');
+          span.appendChild(zeroWidth);
+          range.insertNode(span);
 
-        const newRange = document.createRange();
-        newRange.selectNodeContents(span);
-        selection.removeAllRanges();
-        selection.addRange(newRange);
-        this.showToast('Texto en rojo insertado');
+          const innerRange = document.createRange();
+          innerRange.setStart(zeroWidth, 1);
+          innerRange.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(innerRange);
+          this.showToast('Escribiendo en rojo');
+        }
       }
     }
 
@@ -606,20 +634,56 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
     }
   }
 
+  isRedTextActive(): boolean {
+    if (typeof window === 'undefined') return false;
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return false;
+    let node: Node | null = selection.anchorNode;
+    if (!node) return false;
+    if (node.nodeType === Node.TEXT_NODE) node = node.parentElement;
+    return !!(node as HTMLElement)?.closest?.('.text-red-500, [style*="239, 68, 68"], [style*="#ef4444"], red');
+  }
+
   // Métodos puente para compatibilidad
   applyRedTextColorToSelection(block?: NoteBlock) {
     this.applyTextStyleToSelection('red', block);
   }
 
-  applyRedTextToActiveBlock() {
-    this.applyTextStyleToSelection('red');
+  applyRedTextToActiveBlock(event?: Event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    const targetBlock = this.activeBlockId ? this.blocks.find(b => b.id === this.activeBlockId) : null;
+    const blockEl = targetBlock ? document.getElementById('block-' + targetBlock.id) : null;
+    if (blockEl) {
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0 || !blockEl.contains(selection.anchorNode)) {
+        blockEl.focus();
+        const newRange = document.createRange();
+        newRange.selectNodeContents(blockEl);
+        newRange.collapse(false);
+        const sel = window.getSelection();
+        sel?.removeAllRanges();
+        sel?.addRange(newRange);
+      }
+    }
+    this.applyTextStyleToSelection('red', targetBlock || undefined);
   }
 
-  applyBoldTextToActiveBlock(block?: NoteBlock) {
+  applyBoldTextToActiveBlock(block?: NoteBlock, event?: Event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
     this.applyTextStyleToSelection('bold', block);
   }
 
-  applyItalicTextToActiveBlock(block?: NoteBlock) {
+  applyItalicTextToActiveBlock(block?: NoteBlock, event?: Event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
     this.applyTextStyleToSelection('italic', block);
   }
 
