@@ -202,6 +202,10 @@ import { AuthService } from '../../services/auth.service';
               <path d="M3 10.5L12 3l9 7.5v9a2 2 0 0 1-2 2h-4a1 1 0 0 1-1-1v-4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v4a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2v-9z"></path>
             </ng-container>
 
+            <ng-container *ngIf="item.icon === 'proyectos'">
+              <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+            </ng-container>
+
             <ng-container *ngIf="item.icon === 'link'">
               <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
               <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
@@ -510,16 +514,16 @@ export class NavbarComponent implements OnInit {
 
   navItemsTranslations: any = {
     es: [
-      { name: 'Inicio',       link: '#hero',          icon: 'home'     },
-      { name: 'Diseños',      link: '/prototipos',    icon: 'disenos'  },
-      { name: 'Links',        link: '/links',         icon: 'link'     },
-      { name: 'RotBot',       link: '/rotbot',        icon: 'chat'     }
+      { name: 'Inicio',       link: '#hero',          icon: 'home'      },
+      { name: 'Diseños',      link: '/prototipos',    icon: 'disenos'   },
+      { name: 'Proyectos',    link: '#proyectos',     icon: 'proyectos' },
+      { name: 'RotBot',       link: '/rotbot',        icon: 'chat'      }
     ],
     en: [
-      { name: 'Home',         link: '#hero',          icon: 'home'     },
-      { name: 'Designs',      link: '/prototipos',    icon: 'disenos'  },
-      { name: 'Links',        link: '/links',         icon: 'link'     },
-      { name: 'RotBot',       link: '/rotbot',        icon: 'chat'     }
+      { name: 'Home',         link: '#hero',          icon: 'home'      },
+      { name: 'Designs',      link: '/prototipos',    icon: 'disenos'   },
+      { name: 'Projects',     link: '#proyectos',     icon: 'proyectos' },
+      { name: 'RotBot',       link: '/rotbot',        icon: 'chat'      }
     ]
   };
 
@@ -700,8 +704,14 @@ export class NavbarComponent implements OnInit {
       return;
     }
 
-    if (this.router.url.includes('/prototipos') || this.router.url.includes('/disenos') || this.router.url.includes('/descripcion-proyecto') || this.router.url.includes('/proyecto')) {
+    if (this.router.url.includes('/prototipos') || this.router.url.includes('/disenos') || this.router.url.includes('/descripcion-proyecto')) {
       this.activeSection = '/prototipos';
+      this.updatePillPosition();
+      return;
+    }
+
+    if (this.router.url.includes('/proyecto')) {
+      this.activeSection = '#proyectos';
       this.updatePillPosition();
       return;
     }
@@ -711,8 +721,6 @@ export class NavbarComponent implements OnInit {
       this.updatePillPosition();
       return;
     }
-
-
 
     if (this.router.url.includes('/links')) {
       this.activeSection = '/links';
@@ -738,6 +746,29 @@ export class NavbarComponent implements OnInit {
       return;
     }
 
+    const currentPath = this.router.url.split('?')[0].split('#')[0];
+    const isRoot = currentPath === '/' || currentPath === '' || currentPath === '/proyectos' || currentPath === '/portfolio';
+
+    if (isRoot) {
+      const scrollPosition = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+
+      const proyectosEl = document.getElementById('proyectos');
+      if (proyectosEl) {
+        const top = proyectosEl.offsetTop - 180;
+        if (scrollPosition >= top) {
+          this.activeSection = '#proyectos';
+          this.updatePillPosition();
+          this.trackSectionView();
+          return;
+        }
+      }
+
+      this.activeSection = '#hero';
+      this.updatePillPosition();
+      this.trackSectionView();
+      return;
+    }
+
     const scrollPosition = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
 
     // Default to hero if scrolled close to top
@@ -748,7 +779,7 @@ export class NavbarComponent implements OnInit {
       return;
     }
 
-    const sections = ['hero', 'portfolio', 'about', 'skills', 'contact'];
+    const sections = ['hero', 'proyectos', 'portfolio', 'about', 'skills', 'contact'];
     for (const section of sections) {
       const el = document.getElementById(section);
       if (el) {
@@ -933,7 +964,7 @@ export class NavbarComponent implements OnInit {
     this.mobileItems = [
       { name: isEs ? 'Inicio' : 'Home',         link: '#hero',          icon: 'home' },
       { name: isEs ? 'Diseños' : 'Designs',     link: '/prototipos',    icon: 'disenos' },
-      { name: 'Links',                          link: '/links',         icon: 'link' },
+      { name: isEs ? 'Proyectos' : 'Projects',   link: '#proyectos',     icon: 'proyectos' },
       { name: 'Chat',                           link: '/rotbot',        icon: 'chat' },
       { name: isEs ? 'Cuenta' : 'Account',      link: this.authService.isAuthenticated() ? '/perfil' : '/login', icon: 'user' }
     ];
@@ -944,7 +975,7 @@ export class NavbarComponent implements OnInit {
     return this.currentLanguage === 'es' ? 'Contacto' : 'Contact';
   }
 
-  private scrollIntoView(id: string, retries = 8) {
+  private scrollIntoView(id: string, retries = 12) {
     if (id === 'hero' || id === 'hero-design') {
       window.scrollTo({
         top: 0,
@@ -954,7 +985,7 @@ export class NavbarComponent implements OnInit {
     }
     const element = document.getElementById(id);
     if (element) {
-      const offset = 100;
+      const offset = 80;
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - offset;
       window.scrollTo({
@@ -978,12 +1009,13 @@ export class NavbarComponent implements OnInit {
     if (link.startsWith('#')) {
       this.analyticsService.incrementSectionView(link);
       const targetId = link.replace('#', '');
-      const isRoot = this.router.url === '/' || this.router.url === '/proyectos';
+      const currentPath = this.router.url.split('?')[0].split('#')[0];
+      const isRoot = currentPath === '/' || currentPath === '' || currentPath === '/proyectos' || currentPath === '/portfolio';
       if (isRoot) {
         this.scrollIntoView(targetId);
       } else {
         this.router.navigate(['/']).then(() => {
-          setTimeout(() => this.scrollIntoView(targetId), 200);
+          setTimeout(() => this.scrollIntoView(targetId), 250);
         });
       }
     } else {
