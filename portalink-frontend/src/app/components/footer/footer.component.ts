@@ -7,7 +7,7 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <footer id="footer" class="bg-white text-neutral-900 pt-16 pb-12 sm:pt-20 sm:pb-16 px-6 sm:px-12 lg:px-20 border-t border-neutral-100 font-sans selection:bg-neutral-900 selection:text-white">
+    <footer id="footer" class="bg-white text-neutral-900 pt-10 pb-8 sm:pt-14 sm:pb-10 px-6 sm:px-12 lg:px-20 border-t border-neutral-100 font-sans selection:bg-neutral-900 selection:text-white">
       <div class="max-w-[1500px] mx-auto">
         
         <!-- Top Grid: 4 Columns (Layout Clásico Restaurado & Pulido) -->
@@ -35,7 +35,6 @@ import { RouterModule } from '@angular/router';
               <a href="https://github.com/santiagoarbelaezc" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 text-xs font-headline font-medium transition-all no-underline">GitHub</a>
               <a href="https://www.linkedin.com/in/santiago-arbelaez-contreras-9830b5290/" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 text-xs font-headline font-medium transition-all no-underline">LinkedIn</a>
               <a href="https://www.instagram.com/santiarbelaezz/" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 text-xs font-headline font-medium transition-all no-underline">Instagram</a>
-              <a href="https://www.tiktok.com/@santiarbelaezz" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-700 text-xs font-headline font-medium transition-all no-underline">TikTok</a>
             </div>
           </div>
 

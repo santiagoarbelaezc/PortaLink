@@ -9,7 +9,7 @@ import { ErpDiagramComponent } from '../erp-diagram/erp-diagram.component';
   imports: [CommonModule, RouterModule, ErpDiagramComponent],
   template: `
     <section id="hero" 
-             class="relative w-full flex flex-col items-center justify-center overflow-hidden bg-white text-neutral-900 pt-8 xs:pt-9 sm:pt-14 md:pt-20 pb-10 xs:pb-12 sm:pb-10 px-3 xs:px-4 sm:px-8 lg:px-16 select-none">
+             class="relative w-full flex flex-col items-center justify-center overflow-hidden bg-white text-neutral-900 pt-6 xs:pt-7 sm:pt-10 md:pt-14 pb-6 xs:pb-7 sm:pb-8 px-3 xs:px-4 sm:px-8 lg:px-16 select-none">
       
       <!-- Subtle Ambient Accent -->
       <div class="absolute inset-0 pointer-events-none z-0 overflow-hidden">

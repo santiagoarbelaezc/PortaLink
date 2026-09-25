@@ -8,7 +8,7 @@ import { RevealDirective } from '../../shared/directives/reveal.directive';
   standalone: true,
   imports: [CommonModule, RouterModule, RevealDirective],
   template: `
-    <section id="about" class="relative py-10 md:py-16 px-6 sm:px-12 lg:px-20 bg-white text-neutral-900 transition-colors duration-500" *ngIf="data?.visible !== false">
+    <section id="about" class="relative py-6 md:py-10 px-6 sm:px-12 lg:px-20 bg-white text-neutral-900 transition-colors duration-500" *ngIf="data?.visible !== false">
       <div class="max-w-[1500px] mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
 

@@ -16,7 +16,7 @@ interface SocialLink {
   imports: [CommonModule, RouterModule, FormsModule],
   encapsulation: ViewEncapsulation.None,
   template: `
-    <section id="contact" class="relative py-10 md:py-16 px-6 sm:px-12 lg:px-20 bg-white text-neutral-900 transition-colors duration-500">
+    <section id="contact" class="relative py-6 md:py-10 px-6 sm:px-12 lg:px-20 bg-white text-neutral-900 transition-colors duration-500">
       <div class="max-w-[1500px] mx-auto">
         
         <!-- Grand Showcase Container con AOS rápido y responsivo -->

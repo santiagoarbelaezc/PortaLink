@@ -43,7 +43,7 @@ import * as AOS from 'aos';
       <!-- ═══════════════════════════════════════════════════════════ -->
       <!-- 3. GALERÍA DE PROYECTOS REALIZADOS (ESTILO APPLE ULTRALIMPIO)-->
       <!-- ═══════════════════════════════════════════════════════════ -->
-      <section id="proyectos" class="projects-showcase-section relative py-8 md:py-14 px-6 sm:px-12 lg:px-20 overflow-hidden bg-white text-neutral-900 transition-colors duration-500">
+      <section id="proyectos" class="projects-showcase-section relative py-6 md:py-10 px-6 sm:px-12 lg:px-20 overflow-hidden bg-white text-neutral-900 transition-colors duration-500">
 
         <!-- Encabezado Editorial -->
         <div class="max-w-[1500px] mx-auto mb-8 sm:mb-12">
