@@ -46,17 +46,18 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y sshpass rsync
 
-          # Configurar autenticación SSH (Llave privada o Contraseña)
+          # Configurar autenticación SSH (Llave privada o Contraseña) con ConnectTimeout
+          SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=30 -o ServerAliveInterval=15"
           if [ -n "$SSH_KEY" ]; then
             mkdir -p ~/.ssh
             echo "$SSH_KEY" > ~/.ssh/id_hostinger
             chmod 600 ~/.ssh/id_hostinger
-            SSH_CMD="ssh -p $SSH_PORT -i ~/.ssh/id_hostinger -o StrictHostKeyChecking=no"
-            SSH_EXEC="ssh -p $SSH_PORT -i ~/.ssh/id_hostinger -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST"
+            SSH_CMD="ssh -p $SSH_PORT -i ~/.ssh/id_hostinger $SSH_OPTS"
+            SSH_EXEC="ssh -p $SSH_PORT -i ~/.ssh/id_hostinger $SSH_OPTS $SSH_USER@$SSH_HOST"
             RSYNC_PREFIX=""
           else
-            SSH_CMD="ssh -p $SSH_PORT -o StrictHostKeyChecking=no"
-            SSH_EXEC="sshpass -p $SSH_PASSWORD ssh -p $SSH_PORT -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST"
+            SSH_CMD="ssh -p $SSH_PORT $SSH_OPTS"
+            SSH_EXEC="sshpass -p $SSH_PASSWORD ssh -p $SSH_PORT $SSH_OPTS $SSH_USER@$SSH_HOST"
             RSYNC_PREFIX="sshpass -p $SSH_PASSWORD"
           fi
 

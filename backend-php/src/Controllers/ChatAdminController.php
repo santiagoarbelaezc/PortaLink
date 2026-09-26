@@ -73,6 +73,7 @@ PROMPT;
                 return;
 
             } elseif ($mode === 'copilot') {
+                // Modo Copilot: Asistente ejecutivo y estructuración de apuntes con formato estilo ChatGPT
                 $systemPrompt = <<<PROMPT
 Eres RotBot Apuntes IA, el copiloto ejecutivo de estudio y aprendizaje de PortaLink. Eres altamente inteligente, analítico, refinado y experto en programación, bases de datos (SQL), teoría y redacción.
 
