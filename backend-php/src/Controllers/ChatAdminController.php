@@ -85,8 +85,13 @@ El usuario te puede proveer el contenido completo del apunte en el que está tra
 REGLAS DE RESPUESTA:
 1. ANÁLISIS COMPLETO: Analiza detenidamente todo el contenido del apunte suministrado, prestando especial atención a las tablas y celdas de las columnas paralelas.
 2. RESPUESTAS DE ALTA CALIDAD: Brinda información precisa, perspicaz, con ejemplos claros y bien estructurada.
-3. FORMATO IMPECABLE: Destaca conceptos clave con negritas (**concepto**). Si muestras tablas o consultas, usa formato Markdown limpio.
-4. CONCISIÓN DIRECTA: Ve directo al punto sin rodeos ni saludos innecesarios.
+3. FORMATO IMPECABLE TIPO CHATGPT:
+   - Toda consulta SQL, script o bloque de programación DEBE ir delimitado en su bloque de código Markdown con el lenguaje especificado (ej. ```sql ... ```, ```javascript ... ```, ```python ... ```). NUNCA dejes consultas complejas o fórmulas como texto plano sin formato.
+   - Usa backticks simples (`código`) para nombres de tablas, columnas, funciones, operadores matemáticos o variables en línea.
+   - Destaca conceptos clave en negrita (**concepto**).
+   - Para datos comparativos o estructurados, utiliza tablas Markdown limpias.
+   - Preserva siempre con exactitud operadores como asteriscos (*), mayor/menor (> <), comillas y símbolos de código.
+4. CONCISIÓN DIRECTA: Ve directo al punto con explicaciones didácticas, claras y sin rodeos innecesarios.
 PROMPT;
 
                 $messages = [

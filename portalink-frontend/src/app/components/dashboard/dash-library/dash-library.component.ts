@@ -2982,7 +2982,34 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
     const codeBgClass = darkTheme ? 'bg-[#09090b]' : 'bg-neutral-100 text-neutral-900';
     const codeTextClass = darkTheme ? 'text-neutral-200 font-bold' : 'text-neutral-800 font-bold';
 
-    let html = content
+    const codeBlocks: string[] = [];
+    const inlineCodes: string[] = [];
+
+    // 1. Extraer bloques de código primero para que no sean afectados por cursivas o asteriscos
+    let html = content.replace(/```([a-z0-9_\-+]*)\n?([\s\S]*?)```/gim, (_m, _lang, code) => {
+      const escaped = code
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      const block = `<pre class="p-4 my-2.5 rounded-xl ${codeBgClass} border ${borderClass} ${codeTextClass} font-mono text-xs sm:text-sm overflow-x-auto shadow-inner relative group"><code>${escaped}</code></pre>`;
+      const ph = `__FMT_CODEBLOCK_${codeBlocks.length}__`;
+      codeBlocks.push(block);
+      return ph;
+    });
+
+    // 2. Extraer código inline
+    html = html.replace(/`([^`\n]+)`/g, (_m, inline) => {
+      const escaped = inline
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      const badge = `<code class="px-1.5 py-0.5 rounded text-xs font-mono font-semibold bg-neutral-200/80 dark:bg-neutral-800 text-pink-600 dark:text-pink-400 border border-neutral-300/60 dark:border-neutral-700/60">${escaped}</code>`;
+      const ph = `__FMT_INLINE_${inlineCodes.length}__`;
+      inlineCodes.push(badge);
+      return ph;
+    });
+
+    html = html
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
@@ -3002,14 +3029,11 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
     html = html.replace(/&lt;\[red\]&gt;(.*?)&lt;\[\/red\]&gt;/gim, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
 
     // Bold & Italics
-    html = html.replace(/\*\*(.*?)\*\*/g, `<strong class="font-bold ${headingTextClass}">$1</strong>`);
-    html = html.replace(/\*(.*?)\*/g, '<em class="italic opacity-80">$1</em>');
+    html = html.replace(/\*\*(.+?)\*\*/g, `<strong class="font-bold ${headingTextClass}">$1</strong>`);
+    html = html.replace(/(?<=^|[\s(])\*(?!\s)([^*\n]+?)(?<!\s)\*(?=[.,!?;:\s)]|$)/g, '<em class="italic opacity-80">$1</em>');
 
     // Callouts / Blockquotes
     html = html.replace(/^> (.*$)/gim, `<blockquote class="p-3 my-2 rounded-xl bg-neutral-800/40 border-l-4 border-neutral-600 text-xs sm:text-sm ${headingTextClass} font-medium flex items-start gap-2 shadow-sm">$1</blockquote>`);
-
-    // Code blocks
-    html = html.replace(/```([a-z]*)\n([\s\S]*?)```/gim, `<pre class="p-4 my-2.5 rounded-xl ${codeBgClass} border ${borderClass} ${codeTextClass} font-mono text-xs sm:text-sm overflow-x-auto shadow-inner relative group"><code>$2</code></pre>`);
 
     // Checkboxes
     html = html.replace(/- \[ \]/g, ' <input type="checkbox" disabled class="mr-2 rounded text-neutral-500 w-3.5 h-3.5">');
@@ -3022,6 +3046,14 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
     html = html.replace(/(<\/h[1-3]>|<\/blockquote>|<\/pre>|<hr[^>]*>)\s*(<br\s*\/?>)+/gim, '$1');
     html = html.replace(/(<br\s*\/?>)+\s*(<h[1-3]>|<blockquote|<pre|<hr)/gim, '$2');
     html = html.replace(/(<br\s*\/?>){3,}/gim, '<br><br>');
+
+    // Restaurar código inline y bloques
+    inlineCodes.forEach((code, i) => {
+      html = html.replace(`__FMT_INLINE_${i}__`, code);
+    });
+    codeBlocks.forEach((code, i) => {
+      html = html.replace(`__FMT_CODEBLOCK_${i}__`, code);
+    });
 
     return html;
   }
@@ -3193,36 +3225,230 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
     }, 1600);
   }
 
-  formatCopilotMessage(content: string): string {
+  private copilotHtmlCache = new Map<string, SafeHtml>();
+
+  handleCopilotContainerClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const copyBtn = target.closest('.copilot-copy-code-btn') as HTMLElement;
+    if (copyBtn) {
+      event.preventDefault();
+      event.stopPropagation();
+      const codeToCopy = copyBtn.getAttribute('data-code');
+      if (codeToCopy) {
+        const decoded = decodeURIComponent(codeToCopy);
+        navigator.clipboard.writeText(decoded).then(() => {
+          const originalContent = copyBtn.innerHTML;
+          copyBtn.innerHTML = `
+            <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            <span class="text-emerald-400 font-medium">¡Copiado!</span>
+          `;
+          copyBtn.classList.add('bg-emerald-500/20');
+          setTimeout(() => {
+            copyBtn.innerHTML = originalContent;
+            copyBtn.classList.remove('bg-emerald-500/20');
+          }, 2000);
+        }).catch(() => {
+          this.showToast('No se pudo copiar el código al portapapeles', 'error');
+        });
+      }
+    }
+  }
+
+  formatCopilotMessage(content: string): SafeHtml {
     if (!content) return '';
-    
-    // 1. Escapar caracteres HTML especiales
-    let html = content
+    const cacheKey = `${this.isDark ? 'dark' : 'light'}_${content}`;
+    const cached = this.copilotHtmlCache.get(cacheKey);
+    if (cached) return cached;
+
+    if (this.copilotHtmlCache.size > 250) {
+      this.copilotHtmlCache.clear();
+    }
+
+    const htmlString = this.parseCopilotMarkdown(content, this.isDark);
+    const safeHtml = this.sanitizer.bypassSecurityTrustHtml(htmlString);
+    this.copilotHtmlCache.set(cacheKey, safeHtml);
+    return safeHtml;
+  }
+
+  private escapeCopilotHtml(text: string): string {
+    return text
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
 
-    // 2. Formatear encabezados markdown (###, ##, #)
-    html = html.replace(/^### (.*?)$/gm, '<h3 class="text-xs sm:text-sm font-bold mt-2 mb-1 text-blue-500">$1</h3>');
-    html = html.replace(/^## (.*?)$/gm, '<h2 class="text-sm sm:text-base font-bold mt-2 mb-1 text-blue-500">$1</h2>');
-    html = html.replace(/^# (.*?)$/gm, '<h1 class="text-base sm:text-lg font-extrabold mt-2 mb-1 text-blue-500">$1</h1>');
+  parseCopilotMarkdown(content: string, darkTheme: boolean = this.isDark): string {
+    if (!content) return '';
 
-    // 3. Separadores horizontales (--- o ***)
-    html = html.replace(/^---+$/gm, '<hr class="my-2 border-neutral-200 dark:border-neutral-700/80">');
+    const codeBlocks: string[] = [];
+    const inlineCodes: string[] = [];
+    const tables: string[] = [];
 
-    // 4. Formatear **texto en negrilla** -> negrilla con color azul destacado
-    html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-blue-600 dark:text-blue-400">$1</strong>');
+    // Theme color constants
+    const headingTextClass = darkTheme ? 'text-white' : 'text-neutral-900';
+    const borderClass = darkTheme ? 'border-neutral-800' : 'border-neutral-200';
+    const inlineCodeClass = darkTheme 
+      ? 'bg-neutral-800 text-pink-400 border border-neutral-700/70' 
+      : 'bg-neutral-200/90 text-pink-600 border border-neutral-300/80';
+    const listTextClass = darkTheme ? 'text-neutral-200' : 'text-neutral-800';
 
-    // 5. Formatear *texto en cursiva/destacado* -> texto semi-negrilla azul
-    html = html.replace(/\*(.*?)\*/g, '<span class="font-semibold text-blue-600 dark:text-blue-400">$1</span>');
+    // 1. Extraer bloques de código (```lang ... ```)
+    let text = content.replace(/```([a-zA-Z0-9_\-+]*)\n?([\s\S]*?)```/g, (_match, lang, code) => {
+      const trimmedLang = (lang || '').trim().toLowerCase();
+      const displayLang = trimmedLang || 'código';
+      const rawCode = code.replace(/\r\n/g, '\n').replace(/^\n+|\n+$/g, '');
+      const escapedCode = this.escapeCopilotHtml(rawCode);
+      const encoded = encodeURIComponent(rawCode);
 
-    // 6. Limpiar cualquier asterisco suelto sobrante
-    html = html.replace(/\*/g, '');
+      const blockHtml = `<div class="my-3 rounded-xl overflow-hidden border border-neutral-700/60 bg-[#0d0d11] shadow-md font-mono text-xs sm:text-[13px] text-neutral-200">` +
+        `<div class="flex items-center justify-between px-3.5 py-1.5 bg-[#18181f] border-b border-neutral-800 text-neutral-400 text-xs select-none">` +
+          `<span class="font-sans font-semibold text-[11px] uppercase tracking-wider text-neutral-300">${displayLang}</span>` +
+          `<button type="button" class="copilot-copy-code-btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-neutral-300 hover:text-white hover:bg-neutral-700/60 active:scale-95 transition-all text-xs font-sans cursor-pointer" data-code="${encoded}">` +
+            `<svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>` +
+            `<span>Copiar</span>` +
+          `</button>` +
+        `</div>` +
+        `<div class="p-3.5 overflow-x-auto text-neutral-100 font-mono text-xs sm:text-sm leading-relaxed whitespace-pre selection:bg-neutral-700 selection:text-white"><code>${escapedCode}</code></div>` +
+      `</div>`;
 
-    // 7. Convertir saltos de línea \n a <br>
-    html = html.replace(/\n/g, '<br>');
+      const placeholder = `__COPILOT_CODEBLOCK_${codeBlocks.length}__`;
+      codeBlocks.push(blockHtml);
+      return `\n\n${placeholder}\n\n`;
+    });
 
-    return html;
+    // 2. Extraer código inline (`código`)
+    text = text.replace(/`([^`\n]+)`/g, (_match, inline) => {
+      const escapedInline = this.escapeCopilotHtml(inline);
+      const inlineHtml = `<code class="px-1.5 py-0.5 mx-0.5 rounded-md text-[12px] font-mono font-medium ${inlineCodeClass}">${escapedInline}</code>`;
+      const placeholder = `__COPILOT_INLINE_${inlineCodes.length}__`;
+      inlineCodes.push(inlineHtml);
+      return placeholder;
+    });
+
+    // 3. Extraer tablas Markdown
+    const tableRegex = /((?:^[ \t]*\|[^\n]+\|[ \t]*\n)(?:^[ \t]*\|[-: |]+\|[ \t]*\n)(?:^[ \t]*\|[^\n]+\|[ \t]*(?:\n|$))+)/gm;
+    text = text.replace(tableRegex, (match) => {
+      const lines = match.trim().split('\n').map(l => l.trim());
+      if (lines.length >= 2) {
+        const headerCols = lines[0].replace(/^\||\|$/g, '').split('|').map(c => c.trim());
+        const bodyRows = lines.slice(2).map(row => 
+          row.replace(/^\||\|$/g, '').split('|').map(c => c.trim())
+        );
+
+        const tableThBg = darkTheme ? 'bg-neutral-800/80 text-neutral-200 border-neutral-700' : 'bg-neutral-100 text-neutral-800 border-neutral-200';
+        const tableBorder = darkTheme ? 'border-neutral-700' : 'border-neutral-200';
+        const tableBodyText = darkTheme ? 'text-neutral-300' : 'text-neutral-700';
+        const tableRowHover = darkTheme ? 'hover:bg-neutral-800/40' : 'hover:bg-neutral-50';
+
+        const tableHtml = `<div class="my-3 overflow-x-auto rounded-xl border ${borderClass} shadow-xs">` +
+          `<table class="w-full text-left text-xs sm:text-sm border-collapse">` +
+            `<thead class="${tableThBg} font-semibold border-b ${tableBorder}">` +
+              `<tr>${headerCols.map(c => `<th class="px-3 py-2 border-r last:border-r-0 ${tableBorder}">${this.escapeCopilotHtml(c)}</th>`).join('')}</tr>` +
+            `</thead>` +
+            `<tbody class="divide-y ${darkTheme ? 'divide-neutral-800' : 'divide-neutral-200'} ${tableBodyText}">` +
+              bodyRows.map(row => 
+                `<tr class="${tableRowHover}">${row.map(c => `<td class="px-3 py-2 border-r last:border-r-0 ${tableBorder}">${this.escapeCopilotHtml(c)}</td>`).join('')}</tr>`
+              ).join('') +
+            `</tbody>` +
+          `</table>` +
+        `</div>`;
+
+        const placeholder = `__COPILOT_TABLE_${tables.length}__`;
+        tables.push(tableHtml);
+        return `\n\n${placeholder}\n\n`;
+      }
+      return match;
+    });
+
+    // 4. Escapar caracteres HTML en el texto restante
+    text = this.escapeCopilotHtml(text);
+
+    // 5. Encabezados (#, ##, ###)
+    text = text.replace(/^###[ \t]+(.*)$/gm, `<h3 class="text-sm sm:text-base font-bold mt-3 mb-1.5 ${headingTextClass}">$1</h3>`);
+    text = text.replace(/^##[ \t]+(.*)$/gm, `<h2 class="text-base sm:text-lg font-bold mt-3.5 mb-2 pb-1 border-b ${borderClass} ${headingTextClass}">$1</h2>`);
+    text = text.replace(/^#[ \t]+(.*)$/gm, `<h1 class="text-lg sm:text-xl font-extrabold mt-4 mb-2 ${headingTextClass}">$1</h1>`);
+
+    // 6. Citas / Blockquotes
+    text = text.replace(/^>[ \t]+(.*)$/gm, `<blockquote class="my-2.5 pl-3 py-1 border-l-2 border-blue-500 ${darkTheme ? 'bg-blue-500/10 text-neutral-300' : 'bg-blue-500/5 text-neutral-700'} rounded-r text-xs sm:text-sm italic">$1</blockquote>`);
+
+    // 7. Separadores horizontales (--- o ***)
+    text = text.replace(/^(?:---|___|\*\*\*)$/gm, `<hr class="my-3 ${borderClass}">`);
+
+    // 8. Texto en negrita: **texto** (soporta asteriscos o fórmulas internas como **formula * 2**)
+    text = text.replace(/\*\*(.+?)\*\*/g, `<strong class="font-bold ${headingTextClass}">$1</strong>`);
+
+    // 9. Texto en cursiva: *texto* o _texto_ (delimitado, sin coincidir operadores de multiplicación como a * b)
+    text = text.replace(/(?<=^|[\s(])\*(?!\s)([^*\n]+?)(?<!\s)\*(?=[.,!?;:\s)]|$)/g, `<em class="italic ${darkTheme ? 'text-neutral-200' : 'text-neutral-800'}">$1</em>`);
+    text = text.replace(/(?<=^|[\s(])_(?!\s)([^_\n]+?)(?<!\s)_(?=[.,!?;:\s)]|$)/g, `<em class="italic ${darkTheme ? 'text-neutral-200' : 'text-neutral-800'}">$1</em>`);
+
+    // 10. Enlaces [Texto](URL)
+    text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:text-blue-600 dark:text-blue-400 underline font-medium">$1</a>');
+
+    // 11. Listas desordenadas y numeradas
+    const lines = text.split('\n');
+    const processedLines: string[] = [];
+    let inUl = false;
+    let inOl = false;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const bulletMatch = line.match(/^[\t ]*[-*•][ \t]+(.*)$/);
+      const numMatch = line.match(/^[\t ]*(\d+)\.[ \t]+(.*)$/);
+
+      if (bulletMatch) {
+        if (!inUl) {
+          if (inOl) { processedLines.push('</ol>'); inOl = false; }
+          processedLines.push(`<ul class="my-2 ml-4 space-y-1 list-disc list-outside ${listTextClass}">`);
+          inUl = true;
+        }
+        processedLines.push(`<li class="leading-relaxed">${bulletMatch[1]}</li>`);
+      } else if (numMatch) {
+        if (!inOl) {
+          if (inUl) { processedLines.push('</ul>'); inUl = false; }
+          processedLines.push(`<ol class="my-2 ml-4 space-y-1 list-decimal list-outside ${listTextClass}">`);
+          inOl = true;
+        }
+        processedLines.push(`<li class="leading-relaxed">${numMatch[2]}</li>`);
+      } else {
+        if (inUl) { processedLines.push('</ul>'); inUl = false; }
+        if (inOl) { processedLines.push('</ol>'); inOl = false; }
+        processedLines.push(line);
+      }
+    }
+    if (inUl) processedLines.push('</ul>');
+    if (inOl) processedLines.push('</ol>');
+
+    text = processedLines.join('\n');
+
+    // 12. Saltos de línea \n a <br>
+    text = text.replace(/\n{2,}/g, '<br><br>');
+    text = text.replace(/\n/g, '<br>');
+
+    // Limpiar <br> redundantes alrededor de bloques
+    text = text.replace(/(?:<br\s*\/?>)+(<(?:h[1-3]|ul|ol|li|blockquote|hr|div|table|tr|thead|tbody|th|td))/gi, '$1');
+    text = text.replace(/(<\/(?:h[1-3]|ul|ol|li|blockquote|hr|div|table|tr|thead|tbody|th|td)>)(?:<br\s*\/?>)+/gi, '$1');
+    text = text.replace(/(?:<br\s*\/?>)+(__COPILOT_(?:CODEBLOCK|TABLE)_\d+__)(?:<br\s*\/?>)+/g, '$1');
+    text = text.replace(/(?:<br\s*\/?>)+(__COPILOT_(?:CODEBLOCK|TABLE)_\d+__)/g, '$1');
+    text = text.replace(/(__COPILOT_(?:CODEBLOCK|TABLE)_\d+__)(?:<br\s*\/?>)+/g, '$1');
+
+    // 13. Restaurar tablas
+    tables.forEach((tableHtml, index) => {
+      text = text.replace(`__COPILOT_TABLE_${index}__`, tableHtml);
+    });
+
+    // 14. Restaurar código inline
+    inlineCodes.forEach((inlineHtml, index) => {
+      text = text.replace(`__COPILOT_INLINE_${index}__`, inlineHtml);
+    });
+
+    // 15. Restaurar bloques de código
+    codeBlocks.forEach((blockHtml, index) => {
+      text = text.replace(`__COPILOT_CODEBLOCK_${index}__`, blockHtml);
+    });
+
+    return text.trim();
   }
 
   focusCopilotInput() {

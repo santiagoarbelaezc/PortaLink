@@ -2974,7 +2974,8 @@
 
       <!-- ÁREA DE MENSAJES CON SCROLL Y BURBUJAS ESTILO HOME -->
       <div #copilotMessagesContainer class="flex-1 p-3.5 sm:p-5 overflow-y-auto overflow-x-hidden space-y-4 text-[13.5px] sm:text-sm font-sans w-full max-w-full min-w-0"
-           [ngClass]="isDark ? 'bg-[#121215]' : 'bg-white'">
+           [ngClass]="isDark ? 'bg-[#121215]' : 'bg-white'"
+           (click)="handleCopilotContainerClick($event)">
         
         <div *ngFor="let msg of copilotMessages" class="flex flex-col w-full min-w-0 max-w-full" [ngClass]="msg.role === 'user' ? 'items-end' : 'items-start'">
           
