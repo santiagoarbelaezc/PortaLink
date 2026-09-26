@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, ViewChild, ElementRef, inject, HostListener, Directive, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, inject, HostListener, Directive, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -26,6 +26,8 @@ export interface LibraryTab {
   folderTitle?: string;
   notebookTitle?: string;
   pageTitle?: string;
+  scrollTop?: number;
+  scrollPositions?: { [pageId: number]: number };
 }
 
 export interface NoteBlockColumn {
@@ -96,7 +98,7 @@ export class ContentEditableDirective implements OnChanges {
   templateUrl: './dash-library.component.html',
   host: { class: 'block w-full' }
 })
-export class DashLibraryComponent implements OnInit, OnDestroy {
+export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('editorTextarea') editorTextarea?: ElementRef<HTMLTextAreaElement>;
   @ViewChild('copilotMessagesContainer') copilotMessagesContainer?: ElementRef<HTMLDivElement>;
   @ViewChild('copilotTextarea') copilotTextareaElement?: ElementRef<HTMLTextAreaElement>;
@@ -939,11 +941,126 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
     );
   }
 
+  ngAfterViewInit() {
+    this.setupScrollListener();
+  }
+
   ngOnDestroy() {
+    if (this.cleanUpScroll) {
+      this.cleanUpScroll();
+    }
     this.subs.unsubscribe();
     if (this._selectedNotebook) {
       this.inNotesViewChange.emit(false);
     }
+  }
+
+  // ── GESTIÓN DE SCROLL INDEPENDIENTE POR PESTAÑA / VENTANA Y APUNTE ──
+  private isRestoringScroll = false;
+  private scrollDebounceTimer: any = null;
+  private cleanUpScroll?: () => void;
+
+  private setupScrollListener() {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
+    const handleScroll = () => {
+      if (this.isRestoringScroll) return;
+      this.recordCurrentScroll();
+
+      if (this.scrollDebounceTimer) {
+        clearTimeout(this.scrollDebounceTimer);
+      }
+      this.scrollDebounceTimer = setTimeout(() => {
+        this.saveTabsToStorage();
+      }, 500);
+    };
+
+    // Usamos capture: true en document para capturar scroll de <main>, window o sub-contenedores
+    document.addEventListener('scroll', handleScroll, { passive: true, capture: true });
+
+    this.cleanUpScroll = () => {
+      document.removeEventListener('scroll', handleScroll, { capture: true } as any);
+      if (this.scrollDebounceTimer) {
+        clearTimeout(this.scrollDebounceTimer);
+      }
+    };
+  }
+
+  getCurrentScrollTop(): number {
+    if (typeof document === 'undefined') return 0;
+    const mainEl = document.querySelector('main');
+    if (mainEl && mainEl.scrollTop > 0) {
+      return mainEl.scrollTop;
+    }
+    if (typeof window !== 'undefined' && window.pageYOffset > 0) {
+      return window.pageYOffset;
+    }
+    if (document.documentElement && document.documentElement.scrollTop > 0) {
+      return document.documentElement.scrollTop;
+    }
+    return mainEl ? mainEl.scrollTop : 0;
+  }
+
+  restoreScrollTop(top: number) {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    const mainEl = document.querySelector('main');
+    if (mainEl) {
+      mainEl.scrollTop = top;
+    }
+    window.scrollTo(0, top);
+    if (document.documentElement) {
+      document.documentElement.scrollTop = top;
+    }
+  }
+
+  recordCurrentScroll() {
+    if (this.isRestoringScroll || !this.activeTabId) return;
+    const currentScroll = this.getCurrentScrollTop();
+    const tab = this.tabs.find(t => t.id === this.activeTabId);
+    if (!tab) return;
+
+    tab.scrollTop = currentScroll;
+    if (!tab.scrollPositions) {
+      tab.scrollPositions = {};
+    }
+    if (this.selectedPage?.id) {
+      tab.scrollPositions[this.selectedPage.id] = currentScroll;
+    }
+  }
+
+  restoreScrollForCurrentTabAndPage(explicitScroll?: number) {
+    if (typeof window === 'undefined') return;
+
+    const tab = this.tabs.find(t => t.id === this.activeTabId);
+    let targetScroll = 0;
+
+    if (explicitScroll !== undefined) {
+      targetScroll = explicitScroll;
+    } else if (tab) {
+      const pageId = this.selectedPage?.id;
+      if (pageId && tab.scrollPositions && tab.scrollPositions[pageId] !== undefined) {
+        targetScroll = tab.scrollPositions[pageId];
+      } else if (tab.scrollTop !== undefined) {
+        targetScroll = tab.scrollTop;
+      }
+    }
+
+    this.isRestoringScroll = true;
+
+    const applyScroll = () => {
+      this.restoreScrollTop(targetScroll);
+    };
+
+    applyScroll();
+    setTimeout(() => {
+      applyScroll();
+      requestAnimationFrame(() => {
+        applyScroll();
+        setTimeout(() => {
+          this.isRestoringScroll = false;
+        }, 120);
+      });
+    }, 40);
   }
 
   // ── MULTI-TAB WORKSPACE NAVIGATION ──────────────────────────
@@ -977,7 +1094,9 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
       color: '#737373',
       folderId: null,
       notebookId: null,
-      pageId: null
+      pageId: null,
+      scrollTop: 0,
+      scrollPositions: {}
     };
     this.tabs = [defaultTab];
     this.activeTabId = defaultTab.id;
@@ -1022,6 +1141,7 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
   }
 
   openNewTab(folderId?: number | null, notebookId?: number | null, pageId?: number | null) {
+    this.recordCurrentScroll();
     this.syncActiveTabMeta();
 
     const newTabId = 'tab_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
@@ -1029,7 +1149,12 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
     let color = '#737373';
     let icon = 'folder';
 
-    if (notebookId && this.notebooks.length > 0) {
+    if (pageId && this.pages.length > 0) {
+      const p = this.pages.find(pg => pg.id === pageId);
+      if (p) {
+        title = p.title || 'Apunte';
+      }
+    } else if (notebookId && this.notebooks.length > 0) {
       const nb = this.notebooks.find(n => n.id === notebookId);
       if (nb) {
         title = nb.title;
@@ -1052,7 +1177,9 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
       color,
       folderId: folderId ?? null,
       notebookId: notebookId ?? null,
-      pageId: pageId ?? null
+      pageId: pageId ?? null,
+      scrollTop: 0,
+      scrollPositions: {}
     };
 
     this.tabs.push(newTab);
@@ -1067,9 +1194,18 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
     this.openNewTab(this.selectedFolder?.id, notebook.id, null);
   }
 
+  openPageInNewTab(page: NotebookPage, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    this.openNewTab(this.selectedFolder?.id, this.selectedNotebook?.id, page.id);
+  }
+
   switchTab(tabId: string) {
     if (this.activeTabId === tabId && this.selectedNotebook) return;
 
+    this.recordCurrentScroll();
     this.syncActiveTabMeta();
     this.activeTabId = tabId;
     this.saveTabsToStorage();
@@ -1082,6 +1218,21 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
       this.selectedFolder = folder || null;
 
       if (this.selectedFolder && tab.notebookId) {
+        // Optimización si ya estamos en el mismo cuaderno cargado
+        if (this.selectedNotebook && this.selectedNotebook.id === tab.notebookId && this.pages.length > 0) {
+          if (tab.pageId) {
+            const targetPage = this.pages.find(p => p.id === tab.pageId);
+            if (targetPage) {
+              this.selectPage(targetPage, false);
+              return;
+            }
+          } else {
+            this.selectedPage = null;
+            this.restoreScrollForCurrentTabAndPage(0);
+            return;
+          }
+        }
+
         this.libraryService.getNotebooks(tab.folderId).subscribe({
           next: (res) => {
             if (res.ok) {
@@ -1098,6 +1249,7 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
         this.selectedNotebook = null;
         this.selectedPage = null;
         this.pages = [];
+        this.restoreScrollForCurrentTabAndPage(0);
         this.loadNotebooks(tab.folderId);
       }
     } else {
@@ -1106,6 +1258,7 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
       this.selectedPage = null;
       this.notebooks = [];
       this.pages = [];
+      this.restoreScrollForCurrentTabAndPage(0);
     }
   }
 
@@ -1281,6 +1434,7 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
           }
           if (this.selectedPage) {
             this.blocks = this.parseContentToBlocks(this.selectedPage.content || '');
+            this.restoreScrollForCurrentTabAndPage();
           }
           this.saveStateInLocalStorage();
         }
@@ -1288,14 +1442,19 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
     });
   }
 
-  selectPage(page: NotebookPage) {
+  selectPage(page: NotebookPage, savePreviousScroll: boolean = true) {
+    if (savePreviousScroll) {
+      this.recordCurrentScroll();
+    }
     this.selectedPage = page;
     this.showSlashMenu = false;
     this.blocks = this.parseContentToBlocks(page.content || '');
     if (this.isMobileScreen) {
       this.isSidebarCollapsed = true;
     }
+    this.syncActiveTabMeta();
     this.saveStateInLocalStorage();
+    this.restoreScrollForCurrentTabAndPage();
   }
 
   editorViewMode: 'edit' | 'split' | 'preview' = 'edit';
@@ -2143,6 +2302,8 @@ export class DashLibraryComponent implements OnInit, OnDestroy {
     if (this.blocks.length > 0) {
       this.activeBlockId = this.blocks[0].id;
     }
+    this.syncActiveTabMeta();
+    this.restoreScrollForCurrentTabAndPage(0);
     this.showToast('Apunte creado exitosamente');
 
     this.libraryService.createPage({

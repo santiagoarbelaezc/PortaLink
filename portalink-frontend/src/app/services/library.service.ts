@@ -58,6 +58,8 @@ export interface LibraryTab {
   notebookTitle?: string;
   pageId?: number | null;
   pageTitle?: string;
+  scrollTop?: number;
+  scrollPositions?: { [pageId: number]: number };
 }
 
 @Injectable({
