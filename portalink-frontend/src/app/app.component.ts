@@ -22,7 +22,7 @@ import { CookieConsentComponent } from './components/cookie-consent/cookie-conse
     </div>
 
     <!-- Persistent Header & Chatbot (hidden on admin, login, link page, and perfil page) -->
-    <app-navbar *ngIf="showNavbar()" [forceShow]="true"></app-navbar>
+    <app-navbar *ngIf="showNavbar()"></app-navbar>
     <app-ai-chat-floating *ngIf="!isAdminRoute() && !isLoginRoute() && !isLinkRoute() && !isPerfilRoute()"></app-ai-chat-floating>
 
     <!-- Cookie Consent Banner & Legal Preferences Modal -->
@@ -164,54 +164,39 @@ export class AppComponent implements OnInit {
   private loadingSafetyTimeout: any;
 
   isAdminRoute(): boolean {
-    return this.router.url.includes('/admin');
+    const url = this.router.url || '';
+    return url.includes('/admin');
   }
 
   isLoginRoute(): boolean {
-    return this.router.url.includes('/login') || this.router.url.includes('/register');
+    const url = this.router.url || '';
+    return url.includes('/login') || url.includes('/register');
   }
 
   isLinkRoute(): boolean {
-    return this.router.url.includes('/links') || this.router.url.includes('/link');
+    const url = this.router.url || '';
+    return url.includes('/links') || url.includes('/link');
   }
 
   isPerfilRoute(): boolean {
-    return this.router.url.includes('/perfil');
-  }
-
-  isHomeRoute(): boolean {
     const url = this.router.url || '';
-    if (url === '' || url === '/' || url.startsWith('/#') || url.startsWith('/?') || url.startsWith('/proyectos') || url.startsWith('/portfolio')) {
-      return true;
-    }
-    if (typeof window !== 'undefined') {
-      const path = window.location.pathname || '';
-      if (path === '/' || path === '' || path === '/proyectos' || path === '/portfolio') {
-        return true;
-      }
-    }
-    return false;
+    return url.includes('/perfil');
   }
 
   showNavbar(): boolean {
-    // REGLA OBLIGATORIA: En el Home (carga inicial, raíz, proyectos o hash), el navbar SIEMPRE debe salir sí o sí
-    if (this.isHomeRoute()) {
-      return true;
+    const url = (this.router.url || '').split('?')[0].split('#')[0];
+    const path = typeof window !== 'undefined' ? (window.location.pathname || '') : '';
+
+    // Rutas específicas donde el navbar NO debe salir (admin, perfil, rotbot standalone, recuperación)
+    const hiddenPrefixes = ['/admin', '/perfil', '/rotbot', '/verify-email', '/forgot-password', '/reset-password'];
+    for (const prefix of hiddenPrefixes) {
+      if (url.startsWith(prefix) || path.startsWith(prefix)) {
+        return false;
+      }
     }
 
-    // 1. Prioridad: Verificar si la ruta activa tiene la propiedad 'showNavbar' definida en su data
-    let currentRoute = this.activatedRoute;
-    while (currentRoute.firstChild) {
-      currentRoute = currentRoute.firstChild;
-    }
-    const routeShowNavbar = currentRoute.snapshot?.data?.['showNavbar'];
-    if (typeof routeShowNavbar === 'boolean') {
-      return routeShowNavbar;
-    }
-
-    // 2. Fallback para exclusiones si no estuviera explícito en data (links, login y register sí llevan navbar)
-    const url = this.router.url || '';
-    return !this.isAdminRoute() && !this.isPerfilRoute() && !url.includes('/rotbot') && !url.includes('/verify-email') && !url.includes('/forgot-password') && !url.includes('/reset-password');
+    // En todas las demás páginas (Home, Proyectos, Diseños, Planes, Detalle, CV, Certificados, etc.) SIEMPRE debe salir
+    return true;
   }
 
   ngOnInit() {
