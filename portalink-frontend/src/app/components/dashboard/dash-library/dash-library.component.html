@@ -1484,13 +1484,13 @@
                       <span class="text-xs font-bold hidden sm:inline text-red-400">Rojo</span>
                     </button>
 
-                    <!-- BOTÓN LEER ESTE APUNTE CON ROTBOT -->
+                    <!-- BOTÓN LEER ESTE APUNTE CON ROTBOT (SOLO DESKTOP / OCULTO EN MÓVIL) -->
                     <button type="button" 
                             (mousedown)="$event.preventDefault(); $event.stopPropagation()"
                             (touchstart)="$event.preventDefault(); $event.stopPropagation()"
                             (click)="readBlockWithRotBot(block, $event)" 
                             [title]="isReadingThisBlock(block) ? 'Detener lectura con RotBot' : 'Leer este texto en voz alta con RotBot'" 
-                            class="hover:scale-105 active:scale-95 px-2 sm:px-2.5 py-1 rounded-lg shrink-0 transition-all flex items-center gap-1.5 cursor-pointer font-sans text-xs font-semibold shadow-xs"
+                            class="hidden md:flex hover:scale-105 active:scale-95 px-2.5 py-1 rounded-lg shrink-0 transition-all items-center gap-1.5 cursor-pointer font-sans text-xs font-semibold shadow-xs"
                             [ngClass]="isReadingThisBlock(block) 
                               ? 'bg-cyan-500/25 ring-1.5 ring-cyan-400 text-cyan-300' 
                               : (isDark ? 'bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' : 'bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-200')">
@@ -1503,8 +1503,7 @@
                         <span class="w-0.5 bg-cyan-400 rounded-full animate-voice-bar h-3" style="animation-delay: 0.1s"></span>
                         <span class="w-0.5 bg-cyan-400 rounded-full animate-voice-bar h-1.5" style="animation-delay: 0.2s"></span>
                       </div>
-                      <span class="hidden sm:inline">{{ isReadingThisBlock(block) ? 'Detener' : 'Leer' }}</span>
-                      <span class="sm:hidden text-[10.5px]">{{ isReadingThisBlock(block) ? 'Stop' : 'Leer' }}</span>
+                      <span>{{ isReadingThisBlock(block) ? 'Detener' : 'Leer' }}</span>
                     </button>
                   </div>
 
@@ -3175,9 +3174,9 @@
           
           <!-- BOTONES DE ACCIÓN EN EL HEADER -->
           <div class="flex items-center gap-1.5 relative z-10 shrink-0">
-            <!-- Botón Abrir / Alternar Lector RotBot (Voz en Español) -->
+            <!-- Botón Abrir / Alternar Lector RotBot (Voz en Español) (Solo Desktop) -->
             <button (click)="toggleLeftReader()" 
-                    class="h-8 px-2.5 rounded-full border flex items-center gap-1.5 transition-all text-xs font-semibold cursor-pointer shadow-xs"
+                    class="hidden md:flex h-8 px-2.5 rounded-full border items-center gap-1.5 transition-all text-xs font-semibold cursor-pointer shadow-xs"
                     [ngClass]="isLeftReaderOpen 
                       ? 'bg-cyan-500 text-black border-cyan-400 font-bold' 
                       : (isDark ? 'bg-neutral-800 text-neutral-200 border-neutral-700 hover:bg-neutral-700 hover:text-white' : 'bg-neutral-100 text-neutral-800 border-neutral-300 hover:bg-neutral-200')"
