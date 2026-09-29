@@ -30,6 +30,21 @@ export interface LibraryTab {
   scrollPositions?: { [pageId: number]: number };
 }
 
+export interface CodeValidationIssue {
+  line: number;
+  message: string;
+  severity: string;
+}
+
+export interface CodeValidationResult {
+  isValid: boolean;
+  status: 'valid' | 'warning' | 'error';
+  summary: string;
+  issues: CodeValidationIssue[];
+  fixedCode: string;
+  explanation: string;
+}
+
 export interface NoteBlockColumn {
   id: string;
   type: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'imagen';
@@ -37,6 +52,8 @@ export interface NoteBlockColumn {
   language?: string;
   imageUrl?: string;
   isUploading?: boolean;
+  isValidatingCode?: boolean;
+  codeValidation?: CodeValidationResult | null;
 }
 
 export interface NoteBlock {
@@ -50,6 +67,8 @@ export interface NoteBlock {
   imageSize?: 'sm' | 'md' | 'lg' | 'full';
   isUploading?: boolean;
   uploadProgress?: number;
+  isValidatingCode?: boolean;
+  codeValidation?: CodeValidationResult | null;
 }
 
 @Directive({
@@ -124,6 +143,9 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   // Image block & Lightbox modal state
   lightboxImageUrl: string | null = null;
   imageUploadError: string | null = null;
+
+  // Code block validation & copy state
+  copiedCodeBlockId: string | null = null;
 
   // Floating Copilot State
   isCopilotOpen = false;
@@ -1786,6 +1808,76 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     return Math.max(minRows, totalRows);
   }
 
+  // ─── INSPECCIÓN Y AUDITORÍA DE CÓDIGO CON IA ───
+  copyCodeBlock(content: string, blockId?: string, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    if (!content) return;
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(content).then(() => {
+        this.showToast('Código copiado al portapapeles');
+        if (blockId) {
+          this.copiedCodeBlockId = blockId;
+          setTimeout(() => {
+            if (this.copiedCodeBlockId === blockId) {
+              this.copiedCodeBlockId = null;
+            }
+          }, 2000);
+        }
+      });
+    }
+  }
+
+  validateCodeBlock(block: NoteBlock | NoteBlockColumn, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    const code = block.content ? block.content.trim() : '';
+    if (!code) return;
+
+    const lang = block.language || 'code';
+    block.isValidatingCode = true;
+    block.codeValidation = null;
+
+    this.libraryService.validateCode(code, lang).subscribe({
+      next: (res) => {
+        block.isValidatingCode = false;
+        if (res && res.ok && res.data) {
+          block.codeValidation = res.data;
+        }
+      },
+      error: (err) => {
+        block.isValidatingCode = false;
+        block.codeValidation = {
+          isValid: false,
+          status: 'error',
+          summary: 'No se pudo conectar con el auditor de código',
+          issues: [{ line: 1, message: err?.error?.message || 'Error al comunicarse con la IA', severity: 'error' }],
+          fixedCode: block.content,
+          explanation: 'Ocurrió un error temporal al procesar el código con Gemini IA. Por favor, intenta de nuevo.'
+        };
+      }
+    });
+  }
+
+  applyCodeFix(block: NoteBlock | NoteBlockColumn, fixedCode: string, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    if (!fixedCode) return;
+    block.content = fixedCode;
+    block.codeValidation = null;
+    this.syncBlocksToContent();
+  }
+
+  clearCodeValidation(block: NoteBlock | NoteBlockColumn, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    block.codeValidation = null;
+  }
+
   onBlockKeydown(event: KeyboardEvent, block: NoteBlock, index: number) {
     if (this.showSlashMenu) {
       this.onTextareaKeydown(event);
@@ -2070,14 +2162,6 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
       col.content = target.innerText || target.innerHTML || '';
     }
     this.syncBlocksToContent();
-  }
-
-  copyCodeBlock(content: string) {
-    if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      navigator.clipboard.writeText(content || '').then(() => {
-        this.showToast('Código copiado al portapapeles');
-      });
-    }
   }
 
   // ── GESTIÓN DE IMÁGENES & CLOUDINARY ─────────────────────────

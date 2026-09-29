@@ -199,4 +199,20 @@ export class LibraryService {
       { image: base64Data, name: fileName }
     );
   }
+
+  // ── Validación e Inspección de Código con IA ────────────────
+  validateCode(code: string, language: string): Observable<{
+    ok: boolean;
+    data: {
+      isValid: boolean;
+      status: 'valid' | 'warning' | 'error';
+      summary: string;
+      issues: Array<{ line: number; message: string; severity: string }>;
+      fixedCode: string;
+      explanation: string;
+    };
+    message?: string;
+  }> {
+    return this.http.post<any>(`${this.apiUrl}/validate-code`, { code, language });
+  }
 }
