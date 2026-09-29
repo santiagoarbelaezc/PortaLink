@@ -848,9 +848,9 @@
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0118 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25"/>
                 </svg>
               </div>
-              <div class="min-w-0">
-                <span class="text-[10px] font-headline font-bold uppercase tracking-widest block"
-                      [style.color]="nb.color">Cuaderno</span>
+              <div class="min-w-0 flex-1">
+                <span class="text-xs font-headline font-bold block truncate"
+                      [style.color]="nb.color" [title]="nb.title">{{ nb.title }}</span>
                 <span class="text-[10px] font-semibold block truncate" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ nb.pages_count || 0 }} apuntes</span>
               </div>
             </div>
@@ -891,13 +891,9 @@
         </div>
 
         <!-- BODY -->
-        <div class="pl-5 pr-4 pt-3 pb-4 flex-1 flex flex-col">
-          <h3 class="text-sm font-headline font-bold leading-snug transition-colors mb-1.5"
-              [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-            {{ nb.title }}
-          </h3>
+        <div class="pl-5 pr-4 pt-2.5 pb-4 flex-1 flex flex-col justify-between">
           <p class="text-[11px] leading-relaxed flex-1 line-clamp-2"
-             [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">
+             [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">
             {{ nb.description || 'Sin descripción' }}
           </p>
 
@@ -2951,14 +2947,14 @@
         <!-- IZQUIERDA -->
         <div class="space-y-4">
           <div>
-            <label class="block font-headline font-bold mb-1.5 uppercase tracking-wider text-[11px] opacity-70">Título del Cuaderno</label>
+            <label class="block font-headline font-bold mb-1.5 uppercase tracking-wider text-[11px] opacity-70">Título</label>
             <input 
               type="text" 
               [(ngModel)]="notebookForm.title" 
               spellcheck="false"
               autocorrect="off"
               autocapitalize="off"
-              placeholder="ej. Cuaderno - A1, Consultas SQL Avanzadas..."
+              placeholder="ej. A1 - Gramática, Consultas SQL Avanzadas..."
               class="w-full p-3.5 rounded-2xl border font-medium focus:outline-none focus:ring-2 focus:ring-neutral-400/50 transition-all"
               [ngClass]="isDark ? 'bg-neutral-800/80 border-neutral-700 text-white placeholder:text-neutral-500' : 'bg-neutral-100 border-neutral-200 text-neutral-900 placeholder:text-neutral-400'" 
             />
@@ -3000,16 +2996,13 @@
           </div>
 
           <div>
-            <label class="block font-headline font-bold mb-2 uppercase tracking-wider text-[11px] opacity-70">Vista Previa del Cuaderno</label>
+            <label class="block font-headline font-bold mb-2 uppercase tracking-wider text-[11px] opacity-70">Vista Previa</label>
             <div class="relative p-5 rounded-[24px] border overflow-hidden flex flex-col justify-between"
                  [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800' : 'bg-white border-neutral-200'">
               <div class="absolute top-0 left-0 bottom-0 w-2.5" [style.backgroundColor]="notebookForm.color"></div>
               <div class="pl-2">
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-headline font-bold text-white shadow-sm inline-block mb-2" [style.backgroundColor]="notebookForm.color">
-                  Cuaderno
-                </span>
                 <h4 class="font-headline font-bold text-base" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                  {{ notebookForm.title || 'Título del Cuaderno' }}
+                  {{ notebookForm.title || 'Título' }}
                 </h4>
                 <p class="text-xs opacity-60 line-clamp-2 mt-1">
                   {{ notebookForm.description || 'Descripción del módulo de estudio...' }}
