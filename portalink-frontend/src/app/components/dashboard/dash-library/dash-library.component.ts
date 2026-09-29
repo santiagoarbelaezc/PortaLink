@@ -1816,6 +1816,28 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
+    // ─── ATAJOS SHIFT + LETRA: Crear bloque del tipo indicado debajo del actual ───
+    // Shift+T → Título | Shift+S → Subtítulo | Shift+C → Código
+    // Shift+A → Alerta | Shift+N → Texto normal | Shift+2 → 2 Columnas
+    if (event.shiftKey && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      const key = event.key.toUpperCase();
+      const typeMap: Record<string, string> = {
+        'T': 'titulo',
+        'S': 'subtitulo',
+        'C': 'codigo',
+        'A': 'alerta',
+        'N': 'texto',
+        '@': 'columnas',
+        '2': 'columnas',
+      };
+      if (typeMap[key]) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.addBlock(typeMap[key], index);
+        return;
+      }
+    }
+
     if (event.key === 'Enter') {
       if (block.type === 'titulo' || block.type === 'subtitulo') {
         if (!event.shiftKey) {
