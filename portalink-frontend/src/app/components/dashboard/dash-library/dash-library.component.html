@@ -1604,6 +1604,7 @@
                 [(ngModel)]="block.content"
                 (focus)="activeBlockId = block.id"
                 (input)="onBlockInput(block, $event)"
+                (keydown)="onBlockKeydown($event, block, i)"
                 spellcheck="false"
                 autocorrect="off"
                 autocapitalize="off"
