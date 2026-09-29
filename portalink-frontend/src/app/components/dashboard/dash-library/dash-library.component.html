@@ -943,7 +943,7 @@
          class="fixed inset-0 z-50 lg:sticky lg:top-3 lg:self-start lg:z-10 flex flex-col justify-end lg:justify-start bg-black/75 backdrop-blur-md lg:bg-transparent lg:backdrop-blur-none p-0 lg:p-0 transition-all">
       
       <div (click)="$event.stopPropagation()"
-           class="w-full lg:w-80 xl:w-96 shrink-0 rounded-t-[32px] lg:rounded-[24px] border-t lg:border border-neutral-800 p-4 sm:p-5 flex flex-col space-y-4 shadow-2xl max-h-[82vh] lg:max-h-[calc(100vh-1.5rem)] overflow-hidden animate-slide-up lg:animate-fade-in"
+           class="w-full lg:w-[250px] xl:w-[270px] shrink-0 rounded-t-[32px] lg:rounded-[24px] border-t lg:border border-neutral-800 p-3 sm:p-3.5 flex flex-col space-y-3 shadow-2xl max-h-[82vh] lg:max-h-[calc(100vh-1.5rem)] overflow-hidden animate-slide-up lg:animate-fade-in"
            [ngClass]="isDark ? 'bg-[#121215] text-white' : 'bg-white text-neutral-900'">
         
         <!-- PULL DRAG HANDLE PARA MÓVIL (ESTILO IOS BOTTOM SHEET) -->
@@ -1102,8 +1102,25 @@
             </div>
           </div>
 
-          <!-- DERECHA: BOTÓN DESCARGAR PDF -->
+          <!-- DERECHA: BOTONES LEER APUNTE Y DESCARGAR PDF -->
           <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <!-- BOTÓN LEER APUNTE SELECCIONADO / COMPLETO -->
+            <button (click)="readSelectedTextOrActiveBlock()" 
+                    [title]="spanishTts.isSpeaking ? 'Detener lectura en voz alta' : 'Leer texto seleccionado o apunte completo con RotBot'"
+                    class="px-2.5 sm:px-3.5 py-1.5 rounded-xl border text-xs font-headline font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 hover:scale-105 active:scale-95 shadow-xs"
+                    [ngClass]="spanishTts.isSpeaking 
+                      ? 'border-cyan-500/50 bg-cyan-500/20 text-cyan-300 ring-1 ring-cyan-400 animate-pulse' 
+                      : (isDark ? 'border-neutral-700 bg-neutral-800/90 text-neutral-200 hover:bg-neutral-700 hover:text-white' : 'border-neutral-300 bg-white text-neutral-800 hover:bg-neutral-100 hover:text-black')">
+              <svg *ngIf="!spanishTts.isSpeaking" class="w-3.5 h-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.757 3.63 8.25 4.51 8.25H6.75z" />
+              </svg>
+              <svg *ngIf="spanishTts.isSpeaking" class="w-3.5 h-3.5 text-cyan-400" fill="currentColor" viewBox="0 0 24 24">
+                <rect x="6" y="6" width="12" height="12" rx="2" />
+              </svg>
+              <span class="hidden sm:inline">{{ spanishTts.isSpeaking ? 'Detener lectura' : 'Leer apunte' }}</span>
+              <span class="sm:hidden">{{ spanishTts.isSpeaking ? 'Parar' : 'Leer' }}</span>
+            </button>
+
             <button (click)="exportPageToPdf()" [disabled]="isGeneratingPdf" title="Descargar PDF"
                     class="px-2.5 sm:px-4 py-1.5 rounded-xl border text-xs font-headline font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 hover:scale-105 active:scale-95 disabled:opacity-50"
                     [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800/90 text-neutral-200 hover:bg-neutral-700 hover:text-white' : 'border-neutral-300 bg-white text-neutral-800 hover:bg-neutral-100 hover:text-black'">
@@ -1469,6 +1486,29 @@
                       <span class="w-3.5 h-3.5 rounded-full bg-red-500 shrink-0 shadow-xs shadow-red-500/50"
                             [ngClass]="isRedTextActive() ? 'ring-2 ring-white scale-110' : ''"></span>
                       <span class="text-xs font-bold hidden sm:inline text-red-400">Rojo</span>
+                    </button>
+
+                    <!-- BOTÓN LEER ESTE APUNTE CON ROTBOT -->
+                    <button type="button" 
+                            (mousedown)="$event.preventDefault(); $event.stopPropagation()"
+                            (touchstart)="$event.preventDefault(); $event.stopPropagation()"
+                            (click)="readBlockWithRotBot(block, $event)" 
+                            [title]="isReadingThisBlock(block) ? 'Detener lectura con RotBot' : 'Leer este texto en voz alta con RotBot'" 
+                            class="hover:scale-105 active:scale-95 px-2 sm:px-2.5 py-1 rounded-lg shrink-0 transition-all flex items-center gap-1.5 cursor-pointer font-sans text-xs font-semibold shadow-xs"
+                            [ngClass]="isReadingThisBlock(block) 
+                              ? 'bg-cyan-500/25 ring-1.5 ring-cyan-400 text-cyan-300' 
+                              : (isDark ? 'bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' : 'bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-200')">
+                      <svg *ngIf="!isReadingThisBlock(block)" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.757 3.63 8.25 4.51 8.25H6.75z" />
+                      </svg>
+                      <!-- Animación de voz si lee -->
+                      <div *ngIf="isReadingThisBlock(block)" class="flex items-center gap-0.5 h-3">
+                        <span class="w-0.5 bg-cyan-400 rounded-full animate-voice-bar h-2"></span>
+                        <span class="w-0.5 bg-cyan-400 rounded-full animate-voice-bar h-3" style="animation-delay: 0.1s"></span>
+                        <span class="w-0.5 bg-cyan-400 rounded-full animate-voice-bar h-1.5" style="animation-delay: 0.2s"></span>
+                      </div>
+                      <span class="hidden sm:inline">{{ isReadingThisBlock(block) ? 'Detener' : 'Leer' }}</span>
+                      <span class="sm:hidden text-[10.5px]">{{ isReadingThisBlock(block) ? 'Stop' : 'Leer' }}</span>
                     </button>
                   </div>
 
@@ -3085,13 +3125,15 @@
 
     <!-- PANEL FLOTANTE DE CHAT ROTBOT IA (BOTTOM SHEET EN MÓVIL, ARRASTRABLE EN DESKTOP) -->
     <div *ngIf="isCopilotOpen" 
-         class="chat-panel pointer-events-auto fixed inset-x-0 bottom-0 md:inset-x-auto md:bottom-auto w-full md:w-auto max-w-full md:max-w-[94vw] h-[85vh] md:h-[630px] overflow-visible rounded-t-[32px] md:rounded-[32px] border border-b-0 md:border-b shadow-[0_30px_70px_rgba(0,0,0,0.22)] font-sans flex flex-col z-[300] transition-all animate-slide-up md:animate-fade-in"
+         class="copilot-panel chat-panel pointer-events-auto fixed inset-x-0 bottom-0 md:inset-x-auto md:bottom-auto w-full md:w-auto max-w-full md:max-w-[94vw] h-[80vh] md:h-[575px] max-h-[calc(100vh-70px)] overflow-visible rounded-t-[32px] md:rounded-[32px] border border-b-0 md:border-b shadow-[0_30px_70px_rgba(0,0,0,0.22)] font-sans flex flex-col z-[300] animate-slide-up md:animate-fade-in"
+         [class.transition-none]="isDraggingCopilot || isResizingCopilot"
+         [class.transition-all]="!isDraggingCopilot && !isResizingCopilot"
          [ngClass]="isDark ? 'bg-[#121215] border-neutral-800 text-white' : 'bg-white border-neutral-200/90 text-neutral-900'"
          [style.width.px]="!isMobileScreen ? copilotWidth : null"
-         [style.left.px]="(!isMobileScreen && isCopilotCustomPositioned) ? copilotPos.x : null"
-         [style.top.px]="(!isMobileScreen && isCopilotCustomPositioned) ? copilotPos.y : null"
-         [style.bottom]="(!isMobileScreen && !isCopilotCustomPositioned) ? '1.5rem' : null"
-         [style.right]="(!isMobileScreen && !isCopilotCustomPositioned) ? '2.5rem' : null">
+         [style.left]="!isMobileScreen ? (isCopilotCustomPositioned ? (copilotPos.x + 'px') : null) : null"
+         [style.top]="!isMobileScreen ? (isCopilotCustomPositioned ? (copilotPos.y + 'px') : null) : null"
+         [style.bottom]="(!isMobileScreen && !isCopilotCustomPositioned) ? '0.75rem' : null"
+         [style.right]="(!isMobileScreen && !isCopilotCustomPositioned) ? '1.75rem' : 'auto'">
       
       <!-- BOTÓN / MANIJA LATERAL PARA ESTIRAR A LO ANCHO (SOLO DESKTOP) -->
       <div (mousedown)="startResizeCopilot($event)"
@@ -3110,22 +3152,23 @@
       <!-- HEADER DEL CHAT (ZONA ARRASTRABLE EN DESKTOP) -->
       <div (mousedown)="startDragCopilot($event)"
            (touchstart)="startDragCopilot($event)"
-           class="chat-header flex flex-col border-b px-5 sm:px-6 py-3 relative overflow-hidden flex-shrink-0 md:cursor-grab md:active:cursor-grabbing select-none rounded-t-[32px]"
+           class="chat-header flex flex-col border-b px-5 sm:px-6 py-3 relative overflow-hidden flex-shrink-0 cursor-grab active:cursor-grabbing select-none rounded-t-[32px]"
+           [style.cursor]="isDraggingCopilot ? 'grabbing' : 'grab'"
            [ngClass]="isDark ? 'border-neutral-800 bg-[#18181c]/95 backdrop-blur-xl' : 'border-neutral-100 bg-white/95 backdrop-blur-xl'">
         
         <!-- PULL DRAG HANDLE PARA MÓVIL (ESTILO IOS BOTTOM SHEET) -->
         <div class="w-10 h-1.5 rounded-full bg-neutral-600/40 mx-auto -mt-0.5 mb-2 md:hidden shrink-0"></div>
 
         <div class="flex items-center justify-between w-full">
-          <div class="flex items-center gap-3 relative z-10 min-w-0">
+          <div class="flex items-center gap-3 relative z-10 min-w-0 pointer-events-none select-none">
             <div class="w-9 h-9 rounded-2xl border flex items-center justify-center p-1 shadow-xs shrink-0"
                  [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700' : 'bg-neutral-100 border-neutral-200/80'">
-              <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
+              <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain pointer-events-none select-none" alt="Rotbot">
             </div>
             <div class="min-w-0">
               <h3 class="font-sans text-base font-bold tracking-tight leading-none truncate"
                   [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                RotBot Apuntes IA
+                RotBot
               </h3>
               <div class="flex items-center gap-1.5 mt-1">
                 <span class="px-2 py-0.5 rounded-full text-[9.5px] font-semibold inline-flex items-center gap-1 border truncate"
@@ -3139,6 +3182,21 @@
           
           <!-- BOTONES DE ACCIÓN EN EL HEADER -->
           <div class="flex items-center gap-1.5 relative z-10 shrink-0">
+            <!-- Botón Abrir / Alternar Lector RotBot (Voz en Español) -->
+            <button (click)="toggleLeftReader()" 
+                    class="h-8 px-2.5 rounded-full border flex items-center gap-1.5 transition-all text-xs font-semibold cursor-pointer shadow-xs"
+                    [ngClass]="isLeftReaderOpen 
+                      ? 'bg-cyan-500 text-black border-cyan-400 font-bold' 
+                      : (isDark ? 'bg-neutral-800 text-neutral-200 border-neutral-700 hover:bg-neutral-700 hover:text-white' : 'bg-neutral-100 text-neutral-800 border-neutral-300 hover:bg-neutral-200')"
+                    title="Abrir RotBot Lector IA en Español">
+              <span class="w-1.5 h-1.5 rounded-full bg-cyan-400" [class.animate-ping]="spanishTts.isSpeaking"></span>
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+              </svg>
+              <span class="text-[11px]">Lector IA</span>
+            </button>
+
             <!-- Toggle Ancho Preset Button (Solo Desktop) -->
             <button (click)="toggleCopilotWidthPreset()" 
                     class="hidden md:flex w-8 h-8 rounded-full border-none cursor-pointer items-center justify-center transition-all"
@@ -3344,4 +3402,328 @@
     </div>
   </div>
 
+  <!-- ══════════════════════════════════════════════════════
+       ROTBOT IA LECTOR EN ESPAÑOL (LADO IZQUIERDO)
+  ══════════════════════════════════════════════════════ -->
+  <!-- PANEL FLOTANTE DE CHAT ROTBOT LECTOR IA (COMPACTO Y ELEGANTE, ARRASTRABLE EN DESKTOP) -->
+  <div *ngIf="isLeftReaderOpen" 
+       class="left-reader-panel chat-panel pointer-events-auto fixed inset-x-0 bottom-0 md:inset-x-auto md:bottom-auto w-full md:w-[385px] max-w-full md:max-w-[94vw] h-[75vh] md:h-[515px] max-h-[calc(100vh-70px)] overflow-hidden rounded-t-[32px] md:rounded-[32px] border border-b-0 md:border-b shadow-[0_25px_60px_rgba(0,0,0,0.3)] font-sans flex flex-col z-[300] animate-slide-up md:animate-fade-in"
+       [class.transition-none]="isDraggingLeftReader"
+       [class.transition-all]="!isDraggingLeftReader"
+       [ngClass]="isDark ? 'bg-[#121215] border-neutral-800 text-white' : 'bg-white border-neutral-200/90 text-neutral-900'"
+       [style.left]="!isMobileScreen ? (isLeftReaderCustomPositioned ? (leftReaderPos.x + 'px') : '2.5rem') : null"
+       [style.top]="!isMobileScreen ? (isLeftReaderCustomPositioned ? (leftReaderPos.y + 'px') : null) : null"
+       [style.bottom]="(!isMobileScreen && !isLeftReaderCustomPositioned) ? '0.75rem' : null"
+       [style.right]="'auto'">
+
+    <!-- HEADER DEL CHAT (ZONA ARRASTRABLE EN DESKTOP) -->
+    <div (mousedown)="startDragLeftReader($event)"
+         (touchstart)="startDragLeftReader($event)"
+         class="chat-header flex flex-col border-b px-4 sm:px-5 py-2.5 relative overflow-hidden flex-shrink-0 cursor-grab active:cursor-grabbing select-none rounded-t-[32px]"
+         [style.cursor]="isDraggingLeftReader ? 'grabbing' : 'grab'"
+         [ngClass]="isDark ? 'border-neutral-800 bg-[#18181c]/95 backdrop-blur-xl' : 'border-neutral-100 bg-white/95 backdrop-blur-xl'">
+      
+      <!-- PULL DRAG HANDLE PARA MÓVIL -->
+      <div class="w-10 h-1 rounded-full bg-neutral-600/40 mx-auto -mt-0.5 mb-2 md:hidden shrink-0"></div>
+
+      <div class="flex items-center justify-between w-full">
+        <div class="flex items-center gap-2.5 relative z-10 min-w-0 pointer-events-none select-none">
+          <div class="w-8 h-8 rounded-xl border flex items-center justify-center p-1.5 shadow-xs shrink-0"
+               [ngClass]="isDark ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400' : 'bg-cyan-50 border-cyan-200 text-cyan-600'">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+              <circle cx="12" cy="5" r="2"></circle>
+              <path d="M12 7v4"></path>
+              <line x1="8" y1="16" x2="8" y2="16"></line>
+              <line x1="16" y1="16" x2="16" y2="16"></line>
+            </svg>
+          </div>
+          <div class="min-w-0">
+            <h3 class="font-sans text-sm sm:text-base font-bold tracking-tight leading-none truncate"
+                [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              RotBot Lector IA
+            </h3>
+            <div class="flex items-center gap-1.5 mt-1">
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-semibold inline-flex items-center gap-1 border truncate"
+                    [ngClass]="isDark ? 'bg-neutral-800 text-neutral-300 border-neutral-700' : 'bg-neutral-100 text-neutral-700 border-neutral-300'">
+                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse shrink-0"></span>
+                <span class="truncate">Lector de Apuntes</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- BOTONES DE ACCIÓN EN EL HEADER -->
+        <div class="flex items-center gap-1 relative z-10 shrink-0">
+          <!-- Reset Chat Button -->
+          <button (click)="clearLeftReaderChat()" 
+                  class="w-7 h-7 rounded-full border-none cursor-pointer flex items-center justify-center transition-all"
+                  [ngClass]="isDark ? 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-900 hover:text-white'"
+                  title="Nueva conversación">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-3.08 2.82"/>
+            </svg>
+          </button>
+          
+          <!-- Close Button -->
+          <button (click)="closeLeftReader()" 
+                  class="w-7 h-7 rounded-full border-none cursor-pointer flex items-center justify-center transition-all hover:scale-105 active:scale-95"
+                  [ngClass]="isDark ? 'bg-neutral-800 text-white hover:bg-neutral-700' : 'bg-[#09090b] text-white hover:bg-neutral-800'"
+                  style="color: #ffffff !important;"
+                  title="Cerrar Lector">
+            <svg width="13" height="13" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE CABEZA 3D ROTBOT COMPACTO CON OJOS FLOTANTES OLED (EXACTO A DASH ROTBOT) -->
+    <div class="relative w-full h-[120px] sm:h-[130px] flex items-center justify-center overflow-hidden border-b flex-shrink-0 select-none"
+         [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-[#0c0c0e] border-neutral-800 text-white'">
+      
+      <!-- Resplandor sutil de pedestal -->
+      <div class="absolute inset-0 bg-radial-gradient from-white/[0.04] via-transparent to-transparent pointer-events-none"></div>
+
+      <!-- Contenedor cuadrado escalado idéntico a dash-rotbot -->
+      <div class="relative w-[105px] h-[105px] sm:w-[115px] sm:h-[115px] aspect-square flex items-center justify-center my-auto">
+        
+        <!-- 1. The Official 3D Rotbot Head Image -->
+        <img src="https://res.cloudinary.com/doxdjiyvi/image/upload/v1787626350/rotbot-img_j54b0d.png" 
+             alt="Rotbot Face" 
+             class="w-full h-full object-contain pointer-events-none drop-shadow-[0_15px_25px_rgba(0,0,0,0.8)] filter transition-transform duration-500 hover:scale-[1.02]" />
+
+        <!-- 2. Overlay Visor Eyes Container (Proporción exacta a dash-rotbot) -->
+        <div class="absolute top-[55.8%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[45%] h-[22%] flex items-center justify-center gap-[16%] pointer-events-none z-20">
+
+          <!-- LEFT EYE -->
+          <div class="eye-slot flex items-center justify-center w-1/2 h-full">
+            <!-- Crescent OLED Eye (Alive Blink & Talking Bounce) -->
+            <div *ngIf="spanishTts.currentEmotion !== 'thinking'" 
+                 class="rotbot-eye-svg-box crescent" 
+                 [class.talking]="spanishTts.isSpeaking || spanishTts.currentEmotion === 'talking'">
+              <svg viewBox="0 0 100 52" class="w-full h-full">
+                <path d="M 14 36 C 24 10, 76 10, 86 36 C 74 22, 26 22, 14 36 Z" 
+                      fill="#00f0ff" 
+                      stroke="#00f0ff" 
+                      stroke-width="5" 
+                      stroke-linejoin="round" 
+                      stroke-linecap="round" />
+              </svg>
+            </div>
+            <!-- Thinking OLED Eye -->
+            <div *ngIf="spanishTts.currentEmotion === 'thinking'" class="rotbot-eye-svg-box thinking">
+              <div class="w-3.5 h-3 rounded-full bg-[#00f0ff]"></div>
+            </div>
+          </div>
+
+          <!-- RIGHT EYE -->
+          <div class="eye-slot flex items-center justify-center w-1/2 h-full">
+            <!-- Crescent OLED Eye (Alive Blink & Talking Bounce) -->
+            <div *ngIf="spanishTts.currentEmotion !== 'thinking'" 
+                 class="rotbot-eye-svg-box crescent" 
+                 [class.talking]="spanishTts.isSpeaking || spanishTts.currentEmotion === 'talking'">
+              <svg viewBox="0 0 100 52" class="w-full h-full">
+                <path d="M 14 36 C 24 10, 76 10, 86 36 C 74 22, 26 22, 14 36 Z" 
+                      fill="#00f0ff" 
+                      stroke="#00f0ff" 
+                      stroke-width="5" 
+                      stroke-linejoin="round" 
+                      stroke-linecap="round" />
+              </svg>
+            </div>
+            <!-- Thinking OLED Eye -->
+            <div *ngIf="spanishTts.currentEmotion === 'thinking'" class="rotbot-eye-svg-box thinking">
+              <div class="w-3.5 h-3 rounded-full bg-[#00f0ff]"></div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Dynamic Speech & Thinking Floating Indicator -->
+      <div class="absolute bottom-1.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full border bg-[#141419]/95 backdrop-blur-md border-neutral-700 shadow-sm flex items-center gap-1.5 z-30 transition-all text-[10.5px]">
+        <ng-container *ngIf="spanishTts.isSpeaking">
+          <div class="flex items-center gap-0.5">
+            <span *ngFor="let _ of [1,2,3,4,5]" class="w-0.5 bg-cyan-400 rounded-full animate-voice-bar" [style.animation-delay]="(_ * 0.08) + 's'"></span>
+          </div>
+          <span class="font-headline font-bold uppercase tracking-wider text-cyan-400">Leyendo...</span>
+          <button (click)="spanishTts.stop()" title="Detener lectura" class="ml-1 text-rose-400 hover:text-rose-300 font-bold text-[9px] cursor-pointer">⏹ Parar</button>
+        </ng-container>
+        <ng-container *ngIf="!spanishTts.isSpeaking && isLeftReaderLoading">
+          <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
+          <span class="font-headline font-bold uppercase tracking-wider text-neutral-300">Procesando...</span>
+        </ng-container>
+        <ng-container *ngIf="!spanishTts.isSpeaking && !isLeftReaderLoading">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <span class="font-headline font-bold uppercase tracking-wider text-neutral-300">Listo para leer</span>
+        </ng-container>
+      </div>
+
+    </div>
+
+    <!-- BARRA MINIMALISTA DE VOZ NEURAL ROTBOT & VELOCIDAD -->
+    <div class="px-3.5 py-1.5 border-b flex items-center justify-between text-xs flex-shrink-0"
+         [ngClass]="isDark ? 'border-neutral-800 bg-[#16161a]' : 'border-neutral-200 bg-neutral-50'">
+      <div class="flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+        <span class="text-[10.5px] font-bold tracking-wide" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
+          Voz RotBot Neural
+        </span>
+      </div>
+
+      <div class="flex items-center gap-1 shrink-0">
+        <button *ngFor="let spd of [0.9, 1.0, 1.15]" 
+                type="button"
+                (click)="setReaderSpeed(spd)"
+                class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold transition-all cursor-pointer border"
+                [ngClass]="leftReaderSpeed === spd 
+                  ? (isDark ? 'bg-white text-black border-white' : 'bg-neutral-900 text-white border-neutral-900') 
+                  : (isDark ? 'border-neutral-700 text-neutral-400 hover:text-white' : 'border-neutral-300 text-neutral-600 hover:text-black')">
+          {{ spd }}x
+        </button>
+      </div>
+    </div>
+
+    <!-- ÁREA DE MENSAJES CON SCROLL (EXACTO A CHAT-PANEL DERECHO) -->
+    <div #leftReaderMessagesContainer 
+         class="flex-1 p-3 sm:p-4 overflow-y-auto overflow-x-hidden space-y-3 text-[13px] sm:text-[13.5px] font-sans w-full max-w-full min-w-0"
+         [ngClass]="isDark ? 'bg-[#121215]' : 'bg-white'">
+      
+      <div *ngFor="let msg of leftReaderMessages" class="flex flex-col w-full min-w-0 max-w-full" 
+           [ngClass]="msg.role === 'user' ? 'items-end' : 'items-start'">
+        
+        <!-- MENSAJE USUARIO -->
+        <div *ngIf="msg.role === 'user'" class="max-w-[85%] px-3.5 py-2.5 rounded-2xl font-medium text-[13px] sm:text-[13.5px] leading-relaxed shadow-xs break-words [overflow-wrap:anywhere]"
+             [ngClass]="isDark ? 'bg-neutral-800 text-white rounded-br-xs border border-neutral-700' : 'bg-[#09090b] text-white rounded-br-xs'">
+          {{ msg.text }}
+        </div>
+
+        <!-- MENSAJE ASISTENTE ROTBOT -->
+        <div *ngIf="msg.role === 'assistant'" class="flex items-start gap-2 max-w-full w-full min-w-0">
+          <div class="w-7 h-7 rounded-xl flex-shrink-0 flex items-center justify-center border mt-0.5 shadow-xs"
+               [ngClass]="isDark ? 'bg-cyan-500/15 border-cyan-500/30 text-cyan-400' : 'bg-cyan-50 border-cyan-200 text-cyan-600'">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+              <circle cx="12" cy="5" r="2"></circle>
+              <path d="M12 7v4"></path>
+              <line x1="8" y1="16" x2="8" y2="16"></line>
+              <line x1="16" y1="16" x2="16" y2="16"></line>
+            </svg>
+          </div>
+
+          <div class="flex-1 min-w-0 max-w-[calc(100%-38px)] px-3.5 py-2.5 rounded-2xl text-[13px] sm:text-[13.5px] font-normal leading-relaxed border shadow-xs break-words [overflow-wrap:anywhere]"
+               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 text-neutral-100 rounded-bl-xs' : 'bg-neutral-100 border-neutral-200/70 text-neutral-900 rounded-bl-xs'">
+            <div>{{ msg.text }}</div>
+            
+            <div class="flex items-center justify-between mt-1.5 pt-1 border-t border-white/5 text-[10.5px] text-neutral-400">
+              <span>{{ msg.time }}</span>
+              <button (click)="repeatMessageSpeech(msg)" 
+                      class="opacity-75 hover:opacity-100 hover:text-cyan-400 flex items-center gap-1 cursor-pointer transition-colors"
+                      title="Escuchar de nuevo este mensaje">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.757 3.63 8.25 4.51 8.25H6.75z" /></svg>
+                <span>Escuchar</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TYPING ANIMATED DOTS -->
+      <div *ngIf="isLeftReaderLoading" class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-xl flex-shrink-0 flex items-center justify-center border shadow-xs"
+             [ngClass]="isDark ? 'bg-cyan-500/15 border-cyan-500/30 text-cyan-400' : 'bg-cyan-50 border-cyan-200 text-cyan-600'">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+            <circle cx="12" cy="5" r="2"></circle>
+            <path d="M12 7v4"></path>
+          </svg>
+        </div>
+        <div class="px-3 py-2 rounded-2xl flex items-center gap-1 border"
+             [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-neutral-100 border-neutral-200/70 text-neutral-900'">
+          <div class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce"></div>
+          <div class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce [animation-delay:0.2s]"></div>
+          <div class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce [animation-delay:0.4s]"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ÁREA DE ENTRADA / INPUT BAR -->
+    <div class="px-3 py-2 border-t flex-shrink-0"
+         [ngClass]="isDark ? 'border-neutral-800 bg-[#18181c]' : 'border-neutral-100 bg-white'">
+      
+      <!-- Acciones Rápidas -->
+      <div class="flex items-center gap-1.5 pb-1.5">
+        <button type="button" 
+                (click)="readSelectedTextOrActiveBlock()"
+                class="px-2.5 py-1 rounded-xl border text-[11px] font-medium flex items-center gap-1.5 shrink-0 transition-all cursor-pointer shadow-xs active:scale-95 group"
+                [ngClass]="isDark ? 'border-neutral-700/80 bg-neutral-800/90 hover:bg-neutral-700 text-neutral-200 hover:text-white hover:border-cyan-500/40' : 'border-neutral-300 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 hover:text-black hover:border-cyan-500/40'">
+          <svg class="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+          </svg>
+          <span>Leer apunte activo</span>
+        </button>
+      </div>
+
+      <div class="relative flex items-end gap-1.5 border rounded-2xl p-1.5 sm:p-2 transition-colors shadow-xs"
+           [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 focus-within:border-neutral-400' : 'bg-neutral-50 border-neutral-300/80 focus-within:border-neutral-900'">
+        
+        <textarea 
+          #leftReaderTextarea
+          [(ngModel)]="leftReaderInput"
+          [disabled]="isLeftReaderLoading"
+          (keydown)="onLeftReaderKeydown($event)"
+          spellcheck="false"
+          autocorrect="off"
+          name="leftReaderInput"
+          rows="1"
+          placeholder="Escribe o pega texto..."
+          class="flex-1 bg-transparent border-none px-2 py-1 text-xs outline-none focus:outline-none focus:ring-0 disabled:opacity-50 resize-none max-h-28 leading-relaxed my-0 transition-all duration-150"
+          [ngClass]="isDark ? 'text-white placeholder:text-neutral-500' : 'text-neutral-900 placeholder:text-neutral-400'"
+        ></textarea>
+
+        <div class="flex items-center gap-1 shrink-0 mb-0.5">
+          <!-- Botón Solo Leer en Voz Alta -->
+          <button 
+            type="button"
+            (click)="sendLeftReaderText('read-only')"
+            [disabled]="!leftReaderInput.trim() || spanishTts.isSpeaking"
+            title="Leer este texto directamente"
+            class="h-7 px-2.5 rounded-xl font-headline font-bold text-[11px] uppercase tracking-wider transition-all disabled:opacity-30 cursor-pointer flex items-center gap-1 shadow-xs"
+            [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'"
+          >
+            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.757 3.63 8.25 4.51 8.25H6.75z" /></svg>
+            <span>Leer</span>
+          </button>
+
+          <!-- Botón Preguntar a IA y responder hablado -->
+          <button 
+            type="button"
+            (click)="sendLeftReaderText('ask-ai')"
+            [disabled]="!leftReaderInput.trim() || isLeftReaderLoading"
+            title="Consultar con IA y responder con voz"
+            class="h-7 px-2 rounded-xl text-[10.5px] font-bold border transition-all disabled:opacity-30 cursor-pointer flex items-center gap-1"
+            [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800 text-neutral-300 hover:text-white hover:bg-neutral-700' : 'border-neutral-300 bg-neutral-100 text-neutral-700 hover:text-black hover:bg-neutral-200'"
+          >
+            <span>✨ IA</span>
+          </button>
+        </div>
+
+      </div>
+
+      <div class="flex items-center justify-between mt-1 px-1 text-[9.5px] font-sans font-medium opacity-40">
+        <span>Ctrl + Enter para leer</span>
+        <span>Voz Neural ⚡</span>
+      </div>
+
+    </div>
+
+  </div>
 </div>
+

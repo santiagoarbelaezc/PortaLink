@@ -61,6 +61,13 @@
     -webkit-tap-highlight-color: transparent;
   }
 
+  body.is-chat-dragging,
+  body.is-chat-dragging * {
+    cursor: grabbing !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+  }
+
   body {
     @apply font-sans;
     background: transparent;

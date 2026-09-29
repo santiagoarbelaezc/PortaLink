@@ -65,6 +65,42 @@ class RobotChatController
     }
 
     /**
+     * Endpoint: POST /api/robot/tts
+     * Genera voz neural ilimitada en español (el mismo motor de respaldo de RotBot).
+     */
+    public function generateTts(Request $request, Response $response): void
+    {
+        @set_time_limit(30);
+        $body = $request->body;
+        $text = trim($body['text'] ?? '');
+        $lang = $body['lang'] ?? 'es';
+
+        if (empty($text)) {
+            $response->status(400)->json([
+                'ok' => false,
+                'error' => 'El texto a pronunciar no puede estar vacío'
+            ]);
+            return;
+        }
+
+        $cleanText = $this->cleanTextForSpeech($text);
+        $audioBase64 = $this->callNeuralFallbackTTS($cleanText, $lang);
+
+        if (!$audioBase64) {
+            $response->status(500)->json([
+                'ok' => false,
+                'error' => 'No se pudo generar la voz'
+            ]);
+            return;
+        }
+
+        $response->json([
+            'ok' => true,
+            'audio' => $audioBase64
+        ]);
+    }
+
+    /**
      * Endpoint: POST /api/robot/transcribe
      * Transcribe fielmente el audio del usuario en inglés usando Groq Whisper Turbo o Gemini Multimodal.
      */

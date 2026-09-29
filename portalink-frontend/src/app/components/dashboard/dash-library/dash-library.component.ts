@@ -7,6 +7,7 @@ import { LibraryService, NotebookFolder, NotebookModule, NotebookPage } from '..
 import { LibraryAiService } from '../../../services/library-ai.service';
 import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-body.directive';
 import { StreakService } from '../../../services/streak.service';
+import { SpanishTtsService } from '../../../services/spanish-tts.service';
 
 export interface SlashCommandItem {
   key: string;
@@ -115,12 +116,73 @@ export class ContentEditableDirective implements OnChanges {
   standalone: true,
   imports: [CommonModule, FormsModule, ContentEditableDirective, TeleportToBodyDirective],
   templateUrl: './dash-library.component.html',
-  host: { class: 'block w-full' }
+  host: { class: 'block w-full' },
+  styles: [`
+    .rotbot-eye-svg-box {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      filter: drop-shadow(0 0 4px #00f0ff) drop-shadow(0 0 10px rgba(0, 240, 255, 0.5));
+    }
+    .rotbot-eye-svg-box.crescent { animation: aliveCrescentBlink 4.2s infinite ease-in-out; }
+    .rotbot-eye-svg-box.neutral { animation: aliveNeutralBlink 3.8s infinite ease-in-out; }
+    .rotbot-eye-svg-box.thinking { animation: thinkPulse 1.2s infinite alternate ease-in-out; }
+    .rotbot-eye-svg-box.surprised { animation: aliveSurprise 4.5s infinite ease-in-out; }
+    .rotbot-eye-svg-box.talking { animation: talkingBounce 0.24s infinite alternate ease-in-out !important; }
+
+    @keyframes aliveCrescentBlink {
+      0%, 82%, 100% { transform: translate(0, 0) scaleY(1); }
+      25% { transform: translate(-2px, -1px) scaleY(1); }
+      50% { transform: translate(2px, -1px) scaleY(1); }
+      88% { transform: translate(0, 0) scaleY(0.08); }
+      92% { transform: translate(0, 0) scaleY(1); }
+      95% { transform: translate(0, 0) scaleY(0.08); }
+    }
+    @keyframes aliveNeutralBlink {
+      0%, 80%, 100% { transform: translate(0, 0) scaleY(1); }
+      30% { transform: translate(-3px, 0) scaleY(1); }
+      60% { transform: translate(3px, 0) scaleY(1); }
+      88% { transform: translate(0, 0) scaleY(0.06); }
+      92% { transform: translate(0, 0) scaleY(1); }
+    }
+    @keyframes aliveSurprise {
+      0%, 88%, 100% { transform: scale(1.1) translate(0, 0); }
+      93% { transform: scale(1.1) scaleY(0.1); }
+    }
+    @keyframes thinkPulse {
+      0% { transform: translateY(-5px) scale(0.85); opacity: 0.75; }
+      100% { transform: translateY(4px) scale(1); opacity: 1; }
+    }
+    @keyframes talkingBounce {
+      0% { transform: scaleY(1) scaleX(1); }
+      50% { transform: scaleY(0.6) scaleX(1.08); }
+      100% { transform: scaleY(1.15) scaleX(0.94); }
+    }
+    @keyframes voiceBar {
+      0%, 100% { height: 4px; }
+      50% { height: 18px; }
+    }
+    .animate-voice-bar {
+      animation: voiceBar 0.45s ease-in-out infinite alternate;
+    }
+    .chat-header {
+      cursor: grab !important;
+    }
+    .chat-header:active,
+    body.is-chat-dragging .chat-header {
+      cursor: grabbing !important;
+    }
+  `]
 })
 export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('editorTextarea') editorTextarea?: ElementRef<HTMLTextAreaElement>;
   @ViewChild('copilotMessagesContainer') copilotMessagesContainer?: ElementRef<HTMLDivElement>;
   @ViewChild('copilotTextarea') copilotTextareaElement?: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('leftReaderMessagesContainer') leftReaderMessagesContainer?: ElementRef<HTMLDivElement>;
+  @ViewChild('leftReaderTextarea') leftReaderTextareaElement?: ElementRef<HTMLTextAreaElement>;
 
   @Input() theme: string = 'light';
   get isDark(): boolean {
@@ -131,6 +193,22 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   private libraryAiService = inject(LibraryAiService);
   private streakService = inject(StreakService);
   private sanitizer = inject(DomSanitizer);
+  public spanishTts = inject(SpanishTtsService);
+
+  // ── LEFT ROTBOT READER STATE ─────────────────────────────
+  isLeftReaderOpen = false;
+  isLeftReaderLoading = false;
+  leftReaderInput = '';
+  currentlyReadingBlockId: string | null = null;
+  leftReaderSpeed = 1.0;
+  leftReaderMessages: { id: string; role: 'user' | 'assistant'; text: string; time: string }[] = [
+    {
+      id: 'welcome',
+      role: 'assistant',
+      text: '¡Listo! Haz clic en **Leer apunte activo** o escribe cualquier texto para escucharlo.',
+      time: 'Ahora'
+    }
+  ];
 
   // Block-level AI action state
   activeAiBlockId: string | null = null;
@@ -155,7 +233,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   copilotOverlayOpacity = '1';
   copilotInput = '';
   copilotMessages: { role: 'user' | 'assistant'; content: string }[] = [
-    { role: 'assistant', content: '¡Hola! Soy **RotBot Apuntes IA**. ¿En qué puedo ayudarte a resumir, explicar o estructurar tus notas de estudio hoy?' }
+    { role: 'assistant', content: '¡Hola! Soy **RotBot**. ¿En qué puedo ayudarte a resumir, explicar o estructurar tus notas de estudio hoy?' }
   ];
 
 
@@ -968,6 +1046,9 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.spanishTts) {
+      this.spanishTts.stop();
+    }
     if (this.cleanUpScroll) {
       this.cleanUpScroll();
     }
@@ -975,6 +1056,9 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this._selectedNotebook) {
       this.inNotesViewChange.emit(false);
     }
+    document.body.classList.remove('is-chat-dragging');
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
   }
 
   // ── GESTIÓN DE SCROLL INDEPENDIENTE POR PESTAÑA / VENTANA Y APUNTE ──
@@ -3474,7 +3558,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
       this.copilotMessages = [
         {
           role: 'assistant',
-          content: '¡Hola! Soy **RotBot Apuntes IA**. ¿En qué puedo ayudarte a resumir, explicar o estructurar tus notas de estudio hoy?'
+          content: '¡Hola! Soy **RotBot**. ¿En qué puedo ayudarte a resumir, explicar o estructurar tus notas de estudio hoy?'
         }
       ];
       this.saveCopilotChatToStorage();
@@ -3838,16 +3922,53 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     } catch {}
   }
 
+  // ── LEFT READER DRAG LOGIC ─────────────────────────────
+  isDraggingLeftReader = false;
+  leftReaderPos = { x: 0, y: 0 };
+  isLeftReaderCustomPositioned = false;
+  private leftReaderDragStartOffset = { x: 0, y: 0 };
+
+  startDragLeftReader(event: MouseEvent | TouchEvent) {
+    if (this.isMobileScreen) return;
+    const target = event.target as HTMLElement;
+    if (target.closest('button') || target.closest('select')) return;
+
+    this.isDraggingLeftReader = true;
+    document.body.classList.add('is-chat-dragging');
+    document.body.style.cursor = 'grabbing';
+    document.body.style.userSelect = 'none';
+
+    const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+    const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
+
+    const chatEl = document.querySelector('.left-reader-panel') as HTMLElement;
+    if (chatEl) {
+      const rect = chatEl.getBoundingClientRect();
+      this.leftReaderDragStartOffset = {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+      if (!this.isLeftReaderCustomPositioned) {
+        this.leftReaderPos = { x: rect.left, y: rect.top };
+        this.isLeftReaderCustomPositioned = true;
+      }
+    }
+  }
+
   startDragCopilot(event: MouseEvent | TouchEvent) {
     if (this.isMobileScreen) return;
     const target = event.target as HTMLElement;
     if (target.closest('button')) return;
 
     this.isDraggingCopilot = true;
+    document.body.classList.add('is-chat-dragging');
+    document.body.style.cursor = 'grabbing';
+    document.body.style.userSelect = 'none';
+
     const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
     const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
 
-    const chatEl = document.querySelector('.chat-panel') as HTMLElement;
+    const chatEl = document.querySelector('.copilot-panel') as HTMLElement;
     if (chatEl) {
       const rect = chatEl.getBoundingClientRect();
       this.dragStartOffset = {
@@ -3866,7 +3987,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   onDragCopilotMove(event: MouseEvent | TouchEvent) {
     if (this.isResizingCopilot) {
       const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
-      const deltaX = this.resizeStartX - clientX; // Arrastrar hacia la izquierda incrementa el ancho
+      const deltaX = this.resizeStartX - clientX;
       const minW = 360;
       const maxW = Math.min(window.innerWidth - 30, 920);
       const newWidth = Math.max(minW, Math.min(this.resizeStartWidth + deltaX, maxW));
@@ -3877,14 +3998,36 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
+    if (this.isDraggingLeftReader) {
+      const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+      const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
+
+      const chatEl = document.querySelector('.left-reader-panel') as HTMLElement;
+      const chatWidth = chatEl ? chatEl.offsetWidth : 385;
+      const chatHeight = chatEl ? chatEl.offsetHeight : 515;
+
+      const margin = 12;
+      const maxX = window.innerWidth - chatWidth - margin;
+      const maxY = window.innerHeight - chatHeight - margin;
+
+      let newX = clientX - this.leftReaderDragStartOffset.x;
+      let newY = clientY - this.leftReaderDragStartOffset.y;
+
+      newX = Math.max(margin, Math.min(newX, maxX));
+      newY = Math.max(margin, Math.min(newY, maxY));
+
+      this.leftReaderPos = { x: newX, y: newY };
+      return;
+    }
+
     if (!this.isDraggingCopilot) return;
 
     const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
     const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
 
-    const chatEl = document.querySelector('.chat-panel') as HTMLElement;
+    const chatEl = document.querySelector('.copilot-panel') as HTMLElement;
     const chatWidth = chatEl ? chatEl.offsetWidth : this.copilotWidth;
-    const chatHeight = chatEl ? chatEl.offsetHeight : 630;
+    const chatHeight = chatEl ? chatEl.offsetHeight : 575;
 
     const margin = 12;
     const maxX = window.innerWidth - chatWidth - margin;
@@ -3903,6 +4046,267 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostListener('window:touchend')
   onDragCopilotEnd() {
     this.isDraggingCopilot = false;
+    this.isDraggingLeftReader = false;
     this.isResizingCopilot = false;
+    document.body.classList.remove('is-chat-dragging');
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  }
+
+  // ── ROTBOT LECTOR EN ESPAÑOL (MÉTODOS) ───────────────────
+  toggleLeftReader() {
+    this.isLeftReaderOpen = !this.isLeftReaderOpen;
+    if (this.isLeftReaderOpen) {
+      setTimeout(() => this.scrollToBottomLeftReader(), 100);
+    }
+  }
+
+  openLeftReader() {
+    this.isLeftReaderOpen = true;
+    setTimeout(() => this.scrollToBottomLeftReader(), 100);
+  }
+
+  closeLeftReader() {
+    this.isLeftReaderOpen = false;
+  }
+
+  scrollToBottomLeftReader() {
+    setTimeout(() => {
+      if (this.leftReaderMessagesContainer?.nativeElement) {
+        const el = this.leftReaderMessagesContainer.nativeElement;
+        el.scrollTop = el.scrollHeight;
+      }
+    }, 80);
+  }
+
+  setReaderSpeed(speed: number) {
+    this.leftReaderSpeed = speed;
+    this.spanishTts.rate = speed;
+  }
+
+  setReaderVoice(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const voiceName = select.value;
+    const voices = window.speechSynthesis?.getVoices() || [];
+    const found = voices.find(v => v.name === voiceName);
+    if (found) {
+      this.spanishTts.setSelectedVoice(found);
+    }
+  }
+
+  isReadingThisBlock(block: NoteBlock): boolean {
+    return this.currentlyReadingBlockId === block.id && this.spanishTts.isSpeaking;
+  }
+
+  readBlockWithRotBot(block: NoteBlock, event?: Event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    if (this.isReadingThisBlock(block)) {
+      this.spanishTts.stop();
+      this.currentlyReadingBlockId = null;
+      return;
+    }
+
+    let textToRead = '';
+    if (block.type === 'columnas') {
+      const c1 = block.columns?.[0]?.content || '';
+      const c2 = block.columns?.[1]?.content || '';
+      textToRead = `Columna uno: ${c1}. Columna dos: ${c2}`;
+    } else {
+      textToRead = block.content || '';
+    }
+
+    const clean = this.spanishTts.cleanTextForSpeech(textToRead);
+    if (!clean) {
+      this.showToast('Este bloque no contiene texto para leer');
+      return;
+    }
+
+    this.currentlyReadingBlockId = block.id;
+    this.spanishTts.rate = this.leftReaderSpeed;
+
+    const preview = clean.length > 120 ? clean.substring(0, 120) + '...' : clean;
+    this.leftReaderMessages.push({
+      id: 'read_' + Date.now(),
+      role: 'assistant',
+      text: `🔊 **Leyendo apunte:** "${preview}"`,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    });
+    this.scrollToBottomLeftReader();
+
+    this.spanishTts.speak(clean, () => {
+      this.currentlyReadingBlockId = null;
+    });
+  }
+
+  readSelectedTextOrActiveBlock() {
+    if (this.spanishTts.isSpeaking) {
+      this.spanishTts.stop();
+      this.currentlyReadingBlockId = null;
+      return;
+    }
+
+    // 1. Verificar si hay texto seleccionado con el ratón
+    const selection = window.getSelection()?.toString()?.trim();
+    if (selection) {
+      this.openLeftReader();
+      this.currentlyReadingBlockId = null;
+      this.spanishTts.rate = this.leftReaderSpeed;
+
+      const preview = selection.length > 120 ? selection.substring(0, 120) + '...' : selection;
+      this.leftReaderMessages.push({
+        id: 'sel_' + Date.now(),
+        role: 'assistant',
+        text: `🎯 **Leyendo texto seleccionado:** "${preview}"`,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+      this.scrollToBottomLeftReader();
+
+      this.spanishTts.speak(selection, () => {
+        this.currentlyReadingBlockId = null;
+      });
+      return;
+    }
+
+    // 2. Si hay un bloque activo, leer ese bloque
+    if (this.activeBlockId) {
+      const activeBlock = this.blocks.find(b => b.id === this.activeBlockId);
+      if (activeBlock) {
+        this.readBlockWithRotBot(activeBlock);
+        return;
+      }
+    }
+
+    // 3. Si no hay selección ni bloque activo, leer el apunte completo
+    if (this.blocks.length > 0) {
+      const fullText = (this.selectedPage?.title ? `${this.selectedPage.title}. ` : '') + 
+        this.blocks.map(b => {
+          if (b.type === 'columnas') {
+            return `${b.columns?.[0]?.content || ''}. ${b.columns?.[1]?.content || ''}`;
+          }
+          return b.content || '';
+        }).join('. ');
+
+      const clean = this.spanishTts.cleanTextForSpeech(fullText);
+      if (clean) {
+        this.openLeftReader();
+        this.spanishTts.rate = this.leftReaderSpeed;
+        this.leftReaderMessages.push({
+          id: 'full_' + Date.now(),
+          role: 'assistant',
+          text: `📚 **Leyendo apunte completo:** ${this.selectedPage?.title || 'Notas'}`,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        this.scrollToBottomLeftReader();
+
+        this.spanishTts.speak(clean, () => {
+          this.currentlyReadingBlockId = null;
+        });
+        return;
+      }
+    }
+
+    this.showToast('No hay contenido disponible para leer');
+  }
+
+  sendLeftReaderText(mode: 'read-only' | 'ask-ai') {
+    const text = this.leftReaderInput.trim();
+    if (!text) return;
+
+    this.leftReaderInput = '';
+    if (this.leftReaderTextareaElement?.nativeElement) {
+      this.leftReaderTextareaElement.nativeElement.style.height = 'auto';
+    }
+
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    if (mode === 'read-only') {
+      this.leftReaderMessages.push({
+        id: 'user_' + Date.now(),
+        role: 'user',
+        text: text,
+        time: timeStr
+      });
+      this.leftReaderMessages.push({
+        id: 'bot_' + Date.now(),
+        role: 'assistant',
+        text: `🔊 ${text}`,
+        time: timeStr
+      });
+      this.scrollToBottomLeftReader();
+
+      this.spanishTts.rate = this.leftReaderSpeed;
+      this.spanishTts.speak(text);
+    } else {
+      this.leftReaderMessages.push({
+        id: 'user_' + Date.now(),
+        role: 'user',
+        text: text,
+        time: timeStr
+      });
+      this.scrollToBottomLeftReader();
+      this.isLeftReaderLoading = true;
+      this.spanishTts.setEmotion('thinking');
+
+      const history = this.leftReaderMessages.slice(-6).map(m => ({ role: m.role, content: m.text }));
+      this.libraryAiService.askCopilot(text, this.selectedPage?.title, history).subscribe({
+        next: (res) => {
+          this.isLeftReaderLoading = false;
+          if (res.success && res.result) {
+            this.leftReaderMessages.push({
+              id: 'bot_' + Date.now(),
+              role: 'assistant',
+              text: res.result,
+              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+            this.scrollToBottomLeftReader();
+            this.spanishTts.rate = this.leftReaderSpeed;
+            this.spanishTts.speak(res.result);
+          } else {
+            this.leftReaderMessages.push({
+              id: 'err_' + Date.now(),
+              role: 'assistant',
+              text: '⚠️ ' + (res.error || 'No pude procesar la respuesta en este momento.'),
+              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+            this.spanishTts.setEmotion('neutral');
+          }
+        },
+        error: () => {
+          this.isLeftReaderLoading = false;
+          this.spanishTts.setEmotion('neutral');
+        }
+      });
+    }
+  }
+
+  repeatMessageSpeech(msg: { text: string }) {
+    const clean = this.spanishTts.cleanTextForSpeech(msg.text);
+    if (clean) {
+      this.spanishTts.rate = this.leftReaderSpeed;
+      this.spanishTts.speak(clean);
+    }
+  }
+
+  clearLeftReaderChat() {
+    this.spanishTts.stop();
+    this.leftReaderMessages = [
+      {
+        id: 'welcome',
+        role: 'assistant',
+        text: 'Historial reiniciado. Haz clic en **Leer apunte activo** o escribe cualquier texto para escucharlo.',
+        time: 'Ahora'
+      }
+    ];
+  }
+
+  onLeftReaderKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter' && event.ctrlKey) {
+      event.preventDefault();
+      this.sendLeftReaderText('read-only');
+    }
   }
 }

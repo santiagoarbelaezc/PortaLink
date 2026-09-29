@@ -392,6 +392,7 @@ $router->get('/api/command-center/recent-activities', [CommandCenterController::
 // ──────────────────────────────────────────────────────────────
 $router->post('/api/robot/chat', [RobotChatController::class, 'chat'], [OptionalAuthMiddleware::class]);
 $router->post('/api/robot_chat.php', [RobotChatController::class, 'chat'], [OptionalAuthMiddleware::class]);
+$router->post('/api/robot/tts', [RobotChatController::class, 'generateTts'], [OptionalAuthMiddleware::class]);
 $router->post('/api/robot/transcribe', [RobotChatController::class, 'transcribe'], [OptionalAuthMiddleware::class]);
 
 // ──────────────────────────────────────────────────────────────
