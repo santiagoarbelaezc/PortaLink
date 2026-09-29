@@ -19,8 +19,10 @@ class Groq
     {
         // Pool de API Keys de Groq soportando nombres estándar y alternativas
         $keys = array_values(array_unique(array_filter([
-            $_ENV['GROQ_API_KEY_COPILOT'] ?? getenv('GROQ_API_KEY_COPILOT') ?: '',
+            $options['api_key'] ?? '',
+            $_ENV['GROQ_API_KEY_CODE_CHECK'] ?? getenv('GROQ_API_KEY_CODE_CHECK') ?: '',
             $_ENV['GROQ_API_KEY_PRIMARY'] ?? getenv('GROQ_API_KEY_PRIMARY') ?: '',
+            $_ENV['GROQ_API_KEY_COPILOT'] ?? getenv('GROQ_API_KEY_COPILOT') ?: '',
             $_ENV['GROQ_API_KEY'] ?? getenv('GROQ_API_KEY') ?: '',
             $_ENV['GROQ_API_KEY_1'] ?? getenv('GROQ_API_KEY_1') ?: '',
             $_ENV['GROQ_API_KEY_2'] ?? getenv('GROQ_API_KEY_2') ?: '',
@@ -111,6 +113,7 @@ class Groq
             CURLOPT_TIMEOUT => 25,
             CURLOPT_CONNECTTIMEOUT => 5,
             CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => 0,
         ]);
 
         $responseBody = curl_exec($ch);

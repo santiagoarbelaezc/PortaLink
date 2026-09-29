@@ -11,7 +11,7 @@ class Gemini
     /**
      * Ejecuta una llamada a la API REST de Google Gemini con pool de claves, reintento automático y respaldo a Groq
      */
-    public static function callGemini(string $prompt, string $systemPrompt = '', array $history = []): array
+    public static function callGemini(string $prompt, string $systemPrompt = '', array $history = [], bool $useSearch = true): array
     {
         @set_time_limit(120);
 
@@ -27,8 +27,8 @@ class Gemini
         
         // Modelos soportados de Google Gemini en orden de preferencia y velocidad
         $modelsToTry = [
-            'gemini-3.6-flash',
             'gemini-flash-latest',
+            'gemini-3.6-flash',
             'gemini-3.1-pro-preview',
             'gemini-2.5-flash',
             'gemini-pro-latest'
@@ -48,7 +48,7 @@ class Gemini
                     }
 
                     try {
-                        $response = self::requestGeminiModel($model, $apiKey, $prompt, $systemPrompt, $history);
+                        $response = self::requestGeminiModel($model, $apiKey, $prompt, $systemPrompt, $history, $useSearch);
                         AiLogger::info('Gemini', "Respuesta exitosa con modelo {$model} (Key ...{$keySuffix})");
                         return $response;
                     } catch (Throwable $e) {
@@ -109,7 +109,7 @@ class Gemini
         }
     }
 
-    private static function requestGeminiModel(string $model, string $apiKey, string $prompt, string $systemPrompt, array $history): array
+    private static function requestGeminiModel(string $model, string $apiKey, string $prompt, string $systemPrompt, array $history, bool $useSearch = true): array
     {
         $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}";
 
@@ -138,11 +138,14 @@ class Gemini
         ];
 
         $payload = [
-            'contents' => $contents,
-            'tools' => [
-                ['google_search' => (object)[]]
-            ]
+            'contents' => $contents
         ];
+
+        if ($useSearch) {
+            $payload['tools'] = [
+                ['google_search' => (object)[]]
+            ];
+        }
 
         if (!empty($systemPrompt)) {
             $payload['systemInstruction'] = [

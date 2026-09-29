@@ -107,4 +107,9 @@ class Request
     {
         return $this->headers[strtolower($name)] ?? null;
     }
+
+    public function getBody(): array
+    {
+        return $this->body;
+    }
 }

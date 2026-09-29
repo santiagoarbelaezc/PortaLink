@@ -6,6 +6,7 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Core\Database;
 use App\Config\Cloudinary;
+use App\Config\Groq;
 use Exception;
 
 class LibraryController
@@ -659,6 +660,100 @@ class LibraryController
             $response->status(500)->json([
                 'ok' => false,
                 'message' => 'Error al subir la imagen: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Valida y analiza fragmentos de código (SQL, Python, TypeScript, etc.) con Groq IA
+     */
+    public function validateCode(Request $request, Response $response): void
+    {
+        try {
+            $data = !empty($request->body) ? $request->body : (method_exists($request, 'getBody') ? $request->getBody() : []);
+            if (empty($data)) {
+                $rawInput = file_get_contents('php://input');
+                if (!empty($rawInput)) {
+                    $decoded = json_decode($rawInput, true);
+                    if (is_array($decoded)) {
+                        $data = $decoded;
+                    }
+                }
+            }
+
+            $code = trim($data['code'] ?? '');
+            $language = strtolower(trim($data['language'] ?? 'código'));
+
+            if (empty($code)) {
+                $response->status(400)->json([
+                    'ok' => false,
+                    'message' => 'El fragmento de código no puede estar vacío.'
+                ]);
+                return;
+            }
+
+            $systemPrompt = "Eres un auditor y linter de código experto de clase mundial especializado en bases de datos (SQL) y lenguajes de programación modernos (Python, TypeScript, JavaScript, HTML, CSS, JSON). " .
+                "Analiza con máxima precisión técnica el código proporcionado por el usuario en el lenguaje '{$language}'. " .
+                "Debes verificar si tiene errores de sintaxis, palabras clave mal escritas (por ejemplo 'FORM' en vez de 'FROM' en SQL), errores semánticos, problemas de indentación o dos puntos faltantes en Python, llaves sin cerrar, o fallas en tiempo de ejecución. " .
+                "REGLA CRÍTICA: Debes responder ÚNICAMENTE con un JSON válido y parseable, sin texto previo ni posterior, sin comillas triples markdown (sin ```json ni ```), con la siguiente estructura exacta: " .
+                "{" .
+                "\"isValid\": true|false, " .
+                "\"status\": \"valid\"|\"warning\"|\"error\", " .
+                "\"summary\": \"Resumen conciso en 1 línea (ej: 'Consulta SQL válida y optimizada' o 'Error de sintaxis: 'FORM' no es una cláusula SQL válida')\", " .
+                "\"issues\": [{\"line\": 1, \"message\": \"Descripción del error\", \"severity\": \"error\"|\"warning\"}], " .
+                "\"fixedCode\": \"El código completo corregido si había errores, o el mismo código si es correcto\", " .
+                "\"explanation\": \"Explicación concisa y didáctica de 1 o 2 frases sobre qué estaba mal y cómo se corrigió.\"" .
+                "}";
+
+            $userPrompt = "Lenguaje: {$language}\nCódigo:\n```\n{$code}\n```";
+
+            $messages = [
+                ['role' => 'system', 'content' => $systemPrompt],
+                ['role' => 'user', 'content' => $userPrompt]
+            ];
+
+            $groqRes = Groq::callGroq($messages, [
+                'model' => 'openai/gpt-oss-120b',
+                'temperature' => 1.0,
+                'max_tokens' => 2048
+            ]);
+
+            $rawContent = trim($groqRes['content'] ?? '');
+
+            // Limpieza de formato markdown
+            $cleanJson = preg_replace('/^```(?:json)?\s*/i', '', $rawContent);
+            $cleanJson = preg_replace('/\s*```$/', '', $cleanJson);
+            $cleanJson = trim($cleanJson);
+
+            // Si vino texto con JSON adentro, extraer el bloque entre llaves
+            if (!str_starts_with($cleanJson, '{') && preg_match('/\{[\s\S]*\}/', $cleanJson, $jsonMatch)) {
+                $cleanJson = $jsonMatch[0];
+            }
+
+            $parsed = json_decode($cleanJson, true);
+
+            if (!is_array($parsed) || !isset($parsed['isValid'])) {
+                // Si el modelo devolvió texto libre, extraer o estructurar
+                $hasError = (stripos($rawContent, 'error') !== false || stripos($rawContent, 'incorrect') !== false);
+                $parsed = [
+                    'isValid' => !$hasError,
+                    'status' => $hasError ? 'error' : 'valid',
+                    'summary' => $hasError ? 'Se detectaron observaciones en el código' : 'Código válido',
+                    'issues' => $hasError ? [['line' => 1, 'message' => substr($rawContent, 0, 120), 'severity' => 'error']] : [],
+                    'fixedCode' => $code,
+                    'explanation' => $rawContent
+                ];
+            }
+
+            $response->status(200)->json([
+                'ok' => true,
+                'data' => $parsed
+            ]);
+        } catch (\Throwable $e) {
+            error_log('[LibraryController] validateCode error: ' . $e->getMessage());
+            $response->status(500)->json([
+                'ok' => false,
+                'message' => 'Error al validar el código: ' . $e->getMessage()
             ]);
         }
     }

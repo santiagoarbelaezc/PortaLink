@@ -374,6 +374,9 @@ $router->get('/api/library/search', [LibraryController::class, 'searchLibrary'],
 // Subida de imágenes a Cloudinary para notas
 $router->post('/api/library/upload-image', [LibraryController::class, 'uploadImage'], [OptionalAuthMiddleware::class]);
 
+// Validación e inspección de código con IA
+$router->post('/api/library/validate-code', [LibraryController::class, 'validateCode'], [OptionalAuthMiddleware::class]);
+
 // ──────────────────────────────────────────────────────────────
 //  RUTAS DE CENTRO DE COMANDO IA (/api/command-center)
 // ──────────────────────────────────────────────────────────────
