@@ -17,17 +17,20 @@ class Groq
      */
     public static function callGroq(array $messages, array $options = []): array
     {
-        // Pool de API Keys de Groq soportando nombres estándar y alternativas
+        // Pool de API Keys de Groq cargadas desde .env y variables de entorno del servidor
         $keys = array_values(array_unique(array_filter([
             $options['api_key'] ?? '',
-            $_ENV['GROQ_API_KEY_CODE_CHECK'] ?? getenv('GROQ_API_KEY_CODE_CHECK') ?: '',
             $_ENV['GROQ_API_KEY_PRIMARY'] ?? getenv('GROQ_API_KEY_PRIMARY') ?: '',
             $_ENV['GROQ_API_KEY_COPILOT'] ?? getenv('GROQ_API_KEY_COPILOT') ?: '',
+            $_ENV['GROQ_API_KEY_CODE_CHECK'] ?? getenv('GROQ_API_KEY_CODE_CHECK') ?: '',
+            $_ENV['GROQ_API_KEY_FALLBACK'] ?? getenv('GROQ_API_KEY_FALLBACK') ?: '',
+            $_ENV['GROQ_API_KEY_CONSULTING'] ?? getenv('GROQ_API_KEY_CONSULTING') ?: '',
             $_ENV['GROQ_API_KEY'] ?? getenv('GROQ_API_KEY') ?: '',
             $_ENV['GROQ_API_KEY_1'] ?? getenv('GROQ_API_KEY_1') ?: '',
             $_ENV['GROQ_API_KEY_2'] ?? getenv('GROQ_API_KEY_2') ?: '',
-            $_ENV['GROQ_API_KEY_FALLBACK'] ?? getenv('GROQ_API_KEY_FALLBACK') ?: '',
-            $_ENV['GROQ_API_KEY_3'] ?? getenv('GROQ_API_KEY_3') ?: ''
+            $_ENV['GROQ_API_KEY_3'] ?? getenv('GROQ_API_KEY_3') ?: '',
+            $_ENV['GROQ_API_KEY_4'] ?? getenv('GROQ_API_KEY_4') ?: '',
+            $_ENV['GROQ_API_KEY_5'] ?? getenv('GROQ_API_KEY_5') ?: ''
         ])));
 
         // Mezclar keys aleatoriamente para distribuir la carga de forma uniforme
@@ -36,10 +39,8 @@ class Groq
         $preferredModel = $options['model'] ?? null;
         $modelsToTry = array_values(array_unique(array_filter([
             $preferredModel,
-            $_ENV['GROQ_MODEL'] ?? getenv('GROQ_MODEL') ?: 'openai/gpt-oss-120b',
-            'openai/gpt-oss-120b',
             'llama-3.3-70b-versatile',
-            'openai/gpt-oss-20b',
+            'openai/gpt-oss-120b',
             'llama-3.1-8b-instant'
         ])));
 
@@ -69,16 +70,9 @@ class Groq
                     $statusCode = (int)($err->getCode() ?: 0);
                     AiLogger::warning('Groq', "Fallo con modelo {$model} (Key ...{$keySuffix}): {$lastError}");
 
-                    // Rate limit / cuota agotada → rotar de key inmediatamente, sin probar más modelos
-                    if ($statusCode === 429 ||
-                        stripos($lastError, 'rate_limit') !== false ||
-                        stripos($lastError, 'quota') !== false ||
-                        stripos($lastError, '429') !== false ||
-                        stripos($lastError, 'exceeded') !== false) {
-                        AiLogger::warning('Groq', "Rate limit en Key ...{$keySuffix}. Rotando a siguiente key al instante.");
-                        break; // Saltar todos los modelos restantes y pasar a la siguiente key
-                    }
-                    // Cualquier otro error → probar el siguiente modelo con la misma key
+                    // En Groq, el límite de TPM/429 es POR MODELO.
+                    // Si falla un modelo por 429, probamos de inmediato el siguiente modelo (ej. Llama 3.3 o 3.1 8B)
+                    // con la misma clave antes de descartar la clave.
                     continue;
                 }
             }

@@ -38,6 +38,14 @@ class ChatAdminController
         $noteContent = trim($body['note_content'] ?? $body['noteContent'] ?? '');
         $history = $body['history'] ?? [];
 
+        // Limpieza de seguridad: evitar que imágenes en base64 o apuntes masivos saturen el TPM de tokens
+        if (!empty($noteContent)) {
+            $noteContent = preg_replace('/data:image\/[a-zA-Z0-9\+\-\.]+;base64,[A-Za-z0-9\/+=\r\n]+/', '[IMAGEN]', $noteContent);
+            if (mb_strlen($noteContent) > 15000) {
+                $noteContent = mb_substr($noteContent, 0, 15000) . "\n... [Contenido truncado por extensión]";
+            }
+        }
+
         try {
             if ($mode === 'transform_block') {
                 $systemPrompt = <<<PROMPT
@@ -160,10 +168,21 @@ PROMPT;
                             ];
                         }
                     }
-                    $geminiRes = Gemini::callGemini($userPrompt, $systemPrompt, $geminiHistory, false);
-                    $reply = trim($geminiRes['content'] ?? '');
-                    $providerUsed = 'gemini';
-                    $modelUsed = $geminiRes['model'] ?? 'gemini-flash-latest';
+                    try {
+                        $geminiRes = Gemini::callGemini($userPrompt, $systemPrompt, $geminiHistory, false);
+                        $reply = trim($geminiRes['content'] ?? '');
+                        $providerUsed = 'gemini';
+                        $modelUsed = $geminiRes['model'] ?? 'gemini-flash-latest';
+                    } catch (Throwable $eGemini) {
+                        AiLogger::warning('ChatAdminController', "Gemini falló también ({$eGemini->getMessage()}). Activando rescate ultra-ligero con Groq Llama 3.1 8B...");
+                        $fallbackGroq = Groq::callGroq($messages, [
+                            'model' => 'llama-3.1-8b-instant',
+                            'temperature' => 0.7
+                        ]);
+                        $reply = trim($fallbackGroq['content'] ?? '');
+                        $providerUsed = 'groq-fallback';
+                        $modelUsed = 'llama-3.1-8b-instant';
+                    }
                 }
 
                 $res->json([
