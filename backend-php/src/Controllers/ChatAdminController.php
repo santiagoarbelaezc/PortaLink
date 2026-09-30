@@ -58,17 +58,27 @@ PROMPT;
                     ['role' => 'user', 'content' => $userPrompt]
                 ];
 
-                $groqRes = Groq::callGroq($messages, [
-                    'temperature' => 0.2,
-                    'max_tokens' => 2048
-                ]);
+                $reply = '';
+                $providerUsed = 'groq';
 
-                $reply = trim($groqRes['content'] ?? '');
+                try {
+                    $groqRes = Groq::callGroq($messages, [
+                        'temperature' => 0.2,
+                        'max_tokens' => 2048
+                    ]);
+                    $reply = trim($groqRes['content'] ?? '');
+                    $providerUsed = 'groq';
+                } catch (Throwable $eGroq) {
+                    AiLogger::warning('ChatAdminController', "Groq falló o alcanzó límite ({$eGroq->getMessage()}). Conmutando automáticamente a Google Gemini...");
+                    $geminiRes = Gemini::callGemini($userPrompt, $systemPrompt, [], false);
+                    $reply = trim($geminiRes['content'] ?? '');
+                    $providerUsed = 'gemini';
+                }
 
                 $res->json([
                     'success' => true,
                     'result' => $reply,
-                    'provider' => 'groq'
+                    'provider' => $providerUsed
                 ]);
                 return;
 
@@ -122,19 +132,40 @@ PROMPT;
 
                 $messages[] = ['role' => 'user', 'content' => $userPrompt];
 
-                $groqRes = Groq::callGroq($messages, [
-                    'temperature' => 1.0,
-                    'max_tokens' => 2048,
-                    'model' => 'openai/gpt-oss-120b'
-                ]);
+                $reply = '';
+                $providerUsed = 'groq';
+                $modelUsed = 'openai/gpt-oss-120b';
 
-                $reply = trim($groqRes['content'] ?? '');
+                try {
+                    $groqRes = Groq::callGroq($messages, [
+                        'temperature' => 1.0,
+                        'max_tokens' => 2048
+                    ]);
+                    $reply = trim($groqRes['content'] ?? '');
+                    $providerUsed = 'groq';
+                    $modelUsed = $groqRes['model'] ?? 'openai/gpt-oss-120b';
+                } catch (Throwable $eGroq) {
+                    AiLogger::warning('ChatAdminController', "Groq falló o alcanzó límite ({$eGroq->getMessage()}). Conmutando automáticamente a Google Gemini...");
+                    $geminiHistory = [];
+                    if (!empty($history) && is_array($history)) {
+                        foreach ($history as $h) {
+                            $geminiHistory[] = [
+                                'role' => (($h['role'] ?? '') === 'user') ? 'user' : 'model',
+                                'content' => $h['content'] ?? ''
+                            ];
+                        }
+                    }
+                    $geminiRes = Gemini::callGemini($userPrompt, $systemPrompt, $geminiHistory, false);
+                    $reply = trim($geminiRes['content'] ?? '');
+                    $providerUsed = 'gemini';
+                    $modelUsed = $geminiRes['model'] ?? 'gemini-flash-latest';
+                }
 
                 $res->json([
                     'success' => true,
                     'result' => $reply,
-                    'provider' => 'groq',
-                    'model' => $groqRes['model'] ?? 'openai/gpt-oss-120b'
+                    'provider' => $providerUsed,
+                    'model' => $modelUsed
                 ]);
                 return;
 

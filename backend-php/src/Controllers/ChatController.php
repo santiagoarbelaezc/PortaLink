@@ -6,7 +6,9 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Core\Database;
 use App\Config\Groq;
+use App\Config\Gemini;
 use Exception;
+use Throwable;
 
 class ChatController
 {
@@ -196,6 +198,11 @@ PROMPT;
             $contextLimit = (int)($_ENV['CONTEXT_MESSAGES_LIMIT'] ?? getenv('CONTEXT_MESSAGES_LIMIT') ?: 10);
             $history = $this->getChatHistory($sessionId, $contextLimit);
 
+            // Verificar si el historial completo de la conversación ya es muy extenso
+            $countStmt = Database::query("SELECT COUNT(*) as cnt FROM chat_messages WHERE session_id = $1", [$sessionId]);
+            $totalSessionMessages = (int)($countStmt->fetch()['cnt'] ?? 0);
+            $chatTooLong = ($totalSessionMessages >= 14);
+
             $systemPrompt = ($chatMode === 'consulting') ? self::CONSULTING_PROMPT : self::SYSTEM_PROMPT;
 
             $messages = array_merge(
@@ -204,9 +211,41 @@ PROMPT;
                 [['role' => 'user', 'content' => trim($message)]]
             );
 
-            $groqRes = Groq::callGroq($messages, ['max_tokens' => 2000, 'key_type' => $chatMode]);
-            $reply = $groqRes['content'];
-            $tokens = $groqRes['tokens'];
+            $reply = '';
+            $tokens = 0;
+            $providerUsed = 'groq';
+
+            // 1. Intentar API primaria: Groq AI
+            try {
+                $groqRes = Groq::callGroq($messages, ['max_tokens' => 2000, 'key_type' => $chatMode]);
+                $reply = $groqRes['content'];
+                $tokens = $groqRes['tokens'];
+                $providerUsed = 'groq';
+            } catch (Throwable $groqErr) {
+                error_log('⚠️ [ChatController] Groq llegó al máximo de requests o falló (' . $groqErr->getMessage() . '). Cambiando automáticamente a la API de Google Gemini...');
+
+                // 2. Fallover a API alternativa (Google Gemini) para garantizar que el chat siga en funcionamiento
+                try {
+                    $geminiHistory = [];
+                    foreach ($history as $h) {
+                        $geminiHistory[] = [
+                            'role' => (($h['role'] ?? '') === 'user') ? 'user' : 'model',
+                            'content' => $h['content'] ?? ''
+                        ];
+                    }
+                    $geminiRes = Gemini::callGemini(trim($message), $systemPrompt, $geminiHistory, false);
+                    $reply = $geminiRes['content'] ?? '';
+                    $tokens = 500;
+                    $providerUsed = 'gemini';
+                    error_log('✅ [ChatController] Failover exitoso a Gemini. El chat continuó en funcionamiento sin interrupciones.');
+                } catch (Throwable $geminiErr) {
+                    error_log('❌ [ChatController] Ambas APIs de IA (Groq y Gemini) excedieron su límite: ' . $geminiErr->getMessage());
+                    // 3. Respuesta de contingencia elegante si ambas APIs de IA están en límite de cuota
+                    $reply = "¡Hola! En este instante nuestros servidores de IA están procesando una alta demanda de solicitudes. Sin embargo, el chat sigue activo. Si deseas consultar proyectos de desarrollo web, e-commerce, o agendar una cita directa con Santiago Arbeláez, contáctanos directamente aquí: [Contactar por WhatsApp](https://wa.me/573054078225). ¿Hay algún proyecto en particular sobre el que quieras orientación?";
+                    $tokens = 60;
+                    $providerUsed = 'contingency';
+                }
+            }
 
             $this->saveMessages($sessionId, trim($message), $reply, $tokens);
 
@@ -258,7 +297,11 @@ PROMPT;
                 'reply' => $reply,
                 'session_id' => $sessionId,
                 'remaining_messages' => $remainingMessages,
-                'site_generated' => $siteGenerated
+                'site_generated' => $siteGenerated,
+                'provider' => $providerUsed,
+                'chat_too_long' => $chatTooLong,
+                'suggest_restart' => $chatTooLong,
+                'total_messages' => $totalSessionMessages + 2
             ]);
         } catch (Exception $err) {
             error_log('❌ [ChatController] Error en sendMessage: ' . $err->getMessage());

@@ -35,6 +35,9 @@ class Groq
             $preferredModel,
             $_ENV['GROQ_MODEL'] ?? getenv('GROQ_MODEL') ?: 'openai/gpt-oss-120b',
             'openai/gpt-oss-120b',
+            'openai/gpt-oss-20b',
+            'qwen/qwen3.8-27b',
+            'allam-2-7b',
             'llama-3.3-70b-versatile',
             'llama-3.1-8b-instant'
         ])));
@@ -95,9 +98,13 @@ class Groq
             'messages' => $messages,
             'temperature' => (float)$options['temperature'],
             'max_completion_tokens' => (int)$options['max_tokens'],
-            'top_p' => 1,
-            'reasoning_effort' => 'medium'
+            'top_p' => 1
         ];
+
+        // Solo incluir reasoning_effort en modelos que explícitamente lo soportan
+        if (str_contains(strtolower($options['model']), 'gpt-oss') || str_contains(strtolower($options['model']), 'deepseek')) {
+            $payloadData['reasoning_effort'] = 'medium';
+        }
 
         $payload = json_encode($payloadData, JSON_UNESCAPED_UNICODE);
 
@@ -131,7 +138,11 @@ class Groq
             throw new RuntimeException("Groq Error ({$statusCode}): {$errMsg}", $statusCode);
         }
 
-        $content = $parsed['choices'][0]['message']['content'] ?? '';
+        $msgObj = $parsed['choices'][0]['message'] ?? [];
+        $content = trim($msgObj['content'] ?? '');
+        if (empty($content) && !empty($msgObj['reasoning'])) {
+            $content = trim($msgObj['reasoning']);
+        }
         $tokens = (int)($parsed['usage']['total_tokens'] ?? 0);
 
         if (empty($content)) {

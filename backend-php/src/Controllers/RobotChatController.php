@@ -55,12 +55,17 @@ class RobotChatController
             $audioBase64 = $this->callNeuralFallbackTTS($speechText, 'en-US');
         }
 
+        $isChatTooLong = (is_array($history) && count($history) >= 12);
+
         $response->json([
             'ok' => true,
             'reply' => $replyText,
             'emotion' => $emotion,
             'audio' => $audioBase64,
-            'sources' => $aiResult['sources'] ?? []
+            'sources' => $aiResult['sources'] ?? [],
+            'provider' => $aiResult['provider'] ?? 'gemini',
+            'chat_too_long' => $isChatTooLong,
+            'suggest_restart' => $isChatTooLong
         ]);
     }
 
@@ -222,7 +227,7 @@ class RobotChatController
         $systemPrompt = $this->buildSystemPrompt($studyPlan);
         $promptMessage = $userMessage;
 
-        // 1. SIEMPRE intentar Gemini primero (con failover de keys y modelos)
+        // 1. Intentar Gemini primero (con failover de keys y modelos)
         try {
             $geminiRes = Gemini::callGemini($promptMessage, $systemPrompt, $history);
             $content = trim($geminiRes['content'] ?? '');
@@ -231,29 +236,29 @@ class RobotChatController
             if (!empty($content)) {
                 $parsed = $this->parseJsonResponse($content);
                 if ($parsed && !empty($parsed['reply']) && !$this->isRefusalResponse($parsed['reply'])) {
-                    return array_merge($parsed, ['sources' => $sources]);
+                    return array_merge($parsed, [
+                        'sources' => $sources,
+                        'provider' => 'gemini'
+                    ]);
                 }
             }
         } catch (\Throwable $e) {
-            error_log('[RobotChat] Gemini error: ' . $e->getMessage());
+            error_log('[RobotChat] Gemini llegó a su límite de requests o falló (' . $e->getMessage() . '). Cambiando automáticamente a la API de respaldo Groq...');
         }
 
-        // 2. Fallback: Buscar contexto web via Gemini Search y pasarlo a Groq
-        $webContext = $this->searchWebContext($promptMessage);
-        $enrichedMessage = $promptMessage;
-        if (!empty($webContext)) {
-            $enrichedMessage = "CONTEXTO DE APOYO:\n{$webContext}\n\nINSTRUCCIÓN:\n{$promptMessage}";
-        }
-
-        $groqFallback = $this->callGroqLLM($enrichedMessage, $systemPrompt, $history);
+        // 2. Si la API principal de Gemini llegó a su límite de requests o falló, cambiar a Groq AI
+        $groqFallback = $this->callGroqLLM($promptMessage, $systemPrompt, $history);
         if (!empty($groqFallback['reply']) && !$this->isRefusalResponse($groqFallback['reply'])) {
+            $groqFallback['provider'] = 'groq';
+            error_log('✅ [RobotChat] Failover exitoso a Groq AI. Conversación activa.');
             return $groqFallback;
         }
 
-        // 3. Respuesta de emergencia
+        // 3. Respuesta de contingencia si ambas APIs están temporalmente saturadas
         return [
-            'reply' => 'I am here to help you master English. What would you like to talk about today?',
-            'emotion' => 'happy'
+            'reply' => 'I am here with you and listening closely! How has your English practice been today?',
+            'emotion' => 'happy',
+            'provider' => 'contingency'
         ];
     }
 
