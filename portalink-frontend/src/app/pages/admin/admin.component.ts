@@ -474,7 +474,7 @@ interface Tab {
       </nav>
 
       <!-- Modal de Racha Diaria Flotante -->
-      <app-dash-streak-modal [theme]="isDark ? 'dark' : 'light'"></app-dash-streak-modal>
+      <app-dash-streak-modal [theme]="isDark ? 'dark' : 'light'" (navigateTab)="activeTab = $event"></app-dash-streak-modal>
 
     </div>
   `,

@@ -26,6 +26,10 @@ export interface ChatSendResponse {
   session_id: number | null;
   remaining_messages: number | null;
   site_generated?: { slug: string; siteData: any } | null;
+  provider?: string;
+  chat_too_long?: boolean;
+  suggest_restart?: boolean;
+  total_messages?: number;
 }
 
 export interface ChatUsageResponse {
@@ -59,6 +63,7 @@ export class ChatStateService {
   remainingMessages = signal<number | null>(null);
   rateLimitEnabled = signal<boolean>(false);
   limitExceeded = signal<boolean>(false);
+  isChatTooLong = signal<boolean>(false);
   userType = signal<'anonymous' | 'user' | 'admin'>('anonymous');
   lastGeneratedSite = signal<{ slug: string; siteData: any } | null>(null);
   chatMode = signal<'design' | 'consulting' | null>(null);
@@ -244,6 +249,9 @@ export class ChatStateService {
         if (res.remaining_messages !== null && res.remaining_messages !== undefined) {
           this.remainingMessages.set(res.remaining_messages);
         }
+        if (res.chat_too_long || this.messages.length >= 14) {
+          this.isChatTooLong.set(true);
+        }
       },
       error: (err) => {
         this.isTyping = false;
@@ -349,6 +357,9 @@ export class ChatStateService {
 
   addMessage(role: 'assistant' | 'user', content: string) {
     this.messages.push({ role, content });
+    if (this.messages.length >= 14) {
+      this.isChatTooLong.set(true);
+    }
     this.saveToLocalStorage();
   }
 
@@ -357,6 +368,7 @@ export class ChatStateService {
     this.isTyping = false;
     this.userInput = '';
     this.limitExceeded.set(false);
+    this.isChatTooLong.set(false);
     this.lastGeneratedSite.set(null);
     this.chatMode.set(null);
     if (typeof localStorage !== 'undefined') {
@@ -383,6 +395,9 @@ export class ChatStateService {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
           this.messages = parsed;
+          if (this.messages.length >= 14) {
+            this.isChatTooLong.set(true);
+          }
         }
       }
     } catch (e) { }

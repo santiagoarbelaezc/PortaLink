@@ -28,6 +28,9 @@ export interface RobotChatResponse {
   score?: number | null;
   sources?: any[];
   error?: string;
+  provider?: 'gemini' | 'groq' | 'contingency' | string;
+  chat_too_long?: boolean;
+  suggest_restart?: boolean;
 }
 
 export interface VoiceOption {

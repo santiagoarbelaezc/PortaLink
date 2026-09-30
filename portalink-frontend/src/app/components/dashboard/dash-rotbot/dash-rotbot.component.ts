@@ -146,6 +146,18 @@ interface ChatEntry {
               <span class="px-2 py-0.5 rounded-md border border-neutral-700/80 bg-neutral-900 text-[10px] font-mono font-semibold text-neutral-400">
                 IA v2.5
               </span>
+
+              <!-- Indicador de cantidad de mensajes en el chat -->
+              <span *ngIf="chatHistory.length > 1" 
+                    class="px-2 py-0.5 rounded-md border text-[10px] font-mono font-semibold transition-colors flex items-center gap-1"
+                    [ngClass]="chatHistory.length >= 20 ? 
+                      (isDark ? 'bg-rose-500/15 border-rose-500/40 text-rose-300' : 'bg-rose-50 border-rose-300 text-rose-700') : 
+                      (chatHistory.length >= 12 ? 
+                        (isDark ? 'bg-amber-500/15 border-amber-500/40 text-amber-300' : 'bg-amber-50 border-amber-300 text-amber-700') : 
+                        (isDark ? 'border-neutral-800 bg-neutral-900 text-neutral-400' : 'border-neutral-300 bg-neutral-100 text-neutral-600'))">
+                <span *ngIf="chatHistory.length >= 12" class="w-1.5 h-1.5 rounded-full" [ngClass]="chatHistory.length >= 20 ? 'bg-rose-500 animate-ping' : 'bg-amber-500'"></span>
+                <span>{{ chatHistory.length }} msgs</span>
+              </span>
             </div>
 
             <!-- Right Header Controls: Reset Button -->
@@ -154,6 +166,41 @@ interface ChatEntry {
                     title="Reiniciar conversación">
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              <span>Reiniciar</span>
+            </button>
+          </div>
+
+          <!-- 📌 AVISO ELEGANTE: CONVERSACIÓN EXTENSA (RECOMENDACIÓN DE REINICIO) -->
+          <div *ngIf="chatHistory.length >= 12" 
+               class="mx-4 sm:mx-5 mt-3 p-3 rounded-2xl border flex items-center justify-between gap-3 text-xs shadow-md animate-fadeIn"
+               [ngClass]="chatHistory.length >= 20 ? 
+                 (isDark ? 'bg-rose-500/10 border-rose-500/30 text-rose-200' : 'bg-rose-50 border-rose-300 text-rose-900') : 
+                 (isDark ? 'bg-amber-500/10 border-amber-500/30 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-900')">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-7 h-7 rounded-xl flex items-center justify-center shrink-0"
+                   [ngClass]="chatHistory.length >= 20 ? 'bg-rose-500/20 text-rose-400' : 'bg-amber-500/20 text-amber-400'">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+              </div>
+              <div class="min-w-0">
+                <p class="font-headline font-bold text-[11px] uppercase tracking-wider m-0">
+                  {{ chatHistory.length >= 20 ? 'Conversación muy extensa (' + chatHistory.length + ' mensajes)' : 'Conversación extensa (' + chatHistory.length + ' mensajes)' }}
+                </p>
+                <p class="text-[10.5px] opacity-80 m-0 font-sans truncate">
+                  Para mantener la máxima rapidez y precisión de Rotbot, te sugerimos reiniciar el chat.
+                </p>
+              </div>
+            </div>
+            <button type="button" 
+                    (click)="clearChat()" 
+                    class="shrink-0 px-3 py-1.5 rounded-xl font-headline font-bold text-[10px] sm:text-[10.5px] uppercase tracking-wider transition-all cursor-pointer border flex items-center gap-1.5 shadow-sm active:scale-95"
+                    [ngClass]="chatHistory.length >= 20 ? 
+                      'bg-rose-500 text-white hover:bg-rose-600 border-rose-400 shadow-rose-500/20' : 
+                      'bg-amber-500 text-white hover:bg-amber-600 border-amber-400 shadow-amber-500/20'">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
               <span>Reiniciar</span>
             </button>
@@ -218,10 +265,24 @@ interface ChatEntry {
           </div>
 
           <!-- Bottom Message Input Bar (Fixed at bottom of Card) -->
-          <div class="p-3.5 sm:p-4 border-t flex-shrink-0"
+          <div class="border-t flex-shrink-0"
                [ngClass]="isDark ? 'bg-[#141419] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
             
-            <div class="relative flex items-center gap-2.5">
+            <!-- Aviso rápido si supera los 20 mensajes -->
+            <div *ngIf="chatHistory.length >= 20" 
+                 class="px-4 py-2 border-b flex items-center justify-between text-[11px] font-mono transition-colors"
+                 [ngClass]="isDark ? 'bg-rose-500/10 border-rose-500/25 text-rose-300' : 'bg-rose-50 border-rose-200 text-rose-800'">
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span>
+                <span>Chat extenso ({{ chatHistory.length }} mensajes). Se aconseja reiniciar para mantener respuestas inmediatas.</span>
+              </div>
+              <button (click)="clearChat()" class="font-headline font-bold uppercase tracking-wider text-[10px] underline hover:opacity-80 cursor-pointer ml-2">
+                Reiniciar
+              </button>
+            </div>
+
+            <div class="p-3.5 sm:p-4">
+              <div class="relative flex items-center gap-2.5">
               
               <!-- High-Visibility Microphone Action Button -->
               <button (click)="toggleVoiceInput()"

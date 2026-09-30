@@ -165,6 +165,35 @@ import { AuthService } from '../../services/auth.service';
                   </div>
                 </div>
      
+                <!-- Aviso si el chat se vuelve muy largo -->
+                <div *ngIf="chatService.isChatTooLong()" 
+                     class="mx-2 sm:mx-6 md:mx-16 mb-3 p-3.5 rounded-2xl border flex items-center justify-between gap-3 text-xs shadow-md animate-fadeIn"
+                     [ngClass]="isDark ? 'bg-amber-500/10 border-amber-500/30 text-amber-300' : 'bg-amber-50 border-amber-300 text-amber-900'">
+                  <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                      </svg>
+                    </div>
+                    <div class="min-w-0">
+                      <p class="font-headline font-bold text-xs uppercase tracking-wider m-0">
+                        Conversación extensa ({{ chatService.messages.length }} mensajes)
+                      </p>
+                      <p class="text-[11px] opacity-80 m-0 font-sans truncate">
+                        Para respuestas más rápidas y precisas, te sugerimos reiniciar el chat.
+                      </p>
+                    </div>
+                  </div>
+                  <button type="button" 
+                          (click)="resetChatWithEffect()" 
+                          class="shrink-0 px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-headline font-bold text-[10.5px] uppercase tracking-wider transition-all cursor-pointer border-none shadow-sm active:scale-95 flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span>Reiniciar Chat</span>
+                  </button>
+                </div>
+
                 <!-- Messages List (ChatGPT Style) -->
                 <ng-container>
                   <div *ngFor="let msg of chatService.messages" class="flex w-full px-2 sm:px-6 md:px-16 animate-fade-in my-2 sm:my-3" [ngClass]="{'justify-end': msg.role === 'user', 'justify-start': msg.role === 'assistant'}">

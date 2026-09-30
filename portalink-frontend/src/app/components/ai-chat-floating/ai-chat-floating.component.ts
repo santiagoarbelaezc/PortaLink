@@ -208,6 +208,21 @@ import { MarkdownPipe } from '../../pipes/markdown-pipe';
                class="flex-grow overflow-y-auto p-5 space-y-4 scroll-smooth custom-scrollbar" 
                style="overscroll-behavior: contain;">
             
+            <!-- Aviso si el chat se vuelve muy largo -->
+            <div *ngIf="chatService.isChatTooLong()" 
+                 class="p-3 rounded-2xl border border-amber-300/80 bg-amber-50 text-amber-900 flex items-center justify-between gap-2.5 text-xs shadow-xs animate-fadeIn">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="text-base select-none shrink-0">⚠️</span>
+                <div class="min-w-0">
+                  <p class="font-bold text-[11px] m-0 text-amber-900">Conversación extensa ({{ chatService.messages.length }} mensajes)</p>
+                  <p class="text-[10px] text-amber-700 m-0 truncate">Te sugerimos reiniciar el chat para mantener respuestas rápidas.</p>
+                </div>
+              </div>
+              <button (click)="resetChatWithEffect()" class="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-bold text-[10px] uppercase tracking-wider shrink-0 cursor-pointer border-none shadow-xs">
+                Reiniciar
+              </button>
+            </div>
+
             <!-- Welcome Intro Section (Compact & Centered) -->
             <div *ngIf="chatService.messages.length <= 1" class="flex flex-col items-center justify-center text-center p-5 my-1 max-w-sm mx-auto rounded-[24px] bg-neutral-50/80 border border-neutral-200/80 shadow-2xs space-y-2">
               <div class="w-28 h-28 sm:w-32 sm:h-32 relative flex items-center justify-center overflow-visible">
