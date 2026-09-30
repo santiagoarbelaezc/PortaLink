@@ -714,8 +714,7 @@ class LibraryController
 
             $groqRes = Groq::callGroq($messages, [
                 'model' => 'openai/gpt-oss-120b',
-                'temperature' => 1.0,
-                'max_tokens' => 2048
+                'temperature' => 1.0
             ]);
 
             $rawContent = trim($groqRes['content'] ?? '');

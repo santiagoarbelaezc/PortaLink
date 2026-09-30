@@ -366,7 +366,7 @@ PROMPT;
             }
             $messages[] = ['role' => 'user', 'content' => $userMessage];
 
-            $groqRes = Groq::callGroq($messages, ['temperature' => 0.7, 'max_tokens' => 450]);
+            $groqRes = Groq::callGroq($messages, ['temperature' => 0.7]);
             $content = trim($groqRes['content'] ?? '');
 
             if (!empty($content)) {

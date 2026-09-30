@@ -217,7 +217,7 @@ PROMPT;
 
             // 1. Intentar API primaria: Groq AI
             try {
-                $groqRes = Groq::callGroq($messages, ['max_tokens' => 2000, 'key_type' => $chatMode]);
+                $groqRes = Groq::callGroq($messages, ['key_type' => $chatMode]);
                 $reply = $groqRes['content'];
                 $tokens = $groqRes['tokens'];
                 $providerUsed = 'groq';

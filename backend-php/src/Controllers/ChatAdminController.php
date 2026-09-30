@@ -63,8 +63,7 @@ PROMPT;
 
                 try {
                     $groqRes = Groq::callGroq($messages, [
-                        'temperature' => 0.2,
-                        'max_tokens' => 2048
+                        'temperature' => 0.2
                     ]);
                     $reply = trim($groqRes['content'] ?? '');
                     $providerUsed = 'groq';
@@ -138,8 +137,7 @@ PROMPT;
 
                 try {
                     $groqRes = Groq::callGroq($messages, [
-                        'temperature' => 1.0,
-                        'max_tokens' => 2048
+                        'temperature' => 1.0
                     ]);
                     $reply = trim($groqRes['content'] ?? '');
                     $providerUsed = 'groq';

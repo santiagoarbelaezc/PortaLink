@@ -30,19 +30,20 @@ class Groq
             $_ENV['GROQ_API_KEY_3'] ?? getenv('GROQ_API_KEY_3') ?: ''
         ])));
 
+        // Mezclar keys aleatoriamente para distribuir la carga de forma uniforme
+        shuffle($keys);
+
         $preferredModel = $options['model'] ?? null;
         $modelsToTry = array_values(array_unique(array_filter([
             $preferredModel,
             $_ENV['GROQ_MODEL'] ?? getenv('GROQ_MODEL') ?: 'openai/gpt-oss-120b',
             'openai/gpt-oss-120b',
-            'openai/gpt-oss-20b',
-            'qwen/qwen3.8-27b',
-            'allam-2-7b',
             'llama-3.3-70b-versatile',
+            'openai/gpt-oss-20b',
             'llama-3.1-8b-instant'
         ])));
 
-        $maxTokens = (int)($options['max_tokens'] ?? $_ENV['GROQ_MAX_TOKENS'] ?? getenv('GROQ_MAX_TOKENS') ?: 2048);
+        $maxTokens = (int)($options['max_tokens'] ?? $_ENV['GROQ_MAX_TOKENS'] ?? getenv('GROQ_MAX_TOKENS') ?: 8192);
         $temperature = (float)($options['temperature'] ?? $_ENV['GROQ_TEMPERATURE'] ?? getenv('GROQ_TEMPERATURE') ?: 1.0);
 
         if (empty($keys)) {
@@ -53,13 +54,8 @@ class Groq
         $lastError = null;
         foreach ($keys as $apiKey) {
             $keySuffix = substr($apiKey, -6);
-            $keyQuotaExceeded = false;
 
             foreach ($modelsToTry as $model) {
-                if ($keyQuotaExceeded) {
-                    break;
-                }
-
                 try {
                     $result = self::makeGroqRequest($apiKey, $messages, [
                         'model' => $model,
@@ -70,15 +66,19 @@ class Groq
                     return $result;
                 } catch (Throwable $err) {
                     $lastError = $err->getMessage();
+                    $statusCode = (int)($err->getCode() ?: 0);
                     AiLogger::warning('Groq', "Fallo con modelo {$model} (Key ...{$keySuffix}): {$lastError}");
-                    
-                    if (stripos($lastError, 'rate_limit') !== false || 
-                        stripos($lastError, 'quota') !== false || 
+
+                    // Rate limit / cuota agotada → rotar de key inmediatamente, sin probar más modelos
+                    if ($statusCode === 429 ||
+                        stripos($lastError, 'rate_limit') !== false ||
+                        stripos($lastError, 'quota') !== false ||
                         stripos($lastError, '429') !== false ||
                         stripos($lastError, 'exceeded') !== false) {
-                        AiLogger::warning('Groq', "Rate limit / Cuota alcanzada en Key ...{$keySuffix}. Rotando...");
-                        $keyQuotaExceeded = true;
+                        AiLogger::warning('Groq', "Rate limit en Key ...{$keySuffix}. Rotando a siguiente key al instante.");
+                        break; // Saltar todos los modelos restantes y pasar a la siguiente key
                     }
+                    // Cualquier otro error → probar el siguiente modelo con la misma key
                     continue;
                 }
             }
@@ -117,8 +117,8 @@ class Groq
                 'Content-Type: application/json',
                 'Content-Length: ' . strlen($payload)
             ],
-            CURLOPT_TIMEOUT => 25,
-            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_TIMEOUT => 7,
+            CURLOPT_CONNECTTIMEOUT => 3,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => 0,
         ]);
