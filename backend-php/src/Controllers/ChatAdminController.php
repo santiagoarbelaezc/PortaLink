@@ -34,8 +34,8 @@ class ChatAdminController
         $blockType = trim($body['block_type'] ?? 'texto');
         $instruction = trim($body['instruction'] ?? '');
         $prompt = trim($body['prompt'] ?? '');
-        $noteTitle = trim($body['note_title'] ?? '');
-        $noteContent = trim($body['note_content'] ?? '');
+        $noteTitle = trim($body['note_title'] ?? $body['noteTitle'] ?? '');
+        $noteContent = trim($body['note_content'] ?? $body['noteContent'] ?? '');
         $history = $body['history'] ?? [];
 
         try {
@@ -82,6 +82,13 @@ PROMPT;
                 return;
 
             } elseif ($mode === 'copilot') {
+                if (empty($prompt)) {
+                    $res->status(400)->json([
+                        'success' => false,
+                        'error' => 'El mensaje o consulta no puede estar vacío.'
+                    ]);
+                    return;
+                }
                 // Modo Copilot: Asistente ejecutivo y estructuración de apuntes con formato estilo ChatGPT
                 $systemPrompt = <<<PROMPT
 Eres RotBot Apuntes IA, el copiloto ejecutivo de estudio y aprendizaje de PortaLink. Eres altamente inteligente, analítico, refinado y experto en programación, bases de datos (SQL), teoría y redacción.

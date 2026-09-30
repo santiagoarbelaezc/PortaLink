@@ -24,56 +24,74 @@ class Gemini
             $_ENV['GEMINI_API_KEY_4'] ?? getenv('GEMINI_API_KEY_4') ?: '',
             $_ENV['GEMINI_API_KEY_5'] ?? getenv('GEMINI_API_KEY_5') ?: ''
         ])));
-        
-        // Modelos soportados de Google Gemini en orden de preferencia y velocidad
+
+        // Mezclar keys aleatoriamente para distribuir la carga
+        shuffle($keys);
+
+        // Modelos en orden de preferencia — solo los más rápidos y estables
         $modelsToTry = [
             'gemini-flash-latest',
-            'gemini-3.6-flash',
-            'gemini-3.1-pro-preview',
             'gemini-2.5-flash',
-            'gemini-pro-latest'
+            'gemini-3.6-flash'
         ];
 
-        $lastError = null;
-        $failedKeysCount = 0;
+        // ── Timeout global: máximo 10s en total para TODAS las keys+modelos de Gemini ──
+        $GEMINI_TIMEOUT = 10.0;
+        $globalStart    = microtime(true);
+        $lastError      = null;
+        $goToGroq       = false; // Flag para salir de ambos loops al instante
 
         if (!empty($keys)) {
-            foreach ($keys as $keyIndex => $apiKey) {
+            foreach ($keys as $apiKey) {
+                if ($goToGroq) break;
+
                 $keySuffix = substr($apiKey, -6);
-                $keyQuotaExceeded = false;
 
                 foreach ($modelsToTry as $model) {
-                    if ($keyQuotaExceeded) {
-                        break; // Pasar a la siguiente API Key si esta ya excedió su cuota
+                    // Verificar timeout global antes de cada intento
+                    $elapsed = microtime(true) - $globalStart;
+                    if ($elapsed >= $GEMINI_TIMEOUT) {
+                        AiLogger::warning('Gemini', sprintf(
+                            'Timeout global de %.0fs superado (%.2fs). Cambiando a Groq al instante.',
+                            $GEMINI_TIMEOUT, $elapsed
+                        ));
+                        $goToGroq = true;
+                        break;
                     }
 
                     try {
                         $response = self::requestGeminiModel($model, $apiKey, $prompt, $systemPrompt, $history, $useSearch);
-                        AiLogger::info('Gemini', "Respuesta exitosa con modelo {$model} (Key ...{$keySuffix})");
+                        AiLogger::info('Gemini', sprintf(
+                            'Exitoso con %s (Key ...%s) en %.2fs', $model, $keySuffix, microtime(true) - $globalStart
+                        ));
                         return $response;
+
                     } catch (Throwable $e) {
-                        $lastError = $e->getMessage();
-                        AiLogger::warning('Gemini', "Fallo con modelo {$model} (Key ...{$keySuffix}): {$lastError}");
-                        
-                        // Si la cuota de la key está agotada (HTTP 429 / Quota exceeded / Resource Exhausted), saltar al siguiente key
-                        if (stripos($lastError, 'quota') !== false || 
-                            stripos($lastError, 'exceeded') !== false || 
+                        $lastError  = $e->getMessage();
+                        $statusCode = (int)($e->getCode() ?: 0);
+                        AiLogger::warning('Gemini', "Fallo con {$model} (Key ...{$keySuffix}): {$lastError}");
+
+                        // Rate-limit / cuota → saltar a Groq DE INMEDIATO sin probar más keys
+                        if ($statusCode === 429 ||
+                            stripos($lastError, 'quota') !== false ||
+                            stripos($lastError, 'exceeded') !== false ||
                             stripos($lastError, '429') !== false ||
                             stripos($lastError, 'RESOURCE_EXHAUSTED') !== false) {
-                            AiLogger::warning('Gemini', "Cuota agotada en Key ...{$keySuffix}. Rotando a la siguiente API Key...");
-                            $keyQuotaExceeded = true;
+                            AiLogger::warning('Gemini', "Rate-limit en Key ...{$keySuffix}. Activando Groq al instante.");
+                            $goToGroq = true;
+                            break; // Sale del loop de modelos; $goToGroq rompe el de keys
                         }
-                        continue;
+                        continue; // Otro error → probar siguiente modelo
                     }
                 }
-                $failedKeysCount++;
             }
         } else {
-            AiLogger::warning('Gemini', 'No se encontraron GEMINI_API_KEY en el entorno. Pasando directamente a Groq de respaldo.');
+            AiLogger::warning('Gemini', 'No hay GEMINI_API_KEY en el entorno. Pasando a Groq directamente.');
         }
 
-        // Si todos los modelos/keys de Gemini fallaron o están sin cuota, recurrir a Groq AI inmediatamente
-        AiLogger::info('Gemini', 'Activando motor de respaldo con Groq AI...');
+        // ── Fallback inmediato a Groq ─────────────────────────────────────────────────
+        $reason = $goToGroq ? 'Rate-limit/Timeout detectado' : 'Todas las keys fallaron';
+        AiLogger::info('Gemini', "Activando Groq AI de respaldo ({$reason})...");
         try {
             $messages = [];
             if (!empty($systemPrompt)) {
@@ -82,28 +100,27 @@ class Gemini
             if (!empty($history) && is_array($history)) {
                 foreach ($history as $h) {
                     $messages[] = [
-                        'role' => ($h['role'] === 'user') ? 'user' : 'assistant',
+                        'role'    => ($h['role'] === 'user') ? 'user' : 'assistant',
                         'content' => $h['content'] ?? ''
                     ];
                 }
             }
             $messages[] = ['role' => 'user', 'content' => $prompt];
 
-            $groqRes = Groq::callGroq($messages, [
-                'temperature' => 0.6,
-                'max_tokens' => 2048
-            ]);
+            $groqRes = Groq::callGroq($messages, ['temperature' => 0.6]);
 
-            AiLogger::info('Groq', 'Respuesta exitosa obtenida desde motor de respaldo Groq.');
+            AiLogger::info('Groq', sprintf(
+                'Respuesta exitosa desde Groq (total: %.2fs desde inicio).', microtime(true) - $globalStart
+            ));
 
             return [
-                'content' => trim($groqRes['content'] ?? ''),
-                'raw' => $groqRes,
+                'content'  => trim($groqRes['content'] ?? ''),
+                'raw'      => $groqRes,
                 'fallback' => true,
                 'provider' => 'groq'
             ];
         } catch (Throwable $fallbackErr) {
-            $fatalMsg = "Servicios de IA no disponibles. Gemini: " . ($lastError ?: 'Sin claves válidas') . " | Groq: " . $fallbackErr->getMessage();
+            $fatalMsg = "Servicios de IA no disponibles. Gemini: " . ($lastError ?: 'Sin claves') . " | Groq: " . $fallbackErr->getMessage();
             AiLogger::error('Gemini', $fatalMsg);
             throw new Exception($fatalMsg);
         }
@@ -217,8 +234,8 @@ class Gemini
                 'X-goog-api-key: ' . $apiKey
             ],
             CURLOPT_POSTFIELDS => $jsonPayload,
-            CURLOPT_CONNECTTIMEOUT => 5,
-            CURLOPT_TIMEOUT => 25,
+            CURLOPT_CONNECTTIMEOUT => 3,
+            CURLOPT_TIMEOUT => 6,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => 0,
             CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4
