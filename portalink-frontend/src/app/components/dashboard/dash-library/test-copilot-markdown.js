@@ -1,311 +1,375 @@
-// Test script to verify Copilot Markdown parser behavior
+/**
+ * Test Suite: Copilot Markdown Parser (dash-library.component.ts)
+ * 
+ * Este test carga directamente el método parseCopilotMarkdown desde 
+ * dash-library.component.ts para garantizar que se prueba el código real en producción.
+ */
 
-function escapeHtml(text) {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+const fs = require('fs');
+const path = require('path');
+const ts = require('typescript');
+
+// 1. Cargar y compilar dinámicamente los métodos desde dash-library.component.ts
+const tsFilePath = path.join(__dirname, 'dash-library.component.ts');
+if (!fs.existsSync(tsFilePath)) {
+  console.error(`ERROR: No se encontró ${tsFilePath}`);
+  process.exit(1);
 }
 
-function parseCopilotMarkdown(content) {
-  if (!content) return '';
+const tsSource = fs.readFileSync(tsFilePath, 'utf8');
 
-  const codeBlocks = [];
-  const inlineCodes = [];
-  const tables = [];
+const startMarker = 'private escapeCopilotHtml(';
+const endMarker = 'focusCopilotInput()';
 
-  // 1. Extract Code Blocks: ```lang\ncode\n```
-  let text = content.replace(/```([a-zA-Z0-9_\-+]*)\n?([\s\S]*?)```/g, (match, lang, code) => {
-    const trimmedLang = (lang || '').trim().toLowerCase();
-    const displayLang = trimmedLang || 'código';
-    const rawCode = code.replace(/\r\n/g, '\n').replace(/^\n+|\n+$/g, '');
-    const escapedCode = escapeHtml(rawCode);
-    const encoded = encodeURIComponent(rawCode);
+const startIdx = tsSource.indexOf(startMarker);
+const endIdx = tsSource.indexOf(endMarker);
 
-    const blockHtml = `<div class="my-3 rounded-xl overflow-hidden border border-neutral-700/60 bg-[#0d0d11] shadow-md font-mono text-xs sm:text-[13px] text-neutral-200">` +
-      `<div class="flex items-center justify-between px-3.5 py-1.5 bg-[#18181f] border-b border-neutral-800 text-neutral-400 text-xs select-none">` +
-        `<span class="font-sans font-semibold text-[11px] uppercase tracking-wider text-neutral-300">${displayLang}</span>` +
-        `<button type="button" class="copilot-copy-code-btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-neutral-300 hover:text-white hover:bg-neutral-700/60 active:scale-95 transition-all text-xs font-sans cursor-pointer" data-code="${encoded}">` +
-          `<svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>` +
-          `<span>Copiar</span>` +
-        `</button>` +
-      `</div>` +
-      `<div class="p-3.5 overflow-x-auto text-neutral-100 font-mono text-xs sm:text-sm leading-relaxed whitespace-pre selection:bg-neutral-700 selection:text-white"><code>${escapedCode}</code></div>` +
-    `</div>`;
+if (startIdx === -1 || endIdx === -1) {
+  console.error('ERROR: No se pudieron localizar los métodos de Copilot en dash-library.component.ts');
+  process.exit(1);
+}
 
-    const placeholder = `__COPILOT_CODEBLOCK_${codeBlocks.length}__`;
-    codeBlocks.push(blockHtml);
-    return `\n\n${placeholder}\n\n`;
-  });
+const methodSlice = tsSource.slice(startIdx, endIdx);
 
-  // 2. Extract Inline Code: `code`
-  text = text.replace(/`([^`\n]+)`/g, (match, inline) => {
-    const escapedInline = escapeHtml(inline);
-    const inlineHtml = `<code class="px-1.5 py-0.5 mx-0.5 rounded-md text-[12px] font-mono font-medium bg-neutral-200/80 dark:bg-neutral-800 text-pink-600 dark:text-pink-400 border border-neutral-300/60 dark:border-neutral-700/60">${escapedInline}</code>`;
-    const placeholder = `__COPILOT_INLINE_${inlineCodes.length}__`;
-    inlineCodes.push(inlineHtml);
-    return placeholder;
-  });
+// Construir una clase de prueba con el método real
+const classCode = `
+class DashLibraryCopilotRunner {
+  isDark = true;
+  ${methodSlice}
+}
+module.exports = DashLibraryCopilotRunner;
+`;
 
-  // 3. Extract Markdown Tables
-  const tableRegex = /((?:^[ \t]*\|[^\n]+\|[ \t]*\n)(?:^[ \t]*\|[-: |]+\|[ \t]*\n)(?:^[ \t]*\|[^\n]+\|[ \t]*(?:\n|$))+)/gm;
-  text = text.replace(tableRegex, (match) => {
-    const lines = match.trim().split('\n').map(l => l.trim());
-    if (lines.length >= 2) {
-      const headerCols = lines[0].replace(/^\||\|$/g, '').split('|').map(c => c.trim());
-      const bodyRows = lines.slice(2).map(row => 
-        row.replace(/^\||\|$/g, '').split('|').map(c => c.trim())
-      );
+const transpiled = ts.transpileModule(classCode, {
+  compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 }
+}).outputText;
 
-      let tableHtml = `<div class="my-3 overflow-x-auto rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-xs">` +
-        `<table class="w-full text-left text-xs sm:text-sm border-collapse">` +
-          `<thead class="bg-neutral-100 dark:bg-neutral-800/80 text-neutral-800 dark:text-neutral-200 font-semibold border-b border-neutral-200 dark:border-neutral-700">` +
-            `<tr>${headerCols.map(c => `<th class="px-3 py-2 border-r last:border-r-0 border-neutral-200 dark:border-neutral-700">${escapeHtml(c)}</th>`).join('')}</tr>` +
-          `</thead>` +
-          `<tbody class="divide-y divide-neutral-200 dark:divide-neutral-800 text-neutral-700 dark:text-neutral-300">` +
-            bodyRows.map(row => 
-              `<tr class="hover:bg-neutral-50 dark:hover:bg-neutral-800/40">${row.map(c => `<td class="px-3 py-2 border-r last:border-r-0 border-neutral-200 dark:border-neutral-800">${escapeHtml(c)}</td>`).join('')}</tr>`
-            ).join('') +
-          `</tbody>` +
-        `</table>` +
-      `</div>`;
+const ModuleClass = eval(`(function() {
+  const module = { exports: {} };
+  ${transpiled};
+  return module.exports;
+})()`);
 
-      const placeholder = `__COPILOT_TABLE_${tables.length}__`;
-      tables.push(tableHtml);
-      return `\n\n${placeholder}\n\n`;
-    }
-    return match;
-  });
+const runner = new ModuleClass();
 
-  // 4. Escape HTML for remaining normal text
-  text = escapeHtml(text);
+// Helper para parsear en tests
+function parse(text, darkTheme = true) {
+  return runner.parseCopilotMarkdown(text, darkTheme);
+}
 
-  // 5. Headings
-  text = text.replace(/^###[ \t]+(.*)$/gm, '<h3 class="text-sm sm:text-base font-bold mt-3 mb-1.5 text-neutral-900 dark:text-white">$1</h3>');
-  text = text.replace(/^##[ \t]+(.*)$/gm, '<h2 class="text-base sm:text-lg font-bold mt-3.5 mb-2 pb-1 border-b border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white">$1</h2>');
-  text = text.replace(/^#[ \t]+(.*)$/gm, '<h1 class="text-lg sm:text-xl font-extrabold mt-4 mb-2 text-neutral-900 dark:text-white">$1</h1>');
+// ==========================================
+// TEST RUNNER
+// ==========================================
+let totalTests = 0;
+let passedTests = 0;
+let failedTests = 0;
 
-  // 6. Blockquotes
-  text = text.replace(/^>[ \t]+(.*)$/gm, '<blockquote class="my-2 pl-3 py-1 border-l-2 border-blue-500 bg-blue-500/10 rounded-r text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 italic">$1</blockquote>');
-
-  // 7. Horizontal Divider
-  text = text.replace(/^(?:---|___|\*\*\*)$/gm, '<hr class="my-3 border-neutral-200 dark:border-neutral-700/80">');
-
-  // 8. Bold text: **text** (supports single asterisks inside like **formula * 2**)
-  text = text.replace(/\*\*(.+?)\*\*/g, '<strong class="font-bold text-neutral-900 dark:text-white">$1</strong>');
-
-  // 9. Italic text: *text* or _text_ (must be bounded and not surrounded by spaces or arithmetic like a * b)
-  text = text.replace(/(?<=^|[\s(])\*(?!\s)([^*\n]+?)(?<!\s)\*(?=[.,!?;:\s)]|$)/g, '<em class="italic text-neutral-800 dark:text-neutral-200">$1</em>');
-  text = text.replace(/(?<=^|[\s(])_(?!\s)([^_\n]+?)(?<!\s)_(?=[.,!?;:\s)]|$)/g, '<em class="italic text-neutral-800 dark:text-neutral-200">$1</em>');
-
-  // 10. Links [Text](URL)
-  text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:text-blue-600 dark:text-blue-400 underline font-medium">$1</a>');
-
-  // 11. Lists: bullet and numbered
-  // Process lines into lists if consecutive
-  const lines = text.split('\n');
-  const processedLines = [];
-  let inUl = false;
-  let inOl = false;
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const bulletMatch = line.match(/^[\t ]*[-*•][ \t]+(.*)$/);
-    const numMatch = line.match(/^[\t ]*(\d+)\.[ \t]+(.*)$/);
-
-    if (bulletMatch) {
-      if (!inUl) {
-        if (inOl) { processedLines.push('</ol>'); inOl = false; }
-        processedLines.push('<ul class="my-2 ml-4 space-y-1 list-disc list-outside text-neutral-800 dark:text-neutral-200">');
-        inUl = true;
-      }
-      processedLines.push(`<li class="leading-relaxed">${bulletMatch[1]}</li>`);
-    } else if (numMatch) {
-      if (!inOl) {
-        if (inUl) { processedLines.push('</ul>'); inUl = false; }
-        processedLines.push('<ol class="my-2 ml-4 space-y-1 list-decimal list-outside text-neutral-800 dark:text-neutral-200">');
-        inOl = true;
-      }
-      processedLines.push(`<li class="leading-relaxed">${numMatch[2]}</li>`);
-    } else {
-      if (inUl) { processedLines.push('</ul>'); inUl = false; }
-      if (inOl) { processedLines.push('</ol>'); inOl = false; }
-      processedLines.push(line);
-    }
+function test(name, fn) {
+  totalTests++;
+  try {
+    fn();
+    passedTests++;
+    console.log(`  \x1b[32m✔ PASS\x1b[0m  ${name}`);
+  } catch (err) {
+    failedTests++;
+    console.error(`  \x1b[31m✖ FAIL\x1b[0m  ${name}`);
+    console.error(`         \x1b[33mError: ${err.message}\x1b[0m`);
   }
-  if (inUl) processedLines.push('</ul>');
-  if (inOl) processedLines.push('</ol>');
-
-  text = processedLines.join('\n');
-
-  // 12. Line breaks: \n -> <br> except inside block elements
-  text = text.replace(/\n{2,}/g, '<br><br>');
-  text = text.replace(/\n/g, '<br>');
-
-  // Clean up <br> around block placeholders and block tags
-  text = text.replace(/(?:<br\s*\/?>)+(<(?:h[1-3]|ul|ol|li|blockquote|hr|div|table|tr|thead|tbody|th|td))/gi, '$1');
-  text = text.replace(/(<\/(?:h[1-3]|ul|ol|li|blockquote|hr|div|table|tr|thead|tbody|th|td)>)(?:<br\s*\/?>)+/gi, '$1');
-  text = text.replace(/(?:<br\s*\/?>)+(__COPILOT_(?:CODEBLOCK|TABLE)_\d+__)(?:<br\s*\/?>)+/g, '$1');
-  text = text.replace(/(?:<br\s*\/?>)+(__COPILOT_(?:CODEBLOCK|TABLE)_\d+__)/g, '$1');
-  text = text.replace(/(__COPILOT_(?:CODEBLOCK|TABLE)_\d+__)(?:<br\s*\/?>)+/g, '$1');
-
-  // 13. Restore tables
-  tables.forEach((tableHtml, index) => {
-    text = text.replace(`__COPILOT_TABLE_${index}__`, tableHtml);
-  });
-
-  // 14. Restore inline codes
-  inlineCodes.forEach((inlineHtml, index) => {
-    text = text.replace(`__COPILOT_INLINE_${index}__`, inlineHtml);
-  });
-
-  // 15. Restore code blocks
-  codeBlocks.forEach((blockHtml, index) => {
-    text = text.replace(`__COPILOT_CODEBLOCK_${index}__`, blockHtml);
-  });
-
-  return text.trim();
 }
 
-// ==========================
-// TEST SUITE
-// ==========================
-console.log('--- RUNNING TESTS ---');
-
-// Test 1: User's exact example in plain text:
-const t1 = "SELECT SUM( p.producto * d.cantidad)";
-const r1 = parseCopilotMarkdown(t1);
-console.log('Test 1 - Plain text multiplication:');
-console.log('Result:', r1);
-if (!r1.includes('p.producto * d.cantidad')) {
-  console.error('FAIL: Asterisk was lost or modified!');
-  process.exit(1);
-} else {
-  console.log('PASS: Asterisk preserved exactly in plain text.');
+function assert(condition, message = 'Assertion failed') {
+  if (!condition) {
+    throw new Error(message);
+  }
 }
 
-// Test 2: User's exact example in code block:
-const t2 = "Aquí tienes la consulta:\n```sql\nSELECT SUM( p.producto * d.cantidad)\nFROM pedidos p;\n```";
-const r2 = parseCopilotMarkdown(t2);
-console.log('\nTest 2 - SQL in code block:');
-if (!r2.includes('SELECT SUM( p.producto * d.cantidad)') || !r2.includes('copilot-copy-code-btn')) {
-  console.error('FAIL: Code block does not preserve SQL asterisk or copy button!');
-  process.exit(1);
-} else {
-  console.log('PASS: SQL preserved with copy button and lang SQL.');
-}
+console.log('\n\x1b[1;36m====================================================\x1b[0m');
+console.log('\x1b[1;36m  PORTALINK - DASH LIBRARY COPILOT TEST SUITE       \x1b[0m');
+console.log('\x1b[1;36m  Probando métodos reales de dash-library.component.ts\x1b[0m');
+console.log('\x1b[1;36m====================================================\x1b[0m\n');
 
-// Test 3: SQL wildcard SELECT * FROM
-const t3 = "SELECT * FROM usuarios WHERE activo = 1";
-const r3 = parseCopilotMarkdown(t3);
-console.log('\nTest 3 - SELECT * FROM:');
-if (!r3.includes('SELECT * FROM')) {
-  console.error('FAIL: SELECT * FROM lost asterisk!');
-  process.exit(1);
-} else {
-  console.log('PASS: SELECT * preserved.');
-}
+// ─── GRUPO 1: Símbolos matemáticos y asteriscos (Evitar símbolos raros) ───
+console.log('\x1b[1m[1] Preservación de asteriscos y operadores (sin símbolos raros)\x1b[0m');
 
-// Test 4: Inline code `p.producto * d.cantidad`
-const t4 = "Usa la fórmula `p.producto * d.cantidad` para calcular el total.";
-const r4 = parseCopilotMarkdown(t4);
-console.log('\nTest 4 - Inline code with asterisk:');
-if (!r4.includes('p.producto * d.cantidad') || !r4.includes('<code')) {
-  console.error('FAIL: Inline code failed!');
-  process.exit(1);
-} else {
-  console.log('PASS: Inline code preserved.');
-}
+test('Multiplicación en texto plano no se convierte en cursiva ni se pierde', () => {
+  const input = 'SELECT SUM( p.producto * d.cantidad)';
+  const res = parse(input);
+  assert(res.includes('p.producto * d.cantidad'), 'Debe mantener el asterisco de multiplicación intacto');
+  assert(!res.includes('<em'), 'No debe crear etiqueta <em> errónea para multiplicación');
+});
 
-// Test 5: Bold and Italic text
-const t5 = "Este texto es **negrita** y este es *cursiva* y esta es una multiplicación 2 * 3 = 6.";
-const r5 = parseCopilotMarkdown(t5);
-console.log('\nTest 5 - Bold, italic and multiplication:');
-console.log('Result:', r5);
-if (!r5.includes('<strong') || !r5.includes('negrita') || !r5.includes('<em') || !r5.includes('cursiva') || !r5.includes('2 * 3 = 6')) {
-  console.error('FAIL: Bold, italic or multiplication failed!');
-  process.exit(1);
-} else {
-  console.log('PASS: Bold, italic and arithmetic all work simultaneously.');
-}
+test('Comodín SQL SELECT * FROM tabla intacto', () => {
+  const res = parse('SELECT * FROM usuarios WHERE activo = 1');
+  assert(res.includes('SELECT * FROM usuarios'), 'Debe conservar SELECT *');
+});
 
-// Test 6: Markdown table
-const t6 = "| ID | Producto | Subtotal |\n|---|---|---|\n| 1 | Laptop | 1000 * 2 |";
-const r6 = parseCopilotMarkdown(t6);
-console.log('\nTest 6 - Table:');
-if (!r6.includes('<table') || !r6.includes('1000 * 2')) {
-  console.error('FAIL: Table failed!');
-  process.exit(1);
-} else {
-  console.log('PASS: Table rendered with 1000 * 2.');
-}
+test('Operación aritmética con múltiples factores (2 * 3 * 4 = 24)', () => {
+  const res = parse('El cálculo es 2 * 3 * 4 = 24 pesos.');
+  assert(res.includes('2 * 3 * 4 = 24'), 'Debe conservar todos los asteriscos de multiplicación');
+  assert(!res.includes('<em'), 'No debe generar cursivas por asteriscos matemáticos');
+});
 
-// Test 7: Unordered and ordered lists with * bullet and math inside
-const t7 = "* Item 1: costo = cantidad * precio\n* Item 2: descuento 10%";
-const r7 = parseCopilotMarkdown(t7);
-console.log('\nTest 7 - List with * bullets and math:');
-console.log('Result:', r7);
-if (!r7.includes('<ul') || !r7.includes('cantidad * precio')) {
-  console.error('FAIL: List failed!');
-  process.exit(1);
-} else {
-  console.log('PASS: List rendered correctly with math intact.');
-}
+test('Operadores de comparación < y > se escapan seguramente', () => {
+  const res = parse('Si a < 10 y b > 20 entonces c = true');
+  assert(res.includes('&lt; 10'), 'El signo < debe escaparse a &lt;');
+  assert(res.includes('&gt; 20'), 'El signo > debe escaparse a &gt;');
+});
 
-// Test 8: Multiple wildcards and multiplications in SQL
-const t8 = "SELECT a.*, b.*, SUM(a.precio * b.cantidad) AS total FROM a JOIN b ON a.id = b.a_id WHERE a.valor > 0 AND a.status < 5;";
-const r8 = parseCopilotMarkdown(t8);
-console.log('\nTest 8 - Multiple asterisks, operators and <> in SQL:');
-if (!r8.includes('a.*') || !r8.includes('b.*') || !r8.includes('a.precio * b.cantidad') || !r8.includes('&gt;') || !r8.includes('&lt;')) {
-  console.error('FAIL: Test 8 failed! Output:', r8);
-  process.exit(1);
-} else {
-  console.log('PASS: Multiple wildcards, multiplications and HTML entities correctly handled.');
-}
+// ─── GRUPO 2: Entidades HTML literales del LLM (Limpieza de &amp; &lt;) ───
+console.log('\n\x1b[1m[2] Manejo de entidades HTML del modelo LLM (Prevención de doble escape)\x1b[0m');
 
-// Test 9: Code block with generics and symbols
-const t9 = "Ejemplo en TypeScript:\n```typescript\nfunction filterData<T>(items: T[], rate: number * 2): Promise<T[]> {\n  return Promise.resolve(items.filter(i => i !== null));\n}\n```";
-const r9 = parseCopilotMarkdown(t9);
-console.log('\nTest 9 - Code block with generics and symbols:');
-if (!r9.includes('&lt;T&gt;') || !r9.includes('rate: number * 2')) {
-  console.error('FAIL: Test 9 failed! Output:', r9);
-  process.exit(1);
-} else {
-  console.log('PASS: Generics, asterisks and symbols safely preserved in code block.');
-}
+test('Entidades &amp; enviadas por el modelo no se duplican como &amp;amp;', () => {
+  const input = 'Comparación lógica: if (x &amp;&amp; y)';
+  const res = parse(input);
+  assert(!res.includes('&amp;amp;'), 'No debe existir doble escape &amp;amp;');
+  assert(res.includes('&amp;&amp;'), 'Debe renderizar la entidad & limpia para el navegador');
+});
 
-// Test 10: Mixed response with conversational text, headers, lists and SQL code block
-const t10 = `¡Claro! Aquí tienes la solución:
+test('Entidades &lt; y &gt; no se convierten en &amp;lt;', () => {
+  const input = 'Usa el tipo &lt;string&gt; en TypeScript';
+  const res = parse(input);
+  assert(!res.includes('&amp;lt;'), 'No debe generar &amp;lt;');
+  assert(res.includes('&lt;string&gt;'), 'Debe mantener el escape simple');
+});
 
-### Consulta SQL optimizada
-Para obtener el monto total multiplicando el precio del producto por la cantidad:
+// ─── GRUPO 3: Citas y Blockquotes ───
+console.log('\n\x1b[1m[3] Citas / Blockquotes (> Cita)\x1b[0m');
 
-\`\`\`sql
-SELECT 
-    p.nombre,
-    SUM(p.producto * d.cantidad) AS total_vendido
-FROM pedidos p
-JOIN detalle_pedidos d ON p.id = d.pedido_id
-GROUP BY p.nombre;
+test('Blockquote con símbolo > se transforma en elemento <blockquote>', () => {
+  const input = '> Esta es una nota importante del apunte';
+  const res = parse(input);
+  assert(res.includes('<blockquote'), 'Debe contener la etiqueta <blockquote');
+  assert(res.includes('Esta es una nota importante del apunte'), 'Debe incluir el texto');
+  assert(res.includes('border-blue-500'), 'Debe tener estilos azulados característicos');
+});
+
+test('Blockquote con formato en negrita interno', () => {
+  const input = '> **Aviso:** No modificar esta clave primaria.';
+  const res = parse(input);
+  assert(res.includes('<blockquote'), 'Debe contener <blockquote>');
+  assert(res.includes('<strong'), 'Debe contener <strong> dentro de la cita');
+  assert(res.includes('Aviso:'), 'Debe contener el texto en negrita');
+});
+
+// ─── GRUPO 4: Formato de Texto (Negrita y Cursiva) ───
+console.log('\n\x1b[1m[4] Formato de texto (Negrita y Cursiva)\x1b[0m');
+
+test('Texto en negrita estándar **texto**', () => {
+  const res = parse('Este es un texto con **palabra clave** importante.');
+  assert(res.includes('<strong class="font-bold text-white">palabra clave</strong>'), 'Debe envolver en <strong>');
+});
+
+test('Negrita con fórmula y asterisco interior **COALESCE(p.producto * d.cantidad, 0)**', () => {
+  const res = parse('Usa **COALESCE(p.producto * d.cantidad, 0)** para evitar nulos.');
+  assert(res.includes('<strong class="font-bold text-white">COALESCE(p.producto * d.cantidad, 0)</strong>'), 'Debe soportar asteriscos matemáticos dentro de la negrita');
+});
+
+test('Texto en cursiva con * y con _', () => {
+  const res = parse('Palabra en *cursiva1* y otra en _cursiva2_.');
+  assert(res.includes('<em class="italic text-neutral-200">cursiva1</em>'), 'Debe parsear *cursiva1*');
+  assert(res.includes('<em class="italic text-neutral-200">cursiva2</em>'), 'Debe parsear _cursiva2_');
+});
+
+test('Negrita y cursiva combinadas en la misma oración', () => {
+  const res = parse('Aquí hay **negrita**, aquí *cursiva*, y aquí 5 * 5 = 25.');
+  assert(res.includes('<strong'), 'Debe tener negrita');
+  assert(res.includes('<em'), 'Debe tener cursiva');
+  assert(res.includes('5 * 5 = 25'), 'La multiplicación debe preservarse sin volverse cursiva');
+});
+
+// ─── GRUPO 5: Bloques de Código e Inline Code ───
+console.log('\n\x1b[1m[5] Bloques de código y código inline\x1b[0m');
+
+test('Bloque de código con lenguaje y botón de copiar', () => {
+  const input = '```sql\nSELECT id, nombre FROM usuarios WHERE rol = 1;\n```';
+  const res = parse(input);
+  assert(res.includes('copilot-copy-code-btn'), 'Debe incluir botón de copiar');
+  assert(res.toLowerCase().includes('sql') && res.includes('uppercase'), 'Debe mostrar la etiqueta del lenguaje con clase uppercase');
+  assert(res.includes('SELECT id, nombre FROM usuarios WHERE rol = 1;'), 'Debe contener el código');
+  assert(res.includes('data-code='), 'Debe tener atributo data-code para el portapapeles');
+});
+
+test('Bloque de código sin lenguaje especificado usa fallback "código"', () => {
+  const input = '```\necho "Hola mundo";\n```';
+  const res = parse(input);
+  assert(res.includes('CÓDIGO') || res.includes('código'), 'Debe mostrar fallback de lenguaje');
+  assert(res.includes('echo &quot;Hola mundo&quot;;'), 'Las comillas deben escaparse de forma segura');
+});
+
+test('Código inline con `variable`', () => {
+  const res = parse('Usa la función `calculateTotal()` para obtener el valor.');
+  assert(res.includes('<code class='), 'Debe crear etiqueta <code>');
+  assert(res.includes('calculateTotal()'), 'Debe contener el nombre de la función');
+  assert(res.includes('text-pink-400'), 'En modo oscuro debe tener texto rosado');
+});
+
+test('Código inline con asterisco de multiplicación interior `p * q`', () => {
+  const res = parse('La fórmula `p * q` es correcta.');
+  assert(res.includes('<code'), 'Debe ser inline code');
+  assert(res.includes('p * q'), 'Debe preservar el asterisco dentro del código');
+});
+
+// ─── GRUPO 6: Tablas Markdown ───
+console.log('\n\x1b[1m[6] Tablas Markdown\x1b[0m');
+
+test('Tabla Markdown se transforma en HTML <table> responsiva', () => {
+  const input = `
+| Función | Descripción | Ejemplo |
+|---|---|---|
+| SUM | Suma valores | SUM(total) |
+| AVG | Promedio | AVG(edad) |
+  `.trim();
+  const res = parse(input);
+  assert(res.includes('<table class="w-full text-left'), 'Debe crear tabla responsiva');
+  assert(res.includes('<thead'), 'Debe tener encabezado thead');
+  assert(res.includes('<th') && res.includes('Función'), 'Debe tener columnas de encabezado');
+  assert(res.includes('<tbody') && res.includes('SUM(total)'), 'Debe tener cuerpo tbody con datos');
+});
+
+// ─── GRUPO 7: Listas desordenadas y ordenadas ───
+console.log('\n\x1b[1m[7] Listas (Desordenadas y Numeradas)\x1b[0m');
+
+test('Lista desordenada con guión (-)', () => {
+  const input = '- Primer punto\n- Segundo punto con `código`\n- Tercer punto';
+  const res = parse(input);
+  assert(res.includes('<ul class="my-2 ml-4 space-y-1 list-disc'), 'Debe agrupar en <ul> con viñetas');
+  assert(res.includes('<li class="leading-relaxed">Primer punto</li>'), 'Debe crear elemento <li>');
+  assert(res.includes('código'), 'Debe permitir código inline dentro de la lista');
+});
+
+test('Lista desordenada con asterisco (*)', () => {
+  const input = '* Opción A: costo = unidades * valor\n* Opción B: costo fijo';
+  const res = parse(input);
+  assert(res.includes('<ul'), 'Debe crear <ul>');
+  assert(res.includes('unidades * valor'), 'El asterisco de viñeta no debe romper la multiplicación interna');
+});
+
+test('Lista numerada (1. 2. 3.)', () => {
+  const input = '1. Paso uno: preparar datos\n2. Paso dos: entrenar modelo\n3. Paso tres: evaluar métricas';
+  const res = parse(input);
+  assert(res.includes('<ol class="my-2 ml-4 space-y-1 list-decimal'), 'Debe agrupar en <ol> decimal');
+  assert(res.includes('Paso uno: preparar datos</li>'), 'Debe crear ítems ordenados');
+});
+
+// ─── GRUPO 8: Encabezados y Enlaces ───
+console.log('\n\x1b[1m[8] Encabezados (#, ##, ###) y Enlaces [Texto](URL)\x1b[0m');
+
+test('Encabezados H1, H2, H3 tienen estilo de subtítulos rosados característicos', () => {
+  const input = '# Título Principal\n## Subtítulo\n### Sección Menor';
+  const resDark = parse(input, true);
+  assert(resDark.includes('<h1 class="text-lg sm:text-xl font-extrabold'), 'Debe generar H1');
+  assert(resDark.includes('<h2 class="text-base sm:text-lg font-bold'), 'Debe generar H2');
+  assert(resDark.includes('<h3 class="text-sm sm:text-base font-bold'), 'Debe generar H3');
+  assert(resDark.includes('text-pink-400'), 'En modo oscuro los subtítulos deben ser rosados (text-pink-400)');
+
+  const resLight = parse(input, false);
+  assert(resLight.includes('text-pink-600'), 'En modo claro los subtítulos deben ser rosados (text-pink-600)');
+});
+
+test('Enlaces markdown se transforman en <a> con target="_blank" y rel seguro', () => {
+  const input = 'Consulta la documentación en [PortaLink Docs](https://portalink.app/docs).';
+  const res = parse(input);
+  assert(res.includes('<a href="https://portalink.app/docs" target="_blank" rel="noopener noreferrer"'), 'Debe generar enlace seguro');
+  assert(res.includes('PortaLink Docs</a>'), 'Debe tener el texto de anclaje');
+});
+
+// ─── GRUPO 9: Normalización de saltos de línea y Tema ───
+console.log('\n\x1b[1m[9] Normalización y Modos Claro / Oscuro\x1b[0m');
+
+test('Elimina saltos de línea vacíos al inicio (trim leading newlines)', () => {
+  const input = '\n\n\n\r\nTexto que comienza después de varios espacios';
+  const res = parse(input);
+  assert(!res.startsWith('<br>'), 'No debe comenzar con etiquetas <br>');
+  assert(res.startsWith('Texto que comienza'), 'Debe comenzar directamente con el texto');
+});
+
+test('Modo Claro (darkTheme = false) aplica paleta de texto oscuro', () => {
+  const resLight = parse('**Título Claro**\n`código`', false);
+  assert(resLight.includes('text-neutral-900'), 'En modo claro los títulos usan text-neutral-900');
+  assert(resLight.includes('bg-neutral-200/90 text-pink-600'), 'En modo claro el código inline usa bg claro');
+});
+
+test('Modo Oscuro (darkTheme = true) aplica paleta de texto blanco/contraste', () => {
+  const resDark = parse('**Título Oscuro**\n`código`', true);
+  assert(resDark.includes('text-white'), 'En modo oscuro los títulos usan text-white');
+  assert(resDark.includes('bg-neutral-800 text-pink-400'), 'En modo oscuro el código inline usa bg oscuro');
+});
+
+// ─── GRUPO 10: Casos límite y Respuesta Real Completa ───
+console.log('\n\x1b[1m[10] Casos límite y Respuesta Integral del Asistente\x1b[0m');
+
+test('Entrada vacía o nula retorna string vacío', () => {
+  assert(parse('') === '', 'String vacío debe retornar vacío');
+  assert(parse(null) === '', 'Null debe retornar vacío');
+  assert(parse(undefined) === '', 'Undefined debe retornar vacío');
+});
+
+test('Respuesta completa compleja con todos los elementos combinados', () => {
+  const fullResponse = `
+### Manipulación de datos en Python
+
+Para calcular el total por producto utilizando **NumPy** y **Pandas**:
+
+\`\`\`python
+import pandas as pd
+import numpy as np
+
+# Multiplicación vectorizada de columnas
+df['subtotal'] = df['precio'] * df['cantidad']
+print(df.head())
 \`\`\`
 
-Notas importantes:
-* Verifica que \`d.cantidad\` no tenga valores nulos.
-* Puedes usar **COALESCE(p.producto * d.cantidad, 0)** como alternativa segura.`;
+> **Nota:** La operación vectorizada es mucho más rápida que un ciclo \`for\`.
 
-const r10 = parseCopilotMarkdown(t10);
-console.log('\nTest 10 - Realistic ChatGPT-style response:');
-if (!r10.includes('Consulta SQL optimizada') ||
-    !r10.includes('SUM(p.producto * d.cantidad)') ||
-    !r10.includes('p.nombre') ||
-    !r10.includes('copilot-copy-code-btn') ||
-    !r10.includes('<strong class="font-bold text-neutral-900 dark:text-white">COALESCE(p.producto * d.cantidad, 0)</strong>')) {
-  console.error('FAIL: Test 10 failed! Output:', r10);
+Pasos a seguir:
+* Verifica que \`precio * cantidad\` no contenga valores NaN.
+* Usa **fillna(0)** si encuentras valores vacíos.
+
+| Función | Utilidad |
+|---|---|
+| np.dot | Producto punto |
+| df.groupby | Agrupaciones |
+  `.trim();
+
+  const res = parse(fullResponse);
+  assert(res.includes('<h3'), 'Debe incluir H3');
+  assert(res.includes('copilot-copy-code-btn'), 'Debe incluir botón de copiar');
+  assert(res.toLowerCase().includes('python'), 'Debe detectar lenguaje Python');
+  assert(res.includes('df[&#39;subtotal&#39;] = df[&#39;precio&#39;] * df[&#39;cantidad&#39;]') || res.includes("df['subtotal']"), 'Debe preservar el código Python con escape seguro');
+  assert(res.includes('<blockquote'), 'Debe incluir la cita');
+  assert(res.includes('<strong class="font-bold text-white">NumPy</strong>'), 'Debe incluir negritas');
+  assert(res.includes('<ul') && res.includes('precio * cantidad'), 'Debe incluir lista con matemática intacta');
+  assert(res.includes('<table'), 'Debe incluir la tabla');
+});
+
+test('Elimina iconos y emojis decorativos (📚, 🛠️, 💡, 🚀) manteniendo el texto limpio', () => {
+  const inputWithIcons = `
+### 📚 1. Enunciado del ejercicio
+🛠️ 2. Solución SQL con sub-consulta
+💡 Índices recomendados
+¡Listo! 🚀
+  `.trim();
+  const res = parse(inputWithIcons);
+  assert(!res.includes('📚') && !res.includes('🛠️') && !res.includes('💡') && !res.includes('🚀'), 'No debe contener emojis ni iconos');
+  assert(res.includes('1. Enunciado del ejercicio'), 'Debe preservar el texto del enunciado');
+  assert(res.includes('Solución SQL con sub-consulta'), 'Debe preservar el texto de la solución');
+  assert(res.includes('Índices recomendados'), 'Debe preservar las notas');
+  assert(res.includes('¡Listo!'), 'Debe preservar el cierre');
+});
+
+// ==========================================
+// RESUMEN
+// ==========================================
+console.log('\n\x1b[1;36m====================================================\x1b[0m');
+console.log(`  TOTAL TESTS : ${totalTests}`);
+console.log(`  \x1b[32mPASSED\x1b[0m      : ${passedTests}`);
+console.log(`  \x1b[31mFAILED\x1b[0m      : ${failedTests}`);
+console.log('\x1b[1;36m====================================================\x1b[0m');
+
+if (failedTests > 0) {
+  console.log(`\n\x1b[1;31m✖ Fallaron ${failedTests} pruebas. Revisa los errores anteriores.\x1b[0m\n`);
   process.exit(1);
 } else {
-  console.log('PASS: Realistic ChatGPT-style response parsed with 100% fidelity!');
+  console.log('\n\x1b[1;32m✔ ¡TODAS LAS PRUEBAS PASARON EXITOSAMENTE! (100%)\x1b[0m\n');
+  process.exit(0);
 }
-
-console.log('\nALL 10 TESTS PASSED SUCCESSFULLY! 🎉');

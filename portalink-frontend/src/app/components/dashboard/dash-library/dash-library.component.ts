@@ -3637,17 +3637,35 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Theme color constants
     const headingTextClass = darkTheme ? 'text-white' : 'text-neutral-900';
+    const subtitleClass = darkTheme ? 'text-pink-400' : 'text-pink-600';
     const borderClass = darkTheme ? 'border-neutral-800' : 'border-neutral-200';
     const inlineCodeClass = darkTheme 
       ? 'bg-neutral-800 text-pink-400 border border-neutral-700/70' 
       : 'bg-neutral-200/90 text-pink-600 border border-neutral-300/80';
     const listTextClass = darkTheme ? 'text-neutral-200' : 'text-neutral-800';
 
+    // 0. Pre-procesar: normalizar saltos de línea, eliminar emojis/iconos decorativos y recortar espacios
+    let text = content
+      .replace(/\r\n/g, '\n')
+      .replace(/\r/g, '\n')
+      .replace(/[\p{Extended_Pictographic}\uFE0F\uFE0E\u20E3]\s*/gu, '') // Sin iconos ni emojis
+      .replace(/^\n+/, '')   // eliminar líneas vacías al inicio
+      .trimEnd();
+
+    // 0b. Si el modelo envía entidades HTML literales (ej. &amp;, &lt;), decodificarlas
+    //     para que no se dupliquen al escapar luego.
+    text = text
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'");
+
     // 1. Extraer bloques de código (```lang ... ```)
-    let text = content.replace(/```([a-zA-Z0-9_\-+]*)\n?([\s\S]*?)```/g, (_match, lang, code) => {
+    text = text.replace(/```([a-zA-Z0-9_\-+]*)\n?([\s\S]*?)```/g, (_match, lang, code) => {
       const trimmedLang = (lang || '').trim().toLowerCase();
       const displayLang = trimmedLang || 'código';
-      const rawCode = code.replace(/\r\n/g, '\n').replace(/^\n+|\n+$/g, '');
+      const rawCode = code.replace(/^\n+|\n+$/g, '');
       const escapedCode = this.escapeCopilotHtml(rawCode);
       const encoded = encodeURIComponent(rawCode);
 
@@ -3681,9 +3699,9 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     text = text.replace(tableRegex, (match) => {
       const lines = match.trim().split('\n').map(l => l.trim());
       if (lines.length >= 2) {
-        const headerCols = lines[0].replace(/^\||\|$/g, '').split('|').map(c => c.trim());
+        const headerCols = lines[0].replace(/^\||\\|$/g, '').split('|').map(c => c.trim());
         const bodyRows = lines.slice(2).map(row => 
-          row.replace(/^\||\|$/g, '').split('|').map(c => c.trim())
+          row.replace(/^\||\\|$/g, '').split('|').map(c => c.trim())
         );
 
         const tableThBg = darkTheme ? 'bg-neutral-800/80 text-neutral-200 border-neutral-700' : 'bg-neutral-100 text-neutral-800 border-neutral-200';
@@ -3714,21 +3732,21 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     // 4. Escapar caracteres HTML en el texto restante
     text = this.escapeCopilotHtml(text);
 
-    // 5. Encabezados (#, ##, ###)
-    text = text.replace(/^###[ \t]+(.*)$/gm, `<h3 class="text-sm sm:text-base font-bold mt-3 mb-1.5 ${headingTextClass}">$1</h3>`);
-    text = text.replace(/^##[ \t]+(.*)$/gm, `<h2 class="text-base sm:text-lg font-bold mt-3.5 mb-2 pb-1 border-b ${borderClass} ${headingTextClass}">$1</h2>`);
-    text = text.replace(/^#[ \t]+(.*)$/gm, `<h1 class="text-lg sm:text-xl font-extrabold mt-4 mb-2 ${headingTextClass}">$1</h1>`);
+    // 5. Encabezados (#, ##, ###) - Subtítulos rosados característicos de Rotbot
+    text = text.replace(/^###[ \t]+(.*)$/gm, `<h3 class="text-sm sm:text-base font-bold mt-3 mb-1.5 ${subtitleClass} font-headline">$1</h3>`);
+    text = text.replace(/^##[ \t]+(.*)$/gm, `<h2 class="text-base sm:text-lg font-bold mt-3.5 mb-2 pb-1 border-b ${borderClass} ${subtitleClass} font-headline">$1</h2>`);
+    text = text.replace(/^#[ \t]+(.*)$/gm, `<h1 class="text-lg sm:text-xl font-extrabold mt-4 mb-2 ${subtitleClass} font-headline tracking-tight">$1</h1>`);
 
     // 6. Citas / Blockquotes
-    text = text.replace(/^>[ \t]+(.*)$/gm, `<blockquote class="my-2.5 pl-3 py-1 border-l-2 border-blue-500 ${darkTheme ? 'bg-blue-500/10 text-neutral-300' : 'bg-blue-500/5 text-neutral-700'} rounded-r text-xs sm:text-sm italic">$1</blockquote>`);
+    text = text.replace(/^&gt;[ \t]+(.*)$/gm, `<blockquote class="my-2.5 pl-3 py-1 border-l-2 border-blue-500 ${darkTheme ? 'bg-blue-500/10 text-neutral-300' : 'bg-blue-500/5 text-neutral-700'} rounded-r text-xs sm:text-sm italic">$1</blockquote>`);
 
     // 7. Separadores horizontales (--- o ***)
-    text = text.replace(/^(?:---|___|\*\*\*)$/gm, `<hr class="my-3 ${borderClass}">`);
+    text = text.replace(/^(?:---|___|----)$/gm, `<hr class="my-3 ${borderClass}">`);
 
-    // 8. Texto en negrita: **texto** (soporta asteriscos o fórmulas internas como **formula * 2**)
-    text = text.replace(/\*\*(.+?)\*\*/g, `<strong class="font-bold ${headingTextClass}">$1</strong>`);
+    // 8. Texto en negrita: **texto** — permite asteriscos individuales adentro (ej. fórmulas) sin cruzar pares
+    text = text.replace(/\*\*((?:[^*\n]|\*(?!\*))+?)\*\*/g, `<strong class="font-bold ${headingTextClass}">$1</strong>`);
 
-    // 9. Texto en cursiva: *texto* o _texto_ (delimitado, sin coincidir operadores de multiplicación como a * b)
+    // 9. Texto en cursiva: *texto* o _texto_ (sin coincidir con operadores de multiplicación)
     text = text.replace(/(?<=^|[\s(])\*(?!\s)([^*\n]+?)(?<!\s)\*(?=[.,!?;:\s)]|$)/g, `<em class="italic ${darkTheme ? 'text-neutral-200' : 'text-neutral-800'}">$1</em>`);
     text = text.replace(/(?<=^|[\s(])_(?!\s)([^_\n]+?)(?<!\s)_(?=[.,!?;:\s)]|$)/g, `<em class="italic ${darkTheme ? 'text-neutral-200' : 'text-neutral-800'}">$1</em>`);
 
@@ -3807,7 +3825,6 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }, 50);
   }
-
   scrollToBottomCopilot() {
     setTimeout(() => {
       if (this.copilotMessagesContainer?.nativeElement) {
