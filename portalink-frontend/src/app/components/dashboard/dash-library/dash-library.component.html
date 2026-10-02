@@ -3124,6 +3124,8 @@
          [class.is-fullscreen]="isCopilotFullscreen"
          [class.transition-none]="isDraggingCopilot || isResizingCopilot"
          [class.transition-all]="!isDraggingCopilot && !isResizingCopilot"
+         [class.ring-2]="isCopilotSnapped"
+         [class.ring-cyan-500/40]="isCopilotSnapped"
          [ngClass]="[
            isCopilotFullscreen 
              ? 'fixed inset-0 w-screen h-screen max-w-none max-h-none rounded-none border-0 shadow-2xl z-[900]' 
@@ -3137,6 +3139,25 @@
          [style.bottom]="isCopilotFullscreen ? '0px' : ((!isMobileScreen && !isCopilotCustomPositioned) ? '0.75rem' : null)"
          [style.right]="isCopilotFullscreen ? '0px' : ((!isMobileScreen && !isCopilotCustomPositioned) ? '1.75rem' : 'auto')">
       
+      <!-- HUD FLOTANTE ASISTIDO DE DIMENSIONES (MAGNETISMO & PRESETS) -->
+      <div *ngIf="isResizingCopilot" 
+           class="absolute -top-12 left-1/2 -translate-x-1/2 z-[100] pointer-events-none animate-fade-in flex items-center gap-2 px-3.5 py-1.5 rounded-full border shadow-2xl backdrop-blur-xl transition-all duration-150 select-none whitespace-nowrap"
+           [ngClass]="isCopilotSnapped
+             ? (isDark ? 'bg-cyan-950/95 border-cyan-400 text-cyan-200 ring-2 ring-cyan-500/40 shadow-cyan-500/20' : 'bg-cyan-50/95 border-cyan-500 text-cyan-950 ring-2 ring-cyan-400/40 shadow-cyan-400/20')
+             : (isDark ? 'bg-[#18181c]/95 border-neutral-700 text-white shadow-black/50' : 'bg-white/95 border-neutral-300 text-neutral-900 shadow-neutral-500/20')">
+        <span *ngIf="isCopilotSnapped" class="flex h-2 w-2 relative">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+        </span>
+        <span class="text-xs font-mono font-bold tracking-tight">{{ copilotWidth }} × {{ copilotHeight }} px</span>
+        <span class="text-[10px] font-sans font-bold tracking-wide uppercase px-2 py-0.5 rounded-full"
+              [ngClass]="isCopilotSnapped
+                ? (isDark ? 'bg-cyan-900/70 text-cyan-200 border border-cyan-700/60' : 'bg-cyan-200/80 text-cyan-950 border border-cyan-300')
+                : (isDark ? 'bg-neutral-800 text-neutral-300 border border-neutral-700' : 'bg-neutral-100 text-neutral-700 border border-neutral-200')">
+          {{ copilotCurrentSizeLabel }}
+        </span>
+      </div>
+
       <!-- BOTÓN / MANIJA SUPERIOR PARA ESTIRAR A LO ALTO (SOLO DESKTOP Y NO FULLSCREEN) -->
       <div *ngIf="!isCopilotFullscreen"
            (mousedown)="startResizeCopilot($event, 'height')"
@@ -3145,7 +3166,9 @@
            title="Arrastra para cambiar la altura o haz clic para alternar tamaño"
            class="hidden md:flex absolute -top-3.5 left-1/2 -translate-x-1/2 z-50 items-center justify-center cursor-ns-resize select-none group/height-resizer p-1">
         <div class="h-5 w-12 rounded-full border shadow-lg flex items-center justify-center transition-all duration-200 group-hover/height-resizer:scale-110 active:scale-95 cursor-ns-resize"
-             [ngClass]="isDark ? 'bg-[#18181c] border-neutral-700 text-neutral-400 group-hover/height-resizer:text-white group-hover/height-resizer:border-neutral-500 group-hover/height-resizer:shadow-black/40' : 'bg-white border-neutral-300 text-neutral-600 group-hover/height-resizer:text-black group-hover/height-resizer:border-neutral-500 group-hover/height-resizer:shadow-neutral-400/20'">
+             [ngClass]="copilotResizeInfo.isSnappedHeight
+               ? 'bg-cyan-500 border-cyan-400 text-black ring-2 ring-cyan-400/40 shadow-cyan-500/30'
+               : (isDark ? 'bg-[#18181c] border-neutral-700 text-neutral-400 group-hover/height-resizer:text-white group-hover/height-resizer:border-neutral-500 group-hover/height-resizer:shadow-black/40' : 'bg-white border-neutral-300 text-neutral-600 group-hover/height-resizer:text-black group-hover/height-resizer:border-neutral-500 group-hover/height-resizer:shadow-neutral-400/20')">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
           </svg>
@@ -3167,7 +3190,9 @@
            title="Arrastra para cambiar el ancho o haz clic para alternar tamaño"
            class="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-50 items-center justify-center cursor-ew-resize select-none group/resizer p-1">
         <div class="w-6 h-12 rounded-full border shadow-lg flex items-center justify-center transition-all duration-200 group-hover/resizer:scale-110 active:scale-95 cursor-ew-resize"
-             [ngClass]="isDark ? 'bg-[#18181c] border-neutral-700 text-neutral-400 group-hover/resizer:text-white group-hover/resizer:border-neutral-500 group-hover/resizer:shadow-black/40' : 'bg-white border-neutral-300 text-neutral-600 group-hover/resizer:text-black group-hover/resizer:border-neutral-500 group-hover/resizer:shadow-neutral-400/20'">
+             [ngClass]="copilotResizeInfo.isSnappedWidth
+               ? 'bg-cyan-500 border-cyan-400 text-black ring-2 ring-cyan-400/40 shadow-cyan-500/30'
+               : (isDark ? 'bg-[#18181c] border-neutral-700 text-neutral-400 group-hover/resizer:text-white group-hover/resizer:border-neutral-500 group-hover/resizer:shadow-black/40' : 'bg-white border-neutral-300 text-neutral-600 group-hover/resizer:text-black group-hover/resizer:border-neutral-500 group-hover/resizer:shadow-neutral-400/20')">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" transform="rotate(90 12 12)" />
           </svg>
@@ -3188,7 +3213,7 @@
            title="Arrastra para redimensionar tamaño libremente"
            class="hidden md:flex absolute -top-2 -left-2 w-5 h-5 z-50 items-center justify-center cursor-nwse-resize select-none group/corner-resizer">
         <div class="w-2 h-2 rounded-full border transition-all duration-150 group-hover/corner-resizer:scale-150 active:scale-125"
-             [ngClass]="isDark ? 'bg-neutral-500 border-neutral-400 group-hover/corner-resizer:bg-white' : 'bg-neutral-400 border-neutral-300 group-hover/corner-resizer:bg-black'">
+             [ngClass]="(copilotResizeInfo.isSnappedWidth || copilotResizeInfo.isSnappedHeight) ? 'bg-cyan-400 border-cyan-300 ring-2 ring-cyan-400/50 scale-125' : (isDark ? 'bg-neutral-500 border-neutral-400 group-hover/corner-resizer:bg-white' : 'bg-neutral-400 border-neutral-300 group-hover/corner-resizer:bg-black')">
         </div>
       </div>
 
@@ -3246,12 +3271,126 @@
               <span class="text-[11px]">Lector IA</span>
             </button>
 
+            <!-- Botón Asistente de Tamaño y Presets Recomendados (Solo Desktop y no fullscreen) -->
+            <div *ngIf="!isCopilotFullscreen" class="relative hidden sm:block">
+              <button (click)="toggleCopilotSizeMenu($event)"
+                      class="h-8 px-2.5 rounded-full border items-center gap-1.5 transition-all text-xs font-semibold cursor-pointer shadow-xs flex"
+                      [ngClass]="showCopilotSizeMenu
+                        ? (isDark ? 'bg-cyan-950 border-cyan-500 text-cyan-300 ring-2 ring-cyan-500/30' : 'bg-cyan-50 border-cyan-400 text-cyan-900 ring-2 ring-cyan-400/30')
+                        : (isDark ? 'bg-neutral-800 text-neutral-300 border-neutral-700 hover:bg-neutral-700 hover:text-white' : 'bg-neutral-100 text-neutral-700 border-neutral-300 hover:bg-neutral-200')"
+                      title="Asistente de tamaño y presets recomendados">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 3H3v18h18V3z"></path>
+                  <path d="M9 3v18"></path>
+                  <path d="M3 9h18"></path>
+                </svg>
+                <span class="text-[11px] font-mono">{{ copilotWidth }}×{{ copilotHeight }}</span>
+              </button>
+
+              <!-- POPOVER DE TAMAÑOS ASISTIDOS -->
+              <div *ngIf="showCopilotSizeMenu" 
+                   (click)="$event.stopPropagation()"
+                   class="absolute right-0 top-10 w-72 p-3.5 rounded-2xl border shadow-2xl z-[120] animate-fade-in backdrop-blur-xl flex flex-col gap-2.5 select-none"
+                   [ngClass]="isDark ? 'bg-[#18181c]/95 border-neutral-700 text-white shadow-black/70' : 'bg-white/95 border-neutral-200 text-neutral-900 shadow-neutral-400/30'">
+                
+                <div class="flex items-center justify-between border-b pb-2" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs">⚡</span>
+                    <span class="text-xs font-bold tracking-tight">Tamaño Asistido</span>
+                  </div>
+                  <span class="text-[10px] font-mono opacity-60">{{ copilotWidth }} × {{ copilotHeight }} px</span>
+                </div>
+
+                <!-- COMBOS RÁPIDOS (1-CLIC) -->
+                <div>
+                  <div class="text-[10px] font-semibold uppercase tracking-wider opacity-50 mb-1.5">Presets recomendados</div>
+                  <div class="grid grid-cols-2 gap-1.5">
+                    <button type="button"
+                            (click)="applyCopilotPreset(400, 440)"
+                            class="px-2.5 py-1.5 rounded-xl border text-left text-xs transition-all flex flex-col gap-0.5 cursor-pointer"
+                            [ngClass]="(copilotWidth === 400 && copilotHeight === 440)
+                              ? (isDark ? 'bg-cyan-950/80 border-cyan-400 text-cyan-200 font-bold' : 'bg-cyan-50 border-cyan-500 text-cyan-900 font-bold')
+                              : (isDark ? 'bg-neutral-800/80 border-neutral-700/80 hover:bg-neutral-700 text-neutral-300' : 'bg-neutral-50 border-neutral-200 hover:bg-neutral-100 text-neutral-700')">
+                      <span class="text-[11px] font-bold">Compacto</span>
+                      <span class="text-[9.5px] opacity-60 font-mono">400 × 440 px</span>
+                    </button>
+
+                    <button type="button"
+                            (click)="applyCopilotPreset(540, 575)"
+                            class="px-2.5 py-1.5 rounded-xl border text-left text-xs transition-all flex flex-col gap-0.5 cursor-pointer"
+                            [ngClass]="(copilotWidth === 540 && copilotHeight === 575)
+                              ? (isDark ? 'bg-cyan-950/80 border-cyan-400 text-cyan-200 font-bold' : 'bg-cyan-50 border-cyan-500 text-cyan-900 font-bold')
+                              : (isDark ? 'bg-neutral-800/80 border-neutral-700/80 hover:bg-neutral-700 text-neutral-300' : 'bg-neutral-50 border-neutral-200 hover:bg-neutral-100 text-neutral-700')">
+                      <span class="text-[11px] font-bold">Equilibrado</span>
+                      <span class="text-[9.5px] opacity-60 font-mono">540 × 575 px</span>
+                    </button>
+
+                    <button type="button"
+                            (click)="applyCopilotPreset(680, 720)"
+                            class="px-2.5 py-1.5 rounded-xl border text-left text-xs transition-all flex flex-col gap-0.5 cursor-pointer"
+                            [ngClass]="(copilotWidth === 680 && copilotHeight === 720)
+                              ? (isDark ? 'bg-cyan-950/80 border-cyan-400 text-cyan-200 font-bold' : 'bg-cyan-50 border-cyan-500 text-cyan-900 font-bold')
+                              : (isDark ? 'bg-neutral-800/80 border-neutral-700/80 hover:bg-neutral-700 text-neutral-300' : 'bg-neutral-50 border-neutral-200 hover:bg-neutral-100 text-neutral-700')">
+                      <span class="text-[11px] font-bold">Amplio</span>
+                      <span class="text-[9.5px] opacity-60 font-mono">680 × 720 px</span>
+                    </button>
+
+                    <button type="button"
+                            (click)="applyCopilotPreset(860, copilotMaxHeight)"
+                            class="px-2.5 py-1.5 rounded-xl border text-left text-xs transition-all flex flex-col gap-0.5 cursor-pointer"
+                            [ngClass]="(copilotWidth === 860 && copilotHeight === copilotMaxHeight)
+                              ? (isDark ? 'bg-cyan-950/80 border-cyan-400 text-cyan-200 font-bold' : 'bg-cyan-50 border-cyan-500 text-cyan-900 font-bold')
+                              : (isDark ? 'bg-neutral-800/80 border-neutral-700/80 hover:bg-neutral-700 text-neutral-300' : 'bg-neutral-50 border-neutral-200 hover:bg-neutral-100 text-neutral-700')">
+                      <span class="text-[11px] font-bold">Panorámico</span>
+                      <span class="text-[9.5px] opacity-60 font-mono">860 × Máx px</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- AJUSTE INDIVIDUAL ANCHO -->
+                <div>
+                  <div class="text-[10px] font-semibold uppercase tracking-wider opacity-50 mb-1">Ancho</div>
+                  <div class="grid grid-cols-4 gap-1">
+                    <button *ngFor="let p of copilotWidthPresets"
+                            type="button"
+                            (click)="applyCopilotWidth(p.width)"
+                            class="py-1 px-1 rounded-lg border text-center text-[10.5px] font-mono transition-all cursor-pointer"
+                            [ngClass]="isCurrentWidth(p.width)
+                              ? (isDark ? 'bg-white text-black border-white font-bold' : 'bg-neutral-900 text-white border-neutral-900 font-bold')
+                              : (isDark ? 'bg-neutral-800 text-neutral-300 border-neutral-700 hover:bg-neutral-700' : 'bg-neutral-100 text-neutral-700 border-neutral-200 hover:bg-neutral-200')">
+                      {{ p.width }}
+                    </button>
+                  </div>
+                </div>
+
+                <!-- AJUSTE INDIVIDUAL ALTO -->
+                <div>
+                  <div class="text-[10px] font-semibold uppercase tracking-wider opacity-50 mb-1">Alto</div>
+                  <div class="grid grid-cols-4 gap-1">
+                    <button *ngFor="let p of copilotHeightPresets"
+                            type="button"
+                            (click)="applyCopilotHeight(p.height)"
+                            class="py-1 px-1 rounded-lg border text-center text-[10.5px] font-mono transition-all cursor-pointer"
+                            [ngClass]="isCurrentHeight(p.height)
+                              ? (isDark ? 'bg-white text-black border-white font-bold' : 'bg-neutral-900 text-white border-neutral-900 font-bold')
+                              : (isDark ? 'bg-neutral-800 text-neutral-300 border-neutral-700 hover:bg-neutral-700' : 'bg-neutral-100 text-neutral-700 border-neutral-200 hover:bg-neutral-200')">
+                      {{ p.label === 'Máximo' ? 'Máx' : p.height }}
+                    </button>
+                  </div>
+                </div>
+
+                <div class="pt-1 text-[9.5px] text-center opacity-60 font-sans border-t" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+                  ⚡ Imán magnético activo al arrastrar bordes
+                </div>
+              </div>
+            </div>
+
             <!-- Toggle Altura Preset Button (Solo Desktop y no fullscreen) -->
             <button *ngIf="!isCopilotFullscreen"
                     (click)="toggleCopilotHeightPreset()" 
                     class="hidden md:flex w-8 h-8 rounded-full border-none cursor-pointer items-center justify-center transition-all"
                     [ngClass]="isDark ? 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-900 hover:text-white'"
-                    [title]="copilotHeight > 620 ? 'Reducir altura (440px)' : 'Aumentar altura'">
+                    [title]="'Alternar altura (' + copilotHeight + 'px • ' + copilotCurrentSizeLabel + ')'">
               <svg *ngIf="copilotHeight <= 620" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="18 15 12 9 6 15"></polyline>
               </svg>
@@ -3265,7 +3404,7 @@
                     (click)="toggleCopilotWidthPreset()" 
                     class="hidden md:flex w-8 h-8 rounded-full border-none cursor-pointer items-center justify-center transition-all"
                     [ngClass]="isDark ? 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-900 hover:text-white'"
-                    [title]="copilotWidth > 500 ? 'Reducir ancho (400px)' : 'Expandir ancho'">
+                    [title]="'Alternar ancho (' + copilotWidth + 'px • ' + copilotCurrentSizeLabel + ')'">
               <svg *ngIf="copilotWidth <= 500" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="15 3 21 3 21 9"></polyline>
                 <polyline points="9 21 3 21 3 15"></polyline>

@@ -413,6 +413,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activeColTypeMenuId = null;
     this.activeColLangMenuId = null;
     this.activeTypeMenuBlockId = null;
+    this.showCopilotSizeMenu = false;
   }
 
   // Toast feedback
@@ -3926,12 +3927,13 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  // ── COPILOT DRAG & RESIZE LOGIC ─────────────────────────────
+  // ── COPILOT DRAG & RESIZE LOGIC (ASISTIDO CON IMÁN MAGNÉTICO & PRESETS) ────
   copilotWidth = 400;
   copilotHeight = 575;
   isCopilotFullscreen = false;
   isDraggingCopilot = false;
   isResizingCopilot = false;
+  showCopilotSizeMenu = false;
   copilotResizeDir: 'width' | 'height' | 'both' = 'width';
   copilotPos = { x: 0, y: 0 };
   isCopilotCustomPositioned = false;
@@ -3942,16 +3944,112 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   private resizeStartHeight = 575;
   private resizeStartPosY = 0;
 
+  // Presets recomendados para asistencia magnética
+  readonly copilotWidthPresets = [
+    { label: 'Compacto', width: 400, desc: '400px' },
+    { label: 'Equilibrado', width: 540, desc: '540px' },
+    { label: 'Amplio', width: 680, desc: '680px' },
+    { label: 'Panorámico', width: 860, desc: '860px' }
+  ];
+
+  get copilotMaxHeight(): number {
+    return Math.max(500, Math.min(window.innerHeight - 70, 880));
+  }
+
+  get copilotHeightPresets() {
+    return [
+      { label: 'Compacto', height: 440, desc: '440px' },
+      { label: 'Estándar', height: 575, desc: '575px' },
+      { label: 'Alto', height: 720, desc: '720px' },
+      { label: 'Máximo', height: this.copilotMaxHeight, desc: `${this.copilotMaxHeight}px` }
+    ];
+  }
+
+  copilotResizeInfo = {
+    isSnappedWidth: false,
+    isSnappedHeight: false,
+    activeSnapWidth: null as number | null,
+    activeSnapHeight: null as number | null
+  };
+
+  get isCopilotSnapped(): boolean {
+    return this.copilotResizeInfo.isSnappedWidth || this.copilotResizeInfo.isSnappedHeight;
+  }
+
+  get copilotCurrentSizeLabel(): string {
+    const matchedW = this.copilotWidthPresets.find(p => Math.abs(p.width - this.copilotWidth) <= 14);
+    const matchedH = this.copilotHeightPresets.find(p => Math.abs(p.height - this.copilotHeight) <= 14);
+
+    if (matchedW && matchedH) {
+      return `${matchedW.label} • ${matchedH.label}`;
+    }
+    if (matchedW) {
+      return `Ancho ${matchedW.label}`;
+    }
+    if (matchedH) {
+      return `Alto ${matchedH.label}`;
+    }
+    return 'Libre';
+  }
+
+  private snapToPoints(value: number, points: number[], threshold: number = 22): { value: number; isSnapped: boolean; snapPoint: number | null } {
+    for (const point of points) {
+      if (Math.abs(value - point) <= threshold) {
+        return { value: point, isSnapped: true, snapPoint: point };
+      }
+    }
+    return { value, isSnapped: false, snapPoint: null };
+  }
+
+  toggleCopilotSizeMenu(event?: MouseEvent) {
+    if (event) event.stopPropagation();
+    this.showCopilotSizeMenu = !this.showCopilotSizeMenu;
+  }
+
+  applyCopilotPreset(width: number, height?: number) {
+    this.copilotWidth = width;
+    if (height) {
+      this.copilotHeight = height;
+      try { localStorage.setItem('portalink_copilot_height', String(height)); } catch {}
+    }
+    try { localStorage.setItem('portalink_copilot_width', String(width)); } catch {}
+    this.showCopilotSizeMenu = false;
+    this.scrollToBottomCopilot();
+  }
+
+  applyCopilotWidth(width: number) {
+    this.copilotWidth = width;
+    try { localStorage.setItem('portalink_copilot_width', String(width)); } catch {}
+    this.scrollToBottomCopilot();
+  }
+
+  applyCopilotHeight(height: number) {
+    this.copilotHeight = height;
+    try { localStorage.setItem('portalink_copilot_height', String(height)); } catch {}
+    this.scrollToBottomCopilot();
+  }
+
+  isCurrentWidth(w: number): boolean {
+    return Math.abs(this.copilotWidth - w) <= 8;
+  }
+
+  isCurrentHeight(h: number): boolean {
+    return Math.abs(this.copilotHeight - h) <= 8;
+  }
+
   startResizeCopilot(event: MouseEvent | TouchEvent, dir: 'width' | 'height' | 'both' = 'width') {
     event.stopPropagation();
     event.preventDefault();
     this.isResizingCopilot = true;
+    this.showCopilotSizeMenu = false;
     this.copilotResizeDir = dir;
     this.resizeStartX = 'touches' in event ? event.touches[0].clientX : event.clientX;
     this.resizeStartY = 'touches' in event ? event.touches[0].clientY : event.clientY;
     this.resizeStartWidth = this.copilotWidth;
     this.resizeStartHeight = this.copilotHeight;
     this.resizeStartPosY = this.copilotPos.y;
+    this.copilotResizeInfo.isSnappedWidth = false;
+    this.copilotResizeInfo.isSnappedHeight = false;
     document.body.classList.add('is-chat-dragging');
     if (dir === 'height') {
       document.body.style.cursor = 'ns-resize';
@@ -3964,10 +4062,12 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   toggleCopilotWidthPreset() {
-    if (this.copilotWidth < 500) {
-      this.copilotWidth = 650;
-    } else if (this.copilotWidth < 760) {
-      this.copilotWidth = 840;
+    if (this.copilotWidth < 480) {
+      this.copilotWidth = 540;
+    } else if (this.copilotWidth < 620) {
+      this.copilotWidth = 680;
+    } else if (this.copilotWidth < 800) {
+      this.copilotWidth = 860;
     } else {
       this.copilotWidth = 400;
     }
@@ -3977,10 +4077,12 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   toggleCopilotHeightPreset() {
-    if (this.copilotHeight < 520) {
-      this.copilotHeight = 670;
-    } else if (this.copilotHeight < 740) {
-      this.copilotHeight = Math.min(window.innerHeight - 80, 840);
+    if (this.copilotHeight < 510) {
+      this.copilotHeight = 575;
+    } else if (this.copilotHeight < 650) {
+      this.copilotHeight = 720;
+    } else if (this.copilotHeight < 800) {
+      this.copilotHeight = this.copilotMaxHeight;
     } else {
       this.copilotHeight = 440;
     }
@@ -3991,6 +4093,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   toggleCopilotFullscreen() {
     this.isCopilotFullscreen = !this.isCopilotFullscreen;
+    this.showCopilotSizeMenu = false;
     this.scrollToBottomCopilot();
   }
 
@@ -4065,10 +4168,16 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
         const deltaX = this.resizeStartX - clientX;
         const minW = 360;
         const maxW = Math.min(window.innerWidth - 30, 1100);
-        const newWidth = Math.max(minW, Math.min(this.resizeStartWidth + deltaX, maxW));
-        this.copilotWidth = newWidth;
+        const rawW = Math.max(minW, Math.min(this.resizeStartWidth + deltaX, maxW));
+        
+        // Asistencia magnética a presets
+        const snap = this.snapToPoints(rawW, this.copilotWidthPresets.map(p => p.width), 22);
+        this.copilotWidth = snap.value;
+        this.copilotResizeInfo.isSnappedWidth = snap.isSnapped;
+        this.copilotResizeInfo.activeSnapWidth = snap.snapPoint;
+
         try {
-          localStorage.setItem('portalink_copilot_width', String(newWidth));
+          localStorage.setItem('portalink_copilot_width', String(this.copilotWidth));
         } catch {}
       }
 
@@ -4076,8 +4185,14 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
         const deltaY = this.resizeStartY - clientY;
         const minH = 340;
         const maxH = Math.max(minH, window.innerHeight - 50);
-        const newHeight = Math.max(minH, Math.min(this.resizeStartHeight + deltaY, maxH));
+        const rawH = Math.max(minH, Math.min(this.resizeStartHeight + deltaY, maxH));
+
+        // Asistencia magnética a presets
+        const snap = this.snapToPoints(rawH, this.copilotHeightPresets.map(p => p.height), 22);
+        const newHeight = snap.value;
         this.copilotHeight = newHeight;
+        this.copilotResizeInfo.isSnappedHeight = snap.isSnapped;
+        this.copilotResizeInfo.activeSnapHeight = snap.snapPoint;
 
         if (this.isCopilotCustomPositioned) {
           const heightDiff = newHeight - this.resizeStartHeight;
@@ -4142,6 +4257,10 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isDraggingCopilot = false;
     this.isDraggingLeftReader = false;
     this.isResizingCopilot = false;
+    this.copilotResizeInfo.isSnappedWidth = false;
+    this.copilotResizeInfo.isSnappedHeight = false;
+    this.copilotResizeInfo.activeSnapWidth = null;
+    this.copilotResizeInfo.activeSnapHeight = null;
     document.body.classList.remove('is-chat-dragging');
     document.body.style.cursor = '';
     document.body.style.userSelect = '';
