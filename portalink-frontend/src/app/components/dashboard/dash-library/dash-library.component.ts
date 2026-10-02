@@ -3688,15 +3688,15 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
       const escapedCode = this.escapeCopilotHtml(rawCode);
       const encoded = encodeURIComponent(rawCode);
 
-      const blockHtml = `<div class="my-3 rounded-xl overflow-hidden border border-neutral-700/60 bg-[#0d0d11] shadow-md font-mono text-xs sm:text-[13px] text-neutral-200">` +
-        `<div class="flex items-center justify-between px-3.5 py-1.5 bg-[#18181f] border-b border-neutral-800 text-neutral-400 text-xs select-none">` +
+      const blockHtml = `<div class="my-3 rounded-xl overflow-hidden border border-neutral-700/60 bg-[#0d0d11] shadow-md font-mono text-xs sm:text-sm text-neutral-200">` +
+        `<div class="flex items-center justify-between px-3.5 py-1.5 bg-[#18181f] border-neutral-800 text-neutral-400 text-xs select-none">` +
           `<span class="font-sans font-semibold text-[11px] uppercase tracking-wider text-neutral-300">${displayLang}</span>` +
           `<button type="button" class="copilot-copy-code-btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-neutral-300 hover:text-white hover:bg-neutral-700/60 active:scale-95 transition-all text-xs font-sans cursor-pointer" data-code="${encoded}">` +
             `<svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>` +
             `<span>Copiar</span>` +
           `</button>` +
         `</div>` +
-        `<div class="p-3.5 overflow-x-auto text-neutral-100 font-mono text-xs sm:text-sm leading-relaxed whitespace-pre selection:bg-neutral-700 selection:text-white"><code>${escapedCode}</code></div>` +
+        `<div class="p-3.5 overflow-x-auto text-neutral-100 font-mono text-[13px] sm:text-[14.5px] leading-relaxed whitespace-pre selection:bg-neutral-700 selection:text-white"><code>${escapedCode}</code></div>` +
       `</div>`;
 
       const placeholder = `__COPILOT_CODEBLOCK_${codeBlocks.length}__`;
@@ -3707,7 +3707,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     // 2. Extraer código inline (`código`)
     text = text.replace(/`([^`\n]+)`/g, (_match, inline) => {
       const escapedInline = this.escapeCopilotHtml(inline);
-      const inlineHtml = `<code class="px-1.5 py-0.5 mx-0.5 rounded-md text-[12px] font-mono font-medium ${inlineCodeClass}">${escapedInline}</code>`;
+      const inlineHtml = `<code class="px-1.5 py-0.5 mx-0.5 rounded-md text-[13px] font-mono font-medium ${inlineCodeClass}">${escapedInline}</code>`;
       const placeholder = `__COPILOT_INLINE_${inlineCodes.length}__`;
       inlineCodes.push(inlineHtml);
       return placeholder;
@@ -3729,7 +3729,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
         const tableRowHover = darkTheme ? 'hover:bg-neutral-800/40' : 'hover:bg-neutral-50';
 
         const tableHtml = `<div class="my-3 overflow-x-auto rounded-xl border ${borderClass} shadow-xs">` +
-          `<table class="w-full text-left text-xs sm:text-sm border-collapse">` +
+          `<table class="w-full text-left text-[13px] sm:text-[14.5px] border-collapse">` +
             `<thead class="${tableThBg} font-semibold border-b ${tableBorder}">` +
               `<tr>${headerCols.map(c => `<th class="px-3 py-2 border-r last:border-r-0 ${tableBorder}">${this.escapeCopilotHtml(c)}</th>`).join('')}</tr>` +
             `</thead>` +
@@ -3752,12 +3752,12 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     text = this.escapeCopilotHtml(text);
 
     // 5. Encabezados (#, ##, ###) - Subtítulos rosados característicos de Rotbot
-    text = text.replace(/^###[ \t]+(.*)$/gm, `<h3 class="text-sm sm:text-base font-bold mt-3 mb-1.5 ${subtitleClass} font-headline">$1</h3>`);
-    text = text.replace(/^##[ \t]+(.*)$/gm, `<h2 class="text-base sm:text-lg font-bold mt-3.5 mb-2 pb-1 border-b ${borderClass} ${subtitleClass} font-headline">$1</h2>`);
-    text = text.replace(/^#[ \t]+(.*)$/gm, `<h1 class="text-lg sm:text-xl font-extrabold mt-4 mb-2 ${subtitleClass} font-headline tracking-tight">$1</h1>`);
+    text = text.replace(/^###[ \t]+(.*)$/gm, `<h3 class="text-[15px] sm:text-base font-bold mt-3 mb-1.5 ${subtitleClass} font-headline">$1</h3>`);
+    text = text.replace(/^##[ \t]+(.*)$/gm, `<h2 class="text-base sm:text-[17px] font-bold mt-3.5 mb-2 pb-1 border-b ${borderClass} ${subtitleClass} font-headline">$1</h2>`);
+    text = text.replace(/^#[ \t]+(.*)$/gm, `<h1 class="text-lg sm:text-[21px] font-extrabold mt-4 mb-2 ${subtitleClass} font-headline tracking-tight">$1</h1>`);
 
     // 6. Citas / Blockquotes
-    text = text.replace(/^&gt;[ \t]+(.*)$/gm, `<blockquote class="my-2.5 pl-3 py-1 border-l-2 border-blue-500 ${darkTheme ? 'bg-blue-500/10 text-neutral-300' : 'bg-blue-500/5 text-neutral-700'} rounded-r text-xs sm:text-sm italic">$1</blockquote>`);
+    text = text.replace(/^&gt;[ \t]+(.*)$/gm, `<blockquote class="my-2.5 pl-3 py-1 border-l-2 border-neutral-400 ${darkTheme ? 'bg-neutral-800/40 text-neutral-300' : 'bg-neutral-100 text-neutral-700'} rounded-r text-[13.5px] sm:text-[14.5px] italic">$1</blockquote>`);
 
     // 7. Separadores horizontales (--- o ***)
     text = text.replace(/^(?:---|___|----)$/gm, `<hr class="my-3 ${borderClass}">`);

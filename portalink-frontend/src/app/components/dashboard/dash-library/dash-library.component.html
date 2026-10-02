@@ -3120,13 +3120,12 @@
     </button>
 
     <!-- PANEL FLOTANTE DE CHAT ROTBOT IA (BOTTOM SHEET EN MÓVIL, ARRASTRABLE EN DESKTOP) -->
+    <!-- PANEL FLOTANTE DE CHAT ROTBOT IA (BOTTOM SHEET EN MÓVIL, ARRASTRABLE EN DESKTOP) -->
     <div *ngIf="isCopilotOpen" 
          class="copilot-panel chat-panel pointer-events-auto font-sans flex flex-col"
          [class.is-fullscreen]="isCopilotFullscreen"
          [class.!transition-none]="isDraggingCopilot || isResizingCopilot"
          [class.transition-all]="!isDraggingCopilot && !isResizingCopilot"
-         [class.ring-2]="isCopilotSnapped"
-         [class.ring-cyan-500/40]="isCopilotSnapped"
          [ngClass]="[
            isCopilotFullscreen 
              ? 'fixed inset-0 w-screen h-screen max-w-none max-h-none rounded-none border-0 shadow-2xl z-[1000]' 
@@ -3141,23 +3140,9 @@
          [style.right]="isCopilotFullscreen ? '0px' : ((!isMobileScreen && !isCopilotCustomPositioned) ? '1.75rem' : 'auto')"
          [style.willChange]="(isResizingCopilot || isDraggingCopilot) ? 'width, height, left, top' : null">
       
-      <!-- HUD FLOTANTE ASISTIDO DE DIMENSIONES (MAGNETISMO & PRESETS) -->
-      <div *ngIf="isResizingCopilot" 
-           class="absolute -top-12 left-1/2 -translate-x-1/2 z-[100] pointer-events-none animate-fade-in flex items-center gap-2 px-3.5 py-1.5 rounded-full border shadow-2xl backdrop-blur-xl transition-all duration-150 select-none whitespace-nowrap"
-           [ngClass]="isCopilotSnapped
-             ? (isDark ? 'bg-cyan-950/95 border-cyan-400 text-cyan-200 ring-2 ring-cyan-500/40 shadow-cyan-500/20' : 'bg-cyan-50/95 border-cyan-500 text-cyan-950 ring-2 ring-cyan-400/40 shadow-cyan-400/20')
-             : (isDark ? 'bg-[#18181c]/95 border-neutral-700 text-white shadow-black/50' : 'bg-white/95 border-neutral-300 text-neutral-900 shadow-neutral-500/20')">
-        <span *ngIf="isCopilotSnapped" class="flex h-2 w-2 relative">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
-        </span>
-        <span class="text-xs font-mono font-bold tracking-tight">{{ copilotWidth }} × {{ copilotHeight }} px</span>
-        <span class="text-[10px] font-sans font-bold tracking-wide uppercase px-2 py-0.5 rounded-full"
-              [ngClass]="isCopilotSnapped
-                ? (isDark ? 'bg-cyan-900/70 text-cyan-200 border border-cyan-700/60' : 'bg-cyan-200/80 text-cyan-950 border border-cyan-300')
-                : (isDark ? 'bg-neutral-800 text-neutral-300 border border-neutral-700' : 'bg-neutral-100 text-neutral-700 border border-neutral-200')">
-          {{ copilotCurrentSizeLabel }}
-        </span>
+      <!-- LÍNEA BLANCA INDICADORA EN LA PARTE SUPERIOR AL CAMBIAR TAMAÑO (SIN TEXTO NI COLOR AZUL) -->
+      <div *ngIf="isResizingCopilot && !isCopilotFullscreen" 
+           class="absolute -top-[1px] inset-x-8 h-[2px] bg-white rounded-full shadow-[0_0_12px_rgba(255,255,255,0.95)] z-[60] pointer-events-none">
       </div>
 
       <!-- BOTÓN / MANIJA SUPERIOR PARA ESTIRAR A LO ALTO (SOLO DESKTOP Y NO FULLSCREEN) -->
@@ -3172,7 +3157,7 @@
              [class.transition-all]="!isResizingCopilot"
              [class.duration-200]="!isResizingCopilot"
              [ngClass]="copilotResizeInfo.isSnappedHeight
-               ? 'bg-cyan-500 border-cyan-400 text-black ring-2 ring-cyan-400/40 shadow-cyan-500/30'
+               ? 'bg-white border-white text-black ring-2 ring-white/50 shadow-[0_0_12px_rgba(255,255,255,0.7)]'
                : (isDark ? 'bg-[#18181c] border-neutral-700 text-neutral-400 group-hover/height-resizer:text-white group-hover/height-resizer:border-neutral-500 group-hover/height-resizer:shadow-black/40' : 'bg-white border-neutral-300 text-neutral-600 group-hover/height-resizer:text-black group-hover/height-resizer:border-neutral-500 group-hover/height-resizer:shadow-neutral-400/20')">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
@@ -3199,7 +3184,7 @@
              [class.transition-all]="!isResizingCopilot"
              [class.duration-200]="!isResizingCopilot"
              [ngClass]="copilotResizeInfo.isSnappedWidth
-               ? 'bg-cyan-500 border-cyan-400 text-black ring-2 ring-cyan-400/40 shadow-cyan-500/30'
+               ? 'bg-white border-white text-black ring-2 ring-white/50 shadow-[0_0_12px_rgba(255,255,255,0.7)]'
                : (isDark ? 'bg-[#18181c] border-neutral-700 text-neutral-400 group-hover/resizer:text-white group-hover/resizer:border-neutral-500 group-hover/resizer:shadow-black/40' : 'bg-white border-neutral-300 text-neutral-600 group-hover/resizer:text-black group-hover/resizer:border-neutral-500 group-hover/resizer:shadow-neutral-400/20')">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" transform="rotate(90 12 12)" />
@@ -3221,7 +3206,7 @@
            title="Arrastra para redimensionar tamaño libremente"
            class="hidden md:flex absolute -top-2 -left-2 w-5 h-5 z-50 items-center justify-center cursor-nwse-resize select-none group/corner-resizer">
         <div class="w-2 h-2 rounded-full border transition-all duration-150 group-hover/corner-resizer:scale-150 active:scale-125"
-             [ngClass]="(copilotResizeInfo.isSnappedWidth || copilotResizeInfo.isSnappedHeight) ? 'bg-cyan-400 border-cyan-300 ring-2 ring-cyan-400/50 scale-125' : (isDark ? 'bg-neutral-500 border-neutral-400 group-hover/corner-resizer:bg-white' : 'bg-neutral-400 border-neutral-300 group-hover/corner-resizer:bg-black')">
+             [ngClass]="(copilotResizeInfo.isSnappedWidth || copilotResizeInfo.isSnappedHeight) ? 'bg-white border-white ring-2 ring-white/60 scale-125' : (isDark ? 'bg-neutral-500 border-neutral-400 group-hover/corner-resizer:bg-white' : 'bg-neutral-400 border-neutral-300 group-hover/corner-resizer:bg-black')">
         </div>
       </div>
 
@@ -3284,7 +3269,7 @@
               <button (click)="toggleCopilotSizeMenu($event)"
                       class="h-8 px-2.5 rounded-full border items-center gap-1.5 transition-all text-xs font-semibold cursor-pointer shadow-xs flex"
                       [ngClass]="showCopilotSizeMenu
-                        ? (isDark ? 'bg-cyan-950 border-cyan-500 text-cyan-300 ring-2 ring-cyan-500/30' : 'bg-cyan-50 border-cyan-400 text-cyan-900 ring-2 ring-cyan-400/30')
+                        ? (isDark ? 'bg-neutral-800 border-white/60 text-white ring-2 ring-white/20' : 'bg-neutral-100 border-neutral-900 text-neutral-900 ring-2 ring-neutral-900/20')
                         : (isDark ? 'bg-neutral-800 text-neutral-300 border-neutral-700 hover:bg-neutral-700 hover:text-white' : 'bg-neutral-100 text-neutral-700 border-neutral-300 hover:bg-neutral-200')"
                       title="Asistente de tamaño y presets recomendados">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -3317,7 +3302,7 @@
                             (click)="applyCopilotPreset(400, 440)"
                             class="px-2.5 py-1.5 rounded-xl border text-left text-xs transition-all flex flex-col gap-0.5 cursor-pointer"
                             [ngClass]="(copilotWidth === 400 && copilotHeight === 440)
-                              ? (isDark ? 'bg-cyan-950/80 border-cyan-400 text-cyan-200 font-bold' : 'bg-cyan-50 border-cyan-500 text-cyan-900 font-bold')
+                              ? (isDark ? 'bg-white/10 border-white text-white font-bold ring-1 ring-white/30' : 'bg-neutral-900 text-white border-neutral-900 font-bold')
                               : (isDark ? 'bg-neutral-800/80 border-neutral-700/80 hover:bg-neutral-700 text-neutral-300' : 'bg-neutral-50 border-neutral-200 hover:bg-neutral-100 text-neutral-700')">
                       <span class="text-[11px] font-bold">Compacto</span>
                       <span class="text-[9.5px] opacity-60 font-mono">400 × 440 px</span>
@@ -3327,7 +3312,7 @@
                             (click)="applyCopilotPreset(540, 575)"
                             class="px-2.5 py-1.5 rounded-xl border text-left text-xs transition-all flex flex-col gap-0.5 cursor-pointer"
                             [ngClass]="(copilotWidth === 540 && copilotHeight === 575)
-                              ? (isDark ? 'bg-cyan-950/80 border-cyan-400 text-cyan-200 font-bold' : 'bg-cyan-50 border-cyan-500 text-cyan-900 font-bold')
+                              ? (isDark ? 'bg-white/10 border-white text-white font-bold ring-1 ring-white/30' : 'bg-neutral-900 text-white border-neutral-900 font-bold')
                               : (isDark ? 'bg-neutral-800/80 border-neutral-700/80 hover:bg-neutral-700 text-neutral-300' : 'bg-neutral-50 border-neutral-200 hover:bg-neutral-100 text-neutral-700')">
                       <span class="text-[11px] font-bold">Equilibrado</span>
                       <span class="text-[9.5px] opacity-60 font-mono">540 × 575 px</span>
@@ -3337,7 +3322,7 @@
                             (click)="applyCopilotPreset(680, 720)"
                             class="px-2.5 py-1.5 rounded-xl border text-left text-xs transition-all flex flex-col gap-0.5 cursor-pointer"
                             [ngClass]="(copilotWidth === 680 && copilotHeight === 720)
-                              ? (isDark ? 'bg-cyan-950/80 border-cyan-400 text-cyan-200 font-bold' : 'bg-cyan-50 border-cyan-500 text-cyan-900 font-bold')
+                              ? (isDark ? 'bg-white/10 border-white text-white font-bold ring-1 ring-white/30' : 'bg-neutral-900 text-white border-neutral-900 font-bold')
                               : (isDark ? 'bg-neutral-800/80 border-neutral-700/80 hover:bg-neutral-700 text-neutral-300' : 'bg-neutral-50 border-neutral-200 hover:bg-neutral-100 text-neutral-700')">
                       <span class="text-[11px] font-bold">Amplio</span>
                       <span class="text-[9.5px] opacity-60 font-mono">680 × 720 px</span>
@@ -3347,7 +3332,7 @@
                             (click)="applyCopilotPreset(860, copilotMaxHeight)"
                             class="px-2.5 py-1.5 rounded-xl border text-left text-xs transition-all flex flex-col gap-0.5 cursor-pointer"
                             [ngClass]="(copilotWidth === 860 && copilotHeight === copilotMaxHeight)
-                              ? (isDark ? 'bg-cyan-950/80 border-cyan-400 text-cyan-200 font-bold' : 'bg-cyan-50 border-cyan-500 text-cyan-900 font-bold')
+                              ? (isDark ? 'bg-white/10 border-white text-white font-bold ring-1 ring-white/30' : 'bg-neutral-900 text-white border-neutral-900 font-bold')
                               : (isDark ? 'bg-neutral-800/80 border-neutral-700/80 hover:bg-neutral-700 text-neutral-300' : 'bg-neutral-50 border-neutral-200 hover:bg-neutral-100 text-neutral-700')">
                       <span class="text-[11px] font-bold">Panorámico</span>
                       <span class="text-[9.5px] opacity-60 font-mono">860 × Máx px</span>
@@ -3489,7 +3474,7 @@
       </div>
 
       <!-- ÁREA DE MENSAJES CON SCROLL Y BURBUJAS ESTILO HOME -->
-      <div #copilotMessagesContainer class="flex-1 p-3.5 sm:p-5 overflow-y-auto overflow-x-hidden space-y-4 text-[13.5px] sm:text-sm font-sans w-full max-w-full min-w-0"
+      <div #copilotMessagesContainer class="flex-1 p-3.5 sm:p-5 overflow-y-auto overflow-x-hidden space-y-4 text-[15px] sm:text-[15.5px] font-sans w-full max-w-full min-w-0"
            [ngClass]="isDark ? 'bg-[#121215]' : 'bg-white'"
            (click)="handleCopilotContainerClick($event)">
         
@@ -3499,7 +3484,7 @@
           <div *ngFor="let msg of copilotMessages" class="flex flex-col w-full min-w-0 max-w-full" [ngClass]="msg.role === 'user' ? 'items-end' : 'items-start'">
             
             <!-- MENSAJE USUARIO -->
-            <div *ngIf="msg.role === 'user'" class="max-w-[85%] px-4 py-3 rounded-2xl font-medium text-[13.5px] sm:text-sm leading-relaxed shadow-xs break-words [overflow-wrap:anywhere]"
+            <div *ngIf="msg.role === 'user'" class="max-w-[85%] px-4 py-3 rounded-2xl font-medium text-[15px] sm:text-[15.5px] leading-relaxed shadow-xs break-words [overflow-wrap:anywhere]"
                  [ngClass]="isDark ? 'bg-neutral-800 text-white rounded-br-xs border border-neutral-700' : 'bg-[#09090b] text-white rounded-br-xs'">
               {{ msg.content }}
             </div>
@@ -3511,7 +3496,7 @@
                 <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
               </div>
 
-              <div class="flex-1 min-w-0 max-w-[calc(100%-42px)] px-4 py-3 rounded-2xl text-[13.5px] sm:text-sm font-normal leading-relaxed border shadow-xs break-words [overflow-wrap:anywhere] [word-break:break-word]"
+              <div class="flex-1 min-w-0 max-w-[calc(100%-42px)] px-4 py-3 rounded-2xl text-[15px] sm:text-[15.5px] font-normal leading-relaxed border shadow-xs break-words [overflow-wrap:anywhere] [word-break:break-word]"
                    [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 text-neutral-100 rounded-bl-xs' : 'bg-neutral-100 border-neutral-200/70 text-neutral-900 rounded-bl-xs'"
                    [innerHTML]="formatCopilotMessage(msg.content)">
               </div>
@@ -3554,7 +3539,7 @@
               name="copilotInput"
               rows="1"
               placeholder="Escribe tu mensaje..."
-              class="flex-1 bg-transparent border-none px-2 py-1 text-xs sm:text-sm outline-none focus:outline-none focus:ring-0 disabled:opacity-50 resize-none max-h-36 leading-relaxed my-0 transition-all duration-150"
+              class="flex-1 bg-transparent border-none px-2 py-1 text-sm sm:text-[15px] outline-none focus:outline-none focus:ring-0 disabled:opacity-50 resize-none max-h-36 leading-relaxed my-0 transition-all duration-150"
               [ngClass]="isDark ? 'text-white placeholder:text-neutral-500' : 'text-neutral-900 placeholder:text-neutral-400'"
             ></textarea>
             <button 
