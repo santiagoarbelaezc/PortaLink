@@ -3680,7 +3680,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
       .replace(/&quot;/g, '"')
       .replace(/&#39;/g, "'");
 
-    // 1. Extraer bloques de código (```lang ... ```)
+    // 1. Extraer bloques de código (```lang ... ```) - Escala tipográfica adaptada (13px - 14.5px)
     text = text.replace(/```([a-zA-Z0-9_\-+]*)\n?([\s\S]*?)```/g, (_match, lang, code) => {
       const trimmedLang = (lang || '').trim().toLowerCase();
       const displayLang = trimmedLang || 'código';
@@ -3704,7 +3704,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
       return `\n\n${placeholder}\n\n`;
     });
 
-    // 2. Extraer código inline (`código`)
+    // 2. Extraer código inline (`código`) - Escala tipográfica 13px
     text = text.replace(/`([^`\n]+)`/g, (_match, inline) => {
       const escapedInline = this.escapeCopilotHtml(inline);
       const inlineHtml = `<code class="px-1.5 py-0.5 mx-0.5 rounded-md text-[13px] font-mono font-medium ${inlineCodeClass}">${escapedInline}</code>`;

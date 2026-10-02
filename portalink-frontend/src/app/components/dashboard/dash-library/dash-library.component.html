@@ -3140,7 +3140,7 @@
          [style.right]="isCopilotFullscreen ? '0px' : ((!isMobileScreen && !isCopilotCustomPositioned) ? '1.75rem' : 'auto')"
          [style.willChange]="(isResizingCopilot || isDraggingCopilot) ? 'width, height, left, top' : null">
       
-      <!-- LÍNEA BLANCA INDICADORA EN LA PARTE SUPERIOR AL CAMBIAR TAMAÑO (SIN TEXTO NI COLOR AZUL) -->
+      <!-- INDICADOR VISUAL: Línea blanca luminosa superior activa durante el redimensionamiento (sin texto HUD ni color azul) -->
       <div *ngIf="isResizingCopilot && !isCopilotFullscreen" 
            class="absolute -top-[1px] inset-x-8 h-[2px] bg-white rounded-full shadow-[0_0_12px_rgba(255,255,255,0.95)] z-[60] pointer-events-none">
       </div>
@@ -3152,6 +3152,7 @@
            (click)="toggleCopilotHeightPreset()"
            title="Arrastra para cambiar la altura o haz clic para alternar tamaño"
            class="hidden md:flex absolute -top-3.5 left-1/2 -translate-x-1/2 z-50 items-center justify-center cursor-ns-resize select-none group/height-resizer p-1">
+        <!-- Manija de altura: feedback en blanco neutro al encajar magnéticamente -->
         <div class="h-5 w-12 rounded-full border shadow-lg flex items-center justify-center cursor-ns-resize group-hover/height-resizer:scale-110 active:scale-95"
              [class.!transition-none]="isResizingCopilot"
              [class.transition-all]="!isResizingCopilot"
@@ -3179,6 +3180,7 @@
            (click)="toggleCopilotWidthPreset()"
            title="Arrastra para cambiar el ancho o haz clic para alternar tamaño"
            class="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-50 items-center justify-center cursor-ew-resize select-none group/resizer p-1">
+        <!-- Manija de ancho: feedback en blanco neutro al encajar magnéticamente -->
         <div class="w-6 h-12 rounded-full border shadow-lg flex items-center justify-center cursor-ew-resize group-hover/resizer:scale-110 active:scale-95"
              [class.!transition-none]="isResizingCopilot"
              [class.transition-all]="!isResizingCopilot"
@@ -3473,7 +3475,7 @@
         </div>
       </div>
 
-      <!-- ÁREA DE MENSAJES CON SCROLL Y BURBUJAS ESTILO HOME -->
+      <!-- ÁREA DE MENSAJES CON SCROLL Y BURBUJAS (Tipografía optimizada a 15px - 15.5px para lectura más cómoda) -->
       <div #copilotMessagesContainer class="flex-1 p-3.5 sm:p-5 overflow-y-auto overflow-x-hidden space-y-4 text-[15px] sm:text-[15.5px] font-sans w-full max-w-full min-w-0"
            [ngClass]="isDark ? 'bg-[#121215]' : 'bg-white'"
            (click)="handleCopilotContainerClick($event)">
@@ -3483,13 +3485,13 @@
              [class.mx-auto]="isCopilotFullscreen">
           <div *ngFor="let msg of copilotMessages" class="flex flex-col w-full min-w-0 max-w-full" [ngClass]="msg.role === 'user' ? 'items-end' : 'items-start'">
             
-            <!-- MENSAJE USUARIO -->
+            <!-- MENSAJE USUARIO (Texto aumentado a 15px-15.5px) -->
             <div *ngIf="msg.role === 'user'" class="max-w-[85%] px-4 py-3 rounded-2xl font-medium text-[15px] sm:text-[15.5px] leading-relaxed shadow-xs break-words [overflow-wrap:anywhere]"
                  [ngClass]="isDark ? 'bg-neutral-800 text-white rounded-br-xs border border-neutral-700' : 'bg-[#09090b] text-white rounded-br-xs'">
               {{ msg.content }}
             </div>
 
-            <!-- MENSAJE ASISTENTE ROTBOT -->
+            <!-- MENSAJE ASISTENTE ROTBOT (Texto aumentado a 15px-15.5px) -->
             <div *ngIf="msg.role === 'assistant'" class="flex items-start gap-2.5 max-w-full w-full min-w-0">
               <div class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center p-1 border mt-0.5"
                    [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700' : 'bg-neutral-100 border-neutral-200'">
@@ -3521,12 +3523,13 @@
 
       </div>
 
-      <!-- ÁREA DE ENTRADA / INPUT BAR MULTILÍNEA CON SHIFT + ENTER -->
+      <!-- ÁREA DE ENTRADA / INPUT BAR MULTILÍNEA CON SHIFT + ENTER (Tipografía de entrada ampliada a 14px-15px) -->
       <div class="px-3.5 py-2.5 border-t flex-shrink-0"
            [ngClass]="isDark ? 'border-neutral-800 bg-[#18181c]' : 'border-neutral-100 bg-white'">
         <div [class.max-w-4xl]="isCopilotFullscreen" [class.mx-auto]="isCopilotFullscreen">
           <form (submit)="$event.preventDefault(); sendCopilotMessage()" class="relative flex items-end gap-2 border rounded-2xl p-2 sm:p-2.5 transition-colors shadow-xs"
                 [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 focus-within:border-neutral-400' : 'bg-neutral-50 border-neutral-300/80 focus-within:border-neutral-900'">
+            <!-- Textarea con tamaño de texto 14px-15px -->
             <textarea 
               #copilotTextarea
               [(ngModel)]="copilotInput"
