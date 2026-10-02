@@ -3103,7 +3103,10 @@
   <!-- ══════════════════════════════════════
        ROTBOT IA COPILOTO FLOTANTE DE BIBLIOTECA
   ══════════════════════════════════════ -->
-  <div class="fixed bottom-0 md:bottom-2 inset-x-0 md:inset-x-auto md:-right-6 sm:-right-8 z-[300] pointer-events-none">
+  <div class="pointer-events-none"
+       [ngClass]="isCopilotFullscreen 
+         ? 'fixed inset-0 z-[900]' 
+         : 'fixed bottom-0 md:bottom-2 inset-x-0 md:inset-x-auto md:-right-6 sm:-right-8 z-[300]'">
     
     <!-- BOTÓN APERTURA ROTBOT PERSONAJE (MÁS GRANDE Y EFECTO ULTRA SUTIL) - SOLO DESKTOP -->
     <button *ngIf="!isCopilotOpen" 
@@ -3117,19 +3120,49 @@
 
     <!-- PANEL FLOTANTE DE CHAT ROTBOT IA (BOTTOM SHEET EN MÓVIL, ARRASTRABLE EN DESKTOP) -->
     <div *ngIf="isCopilotOpen" 
-         class="copilot-panel chat-panel pointer-events-auto fixed inset-x-0 bottom-0 md:inset-x-auto md:bottom-auto w-full md:w-auto max-w-full md:max-w-[94vw] h-[80vh] md:h-[575px] max-h-[calc(100vh-70px)] overflow-visible rounded-t-[32px] md:rounded-[32px] border border-b-0 md:border-b shadow-[0_30px_70px_rgba(0,0,0,0.22)] font-sans flex flex-col z-[300] animate-slide-up md:animate-fade-in"
+         class="copilot-panel chat-panel pointer-events-auto font-sans flex flex-col"
+         [class.is-fullscreen]="isCopilotFullscreen"
          [class.transition-none]="isDraggingCopilot || isResizingCopilot"
          [class.transition-all]="!isDraggingCopilot && !isResizingCopilot"
-         [ngClass]="isDark ? 'bg-[#121215] border-neutral-800 text-white' : 'bg-white border-neutral-200/90 text-neutral-900'"
-         [style.width.px]="!isMobileScreen ? copilotWidth : null"
-         [style.left]="!isMobileScreen ? (isCopilotCustomPositioned ? (copilotPos.x + 'px') : null) : null"
-         [style.top]="!isMobileScreen ? (isCopilotCustomPositioned ? (copilotPos.y + 'px') : null) : null"
-         [style.bottom]="(!isMobileScreen && !isCopilotCustomPositioned) ? '0.75rem' : null"
-         [style.right]="(!isMobileScreen && !isCopilotCustomPositioned) ? '1.75rem' : 'auto'">
+         [ngClass]="[
+           isCopilotFullscreen 
+             ? 'fixed inset-0 w-screen h-screen max-w-none max-h-none rounded-none border-0 shadow-2xl z-[900]' 
+             : 'fixed inset-x-0 bottom-0 md:inset-x-auto md:bottom-auto w-full md:w-auto max-w-full md:max-w-[94vw] h-[80vh] max-h-[calc(100vh-30px)] overflow-visible rounded-t-[32px] md:rounded-[32px] border border-b-0 md:border-b shadow-[0_30px_70px_rgba(0,0,0,0.22)] z-[300] animate-slide-up md:animate-fade-in',
+           isDark ? 'bg-[#121215] border-neutral-800 text-white' : 'bg-white border-neutral-200/90 text-neutral-900'
+         ]"
+         [style.width]="isCopilotFullscreen ? '100vw' : (!isMobileScreen ? (copilotWidth + 'px') : null)"
+         [style.height]="isCopilotFullscreen ? '100vh' : (!isMobileScreen ? (copilotHeight + 'px') : null)"
+         [style.left]="isCopilotFullscreen ? '0px' : (!isMobileScreen ? (isCopilotCustomPositioned ? (copilotPos.x + 'px') : null) : null)"
+         [style.top]="isCopilotFullscreen ? '0px' : (!isMobileScreen ? (isCopilotCustomPositioned ? (copilotPos.y + 'px') : null) : null)"
+         [style.bottom]="isCopilotFullscreen ? '0px' : ((!isMobileScreen && !isCopilotCustomPositioned) ? '0.75rem' : null)"
+         [style.right]="isCopilotFullscreen ? '0px' : ((!isMobileScreen && !isCopilotCustomPositioned) ? '1.75rem' : 'auto')">
       
-      <!-- BOTÓN / MANIJA LATERAL PARA ESTIRAR A LO ANCHO (SOLO DESKTOP) -->
-      <div (mousedown)="startResizeCopilot($event)"
-           (touchstart)="startResizeCopilot($event)"
+      <!-- BOTÓN / MANIJA SUPERIOR PARA ESTIRAR A LO ALTO (SOLO DESKTOP Y NO FULLSCREEN) -->
+      <div *ngIf="!isCopilotFullscreen"
+           (mousedown)="startResizeCopilot($event, 'height')"
+           (touchstart)="startResizeCopilot($event, 'height')"
+           (click)="toggleCopilotHeightPreset()"
+           title="Arrastra para cambiar la altura o haz clic para alternar tamaño"
+           class="hidden md:flex absolute -top-3.5 left-1/2 -translate-x-1/2 z-50 items-center justify-center cursor-ns-resize select-none group/height-resizer p-1">
+        <div class="h-5 w-12 rounded-full border shadow-lg flex items-center justify-center transition-all duration-200 group-hover/height-resizer:scale-110 active:scale-95 cursor-ns-resize"
+             [ngClass]="isDark ? 'bg-[#18181c] border-neutral-700 text-neutral-400 group-hover/height-resizer:text-white group-hover/height-resizer:border-neutral-500 group-hover/height-resizer:shadow-black/40' : 'bg-white border-neutral-300 text-neutral-600 group-hover/height-resizer:text-black group-hover/height-resizer:border-neutral-500 group-hover/height-resizer:shadow-neutral-400/20'">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- BORDE SUPERIOR DE AGARRE PARA REDIMENSIONAR ALTURA -->
+      <div *ngIf="!isCopilotFullscreen"
+           (mousedown)="startResizeCopilot($event, 'height')"
+           (touchstart)="startResizeCopilot($event, 'height')"
+           class="hidden md:block absolute -top-1.5 inset-x-8 h-3 cursor-ns-resize z-40 select-none">
+      </div>
+
+      <!-- BOTÓN / MANIJA LATERAL PARA ESTIRAR A LO ANCHO (SOLO DESKTOP Y NO FULLSCREEN) -->
+      <div *ngIf="!isCopilotFullscreen"
+           (mousedown)="startResizeCopilot($event, 'width')"
+           (touchstart)="startResizeCopilot($event, 'width')"
            (click)="toggleCopilotWidthPreset()"
            title="Arrastra para cambiar el ancho o haz clic para alternar tamaño"
            class="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-50 items-center justify-center cursor-ew-resize select-none group/resizer p-1">
@@ -3141,17 +3174,37 @@
         </div>
       </div>
 
+      <!-- BORDE LATERAL DE AGARRE PARA REDIMENSIONAR ANCHO -->
+      <div *ngIf="!isCopilotFullscreen"
+           (mousedown)="startResizeCopilot($event, 'width')"
+           (touchstart)="startResizeCopilot($event, 'width')"
+           class="hidden md:block absolute -left-1.5 inset-y-8 w-3 cursor-ew-resize z-40 select-none">
+      </div>
+
+      <!-- ESQUINA SUPERIOR IZQUIERDA PARA REDIMENSIONAR LIBREMENTE ANCHO Y ALTO -->
+      <div *ngIf="!isCopilotFullscreen"
+           (mousedown)="startResizeCopilot($event, 'both')"
+           (touchstart)="startResizeCopilot($event, 'both')"
+           title="Arrastra para redimensionar tamaño libremente"
+           class="hidden md:flex absolute -top-2 -left-2 w-5 h-5 z-50 items-center justify-center cursor-nwse-resize select-none group/corner-resizer">
+        <div class="w-2 h-2 rounded-full border transition-all duration-150 group-hover/corner-resizer:scale-150 active:scale-125"
+             [ngClass]="isDark ? 'bg-neutral-500 border-neutral-400 group-hover/corner-resizer:bg-white' : 'bg-neutral-400 border-neutral-300 group-hover/corner-resizer:bg-black'">
+        </div>
+      </div>
+
       <!-- HEADER DEL CHAT (ZONA ARRASTRABLE EN DESKTOP) -->
-      <div (mousedown)="startDragCopilot($event)"
-           (touchstart)="startDragCopilot($event)"
-           class="chat-header flex flex-col border-b px-5 sm:px-6 py-3 relative overflow-hidden flex-shrink-0 cursor-grab active:cursor-grabbing select-none rounded-t-[32px]"
-           [style.cursor]="isDraggingCopilot ? 'grabbing' : 'grab'"
+      <div (mousedown)="!isCopilotFullscreen && startDragCopilot($event)"
+           (touchstart)="!isCopilotFullscreen && startDragCopilot($event)"
+           class="chat-header flex flex-col border-b px-5 sm:px-6 py-3 relative overflow-hidden flex-shrink-0 select-none"
+           [class.rounded-t-[32px]]="!isCopilotFullscreen"
+           [style.cursor]="isCopilotFullscreen ? 'default' : (isDraggingCopilot ? 'grabbing' : 'grab')"
            [ngClass]="isDark ? 'border-neutral-800 bg-[#18181c]/95 backdrop-blur-xl' : 'border-neutral-100 bg-white/95 backdrop-blur-xl'">
         
         <!-- PULL DRAG HANDLE PARA MÓVIL (ESTILO IOS BOTTOM SHEET) -->
-        <div class="w-10 h-1.5 rounded-full bg-neutral-600/40 mx-auto -mt-0.5 mb-2 md:hidden shrink-0"></div>
+        <div *ngIf="!isCopilotFullscreen" class="w-10 h-1.5 rounded-full bg-neutral-600/40 mx-auto -mt-0.5 mb-2 md:hidden shrink-0"></div>
 
-        <div class="flex items-center justify-between w-full">
+        <div class="flex items-center justify-between w-full"
+             [class.max-w-5xl]="isCopilotFullscreen" [class.mx-auto]="isCopilotFullscreen">
           <div class="flex items-center gap-3 relative z-10 min-w-0 pointer-events-none select-none">
             <div class="w-9 h-9 rounded-2xl border flex items-center justify-center p-1 shadow-xs shrink-0"
                  [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700' : 'bg-neutral-100 border-neutral-200/80'">
@@ -3167,6 +3220,10 @@
                       [ngClass]="isDark ? 'bg-neutral-800 text-neutral-300 border-neutral-700' : 'bg-neutral-100 text-neutral-700 border-neutral-300'">
                   <span class="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-pulse shrink-0"></span>
                   <span class="truncate">Copilot Apuntes • {{ selectedPage?.title || 'Biblioteca' }}</span>
+                </span>
+                <span *ngIf="isCopilotFullscreen" class="hidden sm:inline-flex px-1.5 py-0.5 rounded-md text-[9px] font-mono border"
+                      [ngClass]="isDark ? 'bg-neutral-800 text-neutral-400 border-neutral-700' : 'bg-neutral-100 text-neutral-500 border-neutral-200'">
+                  Esc para salir
                 </span>
               </div>
             </div>
@@ -3189,8 +3246,23 @@
               <span class="text-[11px]">Lector IA</span>
             </button>
 
-            <!-- Toggle Ancho Preset Button (Solo Desktop) -->
-            <button (click)="toggleCopilotWidthPreset()" 
+            <!-- Toggle Altura Preset Button (Solo Desktop y no fullscreen) -->
+            <button *ngIf="!isCopilotFullscreen"
+                    (click)="toggleCopilotHeightPreset()" 
+                    class="hidden md:flex w-8 h-8 rounded-full border-none cursor-pointer items-center justify-center transition-all"
+                    [ngClass]="isDark ? 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-900 hover:text-white'"
+                    [title]="copilotHeight > 620 ? 'Reducir altura (440px)' : 'Aumentar altura'">
+              <svg *ngIf="copilotHeight <= 620" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="18 15 12 9 6 15"></polyline>
+              </svg>
+              <svg *ngIf="copilotHeight > 620" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+
+            <!-- Toggle Ancho Preset Button (Solo Desktop y no fullscreen) -->
+            <button *ngIf="!isCopilotFullscreen"
+                    (click)="toggleCopilotWidthPreset()" 
                     class="hidden md:flex w-8 h-8 rounded-full border-none cursor-pointer items-center justify-center transition-all"
                     [ngClass]="isDark ? 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-900 hover:text-white'"
                     [title]="copilotWidth > 500 ? 'Reducir ancho (400px)' : 'Expandir ancho'">
@@ -3205,6 +3277,21 @@
                 <polyline points="20 10 14 10 14 4"></polyline>
                 <line x1="14" y1="10" x2="21" y2="3"></line>
                 <line x1="10" y1="14" x2="3" y2="21"></line>
+              </svg>
+            </button>
+
+            <!-- Botón Pantalla Completa (Fullscreen) -->
+            <button (click)="toggleCopilotFullscreen()" 
+                    class="w-8 h-8 rounded-full border-none cursor-pointer flex items-center justify-center transition-all hover:scale-105 active:scale-95"
+                    [ngClass]="isCopilotFullscreen 
+                      ? (isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-neutral-800') 
+                      : (isDark ? 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-900 hover:text-white')"
+                    [title]="isCopilotFullscreen ? 'Salir de pantalla completa (Esc)' : 'Pantalla completa'">
+              <svg *ngIf="!isCopilotFullscreen" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+              </svg>
+              <svg *ngIf="isCopilotFullscreen" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
               </svg>
             </button>
 
@@ -3259,40 +3346,44 @@
            [ngClass]="isDark ? 'bg-[#121215]' : 'bg-white'"
            (click)="handleCopilotContainerClick($event)">
         
-        <div *ngFor="let msg of copilotMessages" class="flex flex-col w-full min-w-0 max-w-full" [ngClass]="msg.role === 'user' ? 'items-end' : 'items-start'">
-          
-          <!-- MENSAJE USUARIO -->
-          <div *ngIf="msg.role === 'user'" class="max-w-[85%] px-4 py-3 rounded-2xl font-medium text-[13.5px] sm:text-sm leading-relaxed shadow-xs break-words [overflow-wrap:anywhere]"
-               [ngClass]="isDark ? 'bg-neutral-800 text-white rounded-br-xs border border-neutral-700' : 'bg-[#09090b] text-white rounded-br-xs'">
-            {{ msg.content }}
+        <div class="w-full flex flex-col space-y-4"
+             [class.max-w-4xl]="isCopilotFullscreen"
+             [class.mx-auto]="isCopilotFullscreen">
+          <div *ngFor="let msg of copilotMessages" class="flex flex-col w-full min-w-0 max-w-full" [ngClass]="msg.role === 'user' ? 'items-end' : 'items-start'">
+            
+            <!-- MENSAJE USUARIO -->
+            <div *ngIf="msg.role === 'user'" class="max-w-[85%] px-4 py-3 rounded-2xl font-medium text-[13.5px] sm:text-sm leading-relaxed shadow-xs break-words [overflow-wrap:anywhere]"
+                 [ngClass]="isDark ? 'bg-neutral-800 text-white rounded-br-xs border border-neutral-700' : 'bg-[#09090b] text-white rounded-br-xs'">
+              {{ msg.content }}
+            </div>
+
+            <!-- MENSAJE ASISTENTE ROTBOT -->
+            <div *ngIf="msg.role === 'assistant'" class="flex items-start gap-2.5 max-w-full w-full min-w-0">
+              <div class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center p-1 border mt-0.5"
+                   [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700' : 'bg-neutral-100 border-neutral-200'">
+                <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
+              </div>
+
+              <div class="flex-1 min-w-0 max-w-[calc(100%-42px)] px-4 py-3 rounded-2xl text-[13.5px] sm:text-sm font-normal leading-relaxed border shadow-xs break-words [overflow-wrap:anywhere] [word-break:break-word]"
+                   [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 text-neutral-100 rounded-bl-xs' : 'bg-neutral-100 border-neutral-200/70 text-neutral-900 rounded-bl-xs'"
+                   [innerHTML]="formatCopilotMessage(msg.content)">
+              </div>
+            </div>
+
           </div>
 
-          <!-- MENSAJE ASISTENTE ROTBOT -->
-          <div *ngIf="msg.role === 'assistant'" class="flex items-start gap-2.5 max-w-full w-full min-w-0">
-            <div class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center p-1 border mt-0.5"
+          <!-- TYPING ANIMATED DOTS -->
+          <div *ngIf="isCopilotLoading" class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center p-1 border"
                  [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700' : 'bg-neutral-100 border-neutral-200'">
               <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
             </div>
-
-            <div class="flex-1 min-w-0 max-w-[calc(100%-42px)] px-4 py-3 rounded-2xl text-[13.5px] sm:text-sm font-normal leading-relaxed border shadow-xs break-words [overflow-wrap:anywhere] [word-break:break-word]"
-                 [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 text-neutral-100 rounded-bl-xs' : 'bg-neutral-100 border-neutral-200/70 text-neutral-900 rounded-bl-xs'"
-                 [innerHTML]="formatCopilotMessage(msg.content)">
+            <div class="px-4 py-3 rounded-2xl flex items-center gap-1.5 border"
+                 [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-neutral-100 border-neutral-200/70 text-neutral-900'">
+              <div class="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-bounce"></div>
+              <div class="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-bounce [animation-delay:0.2s]"></div>
+              <div class="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-bounce [animation-delay:0.4s]"></div>
             </div>
-          </div>
-
-        </div>
-
-        <!-- TYPING ANIMATED DOTS -->
-        <div *ngIf="isCopilotLoading" class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center p-1 border"
-               [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700' : 'bg-neutral-100 border-neutral-200'">
-            <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
-          </div>
-          <div class="px-4 py-3 rounded-2xl flex items-center gap-1.5 border"
-               [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-neutral-100 border-neutral-200/70 text-neutral-900'">
-            <div class="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-bounce"></div>
-            <div class="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-bounce [animation-delay:0.2s]"></div>
-            <div class="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-bounce [animation-delay:0.4s]"></div>
           </div>
         </div>
 
@@ -3301,40 +3392,42 @@
       <!-- ÁREA DE ENTRADA / INPUT BAR MULTILÍNEA CON SHIFT + ENTER -->
       <div class="px-3.5 py-2.5 border-t flex-shrink-0"
            [ngClass]="isDark ? 'border-neutral-800 bg-[#18181c]' : 'border-neutral-100 bg-white'">
-        <form (submit)="$event.preventDefault(); sendCopilotMessage()" class="relative flex items-end gap-2 border rounded-2xl p-2 sm:p-2.5 transition-colors shadow-xs"
-              [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 focus-within:border-neutral-400' : 'bg-neutral-50 border-neutral-300/80 focus-within:border-neutral-900'">
-          <textarea 
-            #copilotTextarea
-            [(ngModel)]="copilotInput"
-            [disabled]="isCopilotLoading"
-            (keydown)="onCopilotKeydown($event)"
-            (input)="adjustCopilotTextareaHeight($event)"
-            spellcheck="false"
-            autocorrect="off"
-            autocapitalize="off"
-            name="copilotInput"
-            rows="1"
-            placeholder="Escribe tu mensaje..."
-            class="flex-1 bg-transparent border-none px-2 py-1 text-xs sm:text-sm outline-none focus:outline-none focus:ring-0 disabled:opacity-50 resize-none max-h-36 leading-relaxed my-0 transition-all duration-150"
-            [ngClass]="isDark ? 'text-white placeholder:text-neutral-500' : 'text-neutral-900 placeholder:text-neutral-400'"
-          ></textarea>
-          <button 
-            type="button"
-            (click)="sendCopilotMessage()"
-            [disabled]="!copilotInput.trim() || isCopilotLoading"
-            class="w-8 h-8 rounded-full flex items-center justify-center transition-all disabled:opacity-30 cursor-pointer flex-shrink-0 border-none shadow-sm mb-0.5"
-            [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="22" y1="2" x2="11" y2="13"></line>
-              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-            </svg>
-          </button>
-        </form>
+        <div [class.max-w-4xl]="isCopilotFullscreen" [class.mx-auto]="isCopilotFullscreen">
+          <form (submit)="$event.preventDefault(); sendCopilotMessage()" class="relative flex items-end gap-2 border rounded-2xl p-2 sm:p-2.5 transition-colors shadow-xs"
+                [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 focus-within:border-neutral-400' : 'bg-neutral-50 border-neutral-300/80 focus-within:border-neutral-900'">
+            <textarea 
+              #copilotTextarea
+              [(ngModel)]="copilotInput"
+              [disabled]="isCopilotLoading"
+              (keydown)="onCopilotKeydown($event)"
+              (input)="adjustCopilotTextareaHeight($event)"
+              spellcheck="false"
+              autocorrect="off"
+              autocapitalize="off"
+              name="copilotInput"
+              rows="1"
+              placeholder="Escribe tu mensaje..."
+              class="flex-1 bg-transparent border-none px-2 py-1 text-xs sm:text-sm outline-none focus:outline-none focus:ring-0 disabled:opacity-50 resize-none max-h-36 leading-relaxed my-0 transition-all duration-150"
+              [ngClass]="isDark ? 'text-white placeholder:text-neutral-500' : 'text-neutral-900 placeholder:text-neutral-400'"
+            ></textarea>
+            <button 
+              type="button"
+              (click)="sendCopilotMessage()"
+              [disabled]="!copilotInput.trim() || isCopilotLoading"
+              class="w-8 h-8 rounded-full flex items-center justify-center transition-all disabled:opacity-30 cursor-pointer flex-shrink-0 border-none shadow-sm mb-0.5"
+              [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </form>
 
-        <div class="flex items-center justify-between mt-1.5 px-1 text-[10px] font-sans font-medium opacity-50">
-          <span>Shift + Enter para salto de línea</span>
-          <span>Powered by Google Gemini ⚡</span>
+          <div class="flex items-center justify-between mt-1.5 px-1 text-[10px] font-sans font-medium opacity-50">
+            <span>Shift + Enter para salto de línea</span>
+            <span>Powered by Google Gemini ⚡</span>
+          </div>
         </div>
       </div>
 

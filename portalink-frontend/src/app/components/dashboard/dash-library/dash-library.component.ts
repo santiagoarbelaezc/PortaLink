@@ -169,11 +169,14 @@ export class ContentEditableDirective implements OnChanges {
       animation: voiceBar 0.45s ease-in-out infinite alternate;
     }
     .chat-header {
-      cursor: grab !important;
+      cursor: grab;
     }
     .chat-header:active,
     body.is-chat-dragging .chat-header {
-      cursor: grabbing !important;
+      cursor: grabbing;
+    }
+    .copilot-panel.is-fullscreen .chat-header {
+      cursor: default !important;
     }
   `]
 })
@@ -791,12 +794,18 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @HostListener('window:keydown', ['$event'])
   onGlobalTypeMenuKeydown(event: KeyboardEvent) {
-    // Cerrar lightbox de imagen con tecla Escape
+    // Cerrar lightbox de imagen o salir de pantalla completa del chat con tecla Escape
     if (event.key === 'Escape' || event.key === 'Esc') {
       if (this.lightboxImageUrl) {
         event.preventDefault();
         event.stopPropagation();
         this.closeImageLightbox();
+        return;
+      }
+      if (this.isCopilotFullscreen) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.toggleCopilotFullscreen();
         return;
       }
     }
@@ -1005,8 +1014,15 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
       const savedWidth = localStorage.getItem('portalink_copilot_width');
       if (savedWidth) {
         const parsedW = parseInt(savedWidth, 10);
-        if (parsedW >= 360 && parsedW <= 1000) {
+        if (parsedW >= 360 && parsedW <= 1100) {
           this.copilotWidth = parsedW;
+        }
+      }
+      const savedHeight = localStorage.getItem('portalink_copilot_height');
+      if (savedHeight) {
+        const parsedH = parseInt(savedHeight, 10);
+        if (parsedH >= 340 && parsedH <= 1200) {
+          this.copilotHeight = parsedH;
         }
       }
     } catch {}
@@ -3545,6 +3561,8 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isCopilotCustomPositioned = false;
       }
       this.scrollToBottomCopilot();
+    } else {
+      this.isCopilotFullscreen = false;
     }
   }
 
@@ -3910,20 +3928,39 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // ── COPILOT DRAG & RESIZE LOGIC ─────────────────────────────
   copilotWidth = 400;
+  copilotHeight = 575;
+  isCopilotFullscreen = false;
   isDraggingCopilot = false;
   isResizingCopilot = false;
+  copilotResizeDir: 'width' | 'height' | 'both' = 'width';
   copilotPos = { x: 0, y: 0 };
   isCopilotCustomPositioned = false;
   private dragStartOffset = { x: 0, y: 0 };
   private resizeStartX = 0;
+  private resizeStartY = 0;
   private resizeStartWidth = 400;
+  private resizeStartHeight = 575;
+  private resizeStartPosY = 0;
 
-  startResizeCopilot(event: MouseEvent | TouchEvent) {
+  startResizeCopilot(event: MouseEvent | TouchEvent, dir: 'width' | 'height' | 'both' = 'width') {
     event.stopPropagation();
     event.preventDefault();
     this.isResizingCopilot = true;
+    this.copilotResizeDir = dir;
     this.resizeStartX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+    this.resizeStartY = 'touches' in event ? event.touches[0].clientY : event.clientY;
     this.resizeStartWidth = this.copilotWidth;
+    this.resizeStartHeight = this.copilotHeight;
+    this.resizeStartPosY = this.copilotPos.y;
+    document.body.classList.add('is-chat-dragging');
+    if (dir === 'height') {
+      document.body.style.cursor = 'ns-resize';
+    } else if (dir === 'both') {
+      document.body.style.cursor = 'nwse-resize';
+    } else {
+      document.body.style.cursor = 'ew-resize';
+    }
+    document.body.style.userSelect = 'none';
   }
 
   toggleCopilotWidthPreset() {
@@ -3937,6 +3974,24 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       localStorage.setItem('portalink_copilot_width', String(this.copilotWidth));
     } catch {}
+  }
+
+  toggleCopilotHeightPreset() {
+    if (this.copilotHeight < 520) {
+      this.copilotHeight = 670;
+    } else if (this.copilotHeight < 740) {
+      this.copilotHeight = Math.min(window.innerHeight - 80, 840);
+    } else {
+      this.copilotHeight = 440;
+    }
+    try {
+      localStorage.setItem('portalink_copilot_height', String(this.copilotHeight));
+    } catch {}
+  }
+
+  toggleCopilotFullscreen() {
+    this.isCopilotFullscreen = !this.isCopilotFullscreen;
+    this.scrollToBottomCopilot();
   }
 
   // ── LEFT READER DRAG LOGIC ─────────────────────────────
@@ -3973,7 +4028,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   startDragCopilot(event: MouseEvent | TouchEvent) {
-    if (this.isMobileScreen) return;
+    if (this.isMobileScreen || this.isCopilotFullscreen) return;
     const target = event.target as HTMLElement;
     if (target.closest('button')) return;
 
@@ -4004,14 +4059,36 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   onDragCopilotMove(event: MouseEvent | TouchEvent) {
     if (this.isResizingCopilot) {
       const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
-      const deltaX = this.resizeStartX - clientX;
-      const minW = 360;
-      const maxW = Math.min(window.innerWidth - 30, 920);
-      const newWidth = Math.max(minW, Math.min(this.resizeStartWidth + deltaX, maxW));
-      this.copilotWidth = newWidth;
-      try {
-        localStorage.setItem('portalink_copilot_width', String(newWidth));
-      } catch {}
+      const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
+
+      if (this.copilotResizeDir === 'width' || this.copilotResizeDir === 'both') {
+        const deltaX = this.resizeStartX - clientX;
+        const minW = 360;
+        const maxW = Math.min(window.innerWidth - 30, 1100);
+        const newWidth = Math.max(minW, Math.min(this.resizeStartWidth + deltaX, maxW));
+        this.copilotWidth = newWidth;
+        try {
+          localStorage.setItem('portalink_copilot_width', String(newWidth));
+        } catch {}
+      }
+
+      if (this.copilotResizeDir === 'height' || this.copilotResizeDir === 'both') {
+        const deltaY = this.resizeStartY - clientY;
+        const minH = 340;
+        const maxH = Math.max(minH, window.innerHeight - 50);
+        const newHeight = Math.max(minH, Math.min(this.resizeStartHeight + deltaY, maxH));
+        this.copilotHeight = newHeight;
+
+        if (this.isCopilotCustomPositioned) {
+          const heightDiff = newHeight - this.resizeStartHeight;
+          const newY = Math.max(12, this.resizeStartPosY - heightDiff);
+          this.copilotPos.y = newY;
+        }
+
+        try {
+          localStorage.setItem('portalink_copilot_height', String(newHeight));
+        } catch {}
+      }
       return;
     }
 
@@ -4044,7 +4121,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const chatEl = document.querySelector('.copilot-panel') as HTMLElement;
     const chatWidth = chatEl ? chatEl.offsetWidth : this.copilotWidth;
-    const chatHeight = chatEl ? chatEl.offsetHeight : 575;
+    const chatHeight = chatEl ? chatEl.offsetHeight : this.copilotHeight;
 
     const margin = 12;
     const maxX = window.innerWidth - chatWidth - margin;
