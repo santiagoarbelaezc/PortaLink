@@ -3943,6 +3943,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   private resizeStartWidth = 400;
   private resizeStartHeight = 575;
   private resizeStartPosY = 0;
+  private resizeRafId: number | null = null;
 
   // Presets recomendados para asistencia magnética
   readonly copilotWidthPresets = [
@@ -3992,10 +3993,16 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     return 'Libre';
   }
 
-  private snapToPoints(value: number, points: number[], threshold: number = 22): { value: number; isSnapped: boolean; snapPoint: number | null } {
+  private snapToPoints(value: number, points: number[], threshold: number = 20): { value: number; isSnapped: boolean; snapPoint: number | null } {
     for (const point of points) {
-      if (Math.abs(value - point) <= threshold) {
+      const dist = Math.abs(value - point);
+      if (dist <= 6) {
         return { value: point, isSnapped: true, snapPoint: point };
+      }
+      if (dist <= threshold) {
+        // Atracción magnética suave (amortiguación) para movimiento ultra fluido sin saltos
+        const attraction = point + (value - point) * 0.45;
+        return { value: Math.round(attraction), isSnapped: true, snapPoint: point };
       }
     }
     return { value, isSnapped: false, snapPoint: null };
@@ -4164,46 +4171,46 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
       const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
       const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
 
-      if (this.copilotResizeDir === 'width' || this.copilotResizeDir === 'both') {
-        const deltaX = this.resizeStartX - clientX;
-        const minW = 360;
-        const maxW = Math.min(window.innerWidth - 30, 1100);
-        const rawW = Math.max(minW, Math.min(this.resizeStartWidth + deltaX, maxW));
-        
-        // Asistencia magnética a presets
-        const snap = this.snapToPoints(rawW, this.copilotWidthPresets.map(p => p.width), 22);
-        this.copilotWidth = snap.value;
-        this.copilotResizeInfo.isSnappedWidth = snap.isSnapped;
-        this.copilotResizeInfo.activeSnapWidth = snap.snapPoint;
-
-        try {
-          localStorage.setItem('portalink_copilot_width', String(this.copilotWidth));
-        } catch {}
+      if (this.resizeRafId) {
+        cancelAnimationFrame(this.resizeRafId);
       }
 
-      if (this.copilotResizeDir === 'height' || this.copilotResizeDir === 'both') {
-        const deltaY = this.resizeStartY - clientY;
-        const minH = 340;
-        const maxH = Math.max(minH, window.innerHeight - 50);
-        const rawH = Math.max(minH, Math.min(this.resizeStartHeight + deltaY, maxH));
+      this.resizeRafId = requestAnimationFrame(() => {
+        if (!this.isResizingCopilot) return;
 
-        // Asistencia magnética a presets
-        const snap = this.snapToPoints(rawH, this.copilotHeightPresets.map(p => p.height), 22);
-        const newHeight = snap.value;
-        this.copilotHeight = newHeight;
-        this.copilotResizeInfo.isSnappedHeight = snap.isSnapped;
-        this.copilotResizeInfo.activeSnapHeight = snap.snapPoint;
-
-        if (this.isCopilotCustomPositioned) {
-          const heightDiff = newHeight - this.resizeStartHeight;
-          const newY = Math.max(12, this.resizeStartPosY - heightDiff);
-          this.copilotPos.y = newY;
+        if (this.copilotResizeDir === 'width' || this.copilotResizeDir === 'both') {
+          const deltaX = this.resizeStartX - clientX;
+          const minW = 360;
+          const maxW = Math.min(window.innerWidth - 30, 1100);
+          const rawW = Math.max(minW, Math.min(this.resizeStartWidth + deltaX, maxW));
+          
+          // Asistencia magnética fluida y suave
+          const snap = this.snapToPoints(rawW, this.copilotWidthPresets.map(p => p.width), 20);
+          this.copilotWidth = snap.value;
+          this.copilotResizeInfo.isSnappedWidth = snap.isSnapped;
+          this.copilotResizeInfo.activeSnapWidth = snap.snapPoint;
         }
 
-        try {
-          localStorage.setItem('portalink_copilot_height', String(newHeight));
-        } catch {}
-      }
+        if (this.copilotResizeDir === 'height' || this.copilotResizeDir === 'both') {
+          const deltaY = this.resizeStartY - clientY;
+          const minH = 340;
+          const maxH = Math.max(minH, window.innerHeight - 50);
+          const rawH = Math.max(minH, Math.min(this.resizeStartHeight + deltaY, maxH));
+
+          // Asistencia magnética fluida y suave
+          const snap = this.snapToPoints(rawH, this.copilotHeightPresets.map(p => p.height), 20);
+          const newHeight = snap.value;
+          this.copilotHeight = newHeight;
+          this.copilotResizeInfo.isSnappedHeight = snap.isSnapped;
+          this.copilotResizeInfo.activeSnapHeight = snap.snapPoint;
+
+          if (this.isCopilotCustomPositioned) {
+            const heightDiff = newHeight - this.resizeStartHeight;
+            const newY = Math.max(12, this.resizeStartPosY - heightDiff);
+            this.copilotPos.y = newY;
+          }
+        }
+      });
       return;
     }
 
@@ -4254,6 +4261,25 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostListener('window:mouseup')
   @HostListener('window:touchend')
   onDragCopilotEnd() {
+    if (this.resizeRafId) {
+      cancelAnimationFrame(this.resizeRafId);
+      this.resizeRafId = null;
+    }
+
+    if (this.isResizingCopilot) {
+      // Si soltó dentro de zona magnética, acoplar limpio al preset
+      if (this.copilotResizeInfo.activeSnapWidth) {
+        this.copilotWidth = this.copilotResizeInfo.activeSnapWidth;
+      }
+      if (this.copilotResizeInfo.activeSnapHeight) {
+        this.copilotHeight = this.copilotResizeInfo.activeSnapHeight;
+      }
+      try {
+        localStorage.setItem('portalink_copilot_width', String(this.copilotWidth));
+        localStorage.setItem('portalink_copilot_height', String(this.copilotHeight));
+      } catch {}
+    }
+
     this.isDraggingCopilot = false;
     this.isDraggingLeftReader = false;
     this.isResizingCopilot = false;

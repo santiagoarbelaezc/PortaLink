@@ -3104,9 +3104,10 @@
        ROTBOT IA COPILOTO FLOTANTE DE BIBLIOTECA
   ══════════════════════════════════════ -->
   <div class="pointer-events-none"
+       appTeleportToBody
        [ngClass]="isCopilotFullscreen 
-         ? 'fixed inset-0 z-[900]' 
-         : 'fixed bottom-0 md:bottom-2 inset-x-0 md:inset-x-auto md:-right-6 sm:-right-8 z-[300]'">
+         ? 'fixed inset-0 z-[1000]' 
+         : 'fixed bottom-0 md:bottom-2 inset-x-0 md:inset-x-auto md:-right-6 sm:-right-8 z-[1000]'">
     
     <!-- BOTÓN APERTURA ROTBOT PERSONAJE (MÁS GRANDE Y EFECTO ULTRA SUTIL) - SOLO DESKTOP -->
     <button *ngIf="!isCopilotOpen" 
@@ -3122,14 +3123,14 @@
     <div *ngIf="isCopilotOpen" 
          class="copilot-panel chat-panel pointer-events-auto font-sans flex flex-col"
          [class.is-fullscreen]="isCopilotFullscreen"
-         [class.transition-none]="isDraggingCopilot || isResizingCopilot"
+         [class.!transition-none]="isDraggingCopilot || isResizingCopilot"
          [class.transition-all]="!isDraggingCopilot && !isResizingCopilot"
          [class.ring-2]="isCopilotSnapped"
          [class.ring-cyan-500/40]="isCopilotSnapped"
          [ngClass]="[
            isCopilotFullscreen 
-             ? 'fixed inset-0 w-screen h-screen max-w-none max-h-none rounded-none border-0 shadow-2xl z-[900]' 
-             : 'fixed inset-x-0 bottom-0 md:inset-x-auto md:bottom-auto w-full md:w-auto max-w-full md:max-w-[94vw] h-[80vh] max-h-[calc(100vh-30px)] overflow-visible rounded-t-[32px] md:rounded-[32px] border border-b-0 md:border-b shadow-[0_30px_70px_rgba(0,0,0,0.22)] z-[300] animate-slide-up md:animate-fade-in',
+             ? 'fixed inset-0 w-screen h-screen max-w-none max-h-none rounded-none border-0 shadow-2xl z-[1000]' 
+             : 'fixed inset-x-0 bottom-0 md:inset-x-auto md:bottom-auto w-full md:w-auto max-w-full md:max-w-[94vw] h-[80vh] max-h-[calc(100vh-30px)] overflow-visible rounded-t-[32px] md:rounded-[32px] border border-b-0 md:border-b shadow-[0_30px_70px_rgba(0,0,0,0.22)] z-[1000] animate-slide-up md:animate-fade-in',
            isDark ? 'bg-[#121215] border-neutral-800 text-white' : 'bg-white border-neutral-200/90 text-neutral-900'
          ]"
          [style.width]="isCopilotFullscreen ? '100vw' : (!isMobileScreen ? (copilotWidth + 'px') : null)"
@@ -3137,7 +3138,8 @@
          [style.left]="isCopilotFullscreen ? '0px' : (!isMobileScreen ? (isCopilotCustomPositioned ? (copilotPos.x + 'px') : null) : null)"
          [style.top]="isCopilotFullscreen ? '0px' : (!isMobileScreen ? (isCopilotCustomPositioned ? (copilotPos.y + 'px') : null) : null)"
          [style.bottom]="isCopilotFullscreen ? '0px' : ((!isMobileScreen && !isCopilotCustomPositioned) ? '0.75rem' : null)"
-         [style.right]="isCopilotFullscreen ? '0px' : ((!isMobileScreen && !isCopilotCustomPositioned) ? '1.75rem' : 'auto')">
+         [style.right]="isCopilotFullscreen ? '0px' : ((!isMobileScreen && !isCopilotCustomPositioned) ? '1.75rem' : 'auto')"
+         [style.willChange]="(isResizingCopilot || isDraggingCopilot) ? 'width, height, left, top' : null">
       
       <!-- HUD FLOTANTE ASISTIDO DE DIMENSIONES (MAGNETISMO & PRESETS) -->
       <div *ngIf="isResizingCopilot" 
@@ -3165,7 +3167,10 @@
            (click)="toggleCopilotHeightPreset()"
            title="Arrastra para cambiar la altura o haz clic para alternar tamaño"
            class="hidden md:flex absolute -top-3.5 left-1/2 -translate-x-1/2 z-50 items-center justify-center cursor-ns-resize select-none group/height-resizer p-1">
-        <div class="h-5 w-12 rounded-full border shadow-lg flex items-center justify-center transition-all duration-200 group-hover/height-resizer:scale-110 active:scale-95 cursor-ns-resize"
+        <div class="h-5 w-12 rounded-full border shadow-lg flex items-center justify-center cursor-ns-resize group-hover/height-resizer:scale-110 active:scale-95"
+             [class.!transition-none]="isResizingCopilot"
+             [class.transition-all]="!isResizingCopilot"
+             [class.duration-200]="!isResizingCopilot"
              [ngClass]="copilotResizeInfo.isSnappedHeight
                ? 'bg-cyan-500 border-cyan-400 text-black ring-2 ring-cyan-400/40 shadow-cyan-500/30'
                : (isDark ? 'bg-[#18181c] border-neutral-700 text-neutral-400 group-hover/height-resizer:text-white group-hover/height-resizer:border-neutral-500 group-hover/height-resizer:shadow-black/40' : 'bg-white border-neutral-300 text-neutral-600 group-hover/height-resizer:text-black group-hover/height-resizer:border-neutral-500 group-hover/height-resizer:shadow-neutral-400/20')">
@@ -3189,7 +3194,10 @@
            (click)="toggleCopilotWidthPreset()"
            title="Arrastra para cambiar el ancho o haz clic para alternar tamaño"
            class="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-50 items-center justify-center cursor-ew-resize select-none group/resizer p-1">
-        <div class="w-6 h-12 rounded-full border shadow-lg flex items-center justify-center transition-all duration-200 group-hover/resizer:scale-110 active:scale-95 cursor-ew-resize"
+        <div class="w-6 h-12 rounded-full border shadow-lg flex items-center justify-center cursor-ew-resize group-hover/resizer:scale-110 active:scale-95"
+             [class.!transition-none]="isResizingCopilot"
+             [class.transition-all]="!isResizingCopilot"
+             [class.duration-200]="!isResizingCopilot"
              [ngClass]="copilotResizeInfo.isSnappedWidth
                ? 'bg-cyan-500 border-cyan-400 text-black ring-2 ring-cyan-400/40 shadow-cyan-500/30'
                : (isDark ? 'bg-[#18181c] border-neutral-700 text-neutral-400 group-hover/resizer:text-white group-hover/resizer:border-neutral-500 group-hover/resizer:shadow-black/40' : 'bg-white border-neutral-300 text-neutral-600 group-hover/resizer:text-black group-hover/resizer:border-neutral-500 group-hover/resizer:shadow-neutral-400/20')">
