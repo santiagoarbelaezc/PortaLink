@@ -223,6 +223,7 @@ interface Tab {
         <main class="flex-1 min-h-0 relative z-10 transition-all duration-300 no-scrollbar"
               [ngClass]="[
                 isDark ? 'bg-[#020204]' : 'bg-white',
+                /* Móvil: pb-[76px] evita que la barra fija inferior oculte el input de Rotbot */
                 activeTab === 'rotbot'
                   ? 'overflow-hidden flex flex-col justify-between items-center h-full p-2 sm:p-3 md:p-5 lg:p-6 pb-[76px] md:pb-6' 
                   : (activeTab === 'library' && isNotesView
