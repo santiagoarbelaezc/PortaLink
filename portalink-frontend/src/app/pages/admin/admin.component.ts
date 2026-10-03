@@ -387,7 +387,8 @@ interface Tab {
       </div>
 
       <!-- ══════════════════════════════════════
-           MOBILE BOTTOM NAV BAR (PERFECTLY CENTERED & BALANCED)
+           BARRA INFERIOR MÓVIL (4 botones limpios: Inicio, Biblioteca, Rotbot IA, Menú)
+           Mensajes se retiró de aquí y permanece en el drawer y sidebar.
       ══════════════════════════════════════ -->
       <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur-2xl select-none transition-all duration-300 shadow-[0_-4px_25px_rgba(0,0,0,0.08)]"
            [ngClass]="[
@@ -395,6 +396,7 @@ interface Tab {
              isNotesView ? 'hidden' : ''
            ]"
            style="padding-top: 6px; padding-bottom: max(10px, env(safe-area-inset-bottom, 10px));">
+        <!-- Grid de 4 columnas equilibradas para móvil -->
         <div class="grid grid-cols-4 items-center w-full max-w-md mx-auto">
 
           <!-- Inicio -->

@@ -27,7 +27,8 @@ interface ChatEntry {
       <!-- ═══════════════════════ ROTBOT COCKPIT (COMPACT STAGE ON MOBILE, 2-COL ON DESKTOP) ═══════════════════════ -->
       <div class="flex-1 flex flex-col lg:grid lg:grid-cols-12 gap-2.5 sm:gap-3.5 lg:gap-6 items-stretch min-h-0 h-full w-full overflow-hidden">
 
-        <!-- ─────────── 3D ROTBOT HEAD STAGE (Compact on mobile, Col 5 on desktop) ─────────── -->
+        <!-- ─────────── 3D ROTBOT HEAD STAGE (Compacto en móvil h-125px, Col 5 en desktop) ─────────── -->
+        <!-- Móvil: Altura e imagen ampliadas para presencia visual óptima sin quitar espacio al chat -->
         <div class="lg:col-span-5 shrink-0 h-[125px] sm:h-[155px] lg:h-full flex flex-col justify-center items-center rounded-2xl sm:rounded-[24px] lg:rounded-[28px] border overflow-hidden transition-all duration-300 shadow-md lg:shadow-xl relative"
              [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-neutral-900 border-neutral-800 text-white'">
           
@@ -46,7 +47,7 @@ interface ChatEntry {
                    alt="Rotbot Face" 
                    class="w-full h-full object-contain pointer-events-none drop-shadow-[0_16px_32px_rgba(0,0,0,0.85)] filter transition-transform duration-500 hover:scale-[1.02]" />
 
-              <!-- 2. Overlay Visor Eyes Container -->
+              <!-- 2. Overlay Visor Eyes Container (Ojos flotantes ampliados proporcionalmente) -->
               <div class="absolute top-[55.8%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[48%] h-[24%] flex items-center justify-center gap-[15%] pointer-events-none z-20">
 
                 <!-- LEFT EYE -->
