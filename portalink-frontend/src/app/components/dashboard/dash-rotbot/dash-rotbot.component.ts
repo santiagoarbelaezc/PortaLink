@@ -122,10 +122,11 @@ interface ChatEntry {
         </div>
 
         <!-- ─────────── CHAT CONSOLE (Col 7 on desktop, Flex-1 on mobile) ─────────── -->
+        <!-- Móvil: flex-1 permite que el chat use todo el alto restante de la pantalla -->
         <div class="lg:col-span-7 flex-1 min-h-0 h-full flex flex-col rounded-2xl sm:rounded-[24px] lg:rounded-[28px] border overflow-hidden transition-all duration-300 shadow-xl"
              [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
 
-          <!-- Chat Top Header (Monocromático Refinado y Limpio) -->
+          <!-- Chat Top Header (Limpio y sin badges que recorten el título en móvil) -->
           <div class="px-3.5 sm:px-5 py-2.5 sm:py-3.5 border-b flex items-center justify-between flex-shrink-0 relative z-30"
                [ngClass]="isDark ? 'border-neutral-800 bg-[#141419]/90 backdrop-blur-md' : 'border-neutral-200 bg-neutral-50/80'">
             <div class="flex items-center gap-2.5 min-w-0">
@@ -136,7 +137,7 @@ interface ChatEntry {
               </span>
             </div>
 
-            <!-- Single Action: Nuevo Chat (Reiniciar conversación) -->
+            <!-- Botón único: 'Nuevo Chat' para reiniciar conversación sin saturar la barra -->
             <button (click)="clearChat()" 
                     class="text-xs font-headline font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 px-3 py-1.5 rounded-xl border active:scale-95 shadow-xs"
                     [ngClass]="isDark ? 'text-neutral-300 hover:text-white border-neutral-700/80 bg-neutral-900 hover:bg-neutral-800' : 'text-neutral-700 hover:text-neutral-900 border-neutral-300 bg-neutral-100 hover:bg-neutral-200'"
@@ -245,6 +246,7 @@ interface ChatEntry {
               </button>
             </div>
 
+            <!-- Móvil: Barra de entrada fija y siempre visible con padding ergonómico (p-2.5) -->
             <div class="p-2.5 sm:p-4">
               <div class="relative flex items-center gap-2 sm:gap-2.5">
               
