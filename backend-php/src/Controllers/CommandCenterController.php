@@ -326,8 +326,8 @@ class CommandCenterController
                 'message' => '+18.4% de incremento semanal en visitas orgánicas al portafolio y Linktree.',
                 'badge' => '+18.4% Visitas',
                 'badgeColor' => 'blue',
-                'actionText' => 'Ver Analíticas',
-                'targetTab' => 'analytics'
+                'actionText' => 'Ver Dashboard',
+                'targetTab' => 'dashboard'
             ];
 
             // C. Biblioteca / Continuidad
@@ -402,7 +402,7 @@ class CommandCenterController
                     ['title' => 'Finanzas & Facturación', 'section' => 'finances', 'targetTab' => 'finances', 'badge' => 'Cartera', 'badgeColor' => 'amber', 'actionText' => 'Ir a Finanzas'],
                     ['title' => 'Biblioteca de Apuntes', 'section' => 'library', 'targetTab' => 'library', 'badge' => 'Estudio', 'badgeColor' => 'purple', 'actionText' => 'Abrir Biblioteca'],
                     ['title' => 'Calendario & Agenda', 'section' => 'itinerary', 'targetTab' => 'itinerary', 'badge' => 'Tareas', 'badgeColor' => 'blue', 'actionText' => 'Ver Calendario'],
-                    ['title' => 'Rendimiento & Visitas', 'section' => 'analytics', 'targetTab' => 'analytics', 'badge' => 'Métricas', 'badgeColor' => 'emerald', 'actionText' => 'Ver Analíticas']
+                    ['title' => 'Gestión de Mensajes', 'section' => 'messages', 'targetTab' => 'messages', 'badge' => 'Contacto', 'badgeColor' => 'emerald', 'actionText' => 'Ver Mensajes']
                 ];
                 foreach ($defaults as $def) {
                     if (!isset($seenSections[$def['section']]) && count($recentAccesses) < 4) {
@@ -600,10 +600,10 @@ Debes responder OBLIGATORIAMENTE en formato JSON estricto con el siguiente esque
       "badge": "Etiqueta destacada (monto, estado o categoría)",
       "badgeColor": "emerald" | "blue" | "amber" | "purple" | "red",
       "details": "Detalle técnico, estado o fecha clave",
-      "targetTab": "finances" | "library" | "itinerary" | "messages" | "users" | "analytics" | "stats"
+      "targetTab": "finances" | "library" | "itinerary" | "messages" | "users" | "dashboard"
     }
   ],
-  "targetTab": "finances" | "library" | "itinerary" | "messages" | "users" | "analytics" | "stats" | "dashboard",
+  "targetTab": "finances" | "library" | "itinerary" | "messages" | "users" | "dashboard",
   "actionText": "Texto del botón principal de redirección (ej: 'Abrir Gestión de Finanzas', 'Ir al Cuaderno SQL', 'Ver Calendario')"
 }
 
@@ -628,8 +628,8 @@ REGLAS DE BÚSQUEDA Y ANÁLISIS:
    - Analiza 'messages', lista los mensajes no leídos o recientes en 'items'.
    - targetTab = 'messages'.
 6. Si pide "tráfico" o "métricas":
-   - Analiza 'analytics' y site_views, resalta visitas y conversión en 'metrics' y 'analysis'.
-   - targetTab = 'analytics'.
+   - Analiza visitas y conversión en 'metrics' y 'analysis'.
+   - targetTab = 'dashboard'.
 SYS;
 
         $contextJson = json_encode($context, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
@@ -732,14 +732,13 @@ TAREA OBLIGATORIA:
 2. Si el usuario dijo una sola palabra o comando directo para ir a un módulo:
    - Ejemplos: "biblioteca", "apuntes", "cuadernos" -> intent: "navigate", targetTab: "library", actionText: "Abrir Biblioteca", summary: "Navegando a la Biblioteca de Apuntes"
    - Ejemplos: "finanzas", "facturas", "pagos", "cobros", "cartera" -> intent: "navigate", targetTab: "finances", actionText: "Ir a Finanzas", summary: "Navegando a Finanzas"
-   - Ejemplos: "control financiero" -> intent: "navigate", targetTab: "financial-control", actionText: "Ir a Control Financiero", summary: "Navegando a Control Financiero"
+   - Ejemplos: "control financiero", "analíticas", "métricas" -> intent: "navigate", targetTab: "financial-control", actionText: "Ver Analíticas", summary: "Navegando a Analíticas"
    - Ejemplos: "agenda", "calendario", "tareas", "itinerario" -> intent: "navigate", targetTab: "itinerary", actionText: "Ver Agenda", summary: "Navegando a Agenda y Calendario"
-   - Ejemplos: "analíticas", "tráfico", "métricas", "visitas" -> intent: "navigate", targetTab: "analytics", actionText: "Ver Analíticas", summary: "Navegando a Analíticas"
    - Ejemplos: "mensajes", "contactos", "correos" -> intent: "navigate", targetTab: "messages", actionText: "Ver Mensajes", summary: "Navegando a Mensajes"
-   - Ejemplos: "inicio", "dashboard", "home" -> intent: "navigate", targetTab: "dashboard", actionText: "Ir a Inicio", summary: "Navegando a Inicio"
+   - Ejemplos: "inicio", "dashboard", "home", "tráfico" -> intent: "navigate", targetTab: "dashboard", actionText: "Ir a Inicio", summary: "Navegando a Inicio"
 3. Si el usuario hizo una pregunta o consulta analítica sobre el sistema (ej: "dame mis clientes", "cuáles son las facturas pendientes", etc.):
    - intent: "query"
-   - targetTab: "finances"|"library"|"itinerary"|"analytics"|"messages"|"dashboard"
+   - targetTab: "finances"|"library"|"itinerary"|"messages"|"dashboard"
    - summary: Conclusión ejecutiva
    - analysis: Párrafo analítico completo
    - items: Lista de resultados relevantes
@@ -748,7 +747,7 @@ Responde SIEMPRE en formato JSON estricto con:
 {
   "transcript": "Texto exacto pronunciado por el usuario",
   "intent": "navigate" | "query",
-  "targetTab": "library" | "finances" | "financial-control" | "itinerary" | "analytics" | "messages" | "dashboard",
+  "targetTab": "library" | "finances" | "financial-control" | "itinerary" | "messages" | "dashboard",
   "summary": "Resumen ejecutivo directo",
   "analysis": "Párrafo explicativo del análisis (si intent es query)",
   "metrics": [ { "label": "...", "value": "..." } ],

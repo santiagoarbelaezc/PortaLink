@@ -67,8 +67,6 @@ use App\Controllers\AuthController;
 use App\Controllers\ChatController;
 use App\Controllers\ItineraryController;
 use App\Controllers\FinanceController;
-use App\Controllers\AnalyticsController;
-use App\Controllers\ReportsController;
 use App\Controllers\ConfigController;
 use App\Controllers\MessagesController;
 use App\Controllers\SiteController;
@@ -76,7 +74,6 @@ use App\Controllers\LibraryController;
 use App\Controllers\ChatAdminController;
 use App\Controllers\CommandCenterController;
 use App\Controllers\RobotChatController;
-use App\Controllers\StudyPlanController;
 use App\Controllers\StreakController;
 
 $request = new Request();
@@ -309,19 +306,7 @@ $router->post('/api/finance/transactions', [FinanceController::class, 'createTra
 $router->put('/api/finance/transactions/:id', [FinanceController::class, 'updateTransaction'], [AuthMiddleware::class]);
 $router->delete('/api/finance/transactions/:id', [FinanceController::class, 'deleteTransaction'], [AuthMiddleware::class]);
 
-// ──────────────────────────────────────────────────────────────
-//  RUTAS DE ANALYTICS (/api/analytics)
-// ──────────────────────────────────────────────────────────────
-$router->post('/api/analytics/track', [AnalyticsController::class, 'trackEvent']);
-$router->get('/api/analytics/metrics', [AnalyticsController::class, 'getDashboardMetrics'], [AuthMiddleware::class]);
 
-// ──────────────────────────────────────────────────────────────
-//  RUTAS DE REPORTES (/api/reports)
-// ──────────────────────────────────────────────────────────────
-$router->get('/api/reports/activity', [ReportsController::class, 'getActivityLogs'], [AuthMiddleware::class]);
-$router->post('/api/reports/activity', [ReportsController::class, 'logActivity'], [AuthMiddleware::class]);
-$router->get('/api/reports/logs', [ReportsController::class, 'getActivityLogs'], [AuthMiddleware::class]);
-$router->post('/api/reports/logs', [ReportsController::class, 'logActivity'], [AuthMiddleware::class]);
 
 // ──────────────────────────────────────────────────────────────
 //  RUTAS DE CONFIGURACIÓN DEL SISTEMA (/api/config)
@@ -395,15 +380,6 @@ $router->post('/api/robot_chat.php', [RobotChatController::class, 'chat'], [Opti
 $router->post('/api/robot/tts', [RobotChatController::class, 'generateTts'], [OptionalAuthMiddleware::class]);
 $router->post('/api/robot/transcribe', [RobotChatController::class, 'transcribe'], [OptionalAuthMiddleware::class]);
 
-// ──────────────────────────────────────────────────────────────
-//  RUTAS DE PLANES DE ESTUDIO DE ROTBOT (/api/robot/study-plans)
-// ──────────────────────────────────────────────────────────────
-$router->get('/api/robot/study-plans', [StudyPlanController::class, 'getAll'], [OptionalAuthMiddleware::class]);
-$router->post('/api/robot/study-plans', [StudyPlanController::class, 'create'], [OptionalAuthMiddleware::class]);
-$router->put('/api/robot/study-plans/:id', [StudyPlanController::class, 'update'], [OptionalAuthMiddleware::class]);
-$router->delete('/api/robot/study-plans/:id', [StudyPlanController::class, 'delete'], [OptionalAuthMiddleware::class]);
-$router->post('/api/robot/study-plans/:id/activate', [StudyPlanController::class, 'activate'], [OptionalAuthMiddleware::class]);
-$router->get('/api/robot/study-plans/active', [StudyPlanController::class, 'getActive'], [OptionalAuthMiddleware::class]);
 
 // ──────────────────────────────────────────────────────────────
 //  RUTAS DE RACHA DIARIA (/api/streak)

@@ -19,7 +19,6 @@ class RobotChatController
         $body = $request->body;
         $userMessage = trim($body['message'] ?? '');
         $history = $body['history'] ?? [];
-        $studyPlan = trim($body['study_plan'] ?? '');
 
         if (empty($userMessage)) {
             $response->status(400)->json([
@@ -36,8 +35,8 @@ class RobotChatController
         ]);
         $voiceId = $body['voice_id'] ?? getenv('ELEVENLABS_VOICE_ID') ?: ($_ENV['ELEVENLABS_VOICE_ID'] ?? 'bIHbv24MWmeRgasZH58o');
 
-        // 1. Obtener respuesta conversacional inteligente con contexto de plan de estudio
-        $aiResult = $this->generateRobotReply($userMessage, $history, $studyPlan);
+        // 1. Obtener respuesta conversacional inteligente
+        $aiResult = $this->generateRobotReply($userMessage, $history);
         $replyText = $aiResult['reply'];
         $emotion = $aiResult['emotion'];
 
@@ -220,11 +219,11 @@ class RobotChatController
     }
 
     /**
-     * Genera respuesta conversacional como Compañero/Tutor de Inglés en modo charla, incorporando el plan de estudio activo si existe.
+     * Genera respuesta conversacional como Compañero/Tutor de Inglés en modo charla.
      */
-    private function generateRobotReply(string $userMessage, array $history = [], string $studyPlan = ''): array
+    private function generateRobotReply(string $userMessage, array $history = []): array
     {
-        $systemPrompt = $this->buildSystemPrompt($studyPlan);
+        $systemPrompt = $this->buildSystemPrompt();
         $promptMessage = $userMessage;
 
         // 1. Intentar Gemini primero (con failover de keys y modelos)
@@ -263,26 +262,17 @@ class RobotChatController
     }
 
     /**
-     * Construye el System Prompt conversacional de inglés incorporando fuentes/planes de estudio.
+     * Construye el System Prompt conversacional de inglés.
      */
-    private function buildSystemPrompt(string $studyPlan = ''): string
+    private function buildSystemPrompt(): string
     {
-        $planDirective = '';
-        if (!empty($studyPlan)) {
-            $planDirective = "\n\nCRITICAL CONTEXT — ACTIVE DAILY STUDY PLAN / SYLLABUS / STUDY SOURCES:\n\"\"\"\n{$studyPlan}\n\"\"\"\n"
-                           . "MANDATORY SYLLABUS INSTRUCTION:\n"
-                           . "- Strictly ground your conversation, dialogue scenarios, vocabulary questions, examples, and discussion on this Daily Study Plan.\n"
-                           . "- Help the user thoroughly practice, discuss, and master the grammar rules, vocabulary terms, readings, and songs present in this syllabus.\n";
-        }
-
         return <<<PROMPT
 You are Rotbot, a native English-speaking close friend and conversational partner.
 YOUR OBJECTIVE: Maintain a natural, 100% English conversation to help the user build fluency, confidence, and real-world vocabulary.
-{$planDirective}
+
 RULES:
 1. Always respond 100% in natural, modern, fluent English.
-2. If an active study plan is provided, naturally discuss its topics, scenarios, vocabulary, and questions in conversation.
-3. If the user writes or speaks in Spanish, reply warmly in English and gently encourage them to continue in English.
+2. If the user writes or speaks in Spanish, reply warmly in English and gently encourage them to continue in English.
 4. If the user makes a grammatical mistake, subtly weave the correct phrasing into your response naturally without breaking the conversational flow.
 5. Keep responses concise (maximum 2-3 sentences) to keep the dialogue snappy and dynamic.
 6. ZERO emojis. No robotic clichés.

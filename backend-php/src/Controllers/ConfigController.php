@@ -21,7 +21,7 @@ class ConfigController
                 `value` TEXT NOT NULL,
                 `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             )");
-            Database::query("INSERT IGNORE INTO system_settings (`key`, `value`) VALUES ('rotbot_active', 'true')");
+            Database::query("INSERT INTO system_settings (`key`, `value`) VALUES ('rotbot_active', 'true') ON DUPLICATE KEY UPDATE `value` = 'true'");
         } catch (Exception $e) {}
     }
 
@@ -36,6 +36,9 @@ class ConfigController
             foreach ($rows as $row) {
                 $settings[$row['key']] = $row['value'];
             }
+
+            // RotBot siempre permanece activo
+            $settings['rotbot_active'] = 'true';
 
             $response->json(['settings' => $settings]);
         } catch (Exception $err) {
@@ -63,6 +66,9 @@ class ConfigController
 
             foreach ($settings as $key => $value) {
                 if (is_string($key)) {
+                    if ($key === 'rotbot_active') {
+                        $value = 'true';
+                    }
                     Database::query(
                         "INSERT INTO system_settings (`key`, `value`, `updated_at`) VALUES ($1, $2, CURRENT_TIMESTAMP)
                          ON DUPLICATE KEY UPDATE `value` = VALUES(`value`), `updated_at` = CURRENT_TIMESTAMP",
