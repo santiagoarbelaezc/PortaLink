@@ -551,30 +551,30 @@ import { MessagesService } from '../../../services/messages.service';
               </div>
             </div>
 
-            <!-- Card 4: Analíticas -->
-            <div (click)="navigateToTab('analytics')"
+            <!-- Card 4: Rotbot IA -->
+            <div (click)="navigateToTab('rotbot')"
                  class="group rounded-[18px] xs:rounded-[20px] sm:rounded-[22px] border p-3.5 xs:p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 hover:border-neutral-400 dark:hover:border-neutral-600 hover:shadow-md cursor-pointer active:scale-98"
                  [ngClass]="isDark ? 'bg-neutral-950/70 border-neutral-800' : 'bg-white border-neutral-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.02)]'">
               <div class="flex items-center justify-between">
                 <span class="hidden sm:inline text-[9px] xs:text-[10px] sm:text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 truncate">
-                  Analíticas & Tráfico
+                  Asistente & IA
                 </span>
                 <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shrink-0 border"
                      [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
                   <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2zM9 10h.01M15 10h.01" />
                   </svg>
                 </div>
               </div>
               <div class="mt-2.5 mb-1.5">
                 <h4 class="text-base xs:text-lg sm:text-xl font-headline font-bold tracking-tight m-0 leading-tight truncate"
                     [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                  Analíticas
+                  RotBot IA
                 </h4>
               </div>
               <div class="hidden sm:flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400 dark:text-neutral-500 font-sans pt-1 border-t"
                    [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
-                <span class="truncate">Métricas & Visitas</span>
+                <span class="truncate">Copiloto Inteligente</span>
                 <span class="font-headline font-bold text-neutral-900 dark:text-white group-hover:translate-x-0.5 transition-transform ml-1">→</span>
               </div>
             </div>
@@ -732,9 +732,8 @@ import { MessagesService } from '../../../services/messages.service';
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 xs:gap-3 sm:gap-5">
           
           <!-- Card 1: Tráfico & Visitas -->
-          <div (click)="navigateToTab('analytics')" 
-               class="group rounded-[18px] xs:rounded-[20px] sm:rounded-[24px] border p-3.5 xs:p-4 sm:p-6 flex flex-col justify-between transition-all duration-300 hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)] cursor-pointer active:scale-98"
-               [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800 hover:bg-neutral-900' : 'bg-white border-neutral-200/80 hover:bg-neutral-50/50'">
+          <div class="group rounded-[18px] xs:rounded-[20px] sm:rounded-[24px] border p-3.5 xs:p-4 sm:p-6 flex flex-col justify-between transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
+               [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800' : 'bg-white border-neutral-200/80'">
             <div class="flex items-center justify-between mb-2 xs:mb-3 sm:mb-4">
               <span class="text-[10px] xs:text-xs font-headline font-semibold uppercase tracking-wider opacity-60 truncate">Tráfico Global</span>
               <div class="w-6 h-6 xs:w-7 xs:h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl flex items-center justify-center bg-blue-500/10 text-blue-500 shrink-0">
@@ -834,11 +833,10 @@ import { MessagesService } from '../../../services/messages.service';
                   </div>
                   <p class="hidden sm:block text-[10px] xs:text-xs opacity-60">Últimos 7 días</p>
                 </div>
-                <button (click)="navigateToTab('analytics')" 
-                        class="text-[9px] xs:text-[10px] font-headline font-semibold uppercase tracking-wider px-2.5 xs:px-3 py-1 rounded-full border transition-colors hover:scale-105 cursor-pointer shrink-0"
-                        [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-700 hover:bg-neutral-100'">
-                  Analíticas →
-                </button>
+                <span class="text-[9px] xs:text-[10px] font-headline font-semibold uppercase tracking-wider px-2.5 xs:px-3 py-1 rounded-full border shrink-0 opacity-70"
+                      [ngClass]="isDark ? 'border-neutral-800 text-neutral-400' : 'border-neutral-200 text-neutral-500'">
+                  En Vivo
+                </span>
               </div>
 
               <!-- Vector Line Chart with Gradient Fill & Data Nodes -->
@@ -1835,7 +1833,6 @@ export class DashHomeComponent implements OnInit, OnDestroy {
       case 'finances': return 'bg-amber-500';
       case 'library': return 'bg-purple-500';
       case 'itinerary': return 'bg-blue-500';
-      case 'analytics': return 'bg-emerald-500';
       case 'messages': return 'bg-cyan-400';
       default: return 'bg-neutral-400';
     }

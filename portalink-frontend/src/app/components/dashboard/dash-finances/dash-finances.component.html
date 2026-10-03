@@ -1,0 +1,2066 @@
+    <div class="space-y-5 tab-enter">
+
+      <!-- Header & Control Bar -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-5"
+           [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+            <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em]"
+               [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+              Gestión Financiera & Cobros
+            </p>
+          </div>
+          <div class="flex items-center gap-3 mt-1">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-xs"
+                 [ngClass]="isDark ? 'bg-[#141419] text-white border border-neutral-800' : 'bg-neutral-100 text-neutral-900 border border-neutral-200'">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-3l3 3 3-3M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22" />
+              </svg>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-headline font-bold uppercase tracking-tight"
+                [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              Finanzas
+            </h2>
+          </div>
+        </div>
+
+        <!-- Action Triggers -->
+        <div class="flex items-center gap-2.5">
+          <button *ngIf="subTab === 'facturas'" (click)="openNewInvoice()"
+                  class="px-5 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider text-black bg-white hover:bg-neutral-200 shadow-md active:scale-95 transition-all cursor-pointer flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            <span>Nueva Cuenta de Cobro</span>
+          </button>
+          <button *ngIf="subTab === 'clientes'" (click)="openNewClient()"
+                  class="px-5 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider text-black bg-white hover:bg-neutral-200 shadow-md active:scale-95 transition-all cursor-pointer flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            <span>Nuevo Cliente</span>
+          </button>
+          <button *ngIf="subTab === 'servicios'" (click)="openSoftwareProposalModal()"
+                  class="px-4 sm:px-5 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider text-white bg-emerald-600 hover:bg-emerald-500 shadow-md hover:shadow-emerald-600/30 active:scale-95 transition-all cursor-pointer flex items-center gap-2 border-0">
+            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+            </svg>
+            <span>Propuesta Comercial de Software</span>
+          </button>
+          <button *ngIf="subTab === 'servicios'" (click)="openNewService()"
+                  class="px-5 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider text-black bg-white hover:bg-neutral-200 shadow-md active:scale-95 transition-all cursor-pointer flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            <span>Nuevo Servicio</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sub-tabs Dock (Estilo Dash Calendar Filter Dock / iOS Segmented Control) -->
+      <div class="flex items-center gap-1 p-1 rounded-2xl border backdrop-blur-xl overflow-x-auto no-scrollbar"
+           [ngClass]="isDark ? 'bg-[#141419] border-neutral-800' : 'bg-neutral-100 border-neutral-200'">
+        <button *ngFor="let t of subTabs" (click)="subTab = t.id"
+                class="flex-1 sm:flex-initial text-center whitespace-nowrap px-4 py-2.5 sm:py-2 text-xs font-headline font-semibold uppercase tracking-wider rounded-xl transition-all duration-200 cursor-pointer shrink-0 active:scale-95"
+                [ngClass]="subTab === t.id
+                  ? 'bg-white text-black font-bold shadow-md'
+                  : (isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-800/40' : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200/60')">
+          {{ t.label }}
+        </button>
+      </div>
+
+      <!-- ══════════════════ RESUMEN (Stock Market Theme) ══════════════════ -->
+      <ng-container *ngIf="subTab === 'resumen'">
+        
+        <!-- KPI Header & Quick Filters -->
+        <div class="flex justify-between items-end mt-4 mb-2">
+           <h3 class="text-xs font-bold uppercase tracking-widest flex items-center gap-2" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+             Indicadores
+           </h3>
+           <div class="flex gap-1 p-1 rounded-xl border backdrop-blur-md" [ngClass]="isDark ? 'bg-[#141419] border-neutral-800' : 'bg-neutral-100 border-neutral-200'">
+             <button (click)="setKpiPeriod('all')" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg transition-all cursor-pointer" [ngClass]="kpiPeriod === 'all' ? 'bg-white text-black font-bold shadow-xs' : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">Todo</button>
+             <button (click)="setKpiPeriod('this_month')" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg transition-all cursor-pointer" [ngClass]="kpiPeriod === 'this_month' ? 'bg-white text-black font-bold shadow-xs' : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">Este Mes</button>
+             <button (click)="setKpiPeriod('last_month')" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg transition-all cursor-pointer" [ngClass]="kpiPeriod === 'last_month' ? 'bg-white text-black font-bold shadow-xs' : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">Mes Ant.</button>
+           </div>
+        </div>
+
+        <!-- Comprehensive Filters -->
+        <div class="rounded-2xl border p-4 mb-4 grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4 items-end shadow-sm"
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
+           <div class="flex flex-col gap-1.5 col-span-2 sm:flex-grow sm:min-w-[200px]">
+             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Buscar Empresa o Cliente</label>
+             <input type="text" [(ngModel)]="invFilterCompany" (ngModelChange)="buildKpis()" placeholder="Ej: TechCorp"
+                    class="w-full px-3.5 py-2 rounded-xl text-xs border outline-none bg-transparent transition-colors"
+                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
+           </div>
+           <div class="flex flex-col gap-1.5 col-span-1 sm:w-28">
+             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Precio Min</label>
+             <input type="number" [(ngModel)]="invFilterMinPrice" (ngModelChange)="buildKpis()" placeholder="0"
+                    class="w-full px-3.5 py-2 rounded-xl text-xs border outline-none bg-transparent transition-colors"
+                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
+           </div>
+           <div class="flex flex-col gap-1.5 col-span-1 sm:w-28">
+             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Precio Max</label>
+             <input type="number" [(ngModel)]="invFilterMaxPrice" (ngModelChange)="buildKpis()" placeholder="Múltiplo"
+                    class="w-full px-3.5 py-2 rounded-xl text-xs border outline-none bg-transparent transition-colors"
+                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
+           </div>
+           <div class="flex flex-col gap-1.5 col-span-1 sm:w-32">
+             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Desde (Fecha)</label>
+             <input type="date" [(ngModel)]="invFilterStartDate" (ngModelChange)="buildKpis()"
+                    class="w-full px-3.5 py-2 rounded-xl text-xs border outline-none bg-transparent cursor-pointer transition-colors"
+                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white focus:border-neutral-500' : 'bg-neutral-50 border-neutral-200 text-neutral-900 focus:border-neutral-500'">
+           </div>
+           <div class="flex flex-col gap-1.5 col-span-1 sm:w-32">
+             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Hasta (Fecha)</label>
+             <input type="date" [(ngModel)]="invFilterEndDate" (ngModelChange)="buildKpis()"
+                    class="w-full px-3.5 py-2 rounded-xl text-xs border outline-none bg-transparent cursor-pointer transition-colors"
+                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white focus:border-neutral-500' : 'bg-neutral-50 border-neutral-200 text-neutral-900 focus:border-neutral-500'">
+           </div>
+           <div class="col-span-2 sm:flex-shrink-0">
+             <button (click)="kpiPeriod='all'; invFilterCompany=''; invFilterMinPrice=null; invFilterMaxPrice=null; invFilterStartDate=''; invFilterEndDate=''; buildKpis()"
+                     class="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-colors cursor-pointer"
+                     [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-300 text-neutral-500 hover:text-black hover:bg-neutral-100'">
+               Limpiar
+             </button>
+           </div>
+        </div>
+
+        <!-- KPI cards (Trading panel style / Apple Card carousel on mobile) -->
+        <div class="flex md:grid overflow-x-auto md:overflow-visible snap-x snap-mandatory gap-3 pb-2 md:pb-0 no-scrollbar md:grid-cols-4">
+          <div *ngFor="let kpi of kpis" class="min-w-[72vw] sm:min-w-[220px] md:min-w-0 snap-start flex-shrink-0 md:flex-shrink relative rounded-2xl border p-4 sm:p-5 overflow-hidden group transition-all duration-300 hover:border-neutral-700 shadow-sm"
+               [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
+            <p class="text-xs font-medium uppercase tracking-wider mb-2 opacity-60"
+               [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ kpi.label }}</p>
+            <p class="text-xl lg:text-2xl font-bold leading-tight" [ngClass]="kpi.color || (isDark ? 'text-white' : 'text-neutral-900')">{{ kpi.value }}</p>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════
+             MONOCHROMATIC ELEGANT CHARTS SECTION
+        ══════════════════════════════════════ -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-6">
+
+          <!-- Chart 1: Histórico de Cobros & Facturación (2 Cols) -->
+          <div class="lg:col-span-2 rounded-2xl border p-6 space-y-6 flex flex-col justify-between transition-all duration-300 hover:border-neutral-700 shadow-sm"
+               [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 class="text-base font-semibold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                  Histórico de Cobros & Facturación
+                </h3>
+                <p class="text-xs mt-0.5 opacity-60">Flujo de caja organizado por fecha de vencimiento</p>
+              </div>
+              <div class="flex items-center gap-4 text-xs font-normal opacity-80">
+                <span class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                  <span>Recaudado / Abonado</span>
+                </span>
+                <span class="flex items-center gap-1.5 opacity-60">
+                  <span class="w-2.5 h-2.5 rounded-full border border-dashed border-neutral-500"></span>
+                  <span>Facturado / Proyectado</span>
+                </span>
+              </div>
+            </div>
+
+            <!-- SVG Monochromatic Bar & Wave Graph -->
+            <div class="relative h-56 w-full flex items-end justify-between gap-2 pt-8 pb-2 px-2 border-b"
+                 [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+              <div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-10">
+                <div class="border-b border-white w-full"></div>
+                <div class="border-b border-white w-full"></div>
+                <div class="border-b border-white w-full"></div>
+                <div class="border-b border-white w-full"></div>
+              </div>
+
+              <!-- Real Monthly Income Bars Organized by Due Date -->
+              <div *ngFor="let m of monthlyIncome; let last = last" class="flex-1 flex flex-col items-center gap-2 group h-full justify-end relative z-10">
+                
+                <!-- Tooltip on Hover -->
+                <div class="text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity px-3 py-1.5 rounded-lg absolute -top-12 shadow-lg whitespace-nowrap z-30 pointer-events-none flex flex-col gap-0.5 items-center"
+                     [ngClass]="isDark ? 'bg-neutral-800 text-white border border-neutral-700' : 'bg-neutral-900 text-white shadow-black/20'">
+                  <span>{{ m.month }} {{ m.year }}</span>
+                  <span class="text-emerald-400">Recaudado: {{ formatCOP(m.collected) }} ({{ m.pctCollected }}%)</span>
+                  <span class="opacity-70">Facturado: {{ formatCOP(m.billed) }}</span>
+                </div>
+
+                <!-- Dual Bar Container -->
+                <div class="w-full max-w-[34px] h-full flex items-end justify-center relative">
+                  <!-- Outer Bar: Total Facturado/Vencimiento -->
+                  <div class="w-full rounded-t-xl transition-all duration-300 border border-dashed"
+                       [ngStyle]="{'height': (m.billedHeight || 6) + '%'}"
+                       [ngClass]="isDark ? 'border-neutral-600 bg-neutral-800/40' : 'border-neutral-400 bg-neutral-200/60'">
+                  </div>
+
+                  <!-- Inner Bar: Recaudado/Abonado -->
+                  <div class="w-full rounded-t-xl transition-all duration-300 absolute bottom-0 shadow-sm"
+                       [ngStyle]="{'height': (m.height || 0) + '%'}"
+                       [ngClass]="m.collected > 0 ? (isDark ? 'bg-emerald-400 text-black shadow-emerald-400/20' : 'bg-emerald-500 text-white shadow-emerald-500/20') : 'bg-transparent'">
+                  </div>
+                </div>
+
+                <div class="flex flex-col items-center leading-tight">
+                  <span class="text-xs font-semibold" [ngClass]="last ? (isDark ? 'text-emerald-400 font-bold' : 'text-neutral-900 font-bold') : 'opacity-80'">{{ m.month }}</span>
+                  <span class="text-[9px] font-mono opacity-50" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">{{ m.year }}</span>
+                </div>
+              </div>
+
+              <div *ngIf="monthlyIncome.length === 0" class="absolute inset-0 flex items-center justify-center text-xs opacity-50">
+                Sin movimientos registrados aún.
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-xs pt-1 opacity-80">
+              <span class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-3l3 3 3-3"/>
+                </svg>
+                <span>Tasa de Recaudo Efectivo: <strong class="font-semibold" [ngClass]="isDark ? 'text-emerald-400' : 'text-emerald-600'">{{ effectiveRecaudoRate }}%</strong></span>
+              </span>
+              <span class="font-mono text-[11px] opacity-60">Auditoría en vivo</span>
+            </div>
+          </div>
+
+          <!-- Chart 2: Estado de Cuentas por Cobrar (1 Col Real Dynamic) -->
+          <div class="rounded-2xl border p-6 space-y-6 flex flex-col justify-between transition-all duration-300 hover:border-neutral-700 shadow-sm"
+               [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
+            <div>
+              <h3 class="text-base font-semibold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                Estado de Cuentas
+              </h3>
+              <p class="text-xs mt-0.5 opacity-60">Estado actual del Ledger de Cobros</p>
+            </div>
+
+            <!-- Monochromatic Donut Simulation -->
+            <div class="flex items-center justify-center py-2 relative">
+              <div class="w-32 h-32 rounded-full border-8 border-neutral-800 border-t-emerald-400 border-r-sky-400 border-b-rose-500/50 flex items-center justify-center relative shadow-inner">
+                <div class="text-center">
+                  <span class="text-xl font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ paidPercentage }}%</span>
+                  <p class="text-[9px] uppercase tracking-wider opacity-50 font-normal">Cobrado</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-2.5 text-xs">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                  <span class="font-medium">Pagadas</span>
+                </div>
+                <span class="font-semibold text-emerald-400">{{ paidPercentage }}%</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>
+                  <span class="font-medium">Enviadas / Pendientes</span>
+                </div>
+                <span class="font-semibold text-sky-400">{{ pendingPercentage }}%</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                  <span class="font-medium">Vencidas</span>
+                </div>
+                <span class="font-semibold text-rose-400">{{ overduePercentage }}%</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Recent invoices (Ledger style) -->
+        <div class="rounded-2xl border overflow-hidden mt-6 shadow-sm transition-all"
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
+          <div class="px-6 py-4 border-b flex items-center justify-between transition-colors"
+               [ngClass]="isDark ? 'bg-[#141419] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+            <h3 class="text-xs font-bold uppercase tracking-wider flex items-center gap-2"
+                [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+              Últimos Movimientos
+            </h3>
+            <button (click)="subTab = 'facturas'" class="text-[10px] font-bold uppercase tracking-wider cursor-pointer border px-3.5 py-1.5 rounded-xl transition-all flex items-center gap-1"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#0c0c0e] text-neutral-300 hover:text-white hover:bg-neutral-800' : 'border-neutral-300 bg-white text-neutral-700 hover:text-black hover:bg-neutral-100'">
+              <span>Ver Ledger</span>
+              <span>→</span>
+            </button>
+          </div>
+
+          <div class="divide-y" [ngClass]="isDark ? 'divide-neutral-800/60' : 'divide-neutral-100'">
+            <ng-container *ngFor="let inv of paginatedRecentInvoices">
+              <!-- Desktop Table Row -->
+              <div (click)="toggleInvoice(inv.id)" class="hidden md:grid md:grid-cols-12 px-6 py-3.5 items-center group cursor-pointer transition-colors"
+                   [ngClass]="isDark ? 'hover:bg-neutral-800/30' : 'hover:bg-neutral-50'">
+                <div class="col-span-3 flex items-center gap-2">
+                  <span class="text-xs font-semibold font-sans" [ngClass]="isDark ? 'text-neutral-400 group-hover:text-white' : 'text-neutral-500 group-hover:text-black'">#{{ inv.invoice_number || inv.id }}</span>
+                </div>
+                <div class="col-span-3">
+                  <p class="text-xs font-bold truncate" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ inv.clientName || 'Cliente' }}</p>
+                  <p class="text-[11px] truncate opacity-60">{{ inv.clientCompany || 'Independiente' }}</p>
+                </div>
+                <div class="col-span-3 text-right">
+                  <span class="text-sm font-bold font-sans block" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(inv.total || inv.total_amount || 0) }}</span>
+                </div>
+                <div class="col-span-3 flex justify-end items-center gap-2">
+                  <span class="text-[10px] font-bold uppercase px-3 py-1 rounded-full border transition-all" 
+                        [ngClass]="getStatusClass(inv.status)">
+                    {{ inv.status === 'Parcial' || inv.status === 'PARCIAL' ? 'Abonada (' + getInvoicePaidPct(inv) + '%)' : inv.status }}
+                  </span>
+                  <svg class="w-4 h-4 ml-1 transition-transform duration-200" [ngClass]="expandedInvoiceId === inv.id ? 'rotate-180 text-white' : (isDark ? 'text-neutral-500 group-hover:text-white' : 'text-neutral-400 group-hover:text-black')" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+              </div>
+
+              <!-- Mobile Native Card Row (Optimized for iPhone 13) -->
+              <div (click)="toggleInvoice(inv.id)" class="md:hidden p-3.5 flex items-center justify-between gap-3 cursor-pointer transition-colors active:bg-neutral-800/40"
+                   [ngClass]="isDark ? 'hover:bg-neutral-800/30' : 'hover:bg-neutral-50'">
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="text-xs font-extrabold font-mono" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">#{{ inv.invoice_number || inv.id }}</span>
+                    <span class="text-[9px] font-bold uppercase px-2 py-0.5 rounded-full border" [ngClass]="getStatusClass(inv.status)">
+                      {{ inv.status === 'Parcial' || inv.status === 'PARCIAL' ? 'Abonada (' + getInvoicePaidPct(inv) + '%)' : inv.status }}
+                    </span>
+                  </div>
+                  <h4 class="text-xs font-extrabold truncate" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ inv.clientName || 'Cliente' }}</h4>
+                  <p class="text-[10px] truncate opacity-60" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ inv.clientCompany || 'Independiente' }}</p>
+                </div>
+                <div class="text-right shrink-0 flex flex-col items-end gap-1">
+                  <span class="text-xs font-black font-sans block" [ngClass]="isDark ? 'text-emerald-400' : 'text-emerald-700'">{{ formatCOP(inv.total || inv.total_amount || 0) }}</span>
+                  <svg class="w-4 h-4 transition-transform duration-200" [ngClass]="expandedInvoiceId === inv.id ? 'rotate-180 text-emerald-400' : 'text-neutral-500'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+              </div>
+              
+              <!-- Expanded Detail Drawer -->
+              <div *ngIf="expandedInvoiceId === inv.id" class="px-6 py-4 border-t-0 border-b transition-colors"
+                   [ngClass]="isDark ? 'bg-black/40 border-neutral-800' : 'bg-neutral-50/70 border-neutral-200'">
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                    <div class="space-y-1 p-3.5 rounded-2xl border transition-colors"
+                         [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200'">
+                      <p class="text-[10px] font-black uppercase tracking-widest opacity-50 mb-1">Datos del Cliente</p>
+                      <p class="text-sm font-extrabold" [ngClass]="isDark ? 'text-white' : 'text-black'">{{ getClient(inv.clientId)?.name || inv.clientName || 'Cliente' }}</p>
+                      <p class="text-xs opacity-60">{{ getClient(inv.clientId)?.company || inv.clientCompany || 'Independiente' }}</p>
+                      <div class="flex items-center gap-3 text-xs opacity-70 pt-1">
+                        <span *ngIf="getClient(inv.clientId)?.email">{{ getClient(inv.clientId)?.email }}</span>
+                        <span *ngIf="getClient(inv.clientId)?.phone"> • {{ getClient(inv.clientId)?.phone }}</span>
+                      </div>
+                    </div>
+
+                    <div class="flex flex-wrap md:justify-end items-center gap-3">
+                      <div *ngIf="inv.status === 'Pagada' || inv.status === 'PAGADA'" class="text-right mr-2">
+                        <p class="text-[10px] font-black uppercase tracking-widest text-emerald-400">Recaudado el {{ inv.paidAt || 'hoy' }}</p>
+                        <p *ngIf="inv.paymentMethod" class="text-xs opacity-60">{{ inv.paymentMethod }} <span *ngIf="inv.paymentNotes">({{ inv.paymentNotes }})</span></p>
+                      </div>
+
+                      <button (click)="downloadInvoicePdf(inv); $event.stopPropagation()" [disabled]="pdfLoading" class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest border transition-all cursor-pointer flex items-center gap-2 shadow-2xs"
+                              [ngClass]="isDark ? 'border-neutral-700 bg-neutral-900 text-neutral-300 hover:text-white hover:bg-neutral-800 disabled:opacity-50' : 'border-neutral-300 bg-white text-neutral-700 hover:text-black hover:bg-neutral-100 disabled:opacity-50'">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        <span>{{ pdfLoading ? 'Generando...' : 'Descargar Cuenta de Cobro' }}</span>
+                      </button>
+                    </div>
+                 </div>
+              </div>
+            </ng-container>
+            <div *ngIf="recentInvoices.length === 0" class="px-6 py-8 text-center text-xs opacity-50">
+              No hay movimientos registrados.
+            </div>
+          </div>
+
+          <!-- 📄 RECENT INVOICES PAGINATION BAR -->
+          <div *ngIf="recentInvoices.length > 0" 
+               class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 border-t transition-all"
+               [ngClass]="isDark ? 'bg-black/30 border-neutral-800 text-neutral-400' : 'bg-neutral-50/50 border-neutral-200 text-neutral-600'">
+            
+            <div class="flex items-center gap-3 text-xs">
+              <span>
+                Mostrando <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ (recentPage - 1) * recentPageSize + 1 }}</span> - 
+                <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ getMin(recentPage * recentPageSize, recentInvoices.length) }}</span> de 
+                <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ recentInvoices.length }}</span>
+              </span>
+
+              <div class="flex items-center gap-1.5 ml-2">
+                <span class="text-[11px] opacity-70">Por pág:</span>
+                <select [(ngModel)]="recentPageSize" (change)="recentPage = 1"
+                        class="px-2 py-1 rounded-lg text-xs font-semibold border outline-none cursor-pointer"
+                        [ngClass]="isDark ? 'border-neutral-700 text-white bg-neutral-950' : 'border-neutral-300 text-neutral-900 bg-white'">
+                  <option [value]="5">5</option>
+                  <option [value]="10">10</option>
+                  <option [value]="25">25</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 self-end sm:self-auto">
+              <button (click)="recentPage = 1" [disabled]="recentPage === 1"
+                      class="p-1.5 rounded-lg border transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                      [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'"
+                      title="Primera página">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" /></svg>
+              </button>
+              <button (click)="recentPage = recentPage - 1" [disabled]="recentPage === 1"
+                      class="px-2.5 py-1 rounded-lg border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                      [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'">
+                <span>‹</span>
+                <span class="hidden sm:inline">Ant</span>
+              </button>
+              <span class="px-3 py-1 text-xs font-mono font-bold rounded-lg border"
+                    [ngClass]="isDark ? 'bg-neutral-950 border-neutral-700 text-white' : 'bg-neutral-100 border-neutral-300 text-neutral-900'">
+                {{ recentPage }} / {{ totalRecentPages }}
+              </span>
+              <button (click)="recentPage = recentPage + 1" [disabled]="recentPage >= totalRecentPages"
+                      class="px-2.5 py-1 rounded-lg border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                      [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'">
+                <span class="hidden sm:inline">Sig</span>
+                <span>›</span>
+              </button>
+              <button (click)="recentPage = totalRecentPages" [disabled]="recentPage >= totalRecentPages"
+                      class="p-1.5 rounded-lg border transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                      [ngClass]="isDark ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'"
+                      title="Última página">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5" /></svg>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- ══════════════════ CLIENTES ══════════════════ -->
+      <ng-container *ngIf="subTab === 'clientes'">
+        <!-- Form modal -->
+        <div *ngIf="showClientForm" class="rounded-2xl border p-6 space-y-4 shadow-sm"
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+          <h3 class="text-sm font-bold uppercase tracking-wide"
+              [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+            {{ editingClient?.id ? 'Editar Cliente' : 'Nuevo Cliente' }}
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div *ngFor="let f of clientFields" class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold uppercase tracking-widest"
+                     [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ f.label }}<span *ngIf="f.required" class="text-red-500 ml-0.5">*</span></label>
+              <input [type]="f.type" [(ngModel)]="$any(editingClient)![f.key]" [style.color-scheme]="isDark ? 'dark' : 'light'" [placeholder]="f.placeholder"
+                     class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none transition-all duration-200"
+                     [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
+            </div>
+            <div class="md:col-span-2 flex flex-col gap-1.5">
+              <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Notas</label>
+              <textarea [(ngModel)]="editingClient!.notes" rows="2" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="Observaciones del cliente..."
+                        class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none transition-all duration-200 resize-none"
+                        [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400'"></textarea>
+            </div>
+          </div>
+          <div class="flex gap-3 justify-end pt-2">
+            <button (click)="showClientForm = false" class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border cursor-pointer transition-colors"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white' : 'border-neutral-300 text-neutral-500 hover:text-neutral-900'">Cancelar</button>
+            <button (click)="saveClient()" class="px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer shadow-md transition-all active:scale-95"
+                    [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-neutral-700'">Guardar</button>
+          </div>
+        </div>
+
+        <!-- Client Filters -->
+        <div *ngIf="!showClientForm" class="rounded-2xl border p-4 mb-4 flex flex-wrap gap-4 items-end shadow-sm"
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
+           <div class="flex flex-col gap-1.5 flex-grow min-w-[200px]">
+             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Buscar Cliente (Nombre, Empresa, Email)</label>
+             <div class="relative">
+               <input type="text" [(ngModel)]="clientFilterText" placeholder="Buscar..."
+                      class="w-full pl-10 pr-3 py-2.5 rounded-xl text-xs border outline-none bg-transparent transition-colors"
+                      [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
+               <svg class="w-4 h-4 absolute left-3.5 top-3" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+               </svg>
+             </div>
+           </div>
+           <div class="flex-shrink-0">
+             <button (click)="clientFilterText=''"
+                     class="px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border transition-colors cursor-pointer"
+                     [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-300 text-neutral-500 hover:text-black hover:bg-neutral-100'">
+               Limpiar
+             </button>
+           </div>
+        </div>
+
+        <!-- Client table (Desktop View) -->
+        <div class="rounded-2xl border overflow-hidden hidden md:block shadow-sm"
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
+          <div class="grid grid-cols-12 px-5 py-3 text-[10px] font-mono uppercase tracking-wider border-b"
+               [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-neutral-400' : 'bg-neutral-50 border-neutral-200 text-neutral-500'">
+            <span class="col-span-3">Nombre</span>
+            <span class="col-span-3">Empresa</span>
+            <span class="col-span-3">Email / Tel</span>
+            <span class="col-span-2 text-center">Facturas</span>
+            <span class="col-span-1"></span>
+          </div>
+          <div class="divide-y" [ngClass]="isDark ? 'divide-neutral-800/60' : 'divide-neutral-100'">
+            <div *ngFor="let c of paginatedClients" class="grid grid-cols-12 px-5 py-4 items-center transition-colors"
+                  [ngClass]="isDark ? 'hover:bg-neutral-800/30' : 'hover:bg-neutral-50'">
+              <div class="col-span-3">
+                <p class="text-sm font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ c.name }}</p>
+                <p class="text-xs" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Desde {{ c.createdAt | date:'MMM yyyy' }}</p>
+              </div>
+              <div class="col-span-3">
+                <p class="text-sm" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">{{ c.company || '—' }}</p>
+              </div>
+              <div class="col-span-3">
+                <p class="text-xs" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">{{ c.email }}</p>
+                <p class="text-xs" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ c.phone }}</p>
+              </div>
+              <div class="col-span-2 text-center">
+                <span class="text-xs font-bold px-2.5 py-1 rounded-full border"
+                      [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
+                  {{ getClientInvoiceCount(c.id) }}
+                </span>
+              </div>
+              <div class="col-span-1 flex justify-end gap-1">
+                <button (click)="editClient(c)" title="Editar" class="p-1.5 rounded-lg cursor-pointer transition-colors"
+                        [ngClass]="isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100'">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                </button>
+                <button (click)="deleteClient(c.id!)" title="Eliminar" class="p-1.5 rounded-lg cursor-pointer transition-colors"
+                        [ngClass]="isDark ? 'text-neutral-400 hover:text-red-400 hover:bg-red-900/20' : 'text-neutral-500 hover:text-red-600 hover:bg-red-50'">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+              </div>
+            </div>
+            <div *ngIf="displayedClients.length === 0" class="px-5 py-10 text-center text-sm"
+                 [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">
+              No se encontraron clientes.
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile Client Cards (App Native Experience for iPhone 13) -->
+        <div class="space-y-3 block md:hidden">
+          <div *ngFor="let c of paginatedClients" class="rounded-2xl border p-4 transition-all shadow-sm"
+               [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
+            
+            <div class="flex items-start justify-between gap-3 mb-2.5">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 border"
+                     [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white' : 'bg-neutral-100 border-neutral-200 text-neutral-900'">
+                  {{ c.name.charAt(0).toUpperCase() }}
+                </div>
+                <div class="min-w-0">
+                  <h4 class="text-sm font-extrabold truncate" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ c.name }}</h4>
+                  <p class="text-[11px] opacity-60 truncate" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Desde {{ c.createdAt | date:'MMM yyyy' }}</p>
+                </div>
+              </div>
+
+              <!-- Quick action buttons -->
+              <div class="flex items-center gap-1 shrink-0">
+                <button (click)="editClient(c)" title="Editar" class="p-2 rounded-xl cursor-pointer border active:scale-95 transition-all"
+                        [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-300' : 'border-neutral-200 bg-neutral-100 text-neutral-700'">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                </button>
+                <button (click)="deleteClient(c.id!)" title="Eliminar" class="p-2 rounded-xl cursor-pointer border active:scale-95 transition-all text-red-400"
+                        [ngClass]="isDark ? 'border-neutral-800 bg-[#141419]' : 'border-neutral-200 bg-neutral-100'">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Details pill -->
+            <div class="space-y-1.5 p-3 rounded-xl mb-3 text-xs"
+                 [ngClass]="isDark ? 'bg-[#141419] border border-neutral-800/80' : 'bg-neutral-50 border border-neutral-100'">
+              <div *ngIf="c.company" class="flex items-center justify-between">
+                <span class="text-[10px] font-bold uppercase tracking-wider opacity-50">Empresa:</span>
+                <span class="font-bold truncate" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ c.company }}</span>
+              </div>
+              <div *ngIf="c.email" class="flex items-center justify-between">
+                <span class="text-[10px] font-bold uppercase tracking-wider opacity-50">Email:</span>
+                <a [href]="'mailto:' + c.email" class="font-mono text-[11px] truncate opacity-90" [ngClass]="isDark ? 'text-emerald-400' : 'text-emerald-600'">{{ c.email }}</a>
+              </div>
+              <div *ngIf="c.phone" class="flex items-center justify-between">
+                <span class="text-[10px] font-bold uppercase tracking-wider opacity-50">Teléfono:</span>
+                <a [href]="'tel:' + c.phone" class="font-mono text-[11px] truncate opacity-90" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">{{ c.phone }}</a>
+              </div>
+            </div>
+
+            <!-- Bottom badge -->
+            <div class="flex items-center justify-between text-xs pt-0.5">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider opacity-50">Facturas Registradas:</span>
+              <span class="text-xs font-bold px-2.5 py-0.5 rounded-full border"
+                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white' : 'bg-neutral-100 border-neutral-300 text-neutral-900'">
+                {{ getClientInvoiceCount(c.id) }} Cuentas
+              </span>
+            </div>
+
+          </div>
+
+          <div *ngIf="displayedClients.length === 0" class="px-5 py-8 text-center text-xs opacity-50 rounded-2xl border"
+               [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
+            No se encontraron clientes.
+          </div>
+        </div>
+
+        <!-- 📄 CLIENTS PAGINATION BAR -->
+        <div *ngIf="displayedClients.length > 0" 
+             class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border transition-all shadow-sm"
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800 text-neutral-400' : 'bg-white border-neutral-200 text-neutral-600'">
+          
+          <div class="flex items-center gap-3 text-xs">
+            <span>
+              Mostrando <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ (clientPage - 1) * clientPageSize + 1 }}</span> - 
+              <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ getMin(clientPage * clientPageSize, displayedClients.length) }}</span> de 
+              <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ displayedClients.length }}</span>
+            </span>
+
+            <div class="flex items-center gap-1.5 ml-2">
+              <span class="text-[11px] opacity-70">Por pág:</span>
+              <select [(ngModel)]="clientPageSize" (change)="clientPage = 1"
+                      class="px-2 py-1 rounded-lg text-xs font-semibold border outline-none cursor-pointer"
+                      [ngClass]="isDark ? 'border-neutral-800 text-white bg-[#141419]' : 'border-neutral-300 text-neutral-900 bg-white'">
+                <option [value]="5">5</option>
+                <option [value]="10">10</option>
+                <option [value]="25">25</option>
+                <option [value]="50">50</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1.5 self-end sm:self-auto">
+            <button (click)="clientPage = 1" [disabled]="clientPage === 1"
+                    class="p-1.5 rounded-lg border transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'"
+                    title="Primera página">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" /></svg>
+            </button>
+            <button (click)="clientPage = clientPage - 1" [disabled]="clientPage === 1"
+                    class="px-2.5 py-1 rounded-lg border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'">
+              <span>‹</span>
+              <span class="hidden sm:inline">Ant</span>
+            </button>
+            <span class="px-3 py-1 text-xs font-mono font-bold rounded-lg border"
+                  [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white' : 'bg-neutral-100 border-neutral-300 text-neutral-900'">
+              {{ clientPage }} / {{ totalClientPages }}
+            </span>
+            <button (click)="clientPage = clientPage + 1" [disabled]="clientPage >= totalClientPages"
+                    class="px-2.5 py-1 rounded-lg border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'">
+              <span class="hidden sm:inline">Sig</span>
+              <span>›</span>
+            </button>
+            <button (click)="clientPage = totalClientPages" [disabled]="clientPage >= totalClientPages"
+                    class="p-1.5 rounded-lg border transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'"
+                    title="Última página">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5" /></svg>
+            </button>
+          </div>
+
+        </div>
+      </ng-container>
+
+      <!-- ══════════════════ SERVICIOS ══════════════════ -->
+      <ng-container *ngIf="subTab === 'servicios'">
+
+
+
+        <!-- Form modal / drawer -->
+        <div *ngIf="showServiceForm" class="rounded-2xl border p-6 space-y-4 shadow-sm transition-all"
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+          <div class="flex items-center justify-between border-b pb-3" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+            <h3 class="text-sm font-headline font-bold uppercase tracking-wider" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              {{ editingService?.id ? 'Editar Servicio' : 'Crear Nuevo Servicio' }}
+            </h3>
+            <button (click)="showServiceForm = false" class="p-1.5 rounded-xl border opacity-60 hover:opacity-100 transition-all cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white' : 'border-neutral-200 text-neutral-500 hover:text-black'">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1.5 md:col-span-2">
+              <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Nombre del Servicio *</label>
+              <input type="text" [(ngModel)]="editingService!.name" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="Ej: Desarrollo de Plataforma Web Enterprise"
+                     class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none transition-colors" [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Categoría</label>
+              <select [(ngModel)]="editingService!.category" (ngModelChange)="onServiceCategoryChange($event)" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                      class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none cursor-pointer transition-colors font-medium"
+                      [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black'">
+                <option value="adquisicion">Propuesta Software</option>
+                <option value="desarrollo">Desarrollo Software</option>
+                <option value="diseño">Diseño UI/UX</option>
+                <option value="marketing">Marketing & Growth</option>
+                <option value="consultoria">Consultoría Estratégica</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Precio Unitario (COP) *</label>
+              <input type="number" [(ngModel)]="editingService!.unitPrice" (wheel)="$event.preventDefault()" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="0"
+                     class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none transition-colors font-mono font-bold" [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+              
+              <!-- Indicador Dinámico de Precio COP -->
+              <div class="mt-1.5 p-3 rounded-xl border flex items-center justify-between transition-all duration-300 shadow-xs"
+                   [ngClass]="isDark ? 'bg-[#141419] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span class="text-[10px] font-bold uppercase tracking-widest opacity-60">Precio servicio</span>
+                </div>
+                <span class="text-base sm:text-lg font-bold font-mono tracking-tight"
+                      [ngClass]="isDark ? 'text-emerald-400' : 'text-emerald-600'">
+                  {{ formatCOPDisplay(editingService!.unitPrice) }}
+                </span>
+              </div>
+            </div>
+            <div class="flex flex-col gap-1.5 md:col-span-2">
+              <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Descripción Corta</label>
+              <textarea [(ngModel)]="editingService!.description" rows="2" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="Alcance, entregables y detalles del servicio..."
+                        class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none resize-none transition-colors"
+                        [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'"></textarea>
+            </div>
+          </div>
+
+          <div class="flex gap-3 justify-end pt-2">
+            <button (click)="showServiceForm = false" class="px-4 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border cursor-pointer transition-colors"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white' : 'border-neutral-300 text-neutral-600 hover:text-neutral-900'">Cancelar</button>
+            <button (click)="saveService()" class="px-5 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider cursor-pointer shadow-md transition-all active:scale-95"
+                    [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-neutral-700'">Guardar Servicio</button>
+          </div>
+        </div>
+
+        <!-- Category Filter Pills (Dock Style) -->
+        <div class="flex items-center gap-1.5 p-1 rounded-2xl border backdrop-blur-md overflow-x-auto no-scrollbar"
+             [ngClass]="isDark ? 'bg-[#141419] border-neutral-800' : 'bg-neutral-100 border-neutral-200'">
+          <button *ngFor="let cat of serviceCategories" (click)="filterCategory = cat.id"
+                  class="whitespace-nowrap px-4 py-1.5 rounded-xl text-xs font-headline font-semibold uppercase tracking-wider transition-all cursor-pointer shrink-0 active:scale-95"
+                  [ngClass]="filterCategory === cat.id
+                    ? 'bg-white text-black font-bold shadow-md'
+                    : (isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-800/40' : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200/60')">
+            {{ cat.label }}
+          </button>
+        </div>
+
+        <!-- Services Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div *ngFor="let s of paginatedServices" 
+               class="rounded-2xl border p-6 flex flex-col justify-between transition-all duration-300 shadow-sm relative overflow-hidden"
+               [ngClass]="[
+                 isAcquisition(s)
+                   ? (isDark ? 'bg-emerald-950/20 border-emerald-500/50 hover:border-emerald-400 shadow-emerald-950/30' : 'bg-emerald-50/70 border-emerald-300 hover:border-emerald-400 shadow-emerald-100/50')
+                   : (isDark ? 'bg-[#0c0c0e] border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200 hover:border-neutral-300')
+               ]">
+            
+            <div>
+              <div class="flex items-start justify-between gap-3 mb-4">
+                <div class="flex items-center gap-3">
+                  <!-- Category Icon -->
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center border shrink-0"
+                       [ngClass]="isAcquisition(s)
+                         ? (isDark ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-emerald-600 text-white border-emerald-600')
+                         : (isDark ? 'bg-[#141419] text-white border-neutral-800' : 'bg-neutral-100 text-black border-neutral-200')">
+                    
+                    <!-- Icon for Adquisición de Software -->
+                    <svg *ngIf="isAcquisition(s)" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+                    </svg>
+
+                    <!-- Code for desarrollo -->
+                    <svg *ngIf="!isAcquisition(s) && s.category === 'desarrollo'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+                    <!-- Palette for diseño -->
+                    <svg *ngIf="!isAcquisition(s) && s.category === 'diseño'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.098 19.902a3.75 3.75 0 005.304 0l6.401-6.402M6.75 21A3.75 3.75 0 013 17.25V4.125C3 3.504 3.504 3 4.125 3h5.25c.621 0 1.125.504 1.125 1.125v4.072M6.75 21a3.75 3.75 0 003.75-3.75V8.197M6.75 21h13.125c.621 0 1.125-.504 1.125-1.125v-5.25c0-.621-.504-1.125-1.125-1.125h-4.072"/></svg>
+                    <!-- Megaphone for marketing -->
+                    <svg *ngIf="!isAcquisition(s) && s.category === 'marketing'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H5.25A2.25 2.25 0 013 13.5v-3c0-1.242 1.008-2.25 2.25-2.25h3c.704 0 1.402-.03 2.09-.09l.481-.042A3.748 3.748 0 0113.8 6.16l2.368-1.579A1.125 1.125 0 0118 5.517v12.966a1.125 1.125 0 01-1.832.864l-2.368-1.579a3.748 3.748 0 01-2.979-1.948l-.481-.042z"/></svg>
+                    <!-- Briefcase for consultoria -->
+                    <svg *ngIf="!isAcquisition(s) && s.category === 'consultoria'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+                    <!-- Cube for otros -->
+                    <svg *ngIf="!isAcquisition(s) && s.category !== 'desarrollo' && s.category !== 'diseño' && s.category !== 'marketing' && s.category !== 'consultoria'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/></svg>
+                  </div>
+                  <div>
+                    <span *ngIf="isAcquisition(s)"
+                          class="text-[9px] font-headline font-bold uppercase tracking-[0.2em] px-2.5 py-0.5 rounded-full border mb-1 inline-flex items-center gap-1.5"
+                          [ngClass]="isDark ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300' : 'bg-emerald-100 border-emerald-300 text-emerald-800'">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                      <span>PROPUESTA SOFTWARE</span>
+                    </span>
+                    <span *ngIf="!isAcquisition(s)"
+                          class="text-[9px] font-headline font-bold uppercase tracking-[0.2em] px-2.5 py-0.5 rounded-full border mb-1 inline-block"
+                          [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
+                      {{ s.category }}
+                    </span>
+                    <h4 class="text-base font-headline font-bold leading-tight" 
+                        [ngClass]="isAcquisition(s) ? (isDark ? 'text-emerald-300' : 'text-emerald-950') : (isDark ? 'text-white' : 'text-neutral-900')">
+                      {{ s.name }}
+                    </h4>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-1 shrink-0">
+                  <!-- Botón Descargar PDF de la Propuesta / Adquisición -->
+                  <button *ngIf="isAcquisition(s)" 
+                          (click)="downloadProposalPdfFromService(s)"
+                          [disabled]="pdfLoading"
+                          class="p-2 rounded-xl cursor-pointer transition-colors"
+                          [ngClass]="isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-500 hover:text-black hover:bg-neutral-100'" 
+                          title="Descargar PDF de Propuesta">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                  </button>
+
+                  <button (click)="editService(s)" class="p-2 rounded-xl cursor-pointer transition-colors" [ngClass]="isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-500 hover:text-black hover:bg-neutral-100'" title="Editar Servicio">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                  </button>
+                  <button (click)="deleteService(s.id!)" class="p-2 rounded-xl cursor-pointer transition-colors" [ngClass]="isDark ? 'text-neutral-400 hover:text-red-400 hover:bg-red-900/20' : 'text-neutral-500 hover:text-red-600 hover:bg-red-50'" title="Eliminar Servicio">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <p *ngIf="s.description" class="text-xs font-sans font-normal leading-relaxed mb-4 opacity-80" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-600'">
+                {{ s.description }}
+              </p>
+            </div>
+
+            <div class="pt-4 border-t flex items-center justify-between mt-auto"
+                 [ngClass]="isAcquisition(s) ? (isDark ? 'border-emerald-500/30' : 'border-emerald-200') : (isDark ? 'border-neutral-800' : 'border-neutral-100')">
+              <span class="text-[10px] font-headline font-bold uppercase tracking-widest opacity-60">
+                {{ isAcquisition(s) ? 'Inversión Proyecto' : 'Tarifa Base' }}
+              </span>
+              <span class="text-lg font-headline font-bold" 
+                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                {{ formatCOP(s.unitPrice || 0) }}
+              </span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 📄 SERVICES PAGINATION BAR -->
+        <div *ngIf="filteredServices.length > 0" 
+             class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border transition-all shadow-sm"
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800 text-neutral-400' : 'bg-white border-neutral-200 text-neutral-600'">
+          
+          <div class="flex items-center gap-3 text-xs">
+            <span>
+              Mostrando <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ (servicePage - 1) * servicePageSize + 1 }}</span> - 
+              <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ getMin(servicePage * servicePageSize, filteredServices.length) }}</span> de 
+              <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ filteredServices.length }}</span>
+            </span>
+
+            <div class="flex items-center gap-1.5 ml-2">
+              <span class="text-[11px] opacity-70">Por pág:</span>
+              <select [(ngModel)]="servicePageSize" (change)="servicePage = 1"
+                      class="px-2 py-1 rounded-lg text-xs font-semibold border outline-none cursor-pointer"
+                      [ngClass]="isDark ? 'border-neutral-800 text-white bg-[#141419]' : 'border-neutral-300 text-neutral-900 bg-white'">
+                <option [value]="4">4</option>
+                <option [value]="8">8</option>
+                <option [value]="16">16</option>
+                <option [value]="32">32</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1.5 self-end sm:self-auto">
+            <button (click)="servicePage = 1" [disabled]="servicePage === 1"
+                    class="p-1.5 rounded-lg border transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'"
+                    title="Primera página">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" /></svg>
+            </button>
+            <button (click)="servicePage = servicePage - 1" [disabled]="servicePage === 1"
+                    class="px-2.5 py-1 rounded-lg border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'">
+              <span>‹</span>
+              <span class="hidden sm:inline">Ant</span>
+            </button>
+            <span class="px-3 py-1 text-xs font-mono font-bold rounded-lg border"
+                  [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white' : 'bg-neutral-100 border-neutral-300 text-neutral-900'">
+              {{ servicePage }} / {{ totalServicePages }}
+            </span>
+            <button (click)="servicePage = servicePage + 1" [disabled]="servicePage >= totalServicePages"
+                    class="px-2.5 py-1 rounded-lg border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'">
+              <span class="hidden sm:inline">Sig</span>
+              <span>›</span>
+            </button>
+            <button (click)="servicePage = totalServicePages" [disabled]="servicePage >= totalServicePages"
+                    class="p-1.5 rounded-lg border transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'"
+                    title="Última página">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5" /></svg>
+            </button>
+          </div>
+
+        </div>
+
+        <div *ngIf="filteredServices.length === 0" class="p-12 text-center text-xs opacity-50 rounded-2xl border" [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
+          No se encontraron servicios registrados en esta categoría.
+        </div>
+
+      </ng-container>
+
+      <!-- ══════════════════ FACTURAS ══════════════════ -->
+      <ng-container *ngIf="subTab === 'facturas'">
+
+        <!-- New / Edit Invoice Form -->
+        <div *ngIf="showInvoiceForm && editingInvoice" class="rounded-2xl border p-6 space-y-5 shadow-sm"
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+          <h3 class="text-sm font-bold uppercase tracking-wide" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+            {{ editingInvoice.id ? 'Editar Cuenta #' + editingInvoice.id : 'Nueva Cuenta de Cobro' }}
+          </h3>
+
+          <!-- Client + title + dates -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1.5 md:col-span-2">
+              <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Nombre / Etiqueta de la Cuenta de Cobro</label>
+              <input type="text" [(ngModel)]="editingInvoice.title" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                     placeholder="Ej: Desarrollo de Plataforma Web Enterprise, Mantenimiento Mensual, etc."
+                     class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none transition-colors font-semibold"
+                     [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Cliente *</label>
+              <select [(ngModel)]="selectedClientId" (change)="onClientSelect()" [style.color-scheme]="isDark ? 'dark' : 'light'" class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none cursor-pointer transition-colors"
+                      [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black'">
+                <option value="">— Seleccionar cliente —</option>
+                <option *ngFor="let c of clients" [value]="c.id">{{ c.name }}{{ c.company ? ' · ' + c.company : '' }}</option>
+              </select>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Fecha de emisión</label>
+              <input type="date" [(ngModel)]="editingInvoice.issuedAt" [style.color-scheme]="isDark ? 'dark' : 'light'" class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none cursor-pointer transition-colors"
+                     [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black'">
+            </div>
+            <div class="flex flex-col gap-1.5 md:col-span-2">
+              <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Fecha de vencimiento</label>
+              <input type="date" [(ngModel)]="editingInvoice.dueAt" [style.color-scheme]="isDark ? 'dark' : 'light'" class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none cursor-pointer transition-colors"
+                     [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black'">
+            </div>
+          </div>
+
+          <!-- Add services -->
+          <div>
+            <label class="text-xs font-bold uppercase tracking-widest block mb-2" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Agregar Servicios</label>
+            <div class="flex gap-2">
+              <select [(ngModel)]="serviceToAdd" [style.color-scheme]="isDark ? 'dark' : 'light'" class="flex-grow px-3.5 py-2.5 rounded-xl text-xs border outline-none cursor-pointer transition-colors"
+                      [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black'">
+                <option value="">— Seleccionar servicio del catálogo —</option>
+                <option *ngFor="let s of allServices" [value]="s.id">{{ s.name }} ({{ formatCOP(s.unitPrice || 0) }})</option>
+              </select>
+              <button (click)="addServiceToInvoice()" class="px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer shrink-0 transition-colors border"
+                      [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-white hover:bg-neutral-800' : 'border-neutral-300 bg-neutral-200 text-neutral-800 hover:bg-neutral-300'">
+                + Agregar
+              </button>
+            </div>
+          </div>
+
+          <!-- Invoice items table -->
+          <div *ngIf="editingInvoice.items?.length" class="rounded-xl border overflow-hidden"
+               [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+            <div class="grid grid-cols-12 px-4 py-2 text-[10px] font-mono uppercase tracking-wider"
+                 [ngClass]="isDark ? 'bg-[#141419] text-neutral-400' : 'bg-neutral-100 text-neutral-500'">
+              <span class="col-span-5">Servicio</span>
+              <span class="col-span-2 text-center">Cant.</span>
+              <span class="col-span-2 text-right">P. Unitario</span>
+              <span class="col-span-2 text-right">Subtotal</span>
+              <span class="col-span-1"></span>
+            </div>
+            <div *ngFor="let item of editingInvoice.items; let i = index" class="grid grid-cols-12 px-4 py-3 items-center border-t transition-colors"
+                 [ngClass]="isDark ? 'border-neutral-800 bg-[#0c0c0e]' : 'border-neutral-200 bg-white'">
+              <div class="col-span-5">
+                <p class="text-sm font-semibold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ item.serviceName }}</p>
+                <input type="text" [(ngModel)]="item.description" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="Descripción adicional..."
+                       class="text-xs mt-0.5 w-full bg-transparent border-0 outline-none"
+                       [ngClass]="isDark ? 'text-neutral-400 placeholder-neutral-600 focus:text-white' : 'text-neutral-600 placeholder-neutral-400 focus:text-black'"
+                       (change)="recalcInvoice()">
+              </div>
+              <div class="col-span-2 flex justify-center">
+                <input type="number" [(ngModel)]="item.quantity" min="1" (change)="recalcInvoice()" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                       class="w-14 text-center px-2 py-1 rounded-lg text-xs border outline-none transition-colors"
+                       [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black'">
+              </div>
+              <div class="col-span-2 flex justify-end">
+                <input type="number" [(ngModel)]="item.unitPrice" (change)="recalcInvoice()" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                       class="w-28 text-right px-2 py-1 rounded-lg text-xs border outline-none transition-colors"
+                       [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black'">
+              </div>
+              <div class="col-span-2 text-right">
+                <span class="text-xs font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(item.subtotal || 0) }}</span>
+              </div>
+              <div class="col-span-1 flex justify-end">
+                <button (click)="removeInvoiceItem(i)" class="p-1 rounded-lg cursor-pointer transition-colors" [ngClass]="isDark ? 'text-neutral-500 hover:text-red-400' : 'text-neutral-400 hover:text-red-500'">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Totals + tax + notes -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Notas / Términos de pago</label>
+              <textarea [(ngModel)]="editingInvoice.notes" rows="3" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="Ej: Pago a 15 días, transferencia bancaria..."
+                        class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none resize-none transition-colors"
+                        [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'"></textarea>
+            </div>
+            <div class="rounded-xl border p-4 space-y-3"
+                 [ngClass]="isDark ? 'bg-[#141419] border-neutral-800' : 'bg-white border-neutral-200'">
+              <div class="flex justify-between text-xs">
+                <span [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Subtotal</span>
+                <span class="font-semibold font-sans" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ formatCOP(editingInvoice.subtotal || 0) }}</span>
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <div class="flex items-center gap-2">
+                  <span [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">IVA</span>
+                  <input type="number" [(ngModel)]="editingInvoice.taxRate" min="0" max="100" (change)="recalcInvoice()" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                         class="w-14 text-center px-2 py-0.5 rounded-lg text-xs border outline-none transition-colors"
+                         [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800 text-white focus:border-neutral-500' : 'bg-neutral-100 border-neutral-300 text-neutral-900 focus:border-black'">
+                  <span [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">%</span>
+                </div>
+                <span class="font-semibold font-sans" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ formatCOP(editingInvoice.taxAmount || 0) }}</span>
+              </div>
+              <div class="border-t pt-3 flex justify-between"
+                   [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+                <span class="text-xs font-bold uppercase tracking-wider" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">{{ (editingInvoice.paidAmount || editingInvoice.paid_amount || 0) > 0 ? 'Total Servicios' : 'Total' }}</span>
+                <span class="text-sm font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(editingInvoice.total || 0) }}</span>
+              </div>
+              <div *ngIf="(editingInvoice.paidAmount || editingInvoice.paid_amount || 0) > 0" class="flex justify-between text-xs text-emerald-500 font-semibold">
+                <span>Valor Ya Abonado</span>
+                <span class="font-sans">- {{ formatCOP(editingInvoice.paidAmount || editingInvoice.paid_amount || 0) }}</span>
+              </div>
+              <div *ngIf="(editingInvoice.paidAmount || editingInvoice.paid_amount || 0) > 0" class="border-t pt-2 flex justify-between"
+                   [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+                <span class="text-xs font-extrabold uppercase tracking-wider" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Total a Pagar</span>
+                <span class="text-base font-extrabold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(editingInvoice.pendingAmount !== undefined ? editingInvoice.pendingAmount : (editingInvoice.total || 0)) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-3 justify-end flex-wrap mt-4">
+            <button (click)="generatePreview()" [disabled]="pdfLoading" class="px-5 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border transition-colors cursor-pointer flex items-center gap-2 mr-auto"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-300 hover:text-white hover:bg-neutral-800' : 'border-neutral-300 text-neutral-600 hover:text-black hover:bg-neutral-100'">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              {{ pdfLoading ? 'Cargando...' : 'Vista Previa' }}
+            </button>
+            <button (click)="showInvoiceForm = false" class="px-4 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border cursor-pointer transition-colors"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white' : 'border-neutral-300 text-neutral-500 hover:text-neutral-900'">Cancelar</button>
+            <!-- Modo Edición: Botón de Actualizar -->
+            <ng-container *ngIf="editingInvoice.id">
+              <button (click)="saveInvoice(editingInvoice.status || 'Borrador')"
+                      class="px-6 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider cursor-pointer shadow-md transition-all active:scale-95"
+                      [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'">
+                Actualizar Cuenta
+              </button>
+            </ng-container>
+
+            <!-- Modo Creación: Botones de Guardar -->
+            <ng-container *ngIf="!editingInvoice.id">
+              <button (click)="saveInvoice('Borrador')" class="px-5 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border cursor-pointer transition-colors"
+                      [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-300 hover:bg-neutral-800 hover:text-white' : 'border-neutral-300 text-neutral-600 hover:bg-neutral-100'">Guardar Borrador</button>
+              <button (click)="saveInvoice('Enviada')" class="px-5 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider cursor-pointer shadow-md transition-all active:scale-95"
+                      [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'">Guardar como Enviada</button>
+              <button (click)="saveInvoice('Pagada')" class="px-5 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider cursor-pointer border transition-colors"
+                      [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900 text-white hover:bg-neutral-800' : 'border-neutral-300 bg-neutral-100 text-neutral-900 hover:bg-neutral-200'">Guardar y Registrar Pago</button>
+            </ng-container>
+          </div>
+        </div>
+
+        <!-- Invoice Filters -->
+        <div class="rounded-2xl border p-4 mb-4 grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4 items-end shadow-sm"
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
+           <div class="flex flex-col gap-1.5 col-span-2 sm:flex-grow sm:min-w-[200px]">
+             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Buscar Empresa o Cliente</label>
+             <input type="text" [(ngModel)]="invFilterCompany" placeholder="Ej: TechCorp"
+                    class="w-full px-3.5 py-2 rounded-xl text-xs border outline-none bg-transparent transition-colors"
+                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
+           </div>
+           <div class="flex flex-col gap-1.5 col-span-1 sm:w-28">
+             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Precio Min</label>
+             <input type="number" [(ngModel)]="invFilterMinPrice" placeholder="0"
+                    class="w-full px-3.5 py-2 rounded-xl text-xs border outline-none bg-transparent transition-colors"
+                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
+           </div>
+           <div class="flex flex-col gap-1.5 col-span-1 sm:w-28">
+             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Precio Max</label>
+             <input type="number" [(ngModel)]="invFilterMaxPrice" placeholder="Múltiplo"
+                    class="w-full px-3.5 py-2 rounded-xl text-xs border outline-none bg-transparent transition-colors"
+                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
+           </div>
+           <div class="flex flex-col gap-1.5 col-span-1 sm:w-32">
+             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Desde (Fecha)</label>
+             <input type="date" [(ngModel)]="invFilterStartDate"
+                    class="w-full px-3.5 py-2 rounded-xl text-xs border outline-none bg-transparent cursor-pointer transition-colors"
+                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 focus:border-neutral-500'">
+           </div>
+           <div class="flex flex-col gap-1.5 col-span-1 sm:w-32">
+             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Hasta (Fecha)</label>
+             <input type="date" [(ngModel)]="invFilterEndDate"
+                    class="w-full px-3.5 py-2 rounded-xl text-xs border outline-none bg-transparent cursor-pointer transition-colors"
+                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white focus:border-neutral-500' : 'border-neutral-300 text-neutral-900 focus:border-neutral-500'">
+           </div>
+           <div class="col-span-2 sm:flex-shrink-0">
+             <button (click)="invFilterCompany=''; invFilterMinPrice=null; invFilterMaxPrice=null; invFilterStartDate=''; invFilterEndDate=''"
+                     class="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-colors cursor-pointer"
+                     [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-300 text-neutral-500 hover:text-black hover:bg-neutral-100'">
+               Limpiar
+             </button>
+           </div>
+         </div>
+
+        <!-- Batch / Cascade Download Bar -->
+        <div class="flex items-center justify-between flex-wrap gap-3 mb-4 p-4 rounded-2xl border transition-all shadow-sm"
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3"/>
+            </svg>
+            <span class="text-xs font-bold uppercase tracking-wider" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">Descarga en Cascada (PDFs en Lote):</span>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <button (click)="downloadCascadeInvoices(['Borrador'])" [disabled]="pdfLoading || batchLoading || getCountByStatus(['Borrador']) === 0"
+                    class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all duration-200 cursor-pointer shadow-xs disabled:opacity-40 disabled:cursor-not-allowed"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-300 hover:text-white hover:bg-neutral-800' : 'border-neutral-300 bg-neutral-50 text-neutral-700 hover:text-black hover:bg-neutral-100'">
+              <svg class="w-3.5 h-3.5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+              {{ batchLoadingStatus === 'Borrador' ? batchProgressText : 'Borradores (' + getCountByStatus(['Borrador']) + ')' }}
+            </button>
+
+            <button (click)="downloadCascadeInvoices(['Enviada'])" [disabled]="pdfLoading || batchLoading || getCountByStatus(['Enviada']) === 0"
+                    class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all duration-200 cursor-pointer shadow-xs disabled:opacity-40 disabled:cursor-not-allowed"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-blue-400 hover:text-blue-300 hover:bg-neutral-800' : 'border-neutral-300 bg-neutral-50 text-blue-600 hover:text-blue-700 hover:bg-neutral-100'">
+              <svg class="w-3.5 h-3.5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+              {{ batchLoadingStatus === 'Enviada' ? batchProgressText : 'Enviadas (' + getCountByStatus(['Enviada']) + ')' }}
+            </button>
+
+            <button (click)="downloadCascadeInvoices(['Borrador', 'Enviada'])" [disabled]="pdfLoading || batchLoading || getCountByStatus(['Borrador', 'Enviada']) === 0"
+                    class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all duration-200 cursor-pointer shadow-sm disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
+                    [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200 border-white' : 'border-black/20 bg-neutral-900 text-white hover:bg-neutral-800'">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+              {{ batchLoadingStatus === 'Ambas' ? batchProgressText : 'Ambas (' + getCountByStatus(['Borrador', 'Enviada']) + ')' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Mobile Bottom Sheet / Inline Payment Panel -->
+        <div *ngIf="showPaymentModal && paymentInvoiceTarget" class="rounded-t-3xl md:rounded-2xl border p-5 md:p-6 space-y-4 shadow-2xl transition-all mb-6 animate-fadeIn fixed md:relative inset-x-2 bottom-16 md:bottom-auto z-50 md:z-auto max-h-[85vh] overflow-y-auto"
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800 text-white' : 'bg-neutral-50 border-neutral-300 text-black'">
+          
+          <!-- Drag Handle Indicator for Mobile -->
+          <div class="w-12 h-1.5 rounded-full mx-auto mb-1 md:hidden opacity-30"
+               [ngClass]="isDark ? 'bg-white' : 'bg-black'"></div>
+          
+          <!-- Header Bar -->
+          <div class="flex items-center justify-between border-b pb-4 transition-colors"
+               [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+            <div class="flex items-center gap-3">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border transition-colors"
+                    [ngClass]="isDark ? 'bg-[#141419] text-white border-neutral-800' : 'bg-white text-black border-neutral-300'">
+                <span>REGISTRO DE RECAUDO / ABONO</span>
+              </span>
+              <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider truncate" [ngClass]="isDark ? 'text-white' : 'text-black'">
+                Abono a Cuenta #{{ paymentInvoiceTarget.invoice_number || paymentInvoiceTarget.id }}
+              </h3>
+            </div>
+            <button (click)="closePaymentModal()" class="p-1.5 rounded-xl border transition-all cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white' : 'border-neutral-200 text-neutral-500 hover:text-black hover:bg-neutral-100'">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          <!-- Body Grid (2 Cols) -->
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+            
+            <!-- Left Col: Client & Invoice Financial State (Purely Monochromatic) -->
+            <div class="md:col-span-5 rounded-2xl border p-5 flex flex-col justify-between transition-colors shadow-xs"
+                 [ngClass]="isDark ? 'bg-[#141419] border-neutral-800' : 'bg-white border-neutral-200'">
+              <div class="space-y-4">
+                <div>
+                  <span class="text-[10px] font-bold uppercase tracking-widest block mb-1 opacity-50">Total Cuenta de Cobro</span>
+                  <p class="text-xl font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-black'">
+                    {{ formatCOP(paymentInvoiceTarget.total_amount || paymentInvoiceTarget.total || 0) }}
+                  </p>
+                </div>
+
+                <div class="space-y-2 border-t pt-3" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+                  <div class="flex justify-between items-center text-xs">
+                    <span class="opacity-50 font-medium">Recaudado hasta hoy:</span>
+                    <span class="font-bold font-sans text-sm" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">{{ formatCOP(paymentInvoiceTarget.paid_amount || 0) }}</span>
+                  </div>
+
+                  <div class="flex justify-between items-center text-xs pt-1">
+                    <span class="font-bold opacity-70">Saldo Pendiente:</span>
+                    <span class="font-bold font-sans text-sm" [ngClass]="isDark ? 'text-white' : 'text-black'">
+                      {{ formatCOP(getPendingAmount(paymentInvoiceTarget)) }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Recaudo Progress Bar (Monocromático) -->
+                <div class="space-y-1.5 pt-1">
+                  <div class="h-2 rounded-full overflow-hidden border" [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-neutral-200 border-neutral-300'">
+                    <div class="h-full rounded-full transition-all duration-500" [ngClass]="isDark ? 'bg-white' : 'bg-black'"
+                         [style.width.%]="getInvoicePaidPct(paymentInvoiceTarget)"></div>
+                  </div>
+                  <div class="flex justify-between items-center text-[10px] font-sans font-bold opacity-60">
+                    <span>Progreso Recaudo</span>
+                    <span>{{ getInvoicePaidPct(paymentInvoiceTarget) }}%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="border-t my-3 transition-colors" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'"></div>
+
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-widest block mb-1 opacity-50">TITULAR DE LA CUENTA</span>
+                <p class="text-sm font-bold truncate" [ngClass]="isDark ? 'text-white' : 'text-black'">{{ paymentInvoiceTarget.clientName || 'Cliente' }}</p>
+                <p class="text-xs opacity-50 truncate mt-0.5">{{ paymentInvoiceTarget.clientCompany || 'Sin empresa' }}</p>
+              </div>
+            </div>
+
+            <!-- Right Col: Form & Formatted Price Preview -->
+            <div class="md:col-span-7 flex flex-col justify-between space-y-4">
+              
+              <!-- Amount Input + Live Price Preview Badge -->
+              <div class="space-y-2">
+                <label class="text-[10px] font-bold uppercase tracking-widest block" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
+                  MONTO A ABONAR (COP) *
+                </label>
+                
+                <input type="number" [(ngModel)]="paymentForm.amount" min="1" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                       placeholder="Ej: 500000"
+                       class="w-full px-4 py-2.5 rounded-xl text-base font-sans font-bold border outline-none transition-colors"
+                       [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white focus:border-neutral-500' : 'bg-white border-neutral-300 text-black focus:border-black'">
+
+                <!-- Indicador del Precio en Color Verde -->
+                <div class="mt-2 p-3.5 rounded-xl border flex items-center justify-between transition-all duration-300 shadow-xs"
+                     [ngClass]="isDark ? 'bg-[#141419] border-neutral-800' : 'bg-white border-neutral-200'">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest opacity-60">Precio abono</span>
+                  </div>
+                  <span class="text-lg sm:text-xl font-bold font-sans"
+                        [ngClass]="isDark ? 'text-emerald-400' : 'text-emerald-600'">
+                    {{ formatCOPDisplay(paymentForm.amount) }}
+                  </span>
+                </div>
+
+                <!-- Quick Presets -->
+                <div class="flex gap-2 pt-1 flex-wrap">
+                  <button (click)="setPaymentPreset(0.5)" type="button"
+                          class="px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider border cursor-pointer transition-colors"
+                          [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-300 hover:text-white hover:bg-neutral-800' : 'border-neutral-200 bg-white text-neutral-700 hover:text-black hover:bg-neutral-100'">
+                    50% del Saldo
+                  </button>
+                  <button (click)="setPaymentPreset(1.0)" type="button"
+                          class="px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider border cursor-pointer transition-colors"
+                          [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-white hover:bg-neutral-800' : 'border-neutral-300 bg-neutral-100 text-black hover:bg-neutral-200'">
+                    Liquidar Saldo Total
+                  </button>
+                </div>
+              </div>
+
+              <!-- Date & Method Fields -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1.5">
+                  <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">FECHA DE ABONO *</label>
+                  <input type="date" [(ngModel)]="paymentForm.paidAt" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                         class="w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold border outline-none cursor-pointer transition-colors"
+                         [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white focus:border-neutral-500' : 'bg-white border-neutral-300 text-black focus:border-black'">
+                </div>
+                <div class="flex flex-col gap-1.5">
+                  <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">MÉTODO DE PAGO *</label>
+                  <select [(ngModel)]="paymentForm.paymentMethod" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                          class="w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold border outline-none cursor-pointer transition-colors"
+                          [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white focus:border-neutral-500' : 'bg-white border-neutral-300 text-black focus:border-black'">
+                    <option *ngFor="let m of paymentMethodsList" [value]="m">{{ m }}</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Notes -->
+              <div class="flex flex-col gap-1.5">
+                <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">COMPROBANTE / REFERENCIA / NOTAS</label>
+                <textarea [(ngModel)]="paymentForm.paymentNotes" rows="2" [style.color-scheme]="isDark ? 'dark' : 'light'"
+                          placeholder="Ej: Abono 1 de 2 · Ref Bancolombia #982341..."
+                          class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none resize-none transition-colors font-medium"
+                          [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-black placeholder-neutral-400 focus:border-black'"></textarea>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Bottom Actions -->
+          <div class="flex gap-3 justify-end pt-3 border-t transition-colors" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+            <button (click)="closePaymentModal()"
+                    class="px-4 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border cursor-pointer transition-colors"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white' : 'border-neutral-300 text-neutral-600 hover:text-black'">
+              Cancelar
+            </button>
+            <button (click)="confirmPayment()" [disabled]="isLoading"
+                    class="px-6 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider transition-all cursor-pointer shadow-md flex items-center gap-2 active:scale-95"
+                    [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              <span>{{ isLoading ? 'Guardando Abono...' : 'Guardar Abono' }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Mobile Invoice Cards (App Native Experience) -->
+        <div class="space-y-3 block md:hidden">
+          <div *ngFor="let inv of paginatedInvoices" class="rounded-2xl border p-4 transition-all shadow-sm"
+               [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
+            
+            <!-- Header -->
+            <div class="flex items-center justify-between border-b pb-2.5 mb-3"
+                 [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold font-sans" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">#{{ inv.invoice_number || inv.id }}</span>
+                <span class="text-[9px] font-bold uppercase px-2.5 py-0.5 rounded-full border" [ngClass]="getStatusClass(inv.status)">
+                  {{ inv.status === 'Parcial' || inv.status === 'PARCIAL' ? 'Abonada (' + getInvoicePaidPct(inv) + '%)' : inv.status }}
+                </span>
+              </div>
+              <span class="text-[10px] font-sans opacity-60" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Vence: {{ inv.dueAt | date:'dd MMM' }}</span>
+            </div>
+
+            <!-- Client & Title -->
+            <div class="space-y-0.5 mb-3">
+              <h4 *ngIf="inv.title" class="text-sm font-bold leading-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ inv.title }}</h4>
+              <p class="text-xs font-bold" [ngClass]="inv.title ? (isDark ? 'text-neutral-300' : 'text-neutral-700') : (isDark ? 'text-white' : 'text-neutral-900')">{{ inv.clientName || 'Cliente' }}</p>
+              <p *ngIf="inv.clientCompany" class="text-[11px] opacity-60" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ inv.clientCompany }}</p>
+            </div>
+
+            <!-- Figures Box -->
+            <div class="grid grid-cols-2 gap-2 p-2.5 rounded-xl mb-3"
+                 [ngClass]="isDark ? 'bg-[#141419] border border-neutral-800/80' : 'bg-neutral-50'">
+              <div>
+                <span class="text-[9px] font-bold uppercase tracking-wider block opacity-50">Monto Total</span>
+                <span class="text-xs font-bold font-sans block" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(inv.total || inv.total_amount || 0) }}</span>
+                <div *ngIf="inv.paid_amount && inv.paid_amount > 0 && inv.status !== 'Pagada' && inv.status !== 'PAGADA'" class="text-[9px] text-emerald-400 font-semibold mt-0.5">
+                  Abonado: {{ formatCOP(inv.paid_amount) }}
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="text-[9px] font-bold uppercase tracking-wider block opacity-50">Falta por Pagar</span>
+                <span class="text-xs font-bold font-sans block"
+                      [ngClass]="getPendingAmount(inv) > 0 ? (isDark ? 'text-amber-400' : 'text-amber-600') : (isDark ? 'text-emerald-400' : 'text-emerald-600')">
+                  {{ formatCOP(getPendingAmount(inv)) }}
+                </span>
+                <span class="text-[9px] block opacity-50 font-semibold">{{ getPendingAmount(inv) > 0 ? 'Por cobrar' : 'Al día' }}</span>
+              </div>
+            </div>
+
+            <!-- Actions Bar -->
+            <div class="flex items-center justify-between pt-1">
+              <button (click)="toggleInvoiceExpand(inv.id || '')" class="text-[11px] font-bold text-neutral-400 hover:text-white flex items-center gap-1 cursor-pointer">
+                <span>{{ expandedInvoiceId === inv.id ? 'Ocultar Abonos' : 'Ver Abonos' }}</span>
+                <svg class="w-3.5 h-3.5 transition-transform duration-200" [ngClass]="expandedInvoiceId === inv.id ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+
+              <div class="flex items-center gap-1.5">
+                <button *ngIf="inv.status !== 'Pagada' && inv.status !== 'PAGADA'" (click)="openPaymentModal(inv)"
+                        class="px-2.5 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-all active:scale-95 border flex items-center gap-1"
+                        [ngClass]="isDark ? 'border-emerald-500/40 bg-emerald-500/20 text-emerald-300' : 'border-emerald-300 bg-emerald-50 text-emerald-700'">
+                  + Abono
+                </button>
+                <button (click)="downloadInvoicePdf(inv)" [disabled]="pdfLoading"
+                        class="p-1.5 rounded-xl cursor-pointer transition-all active:scale-95 border"
+                        [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-300 hover:text-white hover:bg-neutral-800' : 'border-neutral-200 bg-neutral-100 text-neutral-700'">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                </button>
+                <button (click)="editInvoice(inv)" class="p-1.5 rounded-xl cursor-pointer transition-all active:scale-95 border"
+                        [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-300 hover:text-white hover:bg-neutral-800' : 'border-neutral-200 bg-neutral-100 text-neutral-700'">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                </button>
+                <button (click)="deleteInvoice(inv.id || '')" class="p-1.5 rounded-xl cursor-pointer transition-all active:scale-95 border text-red-400"
+                        [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] hover:bg-red-950/30' : 'border-neutral-200 bg-neutral-100'">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Mobile Expanded Payments Drawer -->
+            <div *ngIf="expandedInvoiceId === inv.id" class="mt-3 pt-3 border-t space-y-2"
+                 [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+              <p class="text-[10px] font-bold uppercase tracking-wider opacity-60">Historial de Abonos</p>
+              <div *ngIf="!inv.payments || inv.payments.length === 0" class="text-xs opacity-50 py-1">
+                No hay abonos registrados para esta cuenta.
+              </div>
+              <div *ngFor="let p of inv.payments" class="flex items-center justify-between text-xs p-2.5 rounded-xl border"
+                   [ngClass]="isDark ? 'bg-[#141419] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+                <div>
+                  <span class="font-bold font-sans text-emerald-400 block">{{ formatCOP(p.amount) }}</span>
+                  <span class="text-[10px] opacity-60 block">{{ p.payment_date | date:'dd MMM yyyy' }} · {{ p.payment_method }}</span>
+                </div>
+                <button (click)="deletePayment(p.id!)" class="text-neutral-400 hover:text-red-400 p-1">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <div *ngIf="displayedInvoices.length === 0" class="px-4 py-8 text-center text-xs opacity-50 rounded-2xl border"
+               [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
+            No se encontraron cuentas de cobro.
+          </div>
+        </div>
+
+        <!-- Invoice list (Desktop Table View) -->
+        <div class="rounded-2xl border overflow-hidden hidden md:block shadow-sm"
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
+          <div class="grid grid-cols-12 px-5 py-3 text-[10px] font-mono uppercase tracking-wider border-b gap-2"
+               [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-neutral-400' : 'bg-neutral-50 border-neutral-200 text-neutral-500'">
+            <span class="col-span-2">ID</span>
+            <span class="col-span-3">Cliente / Etiqueta</span>
+            <span class="col-span-2 text-right">Monto Total</span>
+            <span class="col-span-2 text-right">Falta por Pagar</span>
+            <span class="col-span-2 text-center">Estado / Vencimiento</span>
+            <span class="col-span-1"></span>
+          </div>
+          <div class="divide-y" [ngClass]="isDark ? 'divide-neutral-800/60' : 'divide-neutral-100'">
+            <ng-container *ngFor="let inv of paginatedInvoices">
+              <div class="grid grid-cols-12 px-5 py-4 items-center transition-colors gap-2"
+                   [ngClass]="isDark ? 'hover:bg-neutral-800/30' : 'hover:bg-neutral-50'">
+                
+                <div class="col-span-2 flex items-center gap-2">
+                  <button (click)="toggleInvoiceExpand(inv.id || '')" class="p-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer shrink-0"
+                          [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white' : 'border-neutral-200 text-neutral-600 hover:text-black'" title="Ver historial de abonos">
+                    <svg class="w-3.5 h-3.5 transition-transform duration-200" [ngClass]="expandedInvoiceId === inv.id ? 'rotate-90' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                  </button>
+                  <span class="text-xs font-semibold font-sans" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">#{{ inv.invoice_number || inv.id }}</span>
+                </div>
+
+                <div class="col-span-3">
+                  <p *ngIf="inv.title" class="text-sm font-bold truncate" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ inv.title }}</p>
+                  <p class="text-xs truncate" [ngClass]="inv.title ? (isDark ? 'text-neutral-400 font-medium' : 'text-neutral-600 font-medium') : (isDark ? 'text-white font-bold text-sm' : 'text-neutral-900 font-bold text-sm')">{{ inv.clientName }}</p>
+                  <p class="text-[11px] truncate opacity-60" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ inv.clientCompany }}</p>
+                </div>
+
+                <!-- Monto Total -->
+                <div class="col-span-2 text-right">
+                  <span class="text-sm font-bold font-sans block" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ formatCOP(inv.total || inv.total_amount || 0) }}</span>
+                  <div *ngIf="inv.paid_amount && inv.paid_amount > 0 && inv.status !== 'Pagada' && inv.status !== 'PAGADA'" class="text-[10px] font-sans mt-0.5">
+                    <span class="text-emerald-400 font-semibold">Abonado: {{ formatCOP(inv.paid_amount) }}</span>
+                  </div>
+                </div>
+
+                <!-- Falta por Pagar (Saldo Pendiente) -->
+                <div class="col-span-2 text-right">
+                  <span class="text-sm font-bold font-sans block"
+                        [ngClass]="getPendingAmount(inv) > 0 ? (isDark ? 'text-amber-400' : 'text-amber-600') : (isDark ? 'text-emerald-400' : 'text-emerald-600')">
+                    {{ formatCOP(getPendingAmount(inv)) }}
+                  </span>
+                  <span class="text-[10px] block opacity-50 uppercase tracking-wider font-medium">
+                    {{ getPendingAmount(inv) > 0 ? 'Por cobrar' : 'Al día' }}
+                  </span>
+                </div>
+
+                <!-- Estado & Vencimiento -->
+                <div class="col-span-2 flex flex-col items-center justify-center gap-1">
+                  <span class="text-[10px] font-bold uppercase px-3 py-1 rounded-full border" [ngClass]="getStatusClass(inv.status)">
+                    {{ inv.status === 'Parcial' || inv.status === 'PARCIAL' ? 'Abonada (' + getInvoicePaidPct(inv) + '%)' : inv.status }}
+                  </span>
+                  <span class="text-[10px] font-sans opacity-60" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Vence: {{ inv.dueAt | date:'dd MMM yyyy' }}</span>
+                </div>
+
+                <div class="col-span-1 flex justify-end gap-1">
+                  <button *ngIf="inv.status !== 'Pagada' && inv.status !== 'PAGADA'" (click)="openPaymentModal(inv)" title="Registrar Abono"
+                          class="p-1.5 rounded-lg cursor-pointer transition-colors"
+                          [ngClass]="isDark ? 'text-emerald-400 hover:bg-emerald-500/10' : 'text-emerald-600 hover:bg-emerald-50'">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-6-6h12"/></svg>
+                  </button>
+                  <button (click)="downloadInvoicePdf(inv)" title="Descargar PDF" [disabled]="pdfLoading"
+                          class="p-1.5 rounded-lg cursor-pointer transition-colors"
+                          [ngClass]="isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-500 hover:text-black hover:bg-neutral-100'">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                  </button>
+                  <button (click)="editInvoice(inv)" title="Editar" class="p-1.5 rounded-lg cursor-pointer transition-colors"
+                          [ngClass]="isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100'">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                  </button>
+                  <button (click)="deleteInvoice(inv.id || '')" title="Eliminar" class="p-1.5 rounded-lg cursor-pointer transition-colors"
+                          [ngClass]="isDark ? 'text-neutral-400 hover:text-red-400 hover:bg-red-900/20' : 'text-neutral-500 hover:text-red-600 hover:bg-red-50'">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Expanded Abonos Ledger Drawer -->
+              <div *ngIf="expandedInvoiceId === inv.id" class="px-6 py-4 border-t space-y-3 transition-all"
+                   [ngClass]="isDark ? 'bg-[#141419] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <h5 class="text-xs font-headline font-bold uppercase tracking-wider" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                      Historial de Abonos Realizados
+                    </h5>
+                  </div>
+                  <button (click)="openPaymentModal(inv)" class="px-3.5 py-1.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider cursor-pointer transition-all shadow-md flex items-center gap-1.5 active:scale-95"
+                          [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'">
+                    + Registrar Abono
+                  </button>
+                </div>
+
+                <!-- Recaudo Status Bar -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                  <div class="rounded-2xl border p-3.5 flex flex-col justify-between transition-colors shadow-2xs"
+                       [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
+                    <span class="text-[10px] font-bold uppercase tracking-widest block opacity-60 mb-1">Monto Total</span>
+                    <p class="text-sm sm:text-base font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                      {{ formatCOP(inv.total || inv.total_amount || 0) }}
+                    </p>
+                  </div>
+
+                  <div class="rounded-2xl border p-3.5 flex flex-col justify-between transition-colors shadow-2xs"
+                       [ngClass]="isDark ? 'bg-emerald-950/20 border-emerald-500/30' : 'bg-emerald-50/50 border-emerald-200'">
+                    <span class="text-[10px] font-bold uppercase tracking-widest block text-emerald-400/80 mb-1">Recaudado hasta hoy</span>
+                    <p class="text-sm sm:text-base font-bold font-sans text-emerald-400">
+                      {{ formatCOP(inv.paid_amount || 0) }}
+                    </p>
+                  </div>
+
+                  <div class="rounded-2xl border p-3.5 flex flex-col justify-between transition-colors shadow-2xs"
+                       [ngClass]="isDark ? 'bg-amber-950/20 border-amber-500/30' : 'bg-amber-50/50 border-amber-200'">
+                    <span class="text-[10px] font-bold uppercase tracking-widest block text-amber-400/80 mb-1">Saldo Pendiente</span>
+                    <p class="text-sm sm:text-base font-bold font-sans text-amber-400">
+                      {{ formatCOP(getPendingAmount(inv)) }}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Payments list table -->
+                <div *ngIf="inv.payments && inv.payments.length > 0" class="rounded-xl border overflow-hidden" [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'border-neutral-200'">
+                  <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr class="border-b text-[9px] font-mono uppercase tracking-wider" [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400' : 'border-neutral-200 bg-neutral-100 text-neutral-500'">
+                        <th class="px-3.5 py-2">Fecha</th>
+                        <th class="px-3.5 py-2">Método</th>
+                        <th class="px-3.5 py-2 text-right">Monto Abono</th>
+                        <th class="px-3.5 py-2">Notas / Ref</th>
+                        <th class="px-3.5 py-2 text-right"></th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y" [ngClass]="isDark ? 'divide-neutral-800/60' : 'divide-neutral-200'">
+                      <tr *ngFor="let pay of inv.payments" [ngClass]="isDark ? 'hover:bg-neutral-800/30' : 'hover:bg-neutral-100/50'">
+                        <td class="px-3.5 py-2 font-sans opacity-80">{{ pay.payment_date | date:'dd MMM yyyy' }}</td>
+                        <td class="px-3.5 py-2 font-semibold">{{ pay.payment_method }}</td>
+                        <td class="px-3.5 py-2 font-sans font-bold text-right text-emerald-400">{{ formatCOP(pay.amount) }}</td>
+                        <td class="px-3.5 py-2 opacity-70 truncate max-w-[200px]">{{ pay.notes || '—' }}</td>
+                        <td class="px-3.5 py-2 text-right">
+                          <button (click)="deletePayment(pay.id!)" class="p-1 rounded text-neutral-400 hover:text-red-400 hover:bg-red-500/10 cursor-pointer" title="Anular / Eliminar Abono">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div *ngIf="!inv.payments || inv.payments.length === 0" class="p-4 text-center text-xs opacity-50 border rounded-xl" [ngClass]="isDark ? 'border-neutral-800 bg-[#0c0c0e]' : 'border-neutral-200'">
+                  No hay abonos registrados para esta cuenta de cobro aún.
+                </div>
+              </div>
+            </ng-container>
+
+            <div *ngIf="invoices.length === 0" class="px-5 py-10 text-center text-sm"
+                 [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">
+              No hay cuentas de cobro aún.
+            </div>
+          </div>
+        </div>
+
+        <!-- 📄 INVOICES PAGINATION BAR -->
+        <div *ngIf="displayedInvoices.length > 0" 
+             class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border transition-all shadow-sm"
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800 text-neutral-400' : 'bg-white border-neutral-200 text-neutral-600'">
+          
+          <div class="flex items-center gap-3 text-xs">
+            <span>
+              Mostrando <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ (invPage - 1) * invPageSize + 1 }}</span> - 
+              <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ getMin(invPage * invPageSize, displayedInvoices.length) }}</span> de 
+              <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ displayedInvoices.length }}</span>
+            </span>
+
+            <div class="flex items-center gap-1.5 ml-2">
+              <span class="text-[11px] opacity-70">Por pág:</span>
+              <select [(ngModel)]="invPageSize" (change)="invPage = 1"
+                      class="px-2 py-1 rounded-lg text-xs font-semibold border outline-none cursor-pointer"
+                      [ngClass]="isDark ? 'border-neutral-800 text-white bg-[#141419]' : 'border-neutral-300 text-neutral-900 bg-white'">
+                <option [value]="5">5</option>
+                <option [value]="10">10</option>
+                <option [value]="25">25</option>
+                <option [value]="50">50</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1.5 self-end sm:self-auto">
+            <button (click)="invPage = 1" [disabled]="invPage === 1"
+                    class="p-1.5 rounded-lg border transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'"
+                    title="Primera página">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" /></svg>
+            </button>
+            <button (click)="invPage = invPage - 1" [disabled]="invPage === 1"
+                    class="px-2.5 py-1 rounded-lg border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'">
+              <span>‹</span>
+              <span class="hidden sm:inline">Ant</span>
+            </button>
+            <span class="px-3 py-1 text-xs font-mono font-bold rounded-lg border"
+                  [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white' : 'bg-neutral-100 border-neutral-300 text-neutral-900'">
+              {{ invPage }} / {{ totalInvPages }}
+            </span>
+            <button (click)="invPage = invPage + 1" [disabled]="invPage >= totalInvPages"
+                    class="px-2.5 py-1 rounded-lg border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'">
+              <span class="hidden sm:inline">Sig</span>
+              <span>›</span>
+            </button>
+            <button (click)="invPage = totalInvPages" [disabled]="invPage >= totalInvPages"
+                    class="p-1.5 rounded-lg border transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] hover:bg-neutral-800 text-neutral-300' : 'border-neutral-200 hover:bg-neutral-100 text-neutral-700'"
+                    title="Última página">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5" /></svg>
+            </button>
+          </div>
+        </div>
+
+      </ng-container>
+
+      <!-- PDF Preview Modal (iOS Bottom Sheet on Mobile / Centered on Desktop) -->
+      <div *ngIf="showPdfPreview" appTeleportToBody class="modal-backdrop fixed inset-0 w-screen h-screen z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-6 bg-black/80 backdrop-blur-xl animate-fadeIn">
+        <div class="w-full max-w-4xl h-[94vh] sm:h-[90vh] rounded-t-[32px] sm:rounded-3xl flex flex-col overflow-hidden shadow-2xl border-t sm:border modal-enter my-0 sm:my-auto sm:-translate-y-4 md:-translate-y-6 transition-all"
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800 text-white shadow-black/80' : 'bg-white border-neutral-200 text-neutral-900 shadow-xl'">
+          
+          <!-- Mobile Pull Handle -->
+          <div class="w-10 h-1.5 rounded-full bg-neutral-600/40 mx-auto my-2.5 sm:hidden shrink-0"></div>
+
+          <div class="px-5 sm:px-6 py-3 sm:py-4 border-b flex justify-between items-center shrink-0" [ngClass]="isDark ? 'border-neutral-800 bg-[#141419]' : 'border-neutral-200 bg-neutral-50/90'">
+            <div class="flex items-center gap-3">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <h3 class="text-sm font-bold uppercase tracking-wider truncate">
+                {{ showProposalModal ? 'Vista Previa: Propuesta' : 'Vista Previa' }}
+              </h3>
+            </div>
+            <div class="flex items-center gap-2">
+              <button (click)="downloadPreviewPdf()" [disabled]="pdfLoading" class="px-3 sm:px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 shadow-md active:scale-95"
+                      [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                <span class="hidden xs:inline">Descargar PDF</span>
+              </button>
+              <button (click)="printPreviewPdf()" class="hidden sm:flex px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all cursor-pointer items-center gap-1.5"
+                      [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-300 hover:text-white hover:bg-neutral-800' : 'border-neutral-300 text-neutral-700 hover:text-black hover:bg-neutral-100'">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                <span>Imprimir</span>
+              </button>
+              <button (click)="closePreview()" class="p-2 rounded-xl transition-all duration-200 cursor-pointer border ml-1"
+                      [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-200 text-neutral-500 hover:text-black hover:bg-neutral-100'">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="flex-grow bg-neutral-950/40 relative">
+            <iframe *ngIf="previewPdfUrl" [src]="previewPdfUrl" class="w-full h-full border-0"></iframe>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════ -->
+      <!-- MODAL: ARMAR PDF DE ADQUISICIÓN DE SOFTWARE (Centrado & Responsivo) -->
+      <!-- ══════════════════════════════════════════════════════════════ -->
+      <div *ngIf="showProposalModal" appTeleportToBody
+           (click)="$event.target === $event.currentTarget && closeSoftwareProposalModal()"
+           class="modal-backdrop fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 bg-black/80 backdrop-blur-xl animate-fadeIn">
+        <div (click)="$event.stopPropagation()"
+             class="w-full max-w-5xl xl:max-w-6xl max-h-[94vh] sm:max-h-[90vh] rounded-t-[28px] sm:rounded-3xl flex flex-col overflow-hidden shadow-2xl border-t sm:border modal-enter my-0 sm:my-auto transition-all"
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800 text-white shadow-black/80' : 'bg-white border-neutral-200 text-neutral-900 shadow-2xl'">
+          
+          <!-- Mobile Pull Handle -->
+          <div class="w-10 h-1.5 rounded-full bg-neutral-600/40 mx-auto my-2.5 sm:hidden shrink-0"></div>
+
+          <!-- Modal Header Minimalista -->
+          <div class="px-5 sm:px-6 py-3.5 sm:py-4 border-b flex justify-between items-center shrink-0"
+               [ngClass]="isDark ? 'border-neutral-800 bg-[#141419]' : 'border-neutral-200 bg-neutral-50/90'">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm"
+                   [ngClass]="isDark ? 'bg-white/10 text-white border border-neutral-700' : 'bg-black text-white border border-neutral-900'">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-sm font-headline font-bold uppercase tracking-wide">
+                  {{ editingProposalServiceId ? 'Editar Propuesta Comercial de Software' : 'Propuesta Comercial de Software' }}
+                </h3>
+                <p class="text-[11px] opacity-60">
+                  {{ editingProposalServiceId ? 'Actualización de entregables, condiciones y valor acordado' : 'Configuración de entregables, valor acordado y exportación oficial' }}
+                </p>
+              </div>
+            </div>
+
+            <button (click)="closeSoftwareProposalModal()" class="p-2 rounded-xl border opacity-60 hover:opacity-100 transition-all cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white' : 'border-neutral-200 text-neutral-500 hover:text-black'"
+                    title="Cerrar">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          <!-- Modal Body con scroll interno unificado -->
+          <div class="flex-1 overflow-y-auto min-h-0 p-4 sm:p-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
+              <!-- COLUMNA 1: Información del Proyecto & Precio/Condiciones -->
+              <div class="lg:col-span-5 space-y-4">
+                
+                <!-- Datos del Cliente & Proyecto -->
+                <div class="rounded-2xl border p-4 sm:p-5 space-y-3.5"
+                     [ngClass]="isDark ? 'bg-[#101014] border-neutral-800' : 'bg-neutral-50/70 border-neutral-200'">
+                  
+                  <div class="flex items-center justify-between border-b pb-2.5"
+                       [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+                    <span class="text-xs font-headline font-bold uppercase tracking-wider flex items-center gap-2"
+                          [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                      <span class="w-1.5 h-1.5 rounded-full" [ngClass]="isDark ? 'bg-white' : 'bg-black'"></span>
+                      <span>Cliente & Proyecto</span>
+                    </span>
+
+                    <select *ngIf="clients.length > 0"
+                            (change)="onProposalClientSelect($any($event.target).value)"
+                            class="px-2.5 py-1 rounded-lg text-[11px] border outline-none cursor-pointer font-medium"
+                            [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white' : 'bg-white border-neutral-300 text-neutral-900'">
+                      <option value="">Autocompletar cliente...</option>
+                      <option *ngFor="let c of clients" [value]="c.id">{{ c.name }}</option>
+                    </select>
+                  </div>
+
+                  <div class="space-y-3">
+                    <div class="flex flex-col gap-1">
+                      <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Título del Proyecto *</label>
+                      <input type="text" [(ngModel)]="proposalData.projectTitle" placeholder="Nombre del software o proyecto"
+                             class="w-full px-3 py-2 rounded-xl text-xs border outline-none transition-colors"
+                             [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div class="flex flex-col gap-1">
+                        <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Cliente Destinatario *</label>
+                        <input type="text" [(ngModel)]="proposalData.clientName" placeholder="Nombre del cliente"
+                               class="w-full px-3 py-2 rounded-xl text-xs border outline-none transition-colors"
+                               [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+                      </div>
+
+                      <div class="flex flex-col gap-1">
+                        <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Empresa</label>
+                        <input type="text" [(ngModel)]="proposalData.clientCompany" placeholder="Razón social (opcional)"
+                               class="w-full px-3 py-2 rounded-xl text-xs border outline-none transition-colors"
+                               [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div class="flex flex-col gap-1">
+                        <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Correo Electrónico</label>
+                        <input type="email" [(ngModel)]="proposalData.clientEmail" placeholder="correo@empresa.com"
+                               class="w-full px-3 py-2 rounded-xl text-xs border outline-none transition-colors"
+                               [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+                      </div>
+
+                      <div class="flex flex-col gap-1">
+                        <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Teléfono / WhatsApp</label>
+                        <input type="text" [(ngModel)]="proposalData.clientPhone" placeholder="+57 300 000 0000"
+                               class="w-full px-3 py-2 rounded-xl text-xs border outline-none transition-colors"
+                               [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Inversión y Condiciones -->
+                <div class="rounded-2xl border p-4 sm:p-5 space-y-3.5"
+                     [ngClass]="isDark ? 'bg-[#101014] border-neutral-800' : 'bg-neutral-50/70 border-neutral-200'">
+                  
+                  <div class="border-b pb-2.5" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+                    <span class="text-xs font-headline font-bold uppercase tracking-wider flex items-center gap-2"
+                          [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                      <span class="w-1.5 h-1.5 rounded-full" [ngClass]="isDark ? 'bg-white' : 'bg-black'"></span>
+                      <span>Inversión & Condiciones</span>
+                    </span>
+                  </div>
+
+                  <div class="space-y-3">
+                    <!-- Precio Total Único -->
+                    <div class="flex flex-col gap-1.5">
+                      <div class="flex items-center justify-between">
+                        <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+                          Precio Total del Proyecto (COP) *
+                        </label>
+                        <span *ngIf="proposalData.totalAmount" class="text-xs font-sans font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                          {{ formatCOP(proposalData.totalAmount) }} COP
+                        </span>
+                      </div>
+                      <input type="number" [(ngModel)]="proposalData.totalAmount" (wheel)="$event.preventDefault()" min="0" placeholder="0"
+                             class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none transition-colors font-mono font-medium"
+                             [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+                    </div>
+
+                    <!-- Tiempo & Garantía -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div class="flex flex-col gap-1">
+                        <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Tiempo Estimado</label>
+                        <input type="text" [(ngModel)]="proposalData.deliveryTime" placeholder="Ej: 3 a 4 semanas"
+                               class="w-full px-3 py-2 rounded-xl text-xs border outline-none transition-colors"
+                               [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+                      </div>
+
+                      <div class="flex flex-col gap-1">
+                        <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Garantía & Soporte</label>
+                        <input type="text" [(ngModel)]="proposalData.warranty" placeholder="Ej: 12 meses de soporte"
+                               class="w-full px-3 py-2 rounded-xl text-xs border outline-none transition-colors"
+                               [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+              <!-- COLUMNA 2: Entregables & Paquetes -->
+              <div class="lg:col-span-7 space-y-4">
+                <div class="rounded-2xl border p-4 sm:p-5 space-y-3.5 flex flex-col justify-between"
+                     [ngClass]="isDark ? 'bg-[#101014] border-neutral-800' : 'bg-neutral-50/70 border-neutral-200'">
+                  
+                  <!-- Header Entregables -->
+                  <div class="flex items-center justify-between border-b pb-2.5 gap-2 flex-wrap"
+                       [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+                    <div class="flex items-center gap-2">
+                      <span class="w-1.5 h-1.5 rounded-full" [ngClass]="isDark ? 'bg-white' : 'bg-black'"></span>
+                      <span class="text-xs font-headline font-bold uppercase tracking-wider" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                        Entregables Incluidos
+                      </span>
+                      <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border"
+                            [ngClass]="proposalData.items.length > 0 ? (isDark ? 'bg-white/10 text-neutral-200 border-neutral-700' : 'bg-neutral-100 text-neutral-800 border-neutral-300') : (isDark ? 'bg-neutral-800 text-neutral-400 border-neutral-700' : 'bg-neutral-200 text-neutral-600 border-neutral-300')">
+                        {{ proposalData.items.length > 0 ? (getActiveProposalItemsCount() + ' de ' + proposalData.items.length) : '0' }}
+                      </span>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                      <button *ngIf="proposalData.items.length > 0"
+                              (click)="clearProposalItems()"
+                              class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border cursor-pointer transition-colors"
+                              [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-rose-400' : 'border-neutral-300 text-neutral-600 hover:text-rose-600'"
+                              title="Limpiar lista">
+                        Vaciar
+                      </button>
+
+                      <button (click)="resetProposalItemsToDefault()"
+                              class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border cursor-pointer transition-colors"
+                              [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-300 hover:text-white' : 'border-neutral-300 text-neutral-700 hover:text-black'"
+                              title="Cargar paquetes sugeridos">
+                        {{ proposalData.items.length === 0 ? '+ Cargar Sugerencias' : 'Restablecer' }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Estado Vacío -->
+                  <div *ngIf="proposalData.items.length === 0"
+                       class="py-10 px-4 rounded-xl border border-dashed text-center flex flex-col items-center justify-center gap-2.5"
+                       [ngClass]="isDark ? 'border-neutral-800 bg-[#0e0e12]/60 text-neutral-400' : 'border-neutral-300 bg-white/70 text-neutral-500'">
+                    <span class="text-xs font-semibold" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
+                      Sin entregables agregados
+                    </span>
+                    <span class="text-[11px] opacity-70">Agrega un módulo a continuación o carga la plantilla sugerida.</span>
+                    <button (click)="resetProposalItemsToDefault()"
+                            class="mt-1 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider border cursor-pointer transition-all active:scale-95"
+                            [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800 text-white hover:bg-neutral-700' : 'border-neutral-300 bg-white text-black hover:bg-neutral-100'">
+                      + Cargar Sugerencias
+                    </button>
+                  </div>
+
+                  <!-- Lista Dinámica de Entregables (Scroll Interno) -->
+                  <div *ngIf="proposalData.items.length > 0"
+                       class="max-h-[300px] sm:max-h-[340px] overflow-y-auto space-y-2 pr-1.5">
+                    <div *ngFor="let item of proposalData.items; let idx = index"
+                         class="p-3 rounded-xl border transition-all"
+                         [ngClass]="[
+                           item.included !== false 
+                             ? (isDark ? 'bg-[#141419] border-neutral-700/80' : 'bg-white border-neutral-300 shadow-2xs') 
+                             : (isDark ? 'bg-[#0e0e12]/60 border-neutral-800/60 opacity-50' : 'bg-neutral-100/60 border-neutral-200 opacity-60')
+                         ]">
+                      <div class="flex items-start gap-2.5">
+                        <input type="checkbox" [(ngModel)]="item.included" class="mt-1 w-3.5 h-3.5 rounded cursor-pointer accent-black dark:accent-white shrink-0">
+                        
+                        <div class="flex-grow space-y-1 min-w-0">
+                          <div class="flex items-center justify-between gap-2">
+                            <input type="text" [(ngModel)]="item.title" placeholder="Título del entregable"
+                                   class="w-full text-xs font-headline font-bold bg-transparent border-0 outline-none p-0 focus:underline"
+                                   [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                            <button (click)="removeProposalItem(idx)" class="p-1 rounded text-neutral-400 hover:text-red-500 cursor-pointer border-0 bg-transparent shrink-0" title="Eliminar">
+                              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                          </div>
+                          <textarea [(ngModel)]="item.description" rows="1" placeholder="Descripción breve del alcance..."
+                                    class="w-full text-[11px] font-sans bg-transparent border-0 outline-none p-0 resize-none opacity-70 focus:opacity-100"
+                                    [ngClass]="isDark ? 'text-neutral-300 placeholder-neutral-600' : 'text-neutral-700 placeholder-neutral-400'"></textarea>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Formulario Compacto para Agregar Entregable -->
+                  <div class="p-3 rounded-xl border border-dashed flex flex-col gap-2"
+                       [ngClass]="isDark ? 'border-neutral-800 bg-[#0e0e12]' : 'border-neutral-300 bg-white/60'">
+                    <span class="text-[10px] font-bold uppercase tracking-widest opacity-60">Agregar Entregable</span>
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                      <input type="text" [(ngModel)]="proposalItemNewTitle" placeholder="Título (ej: Pasarela de Pagos)"
+                             class="flex-1 min-w-0 px-3 py-2 rounded-xl text-xs border outline-none"
+                             [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+                      <input type="text" [(ngModel)]="proposalItemNewDesc" placeholder="Detalle técnico..."
+                             class="flex-1 min-w-0 px-3 py-2 rounded-xl text-xs border outline-none"
+                             [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+                      <button (click)="addProposalItem()"
+                              class="px-4 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider cursor-pointer transition-all border shadow-xs active:scale-95 shrink-0 whitespace-nowrap"
+                              [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200 border-white' : 'bg-black text-white hover:bg-neutral-800 border-black'">
+                        + Agregar
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- Resumen Económico Monocromático Ajustado al Diseño -->
+                <div class="rounded-2xl border p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all shadow-sm"
+                     [ngClass]="isDark ? 'bg-[#101014] border-neutral-800' : 'bg-neutral-50/80 border-neutral-200'">
+                  <div class="space-y-0.5">
+                    <div class="flex items-center gap-2">
+                      <span class="w-1.5 h-1.5 rounded-full" [ngClass]="isDark ? 'bg-white' : 'bg-black'"></span>
+                      <span class="text-xs font-headline font-bold uppercase tracking-wider"
+                            [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                        Inversión Total Acordada
+                      </span>
+                    </div>
+                    <p class="text-[11px] opacity-60">Valor total acordado para propuesta comercial y contrato</p>
+                  </div>
+
+                  <div class="flex items-baseline gap-2 sm:justify-end">
+                    <span class="text-2xl sm:text-3xl font-extrabold font-sans tracking-tight"
+                          [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                      {{ formatCOP(proposalData.totalAmount || 0) }}
+                    </span>
+                    <span class="text-xs sm:text-sm font-bold font-sans tracking-wider"
+                          [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+                      COP
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Modal Footer Minimalista / Sticky iOS Bottom Bar on mobile -->
+          <div class="px-5 sm:px-6 py-3.5 sm:py-4 border-t flex flex-col-reverse sm:flex-row items-center justify-between gap-3 shrink-0"
+               [ngClass]="isDark ? 'border-neutral-800 bg-[#141419]' : 'border-neutral-200 bg-neutral-50'">
+            <button (click)="closeSoftwareProposalModal()"
+                    class="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border cursor-pointer transition-colors text-center"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#0c0c0e] text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-300 bg-white text-neutral-600 hover:text-black hover:bg-neutral-100'">
+              Cancelar
+            </button>
+
+            <div class="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap sm:flex-nowrap">
+              <button (click)="generateProposalPreview()" [disabled]="proposalSubmitting"
+                      class="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-xs active:scale-95"
+                      [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800 text-neutral-200 hover:bg-neutral-700' : 'border-neutral-300 bg-white text-neutral-800 hover:bg-neutral-100'">
+                <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <span class="truncate">Vista Previa</span>
+              </button>
+
+              <button (click)="saveOnlyAcquisition()" [disabled]="proposalSubmitting"
+                      class="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-xs active:scale-95"
+                      [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800 text-white hover:bg-neutral-700' : 'border-neutral-300 bg-white text-black hover:bg-neutral-100'">
+                <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                <span class="truncate">{{ editingProposalServiceId ? 'Actualizar' : 'Guardar' }}</span>
+              </button>
+
+              <button (click)="downloadSoftwareProposal()" [disabled]="proposalSubmitting"
+                      class="w-full sm:w-auto px-5 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider shadow-md active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 border-0 shrink-0"
+                      [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'">
+                <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                <span class="truncate">{{ proposalSubmitting ? 'Guardando...' : (editingProposalServiceId ? 'Actualizar & PDF' : 'Guardar & PDF') }}</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Premium Success Gadget Toast -->
+      <div *ngIf="gadgetToast && gadgetToast.show" class="fixed bottom-6 right-6 z-[120] flex flex-col min-w-[320px] max-w-[420px] rounded-2xl shadow-2xl font-sans overflow-hidden modal-enter border backdrop-blur-xl transition-all"
+           [ngClass]="isDark ? 'bg-[#141419]/95 text-white border-neutral-800 shadow-black/60' : 'bg-white/95 text-neutral-900 border-neutral-200/80 shadow-xl'">
+        <div class="flex items-center justify-between px-5 py-4 gap-3.5">
+          <div class="flex items-center gap-3.5">
+            <!-- Icon by type -->
+            <div *ngIf="gadgetToast.type === 'create'" class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                 [ngClass]="isDark ? 'bg-emerald-500/15 text-emerald-400' : 'bg-emerald-50 text-emerald-600'">
+              <svg class="w-5 h-5 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            </div>
+            <div *ngIf="gadgetToast.type === 'edit'" class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                 [ngClass]="isDark ? 'bg-blue-500/15 text-blue-400' : 'bg-blue-50 text-blue-600'">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            </div>
+            <div *ngIf="gadgetToast.type === 'delete'" class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                 [ngClass]="isDark ? 'bg-rose-500/15 text-rose-400' : 'bg-rose-50 text-rose-600'">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </div>
+            <div *ngIf="gadgetToast.type === 'success'" class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                 [ngClass]="isDark ? 'bg-emerald-500/15 text-emerald-400' : 'bg-emerald-50 text-emerald-600'">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-[11px] font-bold uppercase tracking-wider opacity-60">
+                {{ gadgetToast.type === 'create' ? 'Creación exitosa' : (gadgetToast.type === 'edit' ? 'Edición guardada' : (gadgetToast.type === 'delete' ? 'Registro eliminado' : 'Operación completada')) }}
+              </span>
+              <span class="text-sm font-extrabold leading-snug">{{ gadgetToast.message }}</span>
+            </div>
+          </div>
+          <button (click)="gadgetToast = null" class="p-1 rounded-lg opacity-50 hover:opacity-100 transition-opacity">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <!-- Progress Bar -->
+        <div class="h-1 w-full bg-neutral-500/10 overflow-hidden">
+          <div class="h-full gadget-progress-bar"
+               [ngClass]="gadgetToast.type === 'create' || gadgetToast.type === 'success' ? 'bg-emerald-500' : (gadgetToast.type === 'edit' ? 'bg-blue-500' : 'bg-rose-500')"></div>
+        </div>
+      </div>
+      <!-- ══════════════════════════════════════
+           iOS MOBILE FLOATING ACTION BUTTON (FAB)
+      ══════════════════════════════════════ -->
+      <div class="sm:hidden fixed bottom-6 right-5 z-40">
+        <button *ngIf="subTab === 'facturas'" (click)="openNewInvoice()"
+                class="w-13 h-13 rounded-full shadow-2xl flex items-center justify-center cursor-pointer active:scale-90 transition-all border border-white/20 bg-white text-black shadow-black/40"
+                title="Nueva Cuenta de Cobro">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        </button>
+        <button *ngIf="subTab === 'servicios'" (click)="openSoftwareProposalModal()"
+                class="w-13 h-13 rounded-full shadow-2xl flex items-center justify-center cursor-pointer active:scale-90 transition-all border border-emerald-400 bg-emerald-500 text-white shadow-emerald-600/40"
+                title="Propuesta Comercial de Software">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        </button>
+        <button *ngIf="subTab === 'clientes'" (click)="openNewClient()"
+                class="w-13 h-13 rounded-full shadow-2xl flex items-center justify-center cursor-pointer active:scale-90 transition-all border border-white/20 bg-white text-black shadow-black/40"
+                title="Nuevo Cliente">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        </button>
+      </div>
+
+    </div>

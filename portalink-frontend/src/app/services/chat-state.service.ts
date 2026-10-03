@@ -185,28 +185,13 @@ export class ChatStateService {
   }
 
   loadRotbotStatus(): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/config/settings`).pipe(
-      tap(res => {
-        const activeVal = res?.settings?.rotbot_active;
-        if (activeVal !== undefined && activeVal !== null) {
-          this.rotbotActive.set(activeVal === 'true' || activeVal === true);
-        } else {
-          this.rotbotActive.set(true);
-        }
-      }),
-      catchError(() => of(null))
-    );
+    this.rotbotActive.set(true);
+    return of({ rotbot_active: true });
   }
 
-  updateRotbotStatus(active: boolean): Observable<any> {
-    const valueStr = active ? 'true' : 'false';
-    return this.http.put<any>(
-      `${environment.apiUrl}/config/settings`,
-      { settings: { rotbot_active: valueStr } },
-      { headers: this.buildHeaders() }
-    ).pipe(
-      tap(() => this.rotbotActive.set(active))
-    );
+  updateRotbotStatus(active: boolean = true): Observable<any> {
+    this.rotbotActive.set(true);
+    return of({ success: true, rotbot_active: true });
   }
 
   /**

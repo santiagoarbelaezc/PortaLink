@@ -52,7 +52,7 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true,
+              "sourceMap": false,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -70,7 +70,8 @@
               "buildTarget": "portalink-frontend:build:production"
             },
             "development": {
-              "buildTarget": "portalink-frontend:build:development"
+              "buildTarget": "portalink-frontend:build:development",
+              "hmr": false
             }
           },
           "defaultConfiguration": "development"
@@ -103,6 +104,11 @@
     }
   },
   "cli": {
-    "analytics": false
+    "analytics": false,
+    "cache": {
+      "enabled": true,
+      "environment": "all",
+      "path": "C:/temp/angular-cache"
+    }
   }
 }

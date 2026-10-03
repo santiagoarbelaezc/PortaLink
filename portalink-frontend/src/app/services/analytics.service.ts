@@ -99,25 +99,11 @@ export class AnalyticsService {
   }
 
   private flushEvents() {
-    if (this.eventQueue.length === 0) return;
-    
-    const batch = [...this.eventQueue];
-    this.eventQueue = []; // clear queue immediately
-
-    // Send to backend
-    this.http.post(`${this.apiUrl}/track`, batch).subscribe({
-      error: (err) => console.error('[Analytics] Failed to send batch', err)
-    });
+    this.eventQueue = [];
   }
 
   getMetrics(): Observable<SystemMetrics> {
-    return this.http.get<{ok: boolean, metrics: SystemMetrics}>(`${this.apiUrl}/metrics`).pipe(
-      map(res => res.metrics),
-      catchError(err => {
-        console.error('Error fetching metrics', err);
-        return of(this.defaultMetrics());
-      })
-    );
+    return of(this.defaultMetrics());
   }
 
   private defaultMetrics(): SystemMetrics {

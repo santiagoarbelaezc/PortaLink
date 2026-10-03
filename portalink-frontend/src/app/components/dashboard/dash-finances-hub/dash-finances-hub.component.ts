@@ -32,7 +32,7 @@ export type FinancesSubTab = 'finances' | 'control';
             <span>Finanzas</span>
           </button>
 
-          <!-- Pestaña Control Financiero -->
+          <!-- Pestaña Analíticas (Control Financiero) -->
           <button (click)="setSubTab('control')"
                   class="flex-1 sm:flex-initial px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-95"
                   [ngClass]="activeSubTab === 'control'
@@ -41,14 +41,14 @@ export type FinancesSubTab = 'finances' | 'control';
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-3l3 3 3-3M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22" />
             </svg>
-            <span>Control Financiero</span>
+            <span>Analíticas</span>
           </button>
         </div>
 
         <!-- Explanatory Label -->
         <div class="hidden md:flex items-center gap-2 px-3 text-xs opacity-50 font-medium">
           <span *ngIf="activeSubTab === 'finances'">Cuentas de cobro, clientes, catálogo de servicios y recaudo</span>
-          <span *ngIf="activeSubTab === 'control'">Métricas ARR/MRR, libro de ingresos/egresos y flujo neto</span>
+          <span *ngIf="activeSubTab === 'control'">Analíticas de ingresos/egresos, métricas ARR/MRR y flujo neto</span>
         </div>
       </div>
 
@@ -65,7 +65,18 @@ export type FinancesSubTab = 'finances' | 'control';
 })
 export class DashFinancesHubComponent implements OnInit {
   @Input() theme: string = 'dark';
-  @Input() defaultSubTab: FinancesSubTab = 'finances';
+  
+  private _defaultSubTab: FinancesSubTab = 'finances';
+  @Input()
+  set defaultSubTab(val: FinancesSubTab) {
+    this._defaultSubTab = val;
+    if (val === 'finances' || val === 'control') {
+      this.activeSubTab = val;
+    }
+  }
+  get defaultSubTab(): FinancesSubTab {
+    return this._defaultSubTab;
+  }
 
   activeSubTab: FinancesSubTab = 'finances';
 
@@ -74,11 +85,13 @@ export class DashFinancesHubComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const saved = typeof localStorage !== 'undefined' ? localStorage.getItem('portalink_finances_subtab') as FinancesSubTab : null;
-    if (saved === 'finances' || saved === 'control') {
-      this.activeSubTab = saved;
+    if (this._defaultSubTab) {
+      this.activeSubTab = this._defaultSubTab;
     } else {
-      this.activeSubTab = this.defaultSubTab;
+      const saved = typeof localStorage !== 'undefined' ? localStorage.getItem('portalink_finances_subtab') as FinancesSubTab : null;
+      if (saved === 'finances' || saved === 'control') {
+        this.activeSubTab = saved;
+      }
     }
   }
 

@@ -6,7 +6,6 @@ import { AudioRecorderService, RecordedAudio } from '../../../services/audio-rec
 import { CommandCenterService } from '../../../services/command-center.service';
 import { StreakService } from '../../../services/streak.service';
 import { Subscription } from 'rxjs';
-import { DashStudyPlanComponent } from './dash-study-plan.component';
 
 interface ChatEntry {
   id: string;
@@ -20,64 +19,55 @@ interface ChatEntry {
 @Component({
   selector: 'app-dash-rotbot',
   standalone: true,
-  imports: [CommonModule, FormsModule, DashStudyPlanComponent],
+  imports: [CommonModule, FormsModule],
   template: `
     <!-- Main Cockpit Container (Full Width & Locked Scroll) -->
-    <div class="w-full h-full flex flex-col justify-center tab-enter font-sans min-h-0 my-auto">
+    <div class="w-full h-full flex flex-col justify-between tab-enter font-sans min-h-0">
 
-      <!-- ═══════════════════════ STUDY PLAN HUB VIEW ═══════════════════════ -->
-      <app-dash-study-plan
-        *ngIf="currentMode === 'study-plan'"
-        class="w-full h-full flex flex-col min-h-0"
-        [theme]="theme"
-        (switchMode)="switchMode($event)">
-      </app-dash-study-plan>
+      <!-- ═══════════════════════ ROTBOT COCKPIT (COMPACT STAGE ON MOBILE, 2-COL ON DESKTOP) ═══════════════════════ -->
+      <div class="flex-1 flex flex-col lg:grid lg:grid-cols-12 gap-2.5 sm:gap-3.5 lg:gap-6 items-stretch min-h-0 h-full w-full overflow-hidden">
 
-      <!-- ═══════════════════════ 2-COLUMN ROTBOT COCKPIT (CHAT / LEARN / LISTENING) ═══════════════════════ -->
-      <div *ngIf="currentMode !== 'study-plan'"
-           class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-stretch min-h-0 h-full w-full overflow-hidden">
-
-        <!-- ─────────── LEFT COLUMN: LARGER 3D ROTBOT HEAD STAGE (Col 5) ─────────── -->
-        <div class="lg:col-span-5 h-full flex flex-col justify-center items-center rounded-[24px] sm:rounded-[28px] border overflow-hidden transition-all duration-300 shadow-xl relative"
+        <!-- ─────────── 3D ROTBOT HEAD STAGE (Compact on mobile, Col 5 on desktop) ─────────── -->
+        <div class="lg:col-span-5 shrink-0 h-[125px] sm:h-[155px] lg:h-full flex flex-col justify-center items-center rounded-2xl sm:rounded-[24px] lg:rounded-[28px] border overflow-hidden transition-all duration-300 shadow-md lg:shadow-xl relative"
              [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-neutral-900 border-neutral-800 text-white'">
           
           <!-- Subtle Executive Pedestal Glow -->
           <div class="absolute inset-0 bg-radial-gradient from-white/[0.04] via-transparent to-transparent pointer-events-none"></div>
 
 
-          <!-- 3D Rotbot Head Stage (Enlarged & Prominent) -->
-          <div class="w-full h-full relative flex items-center justify-center p-6 min-h-0 overflow-hidden select-none">
+          <!-- 3D Rotbot Head Stage -->
+          <div class="w-full h-full relative flex items-center justify-center p-2 sm:p-3.5 lg:p-6 min-h-0 overflow-hidden select-none">
             
             <!-- Head Container with Scaled Dimensions -->
-            <div class="relative w-full max-w-[340px] sm:max-w-[420px] md:max-w-[480px] lg:max-w-[520px] xl:max-w-[560px] aspect-square flex items-center justify-center my-auto">
+            <div class="relative h-full max-h-[114px] sm:max-h-[142px] lg:max-h-none w-auto lg:w-full max-w-[340px] sm:max-w-[420px] md:max-w-[480px] lg:max-w-[520px] xl:max-w-[560px] aspect-square flex items-center justify-center my-auto">
               
               <!-- 1. The Official 3D Rotbot Head Image -->
               <img src="https://res.cloudinary.com/doxdjiyvi/image/upload/v1787626350/rotbot-img_j54b0d.png" 
                    alt="Rotbot Face" 
-                   class="w-full h-full object-contain pointer-events-none drop-shadow-[0_25px_45px_rgba(0,0,0,0.9)] filter transition-transform duration-500 hover:scale-[1.02]" />
+                   class="w-full h-full object-contain pointer-events-none drop-shadow-[0_16px_32px_rgba(0,0,0,0.85)] filter transition-transform duration-500 hover:scale-[1.02]" />
 
               <!-- 2. Overlay Visor Eyes Container -->
-              <div class="absolute top-[55.8%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[45%] h-[22%] flex items-center justify-center gap-[16%] pointer-events-none z-20">
+              <div class="absolute top-[55.8%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[48%] h-[24%] flex items-center justify-center gap-[15%] pointer-events-none z-20">
 
                 <!-- LEFT EYE -->
                 <div class="eye-slot flex items-center justify-center w-1/2 h-full">
                   <div *ngIf="currentEmotion === 'happy'" class="rotbot-eye-svg-box crescent" [class.talking]="isSpeaking">
                     <svg viewBox="0 0 100 52" class="w-full h-full">
-                      <path d="M 14 36 C 24 10, 76 10, 86 36 C 74 22, 26 22, 14 36 Z" fill="#00f0ff" stroke="#00f0ff" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" />
+                      <path d="M 14 36 C 24 10, 76 10, 86 36 C 74 22, 26 22, 14 36 Z" fill="#00f0ff" stroke="#00f0ff" stroke-width="5.5" stroke-linejoin="round" stroke-linecap="round" />
                     </svg>
                   </div>
                   <div *ngIf="currentEmotion === 'neutral'" class="rotbot-eye-svg-box neutral" [class.talking]="isSpeaking">
-                    <div class="w-10 h-10 rounded-2xl bg-[#00f0ff] shadow-[0_0_18px_#00f0ff,0_0_40px_rgba(0,240,255,0.85)]"></div>
+                    <div class="w-6 h-6 sm:w-8 sm:h-8 lg:w-11 lg:h-11 rounded-lg sm:rounded-xl lg:rounded-2xl bg-[#00f0ff] shadow-[0_0_14px_#00f0ff,0_0_32px_rgba(0,240,255,0.85)]"></div>
                   </div>
                   <div *ngIf="currentEmotion === 'thinking'" class="rotbot-eye-svg-box thinking">
-                    <div class="w-9 h-7 rounded-full bg-[#00f0ff] shadow-[0_0_18px_#00f0ff,0_0_40px_rgba(0,240,255,0.8)]"></div>
+                    <div class="w-5 h-4 sm:w-7 sm:h-6 lg:w-10 lg:h-8 rounded-full bg-[#00f0ff] shadow-[0_0_14px_#00f0ff,0_0_32px_rgba(0,240,255,0.8)]"></div>
                   </div>
                   <div *ngIf="currentEmotion === 'surprised'" class="rotbot-eye-svg-box surprised" [class.talking]="isSpeaking">
-                    <div class="w-11 h-11 rounded-full bg-[#00f0ff] shadow-[0_0_22px_#00f0ff,0_0_45px_rgba(0,240,255,0.95)]"></div>
+                    <div class="w-6 h-6 sm:w-9 sm:h-9 lg:w-12 lg:h-12 rounded-full bg-[#00f0ff] shadow-[0_0_16px_#00f0ff,0_0_36px_rgba(0,240,255,0.95)]"></div>
                   </div>
                   <div *ngIf="currentEmotion === 'talking'" class="rotbot-eye-svg-box crescent talking">
                     <svg viewBox="0 0 100 52" class="w-full h-full">
-                      <path d="M 14 36 C 24 10, 76 10, 86 36 C 74 22, 26 22, 14 36 Z" fill="#00f0ff" stroke="#00f0ff" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" />
+                      <path d="M 14 36 C 24 10, 76 10, 86 36 C 74 22, 26 22, 14 36 Z" fill="#00f0ff" stroke="#00f0ff" stroke-width="5.5" stroke-linejoin="round" stroke-linecap="round" />
                     </svg>
                   </div>
                 </div>
@@ -86,21 +76,21 @@ interface ChatEntry {
                 <div class="eye-slot flex items-center justify-center w-1/2 h-full">
                   <div *ngIf="currentEmotion === 'happy'" class="rotbot-eye-svg-box crescent" [class.talking]="isSpeaking">
                     <svg viewBox="0 0 100 52" class="w-full h-full">
-                      <path d="M 14 36 C 24 10, 76 10, 86 36 C 74 22, 26 22, 14 36 Z" fill="#00f0ff" stroke="#00f0ff" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" />
+                      <path d="M 14 36 C 24 10, 76 10, 86 36 C 74 22, 26 22, 14 36 Z" fill="#00f0ff" stroke="#00f0ff" stroke-width="5.5" stroke-linejoin="round" stroke-linecap="round" />
                     </svg>
                   </div>
                   <div *ngIf="currentEmotion === 'neutral'" class="rotbot-eye-svg-box neutral" [class.talking]="isSpeaking">
-                    <div class="w-10 h-10 rounded-2xl bg-[#00f0ff] shadow-[0_0_18px_#00f0ff,0_0_40px_rgba(0,240,255,0.85)]"></div>
+                    <div class="w-6 h-6 sm:w-8 sm:h-8 lg:w-11 lg:h-11 rounded-lg sm:rounded-xl lg:rounded-2xl bg-[#00f0ff] shadow-[0_0_14px_#00f0ff,0_0_32px_rgba(0,240,255,0.85)]"></div>
                   </div>
                   <div *ngIf="currentEmotion === 'thinking'" class="rotbot-eye-svg-box thinking">
-                    <div class="w-9 h-7 rounded-full bg-[#00f0ff] shadow-[0_0_18px_#00f0ff,0_0_40px_rgba(0,240,255,0.8)]"></div>
+                    <div class="w-5 h-4 sm:w-7 sm:h-6 lg:w-10 lg:h-8 rounded-full bg-[#00f0ff] shadow-[0_0_14px_#00f0ff,0_0_32px_rgba(0,240,255,0.8)]"></div>
                   </div>
                   <div *ngIf="currentEmotion === 'surprised'" class="rotbot-eye-svg-box surprised" [class.talking]="isSpeaking">
-                    <div class="w-11 h-11 rounded-full bg-[#00f0ff] shadow-[0_0_22px_#00f0ff,0_0_45px_rgba(0,240,255,0.95)]"></div>
+                    <div class="w-6 h-6 sm:w-9 sm:h-9 lg:w-12 lg:h-12 rounded-full bg-[#00f0ff] shadow-[0_0_16px_#00f0ff,0_0_36px_rgba(0,240,255,0.95)]"></div>
                   </div>
                   <div *ngIf="currentEmotion === 'talking'" class="rotbot-eye-svg-box crescent talking">
                     <svg viewBox="0 0 100 52" class="w-full h-full">
-                      <path d="M 14 36 C 24 10, 76 10, 86 36 C 74 22, 26 22, 14 36 Z" fill="#00f0ff" stroke="#00f0ff" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" />
+                      <path d="M 14 36 C 24 10, 76 10, 86 36 C 74 22, 26 22, 14 36 Z" fill="#00f0ff" stroke="#00f0ff" stroke-width="5.5" stroke-linejoin="round" stroke-linecap="round" />
                     </svg>
                   </div>
                 </div>
@@ -111,69 +101,55 @@ interface ChatEntry {
 
           </div>
 
-          <!-- Dynamic Speech & Thinking Floating Indicator (Monocromático Refinado) -->
+          <!-- Dynamic Speech & Thinking Floating Indicator -->
           <div *ngIf="isSpeaking || isProcessing" 
-               class="absolute bottom-5 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full border bg-[#141419]/95 backdrop-blur-md border-neutral-700 shadow-[0_12px_32px_rgba(0,0,0,0.8)] flex items-center gap-2.5 z-30 transition-all">
-            <ng-container *ngIf="isSpeaking">
-              <div class="flex items-center gap-1">
-                <span *ngFor="let _ of [1,2,3,4,5,6]" 
-                      class="w-1 bg-white rounded-full animate-voice-bar" 
-                      [style.animation-delay]="(_ * 0.08) + 's'"></span>
-              </div>
-              <span class="text-xs font-headline font-bold uppercase tracking-wider text-white">Hablando...</span>
-            </ng-container>
-            <ng-container *ngIf="!isSpeaking && isProcessing">
-              <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
-              <span class="text-xs font-headline font-bold uppercase tracking-wider text-neutral-300">Procesando...</span>
-            </ng-container>
+               class="absolute bottom-2 lg:bottom-5 left-1/2 -translate-x-1/2 px-2.5 py-1 lg:px-4 lg:py-2 rounded-full border bg-[#141419]/95 backdrop-blur-md border-neutral-700 shadow-[0_12px_32px_rgba(0,0,0,0.8)] flex items-center gap-2 z-30 transition-all">
+             <ng-container *ngIf="isSpeaking">
+               <div class="flex items-center gap-1">
+                 <span *ngFor="let _ of [1,2,3,4,5,6]" 
+                       class="w-0.5 sm:w-1 bg-white rounded-full animate-voice-bar" 
+                       [style.animation-delay]="(_ * 0.08) + 's'"></span>
+               </div>
+               <span class="text-[10px] sm:text-xs font-headline font-bold uppercase tracking-wider text-white">Hablando...</span>
+             </ng-container>
+             <ng-container *ngIf="!isSpeaking && isProcessing">
+               <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white animate-ping"></span>
+               <span class="text-[10px] sm:text-xs font-headline font-bold uppercase tracking-wider text-neutral-300">Procesando...</span>
+             </ng-container>
           </div>
 
         </div>
 
-        <!-- ─────────── RIGHT COLUMN: CONVERSATION & PRACTICE CONSOLE (Col 7) ─────────── -->
-        <div class="lg:col-span-7 h-full flex flex-col rounded-[24px] sm:rounded-[28px] border overflow-hidden transition-all duration-300 shadow-xl"
+        <!-- ─────────── CHAT CONSOLE (Col 7 on desktop, Flex-1 on mobile) ─────────── -->
+        <div class="lg:col-span-7 flex-1 min-h-0 h-full flex flex-col rounded-2xl sm:rounded-[24px] lg:rounded-[28px] border overflow-hidden transition-all duration-300 shadow-xl"
              [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
 
-          <!-- Chat Top Header (Monocromático Refinado) -->
-          <div class="px-5 py-3.5 border-b flex items-center justify-between flex-shrink-0 relative z-30"
+          <!-- Chat Top Header (Monocromático Refinado y Limpio) -->
+          <div class="px-3.5 sm:px-5 py-2.5 sm:py-3.5 border-b flex items-center justify-between flex-shrink-0 relative z-30"
                [ngClass]="isDark ? 'border-neutral-800 bg-[#141419]/90 backdrop-blur-md' : 'border-neutral-200 bg-neutral-50/80'">
             <div class="flex items-center gap-2.5 min-w-0">
-              <span class="w-2 h-2 rounded-full bg-white animate-pulse shrink-0"></span>
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
               <span class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider truncate"
                     [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
                 English Lounge
               </span>
-              <span class="px-2 py-0.5 rounded-md border border-neutral-700/80 bg-neutral-900 text-[10px] font-mono font-semibold text-neutral-400">
-                IA v2.5
-              </span>
-
-              <!-- Indicador de cantidad de mensajes en el chat -->
-              <span *ngIf="chatHistory.length > 1" 
-                    class="px-2 py-0.5 rounded-md border text-[10px] font-mono font-semibold transition-colors flex items-center gap-1"
-                    [ngClass]="chatHistory.length >= 20 ? 
-                      (isDark ? 'bg-rose-500/15 border-rose-500/40 text-rose-300' : 'bg-rose-50 border-rose-300 text-rose-700') : 
-                      (chatHistory.length >= 12 ? 
-                        (isDark ? 'bg-amber-500/15 border-amber-500/40 text-amber-300' : 'bg-amber-50 border-amber-300 text-amber-700') : 
-                        (isDark ? 'border-neutral-800 bg-neutral-900 text-neutral-400' : 'border-neutral-300 bg-neutral-100 text-neutral-600'))">
-                <span *ngIf="chatHistory.length >= 12" class="w-1.5 h-1.5 rounded-full" [ngClass]="chatHistory.length >= 20 ? 'bg-rose-500 animate-ping' : 'bg-amber-500'"></span>
-                <span>{{ chatHistory.length }} msgs</span>
-              </span>
             </div>
 
-            <!-- Right Header Controls: Reset Button -->
+            <!-- Single Action: Nuevo Chat (Reiniciar conversación) -->
             <button (click)="clearChat()" 
-                    class="text-xs font-headline font-bold uppercase tracking-wider text-neutral-400 hover:text-white transition-all cursor-pointer flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-neutral-700/80 bg-neutral-900 hover:bg-neutral-800"
-                    title="Reiniciar conversación">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    class="text-xs font-headline font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 px-3 py-1.5 rounded-xl border active:scale-95 shadow-xs"
+                    [ngClass]="isDark ? 'text-neutral-300 hover:text-white border-neutral-700/80 bg-neutral-900 hover:bg-neutral-800' : 'text-neutral-700 hover:text-neutral-900 border-neutral-300 bg-neutral-100 hover:bg-neutral-200'"
+                    title="Reiniciar conversación e iniciar nuevo chat">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
-              <span>Reiniciar</span>
+              <span>Nuevo Chat</span>
             </button>
           </div>
 
           <!-- 📌 AVISO ELEGANTE: CONVERSACIÓN EXTENSA (RECOMENDACIÓN DE REINICIO) -->
           <div *ngIf="chatHistory.length >= 12" 
-               class="mx-4 sm:mx-5 mt-3 p-3 rounded-2xl border flex items-center justify-between gap-3 text-xs shadow-md animate-fadeIn"
+               class="mx-3 sm:mx-5 mt-2.5 sm:mt-3 p-2.5 sm:p-3 rounded-2xl border flex items-center justify-between gap-3 text-xs shadow-md animate-fadeIn"
                [ngClass]="chatHistory.length >= 20 ? 
                  (isDark ? 'bg-rose-500/10 border-rose-500/30 text-rose-200' : 'bg-rose-50 border-rose-300 text-rose-900') : 
                  (isDark ? 'bg-amber-500/10 border-amber-500/30 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-900')">
@@ -206,22 +182,9 @@ interface ChatEntry {
             </button>
           </div>
 
-          <!-- 📌 ACTIVE STUDY PLAN BANNER -->
-          <div *ngIf="isStudyPlanActive && studyPlanText.trim()" 
-               class="mx-4 sm:mx-5 mt-3 px-3.5 py-2.5 rounded-xl border flex items-center justify-between text-xs transition-all shadow-xs"
-               [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
-            <div class="flex items-center gap-2 min-w-0">
-              <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse shrink-0"></span>
-              <span class="font-headline font-bold uppercase tracking-wider text-[10px]" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Plan Activo:</span>
-              <span class="truncate opacity-75 font-mono text-[11px]">{{ getStudyPlanPreview() }}</span>
-            </div>
-            <button (click)="switchMode('study-plan')" class="text-[11px] font-bold text-neutral-300 hover:text-white underline shrink-0 cursor-pointer ml-2">
-              Gestionar
-            </button>
-          </div>
 
           <!-- Chat Message Thread (Internal Scrollable Area) -->
-          <div #chatContainer class="flex-1 p-4 sm:p-6 overflow-y-auto space-y-5 no-scrollbar min-h-0">
+          <div #chatContainer class="flex-1 p-3 sm:p-5 lg:p-6 overflow-y-auto space-y-3.5 sm:space-y-5 no-scrollbar min-h-0">
             
             <div *ngFor="let entry of chatHistory" 
                  class="flex flex-col"
@@ -237,7 +200,7 @@ interface ChatEntry {
               </div>
 
               <!-- Message Bubble (Higher Font Size & Better Readability) -->
-              <div class="max-w-[92%] sm:max-w-[85%] rounded-2xl p-4 sm:p-4.5 text-[14px] sm:text-[15px] font-sans leading-relaxed shadow-sm transition-all"
+              <div class="max-w-[92%] sm:max-w-[85%] rounded-2xl p-3 sm:p-4 text-[13.5px] sm:text-[15px] font-sans leading-relaxed shadow-sm transition-all"
                    [ngClass]="entry.sender === 'user'
                      ? (isDark ? 'bg-white text-black font-medium rounded-tr-xs' : 'bg-neutral-900 text-white rounded-tr-xs')
                      : (isDark ? 'bg-[#141419] border border-neutral-800 text-neutral-100 rounded-tl-xs shadow-md' : 'bg-neutral-50 border border-neutral-200 text-neutral-900 rounded-tl-xs')">
@@ -265,7 +228,7 @@ interface ChatEntry {
           </div>
 
           <!-- Bottom Message Input Bar (Fixed at bottom of Card) -->
-          <div class="border-t flex-shrink-0"
+          <div class="border-t flex-shrink-0 relative z-20"
                [ngClass]="isDark ? 'bg-[#141419] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
             
             <!-- Aviso rápido si supera los 20 mensajes -->
@@ -281,13 +244,13 @@ interface ChatEntry {
               </button>
             </div>
 
-            <div class="p-3.5 sm:p-4">
-              <div class="relative flex items-center gap-2.5">
+            <div class="p-2.5 sm:p-4">
+              <div class="relative flex items-center gap-2 sm:gap-2.5">
               
               <!-- High-Visibility Microphone Action Button -->
               <button (click)="toggleVoiceInput()"
                       [disabled]="isProcessing || isSpeaking"
-                      class="w-12 h-12 rounded-2xl border transition-all duration-300 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center shrink-0 relative group"
+                      class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl border transition-all duration-300 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center shrink-0 relative group"
                       [ngClass]="isVoiceRecording 
                         ? 'bg-rose-500 text-white shadow-[0_0_20px_rgba(244,63,94,0.5)] border-rose-400 scale-105' 
                         : (isDark ? 'bg-neutral-900 border-neutral-700 text-white hover:bg-neutral-800 hover:border-neutral-600 shadow-xs' : 'bg-white border-neutral-300 text-neutral-800 hover:bg-neutral-100 shadow-xs')"
@@ -297,7 +260,7 @@ interface ChatEntry {
                 <span *ngIf="isVoiceRecording" class="absolute -inset-1 rounded-2xl bg-rose-500/40 animate-ping pointer-events-none"></span>
 
                 <!-- Crisp SVG Microphone Vector Icon -->
-                <svg class="w-5 h-5 relative z-10 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 relative z-10 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15a3 3 0 003-3V4.5a3 3 0 00-6 0V12a3 3 0 003 3z" />
                 </svg>
               </button>
@@ -308,16 +271,16 @@ interface ChatEntry {
                      (keyup.enter)="send(userMessage)"
                      [disabled]="isProcessing || isSpeaking"
                      [placeholder]="getInputPlaceholder()"
-                     class="flex-1 px-4 py-3 rounded-2xl border text-sm sm:text-base outline-none transition-all font-sans"
+                     class="flex-1 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl border text-xs sm:text-sm md:text-base outline-none transition-all font-sans"
                      [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 text-white placeholder-neutral-500 focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500/20' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-400 shadow-xs'" />
 
               <!-- Send Button -->
               <button (click)="send(userMessage)"
                       [disabled]="isProcessing || isSpeaking || !userMessage.trim()"
-                      class="px-5 sm:px-6 py-3 rounded-2xl font-headline font-bold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-md active:scale-95 flex items-center gap-1.5 shrink-0"
+                      class="px-3.5 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-headline font-bold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-md active:scale-95 flex items-center gap-1.5 shrink-0"
                       [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-black'">
                 <span>{{ isProcessing ? '...' : 'Enviar' }}</span>
-                <svg *ngIf="!isProcessing" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <svg *ngIf="!isProcessing" class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
                 </svg>
               </button>
@@ -374,7 +337,7 @@ interface ChatEntry {
       align-items: center;
       justify-content: center;
       transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-      filter: drop-shadow(0 0 8px #00f0ff) drop-shadow(0 0 20px rgba(0, 240, 255, 0.65));
+      filter: drop-shadow(0 0 10px #00f0ff) drop-shadow(0 0 24px rgba(0, 240, 255, 0.8));
     }
 
     .rotbot-eye-svg-box.crescent {
@@ -455,8 +418,6 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
   @Output() currentModeChange = new EventEmitter<RotbotMode>();
   @Input() isMuted = false;
   @Output() isMutedChange = new EventEmitter<boolean>();
-  @Input() isStudyPlanActive = false;
-  @Output() isStudyPlanActiveChange = new EventEmitter<boolean>();
 
   private robotService = inject(RobotChatService);
   private audioRecorder = inject(AudioRecorderService);
@@ -471,8 +432,6 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
   isVoiceRecording = false;
 
   lastAudio: string | null = null;
-
-  studyPlanText = '';
 
   userMessage = '';
   selectedVoiceId = 'bIHbv24MWmeRgasZH58o';
@@ -496,7 +455,6 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
 
   ngOnInit() {
     this.initVoices();
-    this.refreshActiveStudyPlan();
     const loaded = this.loadChatFromStorage(this.currentMode);
     if (!loaded) {
       this.initDefaultChat(this.currentMode);
@@ -524,6 +482,22 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
 
   ngAfterViewInit() {
     this.scrollToBottom(true);
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['currentMode'] && !changes['currentMode'].firstChange) {
+      this.switchMode(this.currentMode, false);
+    }
+  }
+
+  ngOnDestroy() {
+    this.stopAudio();
+    if (this.recognition) {
+      try { this.recognition.abort(); } catch {}
+    }
+    if (this.voiceSub) {
+      this.voiceSub.unsubscribe();
+    }
   }
 
   private saveChatToStorage() {
@@ -572,53 +546,7 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
     this.saveChatToStorage();
   }
 
-  refreshActiveStudyPlan() {
-    this.robotService.fetchActiveMaterial().subscribe({
-      next: (res: any) => {
-        const mat = res?.data || res;
-        if (mat && mat.content) {
-          this.robotService.setCachedActive(mat);
-          this.studyPlanText = mat.content;
-          this.isStudyPlanActive = true;
-        } else {
-          this.robotService.setCachedActive(null);
-          this.studyPlanText = '';
-          this.isStudyPlanActive = false;
-        }
-        this.isStudyPlanActiveChange.emit(this.isStudyPlanActive);
-      },
-      error: () => {
-        const plan = this.robotService.getStudyPlan();
-        this.studyPlanText = plan.text;
-        this.isStudyPlanActive = plan.active && plan.text.trim().length > 0;
-        this.isStudyPlanActiveChange.emit(this.isStudyPlanActive);
-      }
-    });
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['currentMode'] && !changes['currentMode'].firstChange) {
-      this.switchMode(this.currentMode, false);
-    }
-  }
-
-  ngOnDestroy() {
-    this.stopAudio();
-    if (this.recognition) {
-      try { this.recognition.abort(); } catch {}
-    }
-    if (this.voiceSub) this.voiceSub.unsubscribe();
-  }
-
-  getStudyPlanPreview(): string {
-    if (!this.studyPlanText) return '';
-    const firstLine = this.studyPlanText.trim().split('\n')[0].replace(/^#+\s*/, '');
-    return firstLine.length > 45 ? firstLine.substring(0, 42) + '...' : firstLine;
-  }
-
   switchMode(mode: RotbotMode, emit = true) {
-    this.refreshActiveStudyPlan();
-
     if (this.currentMode === mode && !emit && this.chatHistory.length > 1) return;
     this.currentMode = mode;
     if (emit) {
@@ -674,9 +602,7 @@ export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, On
       content: entry.text
     }));
 
-    const activePlan = (this.isStudyPlanActive && this.studyPlanText.trim()) ? this.studyPlanText.trim() : undefined;
-
-    this.robotService.sendMessage(text, this.selectedVoiceId, history, 'charla', activePlan).subscribe({
+    this.robotService.sendMessage(text, this.selectedVoiceId, history, 'charla').subscribe({
       next: (res: RobotChatResponse) => {
         this.isProcessing = false;
         this.currentEmotion = res.emotion || 'happy';

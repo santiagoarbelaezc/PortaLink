@@ -51,7 +51,7 @@ export interface ControlSummary {
           </div>
           <h2 class="text-2xl sm:text-3xl font-headline font-bold tracking-tight mt-1"
               [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-            Control Financiero
+            Analíticas & Control Financiero
           </h2>
         </div>
 

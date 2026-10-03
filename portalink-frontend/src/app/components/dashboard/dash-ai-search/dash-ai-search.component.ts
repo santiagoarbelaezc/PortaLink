@@ -10,7 +10,7 @@ export type { RotbotMode };
 const TAB_LABELS: Record<string, string> = {
   dashboard: 'Inicio',
   rotbot: 'Rotbot English Coach',
-  'financial-control': 'Finanzas',
+  'financial-control': 'Analíticas',
   finances: 'Finanzas',
   itinerary: 'Calendario',
   library: 'Biblioteca',
@@ -191,43 +191,8 @@ const TAB_LABELS: Record<string, string> = {
           </a>
         </ng-container>
 
-        <!-- B. Rotbot Action: Mode Tabs & Voice Toggle -->
+        <!-- B. Rotbot Action: Voice Toggle -->
         <ng-container *ngIf="activeTab === 'rotbot'">
-          
-          <!-- Mode Tabs (Chat & Study Plan) -->
-          <div class="flex items-center gap-1 p-1 rounded-2xl border backdrop-blur-md"
-               [ngClass]="theme === 'dark' ? 'bg-[#141419] border-neutral-800' : 'bg-neutral-100 border-neutral-200'">
-            
-            <!-- Chat Tab -->
-            <button (click)="rotbotModeChange.emit('charla')"
-                    class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5"
-                    [ngClass]="rotbotMode === 'charla'
-                      ? (theme === 'dark' ? 'bg-white text-black shadow-md font-bold' : 'bg-neutral-900 text-white shadow-md font-bold')
-                      : (theme === 'dark' ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-600 hover:text-black hover:bg-white')">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-              </svg>
-              <span class="hidden sm:inline">Chat</span>
-            </button>
-
-            <!-- Study Plan Tab -->
-            <button (click)="rotbotModeChange.emit('study-plan')"
-                    class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center gap-1.5 relative"
-                    [ngClass]="rotbotMode === 'study-plan'
-                      ? (theme === 'dark' ? 'bg-white text-black shadow-md font-bold' : 'bg-neutral-900 text-white shadow-md font-bold')
-                      : (theme === 'dark' ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-600 hover:text-black hover:bg-white')">
-              <span class="relative flex h-2 w-2" *ngIf="isStudyPlanActive">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-              </span>
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-              </svg>
-              <span class="hidden sm:inline">Study Plan</span>
-            </button>
-
-          </div>
-
           <!-- Mute / Voice Active Toggle -->
           <button (click)="rotbotMutedChange.emit(!rotbotMuted)"
                   class="px-3 py-2 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center gap-1.5 text-xs sm:text-sm font-semibold"
@@ -238,10 +203,10 @@ const TAB_LABELS: Record<string, string> = {
             <svg *ngIf="!rotbotMuted" class="w-4 h-4 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.414 0-.75-.336-.75-.75V8.25c0-.414.336-.75.75-.75h2.24z" />
             </svg>
-            <svg *ngIf="rotbotMuted" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-1.5l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.414 0-.75-.336-.75-.75V8.25c0-.414.336-.75.75-.75h2.24z" />
+            <svg *ngIf="rotbotMuted" class="w-4 h-4 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-3l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.414 0-.75-.336-.75-.75V8.25c0-.414.336-.75.75-.75h2.24z" />
             </svg>
-            <span class="hidden md:inline">{{ rotbotMuted ? 'Muted' : 'Voice Active' }}</span>
+            <span class="hidden sm:inline">{{ rotbotMuted ? 'Voz Silenciada' : 'Voz Activa' }}</span>
           </button>
         </ng-container>
 
@@ -379,8 +344,6 @@ export class DashAiSearchComponent {
   @Output() rotbotModeChange = new EventEmitter<RotbotMode>();
   @Input() rotbotMuted: boolean = false;
   @Output() rotbotMutedChange = new EventEmitter<boolean>();
-  @Input() isStudyPlanActive: boolean = false;
-  @Output() openStudyPlanModal = new EventEmitter<void>();
 
   @Output() tabChange = new EventEmitter<string>();
   @Output() themeChange = new EventEmitter<void>();

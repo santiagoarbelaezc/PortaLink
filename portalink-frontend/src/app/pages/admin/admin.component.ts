@@ -9,7 +9,6 @@ import { RotbotMode } from '../../services/robot-chat.service';
 // Dashboard Components
 import { DashAiSearchComponent } from '../../components/dashboard/dash-ai-search/dash-ai-search.component';
 import { DashHomeComponent } from '../../components/dashboard/dash-home/dash-home.component';
-import { DashAnalyticsHubComponent } from '../../components/dashboard/dash-analytics-hub/dash-analytics-hub.component';
 import { DashMessagesComponent } from '../../components/dashboard/dash-messages/dash-messages.component';
 import { DashUsersComponent } from '../../components/dashboard/dash-users/dash-users.component';
 import { DashConfigComponent } from '../../components/dashboard/dash-config/dash-config.component';
@@ -38,7 +37,6 @@ interface Tab {
     DashAiSearchComponent,
     DashHomeComponent,
     DashRotbotComponent,
-    DashAnalyticsHubComponent,
     DashMessagesComponent,
     DashUsersComponent,
     DashConfigComponent,
@@ -131,14 +129,6 @@ interface Tab {
                 <ng-container *ngIf="tab.id === 'financial-control'">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-3l3 3 3-3M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22" />
                 </ng-container>
-                <!-- Analytics -->
-                <ng-container *ngIf="tab.id === 'analytics'">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
-                </ng-container>
-                <!-- Stats -->
-                <ng-container *ngIf="tab.id === 'stats'">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
-                </ng-container>
                 <!-- Messages -->
                 <ng-container *ngIf="tab.id === 'messages'">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
@@ -167,10 +157,6 @@ interface Tab {
                 <ng-container *ngIf="tab.id === 'config'">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </ng-container>
-                <!-- Reports -->
-                <ng-container *ngIf="tab.id === 'reports'">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                 </ng-container>
                 <!-- Finances -->
                 <ng-container *ngIf="tab.id === 'finances'">
@@ -228,7 +214,6 @@ interface Tab {
           [isNotesView]="isNotesView"
           [(rotbotMode)]="rotbotMode"
           [(rotbotMuted)]="rotbotMuted"
-          [isStudyPlanActive]="isStudyPlanActive"
           (tabChange)="setTab($event)"
           (themeChange)="toggleTheme()"
           (toggleSidebar)="handleToggleSidebar()">
@@ -238,73 +223,84 @@ interface Tab {
         <main class="flex-1 min-h-0 relative z-10 transition-all duration-300 no-scrollbar"
               [ngClass]="[
                 isDark ? 'bg-[#020204]' : 'bg-white',
-                activeTab === 'rotbot' && rotbotMode !== 'study-plan'
-                  ? 'overflow-hidden flex flex-col justify-center items-center h-full p-3 sm:p-4 md:p-5 lg:p-6' 
+                activeTab === 'rotbot'
+                  ? 'overflow-hidden flex flex-col justify-between items-center h-full p-2 sm:p-3 md:p-5 lg:p-6 pb-[76px] md:pb-6' 
                   : (activeTab === 'library' && isNotesView
                       ? 'overflow-y-auto overflow-x-hidden overscroll-contain md:overscroll-auto md:scroll-smooth px-2 py-2 sm:p-4 md:p-6 pb-28 md:pb-8'
                       : 'overflow-y-auto overflow-x-hidden overscroll-contain md:overscroll-auto md:scroll-smooth p-4 sm:p-6 md:p-8 pb-28 md:pb-8')
               ]">
           <div class="transition-all duration-300"
-               [ngClass]="activeTab === 'rotbot' && rotbotMode !== 'study-plan' ? 'w-full h-full flex flex-col justify-center items-center my-auto' : 'w-full'">
+               [ngClass]="activeTab === 'rotbot' ? 'w-full h-full flex flex-col justify-between items-center min-h-0' : 'w-full'">
 
-            <app-dash-home
-              *ngIf="activeTab === 'dashboard'"
-              [theme]="currentTheme"
-              (tabChange)="setTab($event)">
-            </app-dash-home>
+            @defer (when activeTab === 'dashboard'; prefetch on idle) {
+              <app-dash-home
+                *ngIf="activeTab === 'dashboard'"
+                [theme]="currentTheme"
+                (tabChange)="setTab($event)">
+              </app-dash-home>
+            }
 
-            <app-dash-rotbot
-              *ngIf="activeTab === 'rotbot'"
-              class="w-full h-full flex flex-col justify-center my-auto"
-              [theme]="currentTheme"
-              [(currentMode)]="rotbotMode"
-              [(isMuted)]="rotbotMuted"
-              [(isStudyPlanActive)]="isStudyPlanActive">
-            </app-dash-rotbot>
+            @defer (when activeTab === 'rotbot'; prefetch on idle) {
+              <app-dash-rotbot
+                *ngIf="activeTab === 'rotbot'"
+                class="w-full h-full flex flex-col justify-between min-h-0"
+                [theme]="currentTheme"
+                [(isMuted)]="rotbotMuted">
+              </app-dash-rotbot>
+            }
 
-            <app-dash-itinerary
-              *ngIf="activeTab === 'itinerary'"
-              [theme]="currentTheme">
-            </app-dash-itinerary>
+            @defer (when activeTab === 'itinerary'; prefetch on idle) {
+              <app-dash-itinerary
+                *ngIf="activeTab === 'itinerary'"
+                [theme]="currentTheme">
+              </app-dash-itinerary>
+            }
 
-            <app-dash-analytics-hub
-              *ngIf="activeTab === 'analytics' || activeTab === 'stats' || activeTab === 'reports'"
-              [theme]="currentTheme"
-              [defaultSubTab]="activeTab === 'reports' ? 'reports' : (activeTab === 'stats' ? 'stats' : 'analytics')">
-            </app-dash-analytics-hub>
 
-            <app-dash-messages
-              *ngIf="activeTab === 'messages'"
-              [theme]="currentTheme"
-              (dataChange)="refreshBadges()">
-            </app-dash-messages>
+            @defer (when activeTab === 'messages'; prefetch on idle) {
+              <app-dash-messages
+                *ngIf="activeTab === 'messages'"
+                [theme]="currentTheme"
+                (dataChange)="refreshBadges()">
+              </app-dash-messages>
+            }
 
-            <app-dash-users
-              *ngIf="activeTab === 'users'"
-              [theme]="currentTheme">
-            </app-dash-users>
+            @defer (when activeTab === 'users'; prefetch on idle) {
+              <app-dash-users
+                *ngIf="activeTab === 'users'"
+                [theme]="currentTheme">
+              </app-dash-users>
+            }
 
-            <app-dash-config
-              *ngIf="activeTab === 'config'"
-              [theme]="currentTheme">
-            </app-dash-config>
+            @defer (when activeTab === 'config'; prefetch on idle) {
+              <app-dash-config
+                *ngIf="activeTab === 'config'"
+                [theme]="currentTheme">
+              </app-dash-config>
+            }
 
-            <app-dash-finances-hub
-              *ngIf="activeTab === 'finances' || activeTab === 'financial-control'"
-              [theme]="currentTheme"
-              [defaultSubTab]="activeTab === 'financial-control' ? 'control' : 'finances'">
-            </app-dash-finances-hub>
+            @defer (when activeTab === 'finances' || activeTab === 'financial-control'; prefetch on idle) {
+              <app-dash-finances-hub
+                *ngIf="activeTab === 'finances' || activeTab === 'financial-control'"
+                [theme]="currentTheme"
+                [defaultSubTab]="activeTab === 'financial-control' ? 'control' : 'finances'">
+              </app-dash-finances-hub>
+            }
 
-            <app-dash-library
-              *ngIf="activeTab === 'library'"
-              [theme]="currentTheme"
-              (inNotesViewChange)="onNotesViewChange($event)">
-            </app-dash-library>
+            @defer (when activeTab === 'library'; prefetch on idle) {
+              <app-dash-library
+                *ngIf="activeTab === 'library'"
+                [theme]="currentTheme"
+                (inNotesViewChange)="onNotesViewChange($event)">
+              </app-dash-library>
+            }
 
-            <app-dash-db-viewer
-              *ngIf="activeTab === 'db-viewer'"
-              [theme]="currentTheme">
-            </app-dash-db-viewer>
+            @defer (when activeTab === 'db-viewer'; prefetch on idle) {
+              <app-dash-db-viewer
+                *ngIf="activeTab === 'db-viewer'"
+                [theme]="currentTheme">
+              </app-dash-db-viewer>
+            }
 
           </div>
         </main>
@@ -366,14 +362,11 @@ interface Tab {
                 <ng-container *ngIf="tab.id === 'rotbot'"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2zM9 10h.01M15 10h.01" /></ng-container>
                 <ng-container *ngIf="tab.id === 'finances'"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></ng-container>
                 <ng-container *ngIf="tab.id === 'financial-control'"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-3l3 3 3-3M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22" /></ng-container>
-                <ng-container *ngIf="tab.id === 'analytics'"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></ng-container>
-                <ng-container *ngIf="tab.id === 'stats'"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></ng-container>
                 <ng-container *ngIf="tab.id === 'messages'"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></ng-container>
                 <ng-container *ngIf="tab.id === 'users'"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></ng-container>
                 <ng-container *ngIf="tab.id === 'itinerary'"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></ng-container>
                 <ng-container *ngIf="tab.id === 'library'"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25" /></ng-container>
                 <ng-container *ngIf="tab.id === 'config'"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></ng-container>
-                <ng-container *ngIf="tab.id === 'reports'"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></ng-container>
                 <ng-container *ngIf="tab.id === 'db-viewer'"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" /></ng-container>
               </svg>
             </span>
@@ -401,8 +394,8 @@ interface Tab {
              isNotesView ? 'hidden' : ''
            ]"
            style="padding-top: 6px; padding-bottom: max(10px, env(safe-area-inset-bottom, 10px));">
-        <div class="grid grid-cols-5 items-center w-full max-w-md mx-auto">
-          
+        <div class="grid grid-cols-4 items-center w-full max-w-md mx-auto">
+
           <!-- Inicio -->
           <button (click)="setTab('dashboard')"
                   class="flex flex-col items-center justify-center py-1 min-w-0 w-full text-center transition-all duration-200 active:scale-90 cursor-pointer group select-none">
@@ -416,45 +409,30 @@ interface Tab {
                   [ngClass]="activeTab === 'dashboard' ? (isDark ? 'text-emerald-400 font-bold' : 'text-emerald-600 font-bold') : (isDark ? 'text-neutral-400 font-medium' : 'text-neutral-500 font-medium')">Inicio</span>
           </button>
 
-          <!-- Finanzas -->
-          <button (click)="setTab('finances')"
+          <!-- Biblioteca -->
+          <button (click)="setTab('library')"
                   class="flex flex-col items-center justify-center py-1 min-w-0 w-full text-center transition-all duration-200 active:scale-90 cursor-pointer group select-none">
             <div class="w-11 h-[30px] rounded-full flex items-center justify-center transition-all duration-200 relative mx-auto"
-                 [ngClass]="activeTab === 'finances' ? (isDark ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-500/15 text-emerald-600') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">
+                 [ngClass]="activeTab === 'library' ? (isDark ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-500/15 text-emerald-600') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">
               <svg class="w-5 h-5 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25" />
               </svg>
             </div>
             <span class="block w-full text-center truncate text-[10.5px] tracking-tight mt-0.5"
-                  [ngClass]="activeTab === 'finances' ? (isDark ? 'text-emerald-400 font-bold' : 'text-emerald-600 font-bold') : (isDark ? 'text-neutral-400 font-medium' : 'text-neutral-500 font-medium')">Finanzas</span>
+                  [ngClass]="activeTab === 'library' ? (isDark ? 'text-emerald-400 font-bold' : 'text-emerald-600 font-bold') : (isDark ? 'text-neutral-400 font-medium' : 'text-neutral-500 font-medium')">Biblioteca</span>
           </button>
 
-          <!-- Analíticas -->
-          <button (click)="setTab('analytics')"
+          <!-- Rotbot IA -->
+          <button (click)="setTab('rotbot')"
                   class="flex flex-col items-center justify-center py-1 min-w-0 w-full text-center transition-all duration-200 active:scale-90 cursor-pointer group select-none">
             <div class="w-11 h-[30px] rounded-full flex items-center justify-center transition-all duration-200 relative mx-auto"
-                 [ngClass]="activeTab === 'analytics' ? (isDark ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-500/15 text-emerald-600') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">
+                 [ngClass]="activeTab === 'rotbot' ? (isDark ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-500/15 text-emerald-600') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">
               <svg class="w-5 h-5 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2zM9 10h.01M15 10h.01" />
               </svg>
             </div>
             <span class="block w-full text-center truncate text-[10.5px] tracking-tight mt-0.5"
-                  [ngClass]="activeTab === 'analytics' ? (isDark ? 'text-emerald-400 font-bold' : 'text-emerald-600 font-bold') : (isDark ? 'text-neutral-400 font-medium' : 'text-neutral-500 font-medium')">Analíticas</span>
-          </button>
-
-          <!-- Mensajes -->
-          <button (click)="setTab('messages')"
-                  class="flex flex-col items-center justify-center py-1 min-w-0 w-full text-center transition-all duration-200 active:scale-90 cursor-pointer group select-none">
-            <div class="w-11 h-[30px] rounded-full flex items-center justify-center transition-all duration-200 relative mx-auto"
-                 [ngClass]="activeTab === 'messages' ? (isDark ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-500/15 text-emerald-600') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">
-              <span *ngIf="unreadMessages > 0" class="absolute top-0.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-              <span *ngIf="unreadMessages > 0" class="absolute top-0.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500"></span>
-              <svg class="w-5 h-5 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-              </svg>
-            </div>
-            <span class="block w-full text-center truncate text-[10.5px] tracking-tight mt-0.5"
-                  [ngClass]="activeTab === 'messages' ? (isDark ? 'text-emerald-400 font-bold' : 'text-emerald-600 font-bold') : (isDark ? 'text-neutral-400 font-medium' : 'text-neutral-500 font-medium')">Mensajes</span>
+                  [ngClass]="activeTab === 'rotbot' ? (isDark ? 'text-emerald-400 font-bold' : 'text-emerald-600 font-bold') : (isDark ? 'text-neutral-400 font-medium' : 'text-neutral-500 font-medium')">Rotbot IA</span>
           </button>
 
           <!-- Menú -->
@@ -521,12 +499,11 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   rotbotMode: RotbotMode = 'charla';
   rotbotMuted = false;
-  isStudyPlanActive = false;
 
   tabs: Tab[] = [
     { id: 'dashboard',         name: 'Inicio' },
     { id: 'finances',          name: 'Finanzas' },
-    { id: 'analytics',         name: 'Analíticas' },
+    { id: 'financial-control', name: 'Analíticas' },
     { id: 'messages',          name: 'Mensajes' },
     { id: 'users',             name: 'Usuarios' },
     { id: 'config',            name: 'Configuración' },
@@ -617,7 +594,7 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   setTab(id: string) {
     if (id === 'leads') id = 'messages';
-    if (id === 'stats' || id === 'reports') id = 'analytics';
+    if (id === 'stats' || id === 'reports' || id === 'analytics') id = 'financial-control';
     if (this.activeTab === id) return;
     
     if (this.activeTab === 'library' && id !== 'library' && this.previousSidebarState !== null) {
@@ -637,9 +614,9 @@ export class AdminComponent implements OnInit, OnDestroy {
       const tabName = tabObj ? tabObj.name : id;
       let prompt = `Ver ${tabName}`;
       if (id === 'finances') prompt = 'Reporte de finanzas y pagos';
+      else if (id === 'financial-control') prompt = 'Analíticas y control financiero';
       else if (id === 'library') prompt = 'Cuadernos y apuntes de biblioteca';
       else if (id === 'itinerary') prompt = 'Agenda y tareas de hoy';
-      else if (id === 'analytics') prompt = 'Rendimiento y visitas';
       else if (id === 'messages') prompt = 'Mensajes de contacto';
       else if (id === 'db-viewer') prompt = 'Visor de base de datos y esquemas ERD';
 
