@@ -3114,7 +3114,7 @@
     <!-- PANEL FLOTANTE DE CHAT ROTBOT IA (LAZY LOADED CON @DEFER COMO COMPONENTE HIJO) -->
     @defer (when isCopilotOpen) {
     <app-copilot-chat *ngIf="isCopilotOpen" [theme]="theme" [isDark]="isDark" [selectedPage]="selectedPage"
-      [blocks]="blocks" [isMobileScreen]="isMobileScreen" (closeChat)="toggleCopilot()"
+      [blocks]="blocks" [isMobileScreen]="isMobileScreen" (closeChat)="closeCopilot()"
       (toast)="showToast($event.message, $event.type)">
     </app-copilot-chat>
     }

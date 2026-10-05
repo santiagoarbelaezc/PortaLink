@@ -148,11 +148,17 @@ export class CopilotChatComponent implements OnInit, AfterViewInit, OnDestroy {
     document.body.style.userSelect = '';
   }
 
-  @HostListener('window:keydown.escape')
-  onEscapeKey() {
+  @HostListener('window:keydown.escape', ['$event'])
+  onEscapeKey(event?: KeyboardEvent) {
+    if (this.showCopilotSizeMenu) {
+      this.showCopilotSizeMenu = false;
+      return;
+    }
     if (this.isCopilotFullscreen) {
       this.toggleCopilotFullscreen();
+      return;
     }
+    this.closeChat.emit();
   }
 
   loadChatFromStorage() {

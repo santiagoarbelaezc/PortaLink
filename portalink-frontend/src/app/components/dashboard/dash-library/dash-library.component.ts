@@ -3677,6 +3677,35 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  closeCopilot() {
+    this.isCopilotOpen = false;
+    this.isCopilotFullscreen = false;
+  }
+
+  @HostListener('window:keydown.escape', ['$event'])
+  handleGlobalEscape(event?: KeyboardEvent) {
+    if (this.lightboxImageUrl) {
+      this.closeImageLightbox();
+      return;
+    }
+    if (this.isDeleteModalOpen) {
+      this.closeDeleteModal();
+      return;
+    }
+    if (this.activeAiBlockId) {
+      this.closeAiModal();
+      return;
+    }
+    if (this.isCopilotOpen) {
+      this.closeCopilot();
+      return;
+    }
+    if (this.isLeftReaderOpen) {
+      this.closeLeftReader();
+      return;
+    }
+  }
+
   resetCopilotWithEffect() {
     if (this.isResettingCopilot) return;
     this.isResettingCopilot = true;
