@@ -1092,7 +1092,7 @@
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
-              <span>+ Nuevo</span>
+              <span>Nuevo</span>
             </button>
 
             <!-- BOTÓN ESCONDER SIDEBAR -->
@@ -1241,7 +1241,7 @@
           [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
 
           <!-- IZQUIERDA: Botón toggle sidebar (si está oculto) + Input de Título -->
-          <div class="flex items-center gap-2 sm:gap-2.5 flex-1 min-w-0">
+          <div class="flex items-center gap-2 sm:gap-2.5 min-w-0 shrink-0 max-w-[190px] sm:max-w-[240px] md:max-w-xs lg:max-w-sm">
             <!-- BOTÓN VOLVER A NOTAS EN MÓVIL (ESTILO APPLE NOTES) -->
             <button (click)="isSidebarCollapsed = false" title="Ver lista de apuntes"
               class="lg:hidden px-2 sm:px-2.5 py-1.5 rounded-xl border text-xs font-headline font-bold flex items-center gap-1 transition-all cursor-pointer shadow-xs shrink-0 active:scale-95"
@@ -1266,8 +1266,61 @@
             <div class="w-full min-w-0">
               <input type="text" [(ngModel)]="selectedPage.title" (input)="onTitleInput()" spellcheck="false"
                 autocorrect="off" autocapitalize="off" placeholder="Escribe el título del apunte..."
-                class="w-full text-base sm:text-2xl font-headline font-bold tracking-tight bg-transparent border-none py-1 px-0 focus:outline-none transition-all placeholder:opacity-40"
+                class="w-full text-base sm:text-xl lg:text-2xl font-headline font-bold tracking-tight bg-transparent border-none py-1 px-0 focus:outline-none transition-all placeholder:opacity-40 truncate"
                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'" />
+            </div>
+          </div>
+
+          <!-- CENTRO: GESTIONADOR DE PESTAÑAS (AL LADO DEL TÍTULO) -->
+          <div *ngIf="tabs && tabs.length > 0" class="flex-1 min-w-0 flex items-center gap-1.5 overflow-x-auto scrollbar-none px-1 sm:px-2">
+            <div class="flex items-center gap-1 sm:gap-1.5 p-1 rounded-xl border backdrop-blur-md max-w-full overflow-x-auto scrollbar-none shrink-0"
+              [ngClass]="isDark ? 'bg-neutral-950/70 border-neutral-800/80' : 'bg-neutral-100/80 border-neutral-200/90'">
+
+              <!-- Lista de Pestañas -->
+              <div *ngFor="let tab of tabs" (click)="switchTab(tab.id)"
+                [title]="tab.title || 'Apunte'"
+                class="group/tab relative flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-lg text-xs font-headline font-semibold transition-all duration-150 cursor-pointer shrink-0 max-w-[120px] sm:max-w-[170px] border select-none"
+                [ngClass]="activeTabId === tab.id 
+                  ? (isDark ? 'bg-white text-black border-white shadow-xs font-bold' : 'bg-[#09090b] text-white border-[#09090b] shadow-xs font-bold') 
+                  : (isDark ? 'bg-neutral-900/50 border-neutral-800/60 text-neutral-400 hover:text-white hover:bg-neutral-800/60' : 'bg-white/60 border-neutral-200/70 text-neutral-600 hover:text-black hover:bg-neutral-200/60')">
+
+                <!-- Indicador de color -->
+                <span class="w-2 h-2 rounded-full shrink-0 transition-transform group-hover/tab:scale-125"
+                  [style.backgroundColor]="tab.color || '#737373'"
+                  [style.boxShadow]="activeTabId === tab.id ? '0 0 6px ' + (tab.color || '#737373') : 'none'"></span>
+
+                <!-- Título -->
+                <span class="truncate text-[11px] sm:text-xs tracking-tight">{{ tab.title || 'Biblioteca' }}</span>
+
+                <!-- Cerrar pestaña -->
+                <button *ngIf="tabs.length > 1" type="button"
+                  (click)="closeTab(tab.id, $event)"
+                  title="Cerrar pestaña"
+                  class="w-3.5 h-3.5 rounded flex items-center justify-center transition-all ml-0.5 shrink-0 cursor-pointer opacity-60 hover:opacity-100 hover:bg-red-500/20 hover:text-red-400">
+                  <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Botón Nueva Pestaña -->
+              <button type="button" (click)="openNewTab()"
+                title="Abrir nueva pestaña de trabajo"
+                class="w-6 h-6 rounded-lg border flex items-center justify-center transition-all shrink-0 cursor-pointer shadow-2xs hover:scale-105 active:scale-95"
+                [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900/80 hover:bg-neutral-800 text-neutral-400 hover:text-white' : 'border-neutral-300 bg-white hover:bg-neutral-100 text-neutral-600 hover:text-black'">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+              </button>
+
+              <!-- Botón cerrar otras (si > 1, solo desktop grande) -->
+              <button *ngIf="tabs.length > 1" type="button" (click)="closeOtherTabs(activeTabId, $event)"
+                title="Cerrar todas las demás pestañas"
+                class="hidden xl:flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-headline font-semibold transition-all cursor-pointer opacity-70 hover:opacity-100 shrink-0 border ml-0.5"
+                [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-200 text-neutral-600 hover:text-black hover:bg-neutral-200'">
+                <span>Cerrar otras</span>
+              </button>
+
             </div>
           </div>
 
@@ -2546,7 +2599,7 @@
           <!-- TOP HEADER EN ESTADO VACÍO (CRUCIAL PARA MÓVIL Y DESKTOP) -->
           <div class="flex items-center justify-between pb-3 sm:pb-4 border-b gap-2 px-2 sm:px-0"
             [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 shrink-0">
               <!-- BOTÓN VOLVER A CUADERNOS -->
               <button (click)="selectNotebook(null)" title="Volver a la lista de cuadernos"
                 class="px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-headline font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 shrink-0"
@@ -2569,6 +2622,59 @@
               </button>
             </div>
 
+            <!-- GESTIONADOR DE PESTAÑAS EN ESTADO VACÍO -->
+            <div *ngIf="tabs && tabs.length > 0" class="flex-1 min-w-0 flex items-center gap-1.5 overflow-x-auto scrollbar-none px-1 sm:px-2">
+              <div class="flex items-center gap-1 sm:gap-1.5 p-1 rounded-xl border backdrop-blur-md max-w-full overflow-x-auto scrollbar-none shrink-0"
+                [ngClass]="isDark ? 'bg-neutral-950/70 border-neutral-800/80' : 'bg-neutral-100/80 border-neutral-200/90'">
+
+                <!-- Lista de Pestañas -->
+                <div *ngFor="let tab of tabs" (click)="switchTab(tab.id)"
+                  [title]="tab.title || 'Apunte'"
+                  class="group/tab relative flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-lg text-xs font-headline font-semibold transition-all duration-150 cursor-pointer shrink-0 max-w-[120px] sm:max-w-[170px] border select-none"
+                  [ngClass]="activeTabId === tab.id 
+                    ? (isDark ? 'bg-white text-black border-white shadow-xs font-bold' : 'bg-[#09090b] text-white border-[#09090b] shadow-xs font-bold') 
+                    : (isDark ? 'bg-neutral-900/50 border-neutral-800/60 text-neutral-400 hover:text-white hover:bg-neutral-800/60' : 'bg-white/60 border-neutral-200/70 text-neutral-600 hover:text-black hover:bg-neutral-200/60')">
+
+                  <!-- Indicador de color -->
+                  <span class="w-2 h-2 rounded-full shrink-0 transition-transform group-hover/tab:scale-125"
+                    [style.backgroundColor]="tab.color || '#737373'"
+                    [style.boxShadow]="activeTabId === tab.id ? '0 0 6px ' + (tab.color || '#737373') : 'none'"></span>
+
+                  <!-- Título -->
+                  <span class="truncate text-[11px] sm:text-xs tracking-tight">{{ tab.title || 'Biblioteca' }}</span>
+
+                  <!-- Cerrar pestaña -->
+                  <button *ngIf="tabs.length > 1" type="button"
+                    (click)="closeTab(tab.id, $event)"
+                    title="Cerrar pestaña"
+                    class="w-3.5 h-3.5 rounded flex items-center justify-center transition-all ml-0.5 shrink-0 cursor-pointer opacity-60 hover:opacity-100 hover:bg-red-500/20 hover:text-red-400">
+                    <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+
+                <!-- Botón Nueva Pestaña -->
+                <button type="button" (click)="openNewTab()"
+                  title="Abrir nueva pestaña de trabajo"
+                  class="w-6 h-6 rounded-lg border flex items-center justify-center transition-all shrink-0 cursor-pointer shadow-2xs hover:scale-105 active:scale-95"
+                  [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900/80 hover:bg-neutral-800 text-neutral-400 hover:text-white' : 'border-neutral-300 bg-white hover:bg-neutral-100 text-neutral-600 hover:text-black'">
+                  <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                  </svg>
+                </button>
+
+                <!-- Botón cerrar otras (si > 1, desktop grande) -->
+                <button *ngIf="tabs.length > 1" type="button" (click)="closeOtherTabs(activeTabId, $event)"
+                  title="Cerrar todas las demás pestañas"
+                  class="hidden xl:flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-headline font-semibold transition-all cursor-pointer opacity-70 hover:opacity-100 shrink-0 border ml-0.5"
+                  [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-200 text-neutral-600 hover:text-black hover:bg-neutral-200'">
+                  <span>Cerrar otras</span>
+                </button>
+
+              </div>
+            </div>
+
             <!-- BOTÓN CREAR APUNTE DIRECTO -->
             <button (click)="createNewPage()"
               class="px-3 py-1.5 rounded-xl font-headline font-bold text-xs shadow-xs transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 border shrink-0 hover:scale-105"
@@ -2576,7 +2682,7 @@
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
-              <span>+ Apunte</span>
+              <span>Nuevo Apunte</span>
             </button>
           </div>
 
@@ -2633,78 +2739,6 @@
           </div>
         </div>
       </ng-template>
-
-      <!-- ══════════════════════════════════════
-           CONTENEDOR DE PESTAÑAS EN LA PARTE INFERIOR (REORGANIZADO)
-      ══════════════════════════════════════ -->
-      <div *ngIf="tabs && tabs.length > 0"
-        class="sticky bottom-20 md:bottom-3 z-30 w-full flex items-center justify-center pt-2 pb-1 pointer-events-none mt-4 animate-fade-in">
-        <div class="pointer-events-auto flex items-center gap-1.5 px-3 py-1.5 rounded-2xl border backdrop-blur-2xl shadow-2xl max-w-[calc(100vw-1.5rem)] sm:max-w-full overflow-x-auto scrollbar-none select-none transition-all duration-200"
-          [ngClass]="isDark ? 'bg-[#121216]/95 border-neutral-800/90 text-white shadow-black/80 ring-1 ring-white/10' : 'bg-white/95 border-neutral-200/90 text-neutral-900 shadow-neutral-400/40 ring-1 ring-black/5'">
-
-          <!-- Icono de pestañas / workspace -->
-          <div class="flex items-center gap-1.5 pr-2 border-r text-xs font-headline font-bold shrink-0"
-            [ngClass]="isDark ? 'border-neutral-800 text-neutral-400' : 'border-neutral-200 text-neutral-500'">
-            <svg class="w-3.5 h-3.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M16.5 8.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v8.25A2.25 2.25 0 006 16.5h2.25m8.25-8.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-7.5A2.25 2.25 0 018.25 18v-1.5m8.25-8.25h-6a2.25 2.25 0 00-2.25 2.25v6" />
-            </svg>
-            <span class="hidden sm:inline text-[11px] uppercase tracking-wider font-extrabold">Pestañas</span>
-            <span class="text-[10px] px-1.5 py-0.5 rounded-md font-mono font-bold"
-              [ngClass]="isDark ? 'bg-neutral-800 text-neutral-300' : 'bg-neutral-100 text-neutral-700'">
-              {{ tabs.length }}
-            </span>
-          </div>
-
-          <!-- Lista de Pestañas -->
-          <div class="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5">
-            <div *ngFor="let tab of tabs" (click)="switchTab(tab.id)"
-              [title]="tab.title || 'Apunte'"
-              class="group/tab relative flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-headline font-semibold transition-all duration-150 cursor-pointer shrink-0 max-w-[130px] sm:max-w-[180px] border"
-              [ngClass]="activeTabId === tab.id 
-                ? (isDark ? 'bg-white text-black border-white shadow-sm font-bold' : 'bg-[#09090b] text-white border-[#09090b] shadow-sm font-bold') 
-                : (isDark ? 'bg-neutral-900/60 border-neutral-800/80 text-neutral-400 hover:text-white hover:bg-neutral-800' : 'bg-neutral-100/80 border-neutral-200/90 text-neutral-600 hover:text-black hover:bg-neutral-200')">
-
-              <!-- Indicador de color -->
-              <span class="w-2 h-2 rounded-full shrink-0 transition-transform group-hover/tab:scale-125"
-                [style.backgroundColor]="tab.color || '#737373'"
-                [style.boxShadow]="activeTabId === tab.id ? '0 0 6px ' + (tab.color || '#737373') : 'none'"></span>
-
-              <!-- Título -->
-              <span class="truncate text-[11px] sm:text-xs tracking-tight">{{ tab.title || 'Biblioteca' }}</span>
-
-              <!-- Cerrar pestaña -->
-              <button *ngIf="tabs.length > 1" type="button"
-                (click)="closeTab(tab.id, $event)"
-                title="Cerrar pestaña"
-                class="w-3.5 h-3.5 rounded flex items-center justify-center transition-all ml-0.5 shrink-0 cursor-pointer opacity-60 hover:opacity-100 hover:bg-red-500/20 hover:text-red-400">
-                <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <!-- Botón Nueva Pestaña -->
-            <button type="button" (click)="openNewTab()"
-              title="Abrir nueva pestaña de trabajo"
-              class="w-6 h-6 sm:w-7 sm:h-7 rounded-xl border flex items-center justify-center transition-all shrink-0 cursor-pointer shadow-2xs hover:scale-105 active:scale-95"
-              [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900/80 hover:bg-neutral-800 text-neutral-400 hover:text-white' : 'border-neutral-300 bg-white hover:bg-neutral-100 text-neutral-600 hover:text-black'">
-              <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-            </button>
-          </div>
-
-          <!-- Botón cerrar otras (si > 1, solo desktop) -->
-          <button *ngIf="tabs.length > 1" type="button" (click)="closeOtherTabs(activeTabId, $event)"
-            title="Cerrar todas las demás pestañas"
-            class="hidden md:flex items-center gap-1 pl-2 border-l text-[10px] font-headline font-semibold transition-all cursor-pointer opacity-70 hover:opacity-100 shrink-0"
-            [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:text-white' : 'border-neutral-200 text-neutral-600 hover:text-black'">
-            <span>Cerrar otras</span>
-          </button>
-
-        </div>
-      </div>
 
     </div>
 

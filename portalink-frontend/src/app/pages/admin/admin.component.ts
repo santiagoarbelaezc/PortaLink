@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { MessagesService } from '../../services/messages.service';
 import { AuthService } from '../../services/auth.service';
 import { CommandCenterService } from '../../services/command-center.service';
@@ -454,7 +454,7 @@ interface Tab {
       </nav>
 
       <!-- Modal de Racha Diaria Flotante -->
-      <app-dash-streak-modal [theme]="isDark ? 'dark' : 'light'" (navigateTab)="activeTab = $event"></app-dash-streak-modal>
+      <app-dash-streak-modal [theme]="isDark ? 'dark' : 'light'" (navigateTab)="setTab($event)"></app-dash-streak-modal>
 
     </div>
   `,
@@ -482,6 +482,7 @@ interface Tab {
 })
 export class AdminComponent implements OnInit, OnDestroy {
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private messagesService = inject(MessagesService);
   private authService = inject(AuthService);
   private commandCenterService = inject(CommandCenterService);
@@ -489,6 +490,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   private sessionTimer = inject(SessionTimerService);
   private cdr = inject(ChangeDetectorRef);
   private sessionSub: Subscription | null = null;
+  private queryParamSub: Subscription | null = null;
 
   activeTab = 'dashboard';
   currentTheme = 'dark';
@@ -537,15 +539,48 @@ export class AdminComponent implements OnInit, OnDestroy {
       this.currentTheme = 'dark';
       localStorage.setItem('portalink_admin_theme', 'dark');
     }
-    // Siempre ingresar al dashboard por defecto
-    this.activeTab = 'dashboard';
-    localStorage.setItem('portalink_admin_tab', 'dashboard');
+
+    // Restaurar tab activo: prioridad al query param ?tab=..., luego a localStorage, o 'dashboard' por defecto
+    const queryTab = this.normalizeTab(this.route.snapshot.queryParamMap.get('tab'));
+    const savedTab = this.normalizeTab(typeof localStorage !== 'undefined' ? localStorage.getItem('portalink_admin_tab') : null);
+    const initialTab = queryTab || savedTab || 'dashboard';
+
+    this.activeTab = initialTab;
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('portalink_admin_tab', initialTab);
+    }
+
+    if (this.route.snapshot.queryParamMap.get('tab') !== initialTab) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { tab: initialTab },
+        queryParamsHandling: 'merge',
+        replaceUrl: true
+      });
+    }
+
+    // Sincronizar si cambia el parámetro de URL (ej. botones atrás / adelante del navegador)
+    this.queryParamSub = this.route.queryParamMap.subscribe(params => {
+      const tabFromUrl = this.normalizeTab(params.get('tab'));
+      if (tabFromUrl && tabFromUrl !== this.activeTab) {
+        this.setTab(tabFromUrl, false);
+      }
+    });
+
     this.applyAdminTheme();
     try {
       this.refreshBadges();
     } catch (e) {
       console.warn('[Admin] Error refreshing badges on init:', e);
     }
+  }
+
+  normalizeTab(tabId: string | null | undefined): string | null {
+    if (!tabId) return null;
+    let id = tabId.toLowerCase().trim();
+    if (id === 'leads') id = 'messages';
+    if (id === 'stats' || id === 'reports' || id === 'analytics') id = 'financial-control';
+    return this.tabs.some(t => t.id === id) ? id : null;
   }
 
   applyAdminTheme() {
@@ -590,11 +625,11 @@ export class AdminComponent implements OnInit, OnDestroy {
       localStorage.setItem('portalink_admin_tab', 'dashboard');
     }
     if (typeof window !== 'undefined') {
-      window.location.reload();
+      window.location.href = '/admin?tab=dashboard';
     }
   }
 
-  setTab(id: string) {
+  setTab(id: string, updateUrl: boolean = true) {
     if (id === 'leads') id = 'messages';
     if (id === 'stats' || id === 'reports' || id === 'analytics') id = 'financial-control';
     if (this.activeTab === id) return;
@@ -609,6 +644,17 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.isMobileDrawerOpen = false;
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem('portalink_admin_tab', id);
+    }
+
+    if (updateUrl) {
+      try {
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { tab: id },
+          queryParamsHandling: 'merge',
+          replaceUrl: true
+        });
+      } catch {}
     }
 
     try {
@@ -648,6 +694,7 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.sessionSub?.unsubscribe();
+    this.queryParamSub?.unsubscribe();
     if (typeof document !== 'undefined') {
       const root = document.documentElement;
       root.classList.remove('theme-dark', 'theme-red');
