@@ -32,7 +32,7 @@ const TAB_LABELS: Record<string, string> = {
             [style.padding-top]="isMobileScreen ? 'calc(env(safe-area-inset-top, 0px) + 0.45rem)' : null"
             [ngClass]="[
               theme === 'dark' ? 'bg-[#07070a]/95 backdrop-blur-xl border-neutral-800' : 'bg-white/95 backdrop-blur-xl border-neutral-200',
-              activeTab === 'library' && isNotesView ? 'py-3 sm:py-2 min-h-[56px] sm:min-h-[48px]' : 'py-3.5 sm:py-3.5 min-h-[62px] sm:min-h-[56px]'
+              activeTab === 'library' && isNotesView ? 'py-2.5 sm:py-3 min-h-[66px] sm:min-h-[64px]' : 'py-3.5 sm:py-3.5 min-h-[62px] sm:min-h-[56px]'
             ]">
 
       <!-- ═══════════════════════ LEFT: IDENTITY / BREADCRUMB / LIBRARY TABS ═══════════════════════ -->
@@ -185,20 +185,47 @@ const TAB_LABELS: Record<string, string> = {
 
         <!-- C. LIBRARY NOTES VIEW: TOOLBAR DE TAREAS Y ACCIONES DEL BLOQUE (A LA IZQUIERDA DEL BOTON DE TEMA) -->
         <ng-container *ngIf="activeTab === 'library' && isNotesView && (activeBlockMeta$ | async) as currentBlock">
-          <div class="relative flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full border backdrop-blur-2xl shadow-sm text-xs font-headline font-bold transition-all max-w-[calc(100vw-120px)] sm:max-w-none overflow-x-auto scrollbar-none select-none shrink-0"
-               [ngClass]="theme === 'dark' ? 'bg-[#121215]/95 border-neutral-800 text-neutral-200 shadow-black/40' : 'bg-white/95 border-neutral-200 text-neutral-800 shadow-neutral-200/50'">
+          <div class="relative flex items-center gap-2 sm:gap-2.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-2xl border backdrop-blur-2xl shadow-xl text-xs sm:text-[13px] font-headline font-bold transition-all max-w-[calc(100vw-130px)] sm:max-w-none overflow-x-auto scrollbar-none select-none shrink-0"
+               [ngClass]="theme === 'dark' 
+                 ? 'bg-[#121217]/95 border-neutral-800/90 text-neutral-100 shadow-black/60 ring-1 ring-white/[0.08]' 
+                 : 'bg-white/95 border-neutral-200/90 text-neutral-800 shadow-neutral-300/50 ring-1 ring-black/[0.05]'">
             
-            <!-- BADGE DEL TIPO + ICONO -->
-            <div class="flex items-center gap-1.5 font-mono uppercase tracking-wider text-[11px] font-extrabold pr-2 border-r"
-                 [ngClass]="theme === 'dark' ? 'text-neutral-400 border-neutral-800' : 'text-neutral-600 border-neutral-200'">
-              <span *ngIf="currentBlock.type === 'columnas'" class="text-sm">◫</span>
-              <svg *ngIf="currentBlock.type === 'titulo'" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m0-15l-6 6m6-6l6 6M4.5 19.5h15" /></svg>
-              <svg *ngIf="currentBlock.type === 'subtitulo'" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h12m-12 5.25h9" /></svg>
-              <svg *ngIf="currentBlock.type === 'texto'" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
-              <svg *ngIf="currentBlock.type === 'codigo'" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" /></svg>
-              <svg *ngIf="currentBlock.type === 'alerta'" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.438a3.75 3.75 0 01-7.5 0m7.5 0v1.875a1.875 1.875 0 01-1.875 1.875h-3.75A1.875 1.875 0 018.25 21.75V19.875m3.75-14.625a6.002 6.002 0 00-5.467 3.527C6.082 9.879 6 10.932 6 12c0 2.257.94 4.3 2.457 5.74m7.086 0A8.966 8.966 0 0018 12c0-1.068-.082-2.121-.533-3.223a6.002 6.002 0 00-5.467-3.527z" /></svg>
-              <svg *ngIf="currentBlock.type === 'imagen'" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
-              <span class="truncate max-w-[70px] sm:max-w-none">{{ getBlockTypeLabel(currentBlock.type) }}</span>
+            <!-- BADGE DEL TIPO + ICONO REFINADO -->
+            <div class="flex items-center gap-2 h-8.5 sm:h-9 px-3 rounded-xl font-mono uppercase tracking-wider text-xs sm:text-[12px] font-black shrink-0 border transition-all duration-200 shadow-2xs"
+                 [ngClass]="getBlockTypeBadgeClass(currentBlock.type)">
+              
+              <!-- Icono Columnas -->
+              <svg *ngIf="currentBlock.type === 'columnas'" class="w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                <rect x="3.5" y="4.5" width="7" height="15" rx="2" stroke-linecap="round" stroke-linejoin="round" />
+                <rect x="13.5" y="4.5" width="7" height="15" rx="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <!-- Icono Título H1 -->
+              <svg *ngIf="currentBlock.type === 'titulo'" class="w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.5v13M12.75 5.5v13M3.75 12h9M18.75 18.5V9.75l-2.25 1.5" />
+              </svg>
+              <!-- Icono Subtítulo H2 -->
+              <svg *ngIf="currentBlock.type === 'subtitulo'" class="w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.5v13M12 5.5v13M3.75 12h8.25M17.25 10a2 2 0 114 0c0 1.5-2.25 2.5-4 4.5h4" />
+              </svg>
+              <!-- Icono Texto -->
+              <svg *ngIf="currentBlock.type === 'texto'" class="w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h11" />
+              </svg>
+              <!-- Icono Código -->
+              <svg *ngIf="currentBlock.type === 'codigo'" class="w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 8l-4.5 4 4.5 4m8-8l4.5 4-4.5 4m-6.5 2l3-12" />
+              </svg>
+              <!-- Icono Alerta -->
+              <svg *ngIf="currentBlock.type === 'alerta'" class="w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 3.5h.008M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              </svg>
+              <!-- Icono Imagen -->
+              <svg *ngIf="currentBlock.type === 'imagen'" class="w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                <rect x="3" y="4.5" width="18" height="15" rx="3" stroke-linecap="round" stroke-linejoin="round" />
+                <circle cx="8.5" cy="9" r="1.5" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 15.5l-5-5L5 20.5" />
+              </svg>
+              <span class="truncate max-w-[95px] sm:max-w-none">{{ getBlockTypeLabel(currentBlock.type) }}</span>
             </div>
 
             <!-- BOTÓN CAMBIAR TIPO CON MENÚ DESPLEGABLE -->
@@ -206,10 +233,14 @@ const TAB_LABELS: Record<string, string> = {
               <button type="button"
                       (click)="toggleTypeDropdown($event)"
                       title="Cambiar tipo de bloque"
-                      class="flex items-center gap-0.5 px-1.5 py-0.5 rounded-lg text-xs font-bold transition-all cursor-pointer"
-                      [ngClass]="theme === 'dark' ? 'text-neutral-300 hover:text-white hover:bg-neutral-800' : 'text-neutral-700 hover:text-black hover:bg-neutral-100'">
+                      class="flex items-center gap-1.5 h-8.5 sm:h-9 px-3 rounded-xl text-xs sm:text-[13px] font-bold transition-all cursor-pointer hover:scale-102 active:scale-98"
+                      [ngClass]="isTypeDropdownOpen 
+                        ? (theme === 'dark' ? 'bg-neutral-800 text-white ring-1 ring-neutral-700' : 'bg-neutral-200 text-black ring-1 ring-neutral-300') 
+                        : (theme === 'dark' ? 'text-neutral-300 hover:text-white hover:bg-neutral-800/80' : 'text-neutral-700 hover:text-black hover:bg-neutral-100')">
                 <span>Cambiar</span>
-                <svg class="w-3 h-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <svg class="w-4 h-4 transition-transform duration-200 opacity-70"
+                     [class.rotate-180]="isTypeDropdownOpen"
+                     fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                 </svg>
               </button>
@@ -217,159 +248,241 @@ const TAB_LABELS: Record<string, string> = {
               <!-- MENÚ FLOTANTE CAMBIAR TIPO -->
               <div *ngIf="isTypeDropdownOpen"
                    (click)="$event.stopPropagation()"
-                   class="absolute left-0 sm:right-0 top-full mt-2 w-44 z-50 rounded-2xl border shadow-2xl p-1.5 backdrop-blur-2xl animate-fade-in font-sans font-medium"
-                   [ngClass]="theme === 'dark' ? 'bg-[#18181b] border-neutral-700 text-white shadow-black/80' : 'bg-white border-neutral-200 text-neutral-900 shadow-xl'">
-                <div class="space-y-0.5 text-xs">
+                   class="absolute left-0 sm:right-0 top-full mt-2 w-56 z-50 rounded-2xl border shadow-2xl p-2 backdrop-blur-2xl animate-fade-in font-sans font-medium"
+                   [ngClass]="theme === 'dark' ? 'bg-[#18181f]/95 border-neutral-700/80 text-white shadow-black/80 ring-1 ring-white/10' : 'bg-white/95 border-neutral-200 text-neutral-900 shadow-xl ring-1 ring-black/5'">
+                <div class="space-y-1 text-xs sm:text-[13px]">
+                  <!-- Opción Título H1 -->
                   <button type="button" (click)="changeType('titulo', $event)"
-                          class="w-full px-2.5 py-1.5 rounded-xl text-left font-bold flex items-center justify-between hover:bg-neutral-800/80 cursor-pointer"
-                          [ngClass]="currentBlock.type === 'titulo' ? (theme === 'dark' ? 'bg-neutral-800 text-white' : 'bg-neutral-100 text-black') : ''">
-                    <span>H1 Título</span>
-                    <kbd class="text-[9px] font-mono opacity-60">T</kbd>
+                          class="w-full px-3 py-2 rounded-xl text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
+                          [ngClass]="currentBlock.type === 'titulo' 
+                            ? (theme === 'dark' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' : 'bg-blue-50 text-blue-800 border border-blue-200') 
+                            : (theme === 'dark' ? 'hover:bg-neutral-800/80 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
+                    <div class="flex items-center gap-2.5">
+                      <span class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 bg-blue-500/15 text-blue-400">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.5v13M12.75 5.5v13M3.75 12h9M18.75 18.5V9.75l-2.25 1.5" /></svg>
+                      </span>
+                      <span>H1 Título</span>
+                    </div>
+                    <kbd class="text-[10px] font-mono opacity-60 bg-neutral-500/10 px-1.5 py-0.5 rounded">T</kbd>
                   </button>
+
+                  <!-- Opción Subtítulo H2 -->
                   <button type="button" (click)="changeType('subtitulo', $event)"
-                          class="w-full px-2.5 py-1.5 rounded-xl text-left font-bold flex items-center justify-between hover:bg-neutral-800/80 cursor-pointer"
-                          [ngClass]="currentBlock.type === 'subtitulo' ? (theme === 'dark' ? 'bg-neutral-800 text-white' : 'bg-neutral-100 text-black') : ''">
-                    <span>H2 Subtítulo</span>
-                    <kbd class="text-[9px] font-mono opacity-60">S</kbd>
+                          class="w-full px-3 py-2 rounded-xl text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
+                          [ngClass]="currentBlock.type === 'subtitulo' 
+                            ? (theme === 'dark' ? 'bg-sky-500/20 text-sky-300 border border-sky-500/30' : 'bg-sky-50 text-sky-800 border border-sky-200') 
+                            : (theme === 'dark' ? 'hover:bg-neutral-800/80 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
+                    <div class="flex items-center gap-2.5">
+                      <span class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 bg-sky-500/15 text-sky-400">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.5v13M12 5.5v13M3.75 12h8.25M17.25 10a2 2 0 114 0c0 1.5-2.25 2.5-4 4.5h4" /></svg>
+                      </span>
+                      <span>H2 Subtítulo</span>
+                    </div>
+                    <kbd class="text-[10px] font-mono opacity-60 bg-neutral-500/10 px-1.5 py-0.5 rounded">S</kbd>
                   </button>
+
+                  <!-- Opción Texto Normal -->
                   <button type="button" (click)="changeType('texto', $event)"
-                          class="w-full px-2.5 py-1.5 rounded-xl text-left font-bold flex items-center justify-between hover:bg-neutral-800/80 cursor-pointer"
-                          [ngClass]="currentBlock.type === 'texto' ? (theme === 'dark' ? 'bg-neutral-800 text-white' : 'bg-neutral-100 text-black') : ''">
-                    <span>≡ Texto Normal</span>
-                    <kbd class="text-[9px] font-mono opacity-60">N</kbd>
+                          class="w-full px-3 py-2 rounded-xl text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
+                          [ngClass]="currentBlock.type === 'texto' 
+                            ? (theme === 'dark' ? 'bg-neutral-700/60 text-white border border-neutral-600' : 'bg-neutral-200 text-black border border-neutral-300') 
+                            : (theme === 'dark' ? 'hover:bg-neutral-800/80 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
+                    <div class="flex items-center gap-2.5">
+                      <span class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 bg-neutral-500/15 text-neutral-400">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h11" /></svg>
+                      </span>
+                      <span>Texto Normal</span>
+                    </div>
+                    <kbd class="text-[10px] font-mono opacity-60 bg-neutral-500/10 px-1.5 py-0.5 rounded">N</kbd>
                   </button>
+
+                  <!-- Opción Código -->
                   <button type="button" (click)="changeType('codigo', $event)"
-                          class="w-full px-2.5 py-1.5 rounded-xl text-left font-bold flex items-center justify-between hover:bg-neutral-800/80 cursor-pointer"
-                          [ngClass]="currentBlock.type === 'codigo' ? (theme === 'dark' ? 'bg-neutral-800 text-white' : 'bg-neutral-100 text-black') : ''">
-                    <span>&lt;/&gt; Código</span>
-                    <kbd class="text-[9px] font-mono opacity-60">C</kbd>
+                          class="w-full px-3 py-2 rounded-xl text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
+                          [ngClass]="currentBlock.type === 'codigo' 
+                            ? (theme === 'dark' ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' : 'bg-indigo-50 text-indigo-800 border border-indigo-200') 
+                            : (theme === 'dark' ? 'hover:bg-neutral-800/80 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
+                    <div class="flex items-center gap-2.5">
+                      <span class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 bg-indigo-500/15 text-indigo-400">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 8l-4.5 4 4.5 4m8-8l4.5 4-4.5 4m-6.5 2l3-12" /></svg>
+                      </span>
+                      <span>&lt;/&gt; Código</span>
+                    </div>
+                    <kbd class="text-[10px] font-mono opacity-60 bg-neutral-500/10 px-1.5 py-0.5 rounded">C</kbd>
                   </button>
+
+                  <!-- Opción Alerta -->
                   <button type="button" (click)="changeType('alerta', $event)"
-                          class="w-full px-2.5 py-1.5 rounded-xl text-left font-bold flex items-center justify-between hover:bg-neutral-800/80 cursor-pointer"
-                          [ngClass]="currentBlock.type === 'alerta' ? (theme === 'dark' ? 'bg-neutral-800 text-white' : 'bg-neutral-100 text-black') : ''">
-                    <span>⚠ Alerta</span>
-                    <kbd class="text-[9px] font-mono opacity-60">A</kbd>
+                          class="w-full px-3 py-2 rounded-xl text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
+                          [ngClass]="currentBlock.type === 'alerta' 
+                            ? (theme === 'dark' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-amber-50 text-amber-800 border border-amber-200') 
+                            : (theme === 'dark' ? 'hover:bg-neutral-800/80 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
+                    <div class="flex items-center gap-2.5">
+                      <span class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 bg-amber-500/15 text-amber-400">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 3.5h.008M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
+                      </span>
+                      <span>⚠ Alerta</span>
+                    </div>
+                    <kbd class="text-[10px] font-mono opacity-60 bg-neutral-500/10 px-1.5 py-0.5 rounded">A</kbd>
                   </button>
+
+                  <!-- Opción 2 Columnas -->
                   <button type="button" (click)="changeType('columnas', $event)"
-                          class="w-full px-2.5 py-1.5 rounded-xl text-left font-bold flex items-center justify-between hover:bg-neutral-800/80 cursor-pointer"
-                          [ngClass]="currentBlock.type === 'columnas' ? (theme === 'dark' ? 'bg-neutral-800 text-white' : 'bg-neutral-100 text-black') : ''">
-                    <span>◫ 2 Columnas</span>
-                    <kbd class="text-[9px] font-mono opacity-60">2</kbd>
+                          class="w-full px-3 py-2 rounded-xl text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
+                          [ngClass]="currentBlock.type === 'columnas' 
+                            ? (theme === 'dark' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-purple-50 text-purple-800 border border-purple-200') 
+                            : (theme === 'dark' ? 'hover:bg-neutral-800/80 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
+                    <div class="flex items-center gap-2.5">
+                      <span class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 bg-purple-500/15 text-purple-400">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3.5" y="4.5" width="7" height="15" rx="2"/><rect x="13.5" y="4.5" width="7" height="15" rx="2"/></svg>
+                      </span>
+                      <span>◫ 2 Columnas</span>
+                    </div>
+                    <kbd class="text-[10px] font-mono opacity-60 bg-neutral-500/10 px-1.5 py-0.5 rounded">2</kbd>
                   </button>
+
+                  <!-- Opción Imagen -->
                   <button type="button" (click)="changeType('imagen', $event)"
-                          class="w-full px-2.5 py-1.5 rounded-xl text-left font-bold flex items-center justify-between hover:bg-neutral-800/80 cursor-pointer"
-                          [ngClass]="currentBlock.type === 'imagen' ? (theme === 'dark' ? 'bg-neutral-800 text-white' : 'bg-neutral-100 text-black') : ''">
-                    <span>🖼 Imagen</span>
-                    <kbd class="text-[9px] font-mono opacity-60">I</kbd>
+                          class="w-full px-3 py-2 rounded-xl text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
+                          [ngClass]="currentBlock.type === 'imagen' 
+                            ? (theme === 'dark' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-emerald-50 text-emerald-800 border border-emerald-200') 
+                            : (theme === 'dark' ? 'hover:bg-neutral-800/80 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
+                    <div class="flex items-center gap-2.5">
+                      <span class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 bg-emerald-500/15 text-emerald-400">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4.5" width="18" height="15" rx="3"/><circle cx="8.5" cy="9" r="1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 15.5l-5-5L5 20.5"/></svg>
+                      </span>
+                      <span>🖼 Imagen</span>
+                    </div>
+                    <kbd class="text-[10px] font-mono opacity-60 bg-neutral-500/10 px-1.5 py-0.5 rounded">I</kbd>
                   </button>
                 </div>
               </div>
             </div>
 
-            <span class="opacity-25 text-xs shrink-0">|</span>
+            <!-- SEPARADOR -->
+            <div class="h-5 sm:h-6 w-px mx-0.5 shrink-0" [ngClass]="theme === 'dark' ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
 
-            <!-- BOTÓN IA -->
+            <!-- BOTÓN IA ROTBOT -->
             <button type="button"
                     (click)="triggerAction('ai', null, $event)"
                     title="Asistente RotBot IA para este bloque"
-                    class="px-2 py-0.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1 border shrink-0 hover:scale-105 active:scale-95"
-                    [ngClass]="theme === 'dark' ? 'border-neutral-700 bg-neutral-800/90 text-white hover:bg-neutral-700' : 'border-neutral-300 bg-neutral-100 text-neutral-900 hover:bg-neutral-200'">
-              <span class="text-xs">✨</span>
+                    class="h-8.5 sm:h-9 px-3 sm:px-3.5 rounded-xl text-xs sm:text-[13px] font-extrabold transition-all cursor-pointer flex items-center gap-2 border shrink-0 hover:scale-105 active:scale-95 shadow-xs"
+                    [ngClass]="theme === 'dark' 
+                      ? 'border-purple-500/40 bg-gradient-to-r from-purple-900/30 to-indigo-900/30 text-purple-200 hover:bg-purple-500/30 hover:border-purple-400 ring-1 ring-purple-500/20 shadow-purple-500/20' 
+                      : 'border-purple-200 bg-gradient-to-r from-purple-50 to-indigo-50 text-purple-700 hover:bg-purple-100 hover:border-purple-300 shadow-purple-500/10'">
+              <svg class="w-4 h-4 fill-current shrink-0 text-purple-400 dark:text-purple-300" viewBox="0 0 24 24">
+                <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/>
+              </svg>
               <span>IA</span>
             </button>
 
-            <span class="opacity-25 text-xs shrink-0">|</span>
+            <!-- SEPARADOR -->
+            <div class="h-5 sm:h-6 w-px mx-0.5 shrink-0" [ngClass]="theme === 'dark' ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
 
             <!-- B (Negrilla) -->
             <button type="button"
                     (click)="triggerAction('bold', null, $event)"
                     title="Negrilla (Ctrl + B)"
-                    class="w-6 h-6 rounded-md flex items-center justify-center transition-all cursor-pointer shrink-0 font-serif font-black text-xs"
-                    [ngClass]="theme === 'dark' ? 'text-neutral-300 hover:text-white hover:bg-neutral-800' : 'text-neutral-700 hover:text-black hover:bg-neutral-100'">
-              B
+                    class="w-8.5 h-8.5 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center transition-all cursor-pointer shrink-0 hover:scale-105 active:scale-95"
+                    [ngClass]="theme === 'dark' ? 'text-neutral-200 hover:text-white hover:bg-neutral-800' : 'text-neutral-700 hover:text-black hover:bg-neutral-100'">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 4h7a4 4 0 012.83 6.83A4.5 4.5 0 0113.5 20H6V4zm3 3v4h4a1.5 1.5 0 000-3H9zm0 7v4h4.5a1.5 1.5 0 000-3H9z"/>
+              </svg>
             </button>
 
             <!-- I (Cursiva) -->
             <button type="button"
                     (click)="triggerAction('italic', null, $event)"
                     title="Cursiva (Ctrl + I)"
-                    class="w-6 h-6 rounded-md flex items-center justify-center transition-all cursor-pointer shrink-0 font-serif italic font-bold text-xs"
-                    [ngClass]="theme === 'dark' ? 'text-neutral-300 hover:text-white hover:bg-neutral-800' : 'text-neutral-700 hover:text-black hover:bg-neutral-100'">
-              I
+                    class="w-8.5 h-8.5 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center transition-all cursor-pointer shrink-0 hover:scale-105 active:scale-95"
+                    [ngClass]="theme === 'dark' ? 'text-neutral-200 hover:text-white hover:bg-neutral-800' : 'text-neutral-700 hover:text-black hover:bg-neutral-100'">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M10 4h7v2.5h-2.5l-3 11H14V20H7v-2.5h2.5l3-11H10V4z"/>
+              </svg>
             </button>
 
             <!-- ROJO -->
             <button type="button"
                     (click)="triggerAction('red', null, $event)"
                     title="Colorear en rojo (Ctrl + Shift + D)"
-                    class="flex items-center gap-1 px-1.5 py-0.5 rounded-md text-xs font-bold transition-all cursor-pointer shrink-0"
-                    [ngClass]="(libraryService.isRedTextActive$ | async) ? 'bg-red-500/25 text-red-300 ring-1 ring-red-500' : 'hover:bg-red-500/15 text-red-400'">
-              <span class="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0"></span>
+                    class="flex items-center gap-2 h-8.5 sm:h-9 px-3 sm:px-3.5 rounded-xl text-xs sm:text-[13px] font-bold transition-all cursor-pointer shrink-0 border hover:scale-105 active:scale-95"
+                    [ngClass]="(libraryService.isRedTextActive$ | async) 
+                      ? 'bg-rose-500/20 text-rose-300 border-rose-500/50 ring-2 ring-rose-500/30' 
+                      : (theme === 'dark' ? 'border-neutral-800 bg-neutral-900/60 text-neutral-300 hover:bg-rose-500/15 hover:border-rose-500/30 hover:text-rose-400' : 'border-neutral-200 bg-neutral-50 text-neutral-700 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-600')">
+              <span class="w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-rose-600 to-rose-400 shrink-0 shadow-sm shadow-rose-500/80 ring-2 ring-rose-400/40"></span>
               <span class="hidden sm:inline">Rojo</span>
             </button>
-
-            <span class="opacity-25 text-xs shrink-0">|</span>
 
             <!-- LEER CON ROTBOT -->
             <button type="button"
                     (click)="triggerAction('read', null, $event)"
                     [title]="(libraryService.isReadingBlock$ | async) ? 'Detener lectura' : 'Leer en voz alta con RotBot'"
-                    class="px-2 py-0.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1 border shrink-0 hover:scale-105 active:scale-95"
+                    class="h-8.5 sm:h-9 px-3 sm:px-3.5 rounded-xl text-xs sm:text-[13px] font-bold transition-all cursor-pointer flex items-center gap-2 border shrink-0 hover:scale-105 active:scale-95 shadow-xs"
                     [ngClass]="(libraryService.isReadingBlock$ | async) 
-                      ? 'border-cyan-500 bg-cyan-500/20 text-cyan-300 ring-1 ring-cyan-400 animate-pulse'
-                      : (theme === 'dark' ? 'border-cyan-500/30 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20' : 'border-cyan-200 bg-cyan-50 text-cyan-700 hover:bg-cyan-100')">
-              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.757 3.63 8.25 4.51 8.25H6.75z" />
+                      ? 'border-cyan-500 bg-cyan-500/25 text-cyan-200 ring-2 ring-cyan-400/40 shadow-md shadow-cyan-500/30' 
+                      : (theme === 'dark' ? 'border-cyan-500/30 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 hover:border-cyan-500/50' : 'border-cyan-200 bg-cyan-50 text-cyan-700 hover:bg-cyan-100 hover:border-cyan-300')">
+              <svg *ngIf="!(libraryService.isReadingBlock$ | async)" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.414 0-.75-.336-.75-.75V8.25c0-.414.336-.75.75-.75h2.24z" />
               </svg>
+              <div *ngIf="libraryService.isReadingBlock$ | async" class="flex items-center gap-0.5 h-3.5 shrink-0">
+                <span class="w-0.5 bg-cyan-400 rounded-full animate-voice-bar h-2.5"></span>
+                <span class="w-0.5 bg-cyan-400 rounded-full animate-voice-bar h-3.5" style="animation-delay: 0.1s"></span>
+                <span class="w-0.5 bg-cyan-400 rounded-full animate-voice-bar h-2" style="animation-delay: 0.2s"></span>
+              </div>
               <span>{{ (libraryService.isReadingBlock$ | async) ? 'Parar' : 'Leer' }}</span>
             </button>
 
-            <span class="opacity-25 text-xs shrink-0">|</span>
+            <!-- SEPARADOR -->
+            <div class="h-5 sm:h-6 w-px mx-0.5 shrink-0" [ngClass]="theme === 'dark' ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
 
             <!-- + TEXTO DEBAJO -->
             <button type="button"
                     (click)="triggerAction('addBelow', null, $event)"
-                    title="Añadir texto debajo"
-                    class="px-2 py-0.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1 border shrink-0 hover:scale-105 active:scale-95"
-                    [ngClass]="theme === 'dark' ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25' : 'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'">
-              <span class="text-xs">+</span>
+                    title="Añadir bloque de texto debajo"
+                    class="h-8.5 sm:h-9 px-3 sm:px-3.5 rounded-xl text-xs sm:text-[13px] font-bold transition-all cursor-pointer flex items-center gap-2 border shrink-0 hover:scale-105 active:scale-95 shadow-xs"
+                    [ngClass]="theme === 'dark' ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25 hover:border-emerald-500/60' : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:border-emerald-300'">
+              <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
               <span class="hidden sm:inline">Texto debajo</span>
               <span class="sm:hidden">Texto</span>
             </button>
 
-            <span class="opacity-25 text-xs shrink-0">|</span>
-
-            <!-- SUBIR / BAJAR -->
-            <div class="flex items-center gap-0.5 shrink-0">
+            <!-- SUBIR / BAJAR (AGRUPADOS EN PASTILLA SEGMENTADA) -->
+            <div class="flex items-center h-8.5 sm:h-9 rounded-xl border p-0.5 shrink-0"
+                 [ngClass]="theme === 'dark' ? 'border-neutral-800 bg-neutral-900/80' : 'border-neutral-200 bg-neutral-100/80'">
               <button type="button"
                       (click)="triggerAction('moveUp', null, $event)"
                       [disabled]="(libraryService.activeBlockIndex$ | async)! <= 0"
                       title="Mover bloque arriba"
-                      class="p-1 rounded hover:bg-neutral-800 disabled:opacity-30 cursor-pointer">
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+                      class="w-7.5 h-7.5 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg hover:bg-neutral-800 hover:text-white disabled:opacity-25 disabled:hover:bg-transparent transition-all cursor-pointer">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
                 </svg>
               </button>
               <button type="button"
                       (click)="triggerAction('moveDown', null, $event)"
                       [disabled]="(libraryService.activeBlockIndex$ | async)! >= ((libraryService.totalBlocksCount$ | async)! - 1)"
                       title="Mover bloque abajo"
-                      class="p-1 rounded hover:bg-neutral-800 disabled:opacity-30 cursor-pointer">
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                      class="w-7.5 h-7.5 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg hover:bg-neutral-800 hover:text-white disabled:opacity-25 disabled:hover:bg-transparent transition-all cursor-pointer">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
             </div>
 
-            <span class="opacity-25 text-xs shrink-0">|</span>
+            <!-- SEPARADOR -->
+            <div class="h-5 sm:h-6 w-px mx-0.5 shrink-0" [ngClass]="theme === 'dark' ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
 
             <!-- DUPLICAR -->
             <button type="button"
                     (click)="triggerAction('duplicate', null, $event)"
                     title="Duplicar bloque"
-                    class="p-1 rounded hover:bg-neutral-800 cursor-pointer shrink-0">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v9.25c0 .621-.504 1.125-1.125 1.125z" />
+                    class="w-8.5 h-8.5 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center transition-all cursor-pointer shrink-0 hover:scale-105 active:scale-95"
+                    [ngClass]="theme === 'dark' ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-600 hover:text-black hover:bg-neutral-100'">
+              <svg class="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="8" y="8" width="12" height="12" rx="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16 8V5.5A2.5 2.5 0 0013.5 3h-8A2.5 2.5 0 003 5.5v8A2.5 2.5 0 005.5 16H8" />
               </svg>
             </button>
 
@@ -377,9 +490,10 @@ const TAB_LABELS: Record<string, string> = {
             <button type="button"
                     (click)="triggerAction('delete', null, $event)"
                     title="Eliminar bloque"
-                    class="p-1 rounded hover:bg-red-500/20 text-neutral-400 hover:text-red-400 cursor-pointer shrink-0">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                    class="w-8.5 h-8.5 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center transition-all cursor-pointer shrink-0 hover:scale-105 active:scale-95"
+                    [ngClass]="theme === 'dark' ? 'text-neutral-400 hover:text-rose-400 hover:bg-rose-500/20' : 'text-neutral-500 hover:text-rose-600 hover:bg-rose-50'">
+              <svg class="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
             </button>
 
@@ -388,17 +502,17 @@ const TAB_LABELS: Record<string, string> = {
 
         <!-- Theme Toggle Button -->
         <button (click)="themeChange.emit()"
-                class="w-9 h-9 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center border transition-all duration-200 cursor-pointer hover:scale-105 active:scale-95 shrink-0"
+                class="w-10 h-10 sm:w-10.5 sm:h-10.5 rounded-2xl flex items-center justify-center border transition-all duration-200 cursor-pointer hover:scale-105 active:scale-95 shrink-0"
                 [ngClass]="theme === 'dark'
                   ? 'bg-white/5 border-white/10 hover:border-white/20'
                   : 'bg-black/5 border-black/10 hover:border-black/20'"
                 title="Cambiar tema">
           <!-- Moon Icon (Light Mode) -->
-          <svg *ngIf="theme === 'light'" class="w-4 h-4 text-neutral-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <svg *ngIf="theme === 'light'" class="w-4.5 h-4.5 text-neutral-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
           </svg>
           <!-- Sun Icon (Dark Mode) -->
-          <svg *ngIf="theme === 'dark'" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <svg *ngIf="theme === 'dark'" class="w-4.5 h-4.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="5"></circle>
             <line x1="12" y1="1" x2="12" y2="3"></line>
             <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -415,7 +529,15 @@ const TAB_LABELS: Record<string, string> = {
     </header>
 
   `,
-  styles: []
+  styles: [`
+    @keyframes voiceBar {
+      0%, 100% { height: 4px; }
+      50% { height: 14px; }
+    }
+    .animate-voice-bar {
+      animation: voiceBar 0.45s ease-in-out infinite alternate;
+    }
+  `]
 })
 export class DashAiSearchComponent {
   public libraryService = inject(LibraryService);
@@ -475,6 +597,30 @@ export class DashAiSearchComponent {
       case 'columnas': return '2 COLUMNAS';
       case 'imagen': return 'IMAGEN';
       default: return 'BLOQUE';
+    }
+  }
+
+  getBlockTypeBadgeClass(type: string): string {
+    if (this.theme === 'dark') {
+      switch (type) {
+        case 'titulo': return 'bg-blue-500/15 border-blue-500/40 text-blue-300';
+        case 'subtitulo': return 'bg-sky-500/15 border-sky-500/40 text-sky-300';
+        case 'codigo': return 'bg-indigo-500/15 border-indigo-500/40 text-indigo-300';
+        case 'alerta': return 'bg-amber-500/15 border-amber-500/40 text-amber-300';
+        case 'columnas': return 'bg-purple-500/15 border-purple-500/40 text-purple-300';
+        case 'imagen': return 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300';
+        default: return 'bg-neutral-800 border-neutral-700 text-neutral-200';
+      }
+    } else {
+      switch (type) {
+        case 'titulo': return 'bg-blue-50 border-blue-200 text-blue-700';
+        case 'subtitulo': return 'bg-sky-50 border-sky-200 text-sky-700';
+        case 'codigo': return 'bg-indigo-50 border-indigo-200 text-indigo-700';
+        case 'alerta': return 'bg-amber-50 border-amber-200 text-amber-700';
+        case 'columnas': return 'bg-purple-50 border-purple-200 text-purple-700';
+        case 'imagen': return 'bg-emerald-50 border-emerald-200 text-emerald-700';
+        default: return 'bg-neutral-100 border-neutral-200 text-neutral-800';
+      }
     }
   }
 
