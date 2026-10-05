@@ -245,6 +245,9 @@ const TAB_LABELS: Record<string, string> = {
                 </svg>
               </button>
 
+              <!-- BACKDROP INVISIBLE PARA CERRAR AL HACER CLIC AFUERA -->
+              <div *ngIf="isTypeDropdownOpen" (click)="closeTypeDropdown()" class="fixed inset-0 z-40 bg-transparent"></div>
+
               <!-- MENÚ FLOTANTE CAMBIAR TIPO -->
               <div *ngIf="isTypeDropdownOpen"
                    (click)="$event.stopPropagation()"

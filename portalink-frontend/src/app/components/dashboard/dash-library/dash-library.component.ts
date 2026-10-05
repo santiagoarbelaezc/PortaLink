@@ -802,8 +802,32 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @HostListener('window:keydown', ['$event'])
   onGlobalTypeMenuKeydown(event: KeyboardEvent) {
-    // Cerrar lightbox de imagen o salir de pantalla completa del chat con tecla Escape
+    // Cerrar modales con tecla Escape
     if (event.key === 'Escape' || event.key === 'Esc') {
+      if (this.activeAiBlockId) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.closeAiModal();
+        return;
+      }
+      if (this.isFolderModalOpen) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.isFolderModalOpen = false;
+        return;
+      }
+      if (this.isNotebookModalOpen) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.isNotebookModalOpen = false;
+        return;
+      }
+      if (this.isDeleteModalOpen) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.closeDeleteModal();
+        return;
+      }
       if (this.lightboxImageUrl) {
         event.preventDefault();
         event.stopPropagation();
@@ -1072,8 +1096,24 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
             if (block && payload) this.changeBlockType(block, payload);
             break;
           case 'ai':
-            if (block) {
-              this.activeAiBlockId = (this.activeAiBlockId === block.id ? null : block.id);
+            if (this.activeAiBlockId) {
+              this.closeAiModal();
+            } else if (block) {
+              this.activeBlockId = block.id;
+              this.activeAiBlockId = block.id;
+              this.activeAiTargetColIndex = null;
+              this.aiCustomInstruction = '';
+              this.aiResultPreview = '';
+              this.aiError = '';
+            } else if (this.blocks && this.blocks.length > 0) {
+              this.activeBlockId = this.blocks[0].id;
+              this.activeAiBlockId = this.blocks[0].id;
+              this.activeAiTargetColIndex = null;
+              this.aiCustomInstruction = '';
+              this.aiResultPreview = '';
+              this.aiError = '';
+            } else {
+              this.showToast('Crea o selecciona un bloque primero');
             }
             break;
           case 'bold':
@@ -3443,19 +3483,70 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   // GROQ AI INTEGRATION METHODS (Bloque e IA Flotante)
   // ════════════════════════════════════════════════════════
 
-  toggleAiBlockMenu(blockId: string, event: Event, targetColIndex?: number) {
-    event.stopPropagation();
-    if (this.activeAiBlockId === blockId && this.activeAiTargetColIndex === (targetColIndex ?? null)) {
-      this.activeAiBlockId = null;
-      this.activeAiTargetColIndex = null;
-    } else {
-      this.activeAiBlockId = blockId;
-      this.activeAiTargetColIndex = targetColIndex ?? null;
+  get activeAiBlockSnippet(): string {
+    const block = this.currentActiveBlock;
+    if (!block) return '';
+    if (block.type === 'columnas' && block.columns) {
+      if (this.activeAiTargetColIndex !== null && this.activeAiTargetColIndex !== undefined && block.columns[this.activeAiTargetColIndex]) {
+        return block.columns[this.activeAiTargetColIndex].content || '';
+      }
+      const c1 = block.columns[0]?.content || '';
+      const c2 = block.columns[1]?.content || '';
+      return `Columna 1:\n${c1}\n\nColumna 2:\n${c2}`;
     }
-    this.activeTypeMenuBlockId = null;
+    return block.content || '';
+  }
+
+  closeAiModal() {
+    this.activeAiBlockId = null;
+    this.activeAiTargetColIndex = null;
     this.aiCustomInstruction = '';
     this.aiResultPreview = '';
     this.aiError = '';
+  }
+
+  copyAiResult() {
+    if (!this.aiResultPreview) return;
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(this.aiResultPreview).then(() => {
+        this.showToast('Resultado copiado al portapapeles');
+      }).catch(() => {
+        this.fallbackCopyText(this.aiResultPreview);
+      });
+    } else {
+      this.fallbackCopyText(this.aiResultPreview);
+    }
+  }
+
+  private fallbackCopyText(text: string) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-9999px';
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      this.showToast('Resultado copiado al portapapeles');
+    } catch {
+      this.showToast('No se pudo copiar el texto', 'error');
+    }
+    document.body.removeChild(textArea);
+  }
+
+  toggleAiBlockMenu(blockId: string, event: Event, targetColIndex?: number) {
+    event.stopPropagation();
+    if (this.activeAiBlockId === blockId && this.activeAiTargetColIndex === (targetColIndex ?? null)) {
+      this.closeAiModal();
+    } else {
+      this.activeBlockId = blockId;
+      this.activeAiBlockId = blockId;
+      this.activeAiTargetColIndex = targetColIndex ?? null;
+      this.aiCustomInstruction = '';
+      this.aiResultPreview = '';
+      this.aiError = '';
+    }
+    this.activeTypeMenuBlockId = null;
   }
 
   applyAiTransform(block: NoteBlock, presetInstruction: string) {
