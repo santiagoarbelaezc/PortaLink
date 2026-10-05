@@ -1305,368 +1305,118 @@
           </div>
         </div>
 
-        <!-- PANEL DE TAREAS Y ACCIONES DEL APUNTE (SIEMPRE FIJO EN LA PARTE DE ARRIBA) -->
-        <div *ngIf="currentActiveBlock"
-          class="sticky top-0 z-30 w-full py-1.5 sm:py-2 px-2.5 sm:px-4 rounded-2xl border backdrop-blur-2xl transition-all shadow-md select-none mt-1 sm:mt-2 mb-2"
-          [ngClass]="isDark ? 'bg-[#141418]/95 border-neutral-800 text-neutral-200 shadow-black/60' : 'bg-white/95 border-neutral-200 text-neutral-900 shadow-neutral-200/60'">
-          
-          <div class="relative flex items-center justify-between sm:justify-start gap-1 sm:gap-2 overflow-x-auto scrollbar-none text-xs sm:text-[13px] font-headline font-extrabold">
+        <!-- ASISTENTE IA ROTBOT PARA EL BLOQUE ACTIVO -->
+        <div *ngIf="activeAiBlockId && currentActiveBlock" (click)="$event.stopPropagation()"
+          class="relative w-full max-w-xl mx-auto z-40 rounded-2xl border shadow-2xl p-3.5 sm:p-4 backdrop-blur-2xl animate-fade-in font-sans my-2"
+          [ngClass]="isDark ? 'bg-[#121215]/95 border-neutral-700 text-white shadow-black/80' : 'bg-white/95 border-neutral-200 text-neutral-900 shadow-2xl'">
+          <div class="flex items-center justify-between pb-3 mb-3 border-b"
+            [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+            <div class="flex items-center gap-2">
+              <div class="w-6 h-6 rounded-lg flex items-center justify-center border p-1"
+                [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700' : 'bg-neutral-100 border-neutral-200/80'">
+                <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
+              </div>
+              <span class="font-headline font-bold text-xs" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Asistente IA RotBot</span>
+            </div>
+            <button (click)="activeAiBlockId = null" class="w-6 h-6 rounded-full flex items-center justify-center text-xs opacity-50 hover:opacity-100 transition-colors cursor-pointer" [ngClass]="isDark ? 'hover:bg-neutral-800' : 'hover:bg-neutral-100'">✕</button>
+          </div>
 
-            <!-- BADGE TAG DEL TIPO -->
-            <span class="flex font-mono font-bold uppercase tracking-wider border-r pr-2 sm:pr-3 items-center gap-1 sm:gap-1.5 text-xs sm:text-[12px] shrink-0"
-              [ngClass]="isDark ? 'text-neutral-400 border-neutral-700' : 'text-neutral-600 border-neutral-300'">
-              <svg *ngIf="currentActiveBlock.type === 'titulo'" class="w-3.5 h-3.5 sm:w-4 sm:h-4"
-                [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m0-15l-6 6m6-6l6 6M4.5 19.5h15" />
-              </svg>
-              <svg *ngIf="currentActiveBlock.type === 'subtitulo'" class="w-3.5 h-3.5 sm:w-4 sm:h-4"
-                [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h12m-12 5.25h9" />
-              </svg>
-              <svg *ngIf="currentActiveBlock.type === 'codigo'" class="w-3.5 h-3.5 sm:w-4 sm:h-4"
-                [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
-              </svg>
-              <svg *ngIf="currentActiveBlock.type === 'alerta'" class="w-3.5 h-3.5 sm:w-4 sm:h-4"
-                [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.438a3.75 3.75 0 01-7.5 0m7.5 0v1.875a1.875 1.875 0 01-1.875 1.875h-3.75A1.875 1.875 0 018.25 21.75V19.875m3.75-14.625a6.002 6.002 0 00-5.467 3.527C6.082 9.879 6 10.932 6 12c0 2.257.94 4.3 2.457 5.74m7.086 0A8.966 8.966 0 0018 12c0-1.068-.082-2.121-.533-3.223a6.002 6.002 0 00-5.467-3.527z" />
-              </svg>
-              <svg *ngIf="currentActiveBlock.type === 'texto'" class="w-3.5 h-3.5 sm:w-4 sm:h-4"
-                [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-              </svg>
-              <svg *ngIf="currentActiveBlock.type === 'imagen'" class="w-3.5 h-3.5 sm:w-4 sm:h-4"
-                [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-              </svg>
-              <svg *ngIf="currentActiveBlock.type === 'columnas'" class="w-3.5 h-3.5 sm:w-4 sm:h-4"
-                [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5v15m6-15v15m-10.5-15h15a2.25 2.25 0 012.25 2.25v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75A2.25 2.25 0 014.5 4.5z" />
-              </svg>
-              <span class="inline">{{ getBlockTypeLabel(currentActiveBlock.type) }}</span>
-            </span>
-
-            <!-- BOTÓN CAMBIAR TIPO -->
-            <button type="button" (click)="toggleBlockTypeMenu(currentActiveBlock.id, $event)"
-              class="flex items-center gap-0.5 sm:gap-1 text-[11.5px] sm:text-[12.5px] font-bold outline-none cursor-pointer px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg transition-all shrink-0"
-              [ngClass]="isDark ? 'text-neutral-200 hover:text-white hover:bg-neutral-800/60 active:bg-neutral-800' : 'text-neutral-700 hover:text-black hover:bg-neutral-200/60 active:bg-neutral-200 font-semibold'">
-              <span>Cambiar</span>
-              <svg class="w-3.5 h-3.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-              </svg>
+          <!-- ACCIONES RÁPIDAS -->
+          <div class="space-y-2 mb-3">
+            <button (click)="applyAiTransform(currentActiveBlock, 'Formatea este texto/datos a una tabla Markdown limpia, bien alineada con encabezados y columnas separadas por |')"
+              class="w-full text-left px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between border transition-all cursor-pointer group"
+              [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900/90 hover:bg-neutral-800 hover:border-neutral-700 text-neutral-200' : 'border-neutral-200/80 bg-neutral-50 hover:bg-neutral-100 hover:border-neutral-300 text-neutral-800'">
+              <div class="flex items-center gap-2.5">
+                <svg class="w-4 h-4 transition-transform group-hover:scale-110 shrink-0" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6v12m0-12h16.5m-16.5 0v12m16.5-12v12m-16.5-6h16.5M9.75 6v12m4.5-12v12" /></svg>
+                <span>Dar formato a Tabla Markdown</span>
+              </div>
+              <span class="text-[9.5px] font-bold px-1.5 py-0.5 rounded-md border" [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-neutral-400' : 'bg-neutral-200/60 border-neutral-300 text-neutral-600'">IA</span>
             </button>
 
-            <!-- DROPDOWN MENU: CAMBIAR TIPO -->
-            <div *ngIf="activeTypeMenuBlockId === currentActiveBlock.id" (click)="$event.stopPropagation()"
-              class="absolute left-0 sm:left-14 top-full mt-2 w-48 z-50 rounded-2xl border shadow-2xl p-1.5 backdrop-blur-2xl animate-fade-in"
-              [ngClass]="isDark ? 'bg-[#18181b] border-neutral-700 text-white shadow-black/80' : 'bg-white border-neutral-200 text-neutral-900 shadow-xl'">
-              <div class="space-y-0.5">
-                <button type="button" (click)="selectBlockType(currentActiveBlock, 'titulo', $event)"
-                  class="w-full px-3 py-2 rounded-xl text-left text-xs font-headline font-bold flex items-center justify-between transition-all cursor-pointer"
-                  [ngClass]="currentActiveBlock.type === 'titulo' ? (isDark ? 'bg-neutral-800 text-white border border-neutral-700' : 'bg-neutral-100 text-neutral-900 font-bold border border-neutral-300') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100 hover:text-black')">
-                  <div class="flex items-center gap-2.5">
-                    <svg class="w-4 h-4" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-700'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m0-15l-6 6m6-6l6 6M4.5 19.5h15" /></svg>
-                    <span>Título</span>
-                  </div>
-                  <kbd class="px-1.5 py-0.5 text-[9px] font-mono font-bold rounded border uppercase opacity-60" [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-300' : 'bg-neutral-100 border-neutral-300 text-neutral-700'">T</kbd>
-                </button>
-
-                <button type="button" (click)="selectBlockType(currentActiveBlock, 'subtitulo', $event)"
-                  class="w-full px-3 py-2 rounded-xl text-left text-xs font-headline font-bold flex items-center justify-between transition-all cursor-pointer"
-                  [ngClass]="currentActiveBlock.type === 'subtitulo' ? (isDark ? 'bg-neutral-800 text-white border border-neutral-700' : 'bg-neutral-100 text-neutral-900 font-bold border border-neutral-300') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100 hover:text-black')">
-                  <div class="flex items-center gap-2.5">
-                    <svg class="w-4 h-4" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h12m-12 5.25h9" /></svg>
-                    <span>Subtítulo</span>
-                  </div>
-                  <kbd class="px-1.5 py-0.5 text-[9px] font-mono font-bold rounded border uppercase opacity-60" [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-300' : 'bg-neutral-100 border-neutral-300 text-neutral-700'">S</kbd>
-                </button>
-
-                <button type="button" (click)="selectBlockType(currentActiveBlock, 'codigo', $event)"
-                  class="w-full px-3 py-2 rounded-xl text-left text-xs font-mono font-bold flex items-center justify-between transition-all cursor-pointer"
-                  [ngClass]="currentActiveBlock.type === 'codigo' ? (isDark ? 'bg-neutral-800 text-white border border-neutral-700' : 'bg-neutral-100 text-neutral-900 font-bold border border-neutral-300') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100 hover:text-black')">
-                  <div class="flex items-center gap-2.5">
-                    <svg class="w-4 h-4" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" /></svg>
-                    <span>Código</span>
-                  </div>
-                  <kbd class="px-1.5 py-0.5 text-[9px] font-mono font-bold rounded border uppercase opacity-60" [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-300' : 'bg-neutral-100 border-neutral-300 text-neutral-700'">C</kbd>
-                </button>
-
-                <button type="button" (click)="selectBlockType(currentActiveBlock, 'alerta', $event)"
-                  class="w-full px-3 py-2 rounded-xl text-left text-xs font-headline font-bold flex items-center justify-between transition-all cursor-pointer"
-                  [ngClass]="currentActiveBlock.type === 'alerta' ? (isDark ? 'bg-neutral-800 text-white border border-neutral-700' : 'bg-neutral-100 text-neutral-900 font-bold border border-neutral-300') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100 hover:text-black')">
-                  <div class="flex items-center gap-2.5">
-                    <svg class="w-4 h-4" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.438a3.75 3.75 0 01-7.5 0m7.5 0v1.875a1.875 1.875 0 01-1.875 1.875h-3.75A1.875 1.875 0 018.25 21.75V19.875m3.75-14.625a6.002 6.002 0 00-5.467 3.527C6.082 9.879 6 10.932 6 12c0 2.257.94 4.3 2.457 5.74m7.086 0A8.966 8.966 0 0018 12c0-1.068-.082-2.121-.533-3.223a6.002 6.002 0 00-5.467-3.527z" /></svg>
-                    <span>Alerta</span>
-                  </div>
-                  <kbd class="px-1.5 py-0.5 text-[9px] font-mono font-bold rounded border uppercase opacity-60" [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-300' : 'bg-neutral-100 border-neutral-300 text-neutral-700'">A</kbd>
-                </button>
-
-                <button type="button" (click)="selectBlockType(currentActiveBlock, 'texto', $event)"
-                  class="w-full px-3 py-2 rounded-xl text-left text-xs font-headline font-bold flex items-center justify-between transition-all cursor-pointer"
-                  [ngClass]="currentActiveBlock.type === 'texto' ? (isDark ? 'bg-neutral-800 text-white border border-neutral-700' : 'bg-neutral-100 text-neutral-900 font-bold border border-neutral-300') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100 hover:text-black')">
-                  <div class="flex items-center gap-2.5">
-                    <svg class="w-4 h-4" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
-                    <span>Texto Normal</span>
-                  </div>
-                  <kbd class="px-1.5 py-0.5 text-[9px] font-mono font-bold rounded border uppercase opacity-60" [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-300' : 'bg-neutral-100 border-neutral-300 text-neutral-700'">N</kbd>
-                </button>
-
-                <button type="button" (click)="selectBlockType(currentActiveBlock, 'columnas', $event)"
-                  class="w-full px-3 py-2 rounded-xl text-left text-xs font-headline font-bold flex items-center justify-between transition-all cursor-pointer"
-                  [ngClass]="currentActiveBlock.type === 'columnas' ? (isDark ? 'bg-neutral-800 text-white border border-neutral-700' : 'bg-neutral-100 text-neutral-900 font-bold border border-neutral-300') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100 hover:text-black')">
-                  <div class="flex items-center gap-2.5">
-                    <span class="text-base leading-none">◫</span>
-                    <span>2 Columnas</span>
-                  </div>
-                  <kbd class="px-1.5 py-0.5 text-[9px] font-mono font-bold rounded border uppercase opacity-60" [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-300' : 'bg-neutral-100 border-neutral-300 text-neutral-700'">2</kbd>
-                </button>
-
-                <button type="button" (click)="selectBlockType(currentActiveBlock, 'imagen', $event)"
-                  class="w-full px-3 py-2 rounded-xl text-left text-xs font-headline font-bold flex items-center justify-between transition-all cursor-pointer"
-                  [ngClass]="currentActiveBlock.type === 'imagen' ? (isDark ? 'bg-neutral-800 text-white border border-neutral-700' : 'bg-neutral-100 text-neutral-900 font-bold border border-neutral-300') : (isDark ? 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white' : 'text-neutral-700 hover:bg-neutral-100 hover:text-black')">
-                  <div class="flex items-center gap-2.5">
-                    <svg class="w-4 h-4" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
-                    <span>Imagen</span>
-                  </div>
-                  <kbd class="px-1.5 py-0.5 text-[9px] font-mono font-bold rounded border uppercase opacity-60" [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 text-neutral-300' : 'bg-neutral-100 border-neutral-300 text-neutral-700'">I</kbd>
-                </button>
+            <button (click)="applyAiTransform(currentActiveBlock, 'Traduce el contenido al Inglés si está en Español, o al Español si está en Inglés')"
+              class="w-full text-left px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between border transition-all cursor-pointer group"
+              [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900/90 hover:bg-neutral-800 hover:border-neutral-700 text-neutral-200' : 'border-neutral-200/80 bg-neutral-50 hover:bg-neutral-100 hover:border-neutral-300 text-neutral-800'">
+              <div class="flex items-center gap-2.5">
+                <svg class="w-4 h-4 transition-transform group-hover:scale-110 shrink-0" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18zM3.6 9h16.8M3.6 15h16.8M12 3a14.25 14.25 0 000 18 14.25 14.25 0 000-18z" /></svg>
+                <span>Traducir (Español ↔ Inglés)</span>
               </div>
-            </div>
-
-            <!-- BOTÓN ACCIÓN IA -->
-            <span class="opacity-30 text-xs shrink-0">|</span>
-            <button type="button" (click)="toggleAiBlockMenu(currentActiveBlock.id, $event)"
-              title="Asistente IA para este bloque"
-              class="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-xl text-[11px] sm:text-xs font-headline font-bold transition-all cursor-pointer shadow-xs border shrink-0"
-              [ngClass]="(activeAiBlockId === currentActiveBlock.id) ? (isDark ? 'bg-white text-black border-white' : 'bg-neutral-900 text-white border-neutral-900') : (isDark ? 'bg-neutral-800 text-neutral-200 border-neutral-700 hover:bg-neutral-700 hover:text-white' : 'bg-neutral-100 text-neutral-800 border-neutral-200/90 hover:bg-neutral-200/80 hover:text-black')">
-              <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" [ngClass]="(activeAiBlockId === currentActiveBlock.id) ? (isDark ? 'text-black' : 'text-white') : (isDark ? 'text-neutral-300' : 'text-neutral-700')" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
-              </svg>
-              <span>IA</span>
+              <span class="text-[9.5px] font-bold px-1.5 py-0.5 rounded-md border" [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-neutral-400' : 'bg-neutral-200/60 border-neutral-300 text-neutral-600'">IA</span>
             </button>
 
-            <!-- DROPDOWN MENU: ASISTENTE IA -->
-            <div *ngIf="activeAiBlockId === currentActiveBlock.id" (click)="$event.stopPropagation()"
-              class="absolute left-0 sm:left-24 top-full mt-2 w-[320px] sm:w-[360px] max-w-[calc(100vw-36px)] z-50 rounded-2xl border shadow-2xl p-3.5 backdrop-blur-2xl animate-fade-in font-sans"
-              [ngClass]="isDark ? 'bg-[#121215] border-neutral-700 text-white shadow-black/80' : 'bg-white border-neutral-200 text-neutral-900 shadow-2xl'">
-              <div class="flex items-center justify-between pb-3 mb-3 border-b"
-                [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
-                <div class="flex items-center gap-2">
-                  <div class="w-6 h-6 rounded-lg flex items-center justify-center border p-1"
-                    [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700' : 'bg-neutral-100 border-neutral-200/80'">
-                    <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
-                  </div>
-                  <span class="font-headline font-bold text-xs" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Asistente IA</span>
-                </div>
-                <button (click)="activeAiBlockId = null" class="w-6 h-6 rounded-full flex items-center justify-center text-xs opacity-50 hover:opacity-100 transition-colors" [ngClass]="isDark ? 'hover:bg-neutral-800' : 'hover:bg-neutral-100'">✕</button>
+            <button (click)="applyAiTransform(currentActiveBlock, 'Mejora la redacción, claridad y corrige errores ortográficos manteniendo el estilo original')"
+              class="w-full text-left px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between border transition-all cursor-pointer group"
+              [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900/90 hover:bg-neutral-800 hover:border-neutral-700 text-neutral-200' : 'border-neutral-200/80 bg-neutral-50 hover:bg-neutral-100 hover:border-neutral-300 text-neutral-800'">
+              <div class="flex items-center gap-2.5">
+                <svg class="w-4 h-4 transition-transform group-hover:scale-110 shrink-0" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" /></svg>
+                <span>Mejora Redacción y Ortografía</span>
               </div>
+              <span class="text-[9.5px] font-bold px-1.5 py-0.5 rounded-md border" [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-neutral-400' : 'bg-neutral-200/60 border-neutral-300 text-neutral-600'">IA</span>
+            </button>
+          </div>
 
-              <!-- ACCIONES RÁPIDAS -->
-              <div class="space-y-2 mb-3">
-                <button (click)="applyAiTransform(currentActiveBlock, 'Formatea este texto/datos a una tabla Markdown limpia, bien alineada con encabezados y columnas separadas por |')"
-                  class="w-full text-left px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between border transition-all cursor-pointer group"
-                  [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900/90 hover:bg-neutral-800 hover:border-neutral-700 text-neutral-200' : 'border-neutral-200/80 bg-neutral-50 hover:bg-neutral-100 hover:border-neutral-300 text-neutral-800'">
-                  <div class="flex items-center gap-2.5">
-                    <svg class="w-4 h-4 transition-transform group-hover:scale-110 shrink-0" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6v12m0-12h16.5m-16.5 0v12m16.5-12v12m-16.5-6h16.5M9.75 6v12m4.5-12v12" /></svg>
-                    <span>Dar formato a Tabla Markdown</span>
-                  </div>
-                  <span class="text-[9.5px] font-bold px-1.5 py-0.5 rounded-md border" [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-neutral-400' : 'bg-neutral-200/60 border-neutral-300 text-neutral-600'">IA</span>
-                </button>
-
-                <button (click)="applyAiTransform(currentActiveBlock, 'Traduce el contenido al Inglés si está en Español, o al Español si está en Inglés')"
-                  class="w-full text-left px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between border transition-all cursor-pointer group"
-                  [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900/90 hover:bg-neutral-800 hover:border-neutral-700 text-neutral-200' : 'border-neutral-200/80 bg-neutral-50 hover:bg-neutral-100 hover:border-neutral-300 text-neutral-800'">
-                  <div class="flex items-center gap-2.5">
-                    <svg class="w-4 h-4 transition-transform group-hover:scale-110 shrink-0" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18zM3.6 9h16.8M3.6 15h16.8M12 3a14.25 14.25 0 000 18 14.25 14.25 0 000-18z" /></svg>
-                    <span>Traducir (Español ↔ Inglés)</span>
-                  </div>
-                  <span class="text-[9.5px] font-bold px-1.5 py-0.5 rounded-md border" [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-neutral-400' : 'bg-neutral-200/60 border-neutral-300 text-neutral-600'">IA</span>
-                </button>
-
-                <button (click)="applyAiTransform(currentActiveBlock, 'Mejora la redacción, claridad y corrige errores ortográficos manteniendo el estilo original')"
-                  class="w-full text-left px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between border transition-all cursor-pointer group"
-                  [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900/90 hover:bg-neutral-800 hover:border-neutral-700 text-neutral-200' : 'border-neutral-200/80 bg-neutral-50 hover:bg-neutral-100 hover:border-neutral-300 text-neutral-800'">
-                  <div class="flex items-center gap-2.5">
-                    <svg class="w-4 h-4 transition-transform group-hover:scale-110 shrink-0" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" /></svg>
-                    <span>Mejora Redacción y Ortografía</span>
-                  </div>
-                  <span class="text-[9.5px] font-bold px-1.5 py-0.5 rounded-md border" [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-neutral-400' : 'bg-neutral-200/60 border-neutral-300 text-neutral-600'">IA</span>
-                </button>
-              </div>
-
-              <!-- PROMPT PERSONALIZADO -->
-              <div class="space-y-2">
-                <div class="flex items-center gap-2">
-                  <input type="text" [(ngModel)]="aiCustomInstruction" (keydown.enter)="applyAiTransform(currentActiveBlock, '')"
-                    spellcheck="false" autocorrect="off" autocapitalize="off"
-                    placeholder="Ej: mejorame diseño o explicamelo..."
-                    class="w-full px-3 py-2 text-xs rounded-xl border outline-none bg-transparent transition-colors"
-                    [ngClass]="isDark ? 'border-neutral-700 text-white placeholder-neutral-500 focus:border-neutral-400' : 'border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-800'">
-                  <button (click)="applyAiTransform(currentActiveBlock, '')"
-                    [disabled]="!aiCustomInstruction.trim() || isAiLoading"
-                    class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 disabled:opacity-40 border-none shadow-xs"
-                    [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'">
-                    Enviar
-                  </button>
-                </div>
-              </div>
-
-              <!-- CARGANDO -->
-              <div *ngIf="isAiLoading" class="mt-3 p-3 rounded-xl border flex items-center gap-2.5 text-xs animate-pulse"
-                [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
-                <svg class="w-4 h-4 animate-spin shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                </svg>
-                <span>Procesando solicitud con IA...</span>
-              </div>
-
-              <!-- ERROR -->
-              <div *ngIf="aiError" class="mt-3 p-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-xs text-red-400">
-                {{ aiError }}
-              </div>
-
-              <!-- PREVIEW RESULTADO -->
-              <div *ngIf="aiResultPreview && !isAiLoading" class="mt-3 space-y-2.5">
-                <label class="text-[10px] font-bold uppercase tracking-wider opacity-60">Resultado Generado:</label>
-                <div class="p-3 rounded-xl border max-h-40 overflow-y-auto text-xs font-mono whitespace-pre-wrap leading-relaxed"
-                  [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800 text-neutral-200' : 'bg-neutral-50 border-neutral-200 text-neutral-900'">
-                  {{ aiResultPreview }}
-                </div>
-                <div class="flex flex-wrap items-center gap-2 pt-1">
-                  <ng-container *ngIf="currentActiveBlock.type === 'columnas'">
-                    <button (click)="replaceBlockContentWithAi(currentActiveBlock, 0)"
-                      class="flex-1 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs border-none"
-                      [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-neutral-800'">
-                      Colocar en Columna 1
-                    </button>
-                    <button (click)="replaceBlockContentWithAi(currentActiveBlock, 1)"
-                      class="flex-1 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs border-none"
-                      [ngClass]="isDark ? 'bg-blue-500 text-black hover:bg-blue-400' : 'bg-blue-600 text-white hover:bg-blue-700'">
-                      Colocar en Columna 2
-                    </button>
-                  </ng-container>
-                  <button *ngIf="currentActiveBlock.type !== 'columnas'" (click)="replaceBlockContentWithAi(currentActiveBlock)"
-                    class="flex-1 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs border-none"
-                    [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'">
-                    Reemplazar Bloque
-                  </button>
-                  <button (click)="insertAiResultAsNewBlock(currentActiveBlockIndex)"
-                    class="px-3 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer shrink-0"
-                    [ngClass]="isDark ? 'border-neutral-700 bg-neutral-900 text-neutral-200 hover:bg-neutral-800' : 'border-neutral-300 bg-white text-neutral-800 hover:bg-neutral-100'">
-                    + Insertar Abajo
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <span class="opacity-20 sm:opacity-30 text-xs shrink-0">|</span>
-
-            <!-- BOTONES DE FORMATO DE TEXTO -->
-            <div class="flex items-center gap-0.5 sm:gap-1 shrink-0">
-              <!-- B -->
-              <button type="button" (mousedown)="$event.preventDefault(); $event.stopPropagation()"
-                (click)="applyBoldTextToActiveBlock(currentActiveBlock, $event)" title="Texto en negrilla (Ctrl + B)"
-                class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg transition-all flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95"
-                [ngClass]="isDark ? 'hover:bg-neutral-800 text-neutral-300 hover:text-white' : 'hover:bg-neutral-200 text-neutral-700 hover:text-black'">
-                <span class="text-xs sm:text-sm font-black font-serif">B</span>
-              </button>
-
-              <!-- I -->
-              <button type="button" (mousedown)="$event.preventDefault(); $event.stopPropagation()"
-                (click)="applyItalicTextToActiveBlock(currentActiveBlock, $event)" title="Texto en cursiva (Ctrl + I)"
-                class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg transition-all flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95"
-                [ngClass]="isDark ? 'hover:bg-neutral-800 text-neutral-300 hover:text-white' : 'hover:bg-neutral-200 text-neutral-700 hover:text-black'">
-                <span class="text-xs sm:text-sm font-serif italic font-bold">I</span>
-              </button>
-
-              <!-- Rojo -->
-              <button type="button" (mousedown)="$event.preventDefault(); $event.stopPropagation()"
-                (touchstart)="$event.preventDefault(); $event.stopPropagation()"
-                (click)="applyRedTextToActiveBlock($event)" title="Color rojo (Ctrl + Shift + D)"
-                class="hover:scale-105 active:scale-95 p-1 sm:px-2.5 sm:py-1 rounded-lg shrink-0 transition-all flex items-center gap-1 sm:gap-1.5 cursor-pointer"
-                [ngClass]="isRedTextActive() ? 'bg-red-500/25 ring-1.5 ring-red-500 text-red-300' : 'hover:bg-red-500/20 text-red-400'">
-                <span class="w-3.5 h-3.5 rounded-full bg-red-500 shrink-0 shadow-xs shadow-red-500/50"
-                  [ngClass]="isRedTextActive() ? 'ring-2 ring-white scale-110' : ''"></span>
-                <span class="text-xs font-bold hidden sm:inline text-red-400">Rojo</span>
-              </button>
-
-              <!-- Leer con Rotbot -->
-              <button type="button" (mousedown)="$event.preventDefault(); $event.stopPropagation()"
-                (touchstart)="$event.preventDefault(); $event.stopPropagation()"
-                (click)="readBlockWithRotBot(currentActiveBlock, $event)"
-                [title]="isReadingThisBlock(currentActiveBlock) ? 'Detener lectura con RotBot' : 'Leer este texto en voz alta con RotBot'"
-                class="hover:scale-105 active:scale-95 px-2 sm:px-2.5 py-1 rounded-lg shrink-0 transition-all flex items-center gap-1.5 cursor-pointer font-sans text-xs font-semibold shadow-xs"
-                [ngClass]="isReadingThisBlock(currentActiveBlock) 
-                        ? 'bg-cyan-500/25 ring-1.5 ring-cyan-400 text-cyan-300' 
-                        : (isDark ? 'bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' : 'bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border border-cyan-200')">
-                <svg *ngIf="!isReadingThisBlock(currentActiveBlock)" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.757 3.63 8.25 4.51 8.25H6.75z" />
-                </svg>
-                <div *ngIf="isReadingThisBlock(currentActiveBlock)" class="flex items-center gap-0.5 h-3">
-                  <span class="w-0.5 bg-cyan-400 rounded-full animate-voice-bar h-2"></span>
-                  <span class="w-0.5 bg-cyan-400 rounded-full animate-voice-bar h-3" style="animation-delay: 0.1s"></span>
-                  <span class="w-0.5 bg-cyan-400 rounded-full animate-voice-bar h-1.5" style="animation-delay: 0.2s"></span>
-                </div>
-                <span class="hidden sm:inline">{{ isReadingThisBlock(currentActiveBlock) ? 'Detener' : 'Leer' }}</span>
+          <!-- PROMPT PERSONALIZADO -->
+          <div class="space-y-2">
+            <div class="flex items-center gap-2">
+              <input type="text" [(ngModel)]="aiCustomInstruction" (keydown.enter)="applyAiTransform(currentActiveBlock, '')"
+                spellcheck="false" autocorrect="off" autocapitalize="off"
+                placeholder="Ej: mejorame diseño o explicamelo..."
+                class="w-full px-3 py-2 text-xs rounded-xl border outline-none bg-transparent transition-colors"
+                [ngClass]="isDark ? 'border-neutral-700 text-white placeholder-neutral-500 focus:border-neutral-400' : 'border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-800'">
+              <button (click)="applyAiTransform(currentActiveBlock, '')"
+                [disabled]="!aiCustomInstruction.trim() || isAiLoading"
+                class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 disabled:opacity-40 border-none shadow-xs"
+                [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'">
+                Enviar
               </button>
             </div>
+          </div>
 
-            <span class="opacity-20 sm:opacity-30 text-xs shrink-0">|</span>
+          <!-- CARGANDO -->
+          <div *ngIf="isAiLoading" class="mt-3 p-3 rounded-xl border flex items-center gap-2.5 text-xs animate-pulse"
+            [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
+            <svg class="w-4 h-4 animate-spin shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+            <span>Procesando solicitud con IA...</span>
+          </div>
 
-            <!-- BOTÓN AÑADIR BLOQUE DE TEXTO DEBAJO -->
-            <button type="button" (click)="addBlock('texto', currentActiveBlockIndex)"
-              title="Añadir bloque de texto debajo de este bloque"
-              class="flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs font-bold font-headline transition-all cursor-pointer shadow-xs border shrink-0 hover:scale-[1.04] active:scale-95"
-              [ngClass]="isDark 
-                      ? 'bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 hover:text-emerald-300 border-emerald-500/30 hover:border-emerald-500/50' 
-                      : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 border-emerald-300 hover:border-emerald-400'">
-              <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-              <span class="hidden sm:inline">Texto debajo</span>
-              <span class="sm:hidden text-[10.5px]">Texto</span>
-            </button>
+          <!-- ERROR -->
+          <div *ngIf="aiError" class="mt-3 p-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-xs text-red-400">
+            {{ aiError }}
+          </div>
 
-            <span class="opacity-20 sm:opacity-30 text-xs shrink-0">|</span>
-
-            <!-- SUBIR Y BAJAR BLOQUE -->
-            <div class="flex items-center gap-0.5 shrink-0">
-              <button type="button" (click)="moveBlock(currentActiveBlockIndex, 'up')" [disabled]="currentActiveBlockIndex <= 0" title="Mover arriba"
-                class="hover:text-white disabled:opacity-30 p-1 sm:p-2 rounded-lg hover:bg-neutral-700/50 shrink-0 cursor-pointer transition-colors">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
-                </svg>
+          <!-- PREVIEW RESULTADO -->
+          <div *ngIf="aiResultPreview && !isAiLoading" class="mt-3 space-y-2.5">
+            <label class="text-[10px] font-bold uppercase tracking-wider opacity-60">Resultado Generado:</label>
+            <div class="p-3 rounded-xl border max-h-40 overflow-y-auto text-xs font-mono whitespace-pre-wrap leading-relaxed"
+              [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800 text-neutral-200' : 'bg-neutral-50 border-neutral-200 text-neutral-900'">
+              {{ aiResultPreview }}
+            </div>
+            <div class="flex flex-wrap items-center gap-2 pt-1">
+              <ng-container *ngIf="currentActiveBlock.type === 'columnas'">
+                <button (click)="replaceBlockContentWithAi(currentActiveBlock, 0)"
+                  class="flex-1 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs border-none"
+                  [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-neutral-800'">
+                  Colocar en Columna 1
+                </button>
+                <button (click)="replaceBlockContentWithAi(currentActiveBlock, 1)"
+                  class="flex-1 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs border-none"
+                  [ngClass]="isDark ? 'bg-blue-500 text-black hover:bg-blue-400' : 'bg-blue-600 text-white hover:bg-blue-700'">
+                  Colocar en Columna 2
+                </button>
+              </ng-container>
+              <button *ngIf="currentActiveBlock.type !== 'columnas'" (click)="replaceBlockContentWithAi(currentActiveBlock)"
+                class="flex-1 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs border-none"
+                [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'">
+                Reemplazar Bloque
               </button>
-              <button type="button" (click)="moveBlock(currentActiveBlockIndex, 'down')" [disabled]="currentActiveBlockIndex >= blocks.length - 1"
-                title="Mover abajo"
-                class="hover:text-white disabled:opacity-30 p-1 sm:p-2 rounded-lg hover:bg-neutral-700/50 shrink-0 cursor-pointer transition-colors">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                </svg>
+              <button (click)="insertAiResultAsNewBlock(currentActiveBlockIndex)"
+                class="px-3 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer shrink-0"
+                [ngClass]="isDark ? 'border-neutral-700 bg-neutral-900 text-neutral-200 hover:bg-neutral-800' : 'border-neutral-300 bg-white text-neutral-800 hover:bg-neutral-100'">
+                + Insertar Abajo
               </button>
             </div>
-
-            <span class="opacity-20 sm:opacity-30 text-xs shrink-0">|</span>
-
-            <!-- BOTÓN DUPLICAR (SOLO DESKTOP) -->
-            <button type="button" (click)="duplicateBlock(currentActiveBlockIndex)" title="Duplicar bloque"
-              class="hidden sm:flex hover:text-white p-1 sm:p-2 rounded-lg hover:bg-neutral-700/50 shrink-0 cursor-pointer transition-colors">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v9.25c0 .621-.504 1.125-1.125 1.125z" />
-              </svg>
-            </button>
-
-            <!-- BOTÓN ELIMINAR -->
-            <button type="button" (click)="removeBlock(currentActiveBlockIndex)" title="Eliminar bloque"
-              class="hover:text-red-400 p-1 sm:p-2 rounded-lg hover:bg-red-500/20 shrink-0 cursor-pointer transition-colors">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-              </svg>
-            </button>
-
           </div>
         </div>
 

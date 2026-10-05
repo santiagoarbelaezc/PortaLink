@@ -312,6 +312,29 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     return 0;
   }
+
+  setActiveBlock(id: string) {
+    this.activeBlockId = id;
+    this.syncActiveBlockToService();
+  }
+
+  syncActiveBlockToService() {
+    const block = this.currentActiveBlock;
+    const idx = this.currentActiveBlockIndex;
+    if (block) {
+      this.libraryService.setActiveBlockMeta({
+        id: block.id,
+        type: block.type,
+        content: block.content || ''
+      }, idx, this.blocks.length);
+      this.libraryService.setIsRedTextActive(this.isRedTextActive());
+      this.libraryService.setIsReadingBlock(this.isReadingThisBlock(block));
+    } else {
+      this.libraryService.setActiveBlockMeta(null, -1, this.blocks.length);
+      this.libraryService.setIsRedTextActive(false);
+      this.libraryService.setIsReadingBlock(false);
+    }
+  }
   searchResults: any[] = [];
   isSearching = false;
   private searchDebounceTimer: any = null;
@@ -471,7 +494,14 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Visual Block-Based Slate State
   blocks: NoteBlock[] = [];
-  activeBlockId: string | null = null;
+  private _activeBlockId: string | null = null;
+  get activeBlockId(): string | null {
+    return this._activeBlockId;
+  }
+  set activeBlockId(val: string | null) {
+    this._activeBlockId = val;
+    this.syncActiveBlockToService();
+  }
   activeTypeMenuBlockId: string | null = null;
 
   // ── Posición de la barra flotante de herramientas (top/bottom) ──────
@@ -1033,6 +1063,50 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       })
     );
+    this.subs.add(
+      this.libraryService.blockAction$.subscribe(({ action, payload }) => {
+        const block = this.currentActiveBlock;
+        const idx = this.currentActiveBlockIndex;
+        switch (action) {
+          case 'changeType':
+            if (block && payload) this.changeBlockType(block, payload);
+            break;
+          case 'ai':
+            if (block) {
+              this.activeAiBlockId = (this.activeAiBlockId === block.id ? null : block.id);
+            }
+            break;
+          case 'bold':
+            if (block) this.applyBoldTextToActiveBlock(block);
+            break;
+          case 'italic':
+            if (block) this.applyItalicTextToActiveBlock(block);
+            break;
+          case 'red':
+            this.applyRedTextToActiveBlock();
+            break;
+          case 'read':
+            if (block) this.readBlockWithRotBot(block);
+            break;
+          case 'addBelow':
+            this.addBlock('texto', idx >= 0 ? idx : undefined);
+            break;
+          case 'moveUp':
+            if (idx > 0) this.moveBlock(idx, 'up');
+            break;
+          case 'moveDown':
+            if (idx < this.blocks.length - 1) this.moveBlock(idx, 'down');
+            break;
+          case 'duplicate':
+            if (idx >= 0) this.duplicateBlock(idx);
+            break;
+          case 'delete':
+            if (idx >= 0) this.removeBlock(idx);
+            break;
+        }
+        this.syncActiveBlockToService();
+      })
+    );
   }
 
   ngAfterViewInit() {
@@ -1534,6 +1608,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
           }
           if (this.selectedPage) {
             this.blocks = this.parseContentToBlocks(this.selectedPage.content || '');
+            this.activeBlockId = (this.blocks && this.blocks.length > 0) ? this.blocks[0].id : null;
             this.restoreScrollForCurrentTabAndPage();
           }
           this.saveStateInLocalStorage();
@@ -1841,6 +1916,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.selectedPage.content = mdParts.join('\n\n');
     this.onTitleInput();
+    this.syncActiveBlockToService();
   }
 
   onBlockInput(block: NoteBlock, event?: any) {

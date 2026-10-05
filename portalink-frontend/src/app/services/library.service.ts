@@ -62,6 +62,12 @@ export interface LibraryTab {
   scrollPositions?: { [pageId: number]: number };
 }
 
+export interface ActiveBlockMeta {
+  id: string;
+  type: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'columnas' | 'imagen';
+  content: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -76,6 +82,13 @@ export class LibraryService {
   selectedFolder$ = new BehaviorSubject<NotebookFolder | null>(null);
   searchQuery$ = new BehaviorSubject<string>('');
 
+  // ── Shared Active Block State for Top Bar Actions ──
+  activeBlockMeta$ = new BehaviorSubject<ActiveBlockMeta | null>(null);
+  activeBlockIndex$ = new BehaviorSubject<number>(0);
+  totalBlocksCount$ = new BehaviorSubject<number>(0);
+  isReadingBlock$ = new BehaviorSubject<boolean>(false);
+  isRedTextActive$ = new BehaviorSubject<boolean>(false);
+
   // ── Actions from Top Bar to Library ──
   switchTab$ = new Subject<string>();
   closeTab$ = new Subject<{ id: string; event?: Event }>();
@@ -83,6 +96,7 @@ export class LibraryService {
   closeOtherTabs$ = new Subject<string>();
   createNewNote$ = new Subject<void>();
   breadcrumbNav$ = new Subject<'root' | 'folder'>();
+  blockAction$ = new Subject<{ action: string; payload?: any }>();
 
   setTabs(tabs: LibraryTab[]) {
     this.tabs$.next(tabs);
@@ -98,6 +112,21 @@ export class LibraryService {
   }
   setSearchQuery(q: string) {
     this.searchQuery$.next(q);
+  }
+
+  setActiveBlockMeta(meta: ActiveBlockMeta | null, index: number, total: number) {
+    this.activeBlockMeta$.next(meta);
+    this.activeBlockIndex$.next(index);
+    this.totalBlocksCount$.next(total);
+  }
+  setIsReadingBlock(isReading: boolean) {
+    this.isReadingBlock$.next(isReading);
+  }
+  setIsRedTextActive(isActive: boolean) {
+    this.isRedTextActive$.next(isActive);
+  }
+  triggerBlockAction(action: string, payload?: any) {
+    this.blockAction$.next({ action, payload });
   }
 
   triggerSwitchTab(id: string) {
