@@ -502,17 +502,17 @@ const TAB_LABELS: Record<string, string> = {
 
         <!-- Theme Toggle Button -->
         <button (click)="themeChange.emit()"
-                class="w-10 h-10 sm:w-10.5 sm:h-10.5 rounded-2xl flex items-center justify-center border transition-all duration-200 cursor-pointer hover:scale-105 active:scale-95 shrink-0"
+                class="w-9 h-9 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center border transition-all duration-200 cursor-pointer hover:scale-105 active:scale-95 shrink-0"
                 [ngClass]="theme === 'dark'
                   ? 'bg-white/5 border-white/10 hover:border-white/20'
                   : 'bg-black/5 border-black/10 hover:border-black/20'"
                 title="Cambiar tema">
           <!-- Moon Icon (Light Mode) -->
-          <svg *ngIf="theme === 'light'" class="w-4.5 h-4.5 text-neutral-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <svg *ngIf="theme === 'light'" class="w-4 h-4 text-neutral-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
           </svg>
           <!-- Sun Icon (Dark Mode) -->
-          <svg *ngIf="theme === 'dark'" class="w-4.5 h-4.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <svg *ngIf="theme === 'dark'" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="5"></circle>
             <line x1="12" y1="1" x2="12" y2="3"></line>
             <line x1="12" y1="21" x2="12" y2="23"></line>
