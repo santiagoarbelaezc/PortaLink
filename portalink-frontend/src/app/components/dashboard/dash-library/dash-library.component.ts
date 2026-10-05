@@ -315,6 +315,10 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   setActiveBlock(id: string) {
     this.activeBlockId = id;
+    if (this.activeAiBlockId) {
+      this.activeAiBlockId = id;
+      this.activeAiTargetColIndex = null;
+    }
     this.syncActiveBlockToService();
   }
 

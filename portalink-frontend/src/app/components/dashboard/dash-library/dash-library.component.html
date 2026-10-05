@@ -1381,7 +1381,7 @@
           class="space-y-1.5 sm:space-y-2 min-h-[320px] sm:min-h-[480px] p-2 sm:p-6 pb-28 sm:pb-6 rounded-2xl sm:rounded-3xl border shadow-inner transition-all max-w-full w-full"
           [ngClass]="isDark ? 'bg-[#040406] border-neutral-800/80 text-white' : 'bg-neutral-50/60 border-neutral-200 text-neutral-900'">
 
-          <div *ngFor="let block of blocks; let i = index" (click)="activeBlockId = block.id"
+          <div *ngFor="let block of blocks; let i = index" (click)="setActiveBlock(block.id)"
             class="group relative transition-all duration-150 rounded-xl sm:rounded-2xl px-2 py-1.5 sm:p-2.5 sm:px-3 border overflow-visible w-full cursor-text"
             [ngClass]="activeBlockId === block.id 
               ? (isDark ? 'bg-neutral-900/40 border-neutral-800/80 shadow-xs' : 'bg-neutral-50/80 border-neutral-200/80 shadow-xs') 
@@ -3181,295 +3181,275 @@
   <!-- ══════════════════════════════════════
        MODAL FLOTANTE ASISTENTE ROTBOT IA (TELEPORTED TO BODY)
   ══════════════════════════════════════ -->
-  <div *ngIf="activeAiBlockId && currentActiveBlock" appTeleportToBody (click)="closeAiModal()"
-    class="modal-backdrop fixed inset-0 w-screen h-screen z-[9999] bg-black/80 backdrop-blur-xl flex items-center justify-center p-3 sm:p-5 overflow-y-auto animate-fade-in font-sans">
-    
-    <div (click)="$event.stopPropagation()"
-      class="relative w-full max-w-xl sm:max-w-2xl rounded-3xl border shadow-2xl overflow-hidden font-sans my-auto animate-slide-up transition-all"
-      [ngClass]="isDark 
-        ? 'bg-[#0e0e13]/98 border-purple-500/30 text-white shadow-black/95 ring-1 ring-purple-500/20' 
-        : 'bg-white/98 border-neutral-200 text-neutral-900 shadow-2xl ring-1 ring-purple-500/10'">
-      
-      <!-- LÍNEA SUPERIOR DE GRADIENTE NEÓN VIBRANTE -->
-      <div class="h-1.5 w-full bg-gradient-to-r from-purple-500 via-fuchsia-500 to-indigo-500"></div>
+  <div *ngIf="activeAiBlockId && currentActiveBlock" appTeleportToBody
+    class="pointer-events-auto fixed left-2 sm:left-5 bottom-2 sm:bottom-5 z-[500] w-[calc(100vw-16px)] sm:w-[440px] md:w-[470px] h-[82vh] md:h-[620px] max-h-[calc(100vh-70px)] flex flex-col rounded-[28px] border shadow-[0_20px_60px_rgba(0,0,0,0.55)] overflow-hidden font-sans animate-slide-up sm:animate-fade-in transition-all"
+    [ngClass]="isDark 
+      ? 'bg-[#0e0e13]/98 border-purple-500/35 text-white shadow-black/95 ring-1 ring-purple-500/25 backdrop-blur-2xl' 
+      : 'bg-white/98 border-neutral-200 text-neutral-900 shadow-2xl ring-1 ring-purple-500/15 backdrop-blur-2xl'">
 
-      <!-- HEADER DEL MODAL FLOTANTE -->
-      <div class="p-4 sm:p-5 pb-3 border-b flex items-center justify-between"
-        [ngClass]="isDark ? 'border-neutral-800/80 bg-neutral-900/40' : 'border-neutral-100 bg-neutral-50/50'">
-        
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl flex items-center justify-center p-2 border bg-gradient-to-br from-purple-500/20 via-indigo-500/10 to-transparent border-purple-500/30 text-purple-400 shadow-sm shadow-purple-500/20 shrink-0">
-            <svg class="w-5 h-5 fill-current text-purple-400" viewBox="0 0 24 24">
-              <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/>
-            </svg>
+    <!-- LÍNEA SUPERIOR DE GRADIENTE NEÓN VIBRANTE -->
+    <div class="h-1.5 w-full bg-gradient-to-r from-purple-500 via-fuchsia-500 to-indigo-500 shrink-0"></div>
+
+    <!-- HEADER DEL CHAT IA -->
+    <div class="p-3 sm:p-4 pb-2.5 border-b flex items-center justify-between shrink-0 select-none"
+      [ngClass]="isDark ? 'border-neutral-800/80 bg-neutral-900/40' : 'border-neutral-100 bg-neutral-50/60'">
+      
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="w-8.5 h-8.5 rounded-xl flex items-center justify-center p-1.5 border bg-gradient-to-br from-purple-500/20 via-indigo-500/10 to-transparent border-purple-500/30 text-purple-400 shadow-xs shrink-0">
+          <svg class="w-4.5 h-4.5 fill-current text-purple-400" viewBox="0 0 24 24">
+            <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/>
+          </svg>
+        </div>
+        <div class="min-w-0">
+          <div class="flex items-center gap-1.5">
+            <h3 class="font-headline font-black text-xs sm:text-sm tracking-tight m-0 truncate"
+              [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              RotBot Copilot IA
+            </h3>
+            <span class="text-[9px] px-1.5 py-0.5 rounded-full font-mono uppercase tracking-wider font-extrabold bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30 shrink-0">
+              Lateral
+            </span>
           </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <h3 class="font-headline font-black text-sm sm:text-base tracking-tight m-0"
-                [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                Asistente RotBot IA
-              </h3>
-              <span class="text-[9.5px] px-2 py-0.5 rounded-full font-mono uppercase tracking-wider font-extrabold bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-300 border border-purple-500/30">
-                Copilot
-              </span>
-            </div>
-            <p class="text-xs opacity-60 m-0">Transformación inteligente y enriquecimiento del contenido</p>
-          </div>
+          <p class="text-[10.5px] opacity-60 m-0 truncate">Asistente flotante para bloques</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-1.5 shrink-0">
+        <!-- BADGE DEL BLOQUE ACTIVO -->
+        <div class="flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-mono border"
+          [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 text-neutral-300' : 'bg-white border-neutral-200 text-neutral-700'">
+          <span class="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse"></span>
+          <span class="font-bold">{{ currentActiveBlock.type | uppercase }}</span>
+          <span *ngIf="activeAiTargetColIndex !== null" class="text-purple-400 font-bold">· C{{ activeAiTargetColIndex + 1 }}</span>
         </div>
 
-        <div class="flex items-center gap-2">
-          <!-- BADGE DEL BLOQUE ACTIVO -->
-          <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-mono border"
-            [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 text-neutral-300' : 'bg-white border-neutral-200 text-neutral-700'">
-            <span class="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse"></span>
-            <span class="font-bold">{{ currentActiveBlock.type | uppercase }}</span>
-            <span *ngIf="activeAiTargetColIndex !== null" class="text-purple-400 font-bold">· Col {{ activeAiTargetColIndex + 1 }}</span>
-          </div>
+        <!-- BOTÓN CERRAR -->
+        <button (click)="closeAiModal()" title="Cerrar panel (Esc)"
+          class="w-7.5 h-7.5 rounded-xl flex items-center justify-center transition-all cursor-pointer shadow-xs hover:scale-105 active:scale-95 text-xs font-bold shrink-0"
+          [ngClass]="isDark ? 'bg-neutral-800 hover:bg-neutral-700 text-white' : 'bg-neutral-900 hover:bg-neutral-800 text-white'">
+          ✕
+        </button>
+      </div>
+    </div>
 
-          <!-- BOTÓN CERRAR -->
-          <button (click)="closeAiModal()" title="Cerrar modal (Esc)"
-            class="w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-xs hover:scale-105 active:scale-95 text-xs font-bold shrink-0"
-            [ngClass]="isDark ? 'bg-neutral-800 hover:bg-neutral-700 text-white' : 'bg-neutral-900 hover:bg-neutral-800 text-white'">
-            ✕
+    <!-- CUERPO DEL CHAT (SCROLLABLE) -->
+    <div class="flex-1 min-h-0 overflow-y-auto p-3 sm:p-4 space-y-3.5">
+
+      <!-- VISTA PREVIA DEL BLOQUE A TRANSFORMAR (DINÁMICO SEGÚN BLOQUE SELECCIONADO) -->
+      <div class="p-2.5 sm:p-3 rounded-2xl border text-xs relative group transition-colors"
+        [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800/80 hover:border-neutral-700' : 'bg-neutral-50/80 border-neutral-200/80 hover:border-neutral-300'">
+        <div class="flex items-center justify-between pb-1 mb-1.5 border-b border-dashed"
+          [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+          <div class="flex items-center gap-1.5 text-purple-400 font-headline font-bold text-[10.5px] uppercase tracking-wider">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+            </svg>
+            <span>Bloque seleccionado</span>
+          </div>
+          <span class="text-[9.5px] font-mono opacity-50">{{ (activeAiBlockSnippet.length || 0) }} chars</span>
+        </div>
+        <p class="text-[11.5px] line-clamp-3 leading-relaxed font-mono opacity-80 m-0 select-text whitespace-pre-wrap">
+          {{ activeAiBlockSnippet.trim() ? activeAiBlockSnippet : '(El bloque actual está vacío. Elige una acción o escribe tu instrucción).' }}
+        </p>
+      </div>
+
+      <!-- ACCIONES RÁPIDAS (GRID 2x2) -->
+      <div>
+        <label class="block text-[10px] font-headline font-bold uppercase tracking-wider mb-1.5 opacity-60">
+          Acciones Rápidas
+        </label>
+        <div class="grid grid-cols-2 gap-2">
+          <!-- 1. TABLA MARKDOWN -->
+          <button type="button"
+            (click)="applyAiTransform(currentActiveBlock, 'Formatea este texto/datos a una tabla Markdown limpia, bien alineada con encabezados y columnas separadas por |')"
+            [disabled]="isAiLoading"
+            class="text-left p-2.5 rounded-xl border transition-all cursor-pointer group flex items-start gap-2 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
+            [ngClass]="isDark 
+              ? 'bg-neutral-900/70 border-neutral-800 hover:border-purple-500/50 hover:bg-neutral-800/80 text-white' 
+              : 'bg-white border-neutral-200 hover:border-purple-300 hover:bg-purple-50/40 text-neutral-900 shadow-xs'">
+            <div class="w-6.5 h-6.5 rounded-lg flex items-center justify-center shrink-0 border transition-colors mt-0.5"
+              [ngClass]="isDark ? 'bg-purple-500/10 border-purple-500/20 text-purple-400 group-hover:bg-purple-500/20' : 'bg-purple-50 border-purple-200 text-purple-600 group-hover:bg-purple-100'">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6v12m0-12h16.5m-16.5 0v12m16.5-12v12m-16.5-6h16.5M9.75 6v12m4.5-12v12" /></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <span class="font-headline font-bold text-[11px] block truncate">Tabla MD</span>
+              <p class="text-[9.5px] opacity-60 leading-tight m-0 truncate">Alinear en columnas</p>
+            </div>
+          </button>
+
+          <!-- 2. TRADUCIR -->
+          <button type="button"
+            (click)="applyAiTransform(currentActiveBlock, 'Traduce el contenido al Inglés si está en Español, o al Español si está en Inglés')"
+            [disabled]="isAiLoading"
+            class="text-left p-2.5 rounded-xl border transition-all cursor-pointer group flex items-start gap-2 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
+            [ngClass]="isDark 
+              ? 'bg-neutral-900/70 border-neutral-800 hover:border-indigo-500/50 hover:bg-neutral-800/80 text-white' 
+              : 'bg-white border-neutral-200 hover:border-indigo-300 hover:bg-indigo-50/40 text-neutral-900 shadow-xs'">
+            <div class="w-6.5 h-6.5 rounded-lg flex items-center justify-center shrink-0 border transition-colors mt-0.5"
+              [ngClass]="isDark ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400 group-hover:bg-indigo-500/20' : 'bg-indigo-50 border-indigo-200 text-indigo-600 group-hover:bg-indigo-100'">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18zM3.6 9h16.8M3.6 15h16.8M12 3a14.25 14.25 0 000 18 14.25 14.25 0 000-18z" /></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <span class="font-headline font-bold text-[11px] block truncate">Traducir</span>
+              <p class="text-[9.5px] opacity-60 leading-tight m-0 truncate">ES ↔ EN natural</p>
+            </div>
+          </button>
+
+          <!-- 3. MEJORAR REDACCIÓN -->
+          <button type="button"
+            (click)="applyAiTransform(currentActiveBlock, 'Mejora la redacción, claridad y corrige errores ortográficos manteniendo el estilo original')"
+            [disabled]="isAiLoading"
+            class="text-left p-2.5 rounded-xl border transition-all cursor-pointer group flex items-start gap-2 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
+            [ngClass]="isDark 
+              ? 'bg-neutral-900/70 border-neutral-800 hover:border-emerald-500/50 hover:bg-neutral-800/80 text-white' 
+              : 'bg-white border-neutral-200 hover:border-emerald-300 hover:bg-emerald-50/40 text-neutral-900 shadow-xs'">
+            <div class="w-6.5 h-6.5 rounded-lg flex items-center justify-center shrink-0 border transition-colors mt-0.5"
+              [ngClass]="isDark ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 group-hover:bg-emerald-500/20' : 'bg-emerald-50 border-emerald-200 text-emerald-600 group-hover:bg-emerald-100'">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" /></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <span class="font-headline font-bold text-[11px] block truncate">Redacción</span>
+              <p class="text-[9.5px] opacity-60 leading-tight m-0 truncate">Ortografía y estilo</p>
+            </div>
+          </button>
+
+          <!-- 4. RESUMEN EJECUTIVO -->
+          <button type="button"
+            (click)="applyAiTransform(currentActiveBlock, 'Sintetiza el contenido en un resumen ejecutivo conciso con viñetas y puntos clave claros')"
+            [disabled]="isAiLoading"
+            class="text-left p-2.5 rounded-xl border transition-all cursor-pointer group flex items-start gap-2 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
+            [ngClass]="isDark 
+              ? 'bg-neutral-900/70 border-neutral-800 hover:border-amber-500/50 hover:bg-neutral-800/80 text-white' 
+              : 'bg-white border-neutral-200 hover:border-amber-300 hover:bg-amber-50/40 text-neutral-900 shadow-xs'">
+            <div class="w-6.5 h-6.5 rounded-lg flex items-center justify-center shrink-0 border transition-colors mt-0.5"
+              [ngClass]="isDark ? 'bg-amber-500/10 border-amber-500/20 text-amber-400 group-hover:bg-amber-500/20' : 'bg-amber-50 border-amber-200 text-amber-600 group-hover:bg-amber-100'">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <span class="font-headline font-bold text-[11px] block truncate">Resumen</span>
+              <p class="text-[9.5px] opacity-60 leading-tight m-0 truncate">Puntos clave en viñetas</p>
+            </div>
           </button>
         </div>
       </div>
 
-      <!-- CUERPO DEL MODAL (SCROLLABLE SI ES EXTENSO) -->
-      <div class="p-4 sm:p-5 space-y-4 max-h-[75vh] overflow-y-auto">
-
-        <!-- VISTA PREVIA DEL BLOQUE A TRANSFORMAR -->
-        <div class="p-3 sm:p-3.5 rounded-2xl border text-xs relative group transition-colors"
-          [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800/80 hover:border-neutral-700' : 'bg-neutral-50/80 border-neutral-200/80 hover:border-neutral-300'">
-          <div class="flex items-center justify-between pb-1.5 mb-2 border-b border-dashed"
-            [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-            <div class="flex items-center gap-2 text-purple-400 font-headline font-bold text-[11px] uppercase tracking-wider">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-              </svg>
-              <span>Contenido del bloque a transformar</span>
-            </div>
-            <span class="text-[10px] font-mono opacity-50">{{ (activeAiBlockSnippet.length || 0) }} caracteres</span>
+      <!-- INPUT DE INSTRUCCIÓN A MEDIDA -->
+      <div>
+        <label class="block text-[10px] font-headline font-bold uppercase tracking-wider mb-1.5 opacity-60">
+          O escribe una indicación
+        </label>
+        <div class="relative flex items-center gap-1.5 p-1 rounded-2xl border transition-all"
+          [ngClass]="isDark 
+            ? 'bg-neutral-900/90 border-neutral-700/80 focus-within:border-purple-400 focus-within:ring-2 focus-within:ring-purple-500/20' 
+            : 'bg-neutral-50 border-neutral-300 focus-within:border-purple-600 focus-within:ring-2 focus-within:ring-purple-500/15'">
+          <div class="pl-2 text-purple-400 shrink-0">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg>
           </div>
-          <p class="text-xs line-clamp-3 leading-relaxed font-mono opacity-80 m-0 select-text whitespace-pre-wrap">
-            {{ activeAiBlockSnippet.trim() ? activeAiBlockSnippet : '(El bloque actual está vacío. Puedes generar contenido nuevo usando una de las opciones debajo o escribiendo tu indicación).' }}
-          </p>
+          <input type="text" [(ngModel)]="aiCustomInstruction" (keydown.enter)="applyAiTransform(currentActiveBlock, '')"
+            spellcheck="false" autocorrect="off" autocapitalize="off"
+            placeholder="Ej: explica con ejemplos, hazlo conciso..."
+            class="w-full py-1 px-1 text-xs outline-none bg-transparent font-medium"
+            [ngClass]="isDark ? 'text-white placeholder-neutral-500' : 'text-neutral-900 placeholder-neutral-400'">
+          <button (click)="applyAiTransform(currentActiveBlock, '')"
+            [disabled]="!aiCustomInstruction.trim() || isAiLoading"
+            class="px-3 py-1.5 rounded-xl text-xs font-headline font-bold transition-all cursor-pointer shrink-0 disabled:opacity-30 border-none shadow-md flex items-center gap-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-500 hover:to-indigo-500 active:scale-95 shadow-purple-600/30">
+            <span>Enviar</span>
+            <kbd class="text-[8.5px] font-mono opacity-80 bg-white/20 px-1 py-0.5 rounded">↵</kbd>
+          </button>
         </div>
-
-        <!-- ACCIONES RÁPIDAS (GRID DE TARJETAS MODERNAS) -->
-        <div>
-          <label class="block text-[10.5px] font-headline font-bold uppercase tracking-wider mb-2 opacity-60">
-            Acciones Rápidas con IA
-          </label>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            <!-- 1. TABLA MARKDOWN -->
-            <button type="button"
-              (click)="applyAiTransform(currentActiveBlock, 'Formatea este texto/datos a una tabla Markdown limpia, bien alineada con encabezados y columnas separadas por |')"
-              [disabled]="isAiLoading"
-              class="text-left p-3 rounded-2xl border transition-all cursor-pointer group flex items-start gap-3 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
-              [ngClass]="isDark 
-                ? 'bg-neutral-900/70 border-neutral-800 hover:border-purple-500/50 hover:bg-neutral-800/80 text-white' 
-                : 'bg-white border-neutral-200 hover:border-purple-300 hover:bg-purple-50/40 text-neutral-900 shadow-xs'">
-              <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border transition-colors"
-                [ngClass]="isDark ? 'bg-purple-500/10 border-purple-500/20 text-purple-400 group-hover:bg-purple-500/20' : 'bg-purple-50 border-purple-200 text-purple-600 group-hover:bg-purple-100'">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6v12m0-12h16.5m-16.5 0v12m16.5-12v12m-16.5-6h16.5M9.75 6v12m4.5-12v12" /></svg>
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="font-headline font-bold text-xs flex items-center justify-between">
-                  <span>Tabla Markdown</span>
-                  <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border"
-                    [ngClass]="isDark ? 'border-purple-500/30 text-purple-300 bg-purple-500/10' : 'border-purple-200 text-purple-700 bg-purple-50'">Auto</span>
-                </div>
-                <p class="text-[11px] opacity-60 leading-snug mt-0.5 m-0 truncate">Estructura datos o listas en columnas y filas</p>
-              </div>
-            </button>
-
-            <!-- 2. TRADUCIR -->
-            <button type="button"
-              (click)="applyAiTransform(currentActiveBlock, 'Traduce el contenido al Inglés si está en Español, o al Español si está en Inglés')"
-              [disabled]="isAiLoading"
-              class="text-left p-3 rounded-2xl border transition-all cursor-pointer group flex items-start gap-3 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
-              [ngClass]="isDark 
-                ? 'bg-neutral-900/70 border-neutral-800 hover:border-indigo-500/50 hover:bg-neutral-800/80 text-white' 
-                : 'bg-white border-neutral-200 hover:border-indigo-300 hover:bg-indigo-50/40 text-neutral-900 shadow-xs'">
-              <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border transition-colors"
-                [ngClass]="isDark ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400 group-hover:bg-indigo-500/20' : 'bg-indigo-50 border-indigo-200 text-indigo-600 group-hover:bg-indigo-100'">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18zM3.6 9h16.8M3.6 15h16.8M12 3a14.25 14.25 0 000 18 14.25 14.25 0 000-18z" /></svg>
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="font-headline font-bold text-xs flex items-center justify-between">
-                  <span>Traducir Idioma</span>
-                  <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border"
-                    [ngClass]="isDark ? 'border-indigo-500/30 text-indigo-300 bg-indigo-500/10' : 'border-indigo-200 text-indigo-700 bg-indigo-50'">ES ↔ EN</span>
-                </div>
-                <p class="text-[11px] opacity-60 leading-snug mt-0.5 m-0 truncate">Español al Inglés o viceversa con tono natural</p>
-              </div>
-            </button>
-
-            <!-- 3. MEJORAR REDACCIÓN -->
-            <button type="button"
-              (click)="applyAiTransform(currentActiveBlock, 'Mejora la redacción, claridad y corrige errores ortográficos manteniendo el estilo original')"
-              [disabled]="isAiLoading"
-              class="text-left p-3 rounded-2xl border transition-all cursor-pointer group flex items-start gap-3 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
-              [ngClass]="isDark 
-                ? 'bg-neutral-900/70 border-neutral-800 hover:border-emerald-500/50 hover:bg-neutral-800/80 text-white' 
-                : 'bg-white border-neutral-200 hover:border-emerald-300 hover:bg-emerald-50/40 text-neutral-900 shadow-xs'">
-              <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border transition-colors"
-                [ngClass]="isDark ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 group-hover:bg-emerald-500/20' : 'bg-emerald-50 border-emerald-200 text-emerald-600 group-hover:bg-emerald-100'">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" /></svg>
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="font-headline font-bold text-xs flex items-center justify-between">
-                  <span>Perfeccionar Redacción</span>
-                  <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border"
-                    [ngClass]="isDark ? 'border-emerald-500/30 text-emerald-300 bg-emerald-500/10' : 'border-emerald-200 text-emerald-700 bg-emerald-50'">Fix</span>
-                </div>
-                <p class="text-[11px] opacity-60 leading-snug mt-0.5 m-0 truncate">Corrige ortografía, tono y fluidez profesional</p>
-              </div>
-            </button>
-
-            <!-- 4. RESUMEN EJECUTIVO -->
-            <button type="button"
-              (click)="applyAiTransform(currentActiveBlock, 'Sintetiza el contenido en un resumen ejecutivo conciso con viñetas y puntos clave claros')"
-              [disabled]="isAiLoading"
-              class="text-left p-3 rounded-2xl border transition-all cursor-pointer group flex items-start gap-3 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
-              [ngClass]="isDark 
-                ? 'bg-neutral-900/70 border-neutral-800 hover:border-amber-500/50 hover:bg-neutral-800/80 text-white' 
-                : 'bg-white border-neutral-200 hover:border-amber-300 hover:bg-amber-50/40 text-neutral-900 shadow-xs'">
-              <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border transition-colors"
-                [ngClass]="isDark ? 'bg-amber-500/10 border-amber-500/20 text-amber-400 group-hover:bg-amber-500/20' : 'bg-amber-50 border-amber-200 text-amber-600 group-hover:bg-amber-100'">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="font-headline font-bold text-xs flex items-center justify-between">
-                  <span>Resumen Ejecutivo</span>
-                  <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border"
-                    [ngClass]="isDark ? 'border-amber-500/30 text-amber-300 bg-amber-500/10' : 'border-amber-200 text-amber-700 bg-amber-50'">Key</span>
-                </div>
-                <p class="text-[11px] opacity-60 leading-snug mt-0.5 m-0 truncate">Puntos clave ordenados en viñetas limpias</p>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        <!-- INPUT DE INSTRUCCIÓN PERSONALIZADA -->
-        <div>
-          <label class="block text-[10.5px] font-headline font-bold uppercase tracking-wider mb-2 opacity-60">
-            O escribe una instrucción a medida
-          </label>
-          <div class="relative flex items-center gap-2 p-1.5 rounded-2xl border transition-all"
-            [ngClass]="isDark 
-              ? 'bg-neutral-900/90 border-neutral-700/80 focus-within:border-purple-400 focus-within:ring-2 focus-within:ring-purple-500/20' 
-              : 'bg-neutral-50 border-neutral-300 focus-within:border-purple-600 focus-within:ring-2 focus-within:ring-purple-500/15'">
-            <div class="pl-2.5 text-purple-400 shrink-0">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg>
-            </div>
-            <input type="text" [(ngModel)]="aiCustomInstruction" (keydown.enter)="applyAiTransform(currentActiveBlock, '')"
-              spellcheck="false" autocorrect="off" autocapitalize="off"
-              placeholder="Ej: explica como para principiantes, añade ejemplos de código..."
-              class="w-full py-1.5 px-1 text-xs outline-none bg-transparent font-medium"
-              [ngClass]="isDark ? 'text-white placeholder-neutral-500' : 'text-neutral-900 placeholder-neutral-400'">
-            <button (click)="applyAiTransform(currentActiveBlock, '')"
-              [disabled]="!aiCustomInstruction.trim() || isAiLoading"
-              class="px-4 py-2 rounded-xl text-xs font-headline font-bold transition-all cursor-pointer shrink-0 disabled:opacity-30 border-none shadow-md flex items-center gap-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-500 hover:to-indigo-500 active:scale-95 shadow-purple-600/30">
-              <span>Generar</span>
-              <kbd class="text-[9px] font-mono opacity-80 bg-white/20 px-1 py-0.5 rounded">↵</kbd>
-            </button>
-          </div>
-        </div>
-
-        <!-- ESTADO DE CARGA ANIMADO -->
-        <div *ngIf="isAiLoading" class="p-4 rounded-2xl border flex items-center gap-3 text-xs animate-pulse"
-          [ngClass]="isDark ? 'bg-purple-950/20 border-purple-500/30 text-purple-200' : 'bg-purple-50 border-purple-200 text-purple-900'">
-          <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-purple-500/20 shrink-0">
-            <svg class="w-4 h-4 animate-spin text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <p class="font-headline font-bold m-0 text-xs">RotBot está procesando tu solicitud con IA...</p>
-            <p class="text-[11px] opacity-70 m-0">Generando respuesta optimizada para tu bloque de estudio</p>
-          </div>
-        </div>
-
-        <!-- ALERTA DE ERROR -->
-        <div *ngIf="aiError" class="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/30 text-xs text-red-400 flex items-start gap-2.5">
-          <svg class="w-4 h-4 shrink-0 mt-0.5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-          </svg>
-          <div class="flex-1">
-            <span class="font-bold">Error:</span> {{ aiError }}
-          </div>
-        </div>
-
-        <!-- PREVIEW Y ACCIONES DEL RESULTADO GENERADO -->
-        <div *ngIf="aiResultPreview && !isAiLoading" class="space-y-3 pt-1 border-t"
-          [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-          
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-1.5 text-purple-400 text-xs font-headline font-bold">
-              <span>✨ Resultado Generado</span>
-              <span class="text-[9.5px] font-mono opacity-50">({{ aiResultPreview.length }} caracteres)</span>
-            </div>
-            
-            <button type="button" (click)="copyAiResult()"
-              class="px-2.5 py-1 rounded-lg border text-[11px] font-medium transition-all cursor-pointer flex items-center gap-1.5"
-              [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800 hover:bg-neutral-700 text-neutral-200' : 'border-neutral-300 bg-neutral-100 hover:bg-neutral-200 text-neutral-800'">
-              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-              </svg>
-              <span>Copiar</span>
-            </button>
-          </div>
-
-          <div class="p-3.5 rounded-2xl border max-h-56 overflow-y-auto text-xs font-mono whitespace-pre-wrap leading-relaxed select-text"
-            [ngClass]="isDark ? 'bg-neutral-950/80 border-neutral-800 text-neutral-200' : 'bg-neutral-50 border-neutral-200 text-neutral-900'">
-            {{ aiResultPreview }}
-          </div>
-
-          <!-- BOTONES DE ACCIÓN PARA APLICAR EL RESULTADO -->
-          <div class="flex flex-wrap items-center gap-2 pt-1">
-            <ng-container *ngIf="currentActiveBlock.type === 'columnas'">
-              <button (click)="replaceBlockContentWithAi(currentActiveBlock, 0)"
-                class="flex-1 py-2.5 px-3 rounded-xl text-xs font-headline font-bold transition-all cursor-pointer shadow-md bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-500 hover:to-indigo-500">
-                Colocar en Columna 1
-              </button>
-              <button (click)="replaceBlockContentWithAi(currentActiveBlock, 1)"
-                class="flex-1 py-2.5 px-3 rounded-xl text-xs font-headline font-bold transition-all cursor-pointer shadow-md bg-gradient-to-r from-indigo-600 to-sky-600 text-white hover:from-indigo-500 hover:to-sky-500">
-                Colocar en Columna 2
-              </button>
-            </ng-container>
-
-            <button *ngIf="currentActiveBlock.type !== 'columnas'" (click)="replaceBlockContentWithAi(currentActiveBlock)"
-              class="flex-1 py-2.5 px-4 rounded-xl text-xs font-headline font-bold transition-all cursor-pointer shadow-md bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-500 hover:to-indigo-500 active:scale-95 shadow-purple-600/30">
-              ✓ Reemplazar Bloque Actual
-            </button>
-
-            <button (click)="insertAiResultAsNewBlock(currentActiveBlockIndex)"
-              class="py-2.5 px-3.5 rounded-xl text-xs font-headline font-bold border transition-all cursor-pointer shrink-0"
-              [ngClass]="isDark ? 'border-neutral-700 bg-neutral-900 text-neutral-200 hover:bg-neutral-800' : 'border-neutral-300 bg-white text-neutral-800 hover:bg-neutral-100'">
-              + Insertar Abajo
-            </button>
-
-            <button (click)="aiResultPreview = ''"
-              class="py-2.5 px-3 rounded-xl text-xs font-medium opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
-              Descartar
-            </button>
-          </div>
-        </div>
-
       </div>
 
-      <!-- FOOTER SUTIL CON ATAJOS -->
-      <div class="px-5 py-3 border-t flex items-center justify-between text-[10.5px] opacity-40 font-mono"
-        [ngClass]="isDark ? 'border-neutral-800/80 bg-neutral-900/30' : 'border-neutral-100 bg-neutral-50/30'">
-        <span>Presiona <kbd class="px-1 py-0.5 rounded border">Esc</kbd> para salir</span>
-        <span>RotBot Neural Intelligence ⚡</span>
+      <!-- ESTADO DE CARGA ANIMADO -->
+      <div *ngIf="isAiLoading" class="p-3 rounded-2xl border flex items-center gap-2.5 text-xs animate-pulse"
+        [ngClass]="isDark ? 'bg-purple-950/20 border-purple-500/30 text-purple-200' : 'bg-purple-50 border-purple-200 text-purple-900'">
+        <div class="w-7 h-7 rounded-xl flex items-center justify-center bg-purple-500/20 shrink-0">
+          <svg class="w-3.5 h-3.5 animate-spin text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+          </svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="font-headline font-bold m-0 text-[11.5px] truncate">RotBot está procesando con IA...</p>
+          <p class="text-[10px] opacity-70 m-0 truncate">Generando contenido para tu bloque</p>
+        </div>
+      </div>
+
+      <!-- ALERTA DE ERROR -->
+      <div *ngIf="aiError" class="p-2.5 rounded-2xl bg-red-500/10 border border-red-500/30 text-xs text-red-400 flex items-start gap-2">
+        <svg class="w-3.5 h-3.5 shrink-0 mt-0.5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+        </svg>
+        <div class="flex-1 text-[11px]">
+          <span class="font-bold">Error:</span> {{ aiError }}
+        </div>
+      </div>
+
+      <!-- PREVIEW Y ACCIONES DEL RESULTADO GENERADO -->
+      <div *ngIf="aiResultPreview && !isAiLoading" class="space-y-2.5 pt-1 border-t"
+        [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+        
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1.5 text-purple-400 text-xs font-headline font-bold">
+            <span>✨ Resultado</span>
+            <span class="text-[9px] font-mono opacity-50">({{ aiResultPreview.length }} caracteres)</span>
+          </div>
+          
+          <button type="button" (click)="copyAiResult()"
+            class="px-2 py-0.5 rounded-lg border text-[10.5px] font-medium transition-all cursor-pointer flex items-center gap-1"
+            [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800 hover:bg-neutral-700 text-neutral-200' : 'border-neutral-300 bg-neutral-100 hover:bg-neutral-200 text-neutral-800'">
+            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span>Copiar</span>
+          </button>
+        </div>
+
+        <div class="p-3 rounded-2xl border max-h-48 overflow-y-auto text-xs font-mono whitespace-pre-wrap leading-relaxed select-text"
+          [ngClass]="isDark ? 'bg-neutral-950/80 border-neutral-800 text-neutral-200' : 'bg-neutral-50 border-neutral-200 text-neutral-900'">
+          {{ aiResultPreview }}
+        </div>
+
+        <!-- BOTONES DE ACCIÓN PARA APLICAR EL RESULTADO -->
+        <div class="flex flex-wrap items-center gap-1.5 pt-1">
+          <ng-container *ngIf="currentActiveBlock.type === 'columnas'">
+            <button (click)="replaceBlockContentWithAi(currentActiveBlock, 0)"
+              class="flex-1 py-2 px-2.5 rounded-xl text-[11px] font-headline font-bold transition-all cursor-pointer shadow-md bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-500 hover:to-indigo-500">
+              Columna 1
+            </button>
+            <button (click)="replaceBlockContentWithAi(currentActiveBlock, 1)"
+              class="flex-1 py-2 px-2.5 rounded-xl text-[11px] font-headline font-bold transition-all cursor-pointer shadow-md bg-gradient-to-r from-indigo-600 to-sky-600 text-white hover:from-indigo-500 hover:to-sky-500">
+              Columna 2
+            </button>
+          </ng-container>
+
+          <button *ngIf="currentActiveBlock.type !== 'columnas'" (click)="replaceBlockContentWithAi(currentActiveBlock)"
+            class="flex-1 py-2 px-3 rounded-xl text-[11px] font-headline font-bold transition-all cursor-pointer shadow-md bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-500 hover:to-indigo-500 active:scale-95 shadow-purple-600/30 truncate">
+            ✓ Reemplazar Bloque
+          </button>
+
+          <button (click)="insertAiResultAsNewBlock(currentActiveBlockIndex)"
+            class="py-2 px-2.5 rounded-xl text-[11px] font-headline font-bold border transition-all cursor-pointer shrink-0"
+            [ngClass]="isDark ? 'border-neutral-700 bg-neutral-900 text-neutral-200 hover:bg-neutral-800' : 'border-neutral-300 bg-white text-neutral-800 hover:bg-neutral-100'">
+            + Abajo
+          </button>
+
+          <button (click)="aiResultPreview = ''"
+            class="py-2 px-2 rounded-xl text-[11px] font-medium opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+            Descartar
+          </button>
+        </div>
       </div>
 
     </div>
+
+    <!-- FOOTER SUTIL CON ATAJOS -->
+    <div class="px-3.5 py-2 border-t flex items-center justify-between text-[10px] opacity-40 font-mono shrink-0 select-none"
+      [ngClass]="isDark ? 'border-neutral-800/80 bg-neutral-900/30' : 'border-neutral-100 bg-neutral-50/30'">
+      <span>Cerrar: <kbd class="px-1 py-0.5 rounded border">Esc</kbd></span>
+      <span>Pantalla activa ✓</span>
+    </div>
+
   </div>
 
   <!-- ══════════════════════════════════════════════════════
