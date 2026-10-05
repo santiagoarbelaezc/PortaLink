@@ -79,61 +79,34 @@ const TAB_LABELS: Record<string, string> = {
           </div>
         </ng-container>
 
-        <!-- C. LIBRARY NOTES VIEW: BREADCRUMBS & WORKSPACE TABS DOCK -->
+        <!-- C. LIBRARY NOTES VIEW: BREADCRUMBS -->
         <ng-container *ngIf="activeTab === 'library' && isNotesView">
           
-          <!-- Migas de pan compactas (Desktop grande) -->
-          <div class="hidden xl:flex items-center gap-1.5 text-xs font-headline font-semibold text-neutral-400 shrink-0 pr-1 select-none">
+          <!-- Migas de pan compactas (Desktop/Tablet) -->
+          <div class="hidden sm:flex items-center gap-1.5 text-xs font-headline font-semibold shrink-0 select-none"
+               [ngClass]="theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'">
             <button (click)="libraryService.triggerBreadcrumb('root')" 
-                    class="hover:text-white transition-colors flex items-center gap-1 cursor-pointer">
+                    class="transition-colors flex items-center gap-1 cursor-pointer"
+                    [ngClass]="theme === 'dark' ? 'hover:text-white' : 'hover:text-black'">
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
               <span>Biblioteca</span>
             </button>
             <span class="opacity-40">/</span>
             <button *ngIf="selectedFolder$ | async as folder" 
                     (click)="libraryService.triggerBreadcrumb('folder')"
-                    class="hover:text-white transition-colors truncate max-w-[120px] cursor-pointer">
+                    class="transition-colors truncate max-w-[140px] cursor-pointer"
+                    [ngClass]="theme === 'dark' ? 'hover:text-white' : 'hover:text-black'">
               {{ folder.name }}
             </button>
             <span *ngIf="selectedFolder$ | async" class="opacity-40">/</span>
-          </div>
-
-          <!-- Separador vertical -->
-          <div class="h-4 w-px bg-neutral-800 shrink-0 hidden xl:block"></div>
-
-          <!-- DOCK HORIZONTAL DE PESTAÑAS SIMULTÁNEAS (Visible only on desktop/tablet sm:flex) -->
-          <div class="hidden sm:flex items-center gap-1.5 overflow-x-auto py-0.5 scrollbar-none min-w-0 flex-1 max-w-[500px] lg:max-w-[650px] xl:max-w-[750px]">
-            <div *ngFor="let tab of tabs$ | async"
-                 (click)="libraryService.triggerSwitchTab(tab.id)"
-                 class="group/tab relative flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-headline font-semibold transition-all duration-150 cursor-pointer shrink-0 max-w-[170px] sm:max-w-[210px] select-none"
-                 [ngClass]="(activeTabId$ | async) === tab.id 
-                   ? (theme === 'dark' ? 'bg-[#18181d] border-neutral-700/90 text-white shadow-md shadow-black/40 ring-1 ring-white/10' : 'bg-neutral-100 border-neutral-300 text-neutral-950 shadow-xs ring-1 ring-neutral-900/10') 
-                   : (theme === 'dark' ? 'bg-transparent border-transparent text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/40 hover:border-neutral-800' : 'bg-transparent border-transparent text-neutral-600 hover:text-neutral-950 hover:bg-neutral-200/60 hover:border-neutral-300')">
-              
-              <span class="w-2 h-2 rounded-full shrink-0 transition-all"
-                    [style.backgroundColor]="tab.color || '#737373'"
-                    [style.boxShadow]="(activeTabId$ | async) === tab.id ? '0 0 8px ' + (tab.color || '#737373') : 'none'"
-                    [class.animate-pulse]="(activeTabId$ | async) === tab.id"></span>
-
-              <span class="truncate min-w-0 tracking-tight">{{ tab.title || 'Biblioteca' }}</span>
-
-              <button type="button"
-                      (click)="libraryService.triggerCloseTab(tab.id, $event)"
-                      title="Cerrar pestaña"
-                      class="w-4 h-4 rounded-md flex items-center justify-center transition-all ml-0.5 shrink-0 cursor-pointer"
-                      [ngClass]="(activeTabId$ | async) === tab.id ? 'text-neutral-400 hover:text-red-400 hover:bg-red-500/20 opacity-70 hover:opacity-100' : 'text-neutral-500 hover:text-red-400 hover:bg-red-500/20 opacity-0 group-hover/tab:opacity-100'">
-                <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-              </button>
-            </div>
-
-            <!-- Botón nueva pestaña -->
-            <button type="button"
-                    (click)="libraryService.triggerOpenNewTab()"
-                    title="Abrir nueva pestaña de trabajo"
-                    class="w-7 h-7 rounded-xl border flex items-center justify-center transition-all shrink-0 cursor-pointer shadow-2xs"
-                    [ngClass]="theme === 'dark' ? 'border-neutral-800/90 bg-neutral-900/60 hover:bg-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700' : 'border-neutral-300/90 bg-white/70 hover:bg-white text-neutral-600 hover:text-black hover:border-neutral-400'">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-            </button>
+            <span *ngIf="(selectedNotebook$ | async) as notebook"
+                  class="font-bold truncate max-w-[220px] flex items-center gap-1.5"
+                  [ngClass]="theme === 'dark' ? 'text-white' : 'text-neutral-900'">
+              <span class="w-2.5 h-2.5 rounded-full shrink-0" 
+                    [style.backgroundColor]="notebook.color || '#3b82f6'"
+                    [style.boxShadow]="'0 0 8px ' + (notebook.color || '#3b82f6')"></span>
+              {{ notebook.title }}
+            </span>
           </div>
 
           <!-- TÍTULO MÓVIL ELEGANTE (sm:hidden) CON BOTÓN VOLVER -->
@@ -210,59 +183,7 @@ const TAB_LABELS: Record<string, string> = {
           </button>
         </ng-container>
 
-        <!-- C. LIBRARY NOTES VIEW: BUSCADOR & NUEVO APUNTE -->
-        <ng-container *ngIf="activeTab === 'library' && isNotesView">
-          
-          <!-- Botón Buscador en Móvil (toggle) -->
-          <button type="button"
-                  (click)="isMobileSearchOpen = !isMobileSearchOpen"
-                  class="sm:hidden w-8 h-8 rounded-xl border flex items-center justify-center transition-all cursor-pointer shrink-0"
-                  [ngClass]="isMobileSearchOpen || (searchQuery$ | async)
-                    ? (theme === 'dark' ? 'bg-white text-black border-white shadow-xs' : 'bg-neutral-900 text-white border-neutral-900 shadow-xs')
-                    : (theme === 'dark' ? 'bg-white/5 border-white/10 text-neutral-400 hover:text-white hover:border-white/20' : 'bg-black/5 border-black/10 text-neutral-600 hover:text-black hover:border-black/20')"
-                  title="Buscar apuntes">
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
-          </button>
 
-          <!-- Buscador Desktop/Tablet -->
-          <div class="relative hidden sm:block w-[180px] md:w-[250px]">
-            <input 
-              type="text"
-              [ngModel]="searchQuery$ | async"
-              (ngModelChange)="libraryService.setSearchQuery($event)"
-              spellcheck="false"
-              autocorrect="off"
-              autocapitalize="off"
-              placeholder="Buscar apunte..."
-              class="w-full pl-8 pr-7 py-1.5 text-xs rounded-full border transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-neutral-400/50"
-              [ngClass]="theme === 'dark' ? 'bg-neutral-900/80 border-neutral-800 text-white placeholder:text-neutral-500' : 'bg-neutral-100/80 border-neutral-200 text-neutral-900 placeholder:text-neutral-400'"
-            />
-            <svg class="w-3.5 h-3.5 absolute left-2.5 top-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
-            <button *ngIf="(searchQuery$ | async)" (click)="libraryService.setSearchQuery('')"
-                    class="absolute right-2 top-1.5 w-3.5 h-3.5 flex items-center justify-center opacity-60 hover:opacity-100 cursor-pointer text-xs"
-                    title="Limpiar búsqueda">
-              ✕
-            </button>
-          </div>
-
-          <!-- Botón + Nuevo Apunte -->
-          <button 
-            (click)="libraryService.triggerCreateNewNote()"
-            class="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs font-headline font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center gap-1 sm:gap-1.5 shadow-sm hover:scale-[1.02] active:scale-[0.98] shrink-0"
-            [ngClass]="theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'"
-            title="Crear nuevo apunte"
-          >
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-            <span class="hidden sm:inline">Nuevo Apunte</span>
-            <span class="sm:hidden text-[11px]">Apunte</span>
-          </button>
-
-          <div class="h-4 w-px bg-neutral-800 shrink-0 hidden sm:block"></div>
-        </ng-container>
 
         <!-- Theme Toggle Button -->
         <button (click)="themeChange.emit()"
@@ -292,44 +213,11 @@ const TAB_LABELS: Record<string, string> = {
       </div>
     </header>
 
-    <!-- Barra de Búsqueda Desplegable en Móvil (iOS Style) -->
-    <div *ngIf="isMobileSearchOpen && activeTab === 'library' && isNotesView"
-         class="sm:hidden px-3 py-2 border-b flex items-center gap-2 relative z-30 transition-all duration-200"
-         [ngClass]="theme === 'dark' ? 'bg-[#0b0b10] border-neutral-800/90' : 'bg-neutral-50 border-neutral-200'">
-      <div class="relative flex-1">
-        <input 
-          type="text"
-          [ngModel]="searchQuery$ | async"
-          (ngModelChange)="libraryService.setSearchQuery($event)"
-          spellcheck="false"
-          autocorrect="off"
-          autocapitalize="off"
-          placeholder="Buscar en apuntes..."
-          class="w-full pl-8 pr-7 py-1.5 text-xs rounded-full border transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-neutral-400/50"
-          [ngClass]="theme === 'dark' ? 'bg-neutral-900/90 border-neutral-800 text-white placeholder:text-neutral-500' : 'bg-white border-neutral-200 text-neutral-900 placeholder:text-neutral-400'"
-          autofocus
-        />
-        <svg class="w-3.5 h-3.5 absolute left-2.5 top-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-        </svg>
-        <button *ngIf="(searchQuery$ | async)" (click)="libraryService.setSearchQuery('')"
-                class="absolute right-2.5 top-2 w-3.5 h-3.5 flex items-center justify-center opacity-60 hover:opacity-100 cursor-pointer text-xs"
-                title="Limpiar búsqueda">
-          ✕
-        </button>
-      </div>
-      <button (click)="isMobileSearchOpen = false" 
-              class="text-xs font-semibold px-2 py-1 rounded-lg text-neutral-400 hover:text-white transition-colors cursor-pointer shrink-0">
-        Listo
-      </button>
-    </div>
   `,
   styles: []
 })
 export class DashAiSearchComponent {
   public libraryService = inject(LibraryService);
-
-  isMobileSearchOpen: boolean = false;
 
   tabs$ = this.libraryService.tabs$;
   activeTabId$ = this.libraryService.activeTabId$;

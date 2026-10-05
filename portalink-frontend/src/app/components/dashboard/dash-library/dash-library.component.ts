@@ -282,6 +282,36 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isLoading = false;
   searchQuery = '';
+  noteSearchQuery = '';
+
+  get filteredPages(): NotebookPage[] {
+    if (!this.noteSearchQuery || !this.noteSearchQuery.trim()) {
+      return this.pages;
+    }
+    const q = this.noteSearchQuery.toLowerCase().trim();
+    return this.pages.filter(p => 
+      (p.title && p.title.toLowerCase().includes(q)) || 
+      (p.content && p.content.toLowerCase().includes(q))
+    );
+  }
+
+  get currentActiveBlock(): NoteBlock | null {
+    if (!this.blocks || this.blocks.length === 0) return null;
+    if (this.activeBlockId) {
+      const found = this.blocks.find(b => b.id === this.activeBlockId);
+      if (found) return found;
+    }
+    return this.blocks[0];
+  }
+
+  get currentActiveBlockIndex(): number {
+    if (!this.blocks || this.blocks.length === 0) return -1;
+    if (this.activeBlockId) {
+      const idx = this.blocks.findIndex(b => b.id === this.activeBlockId);
+      if (idx !== -1) return idx;
+    }
+    return 0;
+  }
   searchResults: any[] = [];
   isSearching = false;
   private searchDebounceTimer: any = null;
@@ -1519,6 +1549,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.selectedPage = page;
     this.showSlashMenu = false;
     this.blocks = this.parseContentToBlocks(page.content || '');
+    this.activeBlockId = (this.blocks && this.blocks.length > 0) ? this.blocks[0].id : null;
     if (this.isMobileScreen) {
       this.isSidebarCollapsed = true;
     }
@@ -4038,15 +4069,17 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  isReadingThisBlock(block: NoteBlock): boolean {
+  isReadingThisBlock(block?: NoteBlock | null): boolean {
+    if (!block) return false;
     return this.currentlyReadingBlockId === block.id && this.spanishTts.isSpeaking;
   }
 
-  readBlockWithRotBot(block: NoteBlock, event?: Event) {
+  readBlockWithRotBot(block?: NoteBlock | null, event?: Event) {
     if (event) {
       event.preventDefault();
       event.stopPropagation();
     }
+    if (!block) return;
 
     if (this.isReadingThisBlock(block)) {
       this.spanishTts.stop();
