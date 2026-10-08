@@ -248,167 +248,116 @@ const TAB_LABELS: Record<string, string> = {
               <!-- BACKDROP INVISIBLE PARA CERRAR AL HACER CLIC AFUERA -->
               <div *ngIf="isTypeDropdownOpen" (click)="closeTypeDropdown()" class="fixed inset-0 z-[9998] bg-black/15 backdrop-blur-[0.5px]"></div>
 
-              <!-- MENÚ FLOTANTE CAMBIAR TIPO (POSICIONAMIENTO FIJO HACIA ABAJO CON DISEÑO PREMIUM) -->
+              <!-- MENÚ FLOTANTE CAMBIAR TIPO (COMPACTO Y ELEGANTE) -->
               <div *ngIf="isTypeDropdownOpen"
                    (click)="$event.stopPropagation()"
                    [style.top.px]="dropdownTop"
                    [style.left.px]="dropdownLeft"
-                   class="fixed w-64 z-[9999] rounded-2xl border shadow-2xl p-2 backdrop-blur-2xl animate-fade-in font-sans font-medium"
-                   [ngClass]="theme === 'dark' ? 'bg-[#15151c]/98 border-neutral-700/80 text-white shadow-black/90 ring-1 ring-white/10' : 'bg-white/98 border-neutral-200 text-neutral-900 shadow-2xl ring-1 ring-black/10'">
+                   class="fixed w-44 z-[9999] rounded-xl border shadow-xl p-1 backdrop-blur-2xl animate-fade-in font-sans font-medium select-none"
+                   [ngClass]="theme === 'dark' ? 'bg-[#15151c]/98 border-neutral-700/80 text-white shadow-black/90 ring-1 ring-white/10' : 'bg-white/98 border-neutral-200 text-neutral-900 shadow-xl ring-1 ring-black/10'">
                 
-                <!-- HEADER DEL COMBOBOX -->
-                <div class="px-2.5 py-1.5 border-b mb-1 flex items-center justify-between"
-                     [ngClass]="theme === 'dark' ? 'border-neutral-800 text-neutral-400' : 'border-neutral-100 text-neutral-500'">
-                  <span class="text-[10px] font-headline font-bold uppercase tracking-wider">Formato de bloque</span>
-                  <span class="text-[10px] opacity-60">7 opciones</span>
+                <div class="px-2 py-1 text-[10px] font-headline font-bold uppercase tracking-wider opacity-45 border-b mb-1"
+                     [ngClass]="theme === 'dark' ? 'border-neutral-800' : 'border-neutral-100'">
+                  Formato
                 </div>
 
-                <div class="space-y-1 text-xs sm:text-[13px] max-h-[70vh] overflow-y-auto scrollbar-none py-0.5">
+                <div class="space-y-0.5 text-xs">
                   <!-- Opción Título H1 -->
                   <button type="button" (click)="changeType('titulo', $event)"
-                          class="w-full px-2.5 py-2 rounded-xl text-left font-bold flex items-center justify-between cursor-pointer transition-all hover:scale-[1.01]"
+                          class="w-full px-2 py-1.5 rounded-lg text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
                           [ngClass]="currentBlock.type === 'titulo' 
-                            ? (theme === 'dark' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40 shadow-sm' : 'bg-blue-50 text-blue-800 border border-blue-200 shadow-xs') 
-                            : (theme === 'dark' ? 'hover:bg-neutral-800/80 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
-                    <div class="flex items-center gap-2.5 min-w-0">
-                      <span class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-blue-500/15 text-blue-400 border border-blue-500/20">
-                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.5v13M12.75 5.5v13M3.75 12h9M18.75 18.5V9.75l-2.25 1.5" /></svg>
-                      </span>
-                      <div class="truncate">
-                        <div class="leading-tight">H1 Título</div>
-                        <div class="text-[10px] opacity-60 font-normal">Encabezado principal</div>
-                      </div>
+                            ? (theme === 'dark' ? 'bg-blue-500/20 text-blue-300' : 'bg-blue-50 text-blue-800') 
+                            : (theme === 'dark' ? 'hover:bg-neutral-800 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="w-5 h-5 rounded flex items-center justify-center shrink-0 bg-blue-500/15 text-blue-400 text-[10px] font-headline font-black">H1</span>
+                      <span class="truncate">Título</span>
                     </div>
-                    <div class="flex items-center gap-1.5 shrink-0 ml-1">
-                      <span *ngIf="currentBlock.type === 'titulo'" class="text-blue-400 text-xs font-black">✓</span>
-                      <kbd class="text-[10px] font-mono opacity-50 bg-neutral-500/10 px-1.5 py-0.5 rounded">T</kbd>
-                    </div>
+                    <span *ngIf="currentBlock.type === 'titulo'" class="text-blue-400 text-xs font-black shrink-0">✓</span>
+                    <span *ngIf="currentBlock.type !== 'titulo'" class="text-[10px] font-mono opacity-40 shrink-0">T</span>
                   </button>
 
                   <!-- Opción Subtítulo H2 -->
                   <button type="button" (click)="changeType('subtitulo', $event)"
-                          class="w-full px-2.5 py-2 rounded-xl text-left font-bold flex items-center justify-between cursor-pointer transition-all hover:scale-[1.01]"
+                          class="w-full px-2 py-1.5 rounded-lg text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
                           [ngClass]="currentBlock.type === 'subtitulo' 
-                            ? (theme === 'dark' ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-sm' : 'bg-sky-50 text-sky-800 border border-sky-200 shadow-xs') 
-                            : (theme === 'dark' ? 'hover:bg-neutral-800/80 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
-                    <div class="flex items-center gap-2.5 min-w-0">
-                      <span class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-sky-500/15 text-sky-400 border border-sky-500/20">
-                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.5v13M12 5.5v13M3.75 12h8.25M17.25 10a2 2 0 114 0c0 1.5-2.25 2.5-4 4.5h4" /></svg>
-                      </span>
-                      <div class="truncate">
-                        <div class="leading-tight">H2 Subtítulo</div>
-                        <div class="text-[10px] opacity-60 font-normal">Subtítulo secundario</div>
-                      </div>
+                            ? (theme === 'dark' ? 'bg-sky-500/20 text-sky-300' : 'bg-sky-50 text-sky-800') 
+                            : (theme === 'dark' ? 'hover:bg-neutral-800 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="w-5 h-5 rounded flex items-center justify-center shrink-0 bg-sky-500/15 text-sky-400 text-[10px] font-headline font-black">H2</span>
+                      <span class="truncate">Subtítulo</span>
                     </div>
-                    <div class="flex items-center gap-1.5 shrink-0 ml-1">
-                      <span *ngIf="currentBlock.type === 'subtitulo'" class="text-sky-400 text-xs font-black">✓</span>
-                      <kbd class="text-[10px] font-mono opacity-50 bg-neutral-500/10 px-1.5 py-0.5 rounded">S</kbd>
-                    </div>
+                    <span *ngIf="currentBlock.type === 'subtitulo'" class="text-sky-400 text-xs font-black shrink-0">✓</span>
+                    <span *ngIf="currentBlock.type !== 'subtitulo'" class="text-[10px] font-mono opacity-40 shrink-0">S</span>
                   </button>
 
                   <!-- Opción Texto Normal -->
                   <button type="button" (click)="changeType('texto', $event)"
-                          class="w-full px-2.5 py-2 rounded-xl text-left font-bold flex items-center justify-between cursor-pointer transition-all hover:scale-[1.01]"
+                          class="w-full px-2 py-1.5 rounded-lg text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
                           [ngClass]="currentBlock.type === 'texto' 
-                            ? (theme === 'dark' ? 'bg-neutral-700/60 text-white border border-neutral-600 shadow-sm' : 'bg-neutral-200 text-black border border-neutral-300 shadow-xs') 
-                            : (theme === 'dark' ? 'hover:bg-neutral-800/80 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
-                    <div class="flex items-center gap-2.5 min-w-0">
-                      <span class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-neutral-500/15 text-neutral-400 border border-neutral-500/20">
-                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h11" /></svg>
-                      </span>
-                      <div class="truncate">
-                        <div class="leading-tight">Texto Normal</div>
-                        <div class="text-[10px] opacity-60 font-normal">Párrafo estándar</div>
-                      </div>
+                            ? (theme === 'dark' ? 'bg-neutral-700/60 text-white' : 'bg-neutral-200 text-black') 
+                            : (theme === 'dark' ? 'hover:bg-neutral-800 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="w-5 h-5 rounded flex items-center justify-center shrink-0 bg-neutral-500/15 text-neutral-400 text-[10px] font-headline font-black">T</span>
+                      <span class="truncate">Texto</span>
                     </div>
-                    <div class="flex items-center gap-1.5 shrink-0 ml-1">
-                      <span *ngIf="currentBlock.type === 'texto'" class="text-emerald-400 text-xs font-black">✓</span>
-                      <kbd class="text-[10px] font-mono opacity-50 bg-neutral-500/10 px-1.5 py-0.5 rounded">N</kbd>
-                    </div>
+                    <span *ngIf="currentBlock.type === 'texto'" class="text-emerald-400 text-xs font-black shrink-0">✓</span>
+                    <span *ngIf="currentBlock.type !== 'texto'" class="text-[10px] font-mono opacity-40 shrink-0">N</span>
                   </button>
 
                   <!-- Opción Código -->
                   <button type="button" (click)="changeType('codigo', $event)"
-                          class="w-full px-2.5 py-2 rounded-xl text-left font-bold flex items-center justify-between cursor-pointer transition-all hover:scale-[1.01]"
+                          class="w-full px-2 py-1.5 rounded-lg text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
                           [ngClass]="currentBlock.type === 'codigo' 
-                            ? (theme === 'dark' ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 shadow-sm' : 'bg-indigo-50 text-indigo-800 border border-indigo-200 shadow-xs') 
-                            : (theme === 'dark' ? 'hover:bg-neutral-800/80 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
-                    <div class="flex items-center gap-2.5 min-w-0">
-                      <span class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-indigo-500/15 text-indigo-400 border border-indigo-500/20">
-                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 8l-4.5 4 4.5 4m8-8l4.5 4-4.5 4m-6.5 2l3-12" /></svg>
-                      </span>
-                      <div class="truncate">
-                        <div class="leading-tight">&lt;/&gt; Código</div>
-                        <div class="text-[10px] opacity-60 font-normal">Terminal con sintaxis</div>
-                      </div>
+                            ? (theme === 'dark' ? 'bg-indigo-500/20 text-indigo-300' : 'bg-indigo-50 text-indigo-800') 
+                            : (theme === 'dark' ? 'hover:bg-neutral-800 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="w-5 h-5 rounded flex items-center justify-center shrink-0 bg-indigo-500/15 text-indigo-400 text-[9px] font-mono font-bold">&lt;/&gt;</span>
+                      <span class="truncate">Código</span>
                     </div>
-                    <div class="flex items-center gap-1.5 shrink-0 ml-1">
-                      <span *ngIf="currentBlock.type === 'codigo'" class="text-indigo-400 text-xs font-black">✓</span>
-                      <kbd class="text-[10px] font-mono opacity-50 bg-neutral-500/10 px-1.5 py-0.5 rounded">C</kbd>
-                    </div>
+                    <span *ngIf="currentBlock.type === 'codigo'" class="text-indigo-400 text-xs font-black shrink-0">✓</span>
+                    <span *ngIf="currentBlock.type !== 'codigo'" class="text-[10px] font-mono opacity-40 shrink-0">C</span>
                   </button>
 
                   <!-- Opción Alerta -->
                   <button type="button" (click)="changeType('alerta', $event)"
-                          class="w-full px-2.5 py-2 rounded-xl text-left font-bold flex items-center justify-between cursor-pointer transition-all hover:scale-[1.01]"
+                          class="w-full px-2 py-1.5 rounded-lg text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
                           [ngClass]="currentBlock.type === 'alerta' 
-                            ? (theme === 'dark' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm' : 'bg-amber-50 text-amber-800 border border-amber-200 shadow-xs') 
-                            : (theme === 'dark' ? 'hover:bg-neutral-800/80 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
-                    <div class="flex items-center gap-2.5 min-w-0">
-                      <span class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-amber-500/15 text-amber-400 border border-amber-500/20">
-                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 3.5h.008M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
-                      </span>
-                      <div class="truncate">
-                        <div class="leading-tight">⚠ Alerta</div>
-                        <div class="text-[10px] opacity-60 font-normal">Nota o aviso destacado</div>
-                      </div>
+                            ? (theme === 'dark' ? 'bg-amber-500/20 text-amber-300' : 'bg-amber-50 text-amber-800') 
+                            : (theme === 'dark' ? 'hover:bg-neutral-800 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="w-5 h-5 rounded flex items-center justify-center shrink-0 bg-amber-500/15 text-amber-400 text-[10px]">⚠</span>
+                      <span class="truncate">Alerta</span>
                     </div>
-                    <div class="flex items-center gap-1.5 shrink-0 ml-1">
-                      <span *ngIf="currentBlock.type === 'alerta'" class="text-amber-400 text-xs font-black">✓</span>
-                      <kbd class="text-[10px] font-mono opacity-50 bg-neutral-500/10 px-1.5 py-0.5 rounded">A</kbd>
-                    </div>
+                    <span *ngIf="currentBlock.type === 'alerta'" class="text-amber-400 text-xs font-black shrink-0">✓</span>
+                    <span *ngIf="currentBlock.type !== 'alerta'" class="text-[10px] font-mono opacity-40 shrink-0">A</span>
                   </button>
 
                   <!-- Opción 2 Columnas -->
                   <button type="button" (click)="changeType('columnas', $event)"
-                          class="w-full px-2.5 py-2 rounded-xl text-left font-bold flex items-center justify-between cursor-pointer transition-all hover:scale-[1.01]"
+                          class="w-full px-2 py-1.5 rounded-lg text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
                           [ngClass]="currentBlock.type === 'columnas' 
-                            ? (theme === 'dark' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40 shadow-sm' : 'bg-purple-50 text-purple-800 border border-purple-200 shadow-xs') 
-                            : (theme === 'dark' ? 'hover:bg-neutral-800/80 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
-                    <div class="flex items-center gap-2.5 min-w-0">
-                      <span class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-purple-500/15 text-purple-400 border border-purple-500/20">
-                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3.5" y="4.5" width="7" height="15" rx="2"/><rect x="13.5" y="4.5" width="7" height="15" rx="2"/></svg>
-                      </span>
-                      <div class="truncate">
-                        <div class="leading-tight">◫ 2 Columnas</div>
-                        <div class="text-[10px] opacity-60 font-normal">Disposición lado a lado</div>
-                      </div>
+                            ? (theme === 'dark' ? 'bg-purple-500/20 text-purple-300' : 'bg-purple-50 text-purple-800') 
+                            : (theme === 'dark' ? 'hover:bg-neutral-800 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="w-5 h-5 rounded flex items-center justify-center shrink-0 bg-purple-500/15 text-purple-400 text-[10px]">◫</span>
+                      <span class="truncate">2 Columnas</span>
                     </div>
-                    <div class="flex items-center gap-1.5 shrink-0 ml-1">
-                      <span *ngIf="currentBlock.type === 'columnas'" class="text-purple-400 text-xs font-black">✓</span>
-                      <kbd class="text-[10px] font-mono opacity-50 bg-neutral-500/10 px-1.5 py-0.5 rounded">2</kbd>
-                    </div>
+                    <span *ngIf="currentBlock.type === 'columnas'" class="text-purple-400 text-xs font-black shrink-0">✓</span>
+                    <span *ngIf="currentBlock.type !== 'columnas'" class="text-[10px] font-mono opacity-40 shrink-0">2</span>
                   </button>
 
                   <!-- Opción Imagen -->
                   <button type="button" (click)="changeType('imagen', $event)"
-                          class="w-full px-2.5 py-2 rounded-xl text-left font-bold flex items-center justify-between cursor-pointer transition-all hover:scale-[1.01]"
+                          class="w-full px-2 py-1.5 rounded-lg text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
                           [ngClass]="currentBlock.type === 'imagen' 
-                            ? (theme === 'dark' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm' : 'bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-xs') 
-                            : (theme === 'dark' ? 'hover:bg-neutral-800/80 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
-                    <div class="flex items-center gap-2.5 min-w-0">
-                      <span class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">
-                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4.5" width="18" height="15" rx="3"/><circle cx="8.5" cy="9" r="1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 15.5l-5-5L5 20.5"/></svg>
-                      </span>
-                      <div class="truncate">
-                        <div class="leading-tight">🖼 Imagen</div>
-                        <div class="text-[10px] opacity-60 font-normal">Subir archivo o URL</div>
-                      </div>
+                            ? (theme === 'dark' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-emerald-50 text-emerald-800') 
+                            : (theme === 'dark' ? 'hover:bg-neutral-800 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="w-5 h-5 rounded flex items-center justify-center shrink-0 bg-emerald-500/15 text-emerald-400 text-[10px]">🖼</span>
+                      <span class="truncate">Imagen</span>
                     </div>
-                    <div class="flex items-center gap-1.5 shrink-0 ml-1">
-                      <span *ngIf="currentBlock.type === 'imagen'" class="text-emerald-400 text-xs font-black">✓</span>
-                      <kbd class="text-[10px] font-mono opacity-50 bg-neutral-500/10 px-1.5 py-0.5 rounded">I</kbd>
-                    </div>
+                    <span *ngIf="currentBlock.type === 'imagen'" class="text-emerald-400 text-xs font-black shrink-0">✓</span>
+                    <span *ngIf="currentBlock.type !== 'imagen'" class="text-[10px] font-mono opacity-40 shrink-0">I</span>
                   </button>
                 </div>
               </div>
