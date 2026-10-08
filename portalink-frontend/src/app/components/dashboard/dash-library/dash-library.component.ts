@@ -1097,7 +1097,13 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
         const idx = this.currentActiveBlockIndex;
         switch (action) {
           case 'changeType':
-            if (block && payload) this.changeBlockType(block, payload);
+            if (block && payload) {
+              this.changeBlockType(block, payload);
+            } else if (!block && payload && this.blocks && this.blocks.length > 0) {
+              this.changeBlockType(this.blocks[0], payload);
+            } else if (payload) {
+              this.addBlock(payload);
+            }
             break;
           case 'ai':
             if (this.activeAiBlockId) {
@@ -2246,8 +2252,13 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   changeBlockType(block: NoteBlock, newType: string) {
+    if (!block) return;
+    this.activeBlockId = block.id;
+
     if (newType === 'columnas') {
       this.convertToColumns(block);
+      this.syncActiveBlockToService();
+      this.showToast('Convertido a 2 columnas');
       return;
     }
     const validTypes: ('titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'imagen')[] = [
@@ -2269,6 +2280,14 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
       delete block.columnRatio;
     }
     this.syncBlocksToContent();
+    this.syncActiveBlockToService();
+    this.showToast(`Formato cambiado a ${this.getBlockTypeLabel(block.type)}`);
+    setTimeout(() => {
+      const el = document.getElementById('block-' + block.id);
+      if (el) {
+        el.focus();
+      }
+    }, 50);
   }
 
   convertToColumns(block: NoteBlock) {
@@ -2295,6 +2314,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     ];
     this.syncBlocksToContent();
+    this.syncActiveBlockToService();
   }
 
   setColumnRatio(block: NoteBlock, ratio: '50-50' | '33-66' | '66-33' | '40-60' | '60-40') {
