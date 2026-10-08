@@ -246,118 +246,120 @@ const TAB_LABELS: Record<string, string> = {
               </button>
 
               <!-- BACKDROP INVISIBLE PARA CERRAR AL HACER CLIC AFUERA -->
-              <div *ngIf="isTypeDropdownOpen" (click)="closeTypeDropdown()" class="fixed inset-0 z-[9998] bg-black/15 backdrop-blur-[0.5px]"></div>
+              <div *ngIf="isTypeDropdownOpen" (click)="closeTypeDropdown()" class="fixed inset-0 z-[9998] bg-black/30"></div>
 
-              <!-- MENÚ FLOTANTE CAMBIAR TIPO (COMPACTO Y ELEGANTE) -->
+              <!-- MENÚ FLOTANTE CAMBIAR TIPO (COMPACTO, OPACO OSCURO Y ELEGANTE) -->
               <div *ngIf="isTypeDropdownOpen"
                    (click)="$event.stopPropagation()"
                    [style.top.px]="dropdownTop"
                    [style.left.px]="dropdownLeft"
-                   class="fixed w-44 z-[9999] rounded-xl border shadow-xl p-1 backdrop-blur-2xl animate-fade-in font-sans font-medium select-none"
-                   [ngClass]="theme === 'dark' ? 'bg-[#15151c]/98 border-neutral-700/80 text-white shadow-black/90 ring-1 ring-white/10' : 'bg-white/98 border-neutral-200 text-neutral-900 shadow-xl ring-1 ring-black/10'">
+                   class="fixed w-40 z-[9999] rounded-xl border shadow-2xl p-1 backdrop-blur-xl animate-fade-in font-sans font-medium select-none"
+                   [ngClass]="theme === 'dark' 
+                     ? 'bg-black/90 border-white/10 text-white shadow-2xl shadow-black ring-1 ring-white/5' 
+                     : 'bg-white/95 border-neutral-200 text-neutral-900 shadow-2xl ring-1 ring-black/10'">
                 
-                <div class="px-2 py-1 text-[10px] font-headline font-bold uppercase tracking-wider opacity-45 border-b mb-1"
-                     [ngClass]="theme === 'dark' ? 'border-neutral-800' : 'border-neutral-100'">
+                <div class="px-2 py-0.5 text-[9.5px] font-headline font-bold uppercase tracking-wider opacity-50 border-b mb-1"
+                     [ngClass]="theme === 'dark' ? 'border-white/10 text-neutral-400' : 'border-neutral-100 text-neutral-500'">
                   Formato
                 </div>
 
-                <div class="space-y-0.5 text-xs">
+                <div class="space-y-0.5 text-[11px]">
                   <!-- Opción Título H1 -->
                   <button type="button" (click)="changeType('titulo', $event)"
-                          class="w-full px-2 py-1.5 rounded-lg text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
+                          class="w-full px-2 py-1 rounded-lg text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
                           [ngClass]="currentBlock.type === 'titulo' 
-                            ? (theme === 'dark' ? 'bg-blue-500/20 text-blue-300' : 'bg-blue-50 text-blue-800') 
-                            : (theme === 'dark' ? 'hover:bg-neutral-800 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
+                            ? (theme === 'dark' ? 'bg-blue-500/25 text-blue-200 ring-1 ring-blue-400/30' : 'bg-blue-50 text-blue-800') 
+                            : (theme === 'dark' ? 'hover:bg-white/10 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
                     <div class="flex items-center gap-2 min-w-0">
-                      <span class="w-5 h-5 rounded flex items-center justify-center shrink-0 bg-blue-500/15 text-blue-400 text-[10px] font-headline font-black">H1</span>
+                      <span class="w-4.5 h-4.5 rounded-md flex items-center justify-center shrink-0 bg-blue-500/20 text-blue-400 text-[9.5px] font-headline font-black">H1</span>
                       <span class="truncate">Título</span>
                     </div>
-                    <span *ngIf="currentBlock.type === 'titulo'" class="text-blue-400 text-xs font-black shrink-0">✓</span>
-                    <span *ngIf="currentBlock.type !== 'titulo'" class="text-[10px] font-mono opacity-40 shrink-0">T</span>
+                    <span *ngIf="currentBlock.type === 'titulo'" class="text-blue-400 text-[11px] font-black shrink-0">✓</span>
+                    <span *ngIf="currentBlock.type !== 'titulo'" class="text-[9.5px] font-mono opacity-35 shrink-0">T</span>
                   </button>
 
                   <!-- Opción Subtítulo H2 -->
                   <button type="button" (click)="changeType('subtitulo', $event)"
-                          class="w-full px-2 py-1.5 rounded-lg text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
+                          class="w-full px-2 py-1 rounded-lg text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
                           [ngClass]="currentBlock.type === 'subtitulo' 
-                            ? (theme === 'dark' ? 'bg-sky-500/20 text-sky-300' : 'bg-sky-50 text-sky-800') 
-                            : (theme === 'dark' ? 'hover:bg-neutral-800 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
+                            ? (theme === 'dark' ? 'bg-sky-500/25 text-sky-200 ring-1 ring-sky-400/30' : 'bg-sky-50 text-sky-800') 
+                            : (theme === 'dark' ? 'hover:bg-white/10 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
                     <div class="flex items-center gap-2 min-w-0">
-                      <span class="w-5 h-5 rounded flex items-center justify-center shrink-0 bg-sky-500/15 text-sky-400 text-[10px] font-headline font-black">H2</span>
+                      <span class="w-4.5 h-4.5 rounded-md flex items-center justify-center shrink-0 bg-sky-500/20 text-sky-400 text-[9.5px] font-headline font-black">H2</span>
                       <span class="truncate">Subtítulo</span>
                     </div>
-                    <span *ngIf="currentBlock.type === 'subtitulo'" class="text-sky-400 text-xs font-black shrink-0">✓</span>
-                    <span *ngIf="currentBlock.type !== 'subtitulo'" class="text-[10px] font-mono opacity-40 shrink-0">S</span>
+                    <span *ngIf="currentBlock.type === 'subtitulo'" class="text-sky-400 text-[11px] font-black shrink-0">✓</span>
+                    <span *ngIf="currentBlock.type !== 'subtitulo'" class="text-[9.5px] font-mono opacity-35 shrink-0">S</span>
                   </button>
 
                   <!-- Opción Texto Normal -->
                   <button type="button" (click)="changeType('texto', $event)"
-                          class="w-full px-2 py-1.5 rounded-lg text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
+                          class="w-full px-2 py-1 rounded-lg text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
                           [ngClass]="currentBlock.type === 'texto' 
-                            ? (theme === 'dark' ? 'bg-neutral-700/60 text-white' : 'bg-neutral-200 text-black') 
-                            : (theme === 'dark' ? 'hover:bg-neutral-800 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
+                            ? (theme === 'dark' ? 'bg-white/15 text-white ring-1 ring-white/20' : 'bg-neutral-200 text-black') 
+                            : (theme === 'dark' ? 'hover:bg-white/10 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
                     <div class="flex items-center gap-2 min-w-0">
-                      <span class="w-5 h-5 rounded flex items-center justify-center shrink-0 bg-neutral-500/15 text-neutral-400 text-[10px] font-headline font-black">T</span>
+                      <span class="w-4.5 h-4.5 rounded-md flex items-center justify-center shrink-0 bg-white/10 text-neutral-300 text-[9.5px] font-headline font-black">T</span>
                       <span class="truncate">Texto</span>
                     </div>
-                    <span *ngIf="currentBlock.type === 'texto'" class="text-emerald-400 text-xs font-black shrink-0">✓</span>
-                    <span *ngIf="currentBlock.type !== 'texto'" class="text-[10px] font-mono opacity-40 shrink-0">N</span>
+                    <span *ngIf="currentBlock.type === 'texto'" class="text-emerald-400 text-[11px] font-black shrink-0">✓</span>
+                    <span *ngIf="currentBlock.type !== 'texto'" class="text-[9.5px] font-mono opacity-35 shrink-0">N</span>
                   </button>
 
                   <!-- Opción Código -->
                   <button type="button" (click)="changeType('codigo', $event)"
-                          class="w-full px-2 py-1.5 rounded-lg text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
+                          class="w-full px-2 py-1 rounded-lg text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
                           [ngClass]="currentBlock.type === 'codigo' 
-                            ? (theme === 'dark' ? 'bg-indigo-500/20 text-indigo-300' : 'bg-indigo-50 text-indigo-800') 
-                            : (theme === 'dark' ? 'hover:bg-neutral-800 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
+                            ? (theme === 'dark' ? 'bg-indigo-500/25 text-indigo-200 ring-1 ring-indigo-400/30' : 'bg-indigo-50 text-indigo-800') 
+                            : (theme === 'dark' ? 'hover:bg-white/10 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
                     <div class="flex items-center gap-2 min-w-0">
-                      <span class="w-5 h-5 rounded flex items-center justify-center shrink-0 bg-indigo-500/15 text-indigo-400 text-[9px] font-mono font-bold">&lt;/&gt;</span>
+                      <span class="w-4.5 h-4.5 rounded-md flex items-center justify-center shrink-0 bg-indigo-500/20 text-indigo-400 text-[8.5px] font-mono font-bold">&lt;/&gt;</span>
                       <span class="truncate">Código</span>
                     </div>
-                    <span *ngIf="currentBlock.type === 'codigo'" class="text-indigo-400 text-xs font-black shrink-0">✓</span>
-                    <span *ngIf="currentBlock.type !== 'codigo'" class="text-[10px] font-mono opacity-40 shrink-0">C</span>
+                    <span *ngIf="currentBlock.type === 'codigo'" class="text-indigo-400 text-[11px] font-black shrink-0">✓</span>
+                    <span *ngIf="currentBlock.type !== 'codigo'" class="text-[9.5px] font-mono opacity-35 shrink-0">C</span>
                   </button>
 
                   <!-- Opción Alerta -->
                   <button type="button" (click)="changeType('alerta', $event)"
-                          class="w-full px-2 py-1.5 rounded-lg text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
+                          class="w-full px-2 py-1 rounded-lg text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
                           [ngClass]="currentBlock.type === 'alerta' 
-                            ? (theme === 'dark' ? 'bg-amber-500/20 text-amber-300' : 'bg-amber-50 text-amber-800') 
-                            : (theme === 'dark' ? 'hover:bg-neutral-800 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
+                            ? (theme === 'dark' ? 'bg-amber-500/25 text-amber-200 ring-1 ring-amber-400/30' : 'bg-amber-50 text-amber-800') 
+                            : (theme === 'dark' ? 'hover:bg-white/10 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
                     <div class="flex items-center gap-2 min-w-0">
-                      <span class="w-5 h-5 rounded flex items-center justify-center shrink-0 bg-amber-500/15 text-amber-400 text-[10px]">⚠</span>
+                      <span class="w-4.5 h-4.5 rounded-md flex items-center justify-center shrink-0 bg-amber-500/20 text-amber-400 text-[9.5px]">⚠</span>
                       <span class="truncate">Alerta</span>
                     </div>
-                    <span *ngIf="currentBlock.type === 'alerta'" class="text-amber-400 text-xs font-black shrink-0">✓</span>
-                    <span *ngIf="currentBlock.type !== 'alerta'" class="text-[10px] font-mono opacity-40 shrink-0">A</span>
+                    <span *ngIf="currentBlock.type === 'alerta'" class="text-amber-400 text-[11px] font-black shrink-0">✓</span>
+                    <span *ngIf="currentBlock.type !== 'alerta'" class="text-[9.5px] font-mono opacity-35 shrink-0">A</span>
                   </button>
 
                   <!-- Opción 2 Columnas -->
                   <button type="button" (click)="changeType('columnas', $event)"
-                          class="w-full px-2 py-1.5 rounded-lg text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
+                          class="w-full px-2 py-1 rounded-lg text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
                           [ngClass]="currentBlock.type === 'columnas' 
-                            ? (theme === 'dark' ? 'bg-purple-500/20 text-purple-300' : 'bg-purple-50 text-purple-800') 
-                            : (theme === 'dark' ? 'hover:bg-neutral-800 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
+                            ? (theme === 'dark' ? 'bg-purple-500/25 text-purple-200 ring-1 ring-purple-400/30' : 'bg-purple-50 text-purple-800') 
+                            : (theme === 'dark' ? 'hover:bg-white/10 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
                     <div class="flex items-center gap-2 min-w-0">
-                      <span class="w-5 h-5 rounded flex items-center justify-center shrink-0 bg-purple-500/15 text-purple-400 text-[10px]">◫</span>
+                      <span class="w-4.5 h-4.5 rounded-md flex items-center justify-center shrink-0 bg-purple-500/20 text-purple-400 text-[9.5px]">◫</span>
                       <span class="truncate">2 Columnas</span>
                     </div>
-                    <span *ngIf="currentBlock.type === 'columnas'" class="text-purple-400 text-xs font-black shrink-0">✓</span>
-                    <span *ngIf="currentBlock.type !== 'columnas'" class="text-[10px] font-mono opacity-40 shrink-0">2</span>
+                    <span *ngIf="currentBlock.type === 'columnas'" class="text-purple-400 text-[11px] font-black shrink-0">✓</span>
+                    <span *ngIf="currentBlock.type !== 'columnas'" class="text-[9.5px] font-mono opacity-35 shrink-0">2</span>
                   </button>
 
                   <!-- Opción Imagen -->
                   <button type="button" (click)="changeType('imagen', $event)"
-                          class="w-full px-2 py-1.5 rounded-lg text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
+                          class="w-full px-2 py-1 rounded-lg text-left font-bold flex items-center justify-between cursor-pointer transition-colors"
                           [ngClass]="currentBlock.type === 'imagen' 
-                            ? (theme === 'dark' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-emerald-50 text-emerald-800') 
-                            : (theme === 'dark' ? 'hover:bg-neutral-800 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
+                            ? (theme === 'dark' ? 'bg-emerald-500/25 text-emerald-200 ring-1 ring-emerald-400/30' : 'bg-emerald-50 text-emerald-800') 
+                            : (theme === 'dark' ? 'hover:bg-white/10 text-neutral-300 hover:text-white' : 'hover:bg-neutral-100 text-neutral-700 hover:text-black')">
                     <div class="flex items-center gap-2 min-w-0">
-                      <span class="w-5 h-5 rounded flex items-center justify-center shrink-0 bg-emerald-500/15 text-emerald-400 text-[10px]">🖼</span>
+                      <span class="w-4.5 h-4.5 rounded-md flex items-center justify-center shrink-0 bg-emerald-500/20 text-emerald-400 text-[9.5px]">🖼</span>
                       <span class="truncate">Imagen</span>
                     </div>
-                    <span *ngIf="currentBlock.type === 'imagen'" class="text-emerald-400 text-xs font-black shrink-0">✓</span>
-                    <span *ngIf="currentBlock.type !== 'imagen'" class="text-[10px] font-mono opacity-40 shrink-0">I</span>
+                    <span *ngIf="currentBlock.type === 'imagen'" class="text-emerald-400 text-[11px] font-black shrink-0">✓</span>
+                    <span *ngIf="currentBlock.type !== 'imagen'" class="text-[9.5px] font-mono opacity-35 shrink-0">I</span>
                   </button>
                 </div>
               </div>
@@ -582,6 +584,29 @@ export class DashAiSearchComponent {
     }
   }
 
+  @HostListener('window:keydown', ['$event'])
+  onDropdownKeydown(event: KeyboardEvent) {
+    if (!this.isTypeDropdownOpen) return;
+    const key = event.key.toLowerCase();
+    if (key === 'escape') {
+      this.isTypeDropdownOpen = false;
+    } else if (key === 't') {
+      this.changeType('titulo', event);
+    } else if (key === 's') {
+      this.changeType('subtitulo', event);
+    } else if (key === 'n') {
+      this.changeType('texto', event);
+    } else if (key === 'c') {
+      this.changeType('codigo', event);
+    } else if (key === 'a') {
+      this.changeType('alerta', event);
+    } else if (key === '2') {
+      this.changeType('columnas', event);
+    } else if (key === 'i') {
+      this.changeType('imagen', event);
+    }
+  }
+
   toggleTypeDropdown(event: Event) {
     event.stopPropagation();
     if (this.isTypeDropdownOpen) {
@@ -591,9 +616,14 @@ export class DashAiSearchComponent {
     const btn = (event.currentTarget as HTMLElement) || (event.target as HTMLElement);
     if (btn) {
       const rect = btn.getBoundingClientRect();
-      this.dropdownTop = rect.bottom + 8;
+      this.dropdownTop = rect.bottom + 6;
       const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 800;
-      this.dropdownLeft = Math.max(12, Math.min(rect.left, screenWidth - 272));
+      const dropdownWidth = 160;
+      let left = rect.left;
+      if (left + dropdownWidth > screenWidth - 12) {
+        left = screenWidth - dropdownWidth - 12;
+      }
+      this.dropdownLeft = Math.max(12, left);
     }
     this.isTypeDropdownOpen = true;
   }
@@ -618,11 +648,11 @@ export class DashAiSearchComponent {
 
   getBlockTypeLabel(type: string): string {
     switch (type) {
-      case 'titulo': return 'H1 TÍTULO';
-      case 'subtitulo': return 'H2 SUBTÍTULO';
+      case 'titulo': return 'TÍTULO';
+      case 'subtitulo': return 'SUBTÍTULO';
       case 'codigo': return 'CÓDIGO';
       case 'alerta': return 'ALERTA';
-      case 'texto': return 'TEXTO NORMAL';
+      case 'texto': return 'TEXTO';
       case 'columnas': return '2 COLUMNAS';
       case 'imagen': return 'IMAGEN';
       default: return 'BLOQUE';

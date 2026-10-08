@@ -901,6 +901,10 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
       event.preventDefault();
       event.stopPropagation();
       this.selectBlockType(block, 'imagen');
+    } else if (key === '2') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.selectBlockType(block, 'columnas');
     } else if (key === 'escape') {
       event.preventDefault();
       event.stopPropagation();
@@ -912,12 +916,12 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     switch (type) {
       case 'titulo': return 'Título';
       case 'subtitulo': return 'Subtítulo';
-      case 'codigo': return 'Código / Tabla';
+      case 'codigo': return 'Código';
       case 'alerta': return 'Alerta';
-      case 'texto': return 'Texto Normal';
+      case 'texto': return 'Texto';
       case 'columnas': return '2 Columnas';
       case 'imagen': return 'Imagen';
-      default: return 'Texto Normal';
+      default: return 'Texto';
     }
   }
 
