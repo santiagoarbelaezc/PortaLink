@@ -603,7 +603,6 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   applyTextStyleToSelection(type: 'bold' | 'italic' | 'red', block?: NoteBlock) {
     const selection = window.getSelection();
     if (!selection || selection.rangeCount === 0) {
-      this.showToast('Selecciona el texto con el cursor primero');
       return;
     }
 
@@ -622,7 +621,6 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
         const plainText = boldElement.innerText || boldElement.textContent || '';
         const textNode = document.createTextNode(plainText);
         boldElement.parentNode?.replaceChild(textNode, boldElement);
-        this.showToast('Negrilla removida');
       } else if (selectedText && selectedText.trim().length > 0) {
         const strong = document.createElement('strong');
         strong.className = 'font-bold';
@@ -633,7 +631,6 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
           strong.appendChild(fragment);
           range.insertNode(strong);
         }
-        this.showToast('Texto en negrilla');
       } else {
         const strong = document.createElement('strong');
         strong.className = 'font-bold';
@@ -644,7 +641,6 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
         newRange.selectNodeContents(strong);
         selection.removeAllRanges();
         selection.addRange(newRange);
-        this.showToast('Negrilla insertada');
       }
     } else if (type === 'italic') {
       const italicElement = container?.closest('em, i, .italic') as HTMLElement | null;
@@ -653,7 +649,6 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
         const plainText = italicElement.innerText || italicElement.textContent || '';
         const textNode = document.createTextNode(plainText);
         italicElement.parentNode?.replaceChild(textNode, italicElement);
-        this.showToast('Cursiva removida');
       } else if (selectedText && selectedText.trim().length > 0) {
         const em = document.createElement('em');
         em.className = 'italic';
@@ -664,7 +659,6 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
           em.appendChild(fragment);
           range.insertNode(em);
         }
-        this.showToast('Texto en cursiva');
       } else {
         const em = document.createElement('em');
         em.className = 'italic';
@@ -675,7 +669,6 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
         newRange.selectNodeContents(em);
         selection.removeAllRanges();
         selection.addRange(newRange);
-        this.showToast('Cursiva insertada');
       }
     } else if (type === 'red') {
       const redElement = container?.closest('.text-red-500, [style*="239, 68, 68"], [style*="#ef4444"], red') as HTMLElement | null;
@@ -686,7 +679,6 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
           const plainText = redElement.innerText || redElement.textContent || '';
           const textNode = document.createTextNode(plainText);
           redElement.parentNode?.replaceChild(textNode, redElement);
-          this.showToast('Color rojo removido');
         } else {
           // Aplicar color rojo al texto seleccionado
           const span = document.createElement('span');
@@ -703,7 +695,6 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
           keepRange.selectNodeContents(span);
           selection.removeAllRanges();
           selection.addRange(keepRange);
-          this.showToast('Texto en rojo');
         }
       } else {
         // MODO IPHONE NOTES: Si no hay texto seleccionado, alternar modo de escritura
@@ -720,7 +711,6 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
           afterRange.collapse(true);
           selection.removeAllRanges();
           selection.addRange(afterRange);
-          this.showToast('Color normal activado');
         } else {
           // Entrar en modo rojo: lo siguiente que se escriba será rojo
           const span = document.createElement('span');
@@ -735,7 +725,6 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
           innerRange.collapse(true);
           selection.removeAllRanges();
           selection.addRange(innerRange);
-          this.showToast('Escribiendo en rojo');
         }
       }
     }
