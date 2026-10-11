@@ -85,10 +85,10 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
   previewPdfUrl: SafeResourceUrl | null = null;
   previewInvoiceTarget: Invoice | null = null;
   subTabs = [
-    { id: 'resumen' as SubTab, label: 'Resumen' },
-    { id: 'clientes' as SubTab, label: 'Clientes' },
-    { id: 'servicios' as SubTab, label: 'Servicios' },
-    { id: 'facturas' as SubTab, label: 'Cuentas de Cobro' },
+    { id: 'resumen' as SubTab, label: 'Resumen', icon: 'monitoring' },
+    { id: 'clientes' as SubTab, label: 'Clientes', icon: 'group' },
+    { id: 'servicios' as SubTab, label: 'Servicios', icon: 'inventory_2' },
+    { id: 'facturas' as SubTab, label: 'Cuentas de Cobro', icon: 'receipt_long' },
   ];
 
   clients: Client[] = [];
