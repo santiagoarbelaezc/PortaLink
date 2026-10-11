@@ -17,334 +17,110 @@ import { MessagesService } from '../../../services/messages.service';
   imports: [CommonModule, FormsModule],
   template: `
     <ng-container *ngIf="!isLoading; else skeleton">
-      <div class="space-y-4 xs:space-y-5 sm:space-y-6 tab-enter font-sans">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-4 tab-enter font-sans">
 
-        <!-- ═══════════════════════ 1. WELCOME BANNER ═══════════════════════ -->
-        <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl border p-5 xs:p-6 sm:p-8 md:p-9 min-h-[200px] xs:min-h-[220px] sm:min-h-[240px] flex flex-col justify-center transition-all duration-300 shadow-sm group"
-             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.03)]'">
+        <!-- ═══════════════════════ 1. HERO BENTO GRID (BIENVENIDA + ACCESO RÁPIDO) ═══════════════════════ -->
+        <section class="dash-bento-grid lg:col-span-12 order-1">
+          <!-- Tarjeta Negra de Bienvenida -->
+          <div class="bento-welcome group">
+            <div class="bento-badge">
+              <span class="bento-badge-dot"></span>
+              {{ greetingText }} · Panel Central
+            </div>
 
-          <!-- Subtle Background Ambient Glow -->
-          <div *ngIf="isDark" class="absolute -top-24 -left-24 w-80 h-80 bg-white/[0.02] rounded-full blur-3xl pointer-events-none"></div>
-          <div *ngIf="isDark" class="absolute -bottom-24 right-1/4 w-80 h-80 bg-white/[0.015] rounded-full blur-3xl pointer-events-none"></div>
-
-          <!-- Rotbot 3D Flotando con efecto premium -->
-          <div class="absolute right-1 sm:right-2 md:right-8 top-0 bottom-0 hidden sm:flex items-center justify-center pointer-events-none select-none py-4 sm:py-6 w-[180px] sm:w-[220px] md:w-[320px]">
-            <img src="assets/images/rotbot4.png" class="h-full w-full object-contain opacity-60 sm:opacity-95 transition-transform duration-500 group-hover:scale-[1.02]" alt="Rotbot">
-          </div>
-
-          <div class="relative z-10 max-w-full sm:max-w-[75%] md:max-w-[62%] space-y-3">
-            
-            <!-- Top Tag: Panel de Control -->
-            <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-              <p class="text-[10px] xs:text-xs font-mono font-semibold uppercase tracking-[0.25em]"
-                 [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
-                Panel de Control
+            <div class="relative z-10 space-y-1">
+              <h2 class="bento-title">
+                Bienvenido,<br>
+                <span class="bento-username">Santiago!</span>
+              </h2>
+              <p class="bento-desc">
+                {{ currentRotatingPhrase || 'Gestión centralizada del catálogo y módulos del sistema.' }}
               </p>
             </div>
 
-            <!-- Greeting H2 (Buenos Días Santi / Buenas Tardes Santi / Buenas Noches Santi, + Frase Rotativa) -->
-            <h2 class="text-xl xs:text-2xl sm:text-3xl md:text-4xl font-headline font-bold leading-tight tracking-tight"
-                [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              <span>{{ greetingText }}, </span>
-              <span class="inline-block transition-all duration-300 ease-out"
-                    [class.opacity-0]="isPhraseFading"
-                    [class.-translate-y-1]="isPhraseFading"
-                    [class.opacity-100]="!isPhraseFading"
-                    [class.translate-y-0]="!isPhraseFading">
-                {{ currentRotatingPhrase }}
-              </span>
-            </h2>
-
-            <!-- Fecha y Hora: Estilo de texto original sin cápsula -->
-            <p class="text-[11px] xs:text-xs sm:text-sm mt-1 mb-3 xs:mb-4 sm:mb-5 flex items-baseline gap-1.5 xs:gap-2 font-headline"
-               [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
-               <span class="hidden sm:inline">{{ currentDate }}</span>
-               <span class="sm:hidden">{{ currentDateShort }}</span>
-               <span class="text-xs xs:text-sm md:text-base font-semibold" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-700'">
-                 <span class="hidden sm:inline">{{ currentTime }}</span>
-                 <span class="sm:hidden">{{ currentTimeShort }}</span>
-               </span>
-            </p>
-
-            <!-- Quick Chips (Vistas, Mensajes, Online, Sesión) perfectamente alineados -->
-            <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap items-center relative z-10">
-              <!-- 1. Vistas -->
-              <span class="h-8 px-3.5 rounded-full border inline-flex items-center justify-center sm:justify-start gap-2 text-xs font-semibold tracking-wide transition-all select-none"
-                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-neutral-300' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80'">
-                <svg class="w-3.5 h-3.5 shrink-0 opacity-70 block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-                <span class="leading-none whitespace-nowrap">{{ (metrics.homeViews || 0) + (metrics.linktreeViews || 0) }} Vistas</span>
+            <!-- Chips de Estado Rápido -->
+            <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap items-center relative z-10 pt-2">
+              <!-- Vistas -->
+              <span class="h-7.5 px-3 rounded-full bg-white/10 border border-white/10 text-white/90 inline-flex items-center gap-1.5 text-xs font-semibold">
+                <span class="material-symbols-rounded" style="font-size: 16px;">visibility</span>
+                <span>{{ (metrics.homeViews || 0) + (metrics.linktreeViews || 0) }} Vistas</span>
               </span>
 
-              <!-- 2. Mensajes -->
+              <!-- Mensajes -->
               <span (click)="navigateToTab('messages')"
-                    class="h-8 px-3.5 rounded-full border inline-flex items-center justify-center sm:justify-start gap-2 text-xs font-semibold tracking-wide transition-all select-none cursor-pointer hover:scale-[1.02] active:scale-95"
-                    [ngClass]="unreadMessages > 0 ? 
-                      (isDark ? 'border-amber-500/50 text-amber-400 bg-amber-500/15 shadow-sm shadow-amber-500/10 hover:bg-amber-500/25' : 'border-amber-300 text-amber-800 bg-amber-50 shadow-sm shadow-amber-200/50 hover:bg-amber-100/80') : 
-                      (isDark ? 'bg-[#141419] border-neutral-800 text-neutral-300 hover:border-neutral-700' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80 hover:border-neutral-300')"
-                    [title]="unreadMessages > 0 ? 'Tienes ' + unreadMessages + ' mensaje(s) sin leer. Haz clic para verlos.' : 'Bandeja de mensajes al día. Haz clic para abrir.'">
-                <span *ngIf="unreadMessages > 0" class="relative flex h-2 w-2 shrink-0">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-                </span>
-                <svg *ngIf="unreadMessages === 0" class="w-3.5 h-3.5 shrink-0 opacity-70 block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                <span class="leading-none whitespace-nowrap" [class.font-bold]="unreadMessages > 0">
-                  {{ unreadMessages > 0 ? (unreadMessages + (unreadMessages === 1 ? ' Mensaje Nuevo' : ' Mensajes Nuevos')) : '0 Mensajes' }}
-                </span>
+                    class="h-7.5 px-3 rounded-full border inline-flex items-center gap-1.5 text-xs font-semibold cursor-pointer transition-all hover:scale-105 active:scale-95"
+                    [ngClass]="unreadMessages > 0 ? 'bg-red-500/20 border-red-500/40 text-red-200' : 'bg-white/10 border-white/10 text-white/90'">
+                <span class="material-symbols-rounded" style="font-size: 16px;">mail</span>
+                <span>{{ unreadMessages > 0 ? (unreadMessages + ' Nuevos') : '0 Mensajes' }}</span>
               </span>
 
-              <!-- 3. Online -->
-              <span class="h-8 px-3.5 rounded-full border inline-flex items-center justify-center sm:justify-start gap-2 text-xs font-semibold tracking-wide transition-all select-none"
-                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-neutral-200' : 'border-emerald-200 text-emerald-800 bg-emerald-50/80'">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0 block"></span>
-                <span class="leading-none whitespace-nowrap">Online</span>
+              <!-- Online -->
+              <span class="h-7.5 px-3 rounded-full bg-white/10 border border-white/10 text-white/90 inline-flex items-center gap-1.5 text-xs font-semibold">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span>Online</span>
               </span>
 
-              <!-- 4. Sesión -->
-              <span class="h-8 px-3.5 rounded-full border inline-flex items-center justify-center sm:justify-start gap-2 text-xs font-semibold tracking-wide transition-all select-none"
-                    [ngClass]="sessionIsWarning ? 
-                      (isDark ? 'border-amber-500/40 text-amber-400 bg-amber-500/10 animate-pulse' : 'border-amber-300 text-amber-800 bg-amber-50/80 animate-pulse') : 
-                      (isDark ? 'bg-[#141419] border-neutral-800 text-neutral-300' : 'border-neutral-200 text-neutral-700 bg-neutral-100/80')">
-                <svg class="w-3.5 h-3.5 shrink-0 opacity-70 block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span class="leading-none whitespace-nowrap">{{ sessionTimeFormatted }}</span>
+              <!-- Sesión -->
+              <span class="h-7.5 px-3 rounded-full bg-white/10 border border-white/10 text-white/90 inline-flex items-center gap-1.5 text-xs font-semibold">
+                <span class="material-symbols-rounded" style="font-size: 16px;">timer</span>
+                <span>{{ sessionTimeFormatted }}</span>
               </span>
             </div>
 
+            <!-- Círculos decorativos en CSS -->
+            <div class="bento-circle bento-circle--1"></div>
+            <div class="bento-circle bento-circle--2"></div>
+
+            <!-- Rotbot 3D Iluminado al fondo -->
+            <div class="absolute right-2 top-0 bottom-0 hidden lg:flex items-center justify-center pointer-events-none select-none w-[200px] opacity-75 group-hover:scale-105 transition-transform duration-500">
+              <img src="assets/images/rotbot4.png" class="h-full w-full object-contain" alt="Rotbot">
+            </div>
           </div>
-        </div>
 
-        <!-- ═══════════════════════ RACHA DEL DÍA (ELEGANTE & MOTIVACIONAL) ═══════════════════════ -->
-        <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-6 md:p-7 transition-all duration-300 relative overflow-hidden space-y-4"
-             [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800 shadow-[0_10px_35px_rgba(0,0,0,0.4)]' : 'bg-white border-neutral-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.03)]'">
-          
+          <!-- Tarjeta Blanca de Acceso Rápido -->
+          <div class="bento-quick-access">
+            <p class="bento-section-label">Acceso Rápido</p>
 
-          <!-- Header Racha -->
-          <div class="flex items-center justify-between flex-wrap gap-3 relative z-10">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center relative bg-gradient-to-br from-amber-500/15 to-orange-500/10 border border-amber-500/25 shadow-2xs shrink-0">
-                <span class="text-xl select-none">🔥</span>
-              </div>
-              <div>
-                <div class="flex items-center gap-2">
-                  <h3 class="text-base xs:text-lg sm:text-xl font-headline font-bold tracking-tight m-0 leading-tight"
-                      [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                    Racha del Día
-                  </h3>
-                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/15 text-amber-500 border border-amber-500/30">
-                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                    {{ streakData?.streakCount || 1 }} {{ (streakData?.streakCount === 1) ? 'día' : 'días' }}
-                  </span>
-                </div>
-                <p class="hidden sm:block text-[11px] xs:text-xs sm:text-[13px] font-sans text-neutral-400 dark:text-neutral-500 m-0 mt-0.5">
-                  Mantén tu constancia diaria completando las 3 actividades clave
-                </p>
-              </div>
-            </div>
+            <button class="quick-btn" (click)="navigateToTab('finances')">
+              <div class="quick-btn-icon"><span class="material-symbols-rounded">payments</span></div>
+              <span class="quick-btn-text">
+                <span class="quick-btn-title">Finanzas</span>
+                <span class="quick-btn-sub">Cartera & Facturación</span>
+              </span>
+              <span class="material-symbols-rounded quick-btn-arrow">chevron_right</span>
+            </button>
 
-            <button type="button" 
-                    (click)="openStreakModal()"
-                    class="h-8 px-3 rounded-xl border text-xs font-headline font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95"
-                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-neutral-300 hover:text-white hover:border-neutral-700' : 'bg-neutral-100/80 border-neutral-200 text-neutral-700 hover:text-neutral-900 hover:bg-neutral-200/70'">
-              <span>Ver Racha</span>
-              <svg class="w-3.5 h-3.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-              </svg>
+            <button class="quick-btn" (click)="navigateToTab('library')">
+              <div class="quick-btn-icon"><span class="material-symbols-rounded">menu_book</span></div>
+              <span class="quick-btn-text">
+                <span class="quick-btn-title">Biblioteca</span>
+                <span class="quick-btn-sub">Cuadernos & Apuntes</span>
+              </span>
+              <span class="material-symbols-rounded quick-btn-arrow">chevron_right</span>
+            </button>
+
+            <button class="quick-btn" (click)="navigateToTab('rotbot')">
+              <div class="quick-btn-icon"><span class="material-symbols-rounded">smart_toy</span></div>
+              <span class="quick-btn-text">
+                <span class="quick-btn-title">RotBot IA</span>
+                <span class="quick-btn-sub">Copiloto Inteligente</span>
+              </span>
+              <span class="material-symbols-rounded quick-btn-arrow">chevron_right</span>
+            </button>
+
+            <button class="quick-btn" (click)="navigateToTab('itinerary')">
+              <div class="quick-btn-icon" style="background: #18181b;"><span class="material-symbols-rounded">calendar_today</span></div>
+              <span class="quick-btn-text">
+                <span class="quick-btn-title">Itinerario</span>
+                <span class="quick-btn-sub">Agenda & Tareas</span>
+              </span>
+              <span class="material-symbols-rounded quick-btn-arrow">chevron_right</span>
             </button>
           </div>
-
-          <!-- Main Grid: Metas (Izquierda) + Calendario Semanal & Métricas (Derecha) -->
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 relative z-10 pt-1">
-            
-            <!-- Columna Izquierda: Checklist de las 3 Metas Diarias (7 cols) -->
-            <div class="lg:col-span-7 space-y-2.5">
-              <div class="flex items-center justify-between text-xs font-headline font-semibold text-neutral-400 px-0.5">
-                <span>Progreso de hoy ({{ completedStreakGoals }}/3)</span>
-                <span class="font-mono text-[11px] text-amber-500 font-bold">
-                  {{ (completedStreakGoals === 3) ? '¡100% Completado!' : ((completedStreakGoals / 3) * 100 | number:'1.0-0') + '%' }}
-                </span>
-              </div>
-
-              <!-- Barra de Progreso -->
-              <div class="w-full h-1.5 rounded-full overflow-hidden" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-100'">
-                <div class="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-amber-500 to-emerald-500"
-                     [style.width.%]="(completedStreakGoals / 3) * 100"></div>
-              </div>
-
-              <!-- Meta 1: Login -->
-              <div class="flex items-center justify-between p-3 rounded-xl border transition-all"
-                   [ngClass]="isDark ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-300' : 'bg-emerald-50/80 border-emerald-200 text-emerald-800'">
-                <div class="flex items-center gap-2.5 min-w-0">
-                  <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
-                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
-                    </svg>
-                  </div>
-                  <div class="min-w-0">
-                    <p class="text-xs font-headline font-semibold truncate m-0">
-                      <span class="hidden sm:inline">1. Primer ingreso diario al Dashboard</span>
-                      <span class="sm:hidden">1. Ingreso diario</span>
-                    </p>
-                    <p class="hidden sm:block text-[10px] opacity-75 m-0 font-sans">Registrado automáticamente hoy</p>
-                  </div>
-                </div>
-                <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shrink-0">
-                  Hecho
-                </span>
-              </div>
-
-              <!-- Meta 2: Rotbot IA -->
-              <div class="flex items-center justify-between p-3 rounded-xl border transition-all"
-                   [ngClass]="streakData?.actions?.robot ? 
-                     (isDark ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-300' : 'bg-emerald-50/80 border-emerald-200 text-emerald-800') : 
-                     (isDark ? 'bg-neutral-950/40 border-neutral-800 text-neutral-300 hover:border-neutral-700' : 'bg-neutral-50/80 border-neutral-200/90 text-neutral-700 hover:border-neutral-300')">
-                <div class="flex items-center gap-2.5 min-w-0">
-                  <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0"
-                       [ngClass]="streakData?.actions?.robot ? 'bg-emerald-500 text-white' : (isDark ? 'bg-neutral-800 text-neutral-400' : 'bg-neutral-200 text-neutral-500')">
-                    <svg *ngIf="streakData?.actions?.robot" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
-                    </svg>
-                    <span *ngIf="!streakData?.actions?.robot" class="text-xs font-bold">2</span>
-                  </div>
-                  <div class="min-w-0">
-                    <p class="text-xs font-headline font-semibold truncate m-0">
-                      <span class="hidden sm:inline">2. Conversación con Rotbot IA</span>
-                      <span class="sm:hidden">2. Práctica con Rotbot</span>
-                    </p>
-                    <p class="hidden sm:block text-[10px] opacity-75 m-0 font-sans">Practica inglés o hazle consultas al bot</p>
-                  </div>
-                </div>
-
-                <div class="flex items-center gap-2 shrink-0">
-                  <button *ngIf="!streakData?.actions?.robot" 
-                          type="button"
-                          (click)="tabChange.emit('rotbot')"
-                          class="px-2.5 py-1 rounded-lg text-[10px] font-headline font-semibold bg-neutral-200 hover:bg-neutral-300 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 transition-colors cursor-pointer border-none">
-                    Ir a Rotbot
-                  </button>
-                  <span *ngIf="streakData?.actions?.robot" class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                    Hecho
-                  </span>
-                </div>
-              </div>
-
-              <!-- Meta 3: Biblioteca -->
-              <div class="flex items-center justify-between p-3 rounded-xl border transition-all"
-                   [ngClass]="streakData?.actions?.library ? 
-                     (isDark ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-300' : 'bg-emerald-50/80 border-emerald-200 text-emerald-800') : 
-                     (isDark ? 'bg-neutral-950/40 border-neutral-800 text-neutral-300 hover:border-neutral-700' : 'bg-neutral-50/80 border-neutral-200/90 text-neutral-700 hover:border-neutral-300')">
-                <div class="flex items-center gap-2.5 min-w-0">
-                  <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0"
-                       [ngClass]="streakData?.actions?.library ? 'bg-emerald-500 text-white' : (isDark ? 'bg-neutral-800 text-neutral-400' : 'bg-neutral-200 text-neutral-500')">
-                    <svg *ngIf="streakData?.actions?.library" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
-                    </svg>
-                    <span *ngIf="!streakData?.actions?.library" class="text-xs font-bold">3</span>
-                  </div>
-                  <div class="min-w-0">
-                    <p class="text-xs font-headline font-semibold truncate m-0">
-                      <span class="hidden sm:inline">3. Estudiar o escribir en Biblioteca</span>
-                      <span class="sm:hidden">3. Apuntes de Biblioteca</span>
-                    </p>
-                    <p class="hidden sm:block text-[10px] opacity-75 m-0 font-sans">Crea o repasa tus apuntes de estudio</p>
-                  </div>
-                </div>
-
-                <div class="flex items-center gap-2 shrink-0">
-                  <button *ngIf="!streakData?.actions?.library" 
-                          type="button"
-                          (click)="tabChange.emit('library')"
-                          class="px-2.5 py-1 rounded-lg text-[10px] font-headline font-semibold bg-neutral-200 hover:bg-neutral-300 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 transition-colors cursor-pointer border-none">
-                    Ir a Biblioteca
-                  </button>
-                  <span *ngIf="streakData?.actions?.library" class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                    Hecho
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Columna Derecha: Calendario Semanal & Tarjetas de Racha (5 cols) -->
-            <div class="lg:col-span-5 flex flex-col justify-between space-y-3">
-              
-              <!-- Barra de Consistencia: Semana y Botón Modal Mes -->
-              <div class="p-3.5 rounded-2xl border transition-all"
-                   [ngClass]="isDark ? 'bg-[#121217] border-neutral-800' : 'bg-neutral-50 border-neutral-200/80'">
-                
-                <!-- Encabezado con título y botón para abrir modal de mes -->
-                <div class="flex items-center justify-between mb-2.5 px-0.5">
-                  <div class="flex items-center gap-1.5 min-w-0">
-                    <span class="text-[10px] font-mono uppercase tracking-wider text-neutral-400 truncate">
-                      Esta semana
-                    </span>
-                    <span class="text-[10px] font-headline font-semibold text-neutral-500 hidden sm:inline">Lun — Dom</span>
-                  </div>
-                  
-                  <!-- Botón Ver Mes (Abre el Modal) -->
-                  <button type="button"
-                          (click)="openStreakMonthModal()"
-                          class="px-2.5 py-1 rounded-lg text-[10px] font-headline font-semibold flex items-center gap-1.5 transition-all cursor-pointer border shadow-2xs hover:scale-105 active:scale-95"
-                          [ngClass]="isDark ? 'bg-[#181820] border-neutral-700 text-amber-400 hover:text-amber-300 hover:border-amber-500/40' : 'bg-white border-neutral-200 text-amber-700 hover:text-amber-800 hover:bg-neutral-50'">
-                    <svg class="w-3.5 h-3.5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <span>Ver Mes</span>
-                  </button>
-                </div>
-                
-                <!-- VISTA SEMANA (7 Días) -->
-                <div class="grid grid-cols-7 gap-1 sm:gap-1.5 text-center">
-                  <div *ngFor="let day of streakWeekDays" 
-                       class="flex flex-col items-center p-1.5 rounded-xl transition-all"
-                       [ngClass]="day.isCompleted ? 
-                         (isDark ? 'bg-amber-500/15 border border-amber-500/30 text-amber-400' : 'bg-amber-50 border border-amber-300 text-amber-800') : 
-                         (day.isToday ? 
-                           (isDark ? 'border border-dashed border-neutral-700 bg-neutral-900/50 text-white' : 'border border-dashed border-neutral-300 bg-white text-neutral-900') : 
-                           (isDark ? 'text-neutral-500' : 'text-neutral-400'))">
-                    <span class="text-[10px] font-headline font-bold uppercase">{{ day.name }}</span>
-                    <span class="text-xs font-mono font-semibold mt-0.5">{{ day.dayNumber }}</span>
-                    <span class="text-[11px] mt-1 select-none">
-                      {{ day.isCompleted ? '🔥' : (day.isToday ? '⏳' : '·') }}
-                    </span>
-                  </div>
-                </div>
-
-              </div>
-
-              <!-- Mini Stats Racha Actual y Récord -->
-              <div class="grid grid-cols-2 gap-2.5">
-                <div class="p-3 rounded-xl border text-center"
-                     [ngClass]="isDark ? 'bg-[#121217] border-neutral-800' : 'bg-neutral-50 border-neutral-200/80'">
-                  <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Racha Actual</span>
-                  <div class="text-lg sm:text-xl font-headline font-extrabold text-amber-500">
-                    🔥 {{ streakData?.streakCount || 1 }}d
-                  </div>
-                </div>
-
-                <div class="p-3 rounded-xl border text-center"
-                     [ngClass]="isDark ? 'bg-[#121217] border-neutral-800' : 'bg-neutral-50 border-neutral-200/80'">
-                  <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">Mejor Racha</span>
-                  <div class="text-lg sm:text-xl font-headline font-extrabold"
-                       [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-700'">
-                    🏆 {{ streakData?.longestStreak || 1 }}d
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
+        </section>
 
         <!-- ═══════════════════════ 2. CENTRO DE COMANDO IA (DISEÑO ORIGINAL ELEVADO) ═══════════════════════ -->
-        <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-6 md:p-7 transition-all duration-300 relative overflow-hidden space-y-4"
+        <div class="lg:col-span-12 order-2 rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-6 md:p-7 transition-all duration-300 relative overflow-hidden space-y-4"
              [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800 shadow-[0_10px_35px_rgba(0,0,0,0.4)]' : 'bg-white border-neutral-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.03)]'">
           
           <!-- Header Clásico (Equilibrado & Elegante) -->
@@ -376,7 +152,7 @@ import { MessagesService } from '../../../services/messages.service';
               <svg *ngIf="!isAiSearching" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              <svg *ngIf="isAiSearching" class="animate-spin w-5 h-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg *ngIf="isAiSearching" class="animate-spin w-5 h-5 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
@@ -406,7 +182,7 @@ import { MessagesService } from '../../../services/messages.service';
                       [ngClass]="isVoiceRecording
                         ? 'bg-red-500 text-white shadow-lg shadow-red-500/40 scale-110'
                         : isAiVoiceProcessing
-                          ? 'bg-blue-500 text-white animate-pulse'
+                          ? 'bg-red-500 text-white animate-pulse'
                           : isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100'"
                       [title]="isVoiceRecording ? 'Detener y procesar audio' : 'Activar comando de voz con Gemini'">
                 
@@ -449,8 +225,8 @@ import { MessagesService } from '../../../services/messages.service';
             <!-- Indicador de Procesamiento IA del Audio -->
             <div *ngIf="isAiVoiceProcessing" 
                  class="absolute -bottom-8 left-0 right-0 flex items-center justify-center gap-2 animate-dropdown">
-              <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping"></span>
-              <span class="text-[10px] sm:text-[11px] font-headline font-semibold text-blue-500 dark:text-blue-400 uppercase tracking-wider">
+              <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span>
+              <span class="text-[10px] sm:text-[11px] font-headline font-semibold text-red-500 dark:text-red-400 uppercase tracking-wider">
                 Gemini interpretando tu audio...
               </span>
             </div>
@@ -458,127 +234,10 @@ import { MessagesService } from '../../../services/messages.service';
             <!-- Toast de Error de Voz -->
             <div *ngIf="voiceErrorMessage"
                  class="absolute -bottom-8 left-0 right-0 flex items-center justify-center animate-dropdown">
-              <span class="text-[10px] sm:text-[11px] font-sans text-amber-500 dark:text-amber-400 bg-amber-500/10 px-3 py-0.5 rounded-full border border-amber-500/20">
+              <span class="text-[10px] sm:text-[11px] font-sans text-red-500 dark:text-red-400 bg-red-500/10 px-3 py-0.5 rounded-full border border-red-500/20">
                 ⚠ {{ voiceErrorMessage }}
               </span>
             </div>
-          </div>
-
-          <!-- ══════ TARJETAS MONOCROMÁTICAS DE ACCESOS & MÓDULOS (ESTILO EJECUTIVO) ══════ -->
-          <div *ngIf="!activeAiResponse" class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 xs:gap-3 sm:gap-4 pt-1">
-            
-            <!-- Card 1: Finanzas -->
-            <div (click)="navigateToTab('finances')"
-                 class="group rounded-[18px] xs:rounded-[20px] sm:rounded-[22px] border p-3.5 xs:p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 hover:border-neutral-400 dark:hover:border-neutral-600 hover:shadow-md cursor-pointer active:scale-98"
-                 [ngClass]="isDark ? 'bg-neutral-950/70 border-neutral-800' : 'bg-white border-neutral-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.02)]'">
-              <div class="flex items-center justify-between">
-                <span class="hidden sm:inline text-[9px] xs:text-[10px] sm:text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 truncate">
-                  Finanzas & Cobros
-                </span>
-                <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shrink-0 border"
-                     [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
-                  <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-              </div>
-              <div class="mt-2.5 mb-1.5">
-                <h4 class="text-base xs:text-lg sm:text-xl font-headline font-bold tracking-tight m-0 leading-tight truncate"
-                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                  Finanzas
-                </h4>
-              </div>
-              <div class="hidden sm:flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400 dark:text-neutral-500 font-sans pt-1 border-t"
-                   [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
-                <span class="truncate">Cartera & Facturación</span>
-                <span class="font-headline font-bold text-neutral-900 dark:text-white group-hover:translate-x-0.5 transition-transform ml-1">→</span>
-              </div>
-            </div>
-
-            <!-- Card 2: Biblioteca -->
-            <div (click)="navigateToTab('library')"
-                 class="group rounded-[18px] xs:rounded-[20px] sm:rounded-[22px] border p-3.5 xs:p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 hover:border-neutral-400 dark:hover:border-neutral-600 hover:shadow-md cursor-pointer active:scale-98"
-                 [ngClass]="isDark ? 'bg-neutral-950/70 border-neutral-800' : 'bg-white border-neutral-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.02)]'">
-              <div class="flex items-center justify-between">
-                <span class="hidden sm:inline text-[9px] xs:text-[10px] sm:text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 truncate">
-                  Biblioteca
-                </span>
-                <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shrink-0 border"
-                     [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
-                  <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                  </svg>
-                </div>
-              </div>
-              <div class="mt-2.5 mb-1.5">
-                <h4 class="text-base xs:text-lg sm:text-xl font-headline font-bold tracking-tight m-0 leading-tight truncate"
-                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                  Biblioteca
-                </h4>
-              </div>
-              <div class="hidden sm:flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400 dark:text-neutral-500 font-sans pt-1 border-t"
-                   [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
-                <span class="truncate">Cuadernos & Apuntes</span>
-                <span class="font-headline font-bold text-neutral-900 dark:text-white group-hover:translate-x-0.5 transition-transform ml-1">→</span>
-              </div>
-            </div>
-
-            <!-- Card 3: Itinerario -->
-            <div (click)="navigateToTab('itinerary')"
-                 class="group rounded-[18px] xs:rounded-[20px] sm:rounded-[22px] border p-3.5 xs:p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 hover:border-neutral-400 dark:hover:border-neutral-600 hover:shadow-md cursor-pointer active:scale-98"
-                 [ngClass]="isDark ? 'bg-neutral-950/70 border-neutral-800' : 'bg-white border-neutral-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.02)]'">
-              <div class="flex items-center justify-between">
-                <span class="hidden sm:inline text-[9px] xs:text-[10px] sm:text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 truncate">
-                  Agenda & Tareas
-                </span>
-                <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shrink-0 border"
-                     [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
-                  <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-              </div>
-              <div class="mt-2.5 mb-1.5">
-                <h4 class="text-base xs:text-lg sm:text-xl font-headline font-bold tracking-tight m-0 leading-tight truncate"
-                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                  Itinerario
-                </h4>
-              </div>
-              <div class="hidden sm:flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400 dark:text-neutral-500 font-sans pt-1 border-t"
-                   [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
-                <span class="truncate">Tareas & Calendario</span>
-                <span class="font-headline font-bold text-neutral-900 dark:text-white group-hover:translate-x-0.5 transition-transform ml-1">→</span>
-              </div>
-            </div>
-
-            <!-- Card 4: Rotbot IA -->
-            <div (click)="navigateToTab('rotbot')"
-                 class="group rounded-[18px] xs:rounded-[20px] sm:rounded-[22px] border p-3.5 xs:p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 hover:border-neutral-400 dark:hover:border-neutral-600 hover:shadow-md cursor-pointer active:scale-98"
-                 [ngClass]="isDark ? 'bg-neutral-950/70 border-neutral-800' : 'bg-white border-neutral-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.02)]'">
-              <div class="flex items-center justify-between">
-                <span class="hidden sm:inline text-[9px] xs:text-[10px] sm:text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 truncate">
-                  Asistente & IA
-                </span>
-                <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shrink-0 border"
-                     [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
-                  <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2zM9 10h.01M15 10h.01" />
-                  </svg>
-                </div>
-              </div>
-              <div class="mt-2.5 mb-1.5">
-                <h4 class="text-base xs:text-lg sm:text-xl font-headline font-bold tracking-tight m-0 leading-tight truncate"
-                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                  RotBot IA
-                </h4>
-              </div>
-              <div class="hidden sm:flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400 dark:text-neutral-500 font-sans pt-1 border-t"
-                   [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
-                <span class="truncate">Copiloto Inteligente</span>
-                <span class="font-headline font-bold text-neutral-900 dark:text-white group-hover:translate-x-0.5 transition-transform ml-1">→</span>
-              </div>
-            </div>
-
           </div>
 
           <!-- ══════ RESPUESTA INTELIGENTE GEMINI (DISEÑO EJECUTIVO ELEVADO) ══════ -->
@@ -591,7 +250,7 @@ import { MessagesService } from '../../../services/messages.service';
                  [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
               <div class="flex items-center gap-3">
                 <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shadow-xs border"
-                     [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-blue-400' : 'bg-neutral-100 border-neutral-200 text-neutral-900'">
+                     [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-red-400' : 'bg-neutral-100 border-neutral-200 text-neutral-900'">
                   <svg class="w-4 h-4 sm:w-4.5 sm:h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
@@ -622,9 +281,9 @@ import { MessagesService } from '../../../services/messages.service';
 
             <!-- 1. Resumen Ejecutivo (Callout Banner) -->
             <div *ngIf="activeAiResponse.data.summary"
-                 class="rounded-xl border p-3.5 sm:p-4 flex items-start gap-3 border-l-4 border-l-blue-500 shadow-2xs"
+                 class="rounded-xl border p-3.5 sm:p-4 flex items-start gap-3 border-l-4 border-l-red-500 shadow-2xs"
                  [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800/90' : 'bg-neutral-50/90 border-neutral-200/90'">
-              <div class="w-6 h-6 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0 mt-0.5">
+              <div class="w-6 h-6 rounded-lg bg-red-500/10 text-red-500 flex items-center justify-center shrink-0 mt-0.5">
                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
@@ -686,7 +345,7 @@ import { MessagesService } from '../../../services/messages.service';
                     </div>
 
                     <div class="min-w-0">
-                      <h6 class="text-xs sm:text-sm font-headline font-bold m-0 truncate leading-tight group-hover:text-blue-500 transition-colors"
+                      <h6 class="text-xs sm:text-sm font-headline font-bold m-0 truncate leading-tight group-hover:text-red-500 transition-colors"
                           [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
                         {{ item.title }}
                       </h6>
@@ -702,7 +361,7 @@ import { MessagesService } from '../../../services/messages.service';
                           [ngClass]="getBadgeColorClass(item.badgeColor)">
                       {{ item.badge }}
                     </span>
-                    <span class="text-xs font-bold text-neutral-400 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all">
+                    <span class="text-xs font-bold text-neutral-400 group-hover:text-red-500 group-hover:translate-x-0.5 transition-all">
                       →
                     </span>
                   </div>
@@ -728,106 +387,265 @@ import { MessagesService } from '../../../services/messages.service';
 
         </div>
 
-        <!-- ═══════════════════════ 3. EXECUTIVE KPIS (2x2 GRID ON MOBILE) ═══════════════════════ -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 xs:gap-3 sm:gap-5">
+        <!-- ═══════════════════════ 3. STAT CARDS (ULTRA-MINIMALIST SLATE & RED) ═══════════════════════ -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 order-3 lg:col-span-12">
           
-          <!-- Card 1: Tráfico & Visitas -->
-          <div class="group rounded-[18px] xs:rounded-[20px] sm:rounded-[24px] border p-3.5 xs:p-4 sm:p-6 flex flex-col justify-between transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
-               [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800' : 'bg-white border-neutral-200/80'">
-            <div class="flex items-center justify-between mb-2 xs:mb-3 sm:mb-4">
-              <span class="text-[10px] xs:text-xs font-headline font-semibold uppercase tracking-wider opacity-60 truncate">Tráfico Global</span>
-              <div class="w-6 h-6 xs:w-7 xs:h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl flex items-center justify-center bg-blue-500/10 text-blue-500 shrink-0">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-              </div>
+          <!-- Stat 1: Tráfico & Visitas -->
+          <div class="rounded-2xl border p-4 sm:p-5 transition-all duration-200 flex flex-col justify-between"
+               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200/80 hover:border-neutral-300 shadow-[0_2px_12px_rgba(0,0,0,0.02)]'">
+            <div class="flex items-center justify-between text-neutral-400 mb-3">
+              <span class="text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Tráfico Global</span>
+              <span class="material-symbols-rounded text-neutral-400" style="font-size: 19px;">visibility</span>
             </div>
             <div>
-              <div class="flex items-baseline gap-1.5 xs:gap-2 flex-wrap">
-                <h3 class="text-lg xs:text-xl sm:text-2xl lg:text-3xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                  {{ (metrics.homeViews || 0) + (metrics.linktreeViews || 0) }}
-                </h3>
-                <span class="text-[9px] xs:text-[10px] sm:text-[11px] font-bold text-emerald-500 bg-emerald-500/10 px-1 xs:px-1.5 py-0.5 rounded-full">+18.4%</span>
-              </div>
-              <p class="hidden sm:block text-[10px] xs:text-xs mt-0.5 xs:mt-1 opacity-50 font-normal truncate">Visitas registradas</p>
-            </div>
-          </div>
-
-          <!-- Card 2: Resumen Financiero -->
-          <div (click)="navigateToTab('finances')" 
-               class="group rounded-[18px] xs:rounded-[20px] sm:rounded-[24px] border p-3.5 xs:p-4 sm:p-6 flex flex-col justify-between transition-all duration-300 hover:border-emerald-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)] cursor-pointer active:scale-98"
-               [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800 hover:bg-neutral-900' : 'bg-white border-neutral-200/80 hover:bg-neutral-50/50'">
-            <div class="flex items-center justify-between mb-2 xs:mb-3 sm:mb-4">
-              <span class="text-[10px] xs:text-xs font-headline font-semibold uppercase tracking-wider opacity-60 truncate">Facturación</span>
-              <div class="w-6 h-6 xs:w-7 xs:h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl flex items-center justify-center bg-emerald-500/10 text-emerald-500 shrink-0">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              </div>
-            </div>
-            <div>
-              <div class="flex items-baseline gap-1.5 xs:gap-2 flex-wrap">
-                <h3 class="text-base xs:text-lg sm:text-xl font-headline font-bold tracking-tight truncate text-emerald-500">
-                  {{ formatCurrency(financeTotalPaid) }}
-                </h3>
-              </div>
-              <p class="hidden sm:block text-[10px] xs:text-xs mt-0.5 xs:mt-1 opacity-60 font-normal truncate">
-                Pend: <span class="font-semibold text-amber-500">{{ formatCurrency(financeTotalPending) }}</span>
+              <p class="text-2xl sm:text-3xl font-headline font-extrabold tracking-tight m-0"
+                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                {{ (metrics.homeViews || 0) + (metrics.linktreeViews || 0) | number }}
+              </p>
+              <p class="text-xs text-neutral-500 m-0 mt-2 font-sans flex items-center gap-1.5">
+                <span class="font-bold text-emerald-600 dark:text-emerald-400">+18.4%</span>
+                <span class="text-neutral-400">· Visitas registradas</span>
               </p>
             </div>
           </div>
 
-          <!-- Card 3: Clientes Activos (Finanzas) -->
+          <!-- Stat 2: Facturación -->
           <div (click)="navigateToTab('finances')" 
-               class="group rounded-[18px] xs:rounded-[20px] sm:rounded-[24px] border p-3.5 xs:p-4 sm:p-6 flex flex-col justify-between transition-all duration-300 hover:border-purple-500/50 shadow-[0_10px_35px_rgba(0,0,0,0.03)] cursor-pointer active:scale-98"
-               [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800 hover:bg-neutral-900' : 'bg-white border-neutral-200/80 hover:bg-neutral-50/50'">
-            <div class="flex items-center justify-between mb-2 xs:mb-3 sm:mb-4">
-              <span class="text-[10px] xs:text-xs font-headline font-semibold uppercase tracking-wider opacity-60 truncate">Clientes</span>
-              <div class="w-6 h-6 xs:w-7 xs:h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl flex items-center justify-center bg-purple-500/10 text-purple-400 shrink-0">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-              </div>
+               class="rounded-2xl border p-4 sm:p-5 transition-all duration-200 flex flex-col justify-between cursor-pointer group"
+               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200/80 hover:border-neutral-300 shadow-[0_2px_12px_rgba(0,0,0,0.02)]'">
+            <div class="flex items-center justify-between text-neutral-400 mb-3">
+              <span class="text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Facturación</span>
+              <span class="material-symbols-rounded text-neutral-400 group-hover:text-red-500 transition-colors" style="font-size: 19px;">payments</span>
             </div>
             <div>
-              <div class="flex items-baseline gap-1.5 xs:gap-2 flex-wrap">
-                <h3 class="text-lg xs:text-xl sm:text-2xl lg:text-3xl font-headline font-bold tracking-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                  {{ totalClientsCount }}
-                </h3>
-                <span class="text-[9px] xs:text-[10px] sm:text-[11px] font-medium text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded-full">Finanzas</span>
-              </div>
-              <p class="hidden sm:block text-[10px] xs:text-xs mt-0.5 xs:mt-1 opacity-50 font-normal truncate">Cartera en Finanzas</p>
+              <p class="text-2xl sm:text-3xl font-headline font-extrabold tracking-tight m-0"
+                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                {{ formatCurrency(financeTotalPaid) }}
+              </p>
+              <p class="text-xs text-neutral-500 m-0 mt-2 font-sans flex items-center gap-1.5">
+                <span class="text-neutral-400">Pendiente:</span>
+                <span class="font-bold text-red-600 dark:text-red-400">{{ formatCurrency(financeTotalPending) }}</span>
+              </p>
             </div>
           </div>
 
-          <!-- Card 4: Salud del Sistema -->
-          <div (click)="navigateToTab('stats')" 
-               class="group rounded-[18px] xs:rounded-[20px] sm:rounded-[24px] border p-3.5 xs:p-4 sm:p-6 flex flex-col justify-between transition-all duration-300 hover:border-neutral-500 shadow-[0_10px_35px_rgba(0,0,0,0.03)] cursor-pointer active:scale-98"
-               [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800 hover:bg-neutral-900' : 'bg-white border-neutral-200/80 hover:bg-neutral-50/50'">
-            <div class="flex items-center justify-between mb-2 xs:mb-3 sm:mb-4">
-              <span class="text-[10px] xs:text-xs font-headline font-semibold uppercase tracking-wider opacity-60 truncate">Sistema</span>
-              <div class="w-6 h-6 xs:w-7 xs:h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl flex items-center justify-center bg-cyan-500/10 text-cyan-400 shrink-0">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-              </div>
+          <!-- Stat 3: Clientes Cartera -->
+          <div (click)="navigateToTab('finances')" 
+               class="rounded-2xl border p-4 sm:p-5 transition-all duration-200 flex flex-col justify-between cursor-pointer group"
+               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200/80 hover:border-neutral-300 shadow-[0_2px_12px_rgba(0,0,0,0.02)]'">
+            <div class="flex items-center justify-between text-neutral-400 mb-3">
+              <span class="text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Clientes Cartera</span>
+              <span class="material-symbols-rounded text-neutral-400 group-hover:text-red-500 transition-colors" style="font-size: 19px;">group</span>
             </div>
             <div>
-              <div class="flex items-baseline gap-1.5 xs:gap-2 flex-wrap">
-                <h3 class="text-lg xs:text-xl sm:text-2xl font-headline font-bold tracking-tight text-cyan-400">
-                  99.9%
-                </h3>
-                <span class="text-[9px] xs:text-[10px] opacity-60">Uptime</span>
-              </div>
-              <p class="hidden sm:block text-[10px] xs:text-xs mt-0.5 xs:mt-1 opacity-50 font-normal truncate">Latencia: 42ms</p>
+              <p class="text-2xl sm:text-3xl font-headline font-extrabold tracking-tight m-0"
+                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                {{ totalClientsCount }}
+              </p>
+              <p class="text-xs text-neutral-500 m-0 mt-2 font-sans flex items-center gap-1.5">
+                <span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                <span class="font-semibold text-neutral-900 dark:text-white">Activos</span>
+                <span class="text-neutral-400">· Registros comerciales</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Stat 4: Salud del Sistema -->
+          <div (click)="navigateToTab('stats')" 
+               class="rounded-2xl border p-4 sm:p-5 transition-all duration-200 flex flex-col justify-between cursor-pointer group"
+               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200/80 hover:border-neutral-300 shadow-[0_2px_12px_rgba(0,0,0,0.02)]'">
+            <div class="flex items-center justify-between text-neutral-400 mb-3">
+              <span class="text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Estado Sistema</span>
+              <span class="material-symbols-rounded text-neutral-400 group-hover:text-emerald-500 transition-colors" style="font-size: 19px;">verified</span>
+            </div>
+            <div>
+              <p class="text-2xl sm:text-3xl font-headline font-extrabold tracking-tight m-0"
+                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                99.9%
+              </p>
+              <p class="text-xs text-neutral-500 m-0 mt-2 font-sans flex items-center gap-1.5">
+                <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                <span class="font-semibold text-neutral-900 dark:text-white">Online</span>
+                <span class="text-neutral-400">· Latencia: 42ms</span>
+              </p>
             </div>
           </div>
 
         </div>
 
-        <!-- ═══════════════════════ 4. HIGH-PERFORMANCE CHARTS ROW ═══════════════════════ -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 xs:gap-5">
+        <!-- ═══════════════════════ 4. RACHA DEL DÍA & AGENDA DE HOY (TU DÍA) ═══════════════════════ -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-4 lg:col-span-12 order-4">
+
+          <!-- Racha del Día (Minimalist Black Bento) -->
+          <div class="racha-black-card lg:col-span-7 rounded-2xl border border-neutral-800 bg-[#0a0a0a] text-white p-4 sm:p-5 flex flex-col justify-between transition-all duration-200 shadow-[0_8px_30px_rgba(0,0,0,0.35)] relative">
+
+            <div>
+              <!-- Header Minimalista -->
+              <div class="flex items-center justify-between mb-3.5">
+                <div class="flex items-center gap-2">
+                  <span class="text-base select-none">🔥</span>
+                  <h3 class="text-sm font-headline font-bold tracking-tight m-0" style="color: #ffffff !important;">
+                    Racha
+                  </h3>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-red-500/15 text-red-400 border border-red-500/30"
+                        style="color: #f87171 !important;">
+                    {{ streakData?.streakCount || 1 }} días
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-2.5 text-xs font-headline font-medium">
+                  <button type="button" 
+                          (click)="openStreakMonthModal()"
+                          class="hover:underline transition-colors cursor-pointer bg-transparent border-none p-0"
+                          style="color: #a3a3a3 !important;"
+                          title="Ver calendario del mes">
+                    Mes
+                  </button>
+                  <span style="color: #52525b !important;">·</span>
+                  <button type="button" 
+                          (click)="openStreakModal()"
+                          class="hover:underline transition-colors cursor-pointer bg-transparent border-none p-0"
+                          style="color: #ffffff !important;"
+                          title="Detalles de la racha">
+                    Detalle →
+                  </button>
+                </div>
+              </div>
+
+              <!-- Progreso Fino & Récord -->
+              <div class="mb-3.5">
+                <div class="flex items-center justify-between text-[11px] mb-1.5 font-sans">
+                  <span style="color: #a3a3a3 !important;">{{ completedStreakGoals }}/3 metas hoy</span>
+                  <span style="color: #a3a3a3 !important;">Récord: <strong class="font-mono font-bold" style="color: #ffffff !important;">{{ streakData?.longestStreak || 1 }}d</strong></span>
+                </div>
+                <div class="w-full h-1 bg-neutral-800/90 rounded-full overflow-hidden">
+                  <div class="h-full bg-red-500 rounded-full transition-all duration-300"
+                       [style.width.%]="(completedStreakGoals / 3) * 100"></div>
+                </div>
+              </div>
+
+              <!-- Las 3 Metas en 3 Pastillas Minimalistas (1 fila de 3 cols) -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3.5">
+                <!-- Meta 1: Ingreso -->
+                <div class="rounded-xl border border-neutral-800/80 bg-[#121214] px-3 py-2 flex items-center justify-between">
+                  <span class="text-xs font-medium text-white truncate" style="color: #ffffff !important;">1. Ingreso</span>
+                  <span class="text-[10px] font-mono font-semibold" style="color: #f87171 !important;">Listo</span>
+                </div>
+
+                <!-- Meta 2: Rotbot IA -->
+                <div class="rounded-xl border border-neutral-800/80 bg-[#121214] px-3 py-2 flex items-center justify-between">
+                  <span class="text-xs font-medium text-white truncate" style="color: #ffffff !important;">2. RotBot IA</span>
+                  <span *ngIf="streakData?.actions?.robot" class="text-[10px] font-mono font-semibold" style="color: #f87171 !important;">Listo</span>
+                  <button *ngIf="!streakData?.actions?.robot" 
+                          type="button"
+                          (click)="tabChange.emit('rotbot')"
+                          class="text-[10px] font-headline font-semibold text-red-400 hover:text-red-300 transition-colors cursor-pointer bg-transparent border-none p-0"
+                          style="color: #f87171 !important;">
+                    Ir al bot →
+                  </button>
+                </div>
+
+                <!-- Meta 3: Biblioteca -->
+                <div class="rounded-xl border border-neutral-800/80 bg-[#121214] px-3 py-2 flex items-center justify-between">
+                  <span class="text-xs font-medium text-white truncate" style="color: #ffffff !important;">3. Biblioteca</span>
+                  <span *ngIf="streakData?.actions?.library" class="text-[10px] font-mono font-semibold" style="color: #f87171 !important;">Listo</span>
+                  <button *ngIf="!streakData?.actions?.library" 
+                          type="button"
+                          (click)="tabChange.emit('library')"
+                          class="text-[10px] font-headline font-semibold text-red-400 hover:text-red-300 transition-colors cursor-pointer bg-transparent border-none p-0"
+                          style="color: #f87171 !important;">
+                    Repasar →
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tira Semanal de 7 días (Minimalista por Puntos de Actividad) -->
+            <div class="pt-3 border-t border-neutral-800/80">
+              <div class="grid grid-cols-7 gap-1 text-center">
+                <div *ngFor="let day of streakWeekDays" class="flex flex-col items-center py-0.5">
+                  <span class="text-[9px] font-headline uppercase tracking-wider" style="color: #71717a !important;">{{ day.name }}</span>
+                  <span class="text-xs font-mono font-medium my-0.5"
+                        [style.color]="day.isCompleted ? '#ffffff !important' : (day.isToday ? '#f87171 !important' : '#a1a1aa !important')">
+                    {{ day.dayNumber }}
+                  </span>
+                  <span class="w-1.5 h-1.5 rounded-full mt-0.5" 
+                        [ngClass]="day.isCompleted ? 'bg-red-500' : (day.isToday ? 'bg-red-500 animate-pulse' : 'bg-neutral-800')">
+                  </span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Agenda de Hoy (Acompañante de Racha, 5 cols en lg) -->
+          <div (click)="navigateToTab('itinerary')"
+               class="lg:col-span-5 rounded-[22px] border p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.03)] cursor-pointer group hover:border-neutral-400 dark:hover:border-neutral-700 active:scale-[0.99]"
+               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200/80'">
+            <div>
+              <div class="flex items-center justify-between mb-3.5">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                  <h4 class="text-sm sm:text-base font-headline font-bold tracking-tight m-0"
+                      [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Agenda de Hoy</h4>
+                </div>
+                <span class="text-[10px] font-headline font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border transition-colors group-hover:bg-neutral-900 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black"
+                      [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 bg-neutral-950' : 'border-neutral-200 text-neutral-600 bg-neutral-100'">
+                  Itinerario →
+                </span>
+              </div>
+
+              <!-- Tasks List Preview -->
+              <div class="space-y-2">
+                <div *ngIf="itineraryNotifs.current?.length > 0">
+                  <div *ngFor="let task of itineraryNotifs.current.slice(0, 2)"
+                       class="rounded-xl border p-2.5 flex items-center justify-between bg-red-500/10 border-red-500/25 text-red-600 dark:text-red-400">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping shrink-0"></span>
+                      <span class="text-xs font-semibold truncate">{{ task.title }}</span>
+                    </div>
+                    <span class="text-[10px] opacity-75 font-mono shrink-0 ml-2 font-bold">{{ task.time }}</span>
+                  </div>
+                </div>
+
+                <div *ngIf="itineraryNotifs.upcoming?.length > 0">
+                  <div *ngFor="let task of itineraryNotifs.upcoming.slice(0, 2)"
+                       class="rounded-xl border p-2.5 flex items-center justify-between"
+                       [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800 text-neutral-300' : 'bg-neutral-50 border-neutral-200 text-neutral-700'">
+                    <span class="text-xs font-medium truncate">{{ task.title }}</span>
+                    <span class="text-[10px] opacity-60 font-mono shrink-0 ml-2">{{ task.time }}</span>
+                  </div>
+                </div>
+
+                <div *ngIf="!itineraryNotifs.current?.length && !itineraryNotifs.upcoming?.length"
+                     class="rounded-xl border p-4 text-center"
+                     [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800/80 text-neutral-400' : 'bg-neutral-50/70 border-neutral-200 text-neutral-600'">
+                  <p class="text-xs font-semibold m-0">No hay tareas pendientes para hoy</p>
+                  <span class="text-[10px] opacity-60">¡Todo al día en tu itinerario!</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-2.5 mt-3 border-t flex items-center justify-between text-xs"
+                 [ngClass]="isDark ? 'border-neutral-800 text-neutral-400' : 'border-neutral-100 text-neutral-500'">
+              <span class="truncate">Prioridades del día</span>
+              <span class="font-bold text-red-600 dark:text-red-400 group-hover:translate-x-1 transition-transform shrink-0 ml-2">Abrir →</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ═══════════════════════ 5. HIGH-PERFORMANCE CHARTS ROW ═══════════════════════ -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3.5 sm:gap-4 lg:col-span-12 order-5">
 
           <!-- Gráfica 1: Rendimiento & Tráfico Semanal -->
-          <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 flex flex-col justify-between transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)] min-h-[320px] xs:min-h-[340px] sm:min-h-[360px]"
+          <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 flex flex-col justify-between transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)] min-h-[250px]"
                [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200/80'">
             <div>
               <div class="flex items-center justify-between mb-4 sm:mb-6">
                 <div>
                   <div class="flex items-center gap-2 mb-0.5">
-                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
                     <h4 class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider"
                         [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Rendimiento & Tráfico</h4>
                   </div>
@@ -840,12 +658,12 @@ import { MessagesService } from '../../../services/messages.service';
               </div>
 
               <!-- Vector Line Chart with Gradient Fill & Data Nodes -->
-              <div class="w-full h-36 xs:h-40 sm:h-44 relative mt-1 xs:mt-2">
+              <div class="w-full h-28 sm:h-32 relative mt-1 xs:mt-2">
                 <svg class="w-full h-full" viewBox="0 0 500 140" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="trafficGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.35"/>
-                      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.0"/>
+                      <stop offset="0%" stop-color="#dc2626" stop-opacity="0.35"/>
+                      <stop offset="100%" stop-color="#dc2626" stop-opacity="0.0"/>
                     </linearGradient>
                   </defs>
                   
@@ -854,14 +672,14 @@ import { MessagesService } from '../../../services/messages.service';
                   <line x1="0" y1="105" x2="500" y2="105" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'"/>
 
                   <path [attr.d]="trafficAreaPath" fill="url(#trafficGrad)"/>
-                  <path [attr.d]="trafficLinePath" fill="none" stroke="#3b82f6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path [attr.d]="trafficLinePath" fill="none" stroke="#dc2626" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 
                   <circle *ngFor="let pt of trafficPoints" 
                           [attr.cx]="pt.x" 
                           [attr.cy]="pt.y" 
                           r="4" 
                           [attr.fill]="isDark ? '#0f172a' : '#ffffff'" 
-                          stroke="#3b82f6" 
+                          stroke="#dc2626" 
                           stroke-width="2.5"/>
                 </svg>
               </div>
@@ -882,24 +700,24 @@ import { MessagesService } from '../../../services/messages.service';
               </div>
               <div class="text-center">
                 <span class="text-[9px] xs:text-[10px] opacity-50 block uppercase">Pico</span>
-                <span class="text-xs sm:text-sm font-bold text-blue-500">{{ maxTraffic }}</span>
+                <span class="text-xs sm:text-sm font-bold text-red-500">{{ maxTraffic }}</span>
               </div>
               <div class="text-center">
                 <span class="text-[9px] xs:text-[10px] opacity-50 block uppercase">Conversión</span>
-                <span class="text-xs sm:text-sm font-bold text-emerald-500">{{ conversionRate }}%</span>
+                <span class="text-xs sm:text-sm font-bold text-red-600">{{ conversionRate }}%</span>
               </div>
             </div>
 
           </div>
 
           <!-- Gráfica 2: Flujo Financiero & Ingresos Mensuales -->
-          <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 flex flex-col justify-between transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)] min-h-[320px] xs:min-h-[340px] sm:min-h-[360px]"
+          <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 flex flex-col justify-between transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)] min-h-[250px]"
                [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200/80'">
             <div>
               <div class="flex items-center justify-between mb-4 sm:mb-6">
                 <div>
                   <div class="flex items-center gap-2 mb-0.5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
                     <h4 class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider"
                         [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Flujo Financiero</h4>
                   </div>
@@ -913,14 +731,14 @@ import { MessagesService } from '../../../services/messages.service';
               </div>
 
               <!-- Bar Chart of Monthly Revenue & Payments -->
-              <div class="w-full h-36 xs:h-40 sm:h-44 flex items-end justify-between gap-1.5 xs:gap-2.5 sm:gap-4 px-1 xs:px-2 pt-2 xs:pt-4 relative">
+              <div class="w-full h-28 sm:h-32 flex items-end justify-between gap-1.5 xs:gap-2.5 sm:gap-4 px-1 xs:px-2 pt-2 xs:pt-4 relative">
                 <div *ngFor="let item of financialMonthlyBars" class="flex-1 flex flex-col items-center gap-1 xs:gap-1.5 h-full justify-end group">
-                  <span class="text-[8px] xs:text-[9px] font-bold text-emerald-500 opacity-80 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span class="text-[8px] xs:text-[9px] font-bold text-red-600 opacity-80 sm:opacity-0 group-hover:opacity-100 transition-opacity">
                     {{ item.formattedShort }}
                   </span>
                   <div class="w-full max-w-[22px] xs:max-w-[28px] rounded-t-md xs:rounded-t-lg transition-all duration-500 ease-out relative"
                        [style.height.%]="item.heightPct"
-                       [ngClass]="isDark ? 'bg-emerald-500/80 group-hover:bg-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.3)]' : 'bg-emerald-600 group-hover:bg-emerald-500'">
+                       [ngClass]="'bg-gradient-to-t from-red-700 to-red-500 group-hover:from-red-600 group-hover:to-red-400 shadow-[0_4px_14px_rgba(220,38,38,0.25)]'">
                   </div>
                   <span class="text-[9px] xs:text-[10px] font-headline font-semibold uppercase tracking-wider"
                         [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">
@@ -939,109 +757,20 @@ import { MessagesService } from '../../../services/messages.service';
               </div>
               <div class="text-center">
                 <span class="text-[9px] xs:text-[10px] opacity-50 block uppercase">Tasa Cobro</span>
-                <span class="text-xs sm:text-sm font-bold text-emerald-500">{{ collectionRate }}%</span>
+                <span class="text-xs sm:text-sm font-bold text-red-600">{{ collectionRate }}%</span>
               </div>
               <div class="text-center">
                 <span class="text-[9px] xs:text-[10px] opacity-50 block uppercase">Balance</span>
-                <span class="text-xs sm:text-sm font-bold text-emerald-400 truncate block">{{ formatCurrency(financeTotalPaid) }}</span>
+                <span class="text-xs sm:text-sm font-bold text-red-600 truncate block">{{ formatCurrency(financeTotalPaid) }}</span>
               </div>
             </div>
 
-          </div>
-
-        </div>
-
-        <!-- ═══════════════════════ 5. SERVER STATUS & ITINERARY ROW ═══════════════════════ -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 xs:gap-5">
-
-          <!-- Server Status & CDN -->
-          <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)]"
-               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200/80'">
-            <div class="flex items-center justify-between mb-4 sm:mb-6">
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <h4 class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider"
-                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Infraestructura</h4>
-              </div>
-              <span class="text-[9px] xs:text-[10px] font-headline font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full border border-emerald-500/30 text-emerald-400 bg-emerald-500/10">
-                100% Operacional
-              </span>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-2 xs:gap-2.5 sm:gap-3">
-              <div *ngFor="let stat of serverStats"
-                   class="rounded-xl xs:rounded-2xl p-2.5 xs:p-3 sm:p-4 border transition-all duration-300 hover:scale-[1.01] shadow-xs"
-                   [ngClass]="isDark ? 'bg-neutral-950/80 border-neutral-800/90' : 'bg-neutral-50 border-neutral-200/80'">
-                <p class="text-[10px] xs:text-xs font-sans font-normal mb-0.5 opacity-60 truncate">{{ stat.label }}</p>
-                <div class="flex items-center gap-1.5">
-                  <span *ngIf="stat.dot" class="w-1.5 h-1.5 xs:w-2 xs:h-2 rounded-full bg-emerald-500 animate-pulse flex-shrink-0"></span>
-                  <p class="text-xs xs:text-sm font-headline font-bold truncate" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">
-                    {{ stat.value }}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Quick Agenda & Pending Tasks -->
-          <div (click)="navigateToTab('itinerary')"
-               class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 flex flex-col justify-between transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)] cursor-pointer group hover:border-neutral-500 active:scale-99"
-               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 hover:bg-neutral-900' : 'bg-white border-neutral-200/80 hover:bg-neutral-50/50'">
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
-                  <h4 class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider"
-                      [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Agenda de Hoy</h4>
-                </div>
-                <span class="text-[9px] xs:text-[10px] font-headline font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full border"
-                      [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 bg-neutral-950' : 'border-neutral-200 text-neutral-600 bg-neutral-100'">
-                  Calendario →
-                </span>
-              </div>
-
-              <!-- Tasks List Preview -->
-              <div class="space-y-2">
-                <div *ngIf="itineraryNotifs.current?.length > 0">
-                  <div *ngFor="let task of itineraryNotifs.current.slice(0, 2)"
-                       class="rounded-lg xs:rounded-xl border p-2.5 xs:p-3 flex items-center justify-between bg-blue-500/10 border-blue-500/30 text-blue-400">
-                    <div class="flex items-center gap-2 min-w-0">
-                      <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-ping shrink-0"></span>
-                      <span class="text-xs font-semibold truncate">{{ task.title }}</span>
-                    </div>
-                    <span class="text-[10px] opacity-75 font-mono shrink-0 ml-2">{{ task.time }}</span>
-                  </div>
-                </div>
-
-                <div *ngIf="itineraryNotifs.upcoming?.length > 0">
-                  <div *ngFor="let task of itineraryNotifs.upcoming.slice(0, 2)"
-                       class="rounded-lg xs:rounded-xl border p-2.5 xs:p-3 flex items-center justify-between"
-                       [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800 text-neutral-300' : 'bg-neutral-50 border-neutral-200 text-neutral-700'">
-                    <span class="text-xs font-medium truncate">{{ task.title }}</span>
-                    <span class="text-[10px] opacity-50 font-mono shrink-0 ml-2">{{ task.time }}</span>
-                  </div>
-                </div>
-
-                <div *ngIf="!itineraryNotifs.current?.length && !itineraryNotifs.upcoming?.length"
-                     class="rounded-xl border p-3.5 text-center"
-                     [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800/80 text-neutral-400' : 'bg-neutral-50 border-neutral-200/80 text-neutral-600'">
-                  <p class="text-xs font-medium m-0">No hay tareas pendientes para hoy</p>
-                  <span class="text-[10px] opacity-60">¡Todo al día en tu itinerario!</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="pt-3 mt-3 border-t flex items-center justify-between text-[11px] xs:text-xs"
-                 [ngClass]="isDark ? 'border-neutral-800 text-neutral-400' : 'border-neutral-100 text-neutral-600'">
-              <span class="truncate">Prioridades del día</span>
-              <span class="font-bold text-purple-400 group-hover:translate-x-1 transition-transform shrink-0 ml-2">Abrir →</span>
-            </div>
           </div>
 
         </div>
 
         <!-- ═══════════════════════ 6. FOOTER ACTIONS ═══════════════════════ -->
-        <div class="flex justify-end pt-1 sm:pt-2">
+        <div class="flex justify-end lg:col-span-12 order-6">
           <button (click)="resetMetrics()"
                   class="px-5 xs:px-6 py-2 xs:py-2.5 rounded-full text-[10px] xs:text-xs font-headline font-semibold uppercase tracking-wider border transition-all duration-300 cursor-pointer hover:scale-105 active:scale-95 shadow-sm"
                   [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:border-red-500/40 hover:text-red-400 hover:bg-red-500/10' : 'border-neutral-200 text-neutral-600 hover:border-red-300 hover:text-red-600 hover:bg-red-50'">
@@ -1094,7 +823,7 @@ import { MessagesService } from '../../../services/messages.service';
             <!-- Header del Modal -->
             <div class="flex items-start justify-between flex-wrap gap-4 pr-10 mb-5">
               <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-transparent border border-amber-500/30 shadow-[0_0_20px_rgba(245,158,11,0.15)] shrink-0">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-red-500/20 via-rose-500/10 to-transparent border border-red-500/30 shadow-[0_0_20px_rgba(220,38,38,0.15)] shrink-0">
                   <span class="text-2xl select-none">📅</span>
                 </div>
                 <div>
@@ -1103,7 +832,7 @@ import { MessagesService } from '../../../services/messages.service';
                         [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
                       Calendario Mensual
                     </h3>
-                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-headline font-bold bg-amber-500/15 text-amber-500 border border-amber-500/30">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-headline font-bold bg-red-500/15 text-red-500 border border-red-500/30">
                       {{ streakMonthData?.activeCount || 0 }}d activos
                     </span>
                   </div>
@@ -1170,9 +899,9 @@ import { MessagesService } from '../../../services/messages.service';
               <div *ngFor="let day of streakMonthData?.days"
                    class="h-10 sm:h-12 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center relative text-xs sm:text-sm font-mono transition-all"
                    [ngClass]="day.isCompleted ? 
-                     (isDark ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold shadow-[0_0_12px_rgba(245,158,11,0.2)]' : 'bg-amber-100 text-amber-900 border border-amber-300 font-bold shadow-2xs') : 
+                     (isDark ? 'bg-red-500/20 text-red-300 border border-red-500/40 font-bold shadow-[0_0_12px_rgba(220,38,38,0.2)]' : 'bg-red-100 text-red-900 border border-red-300 font-bold shadow-2xs') : 
                      (day.isToday ? 
-                       (isDark ? 'border-2 border-dashed border-amber-400 text-white font-bold bg-amber-500/10' : 'border-2 border-dashed border-amber-500 text-neutral-900 font-bold bg-amber-50') : 
+                       (isDark ? 'border-2 border-dashed border-red-400 text-white font-bold bg-red-500/10' : 'border-2 border-dashed border-red-500 text-neutral-900 font-bold bg-red-50') : 
                        (day.isCurrentMonth ? 
                          (isDark ? 'bg-[#14141c] text-neutral-300 border border-neutral-800/80 hover:border-neutral-700' : 'bg-neutral-50 text-neutral-700 border border-neutral-200 hover:border-neutral-300') : 
                          (isDark ? 'text-neutral-700 opacity-25 border border-transparent' : 'text-neutral-300 opacity-30 border border-transparent')))"
@@ -1195,18 +924,18 @@ import { MessagesService } from '../../../services/messages.service';
               
               <div class="flex items-center gap-4 text-xs font-sans text-neutral-400">
                 <div class="flex items-center gap-1.5">
-                  <span class="w-3 h-3 rounded-md bg-amber-500/25 border border-amber-500/40 inline-block"></span>
+                  <span class="w-3 h-3 rounded-md bg-red-500/25 border border-red-500/40 inline-block"></span>
                   <span>Completado 🔥</span>
                 </div>
                 <div class="flex items-center gap-1.5">
-                  <span class="w-3 h-3 rounded-md border border-dashed border-amber-500 inline-block"></span>
+                  <span class="w-3 h-3 rounded-md border border-dashed border-red-500 inline-block"></span>
                   <span>Hoy ⏳</span>
                 </div>
               </div>
 
               <div class="flex items-center gap-3">
                 <div class="text-xs font-headline font-semibold" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
-                  Racha actual: <span class="text-amber-500 font-mono font-bold">{{ streakData?.streakCount || 1 }}d</span>
+                  Racha actual: <span class="text-red-500 font-mono font-bold">{{ streakData?.streakCount || 1 }}d</span>
                 </div>
                 <span class="opacity-30">•</span>
                 <div class="text-xs font-headline font-semibold" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
@@ -1272,9 +1001,9 @@ import { MessagesService } from '../../../services/messages.service';
         </div>
 
         <!-- 4. High-Performance Charts Skeleton -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 xs:gap-5">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3.5 sm:gap-4 lg:col-span-12 order-@@">
           <div *ngFor="let _ of [1,2]" 
-               class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 flex flex-col justify-between min-h-[320px] xs:min-h-[340px] sm:min-h-[360px]"
+               class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 flex flex-col justify-between min-h-[250px]"
                [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800/80' : 'bg-white border-neutral-200/80'">
             <div class="space-y-4">
               <div class="flex items-center justify-between">
@@ -1298,7 +1027,7 @@ import { MessagesService } from '../../../services/messages.service';
         </div>
 
         <!-- 5. Infrastructure & Agenda Skeleton -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 xs:gap-5">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3.5 sm:gap-4 lg:col-span-12 order-@@">
           <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 space-y-4"
                [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800/80' : 'bg-white border-neutral-200/80'">
             <div class="flex items-center justify-between">

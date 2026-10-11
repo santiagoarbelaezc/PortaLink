@@ -25,6 +25,7 @@ import { Subscription } from 'rxjs';
 interface Tab {
   id: string;
   name: string;
+  icon: string;
   section?: string;
 }
 
@@ -47,8 +48,7 @@ interface Tab {
     DashStreakModalComponent,
   ],
   template: `
-    <div class="admin-shell fixed inset-0 h-[100dvh] w-full md:relative md:h-screen overflow-hidden flex font-sans"
-         [ngClass]="isDark ? 'bg-neutral-950 text-neutral-100' : 'bg-white text-neutral-900'">
+    <div class="dash-shell min-h-screen w-full flex relative overflow-x-hidden" [class.sidebar-collapsed]="isSidebarCollapsed">
 
       <!-- ══════════════════════════════════════
            MOBILE BACKDROP OVERLAY
@@ -59,153 +59,79 @@ interface Tab {
       </div>
 
       <!-- ══════════════════════════════════════
-           LEFT SIDEBAR (DESKTOP ONLY)
+           DESKTOP SIDEBAR (HIGH CONTRAST SLATE & RED)
       ══════════════════════════════════════ -->
-      <aside class="hidden md:flex flex-col h-full border-r overflow-hidden transition-all duration-300 shrink-0"
-             [ngClass]="[
-               isDark ? 'bg-[#07070a] border-neutral-800' : 'bg-neutral-50 border-neutral-200',
-               isSidebarCollapsed ? 'md:w-0 md:border-r-0 md:opacity-0 md:pointer-events-none' : 'md:w-56 md:opacity-100'
-             ]">
+      <aside class="dash-sidebar fixed top-0 left-0 h-screen z-[200] flex flex-col" [class.mobile-open]="isMobileDrawerOpen">
 
-        <!-- Logo Header -->
-        <div class="py-4 md:py-5 border-b flex items-center shrink-0 transition-all duration-300 px-5"
-             [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-          <button (click)="reloadDashboard()" class="flex items-center gap-3 cursor-pointer group no-underline min-w-0 text-left bg-transparent border-0 p-0 w-full focus:outline-none" title="Recargar Dashboard">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105"
-                 [ngClass]="isDark ? 'bg-white/5 border border-white/10 shadow-xs' : 'bg-white border border-neutral-200 shadow-xs'">
-              <img [src]="isDark ? 'assets/icons/navbar-logodark.png' : 'assets/icons/navbar-logolight.png'" class="w-6 h-6 object-contain" alt="Dashboard">
-            </div>
-            <div class="min-w-0" *ngIf="!isSidebarCollapsed">
-              <h1 class="text-sm font-headline font-bold tracking-tight truncate leading-none"
-                  [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                Dashboard
-              </h1>
-              <span class="text-[10px] font-sans font-medium text-neutral-400 dark:text-neutral-500 block mt-1 tracking-wide leading-none">
-                PortaLink
-              </span>
-            </div>
-          </button>
+        <!-- Brand -->
+        <div class="sidebar-brand" (click)="reloadDashboard()" title="Recargar Dashboard">
+          <div class="sidebar-logo">
+            <span class="material-symbols-rounded">dashboard</span>
+          </div>
+          <span class="sidebar-brand-text">PortaLink</span>
         </div>
 
-        <!-- Navigation -->
-        <nav class="flex-grow p-3 space-y-0.5 overflow-y-auto sidebar-nav overflow-x-hidden no-scrollbar">
+        <!-- Botón Toggle en el borde -->
+        <button class="sidebar-toggle" (click)="handleToggleSidebar()" [title]="isSidebarCollapsed ? 'Expandir barra lateral' : 'Colapsar barra lateral'">
+          <span class="material-symbols-rounded" style="font-size: 18px;">
+            {{ isSidebarCollapsed ? 'chevron_right' : 'chevron_left' }}
+          </span>
+        </button>
+
+        <!-- Items de Navegación -->
+        <nav class="sidebar-nav">
           <ng-container *ngFor="let tab of tabs; let i = index">
             <!-- Section Header: Principal -->
-            <div *ngIf="i === 0 && !isSidebarCollapsed" class="pt-1 pb-1.5 px-3">
-              <span class="text-[10px] font-headline font-bold uppercase tracking-[0.2em]"
-                    [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">
-                Principal
-              </span>
-            </div>
+            <p *ngIf="i === 0 && !isSidebarCollapsed" class="sidebar-nav-label">
+              Navegación
+            </p>
 
             <!-- Section Divider: Herramientas -->
-            <div *ngIf="tab.section === 'herramientas' && (i === 0 || tabs[i-1].section !== 'herramientas')"
-                 class="pt-5 pb-2 px-3">
-              <div class="flex items-center gap-2">
-                <span *ngIf="!isSidebarCollapsed" class="text-[10px] font-headline font-bold uppercase tracking-[0.2em]"
-                      [ngClass]="isDark ? 'text-cyan-400 font-bold' : 'text-cyan-600 font-bold'">
-                  Herramientas
-                </span>
-                <span class="flex-grow border-t" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'"></span>
-              </div>
-            </div>
+            <p *ngIf="tab.section === 'herramientas' && (i === 0 || tabs[i-1].section !== 'herramientas') && !isSidebarCollapsed"
+               class="sidebar-nav-label" style="margin-top: 10px;">
+              Herramientas
+            </p>
 
             <button (click)="setTab(tab.id)"
-                    class="flex items-center rounded-xl text-sm font-semibold tracking-wide transition-all duration-200 cursor-pointer group relative w-full px-3 py-2.5 gap-3"
-                    [ngClass]="getNavClass(tab.id)">
-
-              <!-- Icon -->
-              <span class="w-[18px] h-[18px] flex-shrink-0 flex items-center justify-center">
-                <svg class="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
-                <!-- Home / Dashboard -->
-                <ng-container *ngIf="tab.id === 'dashboard'">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-                </ng-container>
-                <!-- Rotbot IA -->
-                <ng-container *ngIf="tab.id === 'rotbot'">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2zM9 10h.01M15 10h.01" />
-                </ng-container>
-                <!-- Control Financiero -->
-                <ng-container *ngIf="tab.id === 'financial-control'">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-3l3 3 3-3M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22" />
-                </ng-container>
-                <!-- Messages -->
-                <ng-container *ngIf="tab.id === 'messages'">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-                </ng-container>
-                <!-- Leads -->
-                <ng-container *ngIf="tab.id === 'leads'">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0" />
-                </ng-container>
-                <!-- Users -->
-                <ng-container *ngIf="tab.id === 'users'">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
-                </ng-container>
-                <!-- Customize -->
-                <ng-container *ngIf="tab.id === 'home'">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
-                </ng-container>
-                <!-- Itinerary -->
-                <ng-container *ngIf="tab.id === 'itinerary'">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
-                </ng-container>
-                <!-- Library -->
-                <ng-container *ngIf="tab.id === 'library'">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25" />
-                </ng-container>
-                <!-- Config -->
-                <ng-container *ngIf="tab.id === 'config'">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </ng-container>
-                <!-- Finances -->
-                <ng-container *ngIf="tab.id === 'finances'">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
-                </ng-container>
-                <!-- Visor BD -->
-                <ng-container *ngIf="tab.id === 'db-viewer'">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
-                </ng-container>
-              </svg>
-            </span>
-
-            <!-- Label -->
-            <span *ngIf="!isSidebarCollapsed" class="flex-grow text-left text-[13px]">{{ tab.name }}</span>
-
-            <!-- Badges -->
-            <ng-container *ngIf="!isSidebarCollapsed">
-              <span *ngIf="tab.id === 'messages' && unreadMessages > 0 && activeTab !== 'messages'"
-                    class="text-[9px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center"
-                    [ngClass]="activeTab === tab.id ? (isDark ? 'bg-black/20 text-white' : 'bg-white/20 text-black') : (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white')">
+                    class="sidebar-nav-item"
+                    [class.sidebar-nav-item--active]="activeTab === tab.id"
+                    [title]="tab.name">
+              <span class="material-symbols-rounded sidebar-nav-icon">{{ tab.icon }}</span>
+              <span class="sidebar-nav-label-text">{{ tab.name }}</span>
+              <span *ngIf="activeTab === tab.id" class="sidebar-nav-active-dot"></span>
+              
+              <!-- Badges -->
+              <span *ngIf="tab.id === 'messages' && unreadMessages > 0 && activeTab !== 'messages' && !isSidebarCollapsed"
+                    class="badge-new-pill" style="margin-left: auto;">
                 {{ unreadMessages }}
               </span>
-              <span *ngIf="tab.id === 'leads' && pendingLeads > 0 && activeTab !== 'leads'"
-                    class="text-[9px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center"
-                    [ngClass]="activeTab === tab.id ? (isDark ? 'bg-black/20 text-white' : 'bg-white/20 text-black') : (isDark ? 'bg-white text-black' : 'bg-neutral-900 text-white')">
-                {{ pendingLeads }}
-              </span>
-            </ng-container>
-          </button>
-        </ng-container>
+            </button>
+          </ng-container>
         </nav>
 
-        <!-- Bottom: Logout -->
-        <div class="p-3 border-t shrink-0" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-          <button (click)="logout()"
-                  class="flex items-center rounded-xl text-[13px] font-semibold transition-all duration-200 cursor-pointer"
-                  [ngClass]="[isDark ? 'text-neutral-600 hover:text-red-400 hover:bg-red-500/5' : 'text-neutral-400 hover:text-red-500 hover:bg-red-50', isSidebarCollapsed ? 'px-0 py-2.5 justify-center w-14 mx-auto' : 'w-full px-3 py-2.5 gap-3']">
-            <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
-            </svg>
-            <span *ngIf="!isSidebarCollapsed">Salir</span>
+        <!-- Perfil de Usuario en el pie del sidebar -->
+        <div class="sidebar-user-card" *ngIf="!isSidebarCollapsed">
+          <div class="sidebar-avatar">{{ getUserInitials() }}</div>
+          <div class="sidebar-user-info">
+            <span class="sidebar-username">{{ getUserName() }}</span>
+            <span class="sidebar-role">Administrador</span>
+          </div>
+        </div>
+
+        <!-- Logout Button -->
+        <div class="p-2 border-t border-[#18181b] shrink-0">
+          <button (click)="logout()" class="sidebar-nav-item text-red-400 hover:text-red-300 hover:bg-red-500/10" [title]="'Cerrar Sesión'">
+            <span class="material-symbols-rounded sidebar-nav-icon text-red-400">logout</span>
+            <span class="sidebar-nav-label-text" *ngIf="!isSidebarCollapsed">Cerrar Sesión</span>
           </button>
         </div>
       </aside>
 
       <!-- ══════════════════════════════════════
-           MAIN AREA
+           MAIN AREA (DASH CONTENT)
       ══════════════════════════════════════ -->
-      <div class="flex-grow flex flex-col h-full overflow-hidden min-w-0 relative">
+      <div class="dash-content flex-1 flex flex-col min-h-screen min-w-0"
+           [style.margin-left]="isMobileScreen ? '0px' : (isSidebarCollapsed ? '68px' : '240px')">
 
         <!-- Top Bar (AI Search & Rotbot Dynamic Header) -->
         <app-dash-ai-search
@@ -464,20 +390,14 @@ interface Tab {
       100% { opacity: 1; }
     }
 
-    .admin-shell { 
-      font-family: 'Inter Tight', sans-serif; 
+    .dash-shell { 
+      font-family: var(--font-family, 'Inter Tight', sans-serif); 
       animation: adminFadeIn 0.3s ease-out forwards;
     }
 
     /* Hide sidebar scrollbar */
     .sidebar-nav { scrollbar-width: none; }
     .sidebar-nav::-webkit-scrollbar { display: none; }
-
-    /* Force strict colors in the admin panel to avoid global styles.css overrides */
-    ::ng-deep .admin-shell .text-white { color: #ffffff !important; }
-    ::ng-deep .admin-shell .text-black { color: #000000 !important; }
-    ::ng-deep .admin-shell .bg-white { background-color: #ffffff !important; }
-    ::ng-deep .admin-shell .bg-black { background-color: #000000 !important; }
   `]
 })
 export class AdminComponent implements OnInit, OnDestroy {
@@ -505,17 +425,32 @@ export class AdminComponent implements OnInit, OnDestroy {
   rotbotMuted = false;
 
   tabs: Tab[] = [
-    { id: 'dashboard',         name: 'Inicio' },
-    { id: 'finances',          name: 'Finanzas' },
-    { id: 'financial-control', name: 'Analíticas' },
-    { id: 'messages',          name: 'Mensajes' },
-    { id: 'users',             name: 'Usuarios' },
-    { id: 'config',            name: 'Configuración' },
-    { id: 'rotbot',            name: 'Rotbot IA',   section: 'herramientas' },
-    { id: 'itinerary',         name: 'Calendario',  section: 'herramientas' },
-    { id: 'library',           name: 'Biblioteca',  section: 'herramientas' },
-    { id: 'db-viewer',         name: 'Visor BD',    section: 'herramientas' },
+    { id: 'dashboard',         name: 'Inicio',        icon: 'dashboard' },
+    { id: 'finances',          name: 'Finanzas',      icon: 'payments' },
+    { id: 'financial-control', name: 'Analíticas',    icon: 'monitoring' },
+    { id: 'messages',          name: 'Mensajes',      icon: 'mail' },
+    { id: 'users',             name: 'Usuarios',      icon: 'group' },
+    { id: 'config',            name: 'Configuración', icon: 'settings' },
+    { id: 'rotbot',            name: 'Rotbot IA',     icon: 'smart_toy',       section: 'herramientas' },
+    { id: 'itinerary',         name: 'Calendario',    icon: 'calendar_today',  section: 'herramientas' },
+    { id: 'library',           name: 'Biblioteca',    icon: 'menu_book',       section: 'herramientas' },
+    { id: 'db-viewer',         name: 'Visor BD',      icon: 'database',        section: 'herramientas' },
   ];
+
+  getUserName(): string {
+    const user = this.authService.currentUser();
+    return user?.nombre || 'Santiago';
+  }
+
+  getUserInitials(): string {
+    const name = this.getUserName().trim();
+    if (!name) return 'SA';
+    const parts = name.split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  }
 
   get isDark() { return this.currentTheme === 'dark'; }
 
@@ -600,6 +535,10 @@ export class AdminComponent implements OnInit, OnDestroy {
         this.previousSidebarState = null;
       }
     }
+  }
+
+  get isMobileScreen(): boolean {
+    return typeof window !== 'undefined' && window.innerWidth < 768;
   }
 
   onNotesViewChange(inNotes: boolean) {

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { RotbotMode } from '../../../services/robot-chat.service';
 import { LibraryService } from '../../../services/library.service';
+import { AuthService } from '../../../services/auth.service';
 
 export type { RotbotMode };
 
@@ -148,19 +149,15 @@ const TAB_LABELS: Record<string, string> = {
         <!-- A. Non-Rotbot & Non-Notes Action: Ver Sitio en Vivo -->
         <ng-container *ngIf="activeTab !== 'rotbot' && !(activeTab === 'library' && isNotesView)">
           <a routerLink="/"
-             class="inline-flex items-center gap-2 px-3.5 sm:px-4.5 py-2 sm:py-2.5 rounded-full font-headline font-semibold text-xs uppercase tracking-wider transition-all duration-300 border cursor-pointer hover:scale-[1.02] active:scale-[0.98] shadow-sm"
-             [ngClass]="theme === 'dark'
-               ? 'bg-white/10 hover:bg-white text-white hover:text-black border-white/20 hover:border-white'
-               : 'bg-[#09090b] hover:bg-neutral-800 text-white border-transparent'">
-            <span class="relative flex h-2.5 w-2.5">
+             class="btn-action-primary"
+             style="padding: 6px 14px; font-size: 0.76rem;"
+             title="Abrir sitio web público">
+            <span class="relative flex h-2 w-2">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span class="hidden sm:inline">Ver sitio en vivo</span>
-            <span class="sm:hidden">Sitio</span>
-            <svg class="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H18m0 0v4.5M18 6l-7.5 7.5M6 18h12"/>
-            </svg>
+            <span class="hidden sm:inline">Ver sitio</span>
+            <span class="material-symbols-rounded" style="font-size: 14px; opacity: 0.7;">open_in_new</span>
           </a>
         </ng-container>
 
@@ -506,6 +503,18 @@ const TAB_LABELS: Record<string, string> = {
           </div>
         </ng-container>
 
+        <!-- Status Pill Pulsante -->
+        <div class="dash-status-pill hidden md:flex">
+          <span class="dash-status-dot"></span>
+          <span>Sistema Activo</span>
+        </div>
+
+        <!-- User Chip -->
+        <div class="dash-user-chip hidden sm:flex" (click)="tabChange.emit('config')" title="Configuración de usuario">
+          <div class="dash-avatar-mini">{{ userInitials }}</div>
+          <span class="truncate max-w-[120px]">{{ userName }}</span>
+        </div>
+
         <!-- Theme Toggle Button -->
         <button (click)="themeChange.emit()"
                 class="w-9 h-9 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center border transition-all duration-200 cursor-pointer hover:scale-105 active:scale-95 shrink-0"
@@ -547,6 +556,22 @@ const TAB_LABELS: Record<string, string> = {
 })
 export class DashAiSearchComponent {
   public libraryService = inject(LibraryService);
+  private authService = inject(AuthService);
+
+  get userName(): string {
+    const user = this.authService.currentUser();
+    return user?.nombre || 'Santiago';
+  }
+
+  get userInitials(): string {
+    const name = this.userName.trim();
+    if (!name) return 'SA';
+    const parts = name.split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  }
 
   tabs$ = this.libraryService.tabs$;
   activeTabId$ = this.libraryService.activeTabId$;

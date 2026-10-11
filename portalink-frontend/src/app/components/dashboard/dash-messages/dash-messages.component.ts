@@ -41,11 +41,8 @@ import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-
           </button>
 
           <button *ngIf="unreadCount > 0" (click)="markAllAsRead()"
-                  class="px-4.5 py-2 rounded-full text-xs font-headline font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center gap-2 shadow-sm hover:scale-[1.02] active:scale-[0.98]"
-                  [ngClass]="isDark ? 'bg-emerald-500 text-black hover:bg-emerald-400 font-bold' : 'bg-emerald-600 text-white hover:bg-emerald-700'">
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-            </svg>
+                  class="btn-action-primary">
+            <span class="material-symbols-rounded" style="font-size: 16px;">done_all</span>
             <span>Marcar Leídos ({{ unreadCount }})</span>
           </button>
         </div>
@@ -244,7 +241,7 @@ import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-
 
                   <!-- Status badges -->
                   <div class="flex items-center gap-2 mt-2.5">
-                    <span *ngIf="msg.status === 'unread'" class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                    <span *ngIf="msg.status === 'unread'" class="badge-new-pill">
                       Nuevo
                     </span>
                     <span *ngIf="msg.status === 'replied'" class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">

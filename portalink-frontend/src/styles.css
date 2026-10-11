@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 @import 'aos/dist/aos.css';
+@import './styles/dashboard-theme.css';
 
 @tailwind base;
 @tailwind components;
@@ -251,8 +253,17 @@
   color: var(--text-primary) !important;
 }
 
-/* Preserve strict white text inside modal backdrops for dark buttons/elements */
-.modal-backdrop .text-white {
+/* Preserve strict white text inside modal backdrops, dark cards, black bento widgets, and red buttons */
+.modal-backdrop .text-white,
+.racha-black-card,
+.racha-black-card .text-white,
+.racha-black-card h3,
+.racha-black-card strong,
+.force-white,
+button.bg-red-600,
+button.bg-red-600 *,
+.bg-red-600,
+.bg-red-600 * {
   color: #ffffff !important;
 }
 

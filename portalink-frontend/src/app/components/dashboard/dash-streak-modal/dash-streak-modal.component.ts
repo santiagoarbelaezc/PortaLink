@@ -134,7 +134,7 @@ import { Subscription } from 'rxjs';
 
               <!-- Progress Bar (Con halo suave en desktop) -->
               <div class="w-full h-1.5 sm:h-2 md:h-2.5 rounded-full overflow-hidden" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-100'">
-                <div class="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-amber-500 via-emerald-500 to-teal-400 shadow-[0_0_12px_rgba(16,185,129,0.3)]"
+                <div class="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-red-600 via-rose-500 to-red-400 shadow-[0_0_12px_rgba(220,38,38,0.4)]"
                      [style.width.%]="(completedCount / 3) * 100"></div>
               </div>
 
@@ -142,10 +142,10 @@ import { Subscription } from 'rxjs';
               <div class="space-y-1.5 sm:space-y-2.5 md:space-y-3 pt-0.5">
                 
                 <!-- Goal 1: Login (Completed) -->
-                <div class="flex items-center justify-between p-2.5 sm:p-3 md:p-3.5 rounded-xl sm:rounded-2xl border transition-all duration-200 md:hover:border-emerald-500/40"
-                     [ngClass]="isDark ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800'">
+                <div class="flex items-center justify-between p-2.5 sm:p-3 md:p-3.5 rounded-xl sm:rounded-2xl border transition-all duration-200 md:hover:border-red-500/40"
+                     [ngClass]="isDark ? 'bg-red-500/10 border-red-500/25 text-red-300' : 'bg-red-50 border-red-200 text-red-900'">
                   <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                    <div class="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-md">
+                    <div class="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-full bg-red-600 text-white flex items-center justify-center shrink-0 shadow-md">
                       <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
                       </svg>
@@ -155,7 +155,7 @@ import { Subscription } from 'rxjs';
                       <p class="hidden sm:block text-[10px] md:text-[11px] opacity-75 m-0 font-sans">Registrado automáticamente hoy</p>
                     </div>
                   </div>
-                  <span class="text-[9.5px] sm:text-[10px] md:text-[11px] font-mono font-bold px-2 sm:px-2.5 md:px-3 py-0.5 sm:py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/35 shrink-0">
+                  <span class="text-[9.5px] sm:text-[10px] md:text-[11px] font-mono font-bold px-2 sm:px-2.5 md:px-3 py-0.5 sm:py-1 rounded-full bg-red-500/20 text-red-400 border border-red-500/35 shrink-0">
                     ¡Completado!
                   </span>
                 </div>
@@ -163,11 +163,11 @@ import { Subscription } from 'rxjs';
                 <!-- Goal 2: Rotbot IA -->
                 <div class="flex items-center justify-between p-2.5 sm:p-3 md:p-3.5 rounded-xl sm:rounded-2xl border transition-all duration-200"
                      [ngClass]="streakData?.actions?.robot ? 
-                       (isDark ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-300 md:hover:border-emerald-500/40' : 'bg-emerald-50 border-emerald-200 text-emerald-800') : 
+                       (isDark ? 'bg-red-500/10 border-red-500/25 text-red-300 md:hover:border-red-500/40' : 'bg-red-50 border-red-200 text-red-900') : 
                        (isDark ? 'bg-[#14141d]/90 border-neutral-800 text-neutral-300 md:hover:border-neutral-700' : 'bg-neutral-50 border-neutral-200 text-neutral-700')">
                   <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
                     <div class="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center shrink-0"
-                         [ngClass]="streakData?.actions?.robot ? 'bg-emerald-500 text-white shadow-md' : (isDark ? 'bg-neutral-800 text-neutral-400' : 'bg-neutral-200 text-neutral-500')">
+                         [ngClass]="streakData?.actions?.robot ? 'bg-red-600 text-white shadow-md' : (isDark ? 'bg-neutral-800 text-neutral-400' : 'bg-neutral-200 text-neutral-500')">
                       <svg *ngIf="streakData?.actions?.robot" class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
                       </svg>
@@ -185,8 +185,7 @@ import { Subscription } from 'rxjs';
                     <button *ngIf="!streakData?.actions?.robot" 
                             type="button"
                             (click)="goToTab('rotbot')"
-                            class="hidden md:inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10.5px] font-headline font-bold uppercase tracking-wider transition-all cursor-pointer border"
-                            [ngClass]="isDark ? 'bg-neutral-800 hover:bg-neutral-700 text-white border-neutral-700' : 'bg-neutral-200 hover:bg-neutral-300 text-neutral-900 border-neutral-300'"
+                            class="hidden md:inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10.5px] font-headline font-bold uppercase tracking-wider transition-all cursor-pointer border bg-red-600 hover:bg-red-500 text-white border-transparent"
                             title="Ir a conversar con Rotbot">
                       <span>Ir ahora</span>
                       <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -195,7 +194,7 @@ import { Subscription } from 'rxjs';
                     </button>
 
                     <span class="text-[9.5px] sm:text-[10px] md:text-[11px] font-mono px-2 sm:px-2.5 md:px-3 py-0.5 sm:py-1 rounded-full shrink-0"
-                          [ngClass]="streakData?.actions?.robot ? 'bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/35' : (isDark ? 'bg-neutral-800 text-neutral-400' : 'bg-neutral-200 text-neutral-600')">
+                          [ngClass]="streakData?.actions?.robot ? 'bg-red-500/20 text-red-400 font-bold border border-red-500/35' : (isDark ? 'bg-neutral-800 text-neutral-400' : 'bg-neutral-200 text-neutral-600')">
                       {{ streakData?.actions?.robot ? '¡Completado!' : 'Pendiente' }}
                     </span>
                   </div>
@@ -204,11 +203,11 @@ import { Subscription } from 'rxjs';
                 <!-- Goal 3: Biblioteca -->
                 <div class="flex items-center justify-between p-2.5 sm:p-3 md:p-3.5 rounded-xl sm:rounded-2xl border transition-all duration-200"
                      [ngClass]="streakData?.actions?.library ? 
-                       (isDark ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-300 md:hover:border-emerald-500/40' : 'bg-emerald-50 border-emerald-200 text-emerald-800') : 
+                       (isDark ? 'bg-red-500/10 border-red-500/25 text-red-300 md:hover:border-red-500/40' : 'bg-red-50 border-red-200 text-red-900') : 
                        (isDark ? 'bg-[#14141d]/90 border-neutral-800 text-neutral-300 md:hover:border-neutral-700' : 'bg-neutral-50 border-neutral-200 text-neutral-700')">
                   <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
                     <div class="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center shrink-0"
-                         [ngClass]="streakData?.actions?.library ? 'bg-emerald-500 text-white shadow-md' : (isDark ? 'bg-neutral-800 text-neutral-400' : 'bg-neutral-200 text-neutral-500')">
+                         [ngClass]="streakData?.actions?.library ? 'bg-red-600 text-white shadow-md' : (isDark ? 'bg-neutral-800 text-neutral-400' : 'bg-neutral-200 text-neutral-500')">
                       <svg *ngIf="streakData?.actions?.library" class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
                       </svg>
@@ -226,8 +225,7 @@ import { Subscription } from 'rxjs';
                     <button *ngIf="!streakData?.actions?.library" 
                             type="button"
                             (click)="goToTab('library')"
-                            class="hidden md:inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10.5px] font-headline font-bold uppercase tracking-wider transition-all cursor-pointer border"
-                            [ngClass]="isDark ? 'bg-neutral-800 hover:bg-neutral-700 text-white border-neutral-700' : 'bg-neutral-200 hover:bg-neutral-300 text-neutral-900 border-neutral-300'"
+                            class="hidden md:inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10.5px] font-headline font-bold uppercase tracking-wider transition-all cursor-pointer border bg-red-600 hover:bg-red-500 text-white border-transparent"
                             title="Abrir la Biblioteca">
                       <span>Ir ahora</span>
                       <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -236,7 +234,7 @@ import { Subscription } from 'rxjs';
                     </button>
 
                     <span class="text-[9.5px] sm:text-[10px] md:text-[11px] font-mono px-2 sm:px-2.5 md:px-3 py-0.5 sm:py-1 rounded-full shrink-0"
-                          [ngClass]="streakData?.actions?.library ? 'bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/35' : (isDark ? 'bg-neutral-800 text-neutral-400' : 'bg-neutral-200 text-neutral-600')">
+                          [ngClass]="streakData?.actions?.library ? 'bg-red-500/20 text-red-400 font-bold border border-red-500/35' : (isDark ? 'bg-neutral-800 text-neutral-400' : 'bg-neutral-200 text-neutral-600')">
                       {{ streakData?.actions?.library ? '¡Completado!' : 'Pendiente' }}
                     </span>
                   </div>
