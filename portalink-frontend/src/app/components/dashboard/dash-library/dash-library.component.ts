@@ -987,6 +987,48 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isMobileScreen: boolean = false;
 
+  // ── MOBILE NAVIGATION STATE (Master-Detail App Pattern) ────────────────
+  /** En móvil: 'list' muestra la lista de apuntes, 'editor' muestra el editor inmersivo */
+  mobileNotesMode: 'list' | 'editor' = 'list';
+  /** Controla el Bottom Sheet para añadir bloques en móvil */
+  showMobileBlockSheet: boolean = false;
+  /** Controla el Bottom Sheet de opciones del apunte (···) en móvil */
+  showMobilePageOptionsSheet: boolean = false;
+
+  /** Abre el editor inmersivo móvil (navega de lista → editor) */
+  openMobileEditor() {
+    this.mobileNotesMode = 'editor';
+    this.showMobileBlockSheet = false;
+    this.showMobilePageOptionsSheet = false;
+  }
+
+  /** Vuelve a la lista de apuntes desde el editor móvil */
+  closeMobileEditor() {
+    this.mobileNotesMode = 'list';
+    this.showMobileBlockSheet = false;
+    this.showMobilePageOptionsSheet = false;
+  }
+
+  /** Alterna el Bottom Sheet para insertar bloques */
+  toggleMobileBlockSheet(event?: MouseEvent) {
+    if (event) event.stopPropagation();
+    this.showMobileBlockSheet = !this.showMobileBlockSheet;
+    this.showMobilePageOptionsSheet = false;
+  }
+
+  /** Alterna el Bottom Sheet de opciones del apunte */
+  toggleMobilePageOptionsSheet(event?: MouseEvent) {
+    if (event) event.stopPropagation();
+    this.showMobilePageOptionsSheet = !this.showMobilePageOptionsSheet;
+    this.showMobileBlockSheet = false;
+  }
+
+  /** Cierra todos los Bottom Sheets móviles */
+  closeMobileSheets() {
+    this.showMobileBlockSheet = false;
+    this.showMobilePageOptionsSheet = false;
+  }
+
   @HostListener('window:resize')
   onResize() {
     this.checkMobileScreen();
@@ -1629,6 +1671,9 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.selectedNotebook = notebook;
     this.selectedPage = null;
     this.pages = [];
+    // Siempre empezar en la lista al entrar a un cuaderno en móvil
+    this.mobileNotesMode = 'list';
+    this.closeMobileSheets();
 
     if (notebook && notebook.id) {
       this.loadPages(notebook.id);
@@ -1670,6 +1715,8 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activeBlockId = (this.blocks && this.blocks.length > 0) ? this.blocks[0].id : null;
     if (this.isMobileScreen) {
       this.isSidebarCollapsed = true;
+      // En móvil: al seleccionar un apunte, navegar directamente al editor inmersivo
+      this.openMobileEditor();
     }
     this.syncActiveTabMeta();
     this.saveStateInLocalStorage();
@@ -2582,6 +2629,10 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.syncActiveTabMeta();
     this.restoreScrollForCurrentTabAndPage(0);
     this.showToast('Apunte creado exitosamente');
+    // En móvil: al crear un nuevo apunte, ir directamente al editor inmersivo
+    if (this.isMobileScreen) {
+      this.openMobileEditor();
+    }
 
     this.libraryService.createPage({
       notebook_id: this.selectedNotebook.id,

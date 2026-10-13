@@ -51,17 +51,9 @@ interface Tab {
     <div class="dash-shell min-h-screen w-full flex relative overflow-x-hidden" [class.sidebar-collapsed]="isSidebarCollapsed">
 
       <!-- ══════════════════════════════════════
-           MOBILE BACKDROP OVERLAY
-      ══════════════════════════════════════ -->
-      <div *ngIf="isMobileDrawerOpen"
-           (click)="isMobileDrawerOpen = false"
-           class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300">
-      </div>
-
-      <!-- ══════════════════════════════════════
            DESKTOP SIDEBAR (HIGH CONTRAST SLATE & RED)
       ══════════════════════════════════════ -->
-      <aside class="dash-sidebar fixed top-0 left-0 h-screen z-[200] flex flex-col" [class.mobile-open]="isMobileDrawerOpen">
+      <aside class="dash-sidebar fixed top-0 left-0 h-screen z-[200] flex flex-col">
 
         <!-- Brand -->
         <div class="sidebar-brand" (click)="reloadDashboard()" title="Recargar Dashboard">
@@ -233,79 +225,119 @@ interface Tab {
       </div>
 
       <!-- ══════════════════════════════════════
-           MATERIAL 3 MOBILE BOTTOM SHEET MENU
+           PREMIUM MOBILE BOTTOM SHEET MENU
       ══════════════════════════════════════ -->
       <div *ngIf="isMobileDrawerOpen"
            (click)="isMobileDrawerOpen = false"
-           class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300">
+           class="fixed inset-0 bg-black/75 backdrop-blur-md z-40 md:hidden transition-opacity duration-300">
       </div>
 
-      <div class="fixed bottom-0 left-0 right-0 z-50 md:hidden rounded-t-[28px] max-h-[85vh] overflow-y-auto border-t shadow-2xl transition-transform duration-300 ease-out select-none"
+      <div class="fixed bottom-0 left-0 right-0 z-50 md:hidden rounded-t-[32px] max-h-[88vh] overflow-y-auto border-t shadow-[0_-12px_45px_rgba(0,0,0,0.85)] transition-transform duration-300 ease-out select-none flex flex-col"
            [ngClass]="[
-             isDark ? 'bg-[#0f0f14] border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900',
+             isDark ? 'bg-[#0b0c10]/98 border-white/[0.08] text-white' : 'bg-white/98 border-neutral-200 text-neutral-900',
              isMobileDrawerOpen ? 'translate-y-0' : 'translate-y-full'
            ]"
-           style="padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));">
+           style="padding-bottom: calc(1.25rem + env(safe-area-inset-bottom, 12px));">
         
         <!-- Drag Handle Pill -->
-        <div class="w-12 h-1.5 rounded-full bg-neutral-300 dark:bg-neutral-700 mx-auto my-3"></div>
+        <div class="w-12 h-1.5 rounded-full mx-auto my-3 shrink-0"
+             [ngClass]="isDark ? 'bg-white/20' : 'bg-neutral-300'"></div>
 
         <!-- Sheet Header -->
-        <div class="px-5 py-2 flex items-center justify-between border-b pb-3 mb-3"
-             [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+        <div class="px-5 py-2.5 flex items-center justify-between border-b pb-3 mb-2 shrink-0"
+             [ngClass]="isDark ? 'border-white/[0.08]' : 'border-neutral-200/80'">
           <div class="flex items-center gap-3">
-            <img [src]="isDark ? 'assets/icons/navbar-logodark.png' : 'assets/icons/navbar-logolight.png'" class="w-7 h-7 object-contain" alt="Admin Panel">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border"
+                 [ngClass]="isDark ? 'bg-white/[0.05] border-white/10 text-white' : 'bg-neutral-100 border-neutral-200 text-neutral-900'">
+              <span class="material-symbols-rounded text-xl">dashboard_customize</span>
+            </div>
             <div>
-              <h2 class="text-sm font-bold tracking-wide">Menú Dashboard</h2>
-              <p class="text-[11px] opacity-60">Acceso rápido a todas las funciones</p>
+              <h2 class="text-sm font-bold tracking-tight">PortaLink Hub</h2>
+              <p class="text-[11px] opacity-60">Navegación y herramientas rápidas</p>
             </div>
           </div>
-          <button (click)="isMobileDrawerOpen = false" class="p-2 rounded-full hover:bg-neutral-500/10 active:scale-95">
-            <svg class="w-5 h-5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+          <button (click)="isMobileDrawerOpen = false"
+                  class="w-8 h-8 rounded-full flex items-center justify-center transition-colors active:scale-95"
+                  [ngClass]="isDark ? 'bg-white/[0.06] hover:bg-white/[0.12] text-neutral-300' : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700'"
+                  aria-label="Cerrar menú">
+            <span class="material-symbols-rounded text-lg">close</span>
           </button>
         </div>
 
         <!-- All Tabs Grid List -->
-        <div class="px-4 grid grid-cols-2 gap-2.5">
+        <div class="px-4 py-2 grid grid-cols-2 gap-2.5 overflow-y-auto">
           <ng-container *ngFor="let tab of tabs; let i = index">
             <!-- Herramientas Section Header in Mobile Drawer -->
             <div *ngIf="tab.section === 'herramientas' && (i === 0 || tabs[i-1].section !== 'herramientas')"
                  class="col-span-2 pt-3 pb-1 flex items-center gap-2">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-cyan-400">Herramientas</span>
-              <span class="flex-grow border-t" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'"></span>
+              <span class="text-[10.5px] font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+                <span class="material-symbols-rounded text-sm">auto_fix_high</span>
+                Herramientas
+              </span>
+              <span class="flex-grow border-t" [ngClass]="isDark ? 'border-white/[0.08]' : 'border-neutral-200'"></span>
             </div>
 
+            <!-- Tab Button -->
             <button (click)="setTab(tab.id); isMobileDrawerOpen = false;"
-                    class="flex items-center gap-3 p-3 rounded-2xl text-xs font-semibold transition-all active:scale-95 text-left border"
-                  [ngClass]="activeTab === tab.id ? (isDark ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300 font-bold' : 'bg-emerald-50 border-emerald-200 text-emerald-700 font-bold') : (isDark ? 'bg-neutral-900/60 border-neutral-800/80 text-neutral-300 hover:bg-neutral-800' : 'bg-neutral-50 border-neutral-200/60 text-neutral-700 hover:bg-neutral-100')">
-            <span class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-                  [ngClass]="activeTab === tab.id ? (isDark ? 'bg-emerald-500/30 text-emerald-300' : 'bg-emerald-500/20 text-emerald-700') : (isDark ? 'bg-neutral-800 text-neutral-400' : 'bg-white text-neutral-600')">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <ng-container *ngIf="tab.id === 'dashboard'"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></ng-container>
-                <ng-container *ngIf="tab.id === 'rotbot'"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2zM9 10h.01M15 10h.01" /></ng-container>
-                <ng-container *ngIf="tab.id === 'finances'"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></ng-container>
-                <ng-container *ngIf="tab.id === 'messages'"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></ng-container>
-                <ng-container *ngIf="tab.id === 'users'"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></ng-container>
-                <ng-container *ngIf="tab.id === 'itinerary'"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></ng-container>
-                <ng-container *ngIf="tab.id === 'library'"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25" /></ng-container>
-                <ng-container *ngIf="tab.id === 'config'"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></ng-container>
-                <ng-container *ngIf="tab.id === 'db-viewer'"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" /></ng-container>
-              </svg>
-            </span>
-            <span class="truncate">{{ tab.name }}</span>
-          </button>
-        </ng-container>
+                    class="group relative flex items-center gap-3 p-3 rounded-2xl text-xs font-semibold transition-all duration-200 active:scale-95 text-left border"
+                    [ngClass]="activeTab === tab.id
+                      ? (isDark
+                          ? 'bg-gradient-to-r from-emerald-500/20 to-emerald-500/5 border-emerald-500/40 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.15)] font-bold'
+                          : 'bg-emerald-50 border-emerald-300 text-emerald-800 shadow-xs font-bold')
+                      : (isDark
+                          ? 'bg-[#14161f]/90 hover:bg-[#1a1d28] border-white/[0.06] hover:border-white/[0.12] text-neutral-200'
+                          : 'bg-neutral-50/90 hover:bg-neutral-100 border-neutral-200/80 text-neutral-700')">
+              
+              <!-- Tab Icon Badge with signature color -->
+              <span class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-200 group-hover:scale-105"
+                    [ngClass]="activeTab === tab.id
+                      ? (isDark ? 'bg-emerald-500 text-black border-emerald-400 font-bold' : 'bg-emerald-600 text-white border-emerald-600')
+                      : [getTabAccent(tab.id).bg, getTabAccent(tab.id).text, getTabAccent(tab.id).border]">
+                <span class="material-symbols-rounded text-[20px]">{{ tab.icon }}</span>
+              </span>
 
-          <!-- Logout Button -->
-          <button (click)="logout(); isMobileDrawerOpen = false;"
-                  class="col-span-2 flex items-center justify-center gap-2 p-3 mt-2 rounded-2xl text-xs font-bold text-red-500 bg-red-500/10 border border-red-500/20 active:scale-95">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
-            </svg>
-            <span>Cerrar Sesión</span>
-          </button>
+              <!-- Tab Name + Badges -->
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-1">
+                  <span class="truncate tracking-tight">{{ tab.name }}</span>
+                  <span *ngIf="activeTab === tab.id"
+                        class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 shadow-[0_0_6px_#34d399]"></span>
+                </div>
+                
+                <!-- Extra badge for messages / rotbot -->
+                <span *ngIf="tab.id === 'messages' && unreadMessages > 0"
+                      class="inline-block mt-0.5 px-1.5 py-0.2 text-[9.5px] font-bold rounded-full bg-amber-500 text-black leading-tight">
+                  {{ unreadMessages }} nuevo{{ unreadMessages > 1 ? 's' : '' }}
+                </span>
+                <span *ngIf="tab.id === 'rotbot'"
+                      class="inline-block mt-0.5 text-[9.5px] font-medium text-cyan-400/80 leading-tight">
+                  IA Copilot
+                </span>
+              </div>
+            </button>
+          </ng-container>
+
+          <!-- User Card & Logout inside the bottom sheet -->
+          <div class="col-span-2 pt-2.5 mt-2 border-t flex items-center justify-between gap-2"
+               [ngClass]="isDark ? 'border-white/[0.08]' : 'border-neutral-200'">
+            <!-- User Info Pill -->
+            <div class="flex items-center gap-2.5 min-w-0 py-1">
+              <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-500 to-cyan-500 text-black font-extrabold text-xs flex items-center justify-center shrink-0 shadow-sm">
+                {{ getUserInitials() }}
+              </div>
+              <div class="min-w-0">
+                <p class="text-xs font-bold truncate leading-tight">{{ getUserName() }}</p>
+                <p class="text-[10px] opacity-60 truncate leading-tight">Administrador</p>
+              </div>
+            </div>
+
+            <!-- Logout Button -->
+            <button (click)="logout(); isMobileDrawerOpen = false;"
+                    class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 active:scale-95 transition-all shrink-0">
+              <span class="material-symbols-rounded text-base">logout</span>
+              <span>Salir</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -450,6 +482,31 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   get isDark() { return this.currentTheme === 'dark'; }
+
+  getTabAccent(tabId: string): { bg: string; text: string; border: string } {
+    switch (tabId) {
+      case 'dashboard':
+        return { bg: 'bg-blue-500/15 dark:bg-blue-500/20', text: 'text-blue-600 dark:text-blue-400', border: 'border-blue-500/30' };
+      case 'finances':
+        return { bg: 'bg-emerald-500/15 dark:bg-emerald-500/20', text: 'text-emerald-600 dark:text-emerald-400', border: 'border-emerald-500/30' };
+      case 'messages':
+        return { bg: 'bg-amber-500/15 dark:bg-amber-500/20', text: 'text-amber-600 dark:text-amber-400', border: 'border-amber-500/30' };
+      case 'users':
+        return { bg: 'bg-purple-500/15 dark:bg-purple-500/20', text: 'text-purple-600 dark:text-purple-400', border: 'border-purple-500/30' };
+      case 'config':
+        return { bg: 'bg-zinc-500/15 dark:bg-zinc-500/20', text: 'text-zinc-600 dark:text-zinc-300', border: 'border-zinc-500/30' };
+      case 'rotbot':
+        return { bg: 'bg-cyan-500/15 dark:bg-cyan-500/20', text: 'text-cyan-600 dark:text-cyan-400', border: 'border-cyan-500/30' };
+      case 'itinerary':
+        return { bg: 'bg-rose-500/15 dark:bg-rose-500/20', text: 'text-rose-600 dark:text-rose-400', border: 'border-rose-500/30' };
+      case 'library':
+        return { bg: 'bg-teal-500/15 dark:bg-teal-500/20', text: 'text-teal-600 dark:text-teal-400', border: 'border-teal-500/30' };
+      case 'db-viewer':
+        return { bg: 'bg-indigo-500/15 dark:bg-indigo-500/20', text: 'text-indigo-600 dark:text-indigo-400', border: 'border-indigo-500/30' };
+      default:
+        return { bg: 'bg-neutral-500/15 dark:bg-neutral-500/20', text: 'text-neutral-600 dark:text-neutral-400', border: 'border-neutral-500/30' };
+    }
+  }
 
   ngOnInit() {
     // Si la sesión ya expiró, expulsar inmediatamente a login sin intentar cargar widgets

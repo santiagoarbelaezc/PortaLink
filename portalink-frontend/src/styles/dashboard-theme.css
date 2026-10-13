@@ -930,12 +930,7 @@
 
 @media (max-width: 768px) {
   .dash-sidebar {
-    transform: translateX(-100%);
-    transition: transform var(--transition-smooth);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-  }
-  .dash-sidebar.mobile-open {
-    transform: translateX(0);
+    display: none !important;
   }
   .sidebar-toggle {
     display: none;

@@ -1054,9 +1054,532 @@
   </div>
 
   <!-- ══════════════════════════════════════
-       NIVEL 3: EDITOR DE APUNTES NOTION LIVE (SIDEBAR w-72 PERFECTA + PIZARRA CON AJUSTE DINÁMICO DE ANCHO)
+       NIVEL 3 MÓVIL: VISTA MASTER (LISTA DE APUNTES) - Solo visible en pantallas < lg
   ══════════════════════════════════════ -->
-  <div *ngIf="selectedNotebook && searchQuery.trim().length === 0"
+  <div *ngIf="selectedNotebook && searchQuery.trim().length === 0 && isMobileScreen && mobileNotesMode === 'list'"
+    class="flex flex-col w-full min-w-0 space-y-0 animate-fade-in">
+
+    <!-- CABECERA APP MÓVIL: Retroceso + Título cuaderno + Botón Nuevo -->
+    <div class="flex items-center justify-between gap-2 pb-3 border-b px-1"
+      [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+
+      <!-- Botón Volver a Cuadernos -->
+      <button (click)="selectNotebook(null)" title="Volver a cuadernos"
+        class="flex items-center gap-1.5 py-1.5 px-2.5 rounded-xl border text-xs font-headline font-bold transition-all cursor-pointer active:scale-95 shrink-0"
+        [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900 text-neutral-300 active:bg-neutral-800' : 'border-neutral-200 bg-neutral-100 text-neutral-700 active:bg-neutral-200'">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+        <span>Cuadernos</span>
+      </button>
+
+      <!-- Nombre del cuaderno con dot de color -->
+      <div class="flex items-center gap-2 min-w-0 flex-1 px-1">
+        <span class="w-2.5 h-2.5 rounded-full shrink-0 ring-2 ring-white/10"
+          [style.backgroundColor]="selectedNotebook.color || '#10b981'"
+          [style.boxShadow]="'0 0 8px ' + (selectedNotebook.color || '#10b981') + '88'"></span>
+        <span class="text-sm font-headline font-bold truncate"
+          [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ selectedNotebook.title }}</span>
+        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0"
+          [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700 text-neutral-400' : 'bg-neutral-100 border-neutral-200 text-neutral-600'">
+          {{ pages.length }}
+        </span>
+      </div>
+
+      <!-- Botón nuevo apunte (en cabecera) -->
+      <button (click)="createNewPage()" title="Nuevo apunte"
+        class="w-9 h-9 rounded-xl border flex items-center justify-center transition-all cursor-pointer active:scale-95 shrink-0 shadow-xs"
+        [ngClass]="isDark ? 'bg-white text-black border-white' : 'bg-[#09090b] text-white border-[#09090b]'">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- BUSCADOR DE APUNTES MÓVIL -->
+    <div class="relative py-3">
+      <input
+        type="text"
+        [(ngModel)]="noteSearchQuery"
+        spellcheck="false"
+        autocorrect="off"
+        autocapitalize="off"
+        placeholder="Buscar apunte..."
+        class="w-full pl-9 pr-8 py-2.5 text-sm rounded-2xl border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-neutral-400/50"
+        [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800 text-white placeholder:text-neutral-500' : 'bg-neutral-100 border-neutral-200 text-neutral-900 placeholder:text-neutral-400'"
+      />
+      <svg class="w-4 h-4 absolute left-3 top-[22px] opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+      </svg>
+      <button *ngIf="noteSearchQuery" (click)="noteSearchQuery = ''"
+              class="absolute right-3 top-[22px] w-4 h-4 flex items-center justify-center opacity-60 hover:opacity-100 cursor-pointer text-xs"
+              title="Limpiar búsqueda">✕</button>
+    </div>
+
+    <!-- LISTA DE APUNTES MÓVIL TIPO APPLE NOTES -->
+    <div class="space-y-2 pb-28">
+      <!-- Estado vacío -->
+      <div *ngIf="pages.length === 0"
+        class="py-16 px-4 text-center flex flex-col items-center gap-4 rounded-3xl border border-dashed mt-4"
+        [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900/30' : 'border-neutral-200 bg-neutral-50'">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center"
+          [ngClass]="isDark ? 'bg-neutral-800 text-neutral-400' : 'bg-neutral-100 text-neutral-500'">
+          <svg class="w-7 h-7 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+          </svg>
+        </div>
+        <div>
+          <p class="font-headline font-bold text-sm" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Sin apuntes todavía</p>
+          <p class="text-xs opacity-50 mt-1">Toca el botón + para crear tu primer apunte</p>
+        </div>
+        <button (click)="createNewPage()"
+          class="px-5 py-2.5 rounded-xl font-headline font-bold text-xs border active:scale-95 flex items-center gap-2 cursor-pointer"
+          [ngClass]="isDark ? 'bg-white text-black border-white' : 'bg-[#09090b] text-white border-[#09090b]'">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          Crear Apunte
+        </button>
+      </div>
+
+      <!-- Sin resultados de búsqueda -->
+      <div *ngIf="filteredPages.length === 0 && pages.length > 0 && noteSearchQuery"
+        class="py-8 px-4 text-center rounded-2xl border border-dashed text-xs opacity-60 mt-2"
+        [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+        Sin resultados para "{{ noteSearchQuery }}"
+      </div>
+
+      <!-- Tarjeta de apunte táctil (estilo Apple Notes) -->
+      <div *ngFor="let page of filteredPages" (click)="selectPage(page)"
+        class="group relative flex flex-col gap-1 p-4 rounded-2xl border cursor-pointer transition-all duration-150 active:scale-[0.98] overflow-hidden"
+        [ngClass]="selectedPage?.id === page.id
+          ? (isDark ? 'bg-neutral-800/90 border-neutral-700 shadow-md' : 'bg-neutral-100 border-neutral-300 shadow-sm')
+          : (isDark ? 'bg-neutral-900/50 border-neutral-800/60 active:bg-neutral-800/70' : 'bg-white border-neutral-200 active:bg-neutral-50 shadow-xs')">
+
+        <!-- Barra de acento del cuaderno a la izquierda -->
+        <div class="absolute top-0 left-0 bottom-0 w-1 rounded-l-full"
+          [style.backgroundColor]="selectedNotebook?.color || '#737373'"></div>
+
+        <!-- Fila principal: icono fijado + título + badge activo -->
+        <div class="flex items-center gap-2 pl-1">
+          <svg *ngIf="page.is_pinned" class="w-3.5 h-3.5 text-amber-400 fill-amber-400 shrink-0" viewBox="0 0 24 24">
+            <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z" />
+          </svg>
+          <span class="font-headline font-bold text-sm truncate flex-1 min-w-0"
+            [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+            {{ page.title || 'Apunte sin título' }}
+          </span>
+          <svg *ngIf="selectedPage?.id === page.id" class="w-3.5 h-3.5 shrink-0 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
+        </div>
+
+        <!-- Vista previa del contenido -->
+        <p class="text-xs leading-relaxed line-clamp-2 pl-1 opacity-60"
+          [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">
+          {{ (page.content || '').replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]/g,'').trim() || 'Sin contenido' }}
+        </p>
+      </div>
+    </div>
+
+    <!-- FAB: Botón flotante para nuevo apunte (zona del pulgar) -->
+    <div class="fixed bottom-[5rem] right-4 z-30">
+      <button (click)="createNewPage()" title="Nuevo apunte"
+        class="w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all active:scale-90 border"
+        [ngClass]="isDark ? 'bg-white text-black border-white shadow-black/60' : 'bg-[#09090b] text-white border-[#09090b] shadow-neutral-900/30'">
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       NIVEL 3 MÓVIL: VISTA DETAIL (EDITOR INMERSIVO) - Solo visible en móvil modo editor
+  ══════════════════════════════════════ -->
+  <div *ngIf="selectedNotebook && searchQuery.trim().length === 0 && isMobileScreen && mobileNotesMode === 'editor'"
+    class="flex flex-col w-full min-w-0 animate-fade-in">
+
+    <!-- TOP APP BAR NATIVA MÓVIL -->
+    <div class="flex items-center justify-between gap-2 pb-3 border-b"
+      [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+
+      <!-- Botón volver a Lista de Apuntes -->
+      <button (click)="closeMobileEditor()" title="Volver a la lista de apuntes"
+        class="flex items-center gap-1 py-1.5 px-2 rounded-xl border text-xs font-headline font-bold transition-all cursor-pointer active:scale-95 shrink-0"
+        [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900 text-neutral-300 active:bg-neutral-800' : 'border-neutral-200 bg-neutral-100 text-neutral-700 active:bg-neutral-200'">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+        <span>Apuntes</span>
+        <span class="opacity-50 font-normal">({{ pages.length }})</span>
+      </button>
+
+      <!-- Indicador guardado automático + punto de cuaderno -->
+      <div class="flex items-center gap-2 min-w-0 flex-1 justify-center">
+        <span class="w-2 h-2 rounded-full shrink-0"
+          [style.backgroundColor]="selectedNotebook.color || '#10b981'"
+          [style.boxShadow]="'0 0 6px ' + (selectedNotebook.color || '#10b981') + '88'"></span>
+        <span class="text-xs font-headline font-bold truncate"
+          [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
+          {{ selectedPage?.title || 'Sin título' }}
+        </span>
+      </div>
+
+      <!-- Botón opciones del apunte (···) -->
+      <button (click)="toggleMobilePageOptionsSheet($event)" title="Opciones del apunte"
+        class="w-9 h-9 rounded-xl border flex items-center justify-center transition-all cursor-pointer active:scale-95 shrink-0"
+        [ngClass]="showMobilePageOptionsSheet
+          ? (isDark ? 'bg-neutral-700 border-neutral-600 text-white' : 'bg-neutral-200 border-neutral-300 text-black')
+          : (isDark ? 'border-neutral-800 bg-neutral-900 text-neutral-400 active:bg-neutral-800' : 'border-neutral-200 bg-neutral-100 text-neutral-600 active:bg-neutral-200')">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- CANVAS DEL EDITOR EN MÓVIL (limpio, sin sidebar) -->
+    <div *ngIf="selectedPage"
+      class="flex flex-col w-full min-w-0 pb-36 mt-3">
+
+      <!-- Título del apunte (H1 editable nativo) -->
+      <input type="text" [(ngModel)]="selectedPage.title" (input)="onTitleInput()" spellcheck="false"
+        autocorrect="off" autocapitalize="sentences" placeholder="Título..."
+        style="font-size: 22px;"
+        class="w-full font-headline font-bold tracking-tight bg-transparent border-none p-0 mb-4 focus:outline-none transition-all placeholder:text-neutral-400"
+        [ngClass]="isDark ? 'text-white' : 'text-neutral-900'" />
+
+      <!-- BLOQUES DEL APUNTE (reutiliza el mismo canvas de bloques) -->
+      <div
+        class="space-y-1.5 min-h-[320px] pb-4 rounded-2xl"
+        [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+
+        <div *ngFor="let block of blocks; let i = index" (click)="setActiveBlock(block.id)"
+          class="group relative transition-all duration-150 rounded-xl px-1.5 py-1.5 border overflow-visible w-full cursor-text"
+          [ngClass]="activeBlockId === block.id
+            ? (isDark ? 'bg-neutral-900/40 border-neutral-800/80 shadow-xs' : 'bg-neutral-50/80 border-neutral-200/80 shadow-xs')
+            : 'border-transparent'">
+
+          <!-- 👑 TÍTULO -->
+          <div *ngIf="block.type === 'titulo'">
+            <div contenteditable="true" [id]="'mb-block-' + block.id" [(appContentEditable)]="block.content"
+              (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
+              (keydown)="onBlockKeydown($event, block, i)" spellcheck="false" autocorrect="off" autocapitalize="sentences"
+              placeholder="Título..."
+              class="w-full bg-transparent text-2xl font-extrabold font-headline pb-1 pt-0.5 focus:outline-none outline-none leading-snug empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.4em]"
+              [ngClass]="isDark ? 'text-white' : 'text-neutral-900'"></div>
+          </div>
+
+          <!-- 📌 SUBTÍTULO -->
+          <div *ngIf="block.type === 'subtitulo'">
+            <div contenteditable="true" [id]="'mb-block-' + block.id" [(appContentEditable)]="block.content"
+              (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
+              (keydown)="onBlockKeydown($event, block, i)" spellcheck="false" autocorrect="off" autocapitalize="sentences"
+              placeholder="Subtítulo..."
+              class="w-full bg-transparent text-lg font-bold font-headline pb-1 pt-0.5 focus:outline-none outline-none leading-snug empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.4em]"
+              [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'"></div>
+          </div>
+
+          <!-- 📝 TEXTO NORMAL -->
+          <div *ngIf="block.type === 'texto'">
+            <div contenteditable="true" [id]="'mb-block-' + block.id" [(appContentEditable)]="block.content"
+              (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
+              (keydown)="onBlockKeydown($event, block, i)" spellcheck="false" autocorrect="off" autocapitalize="sentences"
+              placeholder="Escribe algo..."
+              style="font-size: 16px; line-height: 1.65;"
+              class="w-full bg-transparent focus:outline-none outline-none transition-all empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.5em]"
+              [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-800'"></div>
+          </div>
+
+          <!-- ⚠️ ALERTA -->
+          <div *ngIf="block.type === 'alerta'"
+            class="rounded-xl px-3 py-2.5 border-l-2 border-amber-400 my-0.5"
+            [ngClass]="isDark ? 'bg-amber-900/20 text-amber-200' : 'bg-amber-50 text-amber-900'">
+            <div contenteditable="true" [id]="'mb-block-' + block.id" [(appContentEditable)]="block.content"
+              (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
+              (keydown)="onBlockKeydown($event, block, i)" spellcheck="false" autocorrect="off"
+              placeholder="Escribe una alerta o nota clave..."
+              style="font-size: 15px;"
+              class="w-full bg-transparent focus:outline-none outline-none font-semibold empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.5em]"></div>
+          </div>
+
+          <!-- 💻 CÓDIGO -->
+          <div *ngIf="block.type === 'codigo'"
+            class="relative rounded-xl overflow-hidden border shadow-sm my-1"
+            [ngClass]="isDark ? 'bg-[#000000] border-neutral-800 text-white' : 'bg-neutral-950 border-neutral-800 text-white'">
+            <div class="flex items-center justify-between px-3 py-1.5 border-b border-neutral-800 text-[11px] font-mono select-none bg-[#0c0c0e]">
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-neutral-700"></span>
+                <span class="w-2 h-2 rounded-full bg-neutral-700"></span>
+                <span class="w-2 h-2 rounded-full bg-neutral-700"></span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-neutral-400 font-bold uppercase text-[10px]">{{ block.language || 'código' }}</span>
+                <button type="button" (click)="copyCodeBlock(block.content, block.id, $event)"
+                  class="px-2 py-0.5 rounded-lg border border-neutral-700 text-[10px] font-mono text-neutral-300 active:bg-neutral-700 cursor-pointer">
+                  {{ copiedCodeBlockId === block.id ? '✓' : 'Copiar' }}
+                </button>
+              </div>
+            </div>
+            <div class="p-3">
+              <textarea [(ngModel)]="block.content"
+                (input)="onBlockInput(block, $event); syncBlocksToContent()"
+                (focus)="activeBlockId = block.id" spellcheck="false" placeholder="// Código..."
+                [rows]="getLineCount(block.content, 4, 'codigo')"
+                class="w-full bg-transparent font-mono text-xs text-zinc-100 leading-relaxed outline-none resize-none border-none placeholder:text-neutral-600 min-h-[80px]"></textarea>
+            </div>
+          </div>
+
+          <!-- ◫ 2 COLUMNAS (en móvil se apilan verticalmente) -->
+          <div *ngIf="block.type === 'columnas'"
+            class="rounded-xl border p-2 my-1 space-y-2"
+            [ngClass]="isDark ? 'bg-[#151518]/90 border-neutral-800' : 'bg-neutral-50/80 border-neutral-200'">
+            <span class="text-[10px] font-headline font-bold opacity-40 uppercase tracking-wider">2 Columnas (apiladas en móvil)</span>
+            <!-- Columna 1 -->
+            <div *ngIf="block.columns && block.columns[0]"
+              class="rounded-xl border p-2"
+              [ngClass]="isDark ? 'bg-[#0f0f12]/80 border-neutral-800/80' : 'bg-white border-neutral-200'">
+              <div contenteditable="true" [(appContentEditable)]="block.columns[0].content"
+                (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
+                spellcheck="false" placeholder="Columna 1..."
+                style="font-size: 15px;"
+                class="w-full bg-transparent focus:outline-none outline-none empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[2em]"
+                [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-800'"></div>
+            </div>
+            <!-- Columna 2 -->
+            <div *ngIf="block.columns && block.columns[1]"
+              class="rounded-xl border p-2"
+              [ngClass]="isDark ? 'bg-[#0f0f12]/80 border-neutral-800/80' : 'bg-white border-neutral-200'">
+              <div contenteditable="true" [(appContentEditable)]="block.columns[1].content"
+                (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
+                spellcheck="false" placeholder="Columna 2..."
+                style="font-size: 15px;"
+                class="w-full bg-transparent focus:outline-none outline-none empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[2em]"
+                [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-800'"></div>
+            </div>
+          </div>
+
+          <!-- 🖼 IMAGEN -->
+          <div *ngIf="block.type === 'imagen'" class="my-1">
+            <img *ngIf="block.imageUrl" [src]="block.imageUrl" alt="Imagen del apunte"
+              class="w-full rounded-xl object-contain max-h-72 border"
+              [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'"
+              (click)="lightboxImageUrl = block.imageUrl" />
+            <div *ngIf="!block.imageUrl"
+              class="flex flex-col items-center justify-center gap-3 py-10 rounded-xl border-2 border-dashed cursor-pointer"
+              [ngClass]="isDark ? 'border-neutral-700 text-neutral-400' : 'border-neutral-300 text-neutral-500'">
+              <svg class="w-8 h-8 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+              </svg>
+              <span class="text-xs font-semibold">Sin imagen</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Estado vacío (sin apunte seleccionado) -->
+    <div *ngIf="!selectedPage"
+      class="flex flex-col items-center justify-center py-16 gap-4 text-center">
+      <div class="w-14 h-14 rounded-2xl flex items-center justify-center"
+        [ngClass]="isDark ? 'bg-neutral-800 text-neutral-400' : 'bg-neutral-100 text-neutral-500'">
+        <svg class="w-7 h-7 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+        </svg>
+      </div>
+      <div>
+        <p class="font-headline font-bold text-sm" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Ningún apunte seleccionado</p>
+        <p class="text-xs opacity-50 mt-1">Vuelve a la lista y elige un apunte</p>
+      </div>
+      <button (click)="closeMobileEditor()"
+        class="px-4 py-2 rounded-xl border text-xs font-headline font-bold cursor-pointer active:scale-95"
+        [ngClass]="isDark ? 'border-neutral-700 bg-neutral-800 text-neutral-200' : 'border-neutral-200 bg-neutral-100 text-neutral-700'">
+        Ver Lista de Apuntes
+      </button>
+    </div>
+
+    <!-- ════════════════════════════════════════════
+         BARRA INFERIOR THUMB-ZONE (Bottom Toolbar Móvil)
+         Fija en la parte inferior del editor - zona del pulgar
+    ════════════════════════════════════════════ -->
+    <div *ngIf="selectedPage"
+      class="fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur-2xl transition-all duration-200"
+      [ngClass]="isDark ? 'bg-[#09090d]/97 border-neutral-800/90' : 'bg-white/97 border-neutral-200'"
+      style="padding-bottom: max(12px, env(safe-area-inset-bottom, 12px)); padding-top: 8px;">
+
+      <!-- Fila de botones de acción rápida -->
+      <div class="flex items-center justify-around px-2 gap-1">
+
+        <!-- Botón + Añadir Bloque (abre Bottom Sheet) -->
+        <button (click)="toggleMobileBlockSheet($event)"
+          class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl min-w-[44px] min-h-[44px] justify-center transition-all active:scale-90 cursor-pointer"
+          [ngClass]="showMobileBlockSheet
+            ? (isDark ? 'bg-emerald-500/25 text-emerald-400' : 'bg-emerald-500/15 text-emerald-600')
+            : (isDark ? 'text-neutral-400 active:bg-neutral-800' : 'text-neutral-600 active:bg-neutral-100')">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          <span class="text-[9px] font-bold tracking-tight">Bloque</span>
+        </button>
+
+        <!-- Negrita -->
+        <button (click)="applyTextStyleToSelection('bold')"
+          class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl min-w-[44px] min-h-[44px] justify-center transition-all active:scale-90 cursor-pointer"
+          [ngClass]="isDark ? 'text-neutral-400 active:bg-neutral-800' : 'text-neutral-600 active:bg-neutral-100'">
+          <span class="text-base font-black font-serif leading-none">B</span>
+          <span class="text-[9px] font-bold tracking-tight">Negrita</span>
+        </button>
+
+        <!-- Cursiva -->
+        <button (click)="applyTextStyleToSelection('italic')"
+          class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl min-w-[44px] min-h-[44px] justify-center transition-all active:scale-90 cursor-pointer"
+          [ngClass]="isDark ? 'text-neutral-400 active:bg-neutral-800' : 'text-neutral-600 active:bg-neutral-100'">
+          <span class="text-base font-bold italic font-serif leading-none">I</span>
+          <span class="text-[9px] font-bold tracking-tight">Cursiva</span>
+        </button>
+
+        <!-- Rojo -->
+        <button (click)="applyTextStyleToSelection('red')"
+          class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl min-w-[44px] min-h-[44px] justify-center transition-all active:scale-90 cursor-pointer text-red-400"
+          [ngClass]="isDark ? 'active:bg-neutral-800' : 'active:bg-neutral-100'">
+          <span class="text-base font-black font-serif leading-none">R</span>
+          <span class="text-[9px] font-bold tracking-tight">Rojo</span>
+        </button>
+
+        <!-- RotBot IA -->
+        <button (click)="toggleAiBlockMenu(currentActiveBlock?.id || '', $event)"
+          class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl min-w-[44px] min-h-[44px] justify-center transition-all active:scale-90 cursor-pointer"
+          [ngClass]="isDark ? 'text-cyan-400 active:bg-neutral-800' : 'text-cyan-600 active:bg-neutral-100'">
+          <svg class="w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+          </svg>
+          <span class="text-[9px] font-bold tracking-tight">IA</span>
+        </button>
+
+        <!-- Eliminar bloque -->
+        <button (click)="currentActiveBlockIndex >= 0 && removeBlock(currentActiveBlockIndex)"
+          [disabled]="blocks.length <= 1"
+          class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl min-w-[44px] min-h-[44px] justify-center transition-all active:scale-90 cursor-pointer disabled:opacity-30"
+          [ngClass]="isDark ? 'text-neutral-500 active:bg-neutral-800' : 'text-neutral-400 active:bg-neutral-100'">
+          <svg class="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+          <span class="text-[9px] font-bold tracking-tight">Borrar</span>
+        </button>
+
+      </div>
+
+      <!-- BOTTOM SHEET: Añadir tipo de bloque -->
+      <div *ngIf="showMobileBlockSheet" (click)="closeMobileSheets()"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 flex items-end">
+        <div (click)="$event.stopPropagation()"
+          class="w-full rounded-t-[28px] border-t p-5 pb-8 space-y-4 animate-slide-up shadow-2xl"
+          [ngClass]="isDark ? 'bg-[#0f0f14] border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
+          <!-- Handle -->
+          <div class="w-10 h-1.5 rounded-full mx-auto -mt-1 mb-2"
+            [ngClass]="isDark ? 'bg-neutral-700' : 'bg-neutral-300'"></div>
+          <h3 class="text-sm font-headline font-bold text-center">Insertar bloque</h3>
+          <!-- Grid de opciones -->
+          <div class="grid grid-cols-3 gap-2.5">
+            <button *ngFor="let bt of [
+              {type: 'texto', label: 'Texto', emoji: '📝'},
+              {type: 'titulo', label: 'Título H1', emoji: '👑'},
+              {type: 'subtitulo', label: 'Subtítulo', emoji: '📌'},
+              {type: 'codigo', label: 'Código', emoji: '💻'},
+              {type: 'alerta', label: 'Alerta', emoji: '⚠️'},
+              {type: 'columnas', label: '2 Columnas', emoji: '◫'},
+              {type: 'imagen', label: 'Imagen', emoji: '🖼'}
+            ]" (click)="addBlock(bt.type); closeMobileSheets()"
+              class="flex flex-col items-center gap-2 p-4 rounded-2xl border cursor-pointer transition-all active:scale-95"
+              [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300 active:bg-neutral-800' : 'bg-neutral-50 border-neutral-200 text-neutral-700 active:bg-neutral-100'">
+              <span class="text-2xl leading-none">{{ bt.emoji }}</span>
+              <span class="text-[10px] font-headline font-bold text-center leading-tight">{{ bt.label }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM SHEET: Opciones del apunte (···) -->
+      <div *ngIf="showMobilePageOptionsSheet" (click)="closeMobileSheets()"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 flex items-end">
+        <div (click)="$event.stopPropagation()"
+          class="w-full rounded-t-[28px] border-t p-5 pb-8 space-y-2 animate-slide-up shadow-2xl"
+          [ngClass]="isDark ? 'bg-[#0f0f14] border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
+          <!-- Handle -->
+          <div class="w-10 h-1.5 rounded-full mx-auto -mt-1 mb-3"
+            [ngClass]="isDark ? 'bg-neutral-700' : 'bg-neutral-300'"></div>
+          <h3 class="text-sm font-headline font-bold text-center mb-4">Opciones del Apunte</h3>
+
+          <!-- Leer con RotBot -->
+          <button (click)="readSelectedTextOrActiveBlock(); closeMobileSheets()"
+            class="flex items-center gap-3 w-full p-4 rounded-2xl border cursor-pointer transition-all active:scale-[0.98] text-left"
+            [ngClass]="spanishTts.isSpeaking
+              ? (isDark ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-400' : 'bg-cyan-50 border-cyan-200 text-cyan-700')
+              : (isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300 active:bg-neutral-800' : 'bg-neutral-50 border-neutral-200 text-neutral-700 active:bg-neutral-100')">
+            <svg class="w-5 h-5 text-cyan-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.757 3.63 8.25 4.51 8.25H6.75z" />
+            </svg>
+            <div>
+              <p class="text-sm font-headline font-bold">{{ spanishTts.isSpeaking ? 'Detener Lectura' : 'Leer con RotBot' }}</p>
+              <p class="text-xs opacity-50">Escucha el apunte en voz alta</p>
+            </div>
+          </button>
+
+          <!-- Exportar PDF -->
+          <button (click)="exportPageToPdf(); closeMobileSheets()" [disabled]="isGeneratingPdf"
+            class="flex items-center gap-3 w-full p-4 rounded-2xl border cursor-pointer transition-all active:scale-[0.98] text-left disabled:opacity-50"
+            [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300 active:bg-neutral-800' : 'bg-neutral-50 border-neutral-200 text-neutral-700 active:bg-neutral-100'">
+            <svg class="w-5 h-5 shrink-0 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            </svg>
+            <div>
+              <p class="text-sm font-headline font-bold">Exportar a PDF</p>
+              <p class="text-xs opacity-50">{{ isGeneratingPdf ? 'Generando...' : 'Descarga el apunte en PDF' }}</p>
+            </div>
+          </button>
+
+          <!-- Fijar / Desfijar -->
+          <button *ngIf="selectedPage" (click)="togglePinPage(selectedPage); closeMobileSheets()"
+            class="flex items-center gap-3 w-full p-4 rounded-2xl border cursor-pointer transition-all active:scale-[0.98] text-left"
+            [ngClass]="selectedPage.is_pinned
+              ? (isDark ? 'bg-amber-500/15 border-amber-500/40 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-700')
+              : (isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300 active:bg-neutral-800' : 'bg-neutral-50 border-neutral-200 text-neutral-700 active:bg-neutral-100')">
+            <svg class="w-5 h-5 shrink-0"
+              [ngClass]="selectedPage.is_pinned ? 'text-amber-400 fill-amber-400' : 'opacity-60'"
+              fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75" />
+            </svg>
+            <div>
+              <p class="text-sm font-headline font-bold">{{ selectedPage.is_pinned ? 'Desfijar Apunte' : 'Fijar Apunte' }}</p>
+              <p class="text-xs opacity-50">{{ selectedPage.is_pinned ? 'Quitar de favoritos fijados' : 'Anclar al inicio de la lista' }}</p>
+            </div>
+          </button>
+
+          <!-- Eliminar apunte -->
+          <button *ngIf="selectedPage" (click)="openDeleteModal('page', selectedPage); closeMobileSheets()"
+            class="flex items-center gap-3 w-full p-4 rounded-2xl border border-red-500/30 bg-red-500/10 text-red-400 cursor-pointer transition-all active:scale-[0.98] text-left">
+            <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+            </svg>
+            <div>
+              <p class="text-sm font-headline font-bold">Eliminar Apunte</p>
+              <p class="text-xs opacity-60">Esta acción no se puede deshacer</p>
+            </div>
+          </button>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       NIVEL 3: EDITOR DE APUNTES NOTION LIVE (SIDEBAR w-72 PERFECTA + PIZARRA CON AJUSTE DINÁMICO DE ANCHO)
+       VISIBLE EN DESKTOP (>= lg) Y EN MÓVIL SOLO CUANDO NO ESTÁ EN MODO APP
+  ══════════════════════════════════════ -->
+  <div *ngIf="selectedNotebook && searchQuery.trim().length === 0 && !isMobileScreen"
     class="flex flex-col lg:flex-row gap-3 sm:gap-5 items-start w-full min-w-0">
 
     <!-- SIDEBAR DE APUNTES STICKY CON SCROLL INTERNO INDEPENDIENTE / DRAWER EN MÓVIL -->
