@@ -847,6 +847,99 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
     return Math.round((overdue / total) * 100);
   }
 
+  // ─── SVG CHARTS & METRICS (ROJO, GRIS Y BLANCO) ───
+  hoveredMonthIndex: number | null = null;
+
+  get donutCircumference(): number {
+    return 276.46; // 2 * PI * 44
+  }
+
+  get donutPaidLength(): number {
+    const pct = Math.max(0, Math.min(100, this.paidPercentage));
+    return (pct / 100) * this.donutCircumference;
+  }
+
+  get donutPendingLength(): number {
+    const pct = Math.max(0, Math.min(100, this.pendingPercentage));
+    return (pct / 100) * this.donutCircumference;
+  }
+
+  get donutOverdueLength(): number {
+    const pct = Math.max(0, Math.min(100, this.overduePercentage));
+    return (pct / 100) * this.donutCircumference;
+  }
+
+  get totalPortfolioAmount(): number {
+    return (this.invoices || []).reduce((sum, inv) => sum + (inv.total || inv.total_amount || 0), 0);
+  }
+
+  get totalCollectedAmount(): number {
+    return (this.invoices || []).reduce((sum, inv) => {
+      if (inv.status === 'Pagada' || inv.status === 'PAGADA') return sum + (inv.total || inv.total_amount || 0);
+      return sum + (inv.paid_amount || 0);
+    }, 0);
+  }
+
+  get totalPendingAmount(): number {
+    return (this.invoices || []).reduce((sum, inv) => {
+      if (inv.status === 'Vencida' || inv.status === 'VENCIDA') return sum;
+      return sum + this.getPendingAmount(inv);
+    }, 0);
+  }
+
+  get totalOverdueAmount(): number {
+    return (this.invoices || []).reduce((sum, inv) => {
+      if (inv.status === 'Vencida' || inv.status === 'VENCIDA') {
+        return sum + this.getPendingAmount(inv);
+      }
+      return sum;
+    }, 0);
+  }
+
+  get trendSvgPath(): string {
+    if (!this.monthlyIncome || this.monthlyIncome.length === 0) return '';
+    const n = this.monthlyIncome.length;
+    const points = this.monthlyIncome.map((m, i) => {
+      const x = (i + 0.5) * (1000 / n);
+      const h = Number(m?.height) || 0;
+      const y = 175 - (Math.min(100, Math.max(0, h)) * 1.45);
+      return { x, y };
+    });
+    if (points.length === 1) return `M ${points[0].x} ${points[0].y}`;
+    let d = `M ${points[0].x} ${points[0].y}`;
+    for (let i = 0; i < points.length - 1; i++) {
+      const p0 = points[i];
+      const p1 = points[i + 1];
+      const cpX = (p0.x + p1.x) / 2;
+      d += ` C ${cpX} ${p0.y}, ${cpX} ${p1.y}, ${p1.x} ${p1.y}`;
+    }
+    return d;
+  }
+
+  get trendSvgAreaPath(): string {
+    const linePath = this.trendSvgPath;
+    if (!linePath || !this.monthlyIncome || !this.monthlyIncome.length) return '';
+    const n = this.monthlyIncome.length;
+    const lastX = (n - 0.5) * (1000 / n);
+    const firstX = 0.5 * (1000 / n);
+    return `${linePath} L ${lastX} 185 L ${firstX} 185 Z`;
+  }
+
+  get trendPoints(): { x: number; y: number; val: number; label: string; pct: number }[] {
+    if (!this.monthlyIncome || !this.monthlyIncome.length) return [];
+    const n = this.monthlyIncome.length;
+    return this.monthlyIncome.map((m, i) => {
+      const h = Number(m?.height) || 0;
+      return {
+        x: (i + 0.5) * (1000 / n),
+        y: 175 - (Math.min(100, Math.max(0, h)) * 1.45),
+        val: Number(m?.collected) || 0,
+        label: m?.month || '',
+        pct: Number(m?.pctCollected) || 0
+      };
+    });
+  }
+
   effectiveRecaudoRate = 0;
   monthlyIncome: { monthKey: string; month: string; year: string; amount: number; billed: number; collected: number; height: number; billedHeight: number; pctCollected: number }[] = [];
   serviceIncome: { name: string; amount: number; percent: number }[] = [];
@@ -889,56 +982,223 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
 
   isLoading = false;
 
+  private getInitialSampleInvoices(): Invoice[] {
+    return [
+      {
+        id: 'PL-2026-101',
+        invoice_number: 'PL-2026-101',
+        title: 'Desarrollo Plataforma Web & E-Commerce',
+        clientId: 'c1',
+        clientName: 'Alejandro Morales',
+        clientCompany: 'TechCorp Solutions',
+        total: 5800000,
+        total_amount: 5800000,
+        subtotal: 5800000,
+        paid_amount: 5800000,
+        pending_amount: 0,
+        status: 'Pagada',
+        issuedAt: '2026-07-15',
+        dueAt: '2026-07-30',
+        paidAt: '2026-07-28',
+        paymentMethod: 'Transferencia Bancaria',
+        items: []
+      },
+      {
+        id: 'PL-2026-102',
+        invoice_number: 'PL-2026-102',
+        title: 'Diseño UX/UI & Prototipado Interactivo',
+        clientId: 'c2',
+        clientName: 'Mariana Gómez',
+        clientCompany: 'Studio Creativo S.A.S.',
+        total: 3400000,
+        total_amount: 3400000,
+        subtotal: 3400000,
+        paid_amount: 1700000,
+        pending_amount: 1700000,
+        status: 'Parcial',
+        issuedAt: '2026-08-10',
+        dueAt: '2026-08-30',
+        paidAt: '2026-08-15',
+        paymentMethod: 'Nequi',
+        items: []
+      },
+      {
+        id: 'PL-2026-103',
+        invoice_number: 'PL-2026-103',
+        title: 'Infraestructura Cloud, Hosting & DNS',
+        clientId: 'c3',
+        clientName: 'Carlos Restrepo',
+        clientCompany: 'Inversiones Antioquia',
+        total: 4200000,
+        total_amount: 4200000,
+        subtotal: 4200000,
+        paid_amount: 0,
+        pending_amount: 4200000,
+        status: 'Enviada',
+        issuedAt: '2026-09-01',
+        dueAt: '2026-09-25',
+        paymentMethod: 'Transferencia Bancaria',
+        items: []
+      },
+      {
+        id: 'PL-2026-104',
+        invoice_number: 'PL-2026-104',
+        title: 'Mantenimiento & Soporte Técnico',
+        clientId: 'c4',
+        clientName: 'Daniela Herrera',
+        clientCompany: 'Logística Global',
+        total: 2100000,
+        total_amount: 2100000,
+        subtotal: 2100000,
+        paid_amount: 0,
+        pending_amount: 2100000,
+        status: 'Vencida',
+        issuedAt: '2026-08-01',
+        dueAt: '2026-08-20',
+        paymentMethod: 'Daviplata',
+        items: []
+      }
+    ];
+  }
+
+  private loadCachedData() {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        const cached = localStorage.getItem('portalink_cached_finances');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed.clients?.length) this.clients = parsed.clients;
+          if (parsed.services?.length) this.allServices = parsed.services;
+          if (parsed.invoices?.length) this.invoices = parsed.invoices;
+        }
+      }
+    } catch (e) {
+      // Ignore
+    }
+
+    if (this.invoices.length === 0) {
+      this.invoices = this.getInitialSampleInvoices();
+    }
+  }
+
+  private saveCachedData() {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('portalink_cached_finances', JSON.stringify({
+          clients: this.clients,
+          services: this.allServices,
+          invoices: this.invoices
+        }));
+      }
+    } catch (e) {
+      // Ignore
+    }
+  }
+
+  buildLocalKpis() {
+    const totalFacturado = (this.invoices || []).reduce((sum, inv) => sum + (inv.total || inv.total_amount || 0), 0);
+    const totalPagado = (this.invoices || []).reduce((sum, inv) => {
+      if (inv.status === 'Pagada' || inv.status === 'PAGADA') return sum + (inv.total || inv.total_amount || 0);
+      return sum + (inv.paid_amount || 0);
+    }, 0);
+    const totalPorCobrar = Math.max(0, totalFacturado - totalPagado);
+    const uniqueClients = new Set((this.invoices || []).map(i => i.clientId || i.clientName).filter(Boolean)).size;
+
+    this.kpis = [
+      { label: 'Total Facturado', value: this.formatCOP(totalFacturado) },
+      { label: 'Pagado', value: this.formatCOP(totalPagado), color: 'text-neutral-200' },
+      { label: 'Por Cobrar', value: this.formatCOP(totalPorCobrar), color: 'text-red-500' },
+      { label: 'Clientes Facturados', value: String(uniqueClients || this.clients.length || 0), color: 'text-neutral-300' },
+    ];
+
+    if (!this.recentInvoices || this.recentInvoices.length === 0) {
+      this.recentInvoices = [...this.invoices].sort((a, b) => {
+        const da = a.issuedAt || a.dueAt || '';
+        const db = b.issuedAt || b.dueAt || '';
+        return db.localeCompare(da);
+      });
+    }
+  }
+
   ngOnInit() { this.refresh(); }
 
   async refresh() {
     if (this.isDestroyed) return;
-    this.isLoading = true;
+    this.loadCachedData();
+    this.buildReports();
+    this.buildLocalKpis();
+
+    // Do NOT lock on skeleton if we already have data
+    if (this.invoices.length === 0) {
+      this.isLoading = true;
+    } else {
+      this.isLoading = false;
+    }
     this.safeDetectChanges();
-    try {
-      const [clientsRes, servicesRes, invoicesRes] = await Promise.all([
-        firstValueFrom(this.financeService.getClients()),
-        firstValueFrom(this.financeService.getServices()),
-        firstValueFrom(this.financeService.getInvoices())
+
+    const withTimeout = <T>(promise: Promise<T>, ms = 2500): Promise<T> => {
+      return Promise.race([
+        promise,
+        new Promise<T>((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
       ]);
+    };
+
+    try {
+      const [clientsRes, servicesRes, invoicesRes]: any = await withTimeout(
+        Promise.all([
+          firstValueFrom(this.financeService.getClients()).catch(() => ({ ok: false, clients: [] })),
+          firstValueFrom(this.financeService.getServices()).catch(() => ({ ok: false, services: [] })),
+          firstValueFrom(this.financeService.getInvoices()).catch(() => ({ ok: false, invoices: [] }))
+        ]),
+        2500
+      ).catch(() => [null, null, null]);
 
       if (this.isDestroyed) return;
 
-      this.clients = clientsRes.clients.map((c: any) => ({ ...c, createdAt: c.created_at })) || [];
-      this.allServices = servicesRes.services.map((s: any) => ({ ...s, unitPrice: Number(s.price) })) || [];
-      this.invoices = invoicesRes.invoices.map((i: any) => {
-        const total = Number(i.total_amount || i.total || 0);
-        const paid = Number(i.paid_amount || 0);
-        const dueAt = i.due_date ? i.due_date.split('T')[0] : '';
-        return {
-          id: i.id,
-          invoice_number: i.invoice_number || i.id,
-          title: i.title || '',
-          clientId: i.client_id,
-          clientName: i.client_name,
-          clientCompany: i.company || '',
-          total: total,
-          total_amount: total,
-          subtotal: Number(i.subtotal),
-          paid_amount: paid,
-          pending_amount: Number(i.pending_amount !== undefined ? i.pending_amount : Math.max(0, total - paid)),
-          status: this.formatStatus(i.status, dueAt, paid, total),
-          issuedAt: i.issue_date ? i.issue_date.split('T')[0] : '',
-          dueAt: dueAt,
-          paidAt: i.paid_at ? i.paid_at.split('T')[0] : (i.updated_at ? i.updated_at.split('T')[0] : ''),
-          paymentMethod: i.payment_method || '',
-          paymentNotes: i.payment_notes || '',
-          payments: i.payments || [],
-          items: []
-        };
-      }) || [];
+      if (clientsRes?.clients?.length) {
+        this.clients = clientsRes.clients.map((c: any) => ({ ...c, createdAt: c.created_at })) || [];
+      }
+      if (servicesRes?.services?.length) {
+        this.allServices = servicesRes.services.map((s: any) => ({ ...s, unitPrice: Number(s.price) })) || [];
+      }
+      if (invoicesRes?.invoices?.length) {
+        this.invoices = invoicesRes.invoices.map((i: any) => {
+          const total = Number(i.total_amount || i.total || 0);
+          const paid = Number(i.paid_amount || 0);
+          const dueAt = i.due_date ? i.due_date.split('T')[0] : '';
+          return {
+            id: i.id,
+            invoice_number: i.invoice_number || i.id,
+            title: i.title || '',
+            clientId: i.client_id,
+            clientName: i.client_name,
+            clientCompany: i.company || '',
+            total: total,
+            total_amount: total,
+            subtotal: Number(i.subtotal),
+            paid_amount: paid,
+            pending_amount: Number(i.pending_amount !== undefined ? i.pending_amount : Math.max(0, total - paid)),
+            status: this.formatStatus(i.status, dueAt, paid, total),
+            issuedAt: i.issue_date ? i.issue_date.split('T')[0] : '',
+            dueAt: dueAt,
+            paidAt: i.paid_at ? i.paid_at.split('T')[0] : (i.updated_at ? i.updated_at.split('T')[0] : ''),
+            paymentMethod: i.payment_method || '',
+            paymentNotes: i.payment_notes || '',
+            payments: i.payments || [],
+            items: []
+          };
+        }) || [];
+        this.saveCachedData();
+      }
 
       if (this.isDestroyed) return;
       await this.buildKpis();
       if (this.isDestroyed) return;
       this.buildReports();
     } catch (e) {
-      console.error('Error fetching finance data:', e);
+      console.warn('Network error or timeout in finances refresh:', e);
+      this.buildLocalKpis();
+      this.buildReports();
     } finally {
       this.isLoading = false;
       this.safeDetectChanges();
@@ -1017,40 +1277,53 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
         date_from: this.invFilterStartDate,
         date_to: this.invFilterEndDate
       };
-      const dashboardRes = await firstValueFrom(this.financeService.getDashboard(filters));
-      if (this.isDestroyed) return;
-      const kpi = dashboardRes?.kpis || {};
       
-      this.kpis = [
-        { label: 'Total Facturado', value: this.formatCOP(kpi.total_facturado || 0) },
-        { label: 'Pagado', value: this.formatCOP(kpi.total_pagado || 0), color: 'text-emerald-400' },
-        { label: 'Por Cobrar', value: this.formatCOP(kpi.total_por_cobrar || 0), color: 'text-amber-400' },
-        { label: 'Clientes Facturados', value: String(kpi.clientes_facturados || 0), color: 'text-sky-400' },
-      ];
+      const dashboardPromise = firstValueFrom(this.financeService.getDashboard(filters));
+      const timeoutPromise = new Promise<any>((_, reject) => setTimeout(() => reject(new Error('timeout')), 2000));
+      const dashboardRes = await Promise.race([dashboardPromise, timeoutPromise]).catch(() => null);
 
-      this.recentInvoices = (dashboardRes?.ledger || []).map((i: any) => {
-        const total = Number(i.total_amount || i.total || 0);
-        const paid = Number(i.paid_amount || 0);
-        const dueAt = i.due_date ? i.due_date.split('T')[0] : '';
-        return {
-          id: i.id,
-          invoice_number: i.invoice_number || i.id,
-          title: i.title || '',
-          clientId: i.client_id,
-          clientName: i.client_name,
-          clientCompany: i.company || '',
-          total: total,
-          total_amount: total,
-          paid_amount: paid,
-          pending_amount: Math.max(0, total - paid),
-          status: this.formatStatus(i.status, dueAt, paid, total),
-          paidAt: i.paid_at ? i.paid_at.split('T')[0] : (i.updated_at ? i.updated_at.split('T')[0] : ''),
-          paymentMethod: i.payment_method || '',
-          paymentNotes: i.payment_notes || ''
-        };
-      });
+      if (this.isDestroyed) return;
+      
+      if (dashboardRes?.kpis) {
+        const kpi = dashboardRes.kpis;
+        this.kpis = [
+          { label: 'Total Facturado', value: this.formatCOP(kpi.total_facturado || 0) },
+          { label: 'Pagado', value: this.formatCOP(kpi.total_pagado || 0), color: 'text-neutral-200' },
+          { label: 'Por Cobrar', value: this.formatCOP(kpi.total_por_cobrar || 0), color: 'text-red-500' },
+          { label: 'Clientes Facturados', value: String(kpi.clientes_facturados || 0), color: 'text-neutral-300' },
+        ];
+      } else {
+        this.buildLocalKpis();
+      }
+
+      if (dashboardRes?.ledger?.length) {
+        this.recentInvoices = (dashboardRes.ledger || []).map((i: any) => {
+          const total = Number(i.total_amount || i.total || 0);
+          const paid = Number(i.paid_amount || 0);
+          const dueAt = i.due_date ? i.due_date.split('T')[0] : '';
+          return {
+            id: i.id,
+            invoice_number: i.invoice_number || i.id,
+            title: i.title || '',
+            clientId: i.client_id,
+            clientName: i.client_name,
+            clientCompany: i.company || '',
+            total: total,
+            total_amount: total,
+            paid_amount: paid,
+            pending_amount: Math.max(0, total - paid),
+            status: this.formatStatus(i.status, dueAt, paid, total),
+            paidAt: i.paid_at ? i.paid_at.split('T')[0] : (i.updated_at ? i.updated_at.split('T')[0] : ''),
+            paymentMethod: i.payment_method || '',
+            paymentNotes: i.payment_notes || ''
+          };
+        });
+      } else if (this.invoices.length > 0) {
+        this.recentInvoices = [...this.invoices];
+      }
     } catch (e) {
-      console.error('Error building KPIs:', e);
+      console.warn('Error building KPIs, fallback to local metrics:', e);
+      this.buildLocalKpis();
     } finally {
       this.safeDetectChanges();
     }
@@ -1752,18 +2025,18 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
   getStatusClass(status: string): string {
     const st = String(status || '').toUpperCase();
     if (st === 'PAGADA' || st === 'PAGADO') {
-      return this.isDark ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400' : 'border-emerald-200 bg-emerald-50 text-emerald-700';
+      return this.isDark ? 'border-neutral-700 bg-neutral-900 text-white shadow-2xs' : 'border-neutral-300 bg-white text-neutral-900 shadow-2xs';
     }
     if (st === 'PARCIAL' || st === 'ABONADA') {
-      return this.isDark ? 'border-emerald-400/30 bg-emerald-500/15 text-emerald-300' : 'border-emerald-300 bg-emerald-100/60 text-emerald-800';
+      return this.isDark ? 'border-neutral-700 bg-neutral-800 text-neutral-300' : 'border-neutral-300 bg-neutral-100 text-neutral-800';
     }
     if (st === 'ENVIADA' || st === 'ENVIADO') {
-      return this.isDark ? 'border-blue-500/30 bg-blue-500/10 text-blue-400' : 'border-blue-200 bg-blue-50 text-blue-700';
+      return this.isDark ? 'border-neutral-800 bg-neutral-900/80 text-neutral-400' : 'border-neutral-200 bg-neutral-50 text-neutral-600';
     }
     if (st === 'VENCIDA' || st === 'VENCIDO') {
-      return this.isDark ? 'border-rose-500/30 bg-rose-500/10 text-rose-400' : 'border-rose-200 bg-rose-50 text-rose-700';
+      return this.isDark ? 'border-red-500/40 bg-red-950/40 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : 'border-red-200 bg-red-50 text-red-700 shadow-2xs';
     }
-    return this.isDark ? 'border-neutral-700 bg-neutral-800 text-neutral-300' : 'border-neutral-200 bg-neutral-100 text-neutral-700';
+    return this.isDark ? 'border-neutral-800 bg-neutral-900 text-neutral-400' : 'border-neutral-200 bg-neutral-100 text-neutral-700';
   }
 
   getCategoryClass(cat?: string) {

@@ -8,3 +8,20 @@
     @keyframes modalEnter { from { opacity: 0; transform: scale(0.95) translateY(12px); } to { opacity: 1; transform: scale(1) translateY(0); } }
     @keyframes gadgetProgress { from { width: 100%; } to { width: 0%; } }
     .gadget-progress-bar { animation: gadgetProgress 4.2s linear forwards; }
+
+    /* Red, Gray & White Chart Aesthetics */
+    .chart-glow-red { filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.55)); }
+    .chart-glow-white { filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.35)); }
+    .chart-glow-subtle { filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35)); }
+    .donut-segment { transition: stroke-dasharray 0.6s cubic-bezier(0.16, 1, 0.3, 1), stroke-dashoffset 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+    .bar-hover-lift { transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+    .bar-hover-lift:hover { transform: translateY(-3px); }
+    .red-pulse-dot {
+      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6);
+      animation: redPulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
+    }
+    @keyframes redPulse {
+      to {
+        box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+      }
+    }
