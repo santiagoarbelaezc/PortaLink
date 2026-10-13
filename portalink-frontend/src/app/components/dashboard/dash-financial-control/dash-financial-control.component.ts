@@ -106,9 +106,11 @@ export interface ControlSummary {
             <button type="button"
                     (click)="openNewModal()"
                     class="inline-flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl text-xs sm:text-sm font-headline font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md active:scale-95 border"
-                    [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200 border-white' : 'bg-[#09090b] text-white hover:bg-neutral-800 border-[#09090b]'">
-              <span class="material-symbols-rounded" style="font-size: 16px;">add</span>
-              <span>Nueva Transacción</span>
+                    [ngClass]="isDark ? 'border-white hover:bg-neutral-200' : 'border-[#09090b] hover:bg-neutral-800'"
+                    [style.background-color]="isDark ? '#ffffff !important' : '#09090b !important'"
+                    [style.color]="isDark ? '#09090b !important' : '#ffffff !important'">
+              <span class="material-symbols-rounded" style="font-size: 16px;" [style.color]="isDark ? '#09090b !important' : '#ffffff !important'">add</span>
+              <span [style.color]="isDark ? '#09090b !important' : '#ffffff !important'">Nueva Transacción</span>
             </button>
           </div>
         </div>
@@ -378,10 +380,12 @@ export interface ControlSummary {
                 <button type="button" (click)="editingTx.type = 'INGRESO'"
                         class="px-4 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border transition-all duration-200 cursor-pointer flex items-center justify-center gap-2"
                         [ngClass]="editingTx.type === 'INGRESO' 
-                          ? (isDark ? 'bg-white text-black border-white shadow-md' : 'bg-[#09090b] text-white border-[#09090b] shadow-md') 
-                          : (isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white' : 'border-neutral-300 bg-neutral-100 text-neutral-600 hover:text-black')">
+                          ? (isDark ? 'border-white shadow-md' : 'border-[#09090b] shadow-md') 
+                          : (isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white' : 'border-neutral-300 bg-neutral-100 text-neutral-600 hover:text-black')"
+                        [style.background-color]="editingTx.type === 'INGRESO' ? (isDark ? '#ffffff !important' : '#09090b !important') : ''"
+                        [style.color]="editingTx.type === 'INGRESO' ? (isDark ? '#09090b !important' : '#ffffff !important') : ''">
                   <span *ngIf="editingTx.type === 'INGRESO'" class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-                  <span>Ingreso (+)</span>
+                  <span [style.color]="editingTx.type === 'INGRESO' ? (isDark ? '#09090b !important' : '#ffffff !important') : ''">Ingreso (+)</span>
                 </button>
                 <button type="button" (click)="editingTx.type = 'EGRESO'"
                         class="px-4 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border transition-all duration-200 cursor-pointer flex items-center justify-center gap-2"
@@ -483,8 +487,10 @@ export interface ControlSummary {
             <button type="button"
                     (click)="saveTransaction()" [disabled]="isSaving"
                     class="px-6 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider cursor-pointer shadow-md transition-all active:scale-95 disabled:opacity-40 border"
-                    [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200 border-white' : 'bg-[#09090b] text-white hover:bg-neutral-800 border-[#09090b]'">
-              {{ isSaving ? 'Guardando...' : (editingTx.id ? 'Guardar Cambios' : 'Registrar Transacción') }}
+                    [ngClass]="isDark ? 'border-white hover:bg-neutral-200' : 'border-[#09090b] hover:bg-neutral-800'"
+                    [style.background-color]="isDark ? '#ffffff !important' : '#09090b !important'"
+                    [style.color]="isDark ? '#09090b !important' : '#ffffff !important'">
+              <span [style.color]="isDark ? '#09090b !important' : '#ffffff !important'">{{ isSaving ? 'Guardando...' : (editingTx.id ? 'Guardar Cambios' : 'Registrar Transacción') }}</span>
             </button>
           </div>
 
@@ -533,8 +539,10 @@ export interface ControlSummary {
             <p class="text-xs font-headline font-medium opacity-60">No se encontraron transacciones registradas.</p>
             <button (click)="openNewModal()"
                     class="px-5 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider cursor-pointer border shadow-sm transition-all active:scale-95"
-                    [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200 border-white' : 'bg-[#09090b] text-white hover:bg-neutral-800 border-[#09090b]'">
-              + Registrar Primera Transacción
+                    [ngClass]="isDark ? 'border-white hover:bg-neutral-200' : 'border-[#09090b] hover:bg-neutral-800'"
+                    [style.background-color]="isDark ? '#ffffff !important' : '#09090b !important'"
+                    [style.color]="isDark ? '#09090b !important' : '#ffffff !important'">
+              <span [style.color]="isDark ? '#09090b !important' : '#ffffff !important'">+ Registrar Primera Transacción</span>
             </button>
           </div>
 

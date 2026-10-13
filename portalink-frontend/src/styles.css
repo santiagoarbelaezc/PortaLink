@@ -253,17 +253,36 @@
   color: var(--text-primary) !important;
 }
 
-/* Preserve strict white text inside modal backdrops, dark cards, black bento widgets, and red buttons */
+/* Preserve strict white text inside modal backdrops, dark cards, black bento widgets, and red/black buttons */
 .modal-backdrop .text-white,
 .racha-black-card,
 .racha-black-card .text-white,
 .racha-black-card h3,
 .racha-black-card strong,
 .force-white,
+.force-white *,
+.btn-action-primary,
+.btn-action-primary *,
 button.bg-red-600,
 button.bg-red-600 *,
 .bg-red-600,
-.bg-red-600 * {
+.bg-red-600 *,
+.bg-red-500,
+.bg-red-500 *,
+.bg-rose-500,
+.bg-rose-500 *,
+.bg-rose-600,
+.bg-rose-600 *,
+.bg-black,
+.bg-black *,
+.bg-neutral-900,
+.bg-neutral-900 *,
+.bg-neutral-950,
+.bg-neutral-950 *,
+.bg-\[\#09090b\],
+.bg-\[\#09090b\] *,
+.bg-\[\#0a0a0a\],
+.bg-\[\#0a0a0a\] * {
   color: #ffffff !important;
 }
 
