@@ -12,7 +12,7 @@ import { DashHomeComponent } from '../../components/dashboard/dash-home/dash-hom
 import { DashMessagesComponent } from '../../components/dashboard/dash-messages/dash-messages.component';
 import { DashUsersComponent } from '../../components/dashboard/dash-users/dash-users.component';
 import { DashConfigComponent } from '../../components/dashboard/dash-config/dash-config.component';
-import { DashFinancesHubComponent } from '../../components/dashboard/dash-finances-hub/dash-finances-hub.component';
+import { DashFinancesComponent } from '../../components/dashboard/dash-finances/dash-finances.component';
 import { DashItineraryComponent } from '../../components/dashboard/dash-itinerary/dash-itinerary.component';
 import { DashLibraryComponent } from '../../components/dashboard/dash-library/dash-library.component';
 import { DashRotbotComponent } from '../../components/dashboard/dash-rotbot/dash-rotbot.component';
@@ -41,7 +41,7 @@ interface Tab {
     DashMessagesComponent,
     DashUsersComponent,
     DashConfigComponent,
-    DashFinancesHubComponent,
+    DashFinancesComponent,
     DashItineraryComponent,
     DashLibraryComponent,
     DashDbViewerComponent,
@@ -205,12 +205,11 @@ interface Tab {
               </app-dash-config>
             }
 
-            @defer (when activeTab === 'finances' || activeTab === 'financial-control'; prefetch on idle) {
-              <app-dash-finances-hub
-                *ngIf="activeTab === 'finances' || activeTab === 'financial-control'"
-                [theme]="currentTheme"
-                [defaultSubTab]="activeTab === 'financial-control' ? 'control' : 'finances'">
-              </app-dash-finances-hub>
+            @defer (when activeTab === 'finances'; prefetch on idle) {
+              <app-dash-finances
+                *ngIf="activeTab === 'finances'"
+                [theme]="currentTheme">
+              </app-dash-finances>
             }
 
             @defer (when activeTab === 'library'; prefetch on idle) {
@@ -287,7 +286,6 @@ interface Tab {
                 <ng-container *ngIf="tab.id === 'dashboard'"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></ng-container>
                 <ng-container *ngIf="tab.id === 'rotbot'"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2zM9 10h.01M15 10h.01" /></ng-container>
                 <ng-container *ngIf="tab.id === 'finances'"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></ng-container>
-                <ng-container *ngIf="tab.id === 'financial-control'"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-3l3 3 3-3M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22" /></ng-container>
                 <ng-container *ngIf="tab.id === 'messages'"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></ng-container>
                 <ng-container *ngIf="tab.id === 'users'"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></ng-container>
                 <ng-container *ngIf="tab.id === 'itinerary'"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></ng-container>
@@ -427,7 +425,6 @@ export class AdminComponent implements OnInit, OnDestroy {
   tabs: Tab[] = [
     { id: 'dashboard',         name: 'Inicio',        icon: 'dashboard' },
     { id: 'finances',          name: 'Finanzas',      icon: 'payments' },
-    { id: 'financial-control', name: 'Analíticas',    icon: 'monitoring' },
     { id: 'messages',          name: 'Mensajes',      icon: 'mail' },
     { id: 'users',             name: 'Usuarios',      icon: 'group' },
     { id: 'config',            name: 'Configuración', icon: 'settings' },
@@ -514,7 +511,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     if (!tabId) return null;
     let id = tabId.toLowerCase().trim();
     if (id === 'leads') id = 'messages';
-    if (id === 'stats' || id === 'reports' || id === 'analytics') id = 'financial-control';
+    if (id === 'stats' || id === 'reports' || id === 'analytics' || id === 'financial-control') id = 'finances';
     return this.tabs.some(t => t.id === id) ? id : null;
   }
 
@@ -570,7 +567,7 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   setTab(id: string, updateUrl: boolean = true) {
     if (id === 'leads') id = 'messages';
-    if (id === 'stats' || id === 'reports' || id === 'analytics') id = 'financial-control';
+    if (id === 'stats' || id === 'reports' || id === 'analytics' || id === 'financial-control') id = 'finances';
     if (this.activeTab === id) return;
     
     if (this.activeTab === 'library' && id !== 'library' && this.previousSidebarState !== null) {
@@ -601,7 +598,6 @@ export class AdminComponent implements OnInit, OnDestroy {
       const tabName = tabObj ? tabObj.name : id;
       let prompt = `Ver ${tabName}`;
       if (id === 'finances') prompt = 'Reporte de finanzas y pagos';
-      else if (id === 'financial-control') prompt = 'Analíticas y control financiero';
       else if (id === 'library') prompt = 'Cuadernos y apuntes de biblioteca';
       else if (id === 'itinerary') prompt = 'Agenda y tareas de hoy';
       else if (id === 'messages') prompt = 'Mensajes de contacto';

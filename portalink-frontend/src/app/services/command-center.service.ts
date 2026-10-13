@@ -229,7 +229,7 @@ export class CommandCenterService {
         { title: 'Finanzas & Facturación', section: 'finances', targetTab: 'finances', badge: 'Cartera', badgeColor: 'amber', actionText: 'Ir a Finanzas' },
         { title: 'Biblioteca de Apuntes', section: 'library', targetTab: 'library', badge: 'Estudio', badgeColor: 'purple', actionText: 'Abrir Biblioteca' },
         { title: 'Calendario & Agenda', section: 'itinerary', targetTab: 'itinerary', badge: 'Tareas', badgeColor: 'blue', actionText: 'Ver Calendario' },
-        { title: 'Rendimiento & Visitas', section: 'analytics', targetTab: 'analytics', badge: 'Métricas', badgeColor: 'emerald', actionText: 'Ver Analíticas' }
+        { title: 'Asistente Rotbot IA', section: 'rotbot', targetTab: 'rotbot', badge: 'IA', badgeColor: 'emerald', actionText: 'Abrir Rotbot' }
       ];
       for (const d of defaults) {
         if (!seen[d.section] && recentAccesses.length < 4) {
@@ -262,8 +262,8 @@ export class CommandCenterService {
           message: '+18.4% de incremento semanal en visitas registradas a tu portafolio.',
           badge: '+18.4% Visitas',
           badgeColor: 'blue',
-          actionText: 'Ver Analíticas',
-          targetTab: 'analytics'
+          actionText: 'Ver Finanzas',
+          targetTab: 'finances'
         },
         {
           id: 'lib-1',

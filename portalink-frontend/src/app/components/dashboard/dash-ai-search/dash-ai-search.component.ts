@@ -11,15 +11,14 @@ export type { RotbotMode };
 const TAB_LABELS: Record<string, string> = {
   dashboard: 'Inicio',
   rotbot: 'Rotbot English Coach',
-  'financial-control': 'Analíticas',
   finances: 'Finanzas',
   itinerary: 'Calendario',
   library: 'Biblioteca',
-  analytics: 'Analíticas',
-  stats: 'Analíticas',
+  analytics: 'Finanzas',
+  stats: 'Finanzas',
   messages: 'Mensajes',
   users: 'Usuarios',
-  reports: 'Analíticas',
+  reports: 'Finanzas',
   config: 'Configuración',
   'db-viewer': 'Visor de Base de Datos',
 };
