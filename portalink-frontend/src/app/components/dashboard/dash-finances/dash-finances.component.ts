@@ -982,102 +982,25 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
 
   isLoading = false;
 
-  private getInitialSampleInvoices(): Invoice[] {
-    return [
-      {
-        id: 'PL-2026-101',
-        invoice_number: 'PL-2026-101',
-        title: 'Desarrollo Plataforma Web & E-Commerce',
-        clientId: 'c1',
-        clientName: 'Alejandro Morales',
-        clientCompany: 'TechCorp Solutions',
-        total: 5800000,
-        total_amount: 5800000,
-        subtotal: 5800000,
-        paid_amount: 5800000,
-        pending_amount: 0,
-        status: 'Pagada',
-        issuedAt: '2026-07-15',
-        dueAt: '2026-07-30',
-        paidAt: '2026-07-28',
-        paymentMethod: 'Transferencia Bancaria',
-        items: []
-      },
-      {
-        id: 'PL-2026-102',
-        invoice_number: 'PL-2026-102',
-        title: 'Diseño UX/UI & Prototipado Interactivo',
-        clientId: 'c2',
-        clientName: 'Mariana Gómez',
-        clientCompany: 'Studio Creativo S.A.S.',
-        total: 3400000,
-        total_amount: 3400000,
-        subtotal: 3400000,
-        paid_amount: 1700000,
-        pending_amount: 1700000,
-        status: 'Parcial',
-        issuedAt: '2026-08-10',
-        dueAt: '2026-08-30',
-        paidAt: '2026-08-15',
-        paymentMethod: 'Nequi',
-        items: []
-      },
-      {
-        id: 'PL-2026-103',
-        invoice_number: 'PL-2026-103',
-        title: 'Infraestructura Cloud, Hosting & DNS',
-        clientId: 'c3',
-        clientName: 'Carlos Restrepo',
-        clientCompany: 'Inversiones Antioquia',
-        total: 4200000,
-        total_amount: 4200000,
-        subtotal: 4200000,
-        paid_amount: 0,
-        pending_amount: 4200000,
-        status: 'Enviada',
-        issuedAt: '2026-09-01',
-        dueAt: '2026-09-25',
-        paymentMethod: 'Transferencia Bancaria',
-        items: []
-      },
-      {
-        id: 'PL-2026-104',
-        invoice_number: 'PL-2026-104',
-        title: 'Mantenimiento & Soporte Técnico',
-        clientId: 'c4',
-        clientName: 'Daniela Herrera',
-        clientCompany: 'Logística Global',
-        total: 2100000,
-        total_amount: 2100000,
-        subtotal: 2100000,
-        paid_amount: 0,
-        pending_amount: 2100000,
-        status: 'Vencida',
-        issuedAt: '2026-08-01',
-        dueAt: '2026-08-20',
-        paymentMethod: 'Daviplata',
-        items: []
-      }
-    ];
-  }
-
   private loadCachedData() {
     try {
       if (typeof localStorage !== 'undefined') {
         const cached = localStorage.getItem('portalink_cached_finances');
         if (cached) {
           const parsed = JSON.parse(cached);
-          if (parsed.clients?.length) this.clients = parsed.clients;
-          if (parsed.services?.length) this.allServices = parsed.services;
-          if (parsed.invoices?.length) this.invoices = parsed.invoices;
+          // Purge any mock/sample items from previous sessions
+          const hasMock = Array.isArray(parsed.invoices) && parsed.invoices.some((inv: any) => inv.id === 'PL-2026-101' || inv.clientId === 'c1');
+          if (!hasMock) {
+            if (Array.isArray(parsed.clients) && parsed.clients.length > 0) this.clients = parsed.clients;
+            if (Array.isArray(parsed.services) && parsed.services.length > 0) this.allServices = parsed.services;
+            if (Array.isArray(parsed.invoices) && parsed.invoices.length > 0) this.invoices = parsed.invoices;
+          } else {
+            localStorage.removeItem('portalink_cached_finances');
+          }
         }
       }
     } catch (e) {
-      // Ignore
-    }
-
-    if (this.invoices.length === 0) {
-      this.invoices = this.getInitialSampleInvoices();
+      // Ignore cache read errors
     }
   }
 
@@ -1128,40 +1051,45 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
     this.buildReports();
     this.buildLocalKpis();
 
-    // Do NOT lock on skeleton if we already have data
-    if (this.invoices.length === 0) {
+    // Do NOT lock on skeleton if we already have data in memory/cache
+    if (this.invoices.length === 0 && this.clients.length === 0 && this.allServices.length === 0) {
       this.isLoading = true;
     } else {
       this.isLoading = false;
     }
     this.safeDetectChanges();
 
-    const withTimeout = <T>(promise: Promise<T>, ms = 2500): Promise<T> => {
-      return Promise.race([
-        promise,
-        new Promise<T>((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
-      ]);
-    };
-
     try {
-      const [clientsRes, servicesRes, invoicesRes]: any = await withTimeout(
-        Promise.all([
-          firstValueFrom(this.financeService.getClients()).catch(() => ({ ok: false, clients: [] })),
-          firstValueFrom(this.financeService.getServices()).catch(() => ({ ok: false, services: [] })),
-          firstValueFrom(this.financeService.getInvoices()).catch(() => ({ ok: false, invoices: [] }))
-        ]),
-        2500
-      ).catch(() => [null, null, null]);
+      const [clientsRes, servicesRes, invoicesRes]: any = await Promise.all([
+        firstValueFrom(this.financeService.getClients()).catch(err => {
+          console.warn('Error cargando clientes:', err);
+          return { ok: false, clients: [] };
+        }),
+        firstValueFrom(this.financeService.getServices()).catch(err => {
+          console.warn('Error cargando servicios:', err);
+          return { ok: false, services: [] };
+        }),
+        firstValueFrom(this.financeService.getInvoices()).catch(err => {
+          console.warn('Error cargando facturas:', err);
+          return { ok: false, invoices: [] };
+        })
+      ]);
 
       if (this.isDestroyed) return;
 
-      if (clientsRes?.clients?.length) {
-        this.clients = clientsRes.clients.map((c: any) => ({ ...c, createdAt: c.created_at })) || [];
+      if (clientsRes && Array.isArray(clientsRes.clients)) {
+        this.clients = clientsRes.clients.map((c: any) => ({
+          ...c,
+          createdAt: c.created_at || c.createdAt
+        }));
       }
-      if (servicesRes?.services?.length) {
-        this.allServices = servicesRes.services.map((s: any) => ({ ...s, unitPrice: Number(s.price) })) || [];
+      if (servicesRes && Array.isArray(servicesRes.services)) {
+        this.allServices = servicesRes.services.map((s: any) => ({
+          ...s,
+          unitPrice: Number(s.price !== undefined ? s.price : (s.unitPrice || 0))
+        }));
       }
-      if (invoicesRes?.invoices?.length) {
+      if (invoicesRes && Array.isArray(invoicesRes.invoices)) {
         this.invoices = invoicesRes.invoices.map((i: any) => {
           const total = Number(i.total_amount || i.total || 0);
           const paid = Number(i.paid_amount || 0);
@@ -1175,7 +1103,7 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
             clientCompany: i.company || '',
             total: total,
             total_amount: total,
-            subtotal: Number(i.subtotal),
+            subtotal: Number(i.subtotal !== undefined ? i.subtotal : total),
             paid_amount: paid,
             pending_amount: Number(i.pending_amount !== undefined ? i.pending_amount : Math.max(0, total - paid)),
             status: this.formatStatus(i.status, dueAt, paid, total),
@@ -1187,16 +1115,17 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
             payments: i.payments || [],
             items: []
           };
-        }) || [];
-        this.saveCachedData();
+        });
       }
+
+      this.saveCachedData();
 
       if (this.isDestroyed) return;
       await this.buildKpis();
       if (this.isDestroyed) return;
       this.buildReports();
     } catch (e) {
-      console.warn('Network error or timeout in finances refresh:', e);
+      console.warn('Network error in finances refresh:', e);
       this.buildLocalKpis();
       this.buildReports();
     } finally {
@@ -1278,9 +1207,10 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
         date_to: this.invFilterEndDate
       };
       
-      const dashboardPromise = firstValueFrom(this.financeService.getDashboard(filters));
-      const timeoutPromise = new Promise<any>((_, reject) => setTimeout(() => reject(new Error('timeout')), 2000));
-      const dashboardRes = await Promise.race([dashboardPromise, timeoutPromise]).catch(() => null);
+      const dashboardRes = await firstValueFrom(this.financeService.getDashboard(filters)).catch(err => {
+        console.warn('Dashboard API call error, falling back to local KPIs:', err);
+        return null;
+      });
 
       if (this.isDestroyed) return;
       
@@ -1390,10 +1320,17 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
     const srvMap: Record<string, number> = {};
     let totalPaid = 0;
     paidInvoices.forEach(inv => {
-      totalPaid += inv.subtotal;
-      (inv.items || []).forEach(item => {
-        srvMap[item.serviceName || ''] = (srvMap[item.serviceName || ''] || 0) + (item.subtotal || 0);
-      });
+      const invAmt = Number(inv.subtotal || inv.total || inv.total_amount || 0);
+      totalPaid += invAmt;
+      if (inv.items && inv.items.length > 0) {
+        inv.items.forEach(item => {
+          const sName = (item.serviceName || item.description || 'Servicio').trim();
+          srvMap[sName] = (srvMap[sName] || 0) + Number(item.subtotal || item.total_price || (item.quantity * item.unit_price) || 0);
+        });
+      } else {
+        const sName = (inv.title || 'Servicio Profesional').trim();
+        srvMap[sName] = (srvMap[sName] || 0) + invAmt;
+      }
     });
 
     this.serviceIncome = Object.keys(srvMap)
