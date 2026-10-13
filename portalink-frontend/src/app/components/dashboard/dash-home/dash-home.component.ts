@@ -17,7 +17,564 @@ import { MessagesService } from '../../../services/messages.service';
   imports: [CommonModule, FormsModule],
   template: `
     <ng-container *ngIf="!isLoading; else skeleton">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-4 tab-enter font-sans">
+      <!-- ═══════════════════════ VISTA NATIVA APP MÓVIL (< lg) ═══════════════════════ -->
+      <div class="block lg:hidden mobile-home-app space-y-3.5 pb-12 tab-enter font-sans select-none">
+
+        <!-- 1. HEADER NATIVO: PERFIL + GREETING + LIVE STATUS -->
+        <div class="rounded-3xl border p-4 transition-all duration-300 relative overflow-hidden"
+             [ngClass]="isDark ? 'bg-[#0d0d11] border-neutral-800/90 text-white shadow-[0_8px_30px_rgba(0,0,0,0.5)]' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-[0_8px_25px_rgba(0,0,0,0.04)]'">
+          
+          <div class="flex items-center justify-between mb-3">
+            <!-- Avatar y Saludo -->
+            <div class="flex items-center gap-3">
+              <div class="relative">
+                <div class="w-11 h-11 rounded-2xl flex items-center justify-center font-headline font-black text-sm tracking-wider text-white shadow-md border"
+                     [ngClass]="isDark ? 'bg-gradient-to-br from-red-600 to-black border-red-500/40 shadow-red-950/40' : 'bg-gradient-to-br from-red-600 to-neutral-900 border-red-400/50 shadow-red-600/20'">
+                  SA
+                </div>
+                <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2"
+                      [ngClass]="isDark ? 'border-[#0d0d11]' : 'border-white'"></span>
+              </div>
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-xs font-headline font-bold uppercase tracking-wider text-red-500">PortaLink Pro</span>
+                  <span class="text-[10px] text-neutral-400">·</span>
+                  <span class="text-[10px] font-mono font-medium text-neutral-400">{{ sessionTimeFormatted }}</span>
+                </div>
+                <h2 class="text-base font-headline font-extrabold tracking-tight m-0 leading-tight"
+                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                  {{ greetingText }}
+                </h2>
+              </div>
+            </div>
+
+            <!-- Botón de Mensajes Rápido con Badge -->
+            <button (click)="navigateToTab('messages')"
+                    class="relative w-10 h-10 rounded-2xl border flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-90"
+                    [ngClass]="unreadMessages > 0 
+                      ? 'bg-red-500/15 border-red-500/40 text-red-400' 
+                      : (isDark ? 'bg-neutral-900/80 border-neutral-800 text-neutral-400' : 'bg-neutral-100 border-neutral-200 text-neutral-600')">
+              <span class="material-symbols-rounded text-xl">mail</span>
+              <span *ngIf="unreadMessages > 0" 
+                    class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-red-600 text-white text-[10px] font-black flex items-center justify-center shadow-md animate-pulse">
+                {{ unreadMessages }}
+              </span>
+            </button>
+          </div>
+
+          <!-- Frase Rotativa Dinámica -->
+          <div class="px-3 py-2 rounded-xl text-xs font-sans flex items-center gap-2 border"
+               [ngClass]="isDark ? 'bg-neutral-950/70 border-neutral-800/80 text-neutral-300' : 'bg-neutral-50 border-neutral-200/70 text-neutral-700'">
+            <span class="text-xs select-none">💡</span>
+            <span class="truncate italic">{{ currentRotatingPhrase || 'Gestión centralizada del catálogo y módulos.' }}</span>
+          </div>
+
+          <!-- Micro Barra de Chips Horizontales -->
+          <div class="flex items-center gap-2 overflow-x-auto pt-3 no-scrollbar">
+            <span class="shrink-0 h-6.5 px-2.5 rounded-full border text-[10px] font-semibold inline-flex items-center gap-1.5"
+                  [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
+              <span class="material-symbols-rounded text-sm">visibility</span>
+              {{ (metrics.homeViews || 0) + (metrics.linktreeViews || 0) | number }} visitas
+            </span>
+            <span class="shrink-0 h-6.5 px-2.5 rounded-full border text-[10px] font-semibold inline-flex items-center gap-1.5"
+                  [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              99.9% Online
+            </span>
+            <span class="shrink-0 h-6.5 px-2.5 rounded-full border text-[10px] font-semibold inline-flex items-center gap-1.5"
+                  [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
+              <span class="material-symbols-rounded text-sm text-red-500">speed</span>
+              42ms Latencia
+            </span>
+          </div>
+        </div>
+
+        <!-- 2. HUB DE ACCESOS RÁPIDOS NATIVO (4 APP SQUIRCLES) -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <!-- Finanzas -->
+          <button (click)="navigateToTab('finances')"
+                  class="p-3.5 rounded-2xl border text-left flex flex-col justify-between transition-all duration-200 cursor-pointer active:scale-95 group relative overflow-hidden"
+                  [ngClass]="isDark ? 'bg-[#111116] border-neutral-800/90 text-white shadow-[0_4px_16px_rgba(0,0,0,0.3)]' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-sm'">
+            <div class="flex items-center justify-between mb-2">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-red-500/10 text-red-500 border border-red-500/20">
+                <span class="material-symbols-rounded text-xl">payments</span>
+              </div>
+              <span class="material-symbols-rounded text-neutral-400 group-hover:text-red-500 transition-colors text-lg">chevron_right</span>
+            </div>
+            <div>
+              <p class="text-xs font-headline font-bold m-0 leading-tight">Finanzas</p>
+              <p class="text-[10px] text-neutral-400 m-0 mt-0.5 truncate">{{ formatCurrency(financeTotalPaid) }}</p>
+            </div>
+          </button>
+
+          <!-- Biblioteca -->
+          <button (click)="navigateToTab('library')"
+                  class="p-3.5 rounded-2xl border text-left flex flex-col justify-between transition-all duration-200 cursor-pointer active:scale-95 group relative overflow-hidden"
+                  [ngClass]="isDark ? 'bg-[#111116] border-neutral-800/90 text-white shadow-[0_4px_16px_rgba(0,0,0,0.3)]' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-sm'">
+            <div class="flex items-center justify-between mb-2">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-neutral-500/10 text-neutral-300 border border-neutral-500/20"
+                   [ngClass]="isDark ? 'text-white' : 'text-neutral-800'">
+                <span class="material-symbols-rounded text-xl">menu_book</span>
+              </div>
+              <span class="material-symbols-rounded text-neutral-400 group-hover:text-red-500 transition-colors text-lg">chevron_right</span>
+            </div>
+            <div>
+              <p class="text-xs font-headline font-bold m-0 leading-tight">Biblioteca</p>
+              <p class="text-[10px] text-neutral-400 m-0 mt-0.5 truncate">Cuadernos & SQL</p>
+            </div>
+          </button>
+
+          <!-- RotBot IA -->
+          <button (click)="navigateToTab('rotbot')"
+                  class="p-3.5 rounded-2xl border text-left flex flex-col justify-between transition-all duration-200 cursor-pointer active:scale-95 group relative overflow-hidden"
+                  [ngClass]="isDark ? 'bg-[#111116] border-neutral-800/90 text-white shadow-[0_4px_16px_rgba(0,0,0,0.3)]' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-sm'">
+            <div class="flex items-center justify-between mb-2">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-red-500/10 text-red-500 border border-red-500/20">
+                <span class="material-symbols-rounded text-xl">smart_toy</span>
+              </div>
+              <span class="material-symbols-rounded text-neutral-400 group-hover:text-red-500 transition-colors text-lg">chevron_right</span>
+            </div>
+            <div>
+              <p class="text-xs font-headline font-bold m-0 leading-tight">RotBot IA</p>
+              <p class="text-[10px] text-neutral-400 m-0 mt-0.5 truncate">Copiloto Activo</p>
+            </div>
+          </button>
+
+          <!-- Agenda / Itinerario -->
+          <button (click)="navigateToTab('itinerary')"
+                  class="p-3.5 rounded-2xl border text-left flex flex-col justify-between transition-all duration-200 cursor-pointer active:scale-95 group relative overflow-hidden"
+                  [ngClass]="isDark ? 'bg-[#111116] border-neutral-800/90 text-white shadow-[0_4px_16px_rgba(0,0,0,0.3)]' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-sm'">
+            <div class="flex items-center justify-between mb-2">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-neutral-500/10 text-neutral-300 border border-neutral-500/20"
+                   [ngClass]="isDark ? 'text-white' : 'text-neutral-800'">
+                <span class="material-symbols-rounded text-xl">calendar_today</span>
+              </div>
+              <span class="material-symbols-rounded text-neutral-400 group-hover:text-red-500 transition-colors text-lg">chevron_right</span>
+            </div>
+            <div>
+              <p class="text-xs font-headline font-bold m-0 leading-tight">Itinerario</p>
+              <p class="text-[10px] text-neutral-400 m-0 mt-0.5 truncate">Tareas & Citas</p>
+            </div>
+          </button>
+        </div>
+
+        <!-- 3. COMANDO IA MÓVIL (INPUT FLUIDO + VOZ + CHIPS) -->
+        <div class="rounded-3xl border p-4 transition-all duration-300 space-y-3"
+             [ngClass]="isDark ? 'bg-[#0d0d11] border-neutral-800/90 text-white' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-sm'">
+          
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-rounded text-red-500 text-lg">auto_awesome</span>
+              <span class="text-xs font-headline font-bold uppercase tracking-wider">Comando Gemini IA</span>
+            </div>
+            <span class="text-[9px] font-mono px-2 py-0.5 rounded-full border"
+                  [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-400' : 'bg-neutral-100 border-neutral-200 text-neutral-600'">
+              Flash 2.0
+            </span>
+          </div>
+
+          <!-- Input Pill con Micrófono y Botón de Envío -->
+          <div class="relative flex items-center">
+            <input type="text"
+                   [(ngModel)]="aiQuery"
+                   (keyup.enter)="askGeminiCommand()"
+                   [disabled]="isAiSearching"
+                   [placeholder]="isAiSearching ? 'Consultando Gemini...' : 'Pregunta o comando rápido...'"
+                   class="w-full pl-3.5 pr-20 py-2.5 rounded-xl border text-xs outline-none transition-all font-sans"
+                   [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800 text-white placeholder-neutral-500 focus:border-red-500/60' : 'bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-red-500/60'">
+            
+            <div class="absolute right-1.5 flex items-center gap-1">
+              <!-- Micrófono -->
+              <button (click)="toggleVoiceInput()"
+                      [disabled]="isAiSearching || isAiVoiceProcessing"
+                      class="w-7 h-7 rounded-lg flex items-center justify-center transition-all cursor-pointer"
+                      [ngClass]="isVoiceRecording 
+                        ? 'bg-red-500 text-white animate-pulse' 
+                        : (isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-900' : 'text-neutral-500 hover:text-black hover:bg-neutral-200')">
+                <span class="material-symbols-rounded text-base">mic</span>
+              </button>
+
+              <!-- Botón Enviar -->
+              <button (click)="askGeminiCommand()"
+                      [disabled]="isAiSearching || !aiQuery.trim() || isVoiceRecording"
+                      class="w-7 h-7 rounded-lg flex items-center justify-center bg-red-600 text-white hover:bg-red-500 transition-all cursor-pointer disabled:opacity-40 active:scale-90">
+                <span class="material-symbols-rounded text-base">arrow_upward</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Estado de grabación o error -->
+          <div *ngIf="isVoiceRecording" class="flex items-center gap-2 py-1 text-xs text-red-500 animate-pulse font-sans">
+            <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+            <span>Escuchando audio... pulsa el micro de nuevo para procesar</span>
+          </div>
+          <div *ngIf="voiceErrorMessage" class="text-[11px] text-red-400 bg-red-500/10 px-2 py-1 rounded-lg border border-red-500/20 font-sans">
+            {{ voiceErrorMessage }}
+          </div>
+
+          <!-- Carrusel de Sugerencias Rápidas -->
+          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-1">
+            <button *ngFor="let sug of quickSuggestions"
+                    (click)="selectSuggestion(sug)"
+                    class="shrink-0 px-2.5 py-1 rounded-full border text-[10px] font-sans transition-all cursor-pointer active:scale-95 whitespace-nowrap"
+                    [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300 hover:border-neutral-700' : 'bg-neutral-100 border-neutral-200 text-neutral-700 hover:border-neutral-300'">
+              {{ sug }}
+            </button>
+          </div>
+
+          <!-- Tarjeta de Respuesta IA Móvil (si está activa) -->
+          <div *ngIf="activeAiResponse"
+               class="rounded-2xl border p-3.5 space-y-2.5 animate-dropdown"
+               [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800 text-white' : 'bg-neutral-50 border-neutral-200 text-neutral-900'">
+            <div class="flex items-center justify-between pb-2 border-b"
+                 [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+              <div class="flex items-center gap-1.5 text-xs font-headline font-bold text-red-500">
+                <span class="material-symbols-rounded text-base">bolt</span>
+                Respuesta Gemini
+              </div>
+              <button (click)="activeAiResponse = null" class="text-neutral-400 hover:text-white p-1">
+                <span class="material-symbols-rounded text-sm">close</span>
+              </button>
+            </div>
+            <p class="text-xs font-sans leading-relaxed m-0 opacity-90">{{ activeAiResponse.data?.summary || activeAiResponse.query }}</p>
+            <div *ngIf="activeAiResponse.data?.targetTab" class="pt-1">
+              <button (click)="navigateToTab(activeAiResponse.data.targetTab)"
+                      class="w-full py-2 px-3 rounded-xl bg-red-600 text-white text-xs font-headline font-bold uppercase tracking-wider flex items-center justify-center gap-2 active:scale-95 shadow-md">
+                <span>{{ activeAiResponse.data.actionText || 'Ver en Módulo' }}</span>
+                <span class="material-symbols-rounded text-sm">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. GRID DE 4 MÉTRICAS CLAVE (2x2) -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <!-- Métrica 1: Tráfico -->
+          <div class="p-3.5 rounded-2xl border flex flex-col justify-between"
+               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800/90 text-white' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-sm'">
+            <div class="flex items-center justify-between text-neutral-400 mb-2">
+              <span class="text-[10px] font-headline font-bold uppercase tracking-wider">Tráfico Global</span>
+              <span class="material-symbols-rounded text-neutral-400 text-base">visibility</span>
+            </div>
+            <div>
+              <p class="text-xl font-headline font-extrabold tracking-tight m-0 leading-tight">
+                {{ (metrics.homeViews || 0) + (metrics.linktreeViews || 0) | number }}
+              </p>
+              <span class="text-[10px] font-bold text-emerald-500 flex items-center gap-1 mt-1 font-sans">
+                +18.4% <span class="text-neutral-400 font-normal">esta semana</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Métrica 2: Facturación -->
+          <div (click)="navigateToTab('finances')"
+               class="p-3.5 rounded-2xl border flex flex-col justify-between cursor-pointer active:scale-95 transition-all"
+               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800/90 text-white' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-sm'">
+            <div class="flex items-center justify-between text-neutral-400 mb-2">
+              <span class="text-[10px] font-headline font-bold uppercase tracking-wider">Facturación</span>
+              <span class="material-symbols-rounded text-red-500 text-base">payments</span>
+            </div>
+            <div>
+              <p class="text-xl font-headline font-extrabold tracking-tight m-0 leading-tight">
+                {{ formatCurrency(financeTotalPaid) }}
+              </p>
+              <span class="text-[10px] text-red-400 flex items-center gap-1 mt-1 font-sans truncate">
+                Pend: {{ formatCurrency(financeTotalPending) }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Métrica 3: Clientes -->
+          <div (click)="navigateToTab('finances')"
+               class="p-3.5 rounded-2xl border flex flex-col justify-between cursor-pointer active:scale-95 transition-all"
+               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800/90 text-white' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-sm'">
+            <div class="flex items-center justify-between text-neutral-400 mb-2">
+              <span class="text-[10px] font-headline font-bold uppercase tracking-wider">Clientes</span>
+              <span class="material-symbols-rounded text-neutral-400 text-base">group</span>
+            </div>
+            <div>
+              <p class="text-xl font-headline font-extrabold tracking-tight m-0 leading-tight">
+                {{ totalClientsCount }}
+              </p>
+              <span class="text-[10px] text-neutral-400 flex items-center gap-1 mt-1 font-sans">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                Activos registrados
+              </span>
+            </div>
+          </div>
+
+          <!-- Métrica 4: Sistema -->
+          <div (click)="navigateToTab('stats')"
+               class="p-3.5 rounded-2xl border flex flex-col justify-between cursor-pointer active:scale-95 transition-all"
+               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800/90 text-white' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-sm'">
+            <div class="flex items-center justify-between text-neutral-400 mb-2">
+              <span class="text-[10px] font-headline font-bold uppercase tracking-wider">Sistema</span>
+              <span class="material-symbols-rounded text-emerald-500 text-base">verified</span>
+            </div>
+            <div>
+              <p class="text-xl font-headline font-extrabold tracking-tight m-0 leading-tight">
+                99.9%
+              </p>
+              <span class="text-[10px] text-neutral-400 flex items-center gap-1 mt-1 font-sans">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                Latencia: 42ms
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. RACHA DEL DÍA MÓVIL (ESTILO APPLE FITNESS / NATIVE TILE) -->
+        <div class="rounded-3xl border border-neutral-800 bg-[#0a0a0d] text-white p-4 space-y-3 shadow-[0_8px_30px_rgba(0,0,0,0.5)]">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-xl select-none">🔥</span>
+              <div>
+                <h3 class="text-sm font-headline font-bold tracking-tight m-0 text-white">Racha del Día</h3>
+                <p class="text-[10px] text-neutral-400 m-0">Récord: {{ streakData?.longestStreak || 1 }} días</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-red-500/20 text-red-400 border border-red-500/30">
+                {{ streakData?.streakCount || 1 }}d
+              </span>
+              <button (click)="openStreakMonthModal()"
+                      class="text-[11px] font-headline text-neutral-400 hover:text-white px-2 py-1 rounded-lg border border-neutral-800 bg-neutral-900 cursor-pointer">
+                Mes →
+              </button>
+            </div>
+          </div>
+
+          <!-- Barra de Progreso de Metas -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between text-[11px] text-neutral-400 font-sans">
+              <span>{{ completedStreakGoals }}/3 objetivos completados</span>
+              <span class="font-bold text-white">{{ ((completedStreakGoals / 3) * 100) | number:'1.0-0' }}%</span>
+            </div>
+            <div class="w-full h-1.5 bg-neutral-800 rounded-full overflow-hidden">
+              <div class="h-full bg-red-500 rounded-full transition-all duration-300"
+                   [style.width.%]="(completedStreakGoals / 3) * 100"></div>
+            </div>
+          </div>
+
+          <!-- Las 3 Metas en Formato Táctil -->
+          <div class="grid grid-cols-3 gap-2">
+            <!-- Meta 1 -->
+            <div class="p-2.5 rounded-xl border border-neutral-800 bg-[#121216] flex flex-col justify-between min-h-[58px]">
+              <span class="text-[10px] text-neutral-400 font-sans">1. Ingreso</span>
+              <span class="text-xs font-headline font-bold text-red-400">✓ Listo</span>
+            </div>
+            <!-- Meta 2 -->
+            <div class="p-2.5 rounded-xl border border-neutral-800 bg-[#121216] flex flex-col justify-between min-h-[58px]">
+              <span class="text-[10px] text-neutral-400 font-sans">2. RotBot</span>
+              <span *ngIf="streakData?.actions?.robot" class="text-xs font-headline font-bold text-red-400">✓ Listo</span>
+              <button *ngIf="!streakData?.actions?.robot" 
+                      (click)="tabChange.emit('rotbot')"
+                      class="text-[11px] font-headline font-bold text-red-400 hover:text-red-300 text-left cursor-pointer">
+                Abrir →
+              </button>
+            </div>
+            <!-- Meta 3 -->
+            <div class="p-2.5 rounded-xl border border-neutral-800 bg-[#121216] flex flex-col justify-between min-h-[58px]">
+              <span class="text-[10px] text-neutral-400 font-sans">3. Apuntes</span>
+              <span *ngIf="streakData?.actions?.library" class="text-xs font-headline font-bold text-red-400">✓ Listo</span>
+              <button *ngIf="!streakData?.actions?.library" 
+                      (click)="tabChange.emit('library')"
+                      class="text-[11px] font-headline font-bold text-red-400 hover:text-red-300 text-left cursor-pointer">
+                Repasar →
+              </button>
+            </div>
+          </div>
+
+          <!-- Tira de 7 Días de la Semana -->
+          <div class="pt-2 border-t border-neutral-800/80">
+            <div class="grid grid-cols-7 gap-1 text-center">
+              <div *ngFor="let day of streakWeekDays" class="flex flex-col items-center py-0.5">
+                <span class="text-[9px] font-headline uppercase text-neutral-500">{{ day.name }}</span>
+                <span class="text-xs font-mono font-medium my-0.5"
+                      [style.color]="day.isCompleted ? '#ffffff' : (day.isToday ? '#f87171' : '#a1a1aa')">
+                  {{ day.dayNumber }}
+                </span>
+                <span class="w-1.5 h-1.5 rounded-full mt-0.5" 
+                      [ngClass]="day.isCompleted ? 'bg-red-500' : (day.isToday ? 'bg-red-500 animate-pulse' : 'bg-neutral-800')">
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. AGENDA DE HOY (WIDGET COMPACTO) -->
+        <div (click)="navigateToTab('itinerary')"
+             class="rounded-3xl border p-4 transition-all duration-300 cursor-pointer active:scale-98 group"
+             [ngClass]="isDark ? 'bg-[#0d0d11] border-neutral-800/90 text-white' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-sm'">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+              <h4 class="text-xs font-headline font-bold uppercase tracking-wider m-0">Agenda de Hoy</h4>
+            </div>
+            <span class="text-[10px] font-headline font-bold text-red-500 group-hover:translate-x-1 transition-transform">
+              Ver Itinerario →
+            </span>
+          </div>
+
+          <div class="space-y-2">
+            <div *ngIf="itineraryNotifs.current?.length > 0">
+              <div *ngFor="let task of itineraryNotifs.current.slice(0, 1)"
+                   class="rounded-xl border p-2.5 flex items-center justify-between bg-red-500/10 border-red-500/25 text-red-500 font-sans">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping shrink-0"></span>
+                  <span class="text-xs font-semibold truncate">{{ task.title }}</span>
+                </div>
+                <span class="text-[10px] font-mono font-bold shrink-0 ml-2">{{ task.time }}</span>
+              </div>
+            </div>
+
+            <div *ngIf="itineraryNotifs.upcoming?.length > 0">
+              <div *ngFor="let task of itineraryNotifs.upcoming.slice(0, 1)"
+                   class="rounded-xl border p-2.5 flex items-center justify-between font-sans"
+                   [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800 text-neutral-300' : 'bg-neutral-50 border-neutral-200 text-neutral-700'">
+                <span class="text-xs font-medium truncate">{{ task.title }}</span>
+                <span class="text-[10px] opacity-60 font-mono shrink-0 ml-2">{{ task.time }}</span>
+              </div>
+            </div>
+
+            <div *ngIf="!itineraryNotifs.current?.length && !itineraryNotifs.upcoming?.length"
+                 class="rounded-xl border p-3 text-center"
+                 [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800/80 text-neutral-400' : 'bg-neutral-50 border-neutral-200 text-neutral-600'">
+              <p class="text-xs font-semibold m-0">Sin pendientes urgentes hoy</p>
+              <span class="text-[10px] opacity-60 font-sans">¡Itinerario al día!</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. GRÁFICAS INTERACTIVAS CON SELECTOR SEGMENTADO [ TRÁFICO | FINANZAS ] -->
+        <div class="rounded-3xl border p-4 space-y-3.5 transition-all duration-300"
+             [ngClass]="isDark ? 'bg-[#0d0d11] border-neutral-800/90 text-white' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-sm'">
+          
+          <!-- Segmented Control Bar -->
+          <div class="flex items-center justify-between">
+            <div class="p-1 rounded-2xl border flex items-center gap-1"
+                 [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800' : 'bg-neutral-100 border-neutral-200'">
+              <button (click)="mobileChartTab = 'traffic'"
+                      class="px-3 py-1.5 rounded-xl text-xs font-headline font-bold transition-all cursor-pointer"
+                      [ngClass]="mobileChartTab === 'traffic'
+                        ? 'bg-red-600 text-white shadow-sm'
+                        : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-600 hover:text-black')">
+                📈 Tráfico (7D)
+              </button>
+              <button (click)="mobileChartTab = 'finances'"
+                      class="px-3 py-1.5 rounded-xl text-xs font-headline font-bold transition-all cursor-pointer"
+                      [ngClass]="mobileChartTab === 'finances'
+                        ? 'bg-red-600 text-white shadow-sm'
+                        : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-600 hover:text-black')">
+                💳 Finanzas (6M)
+              </button>
+            </div>
+            
+            <span class="text-[9px] font-headline uppercase font-semibold text-neutral-400 px-2 py-0.5 rounded-full border"
+                  [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900' : 'border-neutral-200 bg-neutral-50'">
+              En Vivo
+            </span>
+          </div>
+
+          <!-- TAB TRÁFICO -->
+          <div *ngIf="mobileChartTab === 'traffic'" class="space-y-3 animate-fadeIn">
+            <!-- Vector Line Chart SVG -->
+            <div class="w-full h-28 relative">
+              <svg class="w-full h-full" viewBox="0 0 500 140" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="trafficGradMobile" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#dc2626" stop-opacity="0.35"/>
+                    <stop offset="100%" stop-color="#dc2626" stop-opacity="0.0"/>
+                  </linearGradient>
+                </defs>
+                <line x1="0" y1="25" x2="500" y2="25" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'"/>
+                <line x1="0" y1="65" x2="500" y2="65" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'"/>
+                <line x1="0" y1="105" x2="500" y2="105" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'"/>
+                <path [attr.d]="trafficAreaPath" fill="url(#trafficGradMobile)"/>
+                <path [attr.d]="trafficLinePath" fill="none" stroke="#dc2626" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle *ngFor="let pt of trafficPoints" 
+                        [attr.cx]="pt.x" 
+                        [attr.cy]="pt.y" 
+                        r="4" 
+                        [attr.fill]="isDark ? '#0d0d11' : '#ffffff'" 
+                        stroke="#dc2626" 
+                        stroke-width="2.5"/>
+              </svg>
+            </div>
+
+            <!-- Días de la semana -->
+            <div class="flex justify-between text-[10px] font-headline font-semibold uppercase text-neutral-400 px-1">
+              <span *ngFor="let day of weekDays">{{ day }}</span>
+            </div>
+
+            <!-- Resumen de Tráfico -->
+            <div class="grid grid-cols-3 gap-2 pt-3 border-t text-center"
+                 [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+              <div>
+                <span class="text-[9px] uppercase text-neutral-400 block font-sans">Promedio</span>
+                <span class="text-xs font-bold font-headline" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ avgDailyTraffic }}</span>
+              </div>
+              <div>
+                <span class="text-[9px] uppercase text-neutral-400 block font-sans">Pico</span>
+                <span class="text-xs font-bold font-headline text-red-500">{{ maxTraffic }}</span>
+              </div>
+              <div>
+                <span class="text-[9px] uppercase text-neutral-400 block font-sans">Conversión</span>
+                <span class="text-xs font-bold font-headline text-red-600">{{ conversionRate }}%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB FINANZAS -->
+          <div *ngIf="mobileChartTab === 'finances'" class="space-y-3 animate-fadeIn">
+            <!-- Barras Mensuales -->
+            <div class="w-full h-28 flex items-end justify-between gap-2 px-1 pt-2">
+              <div *ngFor="let item of financialMonthlyBars" class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+                <span class="text-[9px] font-bold text-red-500">
+                  {{ item.formattedShort }}
+                </span>
+                <div class="w-full max-w-[20px] rounded-t-md transition-all duration-500 bg-gradient-to-t from-red-700 to-red-500 shadow-sm"
+                     [style.height.%]="item.heightPct">
+                </div>
+                <span class="text-[9px] font-headline font-semibold uppercase text-neutral-400">
+                  {{ item.month }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Resumen de Finanzas -->
+            <div class="grid grid-cols-3 gap-2 pt-3 border-t text-center"
+                 [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+              <div>
+                <span class="text-[9px] uppercase text-neutral-400 block font-sans">Facturas</span>
+                <span class="text-xs font-bold font-headline" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ totalInvoicesCount }}</span>
+              </div>
+              <div>
+                <span class="text-[9px] uppercase text-neutral-400 block font-sans">Tasa Cobro</span>
+                <span class="text-xs font-bold font-headline text-red-600">{{ collectionRate }}%</span>
+              </div>
+              <div>
+                <span class="text-[9px] uppercase text-neutral-400 block font-sans">Cobrado</span>
+                <span class="text-xs font-bold font-headline text-red-600 truncate block">{{ formatCurrency(financeTotalPaid) }}</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 8. FOOTER ACTIONS MÓVIL -->
+        <div class="flex justify-center pt-2">
+          <button (click)="resetMetrics()"
+                  class="px-5 py-2.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider border transition-all cursor-pointer active:scale-95 shadow-sm"
+                  [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:border-red-500/40 hover:text-red-400 bg-neutral-900/60' : 'border-neutral-200 text-neutral-600 hover:border-red-300 hover:text-red-600 bg-white'">
+            Reiniciar Métricas
+          </button>
+        </div>
+
+      </div>
+
+      <!-- ═══════════════════════ VISTA ESCRITORIO BENTO GRID (>= lg) ═══════════════════════ -->
+      <div class="hidden lg:grid grid-cols-12 gap-3.5 sm:gap-4 tab-enter font-sans">
 
         <!-- ═══════════════════════ 1. HERO BENTO GRID (BIENVENIDA + ACCESO RÁPIDO) ═══════════════════════ -->
         <section class="dash-bento-grid lg:col-span-12 order-1">
@@ -1082,6 +1639,13 @@ import { MessagesService } from '../../../services/messages.service';
       0%, 100% { height: 6px; opacity: 0.4; }
       50% { height: 18px; opacity: 1; }
     }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .animate-fadeIn { animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
   `]
 })
 export class DashHomeComponent implements OnInit, OnDestroy {
@@ -1169,6 +1733,7 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   conversionRate = 12.8;
   avgDailyTraffic = 0;
   maxTraffic = 0;
+  mobileChartTab: 'traffic' | 'finances' = 'traffic';
 
   // Radar Proactivo State
   radarData: RadarResponse | null = null;
