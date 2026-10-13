@@ -48,7 +48,7 @@ interface Tab {
     DashStreakModalComponent,
   ],
   template: `
-    <div class="dash-shell min-h-screen w-full flex relative overflow-x-hidden" [class.sidebar-collapsed]="isSidebarCollapsed">
+    <div class="dash-shell h-[100dvh] h-screen max-h-[100dvh] max-h-screen w-full flex relative overflow-hidden" [class.sidebar-collapsed]="isSidebarCollapsed">
 
       <!-- ══════════════════════════════════════
            DESKTOP SIDEBAR (HIGH CONTRAST SLATE & RED)
@@ -122,7 +122,7 @@ interface Tab {
       <!-- ══════════════════════════════════════
            MAIN AREA (DASH CONTENT)
       ══════════════════════════════════════ -->
-      <div class="dash-content flex-1 flex flex-col min-h-screen min-w-0"
+      <div class="dash-content flex-1 flex flex-col h-full max-h-full min-h-0 min-w-0 overflow-hidden"
            [style.margin-left]="isMobileScreen ? '0px' : (isSidebarCollapsed ? '68px' : '240px')">
 
         <!-- Top Bar (AI Search & Rotbot Dynamic Header) -->
@@ -137,15 +137,16 @@ interface Tab {
           (toggleSidebar)="handleToggleSidebar()">
         </app-dash-ai-search>
 
-        <!-- Content (Móvil: pb-[76px] en Rotbot evita que la barra fija inferior oculte el input de chat) -->
-        <main class="flex-1 min-h-0 relative z-10 transition-all duration-300 no-scrollbar"
+        <!-- Content -->
+        <main class="flex-1 min-h-0 relative z-10 transition-all duration-300 no-scrollbar touch-pan-y"
+              style="-webkit-overflow-scrolling: touch;"
               [ngClass]="[
                 isDark ? 'bg-[#020204]' : 'bg-white',
                 activeTab === 'rotbot'
                   ? 'overflow-hidden flex flex-col justify-between items-center h-full p-2 sm:p-3 md:p-5 lg:p-6 pb-[76px] md:pb-6' 
                   : (activeTab === 'library' && isNotesView
-                      ? 'overflow-y-auto overflow-x-hidden overscroll-contain md:overscroll-auto md:scroll-smooth px-2 py-2 sm:p-4 md:p-6 pb-28 md:pb-8'
-                      : 'overflow-y-auto overflow-x-hidden overscroll-contain md:overscroll-auto md:scroll-smooth p-4 sm:p-6 md:p-8 pb-28 md:pb-8')
+                      ? 'overflow-y-auto overflow-x-hidden px-2 py-2 sm:p-4 md:p-6 pb-32 md:pb-8'
+                      : 'overflow-y-auto overflow-x-hidden p-4 sm:p-6 md:p-8 pb-32 md:pb-8')
               ]">
           <div class="transition-all duration-300"
                [ngClass]="activeTab === 'rotbot' ? 'w-full h-full flex flex-col justify-between items-center min-h-0' : 'w-full'">
@@ -225,40 +226,33 @@ interface Tab {
       </div>
 
       <!-- ══════════════════════════════════════
-           PREMIUM MOBILE BOTTOM SHEET MENU
+           PREMIUM MOBILE BOTTOM SHEET MENU (ROJO, BLANCO, GRIS, NEGRO)
       ══════════════════════════════════════ -->
       <div *ngIf="isMobileDrawerOpen"
            (click)="isMobileDrawerOpen = false"
-           class="fixed inset-0 bg-black/75 backdrop-blur-md z-40 md:hidden transition-opacity duration-300">
+           class="fixed inset-0 bg-black/85 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300">
       </div>
 
-      <div class="fixed bottom-0 left-0 right-0 z-50 md:hidden rounded-t-[32px] max-h-[88vh] overflow-y-auto border-t shadow-[0_-12px_45px_rgba(0,0,0,0.85)] transition-transform duration-300 ease-out select-none flex flex-col"
-           [ngClass]="[
-             isDark ? 'bg-[#0b0c10]/98 border-white/[0.08] text-white' : 'bg-white/98 border-neutral-200 text-neutral-900',
-             isMobileDrawerOpen ? 'translate-y-0' : 'translate-y-full'
-           ]"
-           style="padding-bottom: calc(1.25rem + env(safe-area-inset-bottom, 12px));">
+      <div *ngIf="isMobileDrawerOpen"
+           class="fixed bottom-0 left-0 right-0 z-50 md:hidden rounded-t-[32px] max-h-[88vh] overflow-y-auto border-t border-[#27272a] bg-[#09090b] text-white shadow-[0_-12px_45px_rgba(0,0,0,0.95)] transition-all duration-300 ease-out select-none flex flex-col"
+           style="padding-bottom: max(22px, env(safe-area-inset-bottom, 22px));">
         
-        <!-- Drag Handle Pill -->
-        <div class="w-12 h-1.5 rounded-full mx-auto my-3 shrink-0"
-             [ngClass]="isDark ? 'bg-white/20' : 'bg-neutral-300'"></div>
+        <!-- Drag Handle Pill (Gris) -->
+        <div class="w-12 h-1.5 rounded-full mx-auto my-3 shrink-0 bg-[#3f3f46]"></div>
 
         <!-- Sheet Header -->
-        <div class="px-5 py-2.5 flex items-center justify-between border-b pb-3 mb-2 shrink-0"
-             [ngClass]="isDark ? 'border-white/[0.08]' : 'border-neutral-200/80'">
+        <div class="px-5 py-2.5 flex items-center justify-between border-b border-[#1f1f23] pb-3 mb-2 shrink-0">
           <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border"
-                 [ngClass]="isDark ? 'bg-white/[0.05] border-white/10 text-white' : 'bg-neutral-100 border-neutral-200 text-neutral-900'">
-              <span class="material-symbols-rounded text-xl">dashboard_customize</span>
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-[#141417] border border-[#27272a] text-red-500">
+              <span class="material-symbols-rounded text-xl">dashboard</span>
             </div>
             <div>
-              <h2 class="text-sm font-bold tracking-tight">PortaLink Hub</h2>
-              <p class="text-[11px] opacity-60">Navegación y herramientas rápidas</p>
+              <h2 class="text-sm font-bold tracking-tight text-white">PortaLink Hub</h2>
+              <p class="text-[11px] text-[#a1a1aa]">Navegación y herramientas rápidas</p>
             </div>
           </div>
           <button (click)="isMobileDrawerOpen = false"
-                  class="w-8 h-8 rounded-full flex items-center justify-center transition-colors active:scale-95"
-                  [ngClass]="isDark ? 'bg-white/[0.06] hover:bg-white/[0.12] text-neutral-300' : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700'"
+                  class="w-8 h-8 rounded-full flex items-center justify-center bg-[#141417] hover:bg-[#202024] text-[#a1a1aa] hover:text-white border border-[#27272a] transition-colors active:scale-95"
                   aria-label="Cerrar menú">
             <span class="material-symbols-rounded text-lg">close</span>
           </button>
@@ -270,29 +264,25 @@ interface Tab {
             <!-- Herramientas Section Header in Mobile Drawer -->
             <div *ngIf="tab.section === 'herramientas' && (i === 0 || tabs[i-1].section !== 'herramientas')"
                  class="col-span-2 pt-3 pb-1 flex items-center gap-2">
-              <span class="text-[10.5px] font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
-                <span class="material-symbols-rounded text-sm">auto_fix_high</span>
+              <span class="text-[10.5px] font-bold uppercase tracking-wider text-red-400 flex items-center gap-1.5">
+                <span class="material-symbols-rounded text-sm">build</span>
                 Herramientas
               </span>
-              <span class="flex-grow border-t" [ngClass]="isDark ? 'border-white/[0.08]' : 'border-neutral-200'"></span>
+              <span class="flex-grow border-t border-[#27272a]"></span>
             </div>
 
             <!-- Tab Button -->
             <button (click)="setTab(tab.id); isMobileDrawerOpen = false;"
                     class="group relative flex items-center gap-3 p-3 rounded-2xl text-xs font-semibold transition-all duration-200 active:scale-95 text-left border"
                     [ngClass]="activeTab === tab.id
-                      ? (isDark
-                          ? 'bg-gradient-to-r from-emerald-500/20 to-emerald-500/5 border-emerald-500/40 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.15)] font-bold'
-                          : 'bg-emerald-50 border-emerald-300 text-emerald-800 shadow-xs font-bold')
-                      : (isDark
-                          ? 'bg-[#14161f]/90 hover:bg-[#1a1d28] border-white/[0.06] hover:border-white/[0.12] text-neutral-200'
-                          : 'bg-neutral-50/90 hover:bg-neutral-100 border-neutral-200/80 text-neutral-700')">
+                      ? 'bg-[#180a0c] border-red-600/80 text-white shadow-[0_0_16px_rgba(239,68,68,0.22)] font-bold'
+                      : 'bg-[#121215] hover:bg-[#18181c] border-[#222227] hover:border-[#2e2e36] text-[#e4e4e7]'">
               
-              <!-- Tab Icon Badge with signature color -->
+              <!-- Tab Icon Badge -->
               <span class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-200 group-hover:scale-105"
                     [ngClass]="activeTab === tab.id
-                      ? (isDark ? 'bg-emerald-500 text-black border-emerald-400 font-bold' : 'bg-emerald-600 text-white border-emerald-600')
-                      : [getTabAccent(tab.id).bg, getTabAccent(tab.id).text, getTabAccent(tab.id).border]">
+                      ? 'bg-red-600 text-white border-red-500 shadow-sm'
+                      : 'bg-[#1a1a1f] text-[#d4d4d8] border-[#2a2a30]'">
                 <span class="material-symbols-rounded text-[20px]">{{ tab.icon }}</span>
               </span>
 
@@ -301,16 +291,16 @@ interface Tab {
                 <div class="flex items-center justify-between gap-1">
                   <span class="truncate tracking-tight">{{ tab.name }}</span>
                   <span *ngIf="activeTab === tab.id"
-                        class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 shadow-[0_0_6px_#34d399]"></span>
+                        class="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0 shadow-[0_0_6px_#ef4444]"></span>
                 </div>
                 
                 <!-- Extra badge for messages / rotbot -->
                 <span *ngIf="tab.id === 'messages' && unreadMessages > 0"
-                      class="inline-block mt-0.5 px-1.5 py-0.2 text-[9.5px] font-bold rounded-full bg-amber-500 text-black leading-tight">
+                      class="inline-block mt-0.5 px-1.5 py-0.2 text-[9.5px] font-bold rounded-full bg-red-600 text-white leading-tight">
                   {{ unreadMessages }} nuevo{{ unreadMessages > 1 ? 's' : '' }}
                 </span>
                 <span *ngIf="tab.id === 'rotbot'"
-                      class="inline-block mt-0.5 text-[9.5px] font-medium text-cyan-400/80 leading-tight">
+                      class="inline-block mt-0.5 text-[9.5px] font-medium text-red-400 leading-tight">
                   IA Copilot
                 </span>
               </div>
@@ -318,22 +308,21 @@ interface Tab {
           </ng-container>
 
           <!-- User Card & Logout inside the bottom sheet -->
-          <div class="col-span-2 pt-2.5 mt-2 border-t flex items-center justify-between gap-2"
-               [ngClass]="isDark ? 'border-white/[0.08]' : 'border-neutral-200'">
+          <div class="col-span-2 pt-3 mt-2 border-t border-[#1f1f23] flex items-center justify-between gap-2">
             <!-- User Info Pill -->
             <div class="flex items-center gap-2.5 min-w-0 py-1">
-              <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-500 to-cyan-500 text-black font-extrabold text-xs flex items-center justify-center shrink-0 shadow-sm">
+              <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-red-600 to-red-500 text-white font-extrabold text-xs flex items-center justify-center shrink-0 shadow-sm border border-red-400/30">
                 {{ getUserInitials() }}
               </div>
               <div class="min-w-0">
-                <p class="text-xs font-bold truncate leading-tight">{{ getUserName() }}</p>
-                <p class="text-[10px] opacity-60 truncate leading-tight">Administrador</p>
+                <p class="text-xs font-bold truncate text-white leading-tight">{{ getUserName() }}</p>
+                <p class="text-[10px] text-[#a1a1aa] truncate leading-tight">Administrador</p>
               </div>
             </div>
 
             <!-- Logout Button -->
             <button (click)="logout(); isMobileDrawerOpen = false;"
-                    class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 active:scale-95 transition-all shrink-0">
+                    class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-red-400 bg-red-600/10 hover:bg-red-600/20 border border-red-600/25 active:scale-95 transition-all shrink-0">
               <span class="material-symbols-rounded text-base">logout</span>
               <span>Salir</span>
             </button>
@@ -346,9 +335,9 @@ interface Tab {
            Mensajes se retiró de aquí y permanece en el drawer y sidebar.
       ══════════════════════════════════════ -->
       <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur-2xl select-none transition-all duration-300 shadow-[0_-4px_25px_rgba(0,0,0,0.08)]"
+           [class.hidden]="isNotesView || isMobileDrawerOpen"
            [ngClass]="[
-             isDark ? 'bg-[#09090d]/95 border-neutral-800/80 text-neutral-400' : 'bg-white/95 border-neutral-200/90 text-neutral-600',
-             isNotesView ? 'hidden' : ''
+             isDark ? 'bg-[#09090d]/95 border-neutral-800/80 text-neutral-400' : 'bg-white/95 border-neutral-200/90 text-neutral-600'
            ]"
            style="padding-top: 6px; padding-bottom: max(10px, env(safe-area-inset-bottom, 10px));">
         <!-- Grid de 4 columnas equilibradas para móvil -->
@@ -358,52 +347,52 @@ interface Tab {
           <button (click)="setTab('dashboard')"
                   class="flex flex-col items-center justify-center py-1 min-w-0 w-full text-center transition-all duration-200 active:scale-90 cursor-pointer group select-none">
             <div class="w-11 h-[30px] rounded-full flex items-center justify-center transition-all duration-200 relative mx-auto"
-                 [ngClass]="activeTab === 'dashboard' ? (isDark ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-500/15 text-emerald-600') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">
+                 [ngClass]="activeTab === 'dashboard' ? 'bg-red-500/15 text-red-500' : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">
               <svg class="w-5 h-5 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
               </svg>
             </div>
             <span class="block w-full text-center truncate text-[10.5px] tracking-tight mt-0.5"
-                  [ngClass]="activeTab === 'dashboard' ? (isDark ? 'text-emerald-400 font-bold' : 'text-emerald-600 font-bold') : (isDark ? 'text-neutral-400 font-medium' : 'text-neutral-500 font-medium')">Inicio</span>
+                  [ngClass]="activeTab === 'dashboard' ? 'text-red-500 font-bold' : (isDark ? 'text-neutral-400 font-medium' : 'text-neutral-500 font-medium')">Inicio</span>
           </button>
 
           <!-- Biblioteca -->
           <button (click)="setTab('library')"
                   class="flex flex-col items-center justify-center py-1 min-w-0 w-full text-center transition-all duration-200 active:scale-90 cursor-pointer group select-none">
             <div class="w-11 h-[30px] rounded-full flex items-center justify-center transition-all duration-200 relative mx-auto"
-                 [ngClass]="activeTab === 'library' ? (isDark ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-500/15 text-emerald-600') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">
+                 [ngClass]="activeTab === 'library' ? 'bg-red-500/15 text-red-500' : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">
               <svg class="w-5 h-5 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25" />
               </svg>
             </div>
             <span class="block w-full text-center truncate text-[10.5px] tracking-tight mt-0.5"
-                  [ngClass]="activeTab === 'library' ? (isDark ? 'text-emerald-400 font-bold' : 'text-emerald-600 font-bold') : (isDark ? 'text-neutral-400 font-medium' : 'text-neutral-500 font-medium')">Biblioteca</span>
+                  [ngClass]="activeTab === 'library' ? 'text-red-500 font-bold' : (isDark ? 'text-neutral-400 font-medium' : 'text-neutral-500 font-medium')">Biblioteca</span>
           </button>
 
           <!-- Rotbot IA -->
           <button (click)="setTab('rotbot')"
                   class="flex flex-col items-center justify-center py-1 min-w-0 w-full text-center transition-all duration-200 active:scale-90 cursor-pointer group select-none">
             <div class="w-11 h-[30px] rounded-full flex items-center justify-center transition-all duration-200 relative mx-auto"
-                 [ngClass]="activeTab === 'rotbot' ? (isDark ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-500/15 text-emerald-600') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">
+                 [ngClass]="activeTab === 'rotbot' ? 'bg-red-500/15 text-red-500' : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">
               <svg class="w-5 h-5 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2zM9 10h.01M15 10h.01" />
               </svg>
             </div>
             <span class="block w-full text-center truncate text-[10.5px] tracking-tight mt-0.5"
-                  [ngClass]="activeTab === 'rotbot' ? (isDark ? 'text-emerald-400 font-bold' : 'text-emerald-600 font-bold') : (isDark ? 'text-neutral-400 font-medium' : 'text-neutral-500 font-medium')">Rotbot IA</span>
+                  [ngClass]="activeTab === 'rotbot' ? 'text-red-500 font-bold' : (isDark ? 'text-neutral-400 font-medium' : 'text-neutral-500 font-medium')">Rotbot IA</span>
           </button>
 
           <!-- Menú -->
           <button (click)="isMobileDrawerOpen = !isMobileDrawerOpen"
                   class="flex flex-col items-center justify-center py-1 min-w-0 w-full text-center transition-all duration-200 active:scale-90 cursor-pointer group select-none">
             <div class="w-11 h-[30px] rounded-full flex items-center justify-center transition-all duration-200 relative mx-auto"
-                 [ngClass]="isMobileDrawerOpen ? (isDark ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-500/15 text-emerald-600') : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">
+                 [ngClass]="isMobileDrawerOpen ? 'bg-red-500/15 text-red-500' : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-neutral-900')">
               <svg class="w-5 h-5 transition-transform duration-200" [class.rotate-90]="isMobileDrawerOpen" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
               </svg>
             </div>
             <span class="block w-full text-center truncate text-[10.5px] tracking-tight mt-0.5"
-                  [ngClass]="isMobileDrawerOpen ? (isDark ? 'text-emerald-400 font-bold' : 'text-emerald-600 font-bold') : (isDark ? 'text-neutral-400 font-medium' : 'text-neutral-500 font-medium')">Menú</span>
+                  [ngClass]="isMobileDrawerOpen ? 'text-red-500 font-bold' : (isDark ? 'text-neutral-400 font-medium' : 'text-neutral-500 font-medium')">Menú</span>
           </button>
 
         </div>
@@ -483,30 +472,6 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   get isDark() { return this.currentTheme === 'dark'; }
 
-  getTabAccent(tabId: string): { bg: string; text: string; border: string } {
-    switch (tabId) {
-      case 'dashboard':
-        return { bg: 'bg-blue-500/15 dark:bg-blue-500/20', text: 'text-blue-600 dark:text-blue-400', border: 'border-blue-500/30' };
-      case 'finances':
-        return { bg: 'bg-emerald-500/15 dark:bg-emerald-500/20', text: 'text-emerald-600 dark:text-emerald-400', border: 'border-emerald-500/30' };
-      case 'messages':
-        return { bg: 'bg-amber-500/15 dark:bg-amber-500/20', text: 'text-amber-600 dark:text-amber-400', border: 'border-amber-500/30' };
-      case 'users':
-        return { bg: 'bg-purple-500/15 dark:bg-purple-500/20', text: 'text-purple-600 dark:text-purple-400', border: 'border-purple-500/30' };
-      case 'config':
-        return { bg: 'bg-zinc-500/15 dark:bg-zinc-500/20', text: 'text-zinc-600 dark:text-zinc-300', border: 'border-zinc-500/30' };
-      case 'rotbot':
-        return { bg: 'bg-cyan-500/15 dark:bg-cyan-500/20', text: 'text-cyan-600 dark:text-cyan-400', border: 'border-cyan-500/30' };
-      case 'itinerary':
-        return { bg: 'bg-rose-500/15 dark:bg-rose-500/20', text: 'text-rose-600 dark:text-rose-400', border: 'border-rose-500/30' };
-      case 'library':
-        return { bg: 'bg-teal-500/15 dark:bg-teal-500/20', text: 'text-teal-600 dark:text-teal-400', border: 'border-teal-500/30' };
-      case 'db-viewer':
-        return { bg: 'bg-indigo-500/15 dark:bg-indigo-500/20', text: 'text-indigo-600 dark:text-indigo-400', border: 'border-indigo-500/30' };
-      default:
-        return { bg: 'bg-neutral-500/15 dark:bg-neutral-500/20', text: 'text-neutral-600 dark:text-neutral-400', border: 'border-neutral-500/30' };
-    }
-  }
 
   ngOnInit() {
     // Si la sesión ya expiró, expulsar inmediatamente a login sin intentar cargar widgets
