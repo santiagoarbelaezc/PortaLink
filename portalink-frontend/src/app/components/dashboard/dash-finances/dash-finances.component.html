@@ -1210,15 +1210,108 @@
       <!-- ══════════════════ SERVICIOS ══════════════════ -->
       <ng-container *ngIf="subTab === 'servicios'">
 
+        <!-- ══════════════ STAT CARDS SERVICIOS (EXECUTIVE RED, GRAY & WHITE) ══════════════ -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4 mb-4">
+          <!-- Card 1: Total Servicios -->
+          <div class="rounded-2xl border p-4 sm:p-5 transition-all duration-300 flex flex-col justify-between group hover:-translate-y-0.5 card-executive"
+               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 hover:border-neutral-700 shadow-[0_4px_20px_rgba(0,0,0,0.3)]' : 'bg-white border-neutral-200/80 hover:border-neutral-300 shadow-[0_4px_20px_rgba(0,0,0,0.03)]'">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Catálogo Activo</span>
+              <div class="w-8 h-8 rounded-xl flex items-center justify-center transition-colors"
+                   [ngClass]="isDark ? 'bg-neutral-800/80 text-neutral-300 group-hover:text-white' : 'bg-neutral-100 text-neutral-600 group-hover:text-neutral-900'">
+                <span class="material-symbols-rounded" style="font-size: 18px;">inventory_2</span>
+              </div>
+            </div>
+            <div>
+              <p class="text-2xl sm:text-3xl font-headline font-extrabold tracking-tight m-0"
+                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                {{ allServices.length }}
+              </p>
+              <div class="mt-2.5 pt-2.5 border-t flex items-center justify-between text-xs font-sans"
+                   [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+                <span class="text-neutral-500 flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                  <span>Servicios disponibles</span>
+                </span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full border"
+                      [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800 text-neutral-400' : 'bg-neutral-50 border-neutral-200 text-neutral-600'">
+                  Tarifario oficial
+                </span>
+              </div>
+            </div>
+          </div>
 
+          <!-- Card 2: Tarifa Promedio -->
+          <div class="rounded-2xl border p-4 sm:p-5 transition-all duration-300 flex flex-col justify-between group hover:-translate-y-0.5 card-executive relative overflow-hidden"
+               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 hover:border-neutral-700 shadow-[0_4px_20px_rgba(0,0,0,0.3)]' : 'bg-white border-neutral-200/80 hover:border-neutral-300 shadow-[0_4px_20px_rgba(0,0,0,0.03)]'">
+            <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-neutral-600 via-neutral-400 to-transparent opacity-40"></div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Tarifa Promedio Base</span>
+              <div class="w-8 h-8 rounded-xl flex items-center justify-center transition-colors"
+                   [ngClass]="isDark ? 'bg-neutral-800/80 text-white' : 'bg-neutral-100 text-neutral-900'">
+                <span class="material-symbols-rounded" style="font-size: 18px;">price_check</span>
+              </div>
+            </div>
+            <div>
+              <p class="text-2xl sm:text-3xl font-headline font-extrabold tracking-tight m-0"
+                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                {{ formatCOP(avgServicePrice) }}
+              </p>
+              <div class="mt-2.5 pt-2.5 border-t flex items-center justify-between text-xs font-sans"
+                   [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+                <span class="text-neutral-500 flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                  <span>Por entregable</span>
+                </span>
+                <span class="text-[10px] font-headline font-bold px-2 py-0.5 rounded-full border"
+                      [ngClass]="isDark ? 'bg-neutral-800/80 border-neutral-700 text-neutral-300' : 'bg-neutral-100 border-neutral-300 text-neutral-700'">
+                  Ticket medio
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Propuestas de Software (Rojo Ejecutivo) -->
+          <div class="rounded-2xl border p-4 sm:p-5 transition-all duration-300 flex flex-col justify-between group hover:-translate-y-0.5 card-executive relative overflow-hidden"
+               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 hover:border-red-900/50 shadow-[0_4px_20px_rgba(0,0,0,0.3)]' : 'bg-white border-neutral-200/80 hover:border-red-200 shadow-[0_4px_20px_rgba(0,0,0,0.03)]'">
+            <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-red-600 to-red-500 opacity-80"></div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Propuestas Software</span>
+              <div class="w-8 h-8 rounded-xl flex items-center justify-center transition-colors"
+                   [ngClass]="isDark ? 'bg-red-950/40 border border-red-500/30 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : 'bg-red-50 border border-red-200 text-red-600'">
+                <span class="material-symbols-rounded" style="font-size: 18px;">description</span>
+              </div>
+            </div>
+            <div>
+              <p class="text-2xl sm:text-3xl font-headline font-extrabold tracking-tight m-0 text-red-500 dark:text-red-400">
+                {{ proposalServicesCount }} <span class="text-xs font-normal text-neutral-400">módulos</span>
+              </p>
+              <div class="mt-2.5 pt-2.5 border-t flex items-center justify-between text-xs font-sans"
+                   [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+                <span class="text-neutral-500 flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                  <span>Soluciones a medida</span>
+                </span>
+                <span class="text-[10px] font-headline font-bold px-2 py-0.5 rounded-full border border-red-500/30 bg-red-500/10 text-red-500 dark:text-red-400">
+                  Adquisiciones
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <!-- Form modal / drawer -->
-        <div *ngIf="showServiceForm" class="rounded-2xl border p-6 space-y-4 shadow-sm transition-all"
-             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+        <div *ngIf="showServiceForm" class="rounded-2xl border p-6 space-y-4 shadow-xl mb-4 relative overflow-hidden transition-all"
+             [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
+          <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-red-600 to-red-500 opacity-80"></div>
+          
           <div class="flex items-center justify-between border-b pb-3" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-            <h3 class="text-sm font-headline font-bold uppercase tracking-wider" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              {{ editingService?.id ? 'Editar Servicio' : 'Crear Nuevo Servicio' }}
-            </h3>
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-red-500"></span>
+              <h3 class="text-sm font-headline font-bold uppercase tracking-wider" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                {{ editingService?.id ? 'Editar Servicio' : 'Crear Nuevo Servicio' }}
+              </h3>
+            </div>
             <button (click)="showServiceForm = false" class="p-1.5 rounded-xl border opacity-60 hover:opacity-100 transition-all cursor-pointer"
                     [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white' : 'border-neutral-200 text-neutral-500 hover:text-black'">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -1227,16 +1320,16 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex flex-col gap-1.5 md:col-span-2">
-              <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Nombre del Servicio *</label>
+              <label class="text-[10px] font-headline font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Nombre del Servicio *</label>
               <input type="text" [(ngModel)]="editingService!.name" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="Ej: Desarrollo de Plataforma Web Enterprise"
-                     class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none transition-colors" [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+                     class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none transition-colors" [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-red-500/60' : 'bg-neutral-50 border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-900'">
             </div>
             <div class="flex flex-col gap-1.5">
-              <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Categoría</label>
+              <label class="text-[10px] font-headline font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Categoría</label>
               <select [(ngModel)]="editingService!.category" (ngModelChange)="onServiceCategoryChange($event)" [style.color-scheme]="isDark ? 'dark' : 'light'"
                       class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none cursor-pointer transition-colors font-medium"
-                      [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 focus:border-black'">
-                <option value="adquisicion">Propuesta Software</option>
+                      [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white focus:border-red-500/60' : 'bg-neutral-50 border-neutral-300 text-neutral-900 focus:border-neutral-900'">
+                <option value="adquisicion">Propuesta Software (Adquisición)</option>
                 <option value="desarrollo">Desarrollo Software</option>
                 <option value="diseño">Diseño UI/UX</option>
                 <option value="marketing">Marketing & Growth</option>
@@ -1245,72 +1338,80 @@
               </select>
             </div>
             <div class="flex flex-col gap-1.5">
-              <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Precio Unitario (COP) *</label>
+              <label class="text-[10px] font-headline font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Precio Unitario (COP) *</label>
               <input type="number" [(ngModel)]="editingService!.unitPrice" (wheel)="$event.preventDefault()" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="0"
-                     class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none transition-colors font-mono font-bold" [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
+                     class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none transition-colors font-mono font-bold" [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-red-500/60' : 'bg-neutral-50 border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-900'">
               
-              <!-- Indicador Dinámico de Precio COP -->
+              <!-- Indicador Dinámico de Precio COP (Executive Red & White) -->
               <div class="mt-1.5 p-3 rounded-xl border flex items-center justify-between transition-all duration-300 shadow-xs"
                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
                 <div class="flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  <span class="text-[10px] font-bold uppercase tracking-widest opacity-60">Precio servicio</span>
+                  <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                  <span class="text-[10px] font-headline font-bold uppercase tracking-widest opacity-60">Tarifa cotizada</span>
                 </div>
-                <span class="text-base sm:text-lg font-bold font-mono tracking-tight"
-                      [ngClass]="isDark ? 'text-emerald-400' : 'text-emerald-600'">
+                <span class="text-base sm:text-lg font-extrabold font-mono tracking-tight"
+                      [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
                   {{ formatCOPDisplay(editingService!.unitPrice) }}
                 </span>
               </div>
             </div>
             <div class="flex flex-col gap-1.5 md:col-span-2">
-              <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Descripción Corta</label>
-              <textarea [(ngModel)]="editingService!.description" rows="2" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="Alcance, entregables y detalles del servicio..."
+              <label class="text-[10px] font-headline font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Descripción Corta / Entregables</label>
+              <textarea [(ngModel)]="editingService!.description" rows="2" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="Alcance, entregables y detalles técnicos del servicio..."
                         class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none resize-none transition-colors"
-                        [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'"></textarea>
+                        [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-red-500/60' : 'bg-neutral-50 border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-900'"></textarea>
             </div>
           </div>
 
-          <div class="flex gap-3 justify-end pt-2">
+          <div class="flex gap-3 justify-end pt-2 border-t" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
             <button (click)="showServiceForm = false" class="px-4 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border cursor-pointer transition-colors"
                     [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white' : 'border-neutral-300 text-neutral-600 hover:text-neutral-900'">Cancelar</button>
-            <button (click)="saveService()" class="px-5 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider cursor-pointer shadow-md transition-all active:scale-95"
-                    [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-neutral-700'">Guardar Servicio</button>
+            <button (click)="saveService()" class="px-6 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider cursor-pointer shadow-md transition-all active:scale-95 flex items-center gap-2"
+                    [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-neutral-800'">
+              <span class="material-symbols-rounded" style="font-size: 16px;">check</span>
+              <span>Guardar Servicio</span>
+            </button>
           </div>
         </div>
 
         <!-- Category Filter Pills (Dock Style) -->
-        <div class="flex items-center gap-1.5 p-1 rounded-2xl border backdrop-blur-md overflow-x-auto no-scrollbar"
-             [ngClass]="isDark ? 'bg-[#141419] border-neutral-800' : 'bg-neutral-100 border-neutral-200'">
+        <div class="flex items-center gap-1.5 p-1 rounded-2xl border backdrop-blur-md overflow-x-auto no-scrollbar mb-4"
+             [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-neutral-100 border-neutral-200'">
           <button *ngFor="let cat of serviceCategories" (click)="filterCategory = cat.id"
-                  class="whitespace-nowrap px-4 py-1.5 rounded-xl text-xs font-headline font-semibold uppercase tracking-wider transition-all cursor-pointer shrink-0 active:scale-95"
+                  class="whitespace-nowrap px-4 py-2 rounded-xl text-xs font-headline font-semibold uppercase tracking-wider transition-all cursor-pointer shrink-0 active:scale-95 inline-flex items-center gap-2"
                   [ngClass]="filterCategory === cat.id
-                    ? 'bg-white text-black font-bold shadow-md'
+                    ? (isDark ? 'bg-white text-black font-bold shadow-md' : 'bg-neutral-900 text-white font-bold shadow-md')
                     : (isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-800/40' : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200/60')">
-            {{ cat.label }}
+            <span>{{ cat.label }}</span>
+            <span *ngIf="filterCategory === cat.id" class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
           </button>
         </div>
 
-        <!-- Services Grid -->
+        <!-- Services Bento Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div *ngFor="let s of paginatedServices" 
-               class="rounded-2xl border p-6 flex flex-col justify-between transition-all duration-300 shadow-sm relative overflow-hidden"
+               class="rounded-2xl border p-6 flex flex-col justify-between transition-all duration-300 shadow-sm relative overflow-hidden card-executive"
                [ngClass]="[
                  isAcquisition(s)
-                   ? (isDark ? 'bg-emerald-950/20 border-emerald-500/50 hover:border-emerald-400 shadow-emerald-950/30' : 'bg-emerald-50/70 border-emerald-300 hover:border-emerald-400 shadow-emerald-100/50')
-                   : (isDark ? 'bg-[#0c0c0e] border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200 hover:border-neutral-300')
+                   ? (isDark ? 'bg-neutral-900/95 border-red-500/40 hover:border-red-500 shadow-[0_4px_20px_rgba(239,68,68,0.08)]' : 'bg-white border-red-200 hover:border-red-400 shadow-sm')
+                   : (isDark ? 'bg-neutral-900/90 border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200 hover:border-neutral-300')
                ]">
             
+            <!-- Top Line Gradient Accent -->
+            <div *ngIf="isAcquisition(s)" class="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-red-600 via-red-500 to-transparent"></div>
+            <div *ngIf="!isAcquisition(s)" class="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-neutral-600 via-neutral-500 to-transparent opacity-30"></div>
+
             <div>
               <div class="flex items-start justify-between gap-3 mb-4">
                 <div class="flex items-center gap-3">
-                  <!-- Category Icon -->
+                  <!-- Category Icon (Executive Red & Gray) -->
                   <div class="w-10 h-10 rounded-xl flex items-center justify-center border shrink-0"
                        [ngClass]="isAcquisition(s)
-                         ? (isDark ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-emerald-600 text-white border-emerald-600')
+                         ? (isDark ? 'bg-red-950/40 text-red-400 border-red-500/40 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : 'bg-red-50 text-red-600 border-red-200')
                          : (isDark ? 'bg-[#141419] text-white border-neutral-800' : 'bg-neutral-100 text-black border-neutral-200')">
                     
                     <!-- Icon for Adquisición de Software -->
-                    <svg *ngIf="isAcquisition(s)" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <svg *ngIf="isAcquisition(s)" class="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
                     </svg>
 
@@ -1328,8 +1429,8 @@
                   <div>
                     <span *ngIf="isAcquisition(s)"
                           class="text-[9px] font-headline font-bold uppercase tracking-[0.2em] px-2.5 py-0.5 rounded-full border mb-1 inline-flex items-center gap-1.5"
-                          [ngClass]="isDark ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300' : 'bg-emerald-100 border-emerald-300 text-emerald-800'">
-                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                          [ngClass]="isDark ? 'bg-red-950/40 border-red-500/40 text-red-400' : 'bg-red-50 border-red-200 text-red-700'">
+                      <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
                       <span>PROPUESTA SOFTWARE</span>
                     </span>
                     <span *ngIf="!isAcquisition(s)"
@@ -1338,29 +1439,31 @@
                       {{ s.category }}
                     </span>
                     <h4 class="text-base font-headline font-bold leading-tight" 
-                        [ngClass]="isAcquisition(s) ? (isDark ? 'text-emerald-300' : 'text-emerald-950') : (isDark ? 'text-white' : 'text-neutral-900')">
+                        [ngClass]="isAcquisition(s) ? (isDark ? 'text-white' : 'text-neutral-900') : (isDark ? 'text-white' : 'text-neutral-900')">
                       {{ s.name }}
                     </h4>
                   </div>
                 </div>
 
                 <div class="flex items-center gap-1 shrink-0">
-                  <!-- Botón Descargar PDF de la Propuesta / Adquisición -->
+                  <!-- Botón Descargar PDF de la Propuesta Comercial -->
                   <button *ngIf="isAcquisition(s)" 
                           (click)="downloadProposalPdfFromService(s)"
                           [disabled]="pdfLoading"
-                          class="p-2 rounded-xl cursor-pointer transition-colors"
-                          [ngClass]="isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-500 hover:text-black hover:bg-neutral-100'" 
+                          class="p-2 rounded-xl border cursor-pointer transition-colors"
+                          [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-300 hover:text-white hover:bg-neutral-800' : 'border-neutral-200 bg-neutral-50 text-neutral-600 hover:text-black hover:bg-neutral-100'" 
                           title="Descargar PDF de Propuesta">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <svg class="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                     </svg>
                   </button>
 
-                  <button (click)="editService(s)" class="p-2 rounded-xl cursor-pointer transition-colors" [ngClass]="isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-500 hover:text-black hover:bg-neutral-100'" title="Editar Servicio">
+                  <button (click)="editService(s)" class="p-2 rounded-xl border cursor-pointer transition-colors"
+                          [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-200 bg-neutral-50 text-neutral-500 hover:text-black hover:bg-neutral-100'" title="Editar Servicio">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                   </button>
-                  <button (click)="deleteService(s.id!)" class="p-2 rounded-xl cursor-pointer transition-colors" [ngClass]="isDark ? 'text-neutral-400 hover:text-red-400 hover:bg-red-900/20' : 'text-neutral-500 hover:text-red-600 hover:bg-red-50'" title="Eliminar Servicio">
+                  <button (click)="deleteService(s.id!)" class="p-2 rounded-xl border cursor-pointer transition-colors"
+                          [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-red-400 hover:border-red-500/30 hover:bg-red-950/20' : 'border-neutral-200 bg-neutral-50 text-neutral-500 hover:text-red-600 hover:border-red-300 hover:bg-red-50'" title="Eliminar Servicio">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                   </button>
                 </div>
@@ -1372,11 +1475,11 @@
             </div>
 
             <div class="pt-4 border-t flex items-center justify-between mt-auto"
-                 [ngClass]="isAcquisition(s) ? (isDark ? 'border-emerald-500/30' : 'border-emerald-200') : (isDark ? 'border-neutral-800' : 'border-neutral-100')">
-              <span class="text-[10px] font-headline font-bold uppercase tracking-widest opacity-60">
+                 [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+              <span class="text-[10px] font-headline font-bold uppercase tracking-widest text-neutral-400">
                 {{ isAcquisition(s) ? 'Inversión Proyecto' : 'Tarifa Base' }}
               </span>
-              <span class="text-lg font-headline font-bold" 
+              <span class="text-xl font-headline font-black font-mono tracking-tight" 
                     [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
                 {{ formatCOP(s.unitPrice || 0) }}
               </span>
@@ -1387,14 +1490,14 @@
 
         <!-- 📄 SERVICES PAGINATION BAR -->
         <div *ngIf="filteredServices.length > 0" 
-             class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border transition-all shadow-sm"
-             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800 text-neutral-400' : 'bg-white border-neutral-200 text-neutral-600'">
+             class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border transition-all shadow-sm mt-4"
+             [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 text-neutral-400' : 'bg-white border-neutral-200 text-neutral-600'">
           
           <div class="flex items-center gap-3 text-xs">
             <span>
-              Mostrando <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ (servicePage - 1) * servicePageSize + 1 }}</span> - 
-              <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ getMin(servicePage * servicePageSize, filteredServices.length) }}</span> de 
-              <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ filteredServices.length }}</span>
+              Mostrando <span class="font-bold font-mono" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ (servicePage - 1) * servicePageSize + 1 }}</span> - 
+              <span class="font-bold font-mono" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ getMin(servicePage * servicePageSize, filteredServices.length) }}</span> de 
+              <span class="font-bold font-mono" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ filteredServices.length }}</span>
             </span>
 
             <div class="flex items-center gap-1.5 ml-2">
@@ -1443,7 +1546,7 @@
 
         </div>
 
-        <div *ngIf="filteredServices.length === 0" class="p-12 text-center text-xs opacity-50 rounded-2xl border" [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
+        <div *ngIf="filteredServices.length === 0" class="p-12 text-center text-xs opacity-60 rounded-2xl border" [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800' : 'bg-white border-neutral-200'">
           No se encontraron servicios registrados en esta categoría.
         </div>
 
