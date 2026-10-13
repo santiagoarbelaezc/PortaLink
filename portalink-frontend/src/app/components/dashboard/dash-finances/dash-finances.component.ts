@@ -795,7 +795,7 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
   // Service filters & pagination
   filterCategory = 'all';
   servicePage = 1;
-  servicePageSize = 5;
+  servicePageSize = 8;
 
   get filteredServices(): Service[] {
     if (this.filterCategory === 'all') return this.allServices;
