@@ -896,6 +896,42 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
     }, 0);
   }
 
+  get overdueInvoicesCount(): number {
+    return (this.invoices || []).filter(i => i.status === 'Vencida' || i.status === 'VENCIDA').length;
+  }
+
+  get clientsWithInvoicesCount(): number {
+    const billedClientIds = new Set((this.invoices || []).map(i => String(i.clientId || '')).filter(Boolean));
+    return (this.clients || []).filter(c => billedClientIds.has(String(c.id))).length;
+  }
+
+  get clientsWithPendingCount(): number {
+    const clientsWithPending = new Set((this.invoices || []).filter(i => this.getPendingAmount(i) > 0).map(i => String(i.clientId || '')).filter(Boolean));
+    return (this.clients || []).filter(c => clientsWithPending.has(String(c.id))).length;
+  }
+
+  get avgServicePrice(): number {
+    if (!this.allServices || this.allServices.length === 0) return 0;
+    const total = this.allServices.reduce((sum, s) => sum + Number(s.unitPrice || s.price || 0), 0);
+    return Math.round(total / this.allServices.length);
+  }
+
+  get proposalServicesCount(): number {
+    return (this.allServices || []).filter(s => this.isAcquisition(s)).length;
+  }
+
+  getClientPendingAmount(clientId: any): number {
+    return (this.invoices || [])
+      .filter(i => String(i.clientId) === String(clientId))
+      .reduce((sum, i) => sum + this.getPendingAmount(i), 0);
+  }
+
+  getClientTotalBilled(clientId: any): number {
+    return (this.invoices || [])
+      .filter(i => String(i.clientId) === String(clientId))
+      .reduce((sum, i) => sum + Number(i.total || i.total_amount || 0), 0);
+  }
+
   get trendSvgPath(): string {
     if (!this.monthlyIncome || this.monthlyIncome.length === 0) return '';
     const n = this.monthlyIncome.length;

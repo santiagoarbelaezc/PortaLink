@@ -835,127 +835,270 @@
 
       <!-- ══════════════════ CLIENTES ══════════════════ -->
       <ng-container *ngIf="subTab === 'clientes'">
-        <!-- Form modal -->
-        <div *ngIf="showClientForm" class="rounded-2xl border p-6 space-y-4 shadow-sm"
-             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
-          <h3 class="text-sm font-bold uppercase tracking-wide"
-              [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-            {{ editingClient?.id ? 'Editar Cliente' : 'Nuevo Cliente' }}
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div *ngFor="let f of clientFields" class="flex flex-col gap-1.5">
-              <label class="text-xs font-bold uppercase tracking-widest"
-                     [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ f.label }}<span *ngIf="f.required" class="text-red-500 ml-0.5">*</span></label>
-              <input [type]="f.type" [(ngModel)]="$any(editingClient)![f.key]" [style.color-scheme]="isDark ? 'dark' : 'light'" [placeholder]="f.placeholder"
-                     class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none transition-all duration-200"
-                     [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
+        
+        <!-- ══════════════ STAT CARDS CLIENTES (EXECUTIVE RED, GRAY & WHITE) ══════════════ -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4 mb-4">
+          <!-- Card 1: Total Clientes -->
+          <div class="rounded-2xl border p-4 sm:p-5 transition-all duration-300 flex flex-col justify-between group hover:-translate-y-0.5 card-executive"
+               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 hover:border-neutral-700 shadow-[0_4px_20px_rgba(0,0,0,0.3)]' : 'bg-white border-neutral-200/80 hover:border-neutral-300 shadow-[0_4px_20px_rgba(0,0,0,0.03)]'">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Total Clientes</span>
+              <div class="w-8 h-8 rounded-xl flex items-center justify-center transition-colors"
+                   [ngClass]="isDark ? 'bg-neutral-800/80 text-neutral-300 group-hover:text-white' : 'bg-neutral-100 text-neutral-600 group-hover:text-neutral-900'">
+                <span class="material-symbols-rounded" style="font-size: 18px;">group</span>
+              </div>
             </div>
-            <div class="md:col-span-2 flex flex-col gap-1.5">
-              <label class="text-xs font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Notas</label>
-              <textarea [(ngModel)]="editingClient!.notes" rows="2" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="Observaciones del cliente..."
-                        class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none transition-all duration-200 resize-none"
-                        [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400'"></textarea>
+            <div>
+              <p class="text-2xl sm:text-3xl font-headline font-extrabold tracking-tight m-0"
+                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                {{ clients.length }}
+              </p>
+              <div class="mt-2.5 pt-2.5 border-t flex items-center justify-between text-xs font-sans"
+                   [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+                <span class="text-neutral-500 flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                  <span>Cartera registrada</span>
+                </span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full border"
+                      [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800 text-neutral-400' : 'bg-neutral-50 border-neutral-200 text-neutral-600'">
+                  Base activa
+                </span>
+              </div>
             </div>
           </div>
-          <div class="flex gap-3 justify-end pt-2">
-            <button (click)="showClientForm = false" class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border cursor-pointer transition-colors"
-                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white' : 'border-neutral-300 text-neutral-500 hover:text-neutral-900'">Cancelar</button>
-            <button (click)="saveClient()" class="px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer shadow-md transition-all active:scale-95"
-                    [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-neutral-700'">Guardar</button>
+
+          <!-- Card 2: Con Facturación Activa -->
+          <div class="rounded-2xl border p-4 sm:p-5 transition-all duration-300 flex flex-col justify-between group hover:-translate-y-0.5 card-executive relative overflow-hidden"
+               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 hover:border-neutral-700 shadow-[0_4px_20px_rgba(0,0,0,0.3)]' : 'bg-white border-neutral-200/80 hover:border-neutral-300 shadow-[0_4px_20px_rgba(0,0,0,0.03)]'">
+            <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-neutral-600 via-neutral-400 to-transparent opacity-40"></div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Facturación Activa</span>
+              <div class="w-8 h-8 rounded-xl flex items-center justify-center transition-colors"
+                   [ngClass]="isDark ? 'bg-neutral-800/80 text-white' : 'bg-neutral-100 text-neutral-900'">
+                <span class="material-symbols-rounded" style="font-size: 18px;">receipt_long</span>
+              </div>
+            </div>
+            <div>
+              <p class="text-2xl sm:text-3xl font-headline font-extrabold tracking-tight m-0"
+                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                {{ clientsWithInvoicesCount }}
+              </p>
+              <div class="mt-2.5 pt-2.5 border-t flex items-center justify-between text-xs font-sans"
+                   [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+                <span class="text-neutral-500 flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                  <span>Con cuentas asociadas</span>
+                </span>
+                <span class="text-[10px] font-headline font-bold px-2 py-0.5 rounded-full border"
+                      [ngClass]="isDark ? 'bg-neutral-800/80 border-neutral-700 text-neutral-300' : 'bg-neutral-100 border-neutral-300 text-neutral-700'">
+                  {{ clients.length ? Math.round((clientsWithInvoicesCount / clients.length) * 100) : 0 }}% cobertura
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Clientes con Saldo Pendiente (Rojo Ejecutivo) -->
+          <div class="rounded-2xl border p-4 sm:p-5 transition-all duration-300 flex flex-col justify-between group hover:-translate-y-0.5 card-executive relative overflow-hidden"
+               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 hover:border-red-900/50 shadow-[0_4px_20px_rgba(0,0,0,0.3)]' : 'bg-white border-neutral-200/80 hover:border-red-200 shadow-[0_4px_20px_rgba(0,0,0,0.03)]'">
+            <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-red-600 to-red-500 opacity-80"></div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Saldos en Cartera</span>
+              <div class="w-8 h-8 rounded-xl flex items-center justify-center transition-colors"
+                   [ngClass]="isDark ? 'bg-red-950/40 border border-red-500/30 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : 'bg-red-50 border border-red-200 text-red-600'">
+                <span class="material-symbols-rounded" style="font-size: 18px;">hourglass_top</span>
+              </div>
+            </div>
+            <div>
+              <p class="text-2xl sm:text-3xl font-headline font-extrabold tracking-tight m-0 text-red-500 dark:text-red-400">
+                {{ clientsWithPendingCount }} <span class="text-xs font-normal text-neutral-400">con saldo</span>
+              </p>
+              <div class="mt-2.5 pt-2.5 border-t flex items-center justify-between text-xs font-sans"
+                   [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+                <span class="text-neutral-500 flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                  <span>Cobros pendientes</span>
+                </span>
+                <span class="text-[10px] font-headline font-bold px-2 py-0.5 rounded-full border border-red-500/30 bg-red-500/10 text-red-500 dark:text-red-400">
+                  Prioridad
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Client Filters -->
-        <div *ngIf="!showClientForm" class="rounded-2xl border p-4 mb-4 flex flex-wrap gap-4 items-end shadow-sm"
-             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
-           <div class="flex flex-col gap-1.5 flex-grow min-w-[200px]">
-             <label class="text-[10px] font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Buscar Cliente (Nombre, Empresa, Email)</label>
+        <!-- Form modal -->
+        <div *ngIf="showClientForm" class="rounded-2xl border p-6 space-y-4 shadow-xl mb-4 relative overflow-hidden"
+             [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
+          <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-red-600 to-red-500 opacity-80"></div>
+          
+          <div class="flex items-center justify-between border-b pb-3" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-red-500"></span>
+              <h3 class="text-sm font-headline font-bold uppercase tracking-wider" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                {{ editingClient?.id ? 'Editar Cliente' : 'Registrar Nuevo Cliente' }}
+              </h3>
+            </div>
+            <button (click)="showClientForm = false" class="p-1.5 rounded-xl border opacity-60 hover:opacity-100 transition-all cursor-pointer"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white' : 'border-neutral-200 text-neutral-500 hover:text-black'">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div *ngFor="let f of clientFields" class="flex flex-col gap-1.5">
+              <label class="text-[10px] font-headline font-bold uppercase tracking-widest"
+                     [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">{{ f.label }}<span *ngIf="f.required" class="text-red-500 ml-0.5">*</span></label>
+              <input [type]="f.type" [(ngModel)]="$any(editingClient)![f.key]" [style.color-scheme]="isDark ? 'dark' : 'light'" [placeholder]="f.placeholder"
+                     class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none transition-all duration-200"
+                     [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-red-500/60' : 'bg-neutral-50 border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-900'">
+            </div>
+            <div class="md:col-span-2 flex flex-col gap-1.5">
+              <label class="text-[10px] font-headline font-bold uppercase tracking-widest" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Notas / Observaciones</label>
+              <textarea [(ngModel)]="editingClient!.notes" rows="2" [style.color-scheme]="isDark ? 'dark' : 'light'" placeholder="Observaciones o notas adicionales del cliente..."
+                        class="w-full px-3.5 py-2.5 rounded-xl text-xs border outline-none transition-all duration-200 resize-none"
+                        [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-red-500/60' : 'bg-neutral-50 border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-900'"></textarea>
+            </div>
+          </div>
+          <div class="flex gap-3 justify-end pt-2 border-t" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+            <button (click)="showClientForm = false" class="px-4 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border cursor-pointer transition-colors"
+                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white' : 'border-neutral-300 text-neutral-500 hover:text-neutral-900'">Cancelar</button>
+            <button (click)="saveClient()" class="px-6 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider cursor-pointer shadow-md transition-all active:scale-95 flex items-center gap-2"
+                    [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-neutral-800'">
+              <span class="material-symbols-rounded" style="font-size: 16px;">check</span>
+              <span>Guardar Cliente</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Client Filters & Action Header -->
+        <div *ngIf="!showClientForm" class="rounded-2xl border p-4 mb-4 flex flex-wrap gap-4 items-center justify-between shadow-sm"
+             [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200'">
+           <div class="flex flex-col gap-1.5 flex-grow min-w-[240px]">
+             <label class="text-[10px] font-headline font-bold uppercase tracking-widest text-neutral-400">Buscar en Clientes</label>
              <div class="relative">
-               <input type="text" [(ngModel)]="clientFilterText" placeholder="Buscar..."
+               <input type="text" [(ngModel)]="clientFilterText" placeholder="Buscar por nombre, empresa o correo..."
                       class="w-full pl-10 pr-3 py-2.5 rounded-xl text-xs border outline-none bg-transparent transition-colors"
                       [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-neutral-500'">
-               <svg class="w-4 h-4 absolute left-3.5 top-3" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+               <svg class="w-4 h-4 absolute left-3.5 top-3 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                </svg>
              </div>
            </div>
-           <div class="flex-shrink-0">
-             <button (click)="clientFilterText=''"
-                     class="px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border transition-colors cursor-pointer"
+           <div class="flex items-center gap-2 pt-4 sm:pt-0">
+             <button *ngIf="clientFilterText" (click)="clientFilterText=''"
+                     class="px-4 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border transition-colors cursor-pointer"
                      [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white hover:bg-neutral-800' : 'border-neutral-300 text-neutral-500 hover:text-black hover:bg-neutral-100'">
                Limpiar
+             </button>
+             <button (click)="openNewClient()" class="btn-action-primary">
+               <span class="material-symbols-rounded" style="font-size: 16px;">person_add</span>
+               <span>Nuevo Cliente</span>
              </button>
            </div>
         </div>
 
         <!-- Client table (Desktop View) -->
         <div class="rounded-2xl border overflow-hidden hidden md:block shadow-sm"
-             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
+             [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200'">
           <div class="grid grid-cols-12 px-5 py-3 text-[10px] font-mono uppercase tracking-wider border-b"
                [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-neutral-400' : 'bg-neutral-50 border-neutral-200 text-neutral-500'">
-            <span class="col-span-3">Nombre</span>
-            <span class="col-span-3">Empresa</span>
-            <span class="col-span-3">Email / Tel</span>
+            <span class="col-span-4">Cliente / Contacto</span>
+            <span class="col-span-3">Empresa / Teléfono</span>
             <span class="col-span-2 text-center">Facturas</span>
-            <span class="col-span-1"></span>
+            <span class="col-span-2 text-right">Estado de Cartera</span>
+            <span class="col-span-1 text-right">Acciones</span>
           </div>
           <div class="divide-y" [ngClass]="isDark ? 'divide-neutral-800/60' : 'divide-neutral-100'">
             <div *ngFor="let c of paginatedClients" class="grid grid-cols-12 px-5 py-4 items-center transition-colors"
                   [ngClass]="isDark ? 'hover:bg-neutral-800/30' : 'hover:bg-neutral-50'">
-              <div class="col-span-3">
-                <p class="text-sm font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ c.name }}</p>
-                <p class="text-xs" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Desde {{ c.createdAt | date:'MMM yyyy' }}</p>
+              
+              <!-- Col 1: Avatar, Name & Email -->
+              <div class="col-span-4 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center font-headline font-bold text-sm shrink-0 border transition-all"
+                     [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white' : 'bg-neutral-100 border-neutral-200 text-neutral-900'">
+                  {{ (c.name || 'C').charAt(0).toUpperCase() }}
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-headline font-bold truncate leading-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ c.name }}</p>
+                  <p class="text-xs font-mono truncate mt-0.5 text-neutral-400">{{ c.email || '—' }}</p>
+                  <p class="text-[10px] text-neutral-500 font-sans mt-0.5">Desde {{ c.createdAt | date:'MMM yyyy' }}</p>
+                </div>
               </div>
+
+              <!-- Col 2: Company & Phone -->
               <div class="col-span-3">
-                <p class="text-sm" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">{{ c.company || '—' }}</p>
+                <p class="text-sm font-semibold truncate" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ c.company || 'Sin empresa' }}</p>
+                <p class="text-xs font-mono text-neutral-400 mt-0.5">{{ c.phone || '—' }}</p>
               </div>
-              <div class="col-span-3">
-                <p class="text-xs" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">{{ c.email }}</p>
-                <p class="text-xs" [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">{{ c.phone }}</p>
-              </div>
+
+              <!-- Col 3: Invoice Count -->
               <div class="col-span-2 text-center">
-                <span class="text-xs font-bold px-2.5 py-1 rounded-full border"
-                      [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
-                  {{ getClientInvoiceCount(c.id) }}
+                <span class="text-xs font-bold font-mono px-3 py-1 rounded-full border inline-flex items-center gap-1.5"
+                      [ngClass]="getClientInvoiceCount(c.id) > 0 ? (isDark ? 'bg-[#141419] border-neutral-700 text-white' : 'bg-neutral-100 border-neutral-300 text-neutral-900') : (isDark ? 'bg-neutral-950 border-neutral-800 text-neutral-500' : 'bg-neutral-50 border-neutral-200 text-neutral-400')">
+                  <span class="w-1.5 h-1.5 rounded-full" [ngClass]="getClientInvoiceCount(c.id) > 0 ? 'bg-white' : 'bg-neutral-600'"></span>
+                  <span>{{ getClientInvoiceCount(c.id) }} emitidas</span>
                 </span>
               </div>
+
+              <!-- Col 4: Pending Status -->
+              <div class="col-span-2 text-right">
+                <div *ngIf="getClientPendingAmount(c.id) > 0">
+                  <span class="text-xs font-bold font-mono text-red-500 dark:text-red-400 block">
+                    {{ formatCOP(getClientPendingAmount(c.id)) }}
+                  </span>
+                  <span class="text-[9px] font-headline font-bold uppercase tracking-wider text-red-500/80 inline-flex items-center gap-1">
+                    <span class="w-1 h-1 rounded-full bg-red-500 animate-pulse"></span>
+                    Saldo por cobrar
+                  </span>
+                </div>
+                <div *ngIf="getClientPendingAmount(c.id) === 0">
+                  <span class="text-xs font-bold font-sans text-neutral-400 block">Al día</span>
+                  <span class="text-[9px] font-mono text-neutral-500">Sin saldo pendiente</span>
+                </div>
+              </div>
+
+              <!-- Col 5: Actions -->
               <div class="col-span-1 flex justify-end gap-1">
-                <button (click)="editClient(c)" title="Editar" class="p-1.5 rounded-lg cursor-pointer transition-colors"
-                        [ngClass]="isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100'">
+                <button (click)="editClient(c)" title="Editar Cliente" class="p-1.5 rounded-lg border transition-colors cursor-pointer"
+                        [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-300 hover:text-white hover:bg-neutral-800' : 'border-neutral-200 text-neutral-600 hover:text-black hover:bg-neutral-100'">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                 </button>
-                <button (click)="deleteClient(c.id!)" title="Eliminar" class="p-1.5 rounded-lg cursor-pointer transition-colors"
-                        [ngClass]="isDark ? 'text-neutral-400 hover:text-red-400 hover:bg-red-900/20' : 'text-neutral-500 hover:text-red-600 hover:bg-red-50'">
+                <button (click)="deleteClient(c.id!)" title="Eliminar Cliente" class="p-1.5 rounded-lg border transition-colors cursor-pointer"
+                        [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-red-400 hover:border-red-500/30 hover:bg-red-950/20' : 'border-neutral-200 text-neutral-500 hover:text-red-600 hover:border-red-300 hover:bg-red-50'">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                 </button>
               </div>
             </div>
-            <div *ngIf="displayedClients.length === 0" class="px-5 py-10 text-center text-sm"
+            
+            <div *ngIf="displayedClients.length === 0" class="px-5 py-12 text-center text-sm"
                  [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">
-              No se encontraron clientes.
+              <span class="material-symbols-rounded block mx-auto text-3xl mb-2 opacity-40">person_off</span>
+              No se encontraron clientes registrados con ese criterio.
             </div>
           </div>
         </div>
 
         <!-- Mobile Client Cards (App Native Experience for iPhone 13) -->
         <div class="space-y-3 block md:hidden">
-          <div *ngFor="let c of paginatedClients" class="rounded-2xl border p-4 transition-all shadow-sm"
-               [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
+          <div *ngFor="let c of paginatedClients" class="rounded-2xl border p-4.5 transition-all shadow-sm relative overflow-hidden"
+               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200'">
             
-            <div class="flex items-start justify-between gap-3 mb-2.5">
+            <div *ngIf="getClientPendingAmount(c.id) > 0" class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-red-600 to-red-500"></div>
+
+            <div class="flex items-start justify-between gap-3 mb-3">
               <div class="flex items-center gap-3 min-w-0">
-                <div class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 border"
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center font-headline font-bold text-sm shrink-0 border"
                      [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white' : 'bg-neutral-100 border-neutral-200 text-neutral-900'">
-                  {{ c.name.charAt(0).toUpperCase() }}
+                  {{ (c.name || 'C').charAt(0).toUpperCase() }}
                 </div>
                 <div class="min-w-0">
-                  <h4 class="text-sm font-extrabold truncate" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ c.name }}</h4>
-                  <p class="text-[11px] opacity-60 truncate" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Desde {{ c.createdAt | date:'MMM yyyy' }}</p>
+                  <h4 class="text-sm font-headline font-bold truncate" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ c.name }}</h4>
+                  <p class="text-[11px] text-neutral-400 truncate">{{ c.company || 'Sin empresa' }}</p>
                 </div>
               </div>
 
               <!-- Quick action buttons -->
-              <div class="flex items-center gap-1 shrink-0">
+              <div class="flex items-center gap-1.5 shrink-0">
                 <button (click)="editClient(c)" title="Editar" class="p-2 rounded-xl cursor-pointer border active:scale-95 transition-all"
                         [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-300' : 'border-neutral-200 bg-neutral-100 text-neutral-700'">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
@@ -967,50 +1110,54 @@
               </div>
             </div>
 
-            <!-- Details pill -->
-            <div class="space-y-1.5 p-3 rounded-xl mb-3 text-xs"
-                 [ngClass]="isDark ? 'bg-[#141419] border border-neutral-800/80' : 'bg-neutral-50 border border-neutral-100'">
-              <div *ngIf="c.company" class="flex items-center justify-between">
-                <span class="text-[10px] font-bold uppercase tracking-wider opacity-50">Empresa:</span>
-                <span class="font-bold truncate" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ c.company }}</span>
+            <!-- Details Box -->
+            <div class="grid grid-cols-2 gap-2 p-3 rounded-xl mb-3 text-xs"
+                 [ngClass]="isDark ? 'bg-[#141419] border border-neutral-800/80' : 'bg-neutral-50 border border-neutral-200/60'">
+              <div>
+                <span class="text-[9px] font-headline font-bold uppercase tracking-wider text-neutral-500 block">Facturas Emitidas</span>
+                <span class="font-bold font-mono text-xs" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ getClientInvoiceCount(c.id) }} Cuentas</span>
               </div>
-              <div *ngIf="c.email" class="flex items-center justify-between">
-                <span class="text-[10px] font-bold uppercase tracking-wider opacity-50">Email:</span>
-                <a [href]="'mailto:' + c.email" class="font-mono text-[11px] truncate opacity-90" [ngClass]="isDark ? 'text-emerald-400' : 'text-emerald-600'">{{ c.email }}</a>
-              </div>
-              <div *ngIf="c.phone" class="flex items-center justify-between">
-                <span class="text-[10px] font-bold uppercase tracking-wider opacity-50">Teléfono:</span>
-                <a [href]="'tel:' + c.phone" class="font-mono text-[11px] truncate opacity-90" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">{{ c.phone }}</a>
+              <div class="text-right">
+                <span class="text-[9px] font-headline font-bold uppercase tracking-wider text-neutral-500 block">Estado Cartera</span>
+                <span *ngIf="getClientPendingAmount(c.id) > 0" class="font-bold font-mono text-xs text-red-500 dark:text-red-400">
+                  {{ formatCOP(getClientPendingAmount(c.id)) }}
+                </span>
+                <span *ngIf="getClientPendingAmount(c.id) === 0" class="font-bold font-sans text-xs text-neutral-400">
+                  Al día
+                </span>
               </div>
             </div>
 
-            <!-- Bottom badge -->
-            <div class="flex items-center justify-between text-xs pt-0.5">
-              <span class="text-[10px] font-extrabold uppercase tracking-wider opacity-50">Facturas Registradas:</span>
-              <span class="text-xs font-bold px-2.5 py-0.5 rounded-full border"
-                    [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white' : 'bg-neutral-100 border-neutral-300 text-neutral-900'">
-                {{ getClientInvoiceCount(c.id) }} Cuentas
-              </span>
+            <!-- Contact links -->
+            <div class="flex items-center justify-between text-xs pt-1 border-t" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
+              <a *ngIf="c.email" [href]="'mailto:' + c.email" class="font-mono text-[11px] truncate text-neutral-400 hover:text-white flex items-center gap-1">
+                <span class="material-symbols-rounded text-sm">mail</span>
+                <span class="truncate">{{ c.email }}</span>
+              </a>
+              <a *ngIf="c.phone" [href]="'tel:' + c.phone" class="font-mono text-[11px] truncate text-neutral-400 hover:text-white flex items-center gap-1 shrink-0 ml-2">
+                <span class="material-symbols-rounded text-sm">call</span>
+                <span>{{ c.phone }}</span>
+              </a>
             </div>
 
           </div>
 
-          <div *ngIf="displayedClients.length === 0" class="px-5 py-8 text-center text-xs opacity-50 rounded-2xl border"
-               [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
-            No se encontraron clientes.
+          <div *ngIf="displayedClients.length === 0" class="px-5 py-10 text-center text-xs opacity-60 rounded-2xl border"
+               [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800' : 'bg-white border-neutral-200'">
+            No se encontraron clientes registrados.
           </div>
         </div>
 
         <!-- 📄 CLIENTS PAGINATION BAR -->
         <div *ngIf="displayedClients.length > 0" 
-             class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border transition-all shadow-sm"
-             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800 text-neutral-400' : 'bg-white border-neutral-200 text-neutral-600'">
+             class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border transition-all shadow-sm mt-4"
+             [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 text-neutral-400' : 'bg-white border-neutral-200 text-neutral-600'">
           
           <div class="flex items-center gap-3 text-xs">
             <span>
-              Mostrando <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ (clientPage - 1) * clientPageSize + 1 }}</span> - 
-              <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ getMin(clientPage * clientPageSize, displayedClients.length) }}</span> de 
-              <span class="font-bold font-sans" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ displayedClients.length }}</span>
+              Mostrando <span class="font-bold font-mono" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ (clientPage - 1) * clientPageSize + 1 }}</span> - 
+              <span class="font-bold font-mono" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ getMin(clientPage * clientPageSize, displayedClients.length) }}</span> de 
+              <span class="font-bold font-mono" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ displayedClients.length }}</span>
             </span>
 
             <div class="flex items-center gap-1.5 ml-2">
