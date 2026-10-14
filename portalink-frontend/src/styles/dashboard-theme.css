@@ -612,6 +612,12 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.theme-dark .bento-quick-access {
+  background: #111115;
+  border-color: #27272a;
 }
 
 .bento-section-label {
@@ -621,6 +627,10 @@
   letter-spacing: 0.1em;
   color: #71717a;
   margin: 0 0 4px;
+}
+
+.theme-dark .bento-section-label {
+  color: #a1a1aa;
 }
 
 .quick-btn {
@@ -638,11 +648,21 @@
   font-family: inherit;
 }
 
+.theme-dark .quick-btn {
+  background: #18181f;
+  border-color: #27272a;
+}
+
 .quick-btn:hover {
   background: #ffffff;
   border-color: #09090b;
   transform: translateY(-1px);
   box-shadow: var(--shadow-sm);
+}
+
+.theme-dark .quick-btn:hover {
+  background: #202028;
+  border-color: #3f3f46;
 }
 
 .quick-btn-icon {
@@ -655,6 +675,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: transform 0.2s ease, background 0.2s ease;
 }
 
 .quick-btn-text {
@@ -670,10 +691,18 @@
   color: #09090b;
 }
 
+.theme-dark .quick-btn-title {
+  color: #ffffff;
+}
+
 .quick-btn-sub {
   font-size: 0.7rem;
   color: #71717a;
   font-weight: 500;
+}
+
+.theme-dark .quick-btn-sub {
+  color: #a1a1aa;
 }
 
 .quick-btn-arrow {
@@ -682,9 +711,17 @@
   transition: transform 0.2s ease, color 0.2s ease;
 }
 
+.theme-dark .quick-btn-arrow {
+  color: #71717a;
+}
+
 .quick-btn:hover .quick-btn-arrow {
   color: #09090b;
   transform: translateX(2px);
+}
+
+.theme-dark .quick-btn:hover .quick-btn-arrow {
+  color: #ffffff;
 }
 
 /* ─── 3.5. TABLA MODERNA EN "ROW CARDS" (FILAS FLOTANTES) ─── */

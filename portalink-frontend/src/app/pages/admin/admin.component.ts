@@ -230,103 +230,298 @@ interface Tab {
       ══════════════════════════════════════ -->
       <div *ngIf="isMobileDrawerOpen"
            (click)="isMobileDrawerOpen = false"
-           class="fixed inset-0 bg-black/85 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300">
+           class="fixed inset-0 bg-black/80 backdrop-blur-md z-40 md:hidden backdrop-enter">
       </div>
 
       <div *ngIf="isMobileDrawerOpen"
-           class="fixed bottom-0 left-0 right-0 z-50 md:hidden rounded-t-[32px] max-h-[88vh] overflow-y-auto border-t border-[#27272a] bg-[#09090b] text-white shadow-[0_-12px_45px_rgba(0,0,0,0.95)] transition-all duration-300 ease-out select-none flex flex-col"
-           style="padding-bottom: max(22px, env(safe-area-inset-bottom, 22px));">
+           class="fixed bottom-0 left-0 right-0 z-50 md:hidden rounded-t-[36px] max-h-[90vh] overflow-y-auto border-t border-[#27272a] bg-[#09090b] text-white shadow-[0_-16px_50px_rgba(0,0,0,0.98)] sheet-enter select-none flex flex-col"
+           style="padding-bottom: max(26px, env(safe-area-inset-bottom, 26px));">
         
-        <!-- Drag Handle Pill (Gris) -->
+        <!-- Drag Handle Pill -->
         <div class="w-12 h-1.5 rounded-full mx-auto my-3 shrink-0 bg-[#3f3f46]"></div>
 
-        <!-- Sheet Header -->
-        <div class="px-5 py-2.5 flex items-center justify-between border-b border-[#1f1f23] pb-3 mb-2 shrink-0">
+        <!-- Sheet Top Header -->
+        <div class="px-5 py-2 flex items-center justify-between border-b border-[#1f1f23] pb-3 shrink-0">
           <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-[#141417] border border-[#27272a] text-red-500">
-              <span class="material-symbols-rounded text-xl">dashboard</span>
+            <div class="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 bg-gradient-to-br from-red-600 to-black border border-red-500/40 text-white shadow-md shadow-red-950/40 font-headline font-black text-sm">
+              PL
             </div>
             <div>
-              <h2 class="text-sm font-bold tracking-tight text-white">PortaLink Hub</h2>
-              <p class="text-[11px] text-[#a1a1aa]">Navegación y herramientas rápidas</p>
+              <div class="flex items-center gap-1.5">
+                <h2 class="text-sm font-headline font-extrabold tracking-tight text-white m-0">PortaLink Hub</h2>
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+              </div>
+              <p class="text-[11px] text-[#a1a1aa] m-0">Navegación & Control Central</p>
             </div>
           </div>
-          <button (click)="isMobileDrawerOpen = false"
-                  class="w-8 h-8 rounded-full flex items-center justify-center bg-[#141417] hover:bg-[#202024] text-[#a1a1aa] hover:text-white border border-[#27272a] transition-colors active:scale-95"
-                  aria-label="Cerrar menú">
-            <span class="material-symbols-rounded text-lg">close</span>
-          </button>
+          
+          <div class="flex items-center gap-2">
+            <!-- Theme toggle button -->
+            <button (click)="toggleTheme()"
+                    class="w-9 h-9 rounded-xl flex items-center justify-center bg-[#141417] hover:bg-[#202024] text-[#a1a1aa] hover:text-white border border-[#27272a] transition-all active:scale-95 cursor-pointer"
+                    [title]="isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
+              <span class="material-symbols-rounded text-lg">{{ isDark ? 'light_mode' : 'dark_mode' }}</span>
+            </button>
+            <!-- Close button -->
+            <button (click)="isMobileDrawerOpen = false"
+                    class="w-9 h-9 rounded-xl flex items-center justify-center bg-[#141417] hover:bg-[#202024] text-[#a1a1aa] hover:text-white border border-[#27272a] transition-all active:scale-95 cursor-pointer"
+                    aria-label="Cerrar menú">
+              <span class="material-symbols-rounded text-lg">close</span>
+            </button>
+          </div>
         </div>
 
-        <!-- All Tabs Grid List -->
-        <div class="px-4 py-2 grid grid-cols-2 gap-2.5 overflow-y-auto">
-          <ng-container *ngFor="let tab of tabs; let i = index">
-            <!-- Herramientas Section Header in Mobile Drawer -->
-            <div *ngIf="tab.section === 'herramientas' && (i === 0 || tabs[i-1].section !== 'herramientas')"
-                 class="col-span-2 pt-3 pb-1 flex items-center gap-2">
-              <span class="text-[10.5px] font-bold uppercase tracking-wider text-red-400 flex items-center gap-1.5">
-                <span class="material-symbols-rounded text-sm">build</span>
-                Herramientas
-              </span>
-              <span class="flex-grow border-t border-[#27272a]"></span>
-            </div>
+        <div class="px-4 py-3 space-y-4 overflow-y-auto">
 
-            <!-- Tab Button -->
-            <button (click)="setTab(tab.id); isMobileDrawerOpen = false;"
-                    class="group relative flex items-center gap-3 p-3 rounded-2xl text-xs font-semibold transition-all duration-200 active:scale-95 text-left border"
-                    [ngClass]="activeTab === tab.id
-                      ? 'bg-[#180a0c] border-red-600/80 text-white shadow-[0_0_16px_rgba(239,68,68,0.22)] font-bold'
-                      : 'bg-[#121215] hover:bg-[#18181c] border-[#222227] hover:border-[#2e2e36] text-[#e4e4e7]'">
-              
-              <!-- Tab Icon Badge -->
-              <span class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-200 group-hover:scale-105"
-                    [ngClass]="activeTab === tab.id
-                      ? 'bg-red-600 text-white border-red-500 shadow-sm'
-                      : 'bg-[#1a1a1f] text-[#d4d4d8] border-[#2a2a30]'">
-                <span class="material-symbols-rounded text-[20px]">{{ tab.icon }}</span>
-              </span>
-
-              <!-- Tab Name + Badges -->
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center justify-between gap-1">
-                  <span class="truncate tracking-tight">{{ tab.name }}</span>
-                  <span *ngIf="activeTab === tab.id"
-                        class="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0 shadow-[0_0_6px_#ef4444]"></span>
+          <!-- User Card / Active Session Widget -->
+          <div class="p-3.5 rounded-2xl border border-[#27272a] bg-[#121216] flex items-center justify-between shadow-sm">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="relative shrink-0">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-600 to-neutral-900 text-white font-extrabold text-sm flex items-center justify-center border border-red-500/40 shadow-sm">
+                  {{ getUserInitials() }}
                 </div>
-                
-                <!-- Extra badge for messages / rotbot -->
-                <span *ngIf="tab.id === 'messages' && unreadMessages > 0"
-                      class="inline-block mt-0.5 px-1.5 py-0.2 text-[9.5px] font-bold rounded-full bg-red-600 text-white leading-tight">
-                  {{ unreadMessages }} nuevo{{ unreadMessages > 1 ? 's' : '' }}
-                </span>
-                <span *ngIf="tab.id === 'rotbot'"
-                      class="inline-block mt-0.5 text-[9.5px] font-medium text-red-400 leading-tight">
-                  IA Copilot
-                </span>
-              </div>
-            </button>
-          </ng-container>
-
-          <!-- User Card & Logout inside the bottom sheet -->
-          <div class="col-span-2 pt-3 mt-2 border-t border-[#1f1f23] flex items-center justify-between gap-2">
-            <!-- User Info Pill -->
-            <div class="flex items-center gap-2.5 min-w-0 py-1">
-              <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-red-600 to-red-500 text-white font-extrabold text-xs flex items-center justify-center shrink-0 shadow-sm border border-red-400/30">
-                {{ getUserInitials() }}
+                <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#121216]"></span>
               </div>
               <div class="min-w-0">
-                <p class="text-xs font-bold truncate text-white leading-tight">{{ getUserName() }}</p>
-                <p class="text-[10px] text-[#a1a1aa] truncate leading-tight">Administrador</p>
+                <div class="flex items-center gap-2">
+                  <p class="text-xs font-headline font-bold text-white truncate m-0">{{ getUserName() }}</p>
+                  <span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-red-500/15 text-red-400 border border-red-500/30 font-semibold">Admin</span>
+                </div>
+                <p class="text-[10px] text-[#a1a1aa] truncate m-0 mt-0.5">Sesión Activa · Online</p>
               </div>
             </div>
 
             <!-- Logout Button -->
             <button (click)="logout(); isMobileDrawerOpen = false;"
-                    class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-red-400 bg-red-600/10 hover:bg-red-600/20 border border-red-600/25 active:scale-95 transition-all shrink-0">
+                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-red-400 bg-red-600/10 hover:bg-red-600/20 border border-red-600/25 active:scale-95 transition-all shrink-0 cursor-pointer">
               <span class="material-symbols-rounded text-base">logout</span>
               <span>Salir</span>
             </button>
           </div>
+
+          <!-- Section 1: ACCESOS FRECUENTES (Grid 2x2 destacado) -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between px-1">
+              <span class="text-[10px] font-headline font-bold uppercase tracking-wider text-red-400 flex items-center gap-1.5">
+                <span class="material-symbols-rounded text-sm">stars</span>
+                Módulos Principales
+              </span>
+              <span class="text-[10px] text-[#71717a]">Acceso Rápido</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <!-- Inicio -->
+              <button (click)="setTab('dashboard'); isMobileDrawerOpen = false;"
+                      class="p-3 rounded-2xl border text-left flex flex-col justify-between transition-all duration-200 active:scale-95 cursor-pointer group"
+                      [ngClass]="activeTab === 'dashboard'
+                        ? 'bg-gradient-to-br from-red-950/60 to-[#121216] border-red-600/90 shadow-[0_0_16px_rgba(239,68,68,0.22)]'
+                        : 'bg-[#121216] hover:bg-[#18181c] border-[#222227] hover:border-[#2e2e36]'">
+                <div class="flex items-center justify-between mb-2">
+                  <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-200 group-hover:scale-105"
+                       [ngClass]="activeTab === 'dashboard' ? 'bg-red-600 text-white border-red-500 shadow-sm' : 'bg-[#1a1a20] text-red-400 border-[#2a2a30]'">
+                    <span class="material-symbols-rounded text-[20px]">dashboard</span>
+                  </div>
+                  <span *ngIf="activeTab === 'dashboard'" class="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"></span>
+                </div>
+                <div>
+                  <p class="text-xs font-headline font-bold text-white m-0">Inicio</p>
+                  <p class="text-[10px] text-[#a1a1aa] m-0 mt-0.5 truncate">Panel central & IA</p>
+                </div>
+              </button>
+
+              <!-- Finanzas -->
+              <button (click)="setTab('finances'); isMobileDrawerOpen = false;"
+                      class="p-3 rounded-2xl border text-left flex flex-col justify-between transition-all duration-200 active:scale-95 cursor-pointer group"
+                      [ngClass]="activeTab === 'finances'
+                        ? 'bg-gradient-to-br from-red-950/60 to-[#121216] border-red-600/90 shadow-[0_0_16px_rgba(239,68,68,0.22)]'
+                        : 'bg-[#121216] hover:bg-[#18181c] border-[#222227] hover:border-[#2e2e36]'">
+                <div class="flex items-center justify-between mb-2">
+                  <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-200 group-hover:scale-105"
+                       [ngClass]="activeTab === 'finances' ? 'bg-red-600 text-white border-red-500 shadow-sm' : 'bg-[#1a1a20] text-red-400 border-[#2a2a30]'">
+                    <span class="material-symbols-rounded text-[20px]">payments</span>
+                  </div>
+                  <span *ngIf="activeTab === 'finances'" class="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"></span>
+                </div>
+                <div>
+                  <p class="text-xs font-headline font-bold text-white m-0">Finanzas</p>
+                  <p class="text-[10px] text-[#a1a1aa] m-0 mt-0.5 truncate">Cartera & Pagos</p>
+                </div>
+              </button>
+
+              <!-- Biblioteca -->
+              <button (click)="setTab('library'); isMobileDrawerOpen = false;"
+                      class="p-3 rounded-2xl border text-left flex flex-col justify-between transition-all duration-200 active:scale-95 cursor-pointer group"
+                      [ngClass]="activeTab === 'library'
+                        ? 'bg-gradient-to-br from-red-950/60 to-[#121216] border-red-600/90 shadow-[0_0_16px_rgba(239,68,68,0.22)]'
+                        : 'bg-[#121216] hover:bg-[#18181c] border-[#222227] hover:border-[#2e2e36]'">
+                <div class="flex items-center justify-between mb-2">
+                  <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-200 group-hover:scale-105"
+                       [ngClass]="activeTab === 'library' ? 'bg-red-600 text-white border-red-500 shadow-sm' : 'bg-[#1a1a20] text-[#e4e4e7] border-[#2a2a30]'">
+                    <span class="material-symbols-rounded text-[20px]">menu_book</span>
+                  </div>
+                  <span *ngIf="activeTab === 'library'" class="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"></span>
+                </div>
+                <div>
+                  <p class="text-xs font-headline font-bold text-white m-0">Biblioteca</p>
+                  <p class="text-[10px] text-[#a1a1aa] m-0 mt-0.5 truncate">Cuadernos & SQL</p>
+                </div>
+              </button>
+
+              <!-- RotBot IA -->
+              <button (click)="setTab('rotbot'); isMobileDrawerOpen = false;"
+                      class="p-3 rounded-2xl border text-left flex flex-col justify-between transition-all duration-200 active:scale-95 cursor-pointer group"
+                      [ngClass]="activeTab === 'rotbot'
+                        ? 'bg-gradient-to-br from-red-950/60 to-[#121216] border-red-600/90 shadow-[0_0_16px_rgba(239,68,68,0.22)]'
+                        : 'bg-[#121216] hover:bg-[#18181c] border-[#222227] hover:border-[#2e2e36]'">
+                <div class="flex items-center justify-between mb-2">
+                  <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-200 group-hover:scale-105"
+                       [ngClass]="activeTab === 'rotbot' ? 'bg-red-600 text-white border-red-500 shadow-sm' : 'bg-[#1a1a20] text-red-400 border-[#2a2a30]'">
+                    <span class="material-symbols-rounded text-[20px]">smart_toy</span>
+                  </div>
+                  <span *ngIf="activeTab === 'rotbot'" class="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"></span>
+                </div>
+                <div>
+                  <p class="text-xs font-headline font-bold text-white m-0">RotBot IA</p>
+                  <p class="text-[10px] text-red-400 m-0 mt-0.5 truncate font-medium">Copiloto Inteligente</p>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Section 2: OPERACIONES & COMUNICACIÓN (Tarjetas horizontales) -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between px-1">
+              <span class="text-[10px] font-headline font-bold uppercase tracking-wider text-[#a1a1aa] flex items-center gap-1.5">
+                <span class="material-symbols-rounded text-sm">tune</span>
+                Operaciones & Comunicación
+              </span>
+            </div>
+
+            <div class="space-y-1.5">
+              <!-- Mensajes -->
+              <button (click)="setTab('messages'); isMobileDrawerOpen = false;"
+                      class="w-full p-3 rounded-2xl border flex items-center justify-between transition-all duration-200 active:scale-98 cursor-pointer group"
+                      [ngClass]="activeTab === 'messages'
+                        ? 'bg-gradient-to-r from-red-950/50 via-red-900/15 to-[#121216] border-red-600/90 shadow-[0_0_14px_rgba(239,68,68,0.18)]'
+                        : 'bg-[#121216] hover:bg-[#18181c] border-[#222227] hover:border-[#2e2e36]'">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-200 group-hover:scale-105"
+                       [ngClass]="activeTab === 'messages' ? 'bg-red-600 text-white border-red-500 shadow-sm' : 'bg-[#1a1a20] text-[#e4e4e7] border-[#2a2a30]'">
+                    <span class="material-symbols-rounded text-[20px]">mail</span>
+                  </div>
+                  <div class="min-w-0 text-left">
+                    <p class="text-xs font-headline font-bold text-white m-0 leading-tight">Mensajes</p>
+                    <p class="text-[10px] text-[#a1a1aa] m-0 mt-0.5 truncate">Bandeja de contacto y prospectos</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span *ngIf="unreadMessages > 0" 
+                        class="px-2 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-black shadow-md animate-pulse">
+                    {{ unreadMessages }} nuevo{{ unreadMessages > 1 ? 's' : '' }}
+                  </span>
+                  <span class="material-symbols-rounded text-[#71717a] group-hover:text-white transition-colors text-lg">chevron_right</span>
+                </div>
+              </button>
+
+              <!-- Calendario / Itinerario -->
+              <button (click)="setTab('itinerary'); isMobileDrawerOpen = false;"
+                      class="w-full p-3 rounded-2xl border flex items-center justify-between transition-all duration-200 active:scale-98 cursor-pointer group"
+                      [ngClass]="activeTab === 'itinerary'
+                        ? 'bg-gradient-to-r from-red-950/50 via-red-900/15 to-[#121216] border-red-600/90 shadow-[0_0_14px_rgba(239,68,68,0.18)]'
+                        : 'bg-[#121216] hover:bg-[#18181c] border-[#222227] hover:border-[#2e2e36]'">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-200 group-hover:scale-105"
+                       [ngClass]="activeTab === 'itinerary' ? 'bg-red-600 text-white border-red-500 shadow-sm' : 'bg-[#1a1a20] text-[#e4e4e7] border-[#2a2a30]'">
+                    <span class="material-symbols-rounded text-[20px]">calendar_today</span>
+                  </div>
+                  <div class="min-w-0 text-left">
+                    <p class="text-xs font-headline font-bold text-white m-0 leading-tight">Calendario & Tareas</p>
+                    <p class="text-[10px] text-[#a1a1aa] m-0 mt-0.5 truncate">Agenda de compromisos de hoy</p>
+                  </div>
+                </div>
+                <span class="material-symbols-rounded text-[#71717a] group-hover:text-white transition-colors text-lg shrink-0">chevron_right</span>
+              </button>
+
+              <!-- Usuarios -->
+              <button (click)="setTab('users'); isMobileDrawerOpen = false;"
+                      class="w-full p-3 rounded-2xl border flex items-center justify-between transition-all duration-200 active:scale-98 cursor-pointer group"
+                      [ngClass]="activeTab === 'users'
+                        ? 'bg-gradient-to-r from-red-950/50 via-red-900/15 to-[#121216] border-red-600/90 shadow-[0_0_14px_rgba(239,68,68,0.18)]'
+                        : 'bg-[#121216] hover:bg-[#18181c] border-[#222227] hover:border-[#2e2e36]'">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-200 group-hover:scale-105"
+                       [ngClass]="activeTab === 'users' ? 'bg-red-600 text-white border-red-500 shadow-sm' : 'bg-[#1a1a20] text-[#e4e4e7] border-[#2a2a30]'">
+                    <span class="material-symbols-rounded text-[20px]">group</span>
+                  </div>
+                  <div class="min-w-0 text-left">
+                    <p class="text-xs font-headline font-bold text-white m-0 leading-tight">Usuarios</p>
+                    <p class="text-[10px] text-[#a1a1aa] m-0 mt-0.5 truncate">Gestión de cuentas y accesos</p>
+                  </div>
+                </div>
+                <span class="material-symbols-rounded text-[#71717a] group-hover:text-white transition-colors text-lg shrink-0">chevron_right</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Section 3: SISTEMA & HERRAMIENTAS TÉCNICAS -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between px-1">
+              <span class="text-[10px] font-headline font-bold uppercase tracking-wider text-[#a1a1aa] flex items-center gap-1.5">
+                <span class="material-symbols-rounded text-sm">build</span>
+                Sistema & Herramientas
+              </span>
+            </div>
+
+            <div class="space-y-1.5">
+              <!-- Visor BD -->
+              <button (click)="setTab('db-viewer'); isMobileDrawerOpen = false;"
+                      class="w-full p-3 rounded-2xl border flex items-center justify-between transition-all duration-200 active:scale-98 cursor-pointer group"
+                      [ngClass]="activeTab === 'db-viewer'
+                        ? 'bg-gradient-to-r from-red-950/50 via-red-900/15 to-[#121216] border-red-600/90 shadow-[0_0_14px_rgba(239,68,68,0.18)]'
+                        : 'bg-[#121216] hover:bg-[#18181c] border-[#222227] hover:border-[#2e2e36]'">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-200 group-hover:scale-105"
+                       [ngClass]="activeTab === 'db-viewer' ? 'bg-red-600 text-white border-red-500 shadow-sm' : 'bg-[#1a1a20] text-[#e4e4e7] border-[#2a2a30]'">
+                    <span class="material-symbols-rounded text-[20px]">database</span>
+                  </div>
+                  <div class="min-w-0 text-left">
+                    <p class="text-xs font-headline font-bold text-white m-0 leading-tight">Visor de Base de Datos</p>
+                    <p class="text-[10px] text-[#a1a1aa] m-0 mt-0.5 truncate">Esquemas y registros SQL</p>
+                  </div>
+                </div>
+                <span class="material-symbols-rounded text-[#71717a] group-hover:text-white transition-colors text-lg shrink-0">chevron_right</span>
+              </button>
+
+              <!-- Configuración -->
+              <button (click)="setTab('config'); isMobileDrawerOpen = false;"
+                      class="w-full p-3 rounded-2xl border flex items-center justify-between transition-all duration-200 active:scale-98 cursor-pointer group"
+                      [ngClass]="activeTab === 'config'
+                        ? 'bg-gradient-to-r from-red-950/50 via-red-900/15 to-[#121216] border-red-600/90 shadow-[0_0_14px_rgba(239,68,68,0.18)]'
+                        : 'bg-[#121216] hover:bg-[#18181c] border-[#222227] hover:border-[#2e2e36]'">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-200 group-hover:scale-105"
+                       [ngClass]="activeTab === 'config' ? 'bg-red-600 text-white border-red-500 shadow-sm' : 'bg-[#1a1a20] text-[#e4e4e7] border-[#2a2a30]'">
+                    <span class="material-symbols-rounded text-[20px]">settings</span>
+                  </div>
+                  <div class="min-w-0 text-left">
+                    <p class="text-xs font-headline font-bold text-white m-0 leading-tight">Configuración</p>
+                    <p class="text-[10px] text-[#a1a1aa] m-0 mt-0.5 truncate">Ajustes del sistema y perfil</p>
+                  </div>
+                </div>
+                <span class="material-symbols-rounded text-[#71717a] group-hover:text-white transition-colors text-lg shrink-0">chevron_right</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Micro Barra Informativa Inferior -->
+          <div class="pt-3 border-t border-[#1f1f23] flex items-center justify-between text-[11px] text-[#71717a] px-1">
+            <span>PortaLink Pro · v2.5</span>
+            <span class="flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              Conexión Segura
+            </span>
+          </div>
+
         </div>
       </div>
 
@@ -417,6 +612,22 @@ interface Tab {
     /* Hide sidebar scrollbar */
     .sidebar-nav { scrollbar-width: none; }
     .sidebar-nav::-webkit-scrollbar { display: none; }
+
+    @keyframes sheetSlideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .sheet-enter {
+      animation: sheetSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes backdropFade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .backdrop-enter {
+      animation: backdropFade 0.2s ease-out forwards;
+    }
   `]
 })
 export class AdminComponent implements OnInit, OnDestroy {

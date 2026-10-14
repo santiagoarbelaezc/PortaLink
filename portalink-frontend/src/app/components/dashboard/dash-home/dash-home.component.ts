@@ -634,44 +634,90 @@ import { MessagesService } from '../../../services/messages.service';
             </div>
           </div>
 
-          <!-- Tarjeta Blanca de Acceso Rápido -->
-          <div class="bento-quick-access">
-            <p class="bento-section-label">Acceso Rápido</p>
+          <!-- Tarjeta de Acceso Rápido con Soporte Eficiente de Tema (Dark/Light) -->
+          <div class="bento-quick-access transition-all duration-300"
+               [ngClass]="isDark 
+                 ? 'bg-[#111115] border-neutral-800 text-white shadow-[0_10px_35px_rgba(0,0,0,0.3)]' 
+                 : 'bg-white border-neutral-200/90 text-neutral-900 shadow-[0_4px_20px_rgba(0,0,0,0.03)]'">
+            
+            <div class="flex items-center justify-between mb-1">
+              <p class="bento-section-label m-0"
+                 [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+                Acceso Rápido
+              </p>
+              <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+            </div>
 
-            <button class="quick-btn" (click)="navigateToTab('finances')">
-              <div class="quick-btn-icon"><span class="material-symbols-rounded">payments</span></div>
+            <!-- Finanzas -->
+            <button class="quick-btn group transition-all duration-200 active:scale-98"
+                    (click)="navigateToTab('finances')"
+                    [ngClass]="isDark 
+                      ? 'bg-[#18181f] hover:bg-[#202028] border-neutral-800 hover:border-neutral-700' 
+                      : 'bg-neutral-50 hover:bg-white border-neutral-200/90 hover:border-neutral-400'">
+              <div class="quick-btn-icon transition-transform duration-200 group-hover:scale-105"
+                   [ngClass]="isDark ? 'bg-red-500/15 text-red-400 border border-red-500/30' : 'bg-red-50 text-red-600 border border-red-200'">
+                <span class="material-symbols-rounded text-xl">payments</span>
+              </div>
               <span class="quick-btn-text">
-                <span class="quick-btn-title">Finanzas</span>
-                <span class="quick-btn-sub">Cartera & Facturación</span>
+                <span class="quick-btn-title" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Finanzas</span>
+                <span class="quick-btn-sub" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Cartera & Facturación</span>
               </span>
-              <span class="material-symbols-rounded quick-btn-arrow">chevron_right</span>
+              <span class="material-symbols-rounded quick-btn-arrow transition-all group-hover:translate-x-1"
+                    [ngClass]="isDark ? 'text-neutral-500 group-hover:text-red-400' : 'text-neutral-400 group-hover:text-red-600'">chevron_right</span>
             </button>
 
-            <button class="quick-btn" (click)="navigateToTab('library')">
-              <div class="quick-btn-icon"><span class="material-symbols-rounded">menu_book</span></div>
+            <!-- Biblioteca -->
+            <button class="quick-btn group transition-all duration-200 active:scale-98"
+                    (click)="navigateToTab('library')"
+                    [ngClass]="isDark 
+                      ? 'bg-[#18181f] hover:bg-[#202028] border-neutral-800 hover:border-neutral-700' 
+                      : 'bg-neutral-50 hover:bg-white border-neutral-200/90 hover:border-neutral-400'">
+              <div class="quick-btn-icon transition-transform duration-200 group-hover:scale-105"
+                   [ngClass]="isDark ? 'bg-white/10 text-white border border-white/15' : 'bg-neutral-900 text-white'">
+                <span class="material-symbols-rounded text-xl">menu_book</span>
+              </div>
               <span class="quick-btn-text">
-                <span class="quick-btn-title">Biblioteca</span>
-                <span class="quick-btn-sub">Cuadernos & Apuntes</span>
+                <span class="quick-btn-title" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Biblioteca</span>
+                <span class="quick-btn-sub" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Cuadernos & Apuntes</span>
               </span>
-              <span class="material-symbols-rounded quick-btn-arrow">chevron_right</span>
+              <span class="material-symbols-rounded quick-btn-arrow transition-all group-hover:translate-x-1"
+                    [ngClass]="isDark ? 'text-neutral-500 group-hover:text-white' : 'text-neutral-400 group-hover:text-neutral-900'">chevron_right</span>
             </button>
 
-            <button class="quick-btn" (click)="navigateToTab('rotbot')">
-              <div class="quick-btn-icon"><span class="material-symbols-rounded">smart_toy</span></div>
+            <!-- RotBot IA -->
+            <button class="quick-btn group transition-all duration-200 active:scale-98"
+                    (click)="navigateToTab('rotbot')"
+                    [ngClass]="isDark 
+                      ? 'bg-[#18181f] hover:bg-[#202028] border-neutral-800 hover:border-neutral-700' 
+                      : 'bg-neutral-50 hover:bg-white border-neutral-200/90 hover:border-neutral-400'">
+              <div class="quick-btn-icon transition-transform duration-200 group-hover:scale-105"
+                   [ngClass]="isDark ? 'bg-red-500/15 text-red-400 border border-red-500/30' : 'bg-red-600 text-white shadow-sm'">
+                <span class="material-symbols-rounded text-xl">smart_toy</span>
+              </div>
               <span class="quick-btn-text">
-                <span class="quick-btn-title">RotBot IA</span>
-                <span class="quick-btn-sub">Copiloto Inteligente</span>
+                <span class="quick-btn-title" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">RotBot IA</span>
+                <span class="quick-btn-sub" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Copiloto Inteligente</span>
               </span>
-              <span class="material-symbols-rounded quick-btn-arrow">chevron_right</span>
+              <span class="material-symbols-rounded quick-btn-arrow transition-all group-hover:translate-x-1"
+                    [ngClass]="isDark ? 'text-neutral-500 group-hover:text-red-400' : 'text-neutral-400 group-hover:text-red-600'">chevron_right</span>
             </button>
 
-            <button class="quick-btn" (click)="navigateToTab('itinerary')">
-              <div class="quick-btn-icon" style="background: #18181b;"><span class="material-symbols-rounded">calendar_today</span></div>
+            <!-- Itinerario -->
+            <button class="quick-btn group transition-all duration-200 active:scale-98"
+                    (click)="navigateToTab('itinerary')"
+                    [ngClass]="isDark 
+                      ? 'bg-[#18181f] hover:bg-[#202028] border-neutral-800 hover:border-neutral-700' 
+                      : 'bg-neutral-50 hover:bg-white border-neutral-200/90 hover:border-neutral-400'">
+              <div class="quick-btn-icon transition-transform duration-200 group-hover:scale-105"
+                   [ngClass]="isDark ? 'bg-white/10 text-neutral-300 border border-white/15' : 'bg-neutral-800 text-white'">
+                <span class="material-symbols-rounded text-xl">calendar_today</span>
+              </div>
               <span class="quick-btn-text">
-                <span class="quick-btn-title">Itinerario</span>
-                <span class="quick-btn-sub">Agenda & Tareas</span>
+                <span class="quick-btn-title" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Itinerario</span>
+                <span class="quick-btn-sub" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Agenda & Tareas</span>
               </span>
-              <span class="material-symbols-rounded quick-btn-arrow">chevron_right</span>
+              <span class="material-symbols-rounded quick-btn-arrow transition-all group-hover:translate-x-1"
+                    [ngClass]="isDark ? 'text-neutral-500 group-hover:text-white' : 'text-neutral-400 group-hover:text-neutral-900'">chevron_right</span>
             </button>
           </div>
         </section>
