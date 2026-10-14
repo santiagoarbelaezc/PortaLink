@@ -40,10 +40,8 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
   safeDetectChanges() {
     if (!this.isDestroyed && this.cdr) {
       try {
-        this.cdr.detectChanges();
-      } catch (e) {
-        // Ignore change detection on destroyed views safely
-      }
+        this.cdr.markForCheck();
+      } catch (e) {}
     }
   }
 
@@ -932,8 +930,17 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
       .reduce((sum, i) => sum + Number(i.total || i.total_amount || 0), 0);
   }
 
-  get trendSvgPath(): string {
-    if (!this.monthlyIncome || this.monthlyIncome.length === 0) return '';
+  trendSvgPath: string = '';
+  trendSvgAreaPath: string = '';
+  trendPoints: { x: number; y: number; val: number; label: string; pct: number }[] = [];
+
+  updateTrendPaths() {
+    if (!this.monthlyIncome || this.monthlyIncome.length === 0) {
+      this.trendSvgPath = '';
+      this.trendSvgAreaPath = '';
+      this.trendPoints = [];
+      return;
+    }
     const n = this.monthlyIncome.length;
     const points = this.monthlyIncome.map((m, i) => {
       const x = (i + 0.5) * (1000 / n);
@@ -941,30 +948,29 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
       const y = 175 - (Math.min(100, Math.max(0, h)) * 1.45);
       return { x, y };
     });
-    if (points.length === 1) return `M ${points[0].x} ${points[0].y}`;
-    let d = `M ${points[0].x} ${points[0].y}`;
-    for (let i = 0; i < points.length - 1; i++) {
-      const p0 = points[i];
-      const p1 = points[i + 1];
-      const cpX = (p0.x + p1.x) / 2;
-      d += ` C ${cpX} ${p0.y}, ${cpX} ${p1.y}, ${p1.x} ${p1.y}`;
+    let d = '';
+    if (points.length === 1) {
+      d = `M ${points[0].x} ${points[0].y}`;
+    } else if (points.length > 1) {
+      d = `M ${points[0].x} ${points[0].y}`;
+      for (let i = 0; i < points.length - 1; i++) {
+        const p0 = points[i];
+        const p1 = points[i + 1];
+        const cpX = (p0.x + p1.x) / 2;
+        d += ` C ${cpX} ${p0.y}, ${cpX} ${p1.y}, ${p1.x} ${p1.y}`;
+      }
     }
-    return d;
-  }
+    this.trendSvgPath = d;
 
-  get trendSvgAreaPath(): string {
-    const linePath = this.trendSvgPath;
-    if (!linePath || !this.monthlyIncome || !this.monthlyIncome.length) return '';
-    const n = this.monthlyIncome.length;
-    const lastX = (n - 0.5) * (1000 / n);
-    const firstX = 0.5 * (1000 / n);
-    return `${linePath} L ${lastX} 185 L ${firstX} 185 Z`;
-  }
+    if (d) {
+      const lastX = (n - 0.5) * (1000 / n);
+      const firstX = 0.5 * (1000 / n);
+      this.trendSvgAreaPath = `${d} L ${lastX} 185 L ${firstX} 185 Z`;
+    } else {
+      this.trendSvgAreaPath = '';
+    }
 
-  get trendPoints(): { x: number; y: number; val: number; label: string; pct: number }[] {
-    if (!this.monthlyIncome || !this.monthlyIncome.length) return [];
-    const n = this.monthlyIncome.length;
-    return this.monthlyIncome.map((m, i) => {
+    this.trendPoints = this.monthlyIncome.map((m, i) => {
       const h = Number(m?.height) || 0;
       return {
         x: (i + 0.5) * (1000 / n),
@@ -1087,12 +1093,8 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
     this.buildReports();
     this.buildLocalKpis();
 
-    // Do NOT lock on skeleton if we already have data in memory/cache
-    if (this.invoices.length === 0 && this.clients.length === 0 && this.allServices.length === 0) {
-      this.isLoading = true;
-    } else {
-      this.isLoading = false;
-    }
+    // Ensure UI is immediately active and not locked in skeleton
+    this.isLoading = false;
     this.safeDetectChanges();
 
     try {
@@ -1310,8 +1312,8 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
 
     // 2. Group strictly by INVOICE DUE DATE (dueAt / due_date)
     this.invoices.forEach(inv => {
-      const rawDueDate = inv.dueAt || inv.due_date || inv.issuedAt || inv.issue_date;
-      if (rawDueDate) {
+      const rawDueDate = String(inv.dueAt || inv.due_date || inv.issuedAt || inv.issue_date || '');
+      if (rawDueDate && rawDueDate.length >= 7) {
         const mKey = rawDueDate.substring(0, 7); // "YYYY-MM"
         if (!monthsData[mKey]) {
           monthsData[mKey] = { billed: 0, collected: 0 };
@@ -1347,6 +1349,8 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
         pctCollected: pct
       };
     });
+
+    this.updateTrendPaths();
 
     const totalBilledPeriod = Object.values(monthsData).reduce((sum, item) => sum + item.billed, 0);
     const totalCollectedPeriod = Object.values(monthsData).reduce((sum, item) => sum + item.collected, 0);
