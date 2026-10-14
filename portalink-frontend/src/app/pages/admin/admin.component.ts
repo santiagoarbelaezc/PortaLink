@@ -151,74 +151,55 @@ interface Tab {
           <div class="transition-all duration-300"
                [ngClass]="activeTab === 'rotbot' ? 'w-full h-full flex flex-col justify-between items-center min-h-0' : 'w-full'">
 
-            @defer (when activeTab === 'dashboard'; prefetch on idle) {
-              <app-dash-home
-                *ngIf="activeTab === 'dashboard'"
-                [theme]="currentTheme"
-                (tabChange)="setTab($event)">
-              </app-dash-home>
-            }
+            <app-dash-home
+              *ngIf="activeTab === 'dashboard'"
+              [theme]="currentTheme"
+              (tabChange)="setTab($event)">
+            </app-dash-home>
 
-            @defer (when activeTab === 'rotbot'; prefetch on idle) {
-              <app-dash-rotbot
-                *ngIf="activeTab === 'rotbot'"
-                class="w-full h-full flex flex-col justify-between min-h-0"
-                [theme]="currentTheme"
-                [(isMuted)]="rotbotMuted">
-              </app-dash-rotbot>
-            }
+            <app-dash-rotbot
+              *ngIf="activeTab === 'rotbot'"
+              class="w-full h-full flex flex-col justify-between min-h-0"
+              [theme]="currentTheme"
+              [(isMuted)]="rotbotMuted">
+            </app-dash-rotbot>
 
-            @defer (when activeTab === 'itinerary'; prefetch on idle) {
-              <app-dash-itinerary
-                *ngIf="activeTab === 'itinerary'"
-                [theme]="currentTheme">
-              </app-dash-itinerary>
-            }
+            <app-dash-itinerary
+              *ngIf="activeTab === 'itinerary'"
+              [theme]="currentTheme">
+            </app-dash-itinerary>
 
+            <app-dash-messages
+              *ngIf="activeTab === 'messages'"
+              [theme]="currentTheme"
+              (dataChange)="refreshBadges()">
+            </app-dash-messages>
 
-            @defer (when activeTab === 'messages'; prefetch on idle) {
-              <app-dash-messages
-                *ngIf="activeTab === 'messages'"
-                [theme]="currentTheme"
-                (dataChange)="refreshBadges()">
-              </app-dash-messages>
-            }
+            <app-dash-users
+              *ngIf="activeTab === 'users'"
+              [theme]="currentTheme">
+            </app-dash-users>
 
-            @defer (when activeTab === 'users'; prefetch on idle) {
-              <app-dash-users
-                *ngIf="activeTab === 'users'"
-                [theme]="currentTheme">
-              </app-dash-users>
-            }
+            <app-dash-config
+              *ngIf="activeTab === 'config'"
+              [theme]="currentTheme">
+            </app-dash-config>
 
-            @defer (when activeTab === 'config'; prefetch on idle) {
-              <app-dash-config
-                *ngIf="activeTab === 'config'"
-                [theme]="currentTheme">
-              </app-dash-config>
-            }
+            <app-dash-finances
+              *ngIf="activeTab === 'finances'"
+              [theme]="currentTheme">
+            </app-dash-finances>
 
-            @defer (when activeTab === 'finances'; prefetch on idle) {
-              <app-dash-finances
-                *ngIf="activeTab === 'finances'"
-                [theme]="currentTheme">
-              </app-dash-finances>
-            }
+            <app-dash-library
+              *ngIf="activeTab === 'library'"
+              [theme]="currentTheme"
+              (inNotesViewChange)="onNotesViewChange($event)">
+            </app-dash-library>
 
-            @defer (when activeTab === 'library'; prefetch on idle) {
-              <app-dash-library
-                *ngIf="activeTab === 'library'"
-                [theme]="currentTheme"
-                (inNotesViewChange)="onNotesViewChange($event)">
-              </app-dash-library>
-            }
-
-            @defer (when activeTab === 'db-viewer'; prefetch on idle) {
-              <app-dash-db-viewer
-                *ngIf="activeTab === 'db-viewer'"
-                [theme]="currentTheme">
-              </app-dash-db-viewer>
-            }
+            <app-dash-db-viewer
+              *ngIf="activeTab === 'db-viewer'"
+              [theme]="currentTheme">
+            </app-dash-db-viewer>
 
           </div>
         </main>
@@ -844,9 +825,6 @@ export class AdminComponent implements OnInit, OnDestroy {
     } catch {}
 
     setTimeout(() => {
-      try {
-        this.cdr.detectChanges();
-      } catch {}
       const mainEl = document.querySelector('main');
       if (mainEl) {
         mainEl.scrollTo({ top: 0, behavior: 'auto' });

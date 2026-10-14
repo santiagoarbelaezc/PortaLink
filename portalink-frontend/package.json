@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "test:copilot": "node src/app/components/dashboard/dash-library/test-copilot-markdown.js"
+    "test:copilot": "node src/app/components/dashboard/dash-library/test-copilot-markdown.js",
+    "test:components": "node src/app/test-components.js"
   },
   "private": true,
   "dependencies": {

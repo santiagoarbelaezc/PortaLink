@@ -5,7 +5,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FinanceService, Client, Service, Invoice, InvoiceItem } from '../../../services/finance.service';
 import { PdfReportService, SoftwareProposal, SoftwareProposalItem } from '../../../services/pdf-report.service';
 import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-body.directive';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, timeout } from 'rxjs';
 
 type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
 
@@ -1097,15 +1097,15 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
 
     try {
       const [clientsRes, servicesRes, invoicesRes]: any = await Promise.all([
-        firstValueFrom(this.financeService.getClients()).catch(err => {
+        firstValueFrom(this.financeService.getClients().pipe(timeout(6000))).catch(err => {
           console.warn('Error cargando clientes:', err);
           return { ok: false, clients: [] };
         }),
-        firstValueFrom(this.financeService.getServices()).catch(err => {
+        firstValueFrom(this.financeService.getServices().pipe(timeout(6000))).catch(err => {
           console.warn('Error cargando servicios:', err);
           return { ok: false, services: [] };
         }),
-        firstValueFrom(this.financeService.getInvoices()).catch(err => {
+        firstValueFrom(this.financeService.getInvoices().pipe(timeout(6000))).catch(err => {
           console.warn('Error cargando facturas:', err);
           return { ok: false, invoices: [] };
         })
@@ -1243,7 +1243,7 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
         date_to: this.invFilterEndDate
       };
       
-      const dashboardRes = await firstValueFrom(this.financeService.getDashboard(filters)).catch(err => {
+      const dashboardRes = await firstValueFrom(this.financeService.getDashboard(filters).pipe(timeout(6000))).catch(err => {
         console.warn('Dashboard API call error, falling back to local KPIs:', err);
         return null;
       });
