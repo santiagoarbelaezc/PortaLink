@@ -40,9 +40,42 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
   safeDetectChanges() {
     if (!this.isDestroyed && this.cdr) {
       try {
-        this.cdr.markForCheck();
-      } catch (e) {}
+        this.cdr.detectChanges();
+      } catch (e) {
+        try {
+          this.cdr.markForCheck();
+        } catch (err) {}
+      }
     }
+  }
+
+  mapInvoiceFromBackend(i: any): Invoice {
+    const total = Number(i.total_amount !== undefined ? i.total_amount : (i.total || 0));
+    const paid = Number(i.paid_amount || 0);
+    const dueAt = i.due_date ? String(i.due_date).split('T')[0] : (i.dueAt || '');
+    const issuedAt = i.issue_date ? String(i.issue_date).split('T')[0] : (i.issuedAt || '');
+    const paidAt = i.paid_at ? String(i.paid_at).split('T')[0] : (i.paidAt || (i.updated_at ? String(i.updated_at).split('T')[0] : ''));
+    return {
+      id: i.id,
+      invoice_number: i.invoice_number || i.id,
+      title: i.title || '',
+      clientId: i.client_id || i.clientId,
+      clientName: i.client_name || i.clientName,
+      clientCompany: i.company || i.clientCompany || '',
+      total: total,
+      total_amount: total,
+      subtotal: Number(i.subtotal !== undefined ? i.subtotal : total),
+      paid_amount: paid,
+      pending_amount: Number(i.pending_amount !== undefined ? i.pending_amount : Math.max(0, total - paid)),
+      status: this.formatStatus(i.status, dueAt, paid, total),
+      issuedAt: issuedAt,
+      dueAt: dueAt,
+      paidAt: paidAt,
+      paymentMethod: i.payment_method || i.paymentMethod || '',
+      paymentNotes: i.payment_notes || i.paymentNotes || '',
+      payments: i.payments || [],
+      items: i.items || []
+    };
   }
 
   getPendingAmount(inv: any): number {
@@ -1098,7 +1131,24 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
     this.safeDetectChanges();
 
     try {
-      const [clientsRes, servicesRes, invoicesRes]: any = await Promise.all([
+      // 1. Fetch invoices directly with priority
+      const invoicesRes: any = await firstValueFrom(
+        this.financeService.getInvoices().pipe(timeout(6000))
+      ).catch(err => {
+        console.warn('Error cargando facturas:', err);
+        return null;
+      });
+
+      if (invoicesRes?.invoices && Array.isArray(invoicesRes.invoices) && invoicesRes.invoices.length > 0) {
+        this.invoices = invoicesRes.invoices.map((i: any) => this.mapInvoiceFromBackend(i));
+        this.saveCachedData();
+        this.buildReports();
+        this.buildLocalKpis();
+        this.safeDetectChanges();
+      }
+
+      // 2. Fetch clients and services
+      const [clientsRes, servicesRes]: any = await Promise.all([
         firstValueFrom(this.financeService.getClients().pipe(timeout(6000))).catch(err => {
           console.warn('Error cargando clientes:', err);
           return { ok: false, clients: [] };
@@ -1106,58 +1156,25 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
         firstValueFrom(this.financeService.getServices().pipe(timeout(6000))).catch(err => {
           console.warn('Error cargando servicios:', err);
           return { ok: false, services: [] };
-        }),
-        firstValueFrom(this.financeService.getInvoices().pipe(timeout(6000))).catch(err => {
-          console.warn('Error cargando facturas:', err);
-          return { ok: false, invoices: [] };
         })
       ]);
 
-      if (this.isDestroyed) return;
-
-      if (clientsRes && Array.isArray(clientsRes.clients)) {
+      if (clientsRes && Array.isArray(clientsRes.clients) && clientsRes.clients.length > 0) {
         this.clients = clientsRes.clients.map((c: any) => ({
           ...c,
           createdAt: c.created_at || c.createdAt
         }));
       }
-      if (servicesRes && Array.isArray(servicesRes.services)) {
+      if (servicesRes && Array.isArray(servicesRes.services) && servicesRes.services.length > 0) {
         this.allServices = servicesRes.services.map((s: any) => ({
           ...s,
           unitPrice: Number(s.price !== undefined ? s.price : (s.unitPrice || 0))
         }));
       }
-      if (invoicesRes && Array.isArray(invoicesRes.invoices)) {
-        this.invoices = invoicesRes.invoices.map((i: any) => {
-          const total = Number(i.total_amount || i.total || 0);
-          const paid = Number(i.paid_amount || 0);
-          const dueAt = i.due_date ? i.due_date.split('T')[0] : '';
-          return {
-            id: i.id,
-            invoice_number: i.invoice_number || i.id,
-            title: i.title || '',
-            clientId: i.client_id,
-            clientName: i.client_name,
-            clientCompany: i.company || '',
-            total: total,
-            total_amount: total,
-            subtotal: Number(i.subtotal !== undefined ? i.subtotal : total),
-            paid_amount: paid,
-            pending_amount: Number(i.pending_amount !== undefined ? i.pending_amount : Math.max(0, total - paid)),
-            status: this.formatStatus(i.status, dueAt, paid, total),
-            issuedAt: i.issue_date ? i.issue_date.split('T')[0] : '',
-            dueAt: dueAt,
-            paidAt: i.paid_at ? i.paid_at.split('T')[0] : (i.updated_at ? i.updated_at.split('T')[0] : ''),
-            paymentMethod: i.payment_method || '',
-            paymentNotes: i.payment_notes || '',
-            payments: i.payments || [],
-            items: []
-          };
-        });
-      }
 
       this.saveCachedData();
 
+      // 3. Fetch dashboard KPIs & ledger
       if (this.isDestroyed) return;
       await this.buildKpis();
       if (this.isDestroyed) return;

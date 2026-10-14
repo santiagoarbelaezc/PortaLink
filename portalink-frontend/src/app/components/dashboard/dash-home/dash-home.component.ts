@@ -595,32 +595,52 @@ import { MessagesService } from '../../../services/messages.service';
               </p>
             </div>
 
-            <!-- Chips de Estado Rápido -->
-            <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap items-center relative z-10 pt-2">
+            <!-- Chips de Estado Rápido (Rediseño Premium: Rojo, Blanco, Gris y Negro) -->
+            <div class="grid grid-cols-2 gap-2.5 sm:flex sm:flex-wrap items-center relative z-10 pt-3">
               <!-- Vistas -->
-              <span class="h-7.5 px-3 rounded-full bg-white/10 border border-white/10 text-white/90 inline-flex items-center gap-1.5 text-xs font-semibold">
-                <span class="material-symbols-rounded" style="font-size: 16px;">visibility</span>
-                <span>{{ (metrics.homeViews || 0) + (metrics.linktreeViews || 0) }} Vistas</span>
+              <span class="h-8 px-3.5 rounded-full bg-white/[0.07] hover:bg-white/[0.12] border border-white/15 hover:border-white/30 backdrop-blur-md text-white/95 inline-flex items-center gap-2 text-xs font-semibold shadow-sm transition-all duration-300 group/vistas cursor-default">
+                <span class="material-symbols-rounded text-neutral-300 group-hover/vistas:text-white transition-colors" style="font-size: 16px;">visibility</span>
+                <span class="tracking-tight">
+                  <strong class="font-bold text-white">{{ (metrics.homeViews || 0) + (metrics.linktreeViews || 0) | number }}</strong>
+                  <span class="text-neutral-400 font-normal ml-1">Vistas</span>
+                </span>
               </span>
 
-              <!-- Mensajes -->
-              <span (click)="navigateToTab('messages')"
-                    class="h-7.5 px-3 rounded-full border inline-flex items-center gap-1.5 text-xs font-semibold cursor-pointer transition-all hover:scale-105 active:scale-95"
-                    [ngClass]="unreadMessages > 0 ? 'bg-red-500/20 border-red-500/40 text-red-200' : 'bg-white/10 border-white/10 text-white/90'">
-                <span class="material-symbols-rounded" style="font-size: 16px;">mail</span>
-                <span>{{ unreadMessages > 0 ? (unreadMessages + ' Nuevos') : '0 Mensajes' }}</span>
+              <!-- Mensajes (Interactivo con Glow Dinámico) -->
+              <button type="button"
+                     (click)="navigateToTab('messages')"
+                     class="h-8 px-3.5 rounded-full border inline-flex items-center gap-2 text-xs font-semibold cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 group/msg backdrop-blur-md"
+                     [ngClass]="unreadMessages > 0 
+                       ? 'bg-red-500/20 border-red-500/50 text-white shadow-[0_0_15px_rgba(239,68,68,0.35)] hover:bg-red-500/30 hover:border-red-400' 
+                       : 'bg-white/[0.07] hover:bg-white/[0.12] border-white/15 hover:border-red-500/40 text-white/95 shadow-sm'">
+                <span class="material-symbols-rounded transition-colors"
+                      [ngClass]="unreadMessages > 0 ? 'text-red-400 animate-pulse' : 'text-neutral-300 group-hover/msg:text-red-400'"
+                      style="font-size: 16px;">mail</span>
+                <span class="tracking-tight">
+                  <strong *ngIf="unreadMessages > 0" class="font-bold text-red-200">{{ unreadMessages }} Nuevos</strong>
+                  <ng-container *ngIf="unreadMessages === 0">
+                    <strong class="font-bold text-white">0</strong>
+                    <span class="text-neutral-400 font-normal ml-1 group-hover/msg:text-neutral-300 transition-colors">Mensajes</span>
+                  </ng-container>
+                </span>
+              </button>
+
+              <!-- Online (Radar Live Status) -->
+              <span class="h-8 px-3.5 rounded-full bg-white/[0.07] hover:bg-white/[0.12] border border-white/15 hover:border-emerald-500/40 backdrop-blur-md text-white/95 inline-flex items-center gap-2 text-xs font-semibold shadow-sm transition-all duration-300 cursor-default">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span class="font-bold text-white tracking-wide">Online</span>
+                <span class="text-[9px] font-mono font-bold text-emerald-400 bg-emerald-500/15 px-1.5 py-0.5 rounded border border-emerald-500/30">LIVE</span>
               </span>
 
-              <!-- Online -->
-              <span class="h-7.5 px-3 rounded-full bg-white/10 border border-white/10 text-white/90 inline-flex items-center gap-1.5 text-xs font-semibold">
-                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                <span>Online</span>
-              </span>
-
-              <!-- Sesión -->
-              <span class="h-7.5 px-3 rounded-full bg-white/10 border border-white/10 text-white/90 inline-flex items-center gap-1.5 text-xs font-semibold">
-                <span class="material-symbols-rounded" style="font-size: 16px;">timer</span>
-                <span>{{ sessionTimeFormatted }}</span>
+              <!-- Sesión (Cronómetro Cockpit) -->
+              <span class="h-8 px-3.5 rounded-full bg-white/[0.07] hover:bg-white/[0.12] border border-white/15 hover:border-white/30 backdrop-blur-md text-white/95 inline-flex items-center gap-2 text-xs font-semibold shadow-sm transition-all duration-300 group/timer cursor-default">
+                <span class="material-symbols-rounded text-neutral-300 group-hover/timer:text-red-400 transition-colors" style="font-size: 16px;">timer</span>
+                <span class="font-mono font-semibold tracking-wider text-neutral-200 text-xs">
+                  {{ sessionTimeFormatted || '00:00:00' }}
+                </span>
               </span>
             </div>
 
