@@ -808,8 +808,9 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
       }
       if (this.invFilterMinPrice !== null && (i.total || 0) < this.invFilterMinPrice) match = false;
       if (this.invFilterMaxPrice !== null && (i.total || 0) > this.invFilterMaxPrice) match = false;
-      if (this.invFilterStartDate && (i.issuedAt || '') < this.invFilterStartDate) match = false;
-      if (this.invFilterEndDate && (i.issuedAt || '') > this.invFilterEndDate) match = false;
+      const finalDate = i.dueAt || i.due_date || i.issuedAt || '';
+      if (this.invFilterStartDate && finalDate < this.invFilterStartDate) match = false;
+      if (this.invFilterEndDate && finalDate > this.invFilterEndDate) match = false;
       return match;
     });
   }
@@ -1282,27 +1283,13 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
       }
 
       if (dashboardRes?.ledger?.length) {
-        this.recentInvoices = (dashboardRes.ledger || []).map((i: any) => {
-          const total = Number(i.total_amount || i.total || 0);
-          const paid = Number(i.paid_amount || 0);
-          const dueAt = i.due_date ? i.due_date.split('T')[0] : '';
-          return {
-            id: i.id,
-            invoice_number: i.invoice_number || i.id,
-            title: i.title || '',
-            clientId: i.client_id,
-            clientName: i.client_name,
-            clientCompany: i.company || '',
-            total: total,
-            total_amount: total,
-            paid_amount: paid,
-            pending_amount: Math.max(0, total - paid),
-            status: this.formatStatus(i.status, dueAt, paid, total),
-            paidAt: i.paid_at ? i.paid_at.split('T')[0] : (i.updated_at ? i.updated_at.split('T')[0] : ''),
-            paymentMethod: i.payment_method || '',
-            paymentNotes: i.payment_notes || ''
-          };
-        });
+        this.recentInvoices = (dashboardRes.ledger || []).map((i: any) => this.mapInvoiceFromBackend(i));
+        // If this.invoices is empty or was not loaded yet, immediately hydrate from ledger!
+        if (!this.invoices || this.invoices.length === 0) {
+          this.invoices = [...this.recentInvoices];
+          this.saveCachedData();
+          this.buildReports();
+        }
       } else if (this.invoices.length > 0) {
         this.recentInvoices = [...this.invoices];
       }
@@ -1315,40 +1302,66 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   buildReports() {
-    const paidInvoices = this.invoices.filter(i => (i.status === 'Pagada' || i.status === 'PAGADA') && i.paidAt);
+    const paidInvoices = (this.invoices || []).filter(i => (i.status === 'Pagada' || i.status === 'PAGADA') && (i.paidAt || (i.paid_amount && i.paid_amount > 0)));
     const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
     const monthsData: Record<string, { billed: number; collected: number }> = {};
+    const windowKeys: string[] = [];
 
-    // 1. Baseline 6-month window (5 months prior up to current month)
+    // 1. Dynamic continuous month window up to current month (at least 6 months, extending to earliest invoice due date in current period)
     const d = new Date();
-    for (let i = 5; i >= 0; i--) {
-      const past = new Date(d.getFullYear(), d.getMonth() - i, 1);
-      const mKey = `${past.getFullYear()}-${String(past.getMonth() + 1).padStart(2, '0')}`;
-      monthsData[mKey] = { billed: 0, collected: 0 };
-    }
+    const currentYear = d.getFullYear();
+    const currentMonth = d.getMonth();
 
-    // 2. Group strictly by INVOICE DUE DATE (dueAt / due_date)
-    this.invoices.forEach(inv => {
-      const rawDueDate = String(inv.dueAt || inv.due_date || inv.issuedAt || inv.issue_date || '');
-      if (rawDueDate && rawDueDate.length >= 7) {
-        const mKey = rawDueDate.substring(0, 7); // "YYYY-MM"
-        if (!monthsData[mKey]) {
-          monthsData[mKey] = { billed: 0, collected: 0 };
+    // Default window: at least 6 months back up to current month
+    let earliestDate = new Date(currentYear, currentMonth - 5, 1);
+
+    // Expand window back if there are invoices with earlier due dates (up to 11 months back max)
+    (this.invoices || []).forEach(inv => {
+      const rawDue = String(inv.dueAt || inv.due_date || inv.issuedAt || inv.issue_date || '');
+      if (rawDue.length >= 7) {
+        const [y, m] = rawDue.split('-').map(Number);
+        if (!isNaN(y) && !isNaN(m)) {
+          const invDate = new Date(y, m - 1, 1);
+          const minAllowed = new Date(currentYear, currentMonth - 11, 1);
+          if (invDate >= minAllowed && invDate <= d && invDate < earliestDate) {
+            earliestDate = invDate;
+          }
         }
-        const total = Number(inv.total || inv.total_amount || 0);
-        const paid = Number(inv.paid_amount || 0);
-        monthsData[mKey].billed += total;
-        monthsData[mKey].collected += paid;
       }
     });
 
-    const sortedKeys = Object.keys(monthsData).sort();
+    let cursor = new Date(earliestDate.getFullYear(), earliestDate.getMonth(), 1);
+    const endCursor = new Date(currentYear, currentMonth, 1);
+
+    while (cursor <= endCursor) {
+      const mKey = `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, '0')}`;
+      monthsData[mKey] = { billed: 0, collected: 0 };
+      windowKeys.push(mKey);
+      cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
+    }
+
+    // 2. Group strictly by EXACT DUE DATE (dueAt / due_date / fecha exacta de vencimiento)
+    (this.invoices || []).forEach(inv => {
+      const total = Number(inv.total || inv.total_amount || 0);
+      const isPaid = inv.status === 'Pagada' || inv.status === 'PAGADA';
+      const paid = isPaid ? total : Number(inv.paid_amount || 0);
+
+      // Fecha exacta de vencimiento de la cuenta de cobro
+      const rawDue = String(inv.dueAt || inv.due_date || inv.issuedAt || inv.issue_date || '');
+      const dueMonth = rawDue.length >= 7 ? rawDue.substring(0, 7) : '';
+
+      if (dueMonth && monthsData[dueMonth]) {
+        monthsData[dueMonth].billed += total;
+        monthsData[dueMonth].collected += paid;
+      }
+    });
+
     const maxVal = Math.max(
-      ...sortedKeys.map(k => Math.max(monthsData[k].billed, monthsData[k].collected)),
+      ...windowKeys.map(k => Math.max(monthsData[k].billed, monthsData[k].collected)),
       1
     );
 
-    this.monthlyIncome = sortedKeys.map(k => {
+    this.monthlyIncome = windowKeys.map(k => {
       const [y, m] = k.split('-');
       const billed = monthsData[k].billed;
       const collected = monthsData[k].collected;
@@ -1369,9 +1382,9 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
 
     this.updateTrendPaths();
 
-    const totalBilledPeriod = Object.values(monthsData).reduce((sum, item) => sum + item.billed, 0);
-    const totalCollectedPeriod = Object.values(monthsData).reduce((sum, item) => sum + item.collected, 0);
-    this.effectiveRecaudoRate = totalBilledPeriod > 0 ? Math.round((totalCollectedPeriod / totalBilledPeriod) * 100) : 0;
+    const totalBilledPeriod = windowKeys.reduce((sum, k) => sum + monthsData[k].billed, 0);
+    const totalCollectedPeriod = windowKeys.reduce((sum, k) => sum + monthsData[k].collected, 0);
+    this.effectiveRecaudoRate = totalBilledPeriod > 0 ? Math.round((totalCollectedPeriod / totalBilledPeriod) * 100) : (totalCollectedPeriod > 0 ? 100 : 0);
 
     // Service Income
     const srvMap: Record<string, number> = {};

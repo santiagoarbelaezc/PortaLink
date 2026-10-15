@@ -149,6 +149,19 @@ assert(financesContent.includes(".getClients().pipe(timeout(6000))"), 'getClient
 assert(financesContent.includes(".getServices().pipe(timeout(6000))"), 'getServices has 6-second timeout safeguard');
 assert(financesContent.includes(".getInvoices().pipe(timeout(6000))"), 'getInvoices has 6-second timeout safeguard');
 assert(financesContent.includes(".getDashboard(filters).pipe(timeout(6000))"), 'getDashboard has 6-second timeout safeguard');
+assert(financesContent.includes("this.invoices = [...this.recentInvoices];"), 'Hydrates this.invoices from dashboard ledger if invoices endpoint was delayed');
+assert(financesContent.includes("const rawDue = String(inv.dueAt || inv.due_date || inv.issuedAt || inv.issue_date || '');"), 'Counts financial history by exact invoice due date (dueAt / due_date)');
+
+// ─── 5. VERIFY DASH-HOME HERO CHIPS REDESIGN ────────────────────
+console.log('\n[5] Dash Home Hero Chips Redesign (Rojo, Blanco, Gris, Negro)');
+const dashHomeCompPath = path.join(__dirname, 'components', 'dashboard', 'dash-home', 'dash-home.component.ts');
+const dashHomeContent = fs.readFileSync(dashHomeCompPath, 'utf8');
+
+assert(dashHomeContent.includes("Chips de Estado Rápido (Rediseño Premium"), 'Dash Home hero contains redesigned chips container');
+assert(dashHomeContent.includes("material-symbols-rounded text-neutral-300 group-hover/vistas:text-white") && dashHomeContent.includes("Vistas"), 'Vistas chip styled with glassmorphism and visibility icon');
+assert(dashHomeContent.includes("navigateToTab('messages')") && dashHomeContent.includes("mail"), 'Mensajes chip styled with interactive badge and mail icon');
+assert(dashHomeContent.includes("animate-ping absolute inline-flex") && dashHomeContent.includes("LIVE"), 'Online chip features animated radar pulse and LIVE badge');
+assert(dashHomeContent.includes("sessionTimeFormatted") && dashHomeContent.includes("timer"), 'Sesión timer chip styled with cockpit chronograph formatting');
 
 console.log('\n====================================================');
 console.log(`  TOTAL TESTS : ${passedCount + failedCount}`);
