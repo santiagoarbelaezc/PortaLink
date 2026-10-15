@@ -74,12 +74,12 @@ class FinanceController
                 $idx++;
             }
             if ($dateFrom) {
-                $conditions[] = "i.issue_date >= \${$idx}";
+                $conditions[] = "COALESCE(i.due_date, i.issue_date) >= \${$idx}";
                 $params[] = $dateFrom;
                 $idx++;
             }
             if ($dateTo) {
-                $conditions[] = "i.issue_date <= \${$idx}";
+                $conditions[] = "COALESCE(i.due_date, i.issue_date) <= \${$idx}";
                 $params[] = $dateTo;
                 $idx++;
             }

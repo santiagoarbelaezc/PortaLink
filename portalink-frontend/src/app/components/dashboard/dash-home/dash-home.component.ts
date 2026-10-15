@@ -597,7 +597,7 @@ import { MessagesService } from '../../../services/messages.service';
 
             <!-- Chips de Estado Rápido (Rediseño Premium: Rojo, Blanco, Gris y Negro) -->
             <div class="grid grid-cols-2 gap-2.5 sm:flex sm:flex-wrap items-center relative z-10 pt-3">
-              <!-- Vistas -->
+              <!-- Chip 1: Contador acumulado de visitas (Home + Linktree) con formateo numérico y glassmorphism -->
               <span class="h-8 px-3.5 rounded-full bg-white/[0.07] hover:bg-white/[0.12] border border-white/15 hover:border-white/30 backdrop-blur-md text-white/95 inline-flex items-center gap-2 text-xs font-semibold shadow-sm transition-all duration-300 group/vistas cursor-default">
                 <span class="material-symbols-rounded text-neutral-300 group-hover/vistas:text-white transition-colors" style="font-size: 16px;">visibility</span>
                 <span class="tracking-tight">
@@ -606,7 +606,7 @@ import { MessagesService } from '../../../services/messages.service';
                 </span>
               </span>
 
-              <!-- Mensajes (Interactivo con Glow Dinámico) -->
+              <!-- Chip 2: Mensajes no leídos (Botón interactivo con navegación a 'messages' y efecto glow rojo dinámico) -->
               <button type="button"
                      (click)="navigateToTab('messages')"
                      class="h-8 px-3.5 rounded-full border inline-flex items-center gap-2 text-xs font-semibold cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 group/msg backdrop-blur-md"
@@ -625,7 +625,7 @@ import { MessagesService } from '../../../services/messages.service';
                 </span>
               </button>
 
-              <!-- Online (Radar Live Status) -->
+              <!-- Chip 3: Estado Online en tiempo real con efecto radar/ping pulsante y badge LIVE -->
               <span class="h-8 px-3.5 rounded-full bg-white/[0.07] hover:bg-white/[0.12] border border-white/15 hover:border-emerald-500/40 backdrop-blur-md text-white/95 inline-flex items-center gap-2 text-xs font-semibold shadow-sm transition-all duration-300 cursor-default">
                 <span class="relative flex h-2 w-2">
                   <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -635,7 +635,7 @@ import { MessagesService } from '../../../services/messages.service';
                 <span class="text-[9px] font-mono font-bold text-emerald-400 bg-emerald-500/15 px-1.5 py-0.5 rounded border border-emerald-500/30">LIVE</span>
               </span>
 
-              <!-- Sesión (Cronómetro Cockpit) -->
+              <!-- Chip 4: Tiempo activo de sesión (Cockpit) con tipografía monospace para evitar saltos de ancho -->
               <span class="h-8 px-3.5 rounded-full bg-white/[0.07] hover:bg-white/[0.12] border border-white/15 hover:border-white/30 backdrop-blur-md text-white/95 inline-flex items-center gap-2 text-xs font-semibold shadow-sm transition-all duration-300 group/timer cursor-default">
                 <span class="material-symbols-rounded text-neutral-300 group-hover/timer:text-red-400 transition-colors" style="font-size: 16px;">timer</span>
                 <span class="font-mono font-semibold tracking-wider text-neutral-200 text-xs">
@@ -2228,18 +2228,26 @@ export class DashHomeComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Carga los contadores e insignias del panel (leads pendientes y mensajes no leídos).
+   * Implementa fallback en caso de fallo de red consultando el almacenamiento local.
+   */
   private loadBadges() {
     try {
+      // 1. Conteo de prospectos/leads pendientes en almacenamiento local
       const leads = JSON.parse(localStorage.getItem('portalink_admin_leads') || '[]');
       this.pendingLeads = leads.filter((l: any) => l.status === 'Pendiente').length;
     } catch { }
 
+    // 2. Consulta de mensajes no leídos desde el servicio de mensajes
     this.messagesService.getMessages().subscribe({
       next: (msgs) => {
         const list = msgs || [];
+        // Filtra los mensajes cuyo estado sea 'unread'
         this.unreadMessages = list.filter(m => (m.status || '').toLowerCase() === 'unread').length;
       },
       error: () => {
+        // Fallback resiliente: lee mensajes en caché local si la API remota no responde
         try {
           const local = JSON.parse(localStorage.getItem('portalink_contact_messages') || '[]');
           this.unreadMessages = local.filter((m: any) => (m.status || '').toLowerCase() === 'unread').length;
