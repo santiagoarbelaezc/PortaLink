@@ -161,6 +161,7 @@ export class AppComponent implements OnInit {
 
   isLoading = false;
   isFinished = false;
+  private navbarVisible = this.shouldShowNavbar(this.router.url);
   private loadingSafetyTimeout: any;
 
   isAdminRoute(): boolean {
@@ -184,13 +185,16 @@ export class AppComponent implements OnInit {
   }
 
   showNavbar(): boolean {
-    const url = (this.router.url || '').split('?')[0].split('#')[0];
-    const path = typeof window !== 'undefined' ? (window.location.pathname || '') : '';
+    return this.navbarVisible;
+  }
+
+  private shouldShowNavbar(routerUrl: string): boolean {
+    const url = (routerUrl || '').split('?')[0].split('#')[0];
 
     // Rutas específicas donde el navbar NO debe salir (admin, perfil, rotbot standalone, recuperación)
     const hiddenPrefixes = ['/admin', '/perfil', '/rotbot', '/verify-email', '/forgot-password', '/reset-password'];
     for (const prefix of hiddenPrefixes) {
-      if (url.startsWith(prefix) || path.startsWith(prefix)) {
+      if (url === prefix || url.startsWith(`${prefix}/`)) {
         return false;
       }
     }
@@ -210,10 +214,11 @@ export class AppComponent implements OnInit {
           this.isFinished = false;
         }, 1500);
       } else if (
-        event instanceof NavigationEnd ||
-        event instanceof NavigationCancel ||
-        event instanceof NavigationError
+        event instanceof NavigationEnd
       ) {
+        // Update this only after navigation succeeds so the navbar is not
+        // destroyed while the router is resolving a lazy-loaded page.
+        this.navbarVisible = this.shouldShowNavbar(event.urlAfterRedirects);
         if (this.loadingSafetyTimeout) clearTimeout(this.loadingSafetyTimeout);
         // Smoothly finish loading
         this.isFinished = true;
@@ -224,6 +229,13 @@ export class AppComponent implements OnInit {
             this.isFinished = false;
           }, 400);
         }, 300);
+      } else if (
+        event instanceof NavigationCancel ||
+        event instanceof NavigationError
+      ) {
+        if (this.loadingSafetyTimeout) clearTimeout(this.loadingSafetyTimeout);
+        this.isLoading = false;
+        this.isFinished = false;
       }
     });
   }
