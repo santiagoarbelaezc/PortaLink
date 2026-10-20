@@ -524,8 +524,9 @@
 }
 
 .bento-welcome {
-  background: #0a0a0a;
-  border-radius: 18px;
+  background: linear-gradient(135deg, #ffffff 0%, #fbfbfc 50%, #f4f4f5 100%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 22px;
   padding: 38px 42px;
   display: flex;
   flex-direction: column;
@@ -534,14 +535,27 @@
   position: relative;
   overflow: hidden;
   min-height: 220px;
+  color: #09090b;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s ease;
+}
+
+.theme-dark .bento-welcome {
+  background: #0a0a0a;
+  border-color: #27272a;
   color: #ffffff;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
 }
 
 .bento-circle {
   position: absolute;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.035);
+  background: rgba(0, 0, 0, 0.02);
   pointer-events: none;
+}
+
+.theme-dark .bento-circle {
+  background: rgba(255, 255, 255, 0.035);
 }
 
 .bento-circle--1 {
@@ -563,14 +577,20 @@
   align-items: center;
   gap: 7px;
   padding: 4px 12px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #f4f4f5;
+  border: 1px solid #e4e4e7;
   border-radius: 999px;
   font-size: 0.72rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.85);
+  color: #3f3f46;
   width: fit-content;
   letter-spacing: 0.02em;
+}
+
+.theme-dark .bento-badge {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .bento-badge-dot {
@@ -583,13 +603,24 @@
 .bento-title {
   font-size: 2.3rem;
   font-weight: 800;
-  color: #ffffff;
+  color: #09090b;
   letter-spacing: -0.04em;
   line-height: 1.1;
   margin: 0;
 }
 
+.theme-dark .bento-title {
+  color: #ffffff;
+}
+
 .bento-username {
+  color: #dc2626;
+  background: linear-gradient(135deg, #dc2626 0%, #09090b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.theme-dark .bento-username {
   color: #ffffff;
   background: linear-gradient(135deg, #ffffff 30%, #a1a1aa 100%);
   -webkit-background-clip: text;
@@ -598,10 +629,14 @@
 
 .bento-desc {
   font-size: 0.86rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: #71717a;
   max-width: 440px;
   margin: 0;
   line-height: 1.5;
+}
+
+.theme-dark .bento-desc {
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .bento-quick-access {
@@ -669,13 +704,11 @@
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: #09090b;
-  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: transform 0.2s ease, background 0.2s ease;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
 
 .quick-btn-text {
