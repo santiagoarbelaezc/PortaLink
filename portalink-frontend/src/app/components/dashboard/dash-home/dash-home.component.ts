@@ -36,7 +36,7 @@ import { MessagesService } from '../../../services/messages.service';
               </div>
 
               <!-- Título -->
-              <h2 class="text-2xl font-headline font-black tracking-tight leading-[1.1] text-white m-0 mb-2">
+              <h2 class="text-2xl font-headline font-bold tracking-tight leading-[1.1] text-white m-0 mb-2">
                 Bienvenido,<br>
                 Santiago!
               </h2>
@@ -75,11 +75,11 @@ import { MessagesService } from '../../../services/messages.service';
               <div class="flex items-center gap-2.5">
                 <div class="w-8 h-8 rounded-xl border flex items-center justify-center"
                      [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
-                  <span class="material-symbols-rounded text-lg">inventory_2</span>
+                  <span class="material-symbols-rounded text-lg">payments</span>
                 </div>
                 <div>
-                  <p class="text-xs font-headline font-bold m-0" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Inventario & Finanzas</p>
-                  <p class="text-[10px] text-neutral-400 m-0">Ver catálogo y pagos</p>
+                  <p class="text-xs font-headline font-bold m-0" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Gestión de Finanzas</p>
+                  <p class="text-[10px] text-neutral-400 m-0">Cuentas de cobro y pagos</p>
                 </div>
               </div>
               <span class="material-symbols-rounded text-neutral-400 text-base">chevron_right</span>
@@ -151,18 +151,18 @@ import { MessagesService } from '../../../services/messages.service';
 
         <!-- 4. GRID DE 5 MÓDULOS MÓVIL (2 NEGROS + 3 BLANCOS) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-          <!-- Card 1: Black Card (Gestionar Inventario) -->
+          <!-- Card 1: Black Card (Gestionar Finanzas) -->
           <div (click)="navigateToTab('finances')"
                class="rounded-2xl p-4 flex flex-col justify-between cursor-pointer border"
                [ngClass]="isDark ? 'bg-[#09090b] border-neutral-800 text-white' : 'bg-[#0a0a0d] border-neutral-900 text-white shadow-md'">
             <div>
               <div class="w-9 h-9 rounded-xl border flex items-center justify-center bg-neutral-900 border-neutral-800 mb-3"
                    style="color: #ffffff !important;">
-                <span class="material-symbols-rounded text-lg" style="color: #ffffff !important;">inventory_2</span>
+                <span class="material-symbols-rounded text-lg" style="color: #ffffff !important;">payments</span>
               </div>
               <h3 class="text-sm font-headline font-bold m-0 mb-1 leading-tight dark-card-white"
-                  style="color: #ffffff !important;">Gestionar Inventario</h3>
-              <p class="text-[11px] font-sans text-neutral-400 leading-relaxed m-0 mb-4">Control detallado del catálogo, fotos y descripciones técnicas.</p>
+                  style="color: #ffffff !important;">Gestionar Finanzas</h3>
+              <p class="text-[11px] font-sans text-neutral-400 leading-relaxed m-0 mb-4">Control integral de cuentas de cobro, facturación, clientes y pagos en tiempo real.</p>
             </div>
             <div class="text-[11px] font-headline font-bold inline-flex items-center gap-1 dark-card-white"
                  style="color: #ffffff !important;">
@@ -683,7 +683,7 @@ import { MessagesService } from '../../../services/messages.service';
                 </div>
 
                 <!-- Título Bienvenido Santiago en blanco puro, sin degradados -->
-                <h2 class="text-3xl sm:text-4xl lg:text-[42px] font-headline font-black tracking-tight leading-[1.08] text-white m-0 mb-3">
+                <h2 class="text-3xl sm:text-4xl lg:text-[42px] font-headline font-bold tracking-tight leading-[1.08] text-white m-0 mb-3">
                   Bienvenido,<br>
                   Santiago!
                 </h2>
@@ -726,12 +726,12 @@ import { MessagesService } from '../../../services/messages.service';
                   <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-2xl border flex items-center justify-center transition-colors"
                          [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
-                      <span class="material-symbols-rounded text-xl">inventory_2</span>
+                      <span class="material-symbols-rounded text-xl">payments</span>
                     </div>
                     <div>
                       <p class="text-xs font-headline font-bold m-0 group-hover:text-red-500 transition-colors"
-                         [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Inventario & Finanzas</p>
-                      <p class="text-[11px] text-neutral-400 m-0">Ver y editar productos y pagos</p>
+                         [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Gestión de Finanzas</p>
+                      <p class="text-[11px] text-neutral-400 m-0">Cuentas de cobro, clientes y pagos</p>
                     </div>
                   </div>
                   <span class="material-symbols-rounded text-neutral-400 group-hover:text-red-500 group-hover:translate-x-0.5 transition-all text-base">chevron_right</span>
@@ -812,21 +812,21 @@ import { MessagesService } from '../../../services/messages.service';
         <!-- ════ 3. GRID DE 5 MÓDULOS (2 NEGROS + 3 BLANCOS SEGÚN LA CAPTURA) ════ -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           
-          <!-- Card 1: Black Card (Gestionar Inventario) -->
+          <!-- Card 1: Black Card (Gestionar Finanzas) -->
           <div (click)="navigateToTab('finances')"
                class="rounded-[22px] p-5 flex flex-col justify-between cursor-pointer group transition-all duration-200 hover:-translate-y-1 shadow-sm border"
                [ngClass]="isDark ? 'bg-[#09090b] border-neutral-800 text-white hover:border-neutral-700' : 'bg-[#0a0a0d] border-neutral-900 text-white shadow-md'">
             <div>
               <div class="w-11 h-11 rounded-2xl border flex items-center justify-center bg-neutral-900/90 border-neutral-800 mb-4"
                    style="color: #ffffff !important;">
-                <span class="material-symbols-rounded text-xl" style="color: #ffffff !important;">inventory_2</span>
+                <span class="material-symbols-rounded text-xl" style="color: #ffffff !important;">payments</span>
               </div>
               <h3 class="text-base font-headline font-bold m-0 mb-2 leading-tight dark-card-white"
                   style="color: #ffffff !important;">
-                Gestionar Inventario
+                Gestionar Finanzas
               </h3>
               <p class="text-xs font-sans text-neutral-400 leading-relaxed m-0 mb-6">
-                Control detallado del catálogo, fotos, descripciones técnicas y materiales.
+                Control integral de cuentas de cobro, facturación, clientes y estados de pago en tiempo real.
               </p>
             </div>
             <div class="text-xs font-headline font-bold inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform dark-card-white"

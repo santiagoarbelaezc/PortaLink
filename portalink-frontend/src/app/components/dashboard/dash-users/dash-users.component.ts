@@ -39,7 +39,7 @@ interface User {
                  style="color: #ffffff !important;">
               <span class="material-symbols-rounded text-xl" style="color: #ffffff !important;">group</span>
             </div>
-            <h2 class="text-2xl sm:text-3xl lg:text-[32px] font-headline font-black tracking-tight leading-[1.1] text-white m-0 dark-card-white"
+            <h2 class="text-2xl sm:text-3xl lg:text-[32px] font-headline font-bold tracking-tight leading-[1.1] text-white m-0 dark-card-white"
                 style="color: #ffffff !important;">
               Usuarios del Sistema
             </h2>
