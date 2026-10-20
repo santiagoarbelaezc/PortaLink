@@ -14,6 +14,14 @@ export interface LoginResponse {
   };
 }
 
+export interface RememberedAccount {
+  email: string;
+  nombre: string;
+  rol: string;
+  telefono?: string;
+  rememberedAt: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -23,6 +31,7 @@ export class AuthService {
 
   private readonly TOKEN_KEY = 'portalink_jwt_token';
   private readonly USER_KEY = 'portalink_user';
+  private readonly REMEMBERED_KEY = 'portalink_remembered_account';
 
   private isRedirectingToLogin = false;
 
@@ -42,9 +51,53 @@ export class AuthService {
     }
   }
 
-  login(payload: any): Observable<LoginResponse> {
+  /** Gets remembered account if stored in localStorage */
+  getRememberedAccount(): RememberedAccount | null {
+    if (typeof localStorage !== 'undefined') {
+      const raw = localStorage.getItem(this.REMEMBERED_KEY);
+      if (raw) {
+        try {
+          return JSON.parse(raw) as RememberedAccount;
+        } catch {
+          return null;
+        }
+      }
+    }
+    return null;
+  }
+
+  /** Stores account info to remember for password-only login */
+  saveRememberedAccount(user: any): void {
+    if (typeof localStorage !== 'undefined' && user && user.email) {
+      const account: RememberedAccount = {
+        email: user.email,
+        nombre: user.nombre || '',
+        rol: user.rol || '',
+        telefono: user.telefono,
+        rememberedAt: Date.now()
+      };
+      localStorage.setItem(this.REMEMBERED_KEY, JSON.stringify(account));
+    }
+  }
+
+  /** Removes the remembered account from localStorage */
+  forgetRememberedAccount(): void {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem(this.REMEMBERED_KEY);
+    }
+  }
+
+  login(payload: any, remember: boolean = true): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${environment.apiUrl}/auth/login`, payload).pipe(
-      tap(res => this.setSession(res.token, res.usuario))
+      tap(res => {
+        this.setSession(res.token, res.usuario);
+        if (remember) {
+          const userToSave = { ...res.usuario, email: res.usuario?.email || payload.email };
+          this.saveRememberedAccount(userToSave);
+        } else {
+          this.forgetRememberedAccount();
+        }
+      })
     );
   }
 
@@ -53,6 +106,8 @@ export class AuthService {
       tap(res => {
         if (res && res.token && res.usuario) {
           this.setSession(res.token, res.usuario);
+          const userToSave = { ...res.usuario, email: res.usuario?.email || payload.email };
+          this.saveRememberedAccount(userToSave);
         }
       })
     );
@@ -249,7 +304,12 @@ export class AuthService {
 
   updateProfile(nombre: string, email: string, telefono: string): Observable<LoginResponse> {
     return this.http.put<LoginResponse>(`${environment.apiUrl}/auth/profile`, { nombre, email, telefono }).pipe(
-      tap(res => this.setSession(res.token, res.usuario))
+      tap(res => {
+        this.setSession(res.token, res.usuario);
+        if (this.getRememberedAccount()) {
+          this.saveRememberedAccount({ ...res.usuario, email, nombre, telefono });
+        }
+      })
     );
   }
 

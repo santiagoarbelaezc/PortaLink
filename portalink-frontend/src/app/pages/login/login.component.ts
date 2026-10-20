@@ -2,7 +2,7 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, RememberedAccount } from '../../services/auth.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
@@ -66,13 +66,13 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
           <!-- Title Header Group -->
           <div class="text-center mb-6 space-y-1">
             <span class="text-xs font-semibold text-neutral-400 uppercase tracking-widest">
-              {{ activeTab === 'login' ? 'Bienvenido de nuevo' : 'Comienza hoy' }}
+              {{ activeTab === 'login' ? (useRememberedAccount ? 'Cuenta recordada' : 'Bienvenido de nuevo') : 'Comienza hoy' }}
             </span>
             <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900">
-              {{ activeTab === 'login' ? 'Conéctate a tu cuenta' : 'Crea tu cuenta' }}
+              {{ activeTab === 'login' ? (useRememberedAccount ? '¡Hola, ' + getFirstName() + '!' : 'Conéctate a tu cuenta') : 'Crea tu cuenta' }}
             </h2>
             <p class="text-xs font-sans text-neutral-500 max-w-xs mx-auto leading-relaxed m-0">
-              {{ activeTab === 'login' ? 'Ingresa tus credenciales para acceder a tu cuenta.' : 'Regístrate en segundos para acceder a la plataforma.' }}
+              {{ activeTab === 'login' ? (useRememberedAccount ? 'Ingresa tu contraseña para acceder a tu cuenta.' : 'Ingresa tus credenciales para acceder a tu cuenta.') : 'Regístrate en segundos para acceder a la plataforma.' }}
             </p>
           </div>
 
@@ -107,55 +107,155 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
           <!-- Login / Register Slider Container -->
           <div class="relative overflow-hidden w-full transition-all duration-300 ease-out"
-               [style.max-height]="activeTab === 'login' ? '280px' : 'none'">
+               [style.max-height]="activeTab === 'login' ? '460px' : 'none'">
             <div class="flex items-start w-[200%] transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"
                  [style.transform]="activeTab === 'login' ? 'translateX(0)' : 'translateX(-50%)'">
               
               <!-- Login Form (1/2 width) -->
               <div class="w-1/2 pr-2">
                 <form (submit)="login($event)" class="space-y-4">
-                  <!-- Email -->
-                  <div class="space-y-1.5">
-                    <label class="text-xs font-semibold text-neutral-700">Correo Electrónico</label>
-                    <div class="relative">
-                      <input type="email"
-                             [(ngModel)]="email" name="email"
-                             placeholder="usuario@ejemplo.com"
-                             [disabled]="isLoading()"
-                             class="w-full bg-neutral-50 border border-neutral-200/80 rounded-xl px-4 py-3 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all disabled:opacity-50">
+
+                  <!-- CASO 1: CUENTA RECORDADA ACTIVA (Solo contraseña) -->
+                  <div *ngIf="useRememberedAccount && rememberedAccount" class="space-y-3.5 animate-slide-down">
+                    <!-- Tarjeta de Identidad del Usuario Recordado -->
+                    <div class="p-3.5 rounded-2xl bg-neutral-50/90 border border-neutral-200/90 flex items-center justify-between gap-2.5 shadow-2xs hover:border-neutral-300 transition-all">
+                      <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-10 h-10 rounded-full bg-neutral-900 text-white flex items-center justify-center font-bold text-xs tracking-wider shrink-0 shadow-xs border border-neutral-800 select-none">
+                          {{ getInitials(rememberedAccount.nombre) }}
+                        </div>
+                        <div class="min-w-0 text-left">
+                          <div class="flex items-center gap-1.5 flex-wrap">
+                            <h4 class="text-xs sm:text-sm font-bold text-neutral-900 m-0 truncate max-w-[140px] sm:max-w-[180px]">
+                              {{ rememberedAccount.nombre }}
+                            </h4>
+                            <span *ngIf="rememberedAccount.rol" 
+                                  class="text-[9px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-neutral-200/70 text-neutral-700">
+                              {{ rememberedAccount.rol }}
+                            </span>
+                          </div>
+                          <p class="text-[11px] text-neutral-500 m-0 truncate max-w-[160px] sm:max-w-[200px] font-sans">
+                            {{ rememberedAccount.email }}
+                          </p>
+                        </div>
+                      </div>
+
+                      <!-- Botones de Acción -->
+                      <div class="flex items-center gap-1 shrink-0">
+                        <button type="button" 
+                                (click)="switchAccount()" 
+                                class="px-2.5 py-1 rounded-lg text-[11px] font-semibold text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200/60 transition-colors border-none bg-transparent cursor-pointer"
+                                title="Ingresar con otro correo">
+                          Cambiar
+                        </button>
+                        <button type="button" 
+                                (click)="forgetAccount($event)" 
+                                class="p-1 rounded-lg text-neutral-400 hover:text-rose-600 hover:bg-rose-50 transition-colors border-none bg-transparent cursor-pointer"
+                                title="Olvidar esta cuenta de este equipo">
+                          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
                     </div>
+
+                    <!-- Password -->
+                    <div class="space-y-1.5">
+                      <div class="flex justify-between items-center">
+                        <label class="text-xs font-semibold text-neutral-700">Contraseña</label>
+                        <a routerLink="/forgot-password" class="text-xs font-medium text-neutral-500 hover:text-neutral-900 transition-colors no-underline">¿Olvidaste tu contraseña?</a>
+                      </div>
+                      <div class="relative">
+                        <input [type]="showLoginPassword ? 'text' : 'password'"
+                               [(ngModel)]="password" name="password"
+                               placeholder="Ingresa tu contraseña"
+                               autofocus
+                               [disabled]="isLoading()"
+                               class="w-full bg-neutral-50 border border-neutral-200/80 rounded-xl pl-4 pr-11 py-3 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all disabled:opacity-50">
+                        <button type="button" (click)="showLoginPassword = !showLoginPassword" tabindex="-1" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-neutral-400 hover:text-neutral-800 transition-colors cursor-pointer border-none bg-transparent">
+                          <svg *ngIf="!showLoginPassword" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                          <svg *ngIf="showLoginPassword" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Submit Login Button para Cuenta Recordada -->
+                    <button type="submit"
+                            [disabled]="isLoading()"
+                            class="w-full py-3.5 mt-2 rounded-full font-semibold text-xs shadow-md hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 border-none cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+                            style="background-color: #09090b !important; color: #ffffff !important;">
+                      <svg *ngIf="isLoading()" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span style="color: #ffffff !important; font-weight: 600;">{{ isLoading() ? 'Autenticando...' : 'Ingresar como ' + getFirstName() }}</span>
+                    </button>
                   </div>
 
-                  <!-- Password -->
-                  <div class="space-y-1.5">
-                    <div class="flex justify-between items-center">
-                      <label class="text-xs font-semibold text-neutral-700">Contraseña</label>
-                      <a routerLink="/forgot-password" class="text-xs font-medium text-neutral-500 hover:text-neutral-900 transition-colors no-underline">¿Olvidaste tu contraseña?</a>
-                    </div>
-                    <div class="relative">
-                      <input [type]="showLoginPassword ? 'text' : 'password'"
-                             [(ngModel)]="password" name="password"
-                             placeholder="••••••••••••"
-                             [disabled]="isLoading()"
-                             class="w-full bg-neutral-50 border border-neutral-200/80 rounded-xl pl-4 pr-11 py-3 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all disabled:opacity-50">
-                      <button type="button" (click)="showLoginPassword = !showLoginPassword" tabindex="-1" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-neutral-400 hover:text-neutral-800 transition-colors cursor-pointer border-none bg-transparent">
-                        <svg *ngIf="!showLoginPassword" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                        <svg *ngIf="showLoginPassword" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
+                  <!-- CASO 2: FORMULARIO COMPLETO (Correo + Contraseña + Opción de recordar) -->
+                  <div *ngIf="!useRememberedAccount" class="space-y-3.5 animate-slide-down">
+                    <!-- Banner de acceso rápido si hay cuenta guardada previamente -->
+                    <div *ngIf="rememberedAccount" class="flex items-center justify-between text-xs bg-neutral-100/90 border border-neutral-200/80 px-3.5 py-2.5 rounded-xl">
+                      <span class="text-neutral-600 truncate text-[11px] sm:text-xs">
+                        ¿Ingresar como <strong>{{ rememberedAccount.nombre }}</strong>?
+                      </span>
+                      <button type="button" (click)="selectRememberedAccount()" class="text-xs font-bold text-neutral-900 hover:underline bg-transparent border-none cursor-pointer p-0 shrink-0 ml-2">
+                        Usar cuenta
                       </button>
                     </div>
-                  </div>
 
-                  <!-- Submit Login Button -->
-                  <button type="submit"
-                          [disabled]="isLoading()"
-                          class="w-full py-3.5 mt-2 rounded-full font-semibold text-xs shadow-md hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 border-none cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
-                          style="background-color: #09090b !important; color: #ffffff !important;">
-                    <svg *ngIf="isLoading()" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span style="color: #ffffff !important; font-weight: 600;">{{ isLoading() ? 'Autenticando...' : 'Iniciar sesión' }}</span>
-                  </button>
+                    <!-- Email -->
+                    <div class="space-y-1.5">
+                      <label class="text-xs font-semibold text-neutral-700">Correo Electrónico</label>
+                      <div class="relative">
+                        <input type="email"
+                               [(ngModel)]="email" name="email"
+                               placeholder="usuario@ejemplo.com"
+                               [disabled]="isLoading()"
+                               class="w-full bg-neutral-50 border border-neutral-200/80 rounded-xl px-4 py-3 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all disabled:opacity-50">
+                      </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="space-y-1.5">
+                      <div class="flex justify-between items-center">
+                        <label class="text-xs font-semibold text-neutral-700">Contraseña</label>
+                        <a routerLink="/forgot-password" class="text-xs font-medium text-neutral-500 hover:text-neutral-900 transition-colors no-underline">¿Olvidaste tu contraseña?</a>
+                      </div>
+                      <div class="relative">
+                        <input [type]="showLoginPassword ? 'text' : 'password'"
+                               [(ngModel)]="password" name="password"
+                               placeholder="••••••••••••"
+                               [disabled]="isLoading()"
+                               class="w-full bg-neutral-50 border border-neutral-200/80 rounded-xl pl-4 pr-11 py-3 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all disabled:opacity-50">
+                        <button type="button" (click)="showLoginPassword = !showLoginPassword" tabindex="-1" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-neutral-400 hover:text-neutral-800 transition-colors cursor-pointer border-none bg-transparent">
+                          <svg *ngIf="!showLoginPassword" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                          <svg *ngIf="showLoginPassword" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Recordar Usuario Checkbox -->
+                    <div class="flex items-center gap-2 pt-0.5">
+                      <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                        <input type="checkbox"
+                               [(ngModel)]="rememberDevice" name="rememberDevice"
+                               class="w-4 h-4 rounded border-neutral-300 text-neutral-900 focus:ring-black accent-neutral-900 cursor-pointer">
+                        <span class="text-xs text-neutral-600 font-medium">Recordar mi cuenta en este equipo</span>
+                      </label>
+                    </div>
+
+                    <!-- Submit Login Button Estándar -->
+                    <button type="submit"
+                            [disabled]="isLoading()"
+                            class="w-full py-3.5 mt-2 rounded-full font-semibold text-xs shadow-md hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 border-none cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+                            style="background-color: #09090b !important; color: #ffffff !important;">
+                      <svg *ngIf="isLoading()" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span style="color: #ffffff !important; font-weight: 600;">{{ isLoading() ? 'Autenticando...' : 'Iniciar sesión' }}</span>
+                    </button>
+                  </div>
 
                   <!-- Política de Tratamiento de Datos -->
                   <p class="text-center text-[11px] font-sans text-neutral-500 mt-2.5 m-0 leading-normal">
@@ -408,6 +508,11 @@ export class LoginComponent implements OnInit {
 
   activeTab: 'login' | 'register' = 'login';
 
+  // Remembered Account State
+  rememberedAccount: RememberedAccount | null = null;
+  useRememberedAccount = false;
+  rememberDevice = true;
+
   // Login
   email = '';
   password = '';
@@ -435,6 +540,43 @@ export class LoginComponent implements OnInit {
 
   showVerificationModal = false;
   registeredEmailDisplay = '';
+
+  getInitials(name?: string): string {
+    if (!name) return 'U';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+
+  getFirstName(): string {
+    if (!this.rememberedAccount?.nombre) return 'Usuario';
+    return this.rememberedAccount.nombre.trim().split(/\s+/)[0];
+  }
+
+  switchAccount(): void {
+    this.useRememberedAccount = false;
+    this.email = '';
+    this.password = '';
+    this.error = '';
+  }
+
+  selectRememberedAccount(): void {
+    if (this.rememberedAccount) {
+      this.useRememberedAccount = true;
+      this.email = this.rememberedAccount.email;
+      this.password = '';
+      this.error = '';
+    }
+  }
+
+  forgetAccount(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.authService.forgetRememberedAccount();
+    this.rememberedAccount = null;
+    this.useRememberedAccount = false;
+    this.email = '';
+    this.password = '';
+  }
 
   closeVerificationModal() {
     this.showVerificationModal = false;
@@ -521,9 +663,17 @@ export class LoginComponent implements OnInit {
       }
     }
 
+    // Comprobar si existe cuenta recordada para inicio directo con contraseña
+    const remembered = this.authService.getRememberedAccount();
+    if (remembered && remembered.email) {
+      this.rememberedAccount = remembered;
+      this.email = remembered.email;
+      this.useRememberedAccount = true;
+    }
+
     // Manejar expiración de sesión y mensajes
     if (queryParams['expired'] === '1' || queryParams['expired'] === 'true') {
-      this.error = 'Tu sesión ha expirado por seguridad. Por favor ingresa nuevamente.';
+      this.error = 'Tu sesión ha expirado por seguridad. Por favor ingresa tu contraseña nuevamente.';
       this.activeTab = 'login';
     } else if (queryParams['verified'] === 'true' || queryParams['verified'] === '1') {
       this.successMsg = '¡Cuenta verificada exitosamente! Ya puedes iniciar sesión con tus credenciales.';
@@ -592,8 +742,12 @@ export class LoginComponent implements OnInit {
 
   login(event: Event) {
     event.preventDefault();
-    if (!this.email || !this.password) {
-      this.showError('Por favor ingresa correo y contraseña.');
+    if (!this.email) {
+      this.showError('Por favor ingresa tu correo electrónico.');
+      return;
+    }
+    if (!this.password) {
+      this.showError('Por favor ingresa tu contraseña.');
       return;
     }
 
@@ -606,7 +760,9 @@ export class LoginComponent implements OnInit {
       password: this.password
     };
 
-    this.authService.login(payload).subscribe({
+    const shouldRemember = this.useRememberedAccount ? true : this.rememberDevice;
+
+    this.authService.login(payload, shouldRemember).subscribe({
       next: () => {
         this.isLoading.set(false);
         const user = this.authService.currentUser();
@@ -625,7 +781,7 @@ export class LoginComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading.set(false);
-        const message = err.error?.message || 'Error al conectar con el servidor. Intenta de nuevo.';
+        const message = err.error?.message || 'Contraseña incorrecta o error al conectar con el servidor.';
         this.showError(message);
       }
     });

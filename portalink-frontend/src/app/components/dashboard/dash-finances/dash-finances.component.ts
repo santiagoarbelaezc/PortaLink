@@ -167,26 +167,6 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
 
   defaultProposalItems: SoftwareProposalItem[] = [
     {
-      title: 'Dominio y administración por 2 años',
-      description: 'Registro de dominio oficial (.com / .co / .net), administración técnica de DNS, certificados SSL y soporte de administración cloud por 24 meses.',
-      included: true
-    },
-    {
-      title: 'Landing Page para clientes',
-      description: 'Página web moderna de alto impacto y conversión, diseño responsivo ultra rápido, llamados a la acción (CTA) y formulario de captura.',
-      included: true
-    },
-    {
-      title: 'Diseño móvil e instalación para usuarios',
-      description: 'Adaptabilidad táctil para smartphones/tablets, arquitectura PWA instalable sin tiendas con acceso directo en pantalla de inicio.',
-      included: true
-    },
-    {
-      title: 'Bases de datos, una para uso, otra de respaldo',
-      description: 'Base de datos principal de alto rendimiento en producción + réplica y sistema automatizado de backups periódicos para máxima seguridad.',
-      included: true
-    },
-    {
       title: 'Panel Administrativo Directivo (Dashboard)',
       description: 'Módulo privado de gestión con control de datos, reportes financieros y monitoreo en tiempo real.',
       included: true
@@ -197,6 +177,18 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
       included: true
     }
   ];
+
+  isHardcodedLegacyItem(title: string): boolean {
+    const t = (title || '').trim().toLowerCase();
+    return t === 'dominio y administración por 2 años' ||
+           t === 'dominio y administracion por 2 años' ||
+           t === 'dominio y administración por 2 anos' ||
+           t === 'dominio y administracion por 2 anos' ||
+           t === 'landing page para clientes' ||
+           t === 'diseño móvil e instalación para usuarios' ||
+           t === 'diseno movil e instalacion para usuarios' ||
+           t === 'bases de datos, una para uso, otra de respaldo';
+  }
 
   editingProposalServiceId: string | number | null = null;
   editingProposalId: string | number | null = null;
@@ -217,9 +209,72 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
     items: []
   };
 
+  // Secciones colapsables del modal de propuesta
+  proposalSections = {
+    client: true,
+    finance: true,
+    items: true
+  };
+
+  toggleProposalSection(section: 'client' | 'finance' | 'items') {
+    this.proposalSections[section] = !this.proposalSections[section];
+    this.safeDetectChanges();
+  }
+
+  toggleAllProposalSections(expand?: boolean) {
+    const targetState = expand !== undefined ? expand : !this.areAllProposalSectionsOpen();
+    this.proposalSections.client = targetState;
+    this.proposalSections.finance = targetState;
+    this.proposalSections.items = targetState;
+    this.safeDetectChanges();
+  }
+
+  areAllProposalSectionsOpen(): boolean {
+    return this.proposalSections.client && this.proposalSections.finance && this.proposalSections.items;
+  }
+
+  getClientSectionSummary(): string {
+    const parts: string[] = [];
+    if (this.proposalData.clientName) {
+      parts.push(this.proposalData.clientCompany ? `${this.proposalData.clientName} (${this.proposalData.clientCompany})` : this.proposalData.clientName);
+    }
+    if (this.proposalData.projectTitle) {
+      parts.push(this.proposalData.projectTitle);
+    }
+    return parts.length > 0 ? parts.join(' · ') : 'Sin datos de cliente';
+  }
+
+  isClientSectionComplete(): boolean {
+    return !!(this.proposalData.projectTitle?.trim() && this.proposalData.clientName?.trim());
+  }
+
+  getFinanceSectionSummary(): string {
+    if (this.proposalData.totalAmount) {
+      const time = this.proposalData.deliveryTime ? ` · ${this.proposalData.deliveryTime}` : '';
+      return `${this.formatCOP(this.proposalData.totalAmount)} COP${time}`;
+    }
+    return 'Sin cotización';
+  }
+
+  isFinanceSectionComplete(): boolean {
+    return !!(this.proposalData.totalAmount && this.proposalData.totalAmount > 0);
+  }
+
+  getItemsSectionSummary(): string {
+    const active = this.getActiveProposalItemsCount();
+    const total = this.proposalData.items?.length || 0;
+    if (total === 0) return '0 entregables';
+    return `${active} de ${total} incluidos`;
+  }
+
+  isItemsSectionComplete(): boolean {
+    return this.getActiveProposalItemsCount() > 0;
+  }
+
   openSoftwareProposalModal() {
     this.editingProposalServiceId = null;
     this.editingProposalId = null;
+    this.proposalSections = { client: true, finance: true, items: true };
     this.proposalData = {
       projectTitle: 'Ecosistema Digital & Plataforma de Software a Medida',
       clientName: '',
@@ -332,6 +387,69 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
            name.includes('adquisicion') ||
            desc.includes('[adquisición') || 
            desc.includes('[adquisicion');
+  }
+
+  private acquisitionInfoCache = new WeakMap<Service, { client: string; company: string; time: string; payment: string; itemCount: number; topItems: string[] }>();
+
+  getCleanServiceName(name?: string): string {
+    if (!name) return 'Servicio sin título';
+    return name.replace(/^\[(Adquisición|Adquisicion)\]\s*/i, '').trim();
+  }
+
+  getAcquisitionInfo(s: Service): { client: string; company: string; time: string; payment: string; itemCount: number; topItems: string[] } {
+    if (this.acquisitionInfoCache.has(s)) {
+      return this.acquisitionInfoCache.get(s)!;
+    }
+    const proposal = this.buildProposalFromService(s);
+    const activeItems = (proposal.items || []).filter(i => i.included !== false);
+    const info = {
+      client: proposal.clientName || 'Cliente Confidencial',
+      company: proposal.clientCompany || '',
+      time: proposal.deliveryTime || '',
+      payment: proposal.paymentTerms || '',
+      itemCount: activeItems.length,
+      topItems: activeItems.slice(0, 3).map(i => i.title)
+    };
+    this.acquisitionInfoCache.set(s, info);
+    return info;
+  }
+
+  getCategoryBadgeClass(category?: string): string {
+    const cat = (category || '').toLowerCase();
+    switch (cat) {
+      case 'desarrollo':
+        return this.isDark ? 'bg-blue-950/40 border-blue-500/40 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-700';
+      case 'diseño':
+        return this.isDark ? 'bg-purple-950/40 border-purple-500/40 text-purple-400' : 'bg-purple-50 border-purple-200 text-purple-700';
+      case 'marketing':
+        return this.isDark ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-700';
+      case 'consultoria':
+        return this.isDark ? 'bg-amber-950/40 border-amber-500/40 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-700';
+      default:
+        return this.isDark ? 'bg-[#181820] border-neutral-700/60 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700';
+    }
+  }
+
+  getCategoryIconClass(category?: string): string {
+    const cat = (category || '').toLowerCase();
+    switch (cat) {
+      case 'desarrollo':
+        return this.isDark ? 'bg-blue-950/40 text-blue-400 border-blue-500/40' : 'bg-blue-50 text-blue-600 border-blue-200';
+      case 'diseño':
+        return this.isDark ? 'bg-purple-950/40 text-purple-400 border-purple-500/40' : 'bg-purple-50 text-purple-600 border-purple-200';
+      case 'marketing':
+        return this.isDark ? 'bg-emerald-950/40 text-emerald-400 border-emerald-500/40' : 'bg-emerald-50 text-emerald-600 border-emerald-200';
+      case 'consultoria':
+        return this.isDark ? 'bg-amber-950/40 text-amber-400 border-amber-500/40' : 'bg-amber-50 text-amber-600 border-amber-200';
+      default:
+        return this.isDark ? 'bg-[#141419] text-white border-neutral-800' : 'bg-neutral-100 text-neutral-800 border-neutral-200';
+    }
+  }
+
+  getCategoryLabel(category?: string): string {
+    const cat = (category || '').toLowerCase();
+    const found = this.serviceCategories.find(c => c.id === cat);
+    return found ? found.label : (category || 'General');
   }
 
   onServiceCategoryChange(category: string) {
@@ -472,6 +590,8 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
 
+    items = (items || []).filter(it => it && !this.isHardcodedLegacyItem(it.title));
+
     if (!items || items.length === 0) {
       items = JSON.parse(JSON.stringify(this.defaultProposalItems));
     }
@@ -500,6 +620,7 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
   editAcquisitionProposal(s: any) {
     this.editingProposalServiceId = s.id || null;
     this.editingProposalId = s.proposal_id || null;
+    this.proposalSections = { client: true, finance: true, items: true };
     this.proposalData = this.buildProposalFromService(s);
     this.showProposalModal = true;
     this.safeDetectChanges();
