@@ -1,4 +1,4 @@
-import { Component, Input, HostListener, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, HostListener, OnInit, OnDestroy, inject, ChangeDetectorRef, ChangeDetectionStrategy, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ItineraryService, Task as ApiTask } from '../../../services/itinerary.service';
@@ -38,6 +38,7 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
   selector: 'app-dash-itinerary',
   standalone: true,
   imports: [CommonModule, FormsModule, TeleportToBodyDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="animate-fade-in space-y-5 relative font-sans" (click)="onRootClick($event)">
 
@@ -328,8 +329,28 @@ type FilterType = 'all' | 'work' | 'personal' | 'urgent' | 'pending' | 'complete
         </div>
       </div>
 
+      <!-- SKELETON KANBAN LOADER (ALTO CONTRASTE Y SHIMMER) -->
+      <div *ngIf="isLoading && allTasks.length === 0" class="flex gap-4 overflow-x-auto pb-4 kanban-scroll" style="min-height: 55vh;">
+        <div *ngFor="let _ of [1,2,3,4,5,6,7]"
+             class="flex-shrink-0 w-72 sm:w-80 flex flex-col rounded-2xl sm:rounded-[24px] border p-4 space-y-4"
+             [ngClass]="isDark ? 'bg-[#0f0f13] border-neutral-800/90' : 'bg-white border-neutral-200/90'">
+          <div class="flex items-center justify-between pb-3 border-b"
+               [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+            <div class="space-y-1.5">
+              <div class="h-4 w-24 rounded-lg skeleton-shimmer"></div>
+              <div class="h-2.5 w-16 rounded-full skeleton-shimmer"></div>
+            </div>
+            <div class="w-7 h-7 rounded-xl skeleton-shimmer"></div>
+          </div>
+          <div class="space-y-3">
+            <div *ngFor="let _ of [1,2,3]" class="p-4 rounded-2xl border skeleton-shimmer h-24"
+                 [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- ══════════ KANBAN BOARD (MONOCROMÁTICO CON TAGS DE COLOR) ══════════ -->
-      <div class="flex gap-4 overflow-x-auto pb-4 kanban-scroll" style="min-height: 55vh;">
+      <div *ngIf="!isLoading || allTasks.length > 0" class="flex gap-4 overflow-x-auto pb-4 kanban-scroll" style="min-height: 55vh;">
         <div *ngFor="let day of weekPlan; trackBy: trackByDay"
              class="flex-shrink-0 w-72 sm:w-80 flex flex-col rounded-2xl sm:rounded-[24px] border transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)] group"
              [ngClass]="[
@@ -834,16 +855,31 @@ export class DashItineraryComponent implements OnInit, OnDestroy {
   isLoading = true;
   private itineraryService = inject(ItineraryService);
   private cdr = inject(ChangeDetectorRef);
+  private ngZone = inject(NgZone);
   private reminderInterval: any;
 
   // ── Lifecycle ──
   ngOnInit() {
     this.tick();
-    this.clockInterval = setInterval(() => this.tick(), 1000);
+    this.ngZone.runOutsideAngular(() => {
+      this.clockInterval = setInterval(() => {
+        this.tick();
+        this.cdr.markForCheck();
+      }, 1000);
+      // Verificación periódica de recordatorios cada 5 minutos
+      this.reminderInterval = setInterval(() => this.checkPendingReminders(), 300000);
+    });
+
+    // Timeout de seguridad para garantizar que nunca se quede en pantalla negra
+    setTimeout(() => {
+      if (this.isLoading) {
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      }
+    }, 1200);
+
     this.loadWeekTasks();
     this.checkPendingReminders();
-    // Verificación periódica de recordatorios cada 5 minutos
-    this.reminderInterval = setInterval(() => this.checkPendingReminders(), 300000);
   }
 
   ngOnDestroy() {
@@ -870,6 +906,7 @@ export class DashItineraryComponent implements OnInit, OnDestroy {
     const days = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
     const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
     this.currentDateStr = `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+    try { this.cdr.markForCheck(); } catch {}
   }
 
   // ── Date helpers ──

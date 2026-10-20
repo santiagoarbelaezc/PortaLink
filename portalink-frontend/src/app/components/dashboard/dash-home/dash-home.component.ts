@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, Output, EventEmitter, inject } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, Output, EventEmitter, inject, ChangeDetectionStrategy, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AnalyticsService, SystemMetrics } from '../../../services/analytics.service';
@@ -15,6 +15,7 @@ import { MessagesService } from '../../../services/messages.service';
   selector: 'app-dash-home',
   standalone: true,
   imports: [CommonModule, FormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <ng-container *ngIf="!isLoading; else skeleton">
       <!-- ═══════════════════════ VISTA NATIVA APP MÓVIL (< lg) ═══════════════════════ -->
@@ -1575,35 +1576,38 @@ import { MessagesService } from '../../../services/messages.service';
 
     <!-- ═══════════════════════ SKELETON LOADER (1:1 PIXEL-PERFECT MATCH) ═══════════════════════ -->
     <ng-template #skeleton>
-      <div class="space-y-4 xs:space-y-5 sm:space-y-6 animate-pulse font-sans">
+      <div class="space-y-4 xs:space-y-5 sm:space-y-6 font-sans">
         
         <!-- 1. Welcome Banner Skeleton -->
         <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl border p-5 xs:p-6 sm:p-8 md:p-9 min-h-[200px] xs:min-h-[220px] sm:min-h-[240px] flex flex-col justify-center"
-             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200/80'">
-          <div class="space-y-3 max-w-[65%]">
-            <div class="h-3 w-28 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
-            <div class="h-8 sm:h-10 w-52 sm:w-80 rounded-xl" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
-            <div class="h-4 w-44 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/70' : 'bg-neutral-200/70'"></div>
+             [ngClass]="isDark ? 'bg-[#0f0f13] border-neutral-800/90' : 'bg-white border-neutral-200/90'">
+          <div class="space-y-3.5 max-w-[65%]">
+            <div class="h-3.5 w-28 rounded-full skeleton-shimmer"></div>
+            <div class="h-8 sm:h-10 w-52 sm:w-80 rounded-2xl skeleton-shimmer"></div>
+            <div class="h-4 w-44 rounded-full skeleton-shimmer"></div>
             
             <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap pt-2">
-              <div *ngFor="let _ of [1,2,3,4]" class="h-8 w-24 sm:w-28 rounded-xl" [ngClass]="isDark ? 'bg-[#141419] border border-neutral-800' : 'bg-neutral-100'"></div>
+              <div *ngFor="let _ of [1,2,3,4]" class="h-8 w-24 sm:w-28 rounded-xl skeleton-shimmer border"
+                   [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'"></div>
             </div>
           </div>
-          <div class="absolute right-4 top-1/2 -translate-y-1/2 hidden sm:block w-36 h-36 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/20' : 'bg-neutral-100'"></div>
+          <div class="absolute right-6 top-1/2 -translate-y-1/2 hidden sm:block w-36 h-36 rounded-full skeleton-shimmer border"
+               [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'"></div>
         </div>
 
         <!-- 2. AI Command Center Skeleton -->
-        <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-6 space-y-3"
-             [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800/80' : 'bg-white border-neutral-200/80'">
+        <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-6 space-y-3.5"
+             [ngClass]="isDark ? 'bg-[#0f0f13] border-neutral-800/90' : 'bg-white border-neutral-200/90'">
           <div class="flex items-center gap-3">
-            <div class="w-7 h-7 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
-            <div class="h-5 w-44 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+            <div class="w-7 h-7 rounded-lg skeleton-shimmer"></div>
+            <div class="h-5 w-44 rounded-lg skeleton-shimmer"></div>
           </div>
-          <div class="h-3 w-72 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/70' : 'bg-neutral-200/70'"></div>
-          <div class="h-11 sm:h-12 w-full rounded-xl sm:rounded-2xl" [ngClass]="isDark ? 'bg-neutral-950/80 border border-neutral-800' : 'bg-neutral-100 border border-neutral-200'"></div>
+          <div class="h-3.5 w-72 rounded-full skeleton-shimmer"></div>
+          <div class="h-12 w-full rounded-2xl skeleton-shimmer border"
+               [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'"></div>
           <div class="flex items-center gap-2 pt-1 flex-wrap">
-            <div class="h-3 w-16 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/60' : 'bg-neutral-200/60'"></div>
-            <div *ngFor="let _ of [1,2,3,4]" class="h-6 w-28 sm:w-36 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/70' : 'bg-neutral-200/70'"></div>
+            <div class="h-3.5 w-16 rounded-full skeleton-shimmer"></div>
+            <div *ngFor="let _ of [1,2,3,4]" class="h-6 w-28 sm:w-36 rounded-full skeleton-shimmer"></div>
           </div>
         </div>
 
@@ -1611,67 +1615,68 @@ import { MessagesService } from '../../../services/messages.service';
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 xs:gap-3 sm:gap-5">
           <div *ngFor="let _ of [1,2,3,4]" 
                class="rounded-[18px] xs:rounded-[20px] sm:rounded-[24px] border p-3.5 xs:p-4 sm:p-6 flex flex-col justify-between h-28 xs:h-32 sm:h-36"
-               [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800/80' : 'bg-white border-neutral-200/80'">
+               [ngClass]="isDark ? 'bg-[#0f0f13] border-neutral-800/90' : 'bg-white border-neutral-200/90'">
             <div class="flex items-center justify-between">
-              <div class="h-3 w-16 sm:w-24 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
-              <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+              <div class="h-3.5 w-16 sm:w-24 rounded-full skeleton-shimmer"></div>
+              <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl skeleton-shimmer"></div>
             </div>
-            <div class="space-y-1.5">
-              <div class="h-6 sm:h-8 w-20 sm:w-28 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
-              <div class="h-2.5 w-24 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/60' : 'bg-neutral-200/60'"></div>
+            <div class="space-y-2">
+              <div class="h-6 sm:h-8 w-20 sm:w-28 rounded-lg skeleton-shimmer"></div>
+              <div class="h-2.5 w-24 rounded-full skeleton-shimmer"></div>
             </div>
           </div>
         </div>
 
         <!-- 4. High-Performance Charts Skeleton -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3.5 sm:gap-4 lg:col-span-12 order-@@">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3.5 sm:gap-4 lg:col-span-12">
           <div *ngFor="let _ of [1,2]" 
-               class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 flex flex-col justify-between min-h-[250px]"
-               [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800/80' : 'bg-white border-neutral-200/80'">
+               class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 flex flex-col justify-between min-h-[260px]"
+               [ngClass]="isDark ? 'bg-[#0f0f13] border-neutral-800/90' : 'bg-white border-neutral-200/90'">
             <div class="space-y-4">
               <div class="flex items-center justify-between">
-                <div class="space-y-1.5">
-                  <div class="h-4 w-36 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
-                  <div class="h-2.5 w-24 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/60' : 'bg-neutral-200/60'"></div>
+                <div class="space-y-2">
+                  <div class="h-4 w-36 rounded-lg skeleton-shimmer"></div>
+                  <div class="h-2.5 w-24 rounded-full skeleton-shimmer"></div>
                 </div>
-                <div class="h-6 w-20 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+                <div class="h-6 w-20 rounded-full skeleton-shimmer"></div>
               </div>
-              <div class="h-36 sm:h-44 w-full rounded-xl flex items-end justify-between p-2 gap-2" [ngClass]="isDark ? 'bg-neutral-950/40' : 'bg-neutral-50'">
-                <div *ngFor="let h of [30, 60, 45, 80, 70, 95]" class="flex-1 rounded-t-md" [style.height.%]="h" [ngClass]="isDark ? 'bg-neutral-800/60' : 'bg-neutral-200/60'"></div>
+              <div class="h-36 sm:h-44 w-full rounded-2xl flex items-end justify-between p-3 gap-2.5"
+                   [ngClass]="isDark ? 'bg-black/40 border border-neutral-800/60' : 'bg-neutral-50 border border-neutral-200/60'">
+                <div *ngFor="let h of [30, 60, 45, 80, 70, 95]" class="flex-1 rounded-t-md skeleton-shimmer" [style.height.%]="h"></div>
               </div>
             </div>
-            <div class="grid grid-cols-3 gap-2 pt-3 border-t" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
-              <div *ngFor="let _ of [1,2,3]" class="space-y-1 text-center flex flex-col items-center">
-                <div class="h-2 w-12 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/60' : 'bg-neutral-200/60'"></div>
-                <div class="h-3.5 w-14 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+            <div class="grid grid-cols-3 gap-2 pt-3 border-t" [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+              <div *ngFor="let _ of [1,2,3]" class="space-y-1.5 text-center flex flex-col items-center">
+                <div class="h-2.5 w-12 rounded-full skeleton-shimmer"></div>
+                <div class="h-3.5 w-14 rounded-lg skeleton-shimmer"></div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- 5. Infrastructure & Agenda Skeleton -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3.5 sm:gap-4 lg:col-span-12 order-@@">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3.5 sm:gap-4 lg:col-span-12">
           <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 space-y-4"
-               [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800/80' : 'bg-white border-neutral-200/80'">
+               [ngClass]="isDark ? 'bg-[#0f0f13] border-neutral-800/90' : 'bg-white border-neutral-200/90'">
             <div class="flex items-center justify-between">
-              <div class="h-4 w-32 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
-              <div class="h-5 w-24 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+              <div class="h-4 w-32 rounded-lg skeleton-shimmer"></div>
+              <div class="h-5 w-24 rounded-full skeleton-shimmer"></div>
             </div>
             <div class="grid grid-cols-2 gap-2.5">
-              <div *ngFor="let _ of [1,2,3,4]" class="h-16 rounded-xl sm:rounded-2xl p-3 border"
-                   [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800' : 'bg-neutral-50 border-neutral-200'"></div>
+              <div *ngFor="let _ of [1,2,3,4]" class="h-16 rounded-2xl p-3 border skeleton-shimmer"
+                   [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'"></div>
             </div>
           </div>
 
           <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 space-y-4"
-               [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800/80' : 'bg-white border-neutral-200/80'">
+               [ngClass]="isDark ? 'bg-[#0f0f13] border-neutral-800/90' : 'bg-white border-neutral-200/90'">
             <div class="flex items-center justify-between">
-              <div class="h-4 w-32 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
-              <div class="h-5 w-20 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+              <div class="h-4 w-32 rounded-lg skeleton-shimmer"></div>
+              <div class="h-5 w-20 rounded-full skeleton-shimmer"></div>
             </div>
-            <div class="space-y-2">
-              <div *ngFor="let _ of [1,2]" class="h-11 rounded-lg sm:rounded-xl border p-2.5"
-                   [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800' : 'bg-neutral-50 border-neutral-200'"></div>
+            <div class="space-y-2.5">
+              <div *ngFor="let _ of [1,2]" class="h-12 rounded-xl border p-2.5 skeleton-shimmer"
+                   [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'"></div>
             </div>
           </div>
         </div>
@@ -1727,6 +1732,8 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private streakService = inject(StreakService);
   private messagesService = inject(MessagesService);
+  private ngZone = inject(NgZone);
+  private cdr = inject(ChangeDetectorRef);
 
   streakData: DailyStreakData | null = null;
   streakWeekDays: WeekDayStreak[] = [];
@@ -1874,13 +1881,27 @@ export class DashHomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.updateClock();
-    this.clockInterval = setInterval(() => this.updateClock(), 1000);
+    this.ngZone.runOutsideAngular(() => {
+      this.clockInterval = setInterval(() => {
+        this.updateClock();
+        this.cdr.markForCheck();
+      }, 1000);
+    });
+
+    // Timeout de seguridad: asegura que la UI nunca quede bloqueada en skeleton
+    setTimeout(() => {
+      if (this.isLoading) {
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      }
+    }, 1200);
 
     // Racha del Día
     this.streakSub = this.streakService.streak$.subscribe(data => {
       this.streakData = data;
       this.streakWeekDays = this.streakService.getWeekDays();
       this.updateStreakMonth();
+      this.cdr.markForCheck();
     });
 
     // 1. Cargar Radar y Accesos Recientes
@@ -1903,6 +1924,7 @@ export class DashHomeComponent implements OnInit, OnDestroy {
     this.itineraryService.getNotifications().subscribe({
       next: (notifs) => {
         this.itineraryNotifs = notifs || this.itineraryNotifs;
+        this.cdr.markForCheck();
       }
     });
 
@@ -1920,16 +1942,22 @@ export class DashHomeComponent implements OnInit, OnDestroy {
       this.voiceSubs.push(
         this.audioRecorder.isRecording$.subscribe(rec => {
           this.isVoiceRecording = rec;
+          this.cdr.markForCheck();
         }),
         this.audioRecorder.audioVolume$.subscribe(vol => {
           this.audioVolume = vol;
+          this.cdr.markForCheck();
         }),
         this.audioRecorder.recordedAudio$.subscribe(audio => {
           this.processRecordedVoiceAudio(audio);
         }),
         this.audioRecorder.error$.subscribe(errMsg => {
           this.voiceErrorMessage = errMsg;
-          setTimeout(() => this.voiceErrorMessage = '', 5000);
+          this.cdr.markForCheck();
+          setTimeout(() => {
+            this.voiceErrorMessage = '';
+            this.cdr.markForCheck();
+          }, 5000);
         })
       );
     }
@@ -1953,10 +1981,12 @@ export class DashHomeComponent implements OnInit, OnDestroy {
         this.sessionTimeFormatted = h > 0 ? `${h}h ${m}m ${s}s` : `${m}m ${s}s`;
         this.sessionIsWarning = seconds < 900;
       }
+      this.cdr.markForCheck();
     });
 
     this.sessionExpiredSub = this.sessionTimer.sessionExpired$.subscribe(() => {
       this.showSessionExpiredModal = true;
+      this.cdr.markForCheck();
     });
   }
 
@@ -1974,22 +2004,24 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   }
 
   private checkLoadingState() {
-    setTimeout(() => {
-      this.isLoading = false;
-    }, 150);
+    this.isLoading = false;
+    this.cdr.markForCheck();
   }
 
   loadRadarData() {
     this.isRadarLoading = true;
+    this.cdr.markForCheck();
     this.commandCenterService.getRadar().subscribe({
       next: (res) => {
         this.isRadarLoading = false;
         if (res && res.ok) {
           this.radarData = res;
         }
+        this.cdr.markForCheck();
       },
       error: () => {
         this.isRadarLoading = false;
+        this.cdr.markForCheck();
       }
     });
   }
@@ -1999,6 +2031,7 @@ export class DashHomeComponent implements OnInit, OnDestroy {
       next: (suggs) => {
         if (suggs && suggs.length > 0) {
           this.quickSuggestions = suggs;
+          this.cdr.markForCheck();
         }
       },
       error: () => {}
@@ -2298,38 +2331,46 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   }
 
   private startTypewriter() {
-    this.typeInterval = setInterval(() => {
-      if (this.aiQuery || this.isAiSearching || this.activeAiResponse) return;
-      const target = this.placeholders[this.placeholderIdx];
-      if (this.charIdx < target.length) {
-        this.displayPlaceholder = target.substring(0, this.charIdx + 1);
-        this.charIdx++;
-      } else {
-        clearInterval(this.typeInterval);
-        this.pauseTimeout = setTimeout(() => {
-          const eraseInterval = setInterval(() => {
-            if (this.charIdx > 0) {
-              this.charIdx--;
-              this.displayPlaceholder = target.substring(0, this.charIdx);
-            } else {
-              clearInterval(eraseInterval);
-              this.placeholderIdx = (this.placeholderIdx + 1) % this.placeholders.length;
-              this.startTypewriter();
-            }
-          }, 25);
-        }, 2200);
-      }
-    }, 60);
+    this.ngZone.runOutsideAngular(() => {
+      this.typeInterval = setInterval(() => {
+        if (this.aiQuery || this.isAiSearching || this.activeAiResponse) return;
+        const target = this.placeholders[this.placeholderIdx];
+        if (this.charIdx < target.length) {
+          this.displayPlaceholder = target.substring(0, this.charIdx + 1);
+          this.charIdx++;
+          this.cdr.markForCheck();
+        } else {
+          clearInterval(this.typeInterval);
+          this.pauseTimeout = setTimeout(() => {
+            const eraseInterval = setInterval(() => {
+              if (this.charIdx > 0) {
+                this.charIdx--;
+                this.displayPlaceholder = target.substring(0, this.charIdx);
+                this.cdr.markForCheck();
+              } else {
+                clearInterval(eraseInterval);
+                this.placeholderIdx = (this.placeholderIdx + 1) % this.placeholders.length;
+                this.startTypewriter();
+              }
+            }, 25);
+          }, 2200);
+        }
+      }, 60);
+    });
   }
 
   private startPhraseRotation() {
-    this.phraseInterval = setInterval(() => {
-      this.isPhraseFading = true;
-      this.phraseTimeout = setTimeout(() => {
-        this.currentPhraseIndex = (this.currentPhraseIndex + 1) % this.rotatingPhrases.length;
-        this.isPhraseFading = false;
-      }, 300);
-    }, 10000);
+    this.ngZone.runOutsideAngular(() => {
+      this.phraseInterval = setInterval(() => {
+        this.isPhraseFading = true;
+        this.cdr.markForCheck();
+        this.phraseTimeout = setTimeout(() => {
+          this.currentPhraseIndex = (this.currentPhraseIndex + 1) % this.rotatingPhrases.length;
+          this.isPhraseFading = false;
+          this.cdr.markForCheck();
+        }, 300);
+      }, 10000);
+    });
   }
 
   openStreakModal(): void {

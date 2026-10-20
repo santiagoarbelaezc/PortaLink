@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, OnDestroy, SimpleChanges, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, OnDestroy, SimpleChanges, inject, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -13,6 +13,7 @@ type SubTab = 'resumen' | 'clientes' | 'servicios' | 'facturas';
   selector: 'app-dash-finances',
   standalone: true,
   imports: [CommonModule, FormsModule, TeleportToBodyDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dash-finances.component.html',
   styleUrl: './dash-finances.component.css'
 })
@@ -1127,8 +1128,8 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
     this.buildReports();
     this.buildLocalKpis();
 
-    // Ensure UI is immediately active and not locked in skeleton
-    this.isLoading = false;
+    // Si no hay facturas en memoria caché, mostrar skeleton; si ya hay, mostrar UI inmediatamente
+    this.isLoading = (!this.invoices || this.invoices.length === 0);
     this.safeDetectChanges();
 
     try {

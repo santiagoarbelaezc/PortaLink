@@ -1,3 +1,4 @@
+<ng-container *ngIf="!isLoading || invoices.length > 0; else skeleton">
 <div class="space-y-5 tab-enter font-sans">
 
       <!-- ═══════════════════════ HEADER & ACTION BAR ═══════════════════════ -->
@@ -2856,79 +2857,81 @@
       </div>
 
     </div>
+    </ng-container>
 
     <!-- ═══════════════════════ SKELETON LOADER (1:1 PIXEL-PERFECT MATCH) ═══════════════════════ -->
     <ng-template #skeleton>
-      <div class="space-y-4 xs:space-y-5 sm:space-y-6 animate-pulse font-sans">
+      <div class="space-y-4 xs:space-y-5 sm:space-y-6 font-sans">
         
         <!-- 1. Header & Tabs Skeleton -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4"
              [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-          <div class="space-y-2">
-            <div class="h-3 w-32 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
-            <div class="h-7 w-48 rounded-xl" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+          <div class="space-y-2.5">
+            <div class="h-3.5 w-32 rounded-full skeleton-shimmer"></div>
+            <div class="h-8 w-48 rounded-2xl skeleton-shimmer"></div>
           </div>
           <div class="flex items-center gap-2">
-            <div class="h-10 w-36 rounded-xl" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+            <div class="h-10 w-36 rounded-xl skeleton-shimmer"></div>
           </div>
         </div>
 
         <div class="flex items-center gap-2 p-1.5 rounded-2xl border"
              [ngClass]="isDark ? 'bg-[#141419] border-neutral-800' : 'bg-neutral-100 border-neutral-200'">
-          <div *ngFor="let _ of [1,2,3,4]" class="flex-1 h-9 rounded-xl" [ngClass]="isDark ? 'bg-neutral-800/60' : 'bg-neutral-200/60'"></div>
+          <div *ngFor="let _ of [1,2,3,4]" class="flex-1 h-9 rounded-xl skeleton-shimmer"></div>
         </div>
 
         <!-- 2. KPI Cards Skeleton (4 Cards) -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 xs:gap-3 sm:gap-5">
           <div *ngFor="let _ of [1,2,3,4]" 
                class="rounded-[18px] xs:rounded-[20px] sm:rounded-[24px] border p-3.5 xs:p-4 sm:p-6 flex flex-col justify-between h-28 xs:h-32 sm:h-36"
-               [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800/80' : 'bg-white border-neutral-200/80'">
+               [ngClass]="isDark ? 'bg-[#0f0f13] border-neutral-800/90' : 'bg-white border-neutral-200/90'">
             <div class="flex items-center justify-between">
-              <div class="h-3 w-16 sm:w-24 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
-              <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+              <div class="h-3.5 w-16 sm:w-24 rounded-full skeleton-shimmer"></div>
+              <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl skeleton-shimmer"></div>
             </div>
-            <div class="space-y-1.5">
-              <div class="h-6 sm:h-8 w-20 sm:w-28 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
-              <div class="h-2.5 w-24 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/60' : 'bg-neutral-200/60'"></div>
+            <div class="space-y-2">
+              <div class="h-6 sm:h-8 w-20 sm:w-28 rounded-lg skeleton-shimmer"></div>
+              <div class="h-2.5 w-24 rounded-full skeleton-shimmer"></div>
             </div>
           </div>
         </div>
 
         <!-- 3. High-Performance Charts Skeleton -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-3.5 sm:gap-4">
-          <div class="lg:col-span-2 rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 flex flex-col justify-between min-h-[250px]"
-               [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800/80' : 'bg-white border-neutral-200/80'">
+          <div class="lg:col-span-2 rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 flex flex-col justify-between min-h-[260px]"
+               [ngClass]="isDark ? 'bg-[#0f0f13] border-neutral-800/90' : 'bg-white border-neutral-200/90'">
             <div class="space-y-4">
               <div class="flex items-center justify-between">
-                <div class="space-y-1.5">
-                  <div class="h-4 w-36 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
-                  <div class="h-2.5 w-24 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/60' : 'bg-neutral-200/60'"></div>
+                <div class="space-y-2">
+                  <div class="h-4 w-36 rounded-lg skeleton-shimmer"></div>
+                  <div class="h-2.5 w-24 rounded-full skeleton-shimmer"></div>
                 </div>
-                <div class="h-6 w-20 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+                <div class="h-6 w-20 rounded-full skeleton-shimmer"></div>
               </div>
-              <div class="h-36 sm:h-44 w-full rounded-xl flex items-end justify-between p-2 gap-2" [ngClass]="isDark ? 'bg-neutral-950/40' : 'bg-neutral-50'">
-                <div *ngFor="let h of [30, 60, 45, 80, 70, 95]" class="flex-1 rounded-t-md" [style.height.%]="h" [ngClass]="isDark ? 'bg-neutral-800/60' : 'bg-neutral-200/60'"></div>
+              <div class="h-36 sm:h-44 w-full rounded-2xl flex items-end justify-between p-3 gap-2.5"
+                   [ngClass]="isDark ? 'bg-black/40 border border-neutral-800/60' : 'bg-neutral-50 border border-neutral-200/60'">
+                <div *ngFor="let h of [30, 60, 45, 80, 70, 95]" class="flex-1 rounded-t-md skeleton-shimmer" [style.height.%]="h"></div>
               </div>
             </div>
-            <div class="grid grid-cols-3 gap-2 pt-3 border-t" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
-              <div *ngFor="let _ of [1,2,3]" class="space-y-1 text-center flex flex-col items-center">
-                <div class="h-2 w-12 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/60' : 'bg-neutral-200/60'"></div>
-                <div class="h-3.5 w-14 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+            <div class="grid grid-cols-3 gap-2 pt-3 border-t" [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+              <div *ngFor="let _ of [1,2,3]" class="space-y-1.5 text-center flex flex-col items-center">
+                <div class="h-2.5 w-12 rounded-full skeleton-shimmer"></div>
+                <div class="h-3.5 w-14 rounded-lg skeleton-shimmer"></div>
               </div>
             </div>
           </div>
 
-          <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 flex flex-col justify-between min-h-[250px]"
-               [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800/80' : 'bg-white border-neutral-200/80'">
+          <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 flex flex-col justify-between min-h-[260px]"
+               [ngClass]="isDark ? 'bg-[#0f0f13] border-neutral-800/90' : 'bg-white border-neutral-200/90'">
             <div class="space-y-4">
               <div class="flex items-center justify-between">
-                <div class="h-4 w-32 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
-                <div class="h-5 w-20 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+                <div class="h-4 w-32 rounded-lg skeleton-shimmer"></div>
+                <div class="h-5 w-20 rounded-full skeleton-shimmer"></div>
               </div>
-              <div class="w-32 h-32 rounded-full mx-auto" [ngClass]="isDark ? 'bg-neutral-800/40' : 'bg-neutral-100'"></div>
+              <div class="w-32 h-32 rounded-full mx-auto skeleton-shimmer"></div>
             </div>
-            <div class="space-y-2 pt-3 border-t" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
-              <div *ngFor="let _ of [1,2,3]" class="h-4 w-full rounded-md" [ngClass]="isDark ? 'bg-neutral-800/50' : 'bg-neutral-100'"></div>
+            <div class="space-y-2 pt-3 border-t" [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+              <div *ngFor="let _ of [1,2,3]" class="h-4 w-full rounded-md skeleton-shimmer"></div>
             </div>
           </div>
         </div>

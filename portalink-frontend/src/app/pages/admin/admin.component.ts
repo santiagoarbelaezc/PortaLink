@@ -138,7 +138,7 @@ interface Tab {
         </app-dash-ai-search>
 
         <!-- Content -->
-        <main class="flex-1 min-h-0 relative z-10 transition-all duration-300 no-scrollbar touch-pan-y"
+        <main class="flex-1 min-h-0 relative z-10 dash-scroll-viewport no-scrollbar touch-pan-y"
               style="-webkit-overflow-scrolling: touch;"
               [ngClass]="[
                 isDark ? 'bg-[#020204]' : 'bg-white',
@@ -148,8 +148,7 @@ interface Tab {
                       ? 'overflow-y-auto overflow-x-hidden px-2 py-2 sm:p-4 md:p-6 pb-32 md:pb-8'
                       : 'overflow-y-auto overflow-x-hidden p-4 sm:p-6 md:p-8 pb-32 md:pb-8')
               ]">
-          <div class="transition-all duration-300"
-               [ngClass]="activeTab === 'rotbot' ? 'w-full h-full flex flex-col justify-between items-center min-h-0' : 'w-full'">
+          <div [ngClass]="activeTab === 'rotbot' ? 'w-full h-full flex flex-col justify-between items-center min-h-0' : 'w-full'">
 
             <app-dash-home
               *ngIf="activeTab === 'dashboard'"

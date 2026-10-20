@@ -631,6 +631,23 @@
 
 
 
+    <!-- SKELETON LOADER CARPETAS DE ESTUDIO -->
+    <div *ngIf="isLoading && displayedFolders.length === 0"
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 my-2">
+      <div *ngFor="let _ of [1,2,3,4,5,6,7,8]"
+        class="rounded-[26px] border p-5 flex flex-col justify-between min-h-[175px]"
+        [ngClass]="isDark ? 'bg-[#0f0f13] border-neutral-800/90' : 'bg-white border-neutral-200/90'">
+        <div class="flex items-start justify-between gap-3 mb-4">
+          <div class="w-14 h-14 rounded-2xl skeleton-shimmer"></div>
+          <div class="w-7 h-7 rounded-lg skeleton-shimmer"></div>
+        </div>
+        <div class="space-y-2.5">
+          <div class="h-4 w-3/4 rounded-lg skeleton-shimmer"></div>
+          <div class="h-3 w-1/2 rounded-full skeleton-shimmer"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- ESTADO VACÍO CARPETAS (TOTAL O POR FILTRO) -->
     <div *ngIf="displayedFolders.length === 0 && !isLoading" class="p-12 text-center rounded-[28px] border my-4"
       [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
@@ -912,6 +929,24 @@
         </svg>
         <span>Volver a materias</span>
       </button>
+    </div>
+
+    <!-- SKELETON LOADER CUADERNOS DE ESTUDIO -->
+    <div *ngIf="isLoading && notebooks.length === 0"
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 my-4">
+      <div *ngFor="let _ of [1,2,3,4,5,6,7,8]"
+        class="rounded-[26px] border p-5 flex flex-col justify-between min-h-[180px]"
+        [ngClass]="isDark ? 'bg-[#0f0f13] border-neutral-800/90' : 'bg-white border-neutral-200/90'">
+        <div class="flex items-start justify-between gap-2 mb-4">
+          <div class="w-10 h-10 rounded-xl skeleton-shimmer"></div>
+          <div class="w-14 h-6 rounded-lg skeleton-shimmer"></div>
+        </div>
+        <div class="space-y-2">
+          <div class="h-4 w-40 rounded-lg skeleton-shimmer"></div>
+          <div class="h-3 w-28 rounded-full skeleton-shimmer"></div>
+        </div>
+        <div class="h-2 w-full rounded-full skeleton-shimmer mt-4"></div>
+      </div>
     </div>
 
     <!-- ESTADO VACÍO CUADERNOS -->
