@@ -17,8 +17,6 @@ import { DashItineraryComponent } from '../../components/dashboard/dash-itinerar
 import { DashLibraryComponent } from '../../components/dashboard/dash-library/dash-library.component';
 import { DashRotbotComponent } from '../../components/dashboard/dash-rotbot/dash-rotbot.component';
 import { DashDbViewerComponent } from '../../components/dashboard/dash-db-viewer/dash-db-viewer.component';
-import { DashStreakModalComponent } from '../../components/dashboard/dash-streak-modal/dash-streak-modal.component';
-import { StreakService } from '../../services/streak.service';
 import { SessionTimerService } from '../../services/session-timer.service';
 import { Subscription } from 'rxjs';
 
@@ -45,7 +43,6 @@ interface Tab {
     DashItineraryComponent,
     DashLibraryComponent,
     DashDbViewerComponent,
-    DashStreakModalComponent,
   ],
   template: `
     <div class="dash-shell h-[100dvh] h-screen max-h-[100dvh] max-h-screen w-full flex relative overflow-hidden" [class.sidebar-collapsed]="isSidebarCollapsed">
@@ -573,9 +570,6 @@ interface Tab {
         </div>
       </nav>
 
-      <!-- Modal de Racha Diaria Flotante -->
-      <app-dash-streak-modal [theme]="isDark ? 'dark' : 'light'" (navigateTab)="setTab($event)"></app-dash-streak-modal>
-
     </div>
   `,
   styles: [`
@@ -616,7 +610,6 @@ export class AdminComponent implements OnInit, OnDestroy {
   private messagesService = inject(MessagesService);
   private authService = inject(AuthService);
   private commandCenterService = inject(CommandCenterService);
-  private streakService = inject(StreakService);
   private sessionTimer = inject(SessionTimerService);
   private cdr = inject(ChangeDetectorRef);
   private sessionSub: Subscription | null = null;
@@ -675,7 +668,6 @@ export class AdminComponent implements OnInit, OnDestroy {
       this.authService.handleSessionExpiration();
     });
 
-    this.streakService.initStreak();
     const saved = localStorage.getItem('portalink_admin_theme');
     // Siempre modo claro por defecto al iniciar sesión / ingresar, a menos que el usuario guarde 'dark'
     if (saved === 'dark') {

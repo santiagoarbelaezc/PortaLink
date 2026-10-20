@@ -2,14 +2,12 @@ import { Component, Input, OnInit, OnDestroy, Output, EventEmitter, inject, Chan
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AnalyticsService, SystemMetrics } from '../../../services/analytics.service';
-import { ItineraryService } from '../../../services/itinerary.service';
 import { SessionTimerService } from '../../../services/session-timer.service';
 import { FinanceService } from '../../../services/finance.service';
 import { CommandCenterService, CommandCenterResponse, RadarResponse, RadarInsight, RecentAccess } from '../../../services/command-center.service';
 import { AudioRecorderService, RecordedAudio } from '../../../services/audio-recorder.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-import { StreakService, DailyStreakData, WeekDayStreak, MonthDayStreak, MonthStreakData } from '../../../services/streak.service';
 import { MessagesService } from '../../../services/messages.service';
 @Component({
   selector: 'app-dash-home',
@@ -149,101 +147,6 @@ import { MessagesService } from '../../../services/messages.service';
           </div>
         </div>
 
-        <!-- 4. GRID DE 5 MÓDULOS MÓVIL (2 NEGROS + 3 BLANCOS) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-          <!-- Card 1: Black Card (Gestionar Finanzas) -->
-          <div (click)="navigateToTab('finances')"
-               class="rounded-2xl p-4 flex flex-col justify-between cursor-pointer border"
-               [ngClass]="isDark ? 'bg-[#09090b] border-neutral-800 text-white' : 'bg-[#0a0a0d] border-neutral-900 text-white shadow-md'">
-            <div>
-              <div class="w-9 h-9 rounded-xl border flex items-center justify-center bg-neutral-900 border-neutral-800 mb-3"
-                   style="color: #ffffff !important;">
-                <span class="material-symbols-rounded text-lg" style="color: #ffffff !important;">payments</span>
-              </div>
-              <h3 class="text-sm font-headline font-bold m-0 mb-1 leading-tight dark-card-white"
-                  style="color: #ffffff !important;">Gestionar Finanzas</h3>
-              <p class="text-[11px] font-sans text-neutral-400 leading-relaxed m-0 mb-4">Control integral de cuentas de cobro, facturación, clientes y pagos en tiempo real.</p>
-            </div>
-            <div class="text-[11px] font-headline font-bold inline-flex items-center gap-1 dark-card-white"
-                 style="color: #ffffff !important;">
-              <span style="color: #ffffff !important;">Entrar al módulo</span>
-              <span class="material-symbols-rounded text-xs" style="color: #ffffff !important;">arrow_forward</span>
-            </div>
-          </div>
-
-          <!-- Card 2: Black Card (Reporte y Analíticas) -->
-          <div (click)="navigateToTab('rotbot')"
-               class="rounded-2xl p-4 flex flex-col justify-between cursor-pointer border"
-               [ngClass]="isDark ? 'bg-[#09090b] border-neutral-800 text-white' : 'bg-[#0a0a0d] border-neutral-900 text-white shadow-md'">
-            <div>
-              <div class="w-9 h-9 rounded-xl border flex items-center justify-center bg-red-500/15 border-red-500/30 text-red-500 mb-3">
-                <span class="material-symbols-rounded text-lg text-red-500">monitoring</span>
-              </div>
-              <h3 class="text-sm font-headline font-bold m-0 mb-1 leading-tight dark-card-white"
-                  style="color: #ffffff !important;">Reporte y Analíticas</h3>
-              <p class="text-[11px] font-sans text-neutral-400 leading-relaxed m-0 mb-4">Diagnóstico de calidad, gráficos y métricas en tiempo real.</p>
-            </div>
-            <div class="text-[11px] font-headline font-bold text-red-500 inline-flex items-center gap-1">
-              <span>Entrar al módulo</span>
-              <span class="material-symbols-rounded text-xs">arrow_forward</span>
-            </div>
-          </div>
-
-          <!-- Card 3: White Card (Biblioteca & SQL) -->
-          <div (click)="navigateToTab('library')"
-               class="rounded-2xl p-4 flex flex-col justify-between cursor-pointer border"
-               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900 shadow-xs'">
-            <div>
-              <div class="w-9 h-9 rounded-xl border flex items-center justify-center mb-3"
-                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
-                <span class="material-symbols-rounded text-lg">category</span>
-              </div>
-              <h3 class="text-sm font-headline font-bold m-0 mb-1 leading-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Biblioteca & SQL</h3>
-              <p class="text-[11px] font-sans leading-relaxed m-0 mb-4" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Administra las categorías, esquemas y consultas del sistema.</p>
-            </div>
-            <div class="text-[11px] font-headline font-bold inline-flex items-center gap-1" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              <span>Entrar al módulo</span>
-              <span class="material-symbols-rounded text-xs">arrow_forward</span>
-            </div>
-          </div>
-
-          <!-- Card 4: White Card (Itinerario & Agenda) -->
-          <div (click)="navigateToTab('itinerary')"
-               class="rounded-2xl p-4 flex flex-col justify-between cursor-pointer border"
-               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900 shadow-xs'">
-            <div>
-              <div class="w-9 h-9 rounded-xl border flex items-center justify-center mb-3"
-                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
-                <span class="material-symbols-rounded text-lg">layers</span>
-              </div>
-              <h3 class="text-sm font-headline font-bold m-0 mb-1 leading-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Itinerario & Agenda</h3>
-              <p class="text-[11px] font-sans leading-relaxed m-0 mb-4" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Administra citas, tareas pendientes y cronograma diario.</p>
-            </div>
-            <div class="text-[11px] font-headline font-bold inline-flex items-center gap-1" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              <span>Entrar al módulo</span>
-              <span class="material-symbols-rounded text-xs">arrow_forward</span>
-            </div>
-          </div>
-
-          <!-- Card 5: White Card (Buzón de Mensajes) -->
-          <div (click)="navigateToTab('messages')"
-               class="rounded-2xl p-4 flex flex-col justify-between cursor-pointer border sm:col-span-2"
-               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900 shadow-xs'">
-            <div>
-              <div class="w-9 h-9 rounded-xl border flex items-center justify-center mb-3"
-                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
-                <span class="material-symbols-rounded text-lg">storefront</span>
-              </div>
-              <h3 class="text-sm font-headline font-bold m-0 mb-1 leading-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Buzón de Mensajes</h3>
-              <p class="text-[11px] font-sans leading-relaxed m-0 mb-4" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Administra solicitudes directas, mensajes y avisos del catálogo.</p>
-            </div>
-            <div class="text-[11px] font-headline font-bold inline-flex items-center gap-1" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              <span>Entrar al módulo</span>
-              <span class="material-symbols-rounded text-xs">arrow_forward</span>
-            </div>
-          </div>
-        </div>
-
         <!-- 3. COMANDO IA MÓVIL (INPUT FLUIDO + VOZ + CHIPS) -->
         <div class="rounded-3xl border p-4 transition-all duration-300 space-y-3"
              [ngClass]="isDark ? 'bg-[#0d0d11] border-neutral-800/90 text-white' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-sm'">
@@ -333,6 +236,101 @@ import { MessagesService } from '../../../services/messages.service';
           </div>
         </div>
 
+        <!-- 4. GRID DE 5 MÓDULOS MÓVIL (2 NEGROS + 3 BLANCOS) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <!-- Card 1: Black Card (Gestionar Finanzas) -->
+          <div (click)="navigateToTab('finances')"
+               class="rounded-2xl p-4 flex flex-col justify-between cursor-pointer border"
+               [ngClass]="isDark ? 'bg-[#09090b] border-neutral-800 text-white' : 'bg-[#0a0a0d] border-neutral-900 text-white shadow-md'">
+            <div>
+              <div class="w-9 h-9 rounded-xl border flex items-center justify-center bg-neutral-900 border-neutral-800 mb-3"
+                   style="color: #ffffff !important;">
+                <span class="material-symbols-rounded text-lg" style="color: #ffffff !important;">payments</span>
+              </div>
+              <h3 class="text-sm font-headline font-bold m-0 mb-1 leading-tight dark-card-white"
+                   style="color: #ffffff !important;">Gestionar Finanzas</h3>
+              <p class="text-[11px] font-sans text-neutral-400 leading-relaxed m-0 mb-4">Control integral de cuentas de cobro, facturación, clientes y pagos en tiempo real.</p>
+            </div>
+            <div class="text-[11px] font-headline font-bold inline-flex items-center gap-1 dark-card-white"
+                 style="color: #ffffff !important;">
+              <span style="color: #ffffff !important;">Entrar al módulo</span>
+              <span class="material-symbols-rounded text-xs" style="color: #ffffff !important;">arrow_forward</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Black Card (Reporte y Analíticas) -->
+          <div (click)="navigateToTab('rotbot')"
+               class="rounded-2xl p-4 flex flex-col justify-between cursor-pointer border"
+               [ngClass]="isDark ? 'bg-[#09090b] border-neutral-800 text-white' : 'bg-[#0a0a0d] border-neutral-900 text-white shadow-md'">
+            <div>
+              <div class="w-9 h-9 rounded-xl border flex items-center justify-center bg-red-500/15 border-red-500/30 text-red-500 mb-3">
+                <span class="material-symbols-rounded text-lg text-red-500">monitoring</span>
+              </div>
+              <h3 class="text-sm font-headline font-bold m-0 mb-1 leading-tight dark-card-white"
+                   style="color: #ffffff !important;">Reporte y Analíticas</h3>
+              <p class="text-[11px] font-sans text-neutral-400 leading-relaxed m-0 mb-4">Diagnóstico de calidad, gráficos y métricas en tiempo real.</p>
+            </div>
+            <div class="text-[11px] font-headline font-bold text-red-500 inline-flex items-center gap-1">
+              <span>Entrar al módulo</span>
+              <span class="material-symbols-rounded text-xs">arrow_forward</span>
+            </div>
+          </div>
+
+          <!-- Card 3: White Card (Biblioteca & SQL) -->
+          <div (click)="navigateToTab('library')"
+               class="rounded-2xl p-4 flex flex-col justify-between cursor-pointer border"
+               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900 shadow-xs'">
+            <div>
+              <div class="w-9 h-9 rounded-xl border flex items-center justify-center mb-3"
+                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
+                <span class="material-symbols-rounded text-lg">category</span>
+              </div>
+              <h3 class="text-sm font-headline font-bold m-0 mb-1 leading-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Biblioteca & SQL</h3>
+              <p class="text-[11px] font-sans leading-relaxed m-0 mb-4" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Administra las categorías, esquemas y consultas del sistema.</p>
+            </div>
+            <div class="text-[11px] font-headline font-bold inline-flex items-center gap-1" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              <span>Entrar al módulo</span>
+              <span class="material-symbols-rounded text-xs">arrow_forward</span>
+            </div>
+          </div>
+
+          <!-- Card 4: White Card (Itinerario & Agenda) -->
+          <div (click)="navigateToTab('itinerary')"
+               class="rounded-2xl p-4 flex flex-col justify-between cursor-pointer border"
+               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900 shadow-xs'">
+            <div>
+              <div class="w-9 h-9 rounded-xl border flex items-center justify-center mb-3"
+                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
+                <span class="material-symbols-rounded text-lg">layers</span>
+              </div>
+              <h3 class="text-sm font-headline font-bold m-0 mb-1 leading-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Itinerario & Agenda</h3>
+              <p class="text-[11px] font-sans leading-relaxed m-0 mb-4" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Administra citas, tareas pendientes y cronograma diario.</p>
+            </div>
+            <div class="text-[11px] font-headline font-bold inline-flex items-center gap-1" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              <span>Entrar al módulo</span>
+              <span class="material-symbols-rounded text-xs">arrow_forward</span>
+            </div>
+          </div>
+
+          <!-- Card 5: White Card (Buzón de Mensajes) -->
+          <div (click)="navigateToTab('messages')"
+               class="rounded-2xl p-4 flex flex-col justify-between cursor-pointer border sm:col-span-2"
+               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900 shadow-xs'">
+            <div>
+              <div class="w-9 h-9 rounded-xl border flex items-center justify-center mb-3"
+                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
+                <span class="material-symbols-rounded text-lg">storefront</span>
+              </div>
+              <h3 class="text-sm font-headline font-bold m-0 mb-1 leading-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Buzón de Mensajes</h3>
+              <p class="text-[11px] font-sans leading-relaxed m-0 mb-4" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Administra solicitudes directas, mensajes y avisos del catálogo.</p>
+            </div>
+            <div class="text-[11px] font-headline font-bold inline-flex items-center gap-1" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              <span>Entrar al módulo</span>
+              <span class="material-symbols-rounded text-xs">arrow_forward</span>
+            </div>
+          </div>
+        </div>
+
         <!-- 4. GRID DE 4 MÉTRICAS CLAVE (2x2) -->
         <div class="grid grid-cols-2 gap-2.5">
           <!-- Métrica 1: Tráfico -->
@@ -409,253 +407,9 @@ import { MessagesService } from '../../../services/messages.service';
           </div>
         </div>
 
-        <!-- 5. RACHA DEL DÍA MÓVIL (ESTILO APPLE FITNESS / NATIVE TILE) -->
-        <div class="rounded-3xl border border-neutral-800 bg-[#0a0a0d] text-white p-4 space-y-3 shadow-[0_8px_30px_rgba(0,0,0,0.5)]">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="text-xl select-none">🔥</span>
-              <div>
-                <h3 class="text-sm font-headline font-bold tracking-tight m-0 text-white">Racha del Día</h3>
-                <p class="text-[10px] text-neutral-400 m-0">Récord: {{ streakData?.longestStreak || 1 }} días</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-red-500/20 text-red-400 border border-red-500/30">
-                {{ streakData?.streakCount || 1 }}d
-              </span>
-              <button (click)="openStreakMonthModal()"
-                      class="text-[11px] font-headline text-neutral-400 hover:text-white px-2 py-1 rounded-lg border border-neutral-800 bg-neutral-900 cursor-pointer">
-                Mes →
-              </button>
-            </div>
-          </div>
 
-          <!-- Barra de Progreso de Metas -->
-          <div class="space-y-1.5">
-            <div class="flex items-center justify-between text-[11px] text-neutral-400 font-sans">
-              <span>{{ completedStreakGoals }}/3 objetivos completados</span>
-              <span class="font-bold text-white">{{ ((completedStreakGoals / 3) * 100) | number:'1.0-0' }}%</span>
-            </div>
-            <div class="w-full h-1.5 bg-neutral-800 rounded-full overflow-hidden">
-              <div class="h-full bg-red-500 rounded-full transition-all duration-300"
-                   [style.width.%]="(completedStreakGoals / 3) * 100"></div>
-            </div>
-          </div>
 
-          <!-- Las 3 Metas en Formato Táctil -->
-          <div class="grid grid-cols-3 gap-2">
-            <!-- Meta 1 -->
-            <div class="p-2.5 rounded-xl border border-neutral-800 bg-[#121216] flex flex-col justify-between min-h-[58px]">
-              <span class="text-[10px] text-neutral-400 font-sans">1. Ingreso</span>
-              <span class="text-xs font-headline font-bold text-red-400">✓ Listo</span>
-            </div>
-            <!-- Meta 2 -->
-            <div class="p-2.5 rounded-xl border border-neutral-800 bg-[#121216] flex flex-col justify-between min-h-[58px]">
-              <span class="text-[10px] text-neutral-400 font-sans">2. RotBot</span>
-              <span *ngIf="streakData?.actions?.robot" class="text-xs font-headline font-bold text-red-400">✓ Listo</span>
-              <button *ngIf="!streakData?.actions?.robot" 
-                      (click)="tabChange.emit('rotbot')"
-                      class="text-[11px] font-headline font-bold text-red-400 hover:text-red-300 text-left cursor-pointer">
-                Abrir →
-              </button>
-            </div>
-            <!-- Meta 3 -->
-            <div class="p-2.5 rounded-xl border border-neutral-800 bg-[#121216] flex flex-col justify-between min-h-[58px]">
-              <span class="text-[10px] text-neutral-400 font-sans">3. Apuntes</span>
-              <span *ngIf="streakData?.actions?.library" class="text-xs font-headline font-bold text-red-400">✓ Listo</span>
-              <button *ngIf="!streakData?.actions?.library" 
-                      (click)="tabChange.emit('library')"
-                      class="text-[11px] font-headline font-bold text-red-400 hover:text-red-300 text-left cursor-pointer">
-                Repasar →
-              </button>
-            </div>
-          </div>
 
-          <!-- Tira de 7 Días de la Semana -->
-          <div class="pt-2 border-t border-neutral-800/80">
-            <div class="grid grid-cols-7 gap-1 text-center">
-              <div *ngFor="let day of streakWeekDays" class="flex flex-col items-center py-0.5">
-                <span class="text-[9px] font-headline uppercase text-neutral-500">{{ day.name }}</span>
-                <span class="text-xs font-mono font-medium my-0.5"
-                      [style.color]="day.isCompleted ? '#ffffff' : (day.isToday ? '#f87171' : '#a1a1aa')">
-                  {{ day.dayNumber }}
-                </span>
-                <span class="w-1.5 h-1.5 rounded-full mt-0.5" 
-                      [ngClass]="day.isCompleted ? 'bg-red-500' : (day.isToday ? 'bg-red-500 animate-pulse' : 'bg-neutral-800')">
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 6. AGENDA DE HOY (WIDGET COMPACTO) -->
-        <div (click)="navigateToTab('itinerary')"
-             class="rounded-3xl border p-4 transition-all duration-300 cursor-pointer active:scale-98 group"
-             [ngClass]="isDark ? 'bg-[#0d0d11] border-neutral-800/90 text-white' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-sm'">
-          <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-              <h4 class="text-xs font-headline font-bold uppercase tracking-wider m-0">Agenda de Hoy</h4>
-            </div>
-            <span class="text-[10px] font-headline font-bold text-red-500 group-hover:translate-x-1 transition-transform">
-              Ver Itinerario →
-            </span>
-          </div>
-
-          <div class="space-y-2">
-            <div *ngIf="itineraryNotifs.current?.length > 0">
-              <div *ngFor="let task of itineraryNotifs.current.slice(0, 1)"
-                   class="rounded-xl border p-2.5 flex items-center justify-between bg-red-500/10 border-red-500/25 text-red-500 font-sans">
-                <div class="flex items-center gap-2 min-w-0">
-                  <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping shrink-0"></span>
-                  <span class="text-xs font-semibold truncate">{{ task.title }}</span>
-                </div>
-                <span class="text-[10px] font-mono font-bold shrink-0 ml-2">{{ task.time }}</span>
-              </div>
-            </div>
-
-            <div *ngIf="itineraryNotifs.upcoming?.length > 0">
-              <div *ngFor="let task of itineraryNotifs.upcoming.slice(0, 1)"
-                   class="rounded-xl border p-2.5 flex items-center justify-between font-sans"
-                   [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800 text-neutral-300' : 'bg-neutral-50 border-neutral-200 text-neutral-700'">
-                <span class="text-xs font-medium truncate">{{ task.title }}</span>
-                <span class="text-[10px] opacity-60 font-mono shrink-0 ml-2">{{ task.time }}</span>
-              </div>
-            </div>
-
-            <div *ngIf="!itineraryNotifs.current?.length && !itineraryNotifs.upcoming?.length"
-                 class="rounded-xl border p-3 text-center"
-                 [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800/80 text-neutral-400' : 'bg-neutral-50 border-neutral-200 text-neutral-600'">
-              <p class="text-xs font-semibold m-0">Sin pendientes urgentes hoy</p>
-              <span class="text-[10px] opacity-60 font-sans">¡Itinerario al día!</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- 7. GRÁFICAS INTERACTIVAS CON SELECTOR SEGMENTADO [ TRÁFICO | FINANZAS ] -->
-        <div class="rounded-3xl border p-4 space-y-3.5 transition-all duration-300"
-             [ngClass]="isDark ? 'bg-[#0d0d11] border-neutral-800/90 text-white' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-sm'">
-          
-          <!-- Segmented Control Bar -->
-          <div class="flex items-center justify-between">
-            <div class="p-1 rounded-2xl border flex items-center gap-1"
-                 [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800' : 'bg-neutral-100 border-neutral-200'">
-              <button (click)="mobileChartTab = 'traffic'"
-                      class="px-3 py-1.5 rounded-xl text-xs font-headline font-bold transition-all cursor-pointer"
-                      [ngClass]="mobileChartTab === 'traffic'
-                        ? 'bg-red-600 text-white shadow-sm'
-                        : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-600 hover:text-black')">
-                📈 Tráfico (7D)
-              </button>
-              <button (click)="mobileChartTab = 'finances'"
-                      class="px-3 py-1.5 rounded-xl text-xs font-headline font-bold transition-all cursor-pointer"
-                      [ngClass]="mobileChartTab === 'finances'
-                        ? 'bg-red-600 text-white shadow-sm'
-                        : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-600 hover:text-black')">
-                💳 Finanzas (6M)
-              </button>
-            </div>
-            
-            <span class="text-[9px] font-headline uppercase font-semibold text-neutral-400 px-2 py-0.5 rounded-full border"
-                  [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900' : 'border-neutral-200 bg-neutral-50'">
-              En Vivo
-            </span>
-          </div>
-
-          <!-- TAB TRÁFICO -->
-          <div *ngIf="mobileChartTab === 'traffic'" class="space-y-3 animate-fadeIn">
-            <!-- Vector Line Chart SVG -->
-            <div class="w-full h-28 relative">
-              <svg class="w-full h-full" viewBox="0 0 500 140" preserveAspectRatio="none">
-                <defs>
-                  <linearGradient id="trafficGradMobile" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#dc2626" stop-opacity="0.35"/>
-                    <stop offset="100%" stop-color="#dc2626" stop-opacity="0.0"/>
-                  </linearGradient>
-                </defs>
-                <line x1="0" y1="25" x2="500" y2="25" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'"/>
-                <line x1="0" y1="65" x2="500" y2="65" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'"/>
-                <line x1="0" y1="105" x2="500" y2="105" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'"/>
-                <path [attr.d]="trafficAreaPath" fill="url(#trafficGradMobile)"/>
-                <path [attr.d]="trafficLinePath" fill="none" stroke="#dc2626" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle *ngFor="let pt of trafficPoints" 
-                        [attr.cx]="pt.x" 
-                        [attr.cy]="pt.y" 
-                        r="4" 
-                        [attr.fill]="isDark ? '#0d0d11' : '#ffffff'" 
-                        stroke="#dc2626" 
-                        stroke-width="2.5"/>
-              </svg>
-            </div>
-
-            <!-- Días de la semana -->
-            <div class="flex justify-between text-[10px] font-headline font-semibold uppercase text-neutral-400 px-1">
-              <span *ngFor="let day of weekDays">{{ day }}</span>
-            </div>
-
-            <!-- Resumen de Tráfico -->
-            <div class="grid grid-cols-3 gap-2 pt-3 border-t text-center"
-                 [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
-              <div>
-                <span class="text-[9px] uppercase text-neutral-400 block font-sans">Promedio</span>
-                <span class="text-xs font-bold font-headline" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ avgDailyTraffic }}</span>
-              </div>
-              <div>
-                <span class="text-[9px] uppercase text-neutral-400 block font-sans">Pico</span>
-                <span class="text-xs font-bold font-headline text-red-500">{{ maxTraffic }}</span>
-              </div>
-              <div>
-                <span class="text-[9px] uppercase text-neutral-400 block font-sans">Conversión</span>
-                <span class="text-xs font-bold font-headline text-red-600">{{ conversionRate }}%</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- TAB FINANZAS -->
-          <div *ngIf="mobileChartTab === 'finances'" class="space-y-3 animate-fadeIn">
-            <!-- Barras Mensuales -->
-            <div class="w-full h-28 flex items-end justify-between gap-2 px-1 pt-2">
-              <div *ngFor="let item of financialMonthlyBars" class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
-                <span class="text-[9px] font-bold text-red-500">
-                  {{ item.formattedShort }}
-                </span>
-                <div class="w-full max-w-[20px] rounded-t-md transition-all duration-500 bg-gradient-to-t from-red-700 to-red-500 shadow-sm"
-                     [style.height.%]="item.heightPct">
-                </div>
-                <span class="text-[9px] font-headline font-semibold uppercase text-neutral-400">
-                  {{ item.month }}
-                </span>
-              </div>
-            </div>
-
-            <!-- Resumen de Finanzas -->
-            <div class="grid grid-cols-3 gap-2 pt-3 border-t text-center"
-                 [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
-              <div>
-                <span class="text-[9px] uppercase text-neutral-400 block font-sans">Facturas</span>
-                <span class="text-xs font-bold font-headline" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ totalInvoicesCount }}</span>
-              </div>
-              <div>
-                <span class="text-[9px] uppercase text-neutral-400 block font-sans">Tasa Cobro</span>
-                <span class="text-xs font-bold font-headline text-red-600">{{ collectionRate }}%</span>
-              </div>
-              <div>
-                <span class="text-[9px] uppercase text-neutral-400 block font-sans">Cobrado</span>
-                <span class="text-xs font-bold font-headline text-red-600 truncate block">{{ formatCurrency(financeTotalPaid) }}</span>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- 8. FOOTER ACTIONS MÓVIL -->
-        <div class="flex justify-center pt-2">
-          <button (click)="resetMetrics()"
-                  class="px-5 py-2.5 rounded-full text-xs font-headline font-semibold uppercase tracking-wider border transition-all cursor-pointer active:scale-95 shadow-sm"
-                  [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:border-red-500/40 hover:text-red-400 bg-neutral-900/60' : 'border-neutral-200 text-neutral-600 hover:border-red-300 hover:text-red-600 bg-white'">
-            Reiniciar Métricas
-          </button>
-        </div>
 
       </div>
 
@@ -809,134 +563,8 @@ import { MessagesService } from '../../../services/messages.service';
 
         </div>
 
-        <!-- ════ 3. GRID DE 5 MÓDULOS (2 NEGROS + 3 BLANCOS SEGÚN LA CAPTURA) ════ -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          
-          <!-- Card 1: Black Card (Gestionar Finanzas) -->
-          <div (click)="navigateToTab('finances')"
-               class="rounded-[22px] p-5 flex flex-col justify-between cursor-pointer group transition-all duration-200 hover:-translate-y-1 shadow-sm border"
-               [ngClass]="isDark ? 'bg-[#09090b] border-neutral-800 text-white hover:border-neutral-700' : 'bg-[#0a0a0d] border-neutral-900 text-white shadow-md'">
-            <div>
-              <div class="w-11 h-11 rounded-2xl border flex items-center justify-center bg-neutral-900/90 border-neutral-800 mb-4"
-                   style="color: #ffffff !important;">
-                <span class="material-symbols-rounded text-xl" style="color: #ffffff !important;">payments</span>
-              </div>
-              <h3 class="text-base font-headline font-bold m-0 mb-2 leading-tight dark-card-white"
-                  style="color: #ffffff !important;">
-                Gestionar Finanzas
-              </h3>
-              <p class="text-xs font-sans text-neutral-400 leading-relaxed m-0 mb-6">
-                Control integral de cuentas de cobro, facturación, clientes y estados de pago en tiempo real.
-              </p>
-            </div>
-            <div class="text-xs font-headline font-bold inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform dark-card-white"
-                 style="color: #ffffff !important;">
-              <span style="color: #ffffff !important;">Entrar al módulo</span>
-              <span class="material-symbols-rounded text-sm" style="color: #ffffff !important;">arrow_forward</span>
-            </div>
-          </div>
-
-          <!-- Card 2: Black Card with Red Accent (Reporte y Analíticas) -->
-          <div (click)="navigateToTab('rotbot')"
-               class="rounded-[22px] p-5 flex flex-col justify-between cursor-pointer group transition-all duration-200 hover:-translate-y-1 shadow-sm border"
-               [ngClass]="isDark ? 'bg-[#09090b] border-neutral-800 text-white hover:border-red-500/40' : 'bg-[#0a0a0d] border-neutral-900 text-white shadow-md'">
-            <div>
-              <div class="w-11 h-11 rounded-2xl border flex items-center justify-center bg-red-500/15 border-red-500/30 text-red-500 mb-4">
-                <span class="material-symbols-rounded text-xl text-red-500">monitoring</span>
-              </div>
-              <h3 class="text-base font-headline font-bold m-0 mb-2 leading-tight dark-card-white"
-                  style="color: #ffffff !important;">
-                Reporte y Analíticas
-              </h3>
-              <p class="text-xs font-sans text-neutral-400 leading-relaxed m-0 mb-6">
-                Diagnóstico de calidad, gráficos de distribución y métricas clave en tiempo real.
-              </p>
-            </div>
-            <div class="text-xs font-headline font-bold text-red-500 inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform">
-              <span>Entrar al módulo</span>
-              <span class="material-symbols-rounded text-sm">arrow_forward</span>
-            </div>
-          </div>
-
-          <!-- Card 3: White Card (Biblioteca & SQL) -->
-          <div (click)="navigateToTab('library')"
-               class="rounded-[22px] p-5 flex flex-col justify-between cursor-pointer group transition-all duration-200 hover:-translate-y-1 shadow-sm border"
-               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800 text-white hover:border-neutral-700' : 'bg-white border-neutral-200 text-neutral-900 hover:border-neutral-300'">
-            <div>
-              <div class="w-11 h-11 rounded-2xl border flex items-center justify-center mb-4 transition-colors"
-                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
-                <span class="material-symbols-rounded text-xl">category</span>
-              </div>
-              <h3 class="text-base font-headline font-bold m-0 mb-2 leading-tight"
-                  [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                Biblioteca & SQL
-              </h3>
-              <p class="text-xs font-sans leading-relaxed m-0 mb-6"
-                 [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
-                Administra las categorías, esquemas y consultas de bases de datos del sistema.
-              </p>
-            </div>
-            <div class="text-xs font-headline font-bold inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform"
-                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              <span>Entrar al módulo</span>
-              <span class="material-symbols-rounded text-sm">arrow_forward</span>
-            </div>
-          </div>
-
-          <!-- Card 4: White Card (Itinerario & Agenda) -->
-          <div (click)="navigateToTab('itinerary')"
-               class="rounded-[22px] p-5 flex flex-col justify-between cursor-pointer group transition-all duration-200 hover:-translate-y-1 shadow-sm border"
-               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800 text-white hover:border-neutral-700' : 'bg-white border-neutral-200 text-neutral-900 hover:border-neutral-300'">
-            <div>
-              <div class="w-11 h-11 rounded-2xl border flex items-center justify-center mb-4 transition-colors"
-                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
-                <span class="material-symbols-rounded text-xl">layers</span>
-              </div>
-              <h3 class="text-base font-headline font-bold m-0 mb-2 leading-tight"
-                  [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                Itinerario & Agenda
-              </h3>
-              <p class="text-xs font-sans leading-relaxed m-0 mb-6"
-                 [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
-                Administra las actividades programadas, citas y tareas pendientes del itinerario.
-              </p>
-            </div>
-            <div class="text-xs font-headline font-bold inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform"
-                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              <span>Entrar al módulo</span>
-              <span class="material-symbols-rounded text-sm">arrow_forward</span>
-            </div>
-          </div>
-
-          <!-- Card 5: White Card (Buzón de Mensajes) -->
-          <div (click)="navigateToTab('messages')"
-               class="rounded-[22px] p-5 flex flex-col justify-between cursor-pointer group transition-all duration-200 hover:-translate-y-1 shadow-sm border"
-               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800 text-white hover:border-neutral-700' : 'bg-white border-neutral-200 text-neutral-900 hover:border-neutral-300'">
-            <div>
-              <div class="w-11 h-11 rounded-2xl border flex items-center justify-center mb-4 transition-colors"
-                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
-                <span class="material-symbols-rounded text-xl">storefront</span>
-              </div>
-              <h3 class="text-base font-headline font-bold m-0 mb-2 leading-tight"
-                  [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                Buzón de Mensajes
-              </h3>
-              <p class="text-xs font-sans leading-relaxed m-0 mb-6"
-                 [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
-                Administra solicitudes de clientes, mensajes entrantes y alertas del catálogo.
-              </p>
-            </div>
-            <div class="text-xs font-headline font-bold inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform"
-                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-              <span>Entrar al módulo</span>
-              <span class="material-symbols-rounded text-sm">arrow_forward</span>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- ════ 4. BUSCADOR INTELIGENTE GEMINI IA & COMANDOS POR VOZ ════ -->
-        <section class="rounded-2xl border p-4 transition-all duration-200"
+        <!-- ════ 3. BUSCADOR INTELIGENTE GEMINI IA & COMANDOS POR VOZ ════ -->
+        <section class="rounded-2xl border p-4 transition-all duration-200 mb-5"
                  [ngClass]="isDark ? 'bg-[#0e0e13] border-neutral-800' : 'bg-white border-neutral-200 shadow-sm'">
           <div class="filter-inputs-row">
             <div class="search-input-box">
@@ -1025,259 +653,130 @@ import { MessagesService } from '../../../services/messages.service';
           </div>
         </section>
 
-        <!-- ════ 5. WORKSPACE DE DOS COLUMNAS (SECTION 12 DE GUIA_DISENO_DASHBOARD) ════ -->
-        <div class="cat-workspace-grid !mb-0">
-
-          <!-- Columna 1: Rendimiento & Analítica Financiera -->
-          <div class="cat-card !min-h-0 !h-auto">
-            
-            <div class="cat-card-header">
-              <div class="cat-card-title-group">
-                <div class="cat-card-icon-pill">
-                  <span class="material-symbols-rounded">monitoring</span>
-                </div>
-                <h2 class="cat-card-title">Rendimiento & Analítica</h2>
+        <!-- ════ 4. GRID DE 5 MÓDULOS (2 NEGROS + 3 BLANCOS SEGÚN LA CAPTURA) ════ -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          
+          <!-- Card 1: Black Card (Gestionar Finanzas) -->
+          <div (click)="navigateToTab('finances')"
+               class="rounded-[22px] p-5 flex flex-col justify-between cursor-pointer group transition-all duration-200 hover:-translate-y-1 shadow-sm border"
+               [ngClass]="isDark ? 'bg-[#09090b] border-neutral-800 text-white hover:border-neutral-700' : 'bg-[#0a0a0d] border-neutral-900 text-white shadow-md'">
+            <div>
+              <div class="w-11 h-11 rounded-2xl border flex items-center justify-center bg-neutral-900/90 border-neutral-800 mb-4"
+                   style="color: #ffffff !important;">
+                <span class="material-symbols-rounded text-xl" style="color: #ffffff !important;">payments</span>
               </div>
-              
-              <!-- Segmented Control Bar -->
-              <div class="flex items-center gap-1 p-1 rounded-xl border"
-                   [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800' : 'bg-neutral-100 border-neutral-200'">
-                <button (click)="desktopChartTab = 'traffic'"
-                        class="px-2.5 py-1 rounded-lg text-xs font-headline font-bold transition-all cursor-pointer"
-                        [ngClass]="desktopChartTab === 'traffic'
-                          ? (isDark ? 'bg-white text-black' : 'bg-black text-white')
-                          : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-600 hover:text-black')">
-                  Tráfico (7D)
-                </button>
-                <button (click)="desktopChartTab = 'finances'"
-                        class="px-2.5 py-1 rounded-lg text-xs font-headline font-bold transition-all cursor-pointer"
-                        [ngClass]="desktopChartTab === 'finances'
-                          ? (isDark ? 'bg-white text-black' : 'bg-black text-white')
-                          : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-600 hover:text-black')">
-                  Finanzas (6M)
-                </button>
-              </div>
+              <h3 class="text-base font-headline font-bold m-0 mb-2 leading-tight dark-card-white"
+                  style="color: #ffffff !important;">
+                Gestionar Finanzas
+              </h3>
+              <p class="text-xs font-sans text-neutral-400 leading-relaxed m-0 mb-6">
+                Control integral de cuentas de cobro, facturación, clientes y estados de pago en tiempo real.
+              </p>
             </div>
-
-            <!-- Contenido Gráficas -->
-            <div class="p-5 flex flex-col justify-between flex-1 gap-4">
-              
-              <!-- Tab 1: Tráfico Semanal SVG -->
-              <div *ngIf="desktopChartTab === 'traffic'" class="space-y-4 animate-fadeIn">
-                <div class="w-full h-36 relative">
-                  <svg class="w-full h-full" viewBox="0 0 500 140" preserveAspectRatio="none">
-                    <defs>
-                      <linearGradient id="trafficGradDesk" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="#dc2626" stop-opacity="0.30"/>
-                        <stop offset="100%" stop-color="#dc2626" stop-opacity="0.0"/>
-                      </linearGradient>
-                    </defs>
-                    <line x1="0" y1="25" x2="500" y2="25" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'"/>
-                    <line x1="0" y1="65" x2="500" y2="65" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'"/>
-                    <line x1="0" y1="105" x2="500" y2="105" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'"/>
-                    <path [attr.d]="trafficAreaPath" fill="url(#trafficGradDesk)"/>
-                    <path [attr.d]="trafficLinePath" fill="none" stroke="#dc2626" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                    <circle *ngFor="let pt of trafficPoints" 
-                            [attr.cx]="pt.x" 
-                            [attr.cy]="pt.y" 
-                            r="4.5" 
-                            [attr.fill]="isDark ? '#111116' : '#ffffff'" 
-                            stroke="#dc2626" 
-                            stroke-width="2.5"/>
-                  </svg>
-                </div>
-
-                <!-- Días de la semana -->
-                <div class="flex justify-between text-xs font-headline font-semibold uppercase text-neutral-400 px-1">
-                  <span *ngFor="let day of weekDays">{{ day }}</span>
-                </div>
-
-                <!-- Métricas destacadas -->
-                <div class="grid grid-cols-3 gap-2 pt-3 border-t text-center"
-                     [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-                  <div>
-                    <span class="text-[10px] uppercase text-neutral-400 block font-sans">Promedio Diario</span>
-                    <span class="text-sm font-bold font-headline" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ avgDailyTraffic }}</span>
-                  </div>
-                  <div>
-                    <span class="text-[10px] uppercase text-neutral-400 block font-sans">Pico Semanal</span>
-                    <span class="text-sm font-bold font-headline text-red-500">{{ maxTraffic }}</span>
-                  </div>
-                  <div>
-                    <span class="text-[10px] uppercase text-neutral-400 block font-sans">Tasa Conversión</span>
-                    <span class="text-sm font-bold font-headline text-red-600">{{ conversionRate }}%</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Tab 2: Finanzas Mensuales Barras -->
-              <div *ngIf="desktopChartTab === 'finances'" class="space-y-4 animate-fadeIn">
-                <div class="w-full h-36 flex items-end justify-between gap-3 px-2 pt-2">
-                  <div *ngFor="let item of financialMonthlyBars" class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
-                    <span class="text-[10px] font-bold text-red-500 transition-opacity">
-                      {{ item.formattedShort }}
-                    </span>
-                    <div class="w-full max-w-[28px] rounded-t-lg transition-all duration-500 bg-gradient-to-t from-red-700 to-red-500 group-hover:from-red-600 group-hover:to-red-400 shadow-sm"
-                         [style.height.%]="item.heightPct">
-                    </div>
-                    <span class="text-xs font-headline font-semibold uppercase text-neutral-400">
-                      {{ item.month }}
-                    </span>
-                  </div>
-                </div>
-
-                <!-- Métricas Financieras -->
-                <div class="grid grid-cols-3 gap-2 pt-3 border-t text-center"
-                     [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-                  <div>
-                    <span class="text-[10px] uppercase text-neutral-400 block font-sans">Facturas</span>
-                    <span class="text-sm font-bold font-headline" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ totalInvoicesCount }}</span>
-                  </div>
-                  <div>
-                    <span class="text-[10px] uppercase text-neutral-400 block font-sans">Tasa de Cobro</span>
-                    <span class="text-sm font-bold font-headline text-red-500">{{ collectionRate }}%</span>
-                  </div>
-                  <div>
-                    <span class="text-[10px] uppercase text-neutral-400 block font-sans">Total Recaudado</span>
-                    <span class="text-sm font-bold font-headline text-red-600 truncate block">{{ formatCurrency(financeTotalPaid) }}</span>
-                  </div>
-                </div>
-              </div>
-
+            <div class="text-xs font-headline font-bold inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform dark-card-white"
+                 style="color: #ffffff !important;">
+              <span style="color: #ffffff !important;">Entrar al módulo</span>
+              <span class="material-symbols-rounded text-sm" style="color: #ffffff !important;">arrow_forward</span>
             </div>
-
           </div>
 
-          <!-- Columna 2: Operaciones Diarias (Racha & Agenda de Hoy) -->
-          <div class="cat-card !min-h-0 !h-auto">
-            
-            <div class="cat-card-header">
-              <div class="cat-card-title-group">
-                <div class="cat-card-icon-pill">
-                  <span class="material-symbols-rounded text-red-500">local_fire_department</span>
-                </div>
-                <h2 class="cat-card-title">Racha Diaria & Agenda</h2>
+          <!-- Card 2: Black Card with Red Accent (Reporte y Analíticas) -->
+          <div (click)="navigateToTab('rotbot')"
+               class="rounded-[22px] p-5 flex flex-col justify-between cursor-pointer group transition-all duration-200 hover:-translate-y-1 shadow-sm border"
+               [ngClass]="isDark ? 'bg-[#09090b] border-neutral-800 text-white hover:border-red-500/40' : 'bg-[#0a0a0d] border-neutral-900 text-white shadow-md'">
+            <div>
+              <div class="w-11 h-11 rounded-2xl border flex items-center justify-center bg-red-500/15 border-red-500/30 text-red-500 mb-4">
+                <span class="material-symbols-rounded text-xl text-red-500">monitoring</span>
               </div>
-              <div class="flex items-center gap-2">
-                <span class="cat-counter-chip">{{ streakData?.streakCount || 1 }} días récord</span>
-                <button (click)="openStreakMonthModal()"
-                        class="text-xs font-headline font-bold text-neutral-500 hover:text-neutral-900 dark:hover:text-white cursor-pointer hover:underline">
-                  Mes →
-                </button>
-              </div>
+              <h3 class="text-base font-headline font-bold m-0 mb-2 leading-tight dark-card-white"
+                  style="color: #ffffff !important;">
+                Reporte y Analíticas
+              </h3>
+              <p class="text-xs font-sans text-neutral-400 leading-relaxed m-0 mb-6">
+                Diagnóstico de calidad, gráficos de distribución y métricas clave en tiempo real.
+              </p>
             </div>
-
-            <!-- Contenido Racha + Agenda -->
-            <div class="p-5 flex flex-col justify-between flex-1 gap-4">
-              
-              <!-- 1. Barra y Metas de Racha -->
-              <div class="space-y-3">
-                <div class="flex items-center justify-between text-xs font-sans text-neutral-500">
-                  <span>{{ completedStreakGoals }}/3 objetivos completados hoy</span>
-                  <span class="font-bold text-neutral-900 dark:text-white">{{ ((completedStreakGoals / 3) * 100) | number:'1.0-0' }}%</span>
-                </div>
-                <div class="w-full h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
-                  <div class="h-full bg-red-600 rounded-full transition-all duration-300"
-                       [style.width.%]="(completedStreakGoals / 3) * 100"></div>
-                </div>
-
-                <!-- 3 Metas -->
-                <div class="grid grid-cols-3 gap-2">
-                  <div class="p-2.5 rounded-xl border text-center"
-                       [ngClass]="isDark ? 'bg-[#18181f] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
-                    <span class="text-[10px] text-neutral-400 block font-sans">1. Ingreso</span>
-                    <span class="text-xs font-bold text-red-500">✓ Listo</span>
-                  </div>
-                  <div class="p-2.5 rounded-xl border text-center"
-                       [ngClass]="isDark ? 'bg-[#18181f] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
-                    <span class="text-[10px] text-neutral-400 block font-sans">2. RotBot IA</span>
-                    <span *ngIf="streakData?.actions?.robot" class="text-xs font-bold text-red-500">✓ Listo</span>
-                    <button *ngIf="!streakData?.actions?.robot" (click)="tabChange.emit('rotbot')"
-                            class="text-xs font-bold text-red-500 hover:underline cursor-pointer">Abrir →</button>
-                  </div>
-                  <div class="p-2.5 rounded-xl border text-center"
-                       [ngClass]="isDark ? 'bg-[#18181f] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
-                    <span class="text-[10px] text-neutral-400 block font-sans">3. Biblioteca</span>
-                    <span *ngIf="streakData?.actions?.library" class="text-xs font-bold text-red-500">✓ Listo</span>
-                    <button *ngIf="!streakData?.actions?.library" (click)="tabChange.emit('library')"
-                            class="text-xs font-bold text-red-500 hover:underline cursor-pointer">Repasar →</button>
-                  </div>
-                </div>
-
-                <!-- Tira 7 Días -->
-                <div class="pt-2 border-t border-neutral-200 dark:border-neutral-800">
-                  <div class="grid grid-cols-7 gap-1 text-center">
-                    <div *ngFor="let day of streakWeekDays" class="flex flex-col items-center">
-                      <span class="text-[9px] font-headline uppercase text-neutral-400">{{ day.name }}</span>
-                      <span class="text-xs font-mono font-medium my-0.5"
-                            [style.color]="day.isCompleted ? '#dc2626' : (day.isToday ? '#ef4444' : '#a1a1aa')">
-                        {{ day.dayNumber }}
-                      </span>
-                      <span class="w-1.5 h-1.5 rounded-full"
-                            [ngClass]="day.isCompleted ? 'bg-red-500' : (day.isToday ? 'bg-red-500 animate-pulse' : 'bg-neutral-300 dark:bg-neutral-700')"></span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 2. Agenda de Hoy -->
-              <div class="pt-3 border-t border-neutral-200 dark:border-neutral-800">
-                <div class="flex items-center justify-between mb-2.5">
-                  <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                    <h3 class="text-xs font-headline font-bold uppercase tracking-wider text-neutral-900 dark:text-white m-0">
-                      Agenda de Hoy
-                    </h3>
-                  </div>
-                  <button (click)="navigateToTab('itinerary')"
-                          class="text-xs font-bold text-red-600 dark:text-red-400 hover:underline cursor-pointer">
-                    Ver Itinerario →
-                  </button>
-                </div>
-
-                <div class="space-y-2">
-                  <div *ngIf="itineraryNotifs.current?.length > 0">
-                    <div *ngFor="let task of itineraryNotifs.current.slice(0, 1)"
-                         class="rounded-xl border p-2.5 flex items-center justify-between bg-red-500/10 border-red-500/20 text-red-600 dark:text-red-400 font-sans">
-                      <div class="flex items-center gap-2 min-w-0">
-                        <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping shrink-0"></span>
-                        <span class="text-xs font-semibold truncate">{{ task.title }}</span>
-                      </div>
-                      <span class="text-xs font-mono font-bold shrink-0 ml-2">{{ task.time }}</span>
-                    </div>
-                  </div>
-
-                  <div *ngIf="itineraryNotifs.upcoming?.length > 0">
-                    <div *ngFor="let task of itineraryNotifs.upcoming.slice(0, 1)"
-                         class="rounded-xl border p-2.5 flex items-center justify-between font-sans"
-                         [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800 text-neutral-300' : 'bg-neutral-50 border-neutral-200 text-neutral-700'">
-                      <span class="text-xs font-medium truncate">{{ task.title }}</span>
-                      <span class="text-xs opacity-60 font-mono shrink-0 ml-2">{{ task.time }}</span>
-                    </div>
-                  </div>
-
-                  <div *ngIf="!itineraryNotifs.current?.length && !itineraryNotifs.upcoming?.length"
-                       class="rounded-xl border p-3 text-center"
-                       [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800 text-neutral-400' : 'bg-neutral-50 border-neutral-200 text-neutral-600'">
-                    <p class="text-xs font-semibold m-0">Sin pendientes urgentes hoy</p>
-                    <span class="text-[10px] opacity-60 font-sans">¡Itinerario al día!</span>
-                  </div>
-                </div>
-              </div>
-
+            <div class="text-xs font-headline font-bold text-red-500 inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform">
+              <span>Entrar al módulo</span>
+              <span class="material-symbols-rounded text-sm">arrow_forward</span>
             </div>
-
           </div>
 
-        </div>
+          <!-- Card 3: White Card (Biblioteca & SQL) -->
+          <div (click)="navigateToTab('library')"
+               class="rounded-[22px] p-5 flex flex-col justify-between cursor-pointer group transition-all duration-200 hover:-translate-y-1 shadow-sm border"
+               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800 text-white hover:border-neutral-700' : 'bg-white border-neutral-200 text-neutral-900 hover:border-neutral-300'">
+            <div>
+              <div class="w-11 h-11 rounded-2xl border flex items-center justify-center mb-4 transition-colors"
+                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
+                <span class="material-symbols-rounded text-xl">category</span>
+              </div>
+              <h3 class="text-base font-headline font-bold m-0 mb-2 leading-tight"
+                  [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                Biblioteca & SQL
+              </h3>
+              <p class="text-xs font-sans leading-relaxed m-0 mb-6"
+                  [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+                Administra las categorías, esquemas y consultas de bases de datos del sistema.
+              </p>
+            </div>
+            <div class="text-xs font-headline font-bold inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform"
+                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              <span>Entrar al módulo</span>
+              <span class="material-symbols-rounded text-sm">arrow_forward</span>
+            </div>
+          </div>
 
-        <!-- ════ 6. ACCIONES DEL PIE ════ -->
-        <div class="flex justify-end pt-1">
-          <button (click)="resetMetrics()"
-                  class="px-5 py-2 rounded-full text-xs font-headline font-semibold uppercase tracking-wider border transition-all cursor-pointer active:scale-95 shadow-sm"
-                  [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:border-red-500/40 hover:text-red-400 bg-neutral-900/60' : 'border-neutral-200 text-neutral-600 hover:border-red-300 hover:text-red-600 bg-white'">
-            Reiniciar Métricas
-          </button>
+          <!-- Card 4: White Card (Itinerario & Agenda) -->
+          <div (click)="navigateToTab('itinerary')"
+               class="rounded-[22px] p-5 flex flex-col justify-between cursor-pointer group transition-all duration-200 hover:-translate-y-1 shadow-sm border"
+               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800 text-white hover:border-neutral-700' : 'bg-white border-neutral-200 text-neutral-900 hover:border-neutral-300'">
+            <div>
+              <div class="w-11 h-11 rounded-2xl border flex items-center justify-center mb-4 transition-colors"
+                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
+                <span class="material-symbols-rounded text-xl">layers</span>
+              </div>
+              <h3 class="text-base font-headline font-bold m-0 mb-2 leading-tight"
+                  [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                Itinerario & Agenda
+              </h3>
+              <p class="text-xs font-sans leading-relaxed m-0 mb-6"
+                  [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+                Administra las actividades programadas, citas y tareas pendientes del itinerario.
+              </p>
+            </div>
+            <div class="text-xs font-headline font-bold inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform"
+                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              <span>Entrar al módulo</span>
+              <span class="material-symbols-rounded text-sm">arrow_forward</span>
+            </div>
+          </div>
+
+          <!-- Card 5: White Card (Buzón de Mensajes) -->
+          <div (click)="navigateToTab('messages')"
+               class="rounded-[22px] p-5 flex flex-col justify-between cursor-pointer group transition-all duration-200 hover:-translate-y-1 shadow-sm border"
+               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800 text-white hover:border-neutral-700' : 'bg-white border-neutral-200 text-neutral-900 hover:border-neutral-300'">
+            <div>
+              <div class="w-11 h-11 rounded-2xl border flex items-center justify-center mb-4 transition-colors"
+                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
+                <span class="material-symbols-rounded text-xl">storefront</span>
+              </div>
+              <h3 class="text-base font-headline font-bold m-0 mb-2 leading-tight"
+                  [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                Buzón de Mensajes
+              </h3>
+              <p class="text-xs font-sans leading-relaxed m-0 mb-6"
+                  [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+                Administra solicitudes de clientes, mensajes entrantes y alertas del catálogo.
+              </p>
+            </div>
+            <div class="text-xs font-headline font-bold inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform"
+                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              <span>Entrar al módulo</span>
+              <span class="material-symbols-rounded text-sm">arrow_forward</span>
+            </div>
+          </div>
+
         </div>
 
       </div>
@@ -1301,155 +800,6 @@ import { MessagesService } from '../../../services/messages.service';
           </button>
         </div>
       </div>
-
-      <!-- ═══════════════════════ MODAL RACHA MENSUAL (CALENDARIO COMPLETO) ═══════════════════════ -->
-        <div *ngIf="isStreakMonthModalOpen"
-             class="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 md:p-8 bg-black/80 backdrop-blur-md transition-all duration-300 animate-fadeIn"
-             (click)="closeStreakMonthModal()">
-          
-          <div class="relative w-full max-w-xl sm:max-w-2xl rounded-[28px] sm:rounded-[36px] p-6 sm:p-8 border shadow-2xl overflow-hidden transition-all duration-300 transform animate-scaleUp"
-               [ngClass]="isDark ? 'bg-[#0c0c10] border-neutral-800 text-white shadow-[0_30px_70px_rgba(0,0,0,0.9)]' : 'bg-white border-neutral-200 text-neutral-900 shadow-[0_30px_70px_rgba(0,0,0,0.14)]'"
-               (click)="$event.stopPropagation()">
-            
-            <!-- Botón de Cerrar (X) -->
-            <button type="button" 
-                    (click)="closeStreakMonthModal()"
-                    class="absolute top-5 right-5 w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer border border-transparent z-20"
-                    [ngClass]="isDark ? 'text-neutral-400 hover:text-white hover:bg-white/10' : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100'"
-                    title="Cerrar">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            <!-- Header del Modal -->
-            <div class="flex items-start justify-between flex-wrap gap-4 pr-10 mb-5">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-red-500/20 via-rose-500/10 to-transparent border border-red-500/30 shadow-[0_0_20px_rgba(220,38,38,0.15)] shrink-0">
-                  <span class="text-2xl select-none">📅</span>
-                </div>
-                <div>
-                  <div class="flex items-center gap-2">
-                    <h3 class="text-xl sm:text-2xl font-headline font-bold tracking-tight m-0"
-                        [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                      Calendario Mensual
-                    </h3>
-                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-headline font-bold bg-red-500/15 text-red-500 border border-red-500/30">
-                      {{ streakMonthData?.activeCount || 0 }}d activos
-                    </span>
-                  </div>
-                  <p class="text-xs font-sans text-neutral-400 m-0 mt-1">
-                    Visualiza tu constancia y días completados a lo largo del mes
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Barra de Controles de Mes (Anterior / Siguiente / Hoy) -->
-            <div class="flex items-center justify-between p-2.5 sm:p-3 rounded-2xl border mb-4"
-                 [ngClass]="isDark ? 'bg-[#121218] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
-              
-              <div class="flex items-center gap-2">
-                <button type="button" 
-                        (click)="prevStreakMonth()"
-                        class="w-8 h-8 rounded-xl flex items-center justify-center border transition-colors cursor-pointer"
-                        [ngClass]="isDark ? 'border-neutral-800 bg-[#1a1a24] text-neutral-300 hover:text-white hover:border-neutral-700' : 'border-neutral-200 bg-white text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100'"
-                        title="Mes anterior">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
-                  </svg>
-                </button>
-                <button type="button" 
-                        (click)="nextStreakMonth()"
-                        class="w-8 h-8 rounded-xl flex items-center justify-center border transition-colors cursor-pointer"
-                        [ngClass]="isDark ? 'border-neutral-800 bg-[#1a1a24] text-neutral-300 hover:text-white hover:border-neutral-700' : 'border-neutral-200 bg-white text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100'"
-                        title="Mes siguiente">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                  </svg>
-                </button>
-                
-                <span class="text-sm sm:text-base font-headline font-bold capitalize ml-1.5"
-                      [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                  {{ streakMonthData?.monthName }}
-                </span>
-              </div>
-
-              <div class="flex items-center gap-2">
-                <button type="button"
-                        (click)="resetToCurrentMonth()"
-                        class="px-3 py-1 rounded-xl text-xs font-mono font-semibold border transition-colors cursor-pointer"
-                        [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900 text-neutral-300 hover:text-white hover:border-neutral-700' : 'border-neutral-200 bg-white text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100'">
-                  Hoy
-                </button>
-              </div>
-            </div>
-
-            <!-- Encabezados de Días de la Semana -->
-            <div class="grid grid-cols-7 gap-1.5 sm:gap-2 text-center mb-1.5">
-              <span class="text-xs font-headline font-bold text-neutral-500 uppercase py-1">Lun</span>
-              <span class="text-xs font-headline font-bold text-neutral-500 uppercase py-1">Mar</span>
-              <span class="text-xs font-headline font-bold text-neutral-500 uppercase py-1">Mié</span>
-              <span class="text-xs font-headline font-bold text-neutral-500 uppercase py-1">Jue</span>
-              <span class="text-xs font-headline font-bold text-neutral-500 uppercase py-1">Vie</span>
-              <span class="text-xs font-headline font-bold text-neutral-500 uppercase py-1">Sáb</span>
-              <span class="text-xs font-headline font-bold text-neutral-500 uppercase py-1">Dom</span>
-            </div>
-
-            <!-- Matriz de Días del Mes -->
-            <div class="grid grid-cols-7 gap-1.5 sm:gap-2 text-center mb-6">
-              <div *ngFor="let day of streakMonthData?.days"
-                   class="h-10 sm:h-12 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center relative text-xs sm:text-sm font-mono transition-all"
-                   [ngClass]="day.isCompleted ? 
-                     (isDark ? 'bg-red-500/20 text-red-300 border border-red-500/40 font-bold shadow-[0_0_12px_rgba(220,38,38,0.2)]' : 'bg-red-100 text-red-900 border border-red-300 font-bold shadow-2xs') : 
-                     (day.isToday ? 
-                       (isDark ? 'border-2 border-dashed border-red-400 text-white font-bold bg-red-500/10' : 'border-2 border-dashed border-red-500 text-neutral-900 font-bold bg-red-50') : 
-                       (day.isCurrentMonth ? 
-                         (isDark ? 'bg-[#14141c] text-neutral-300 border border-neutral-800/80 hover:border-neutral-700' : 'bg-neutral-50 text-neutral-700 border border-neutral-200 hover:border-neutral-300') : 
-                         (isDark ? 'text-neutral-700 opacity-25 border border-transparent' : 'text-neutral-300 opacity-30 border border-transparent')))"
-                   [title]="day.dateStr + (day.isCompleted ? ' - Racha completada 🔥' : '')">
-                
-                <span class="leading-none">{{ day.dayNumber }}</span>
-                
-                <span *ngIf="day.isCompleted" class="text-[10px] sm:text-[11px] leading-none mt-1 select-none">
-                  🔥
-                </span>
-                <span *ngIf="day.isToday && !day.isCompleted" class="text-[10px] leading-none mt-1 select-none">
-                  ⏳
-                </span>
-              </div>
-            </div>
-
-            <!-- Leyenda y Métricas al pie del Modal -->
-            <div class="flex items-center justify-between flex-wrap gap-3 pt-3.5 border-t"
-                 [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-              
-              <div class="flex items-center gap-4 text-xs font-sans text-neutral-400">
-                <div class="flex items-center gap-1.5">
-                  <span class="w-3 h-3 rounded-md bg-red-500/25 border border-red-500/40 inline-block"></span>
-                  <span>Completado 🔥</span>
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <span class="w-3 h-3 rounded-md border border-dashed border-red-500 inline-block"></span>
-                  <span>Hoy ⏳</span>
-                </div>
-              </div>
-
-              <div class="flex items-center gap-3">
-                <div class="text-xs font-headline font-semibold" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
-                  Racha actual: <span class="text-red-500 font-mono font-bold">{{ streakData?.streakCount || 1 }}d</span>
-                </div>
-                <span class="opacity-30">•</span>
-                <div class="text-xs font-headline font-semibold" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
-                  Récord: <span class="font-mono font-bold">{{ streakData?.longestStreak || 1 }}d</span>
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
     </ng-container>
 
     <!-- ═══════════════════════ SKELETON LOADER (1:1 PIXEL-PERFECT MATCH) ═══════════════════════ -->
@@ -1489,6 +839,12 @@ import { MessagesService } from '../../../services/messages.service';
           </div>
         </div>
 
+        <!-- 2. Controls / Search Skeleton -->
+        <div class="rounded-2xl border p-4"
+             [ngClass]="isDark ? 'bg-[#111116] border-neutral-800' : 'bg-white border-neutral-200'">
+          <div class="h-10 w-full rounded-xl skeleton-shimmer"></div>
+        </div>
+
         <!-- 3. 5 Module Cards Grid Skeleton -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <div *ngFor="let _ of [1,2,3,4,5]" 
@@ -1503,28 +859,7 @@ import { MessagesService } from '../../../services/messages.service';
           </div>
         </div>
 
-        <!-- 4. Controls / Search Skeleton -->
-        <div class="rounded-2xl border p-4"
-             [ngClass]="isDark ? 'bg-[#111116] border-neutral-800' : 'bg-white border-neutral-200'">
-          <div class="h-10 w-full rounded-xl skeleton-shimmer"></div>
-        </div>
 
-        <!-- 5. Workspace Dual Grid Skeleton -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <div *ngFor="let _ of [1,2]" 
-               class="rounded-2xl border p-5 space-y-4 min-h-[300px]"
-               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800' : 'bg-white border-neutral-200'">
-            <div class="flex items-center justify-between pb-3 border-b"
-                 [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-              <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-lg skeleton-shimmer"></div>
-                <div class="h-4 w-40 rounded-lg skeleton-shimmer"></div>
-              </div>
-              <div class="h-7 w-28 rounded-xl skeleton-shimmer"></div>
-            </div>
-            <div class="h-40 w-full rounded-xl skeleton-shimmer"></div>
-          </div>
-        </div>
 
       </div>
     </ng-template>
@@ -1592,23 +927,14 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   @Output() tabChange = new EventEmitter<string>();
 
   private analyticsService = inject(AnalyticsService);
-  private itineraryService = inject(ItineraryService);
   private sessionTimer = inject(SessionTimerService);
   private financeService = inject(FinanceService);
   private commandCenterService = inject(CommandCenterService);
   private audioRecorder = inject(AudioRecorderService);
   private router = inject(Router);
-  private streakService = inject(StreakService);
   private messagesService = inject(MessagesService);
   private ngZone = inject(NgZone);
   private cdr = inject(ChangeDetectorRef);
-
-  streakData: DailyStreakData | null = null;
-  streakWeekDays: WeekDayStreak[] = [];
-  streakMonthData: MonthStreakData | null = null;
-  currentCalendarMonthDate = new Date();
-  isStreakMonthModalOpen = false;
-  private streakSub: Subscription | null = null;
 
   metrics: SystemMetrics = {
     homeViews: 0,
@@ -1697,13 +1023,6 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   totalInvoicesCount = 0;
   financeTotalPaid = 0;
   financeTotalPending = 0;
-  collectionRate = 85;
-  conversionRate = 12.8;
-  avgDailyTraffic = 0;
-  maxTraffic = 0;
-  mobileChartTab: 'traffic' | 'finances' = 'traffic';
-  desktopChartTab: 'traffic' | 'finances' = 'traffic';
-
   // Radar Proactivo State
   radarData: RadarResponse | null = null;
   isRadarLoading = false;
@@ -1740,22 +1059,6 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   private typeInterval: any;
   private pauseTimeout: any;
 
-  // Traffic SVG Path Data
-  weekDays = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-  trafficPoints: { x: number; y: number }[] = [];
-  trafficLinePath = '';
-  trafficAreaPath = '';
-
-  // Financial Monthly Bars Data
-  financialMonthlyBars = [
-    { month: 'Ene', amount: 2400000, formattedShort: '$2.4M', heightPct: 45 },
-    { month: 'Feb', amount: 3200000, formattedShort: '$3.2M', heightPct: 60 },
-    { month: 'Mar', amount: 2800000, formattedShort: '$2.8M', heightPct: 52 },
-    { month: 'Abr', amount: 4100000, formattedShort: '$4.1M', heightPct: 78 },
-    { month: 'May', amount: 3900000, formattedShort: '$3.9M', heightPct: 74 },
-    { month: 'Jun', amount: 5200000, formattedShort: '$5.2M', heightPct: 100 },
-  ];
-
   // Server Stats
   serverStats = [
     { label: 'Estado API', value: 'Online', dot: true },
@@ -1770,8 +1073,6 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   showSessionExpiredModal = false;
   private sessionSub!: Subscription;
   private sessionExpiredSub!: Subscription;
-
-  itineraryNotifs: any = { unseen: 0, current: [], upcoming: [], overdue: [], no_time: [] };
 
   get isDark() { return this.theme === 'dark'; }
 
@@ -1792,14 +1093,6 @@ export class DashHomeComponent implements OnInit, OnDestroy {
       }
     }, 1200);
 
-    // Racha del Día
-    this.streakSub = this.streakService.streak$.subscribe(data => {
-      this.streakData = data;
-      this.streakWeekDays = this.streakService.getWeekDays();
-      this.updateStreakMonth();
-      this.cdr.markForCheck();
-    });
-
     // 1. Cargar Radar y Accesos Recientes
     this.loadRadarData();
 
@@ -1807,24 +1100,14 @@ export class DashHomeComponent implements OnInit, OnDestroy {
     this.analyticsService.getMetrics().subscribe({
       next: (m) => {
         this.metrics = m || this.metrics;
-        this.computeTrafficGraph();
         this.checkLoadingState();
       },
       error: () => {
-        this.computeTrafficGraph();
         this.checkLoadingState();
       }
     });
 
-    // 3. Cargar Itinerario
-    this.itineraryService.getNotifications().subscribe({
-      next: (notifs) => {
-        this.itineraryNotifs = notifs || this.itineraryNotifs;
-        this.cdr.markForCheck();
-      }
-    });
-
-    // 4. Cargar Finanzas Reales
+    // 3. Cargar Finanzas Reales
     this.loadFinanceSummary();
 
     // 5. Badges locales
@@ -1892,7 +1175,6 @@ export class DashHomeComponent implements OnInit, OnDestroy {
     clearInterval(this.phraseInterval);
     clearTimeout(this.pauseTimeout);
     clearTimeout(this.phraseTimeout);
-    if (this.streakSub) this.streakSub.unsubscribe();
     if (this.sessionSub) this.sessionSub.unsubscribe();
     if (this.sessionExpiredSub) this.sessionExpiredSub.unsubscribe();
     this.voiceSubs.forEach(s => s.unsubscribe());
@@ -1951,9 +1233,6 @@ export class DashHomeComponent implements OnInit, OnDestroy {
             if (summary.clientsCount !== undefined || summary.total_clients !== undefined) {
               this.totalClientsCount = summary.clientsCount || summary.total_clients;
             }
-            if (summary.totalBilled && summary.totalPaid) {
-              this.collectionRate = Math.round((summary.totalPaid / summary.totalBilled) * 100) || 85;
-            }
           }
         },
         error: () => {}
@@ -1972,50 +1251,6 @@ export class DashHomeComponent implements OnInit, OnDestroy {
       this.financeTotalPending = 1250000;
       this.totalInvoicesCount = 14;
       this.totalClientsCount = 8;
-    }
-  }
-
-  private computeTrafficGraph() {
-    const rawData = this.metrics?.dailyTrend || [];
-    let values = rawData.map(d => (d.total || (d.home + (d.linktree || 0))) || 0);
-
-    if (!values.length || values.every(v => v === 0)) {
-      values = [42, 68, 55, 89, 110, 95, 128];
-    } else if (values.length < 7) {
-      while (values.length < 7) values.unshift(Math.max(10, Math.round(values[0] * 0.8)));
-    } else if (values.length > 7) {
-      values = values.slice(-7);
-    }
-
-    const maxVal = Math.max(...values, 10);
-    this.maxTraffic = maxVal;
-    const sum = values.reduce((a, b) => a + b, 0);
-    this.avgDailyTraffic = Math.round(sum / values.length);
-    this.conversionRate = Math.min(24.5, Number(((sum > 0 ? (this.unreadMessages + 4) / sum : 0.12) * 100).toFixed(1)));
-
-    const width = 500;
-    const height = 120;
-    const topMargin = 20;
-    const bottomMargin = 15;
-    const step = width / (values.length - 1);
-
-    this.trafficPoints = values.map((val, idx) => {
-      const x = Math.round(idx * step);
-      const ratio = val / maxVal;
-      const y = Math.round((height - bottomMargin) - ratio * (height - topMargin - bottomMargin));
-      return { x, y };
-    });
-
-    if (this.trafficPoints.length > 0) {
-      let d = `M ${this.trafficPoints[0].x} ${this.trafficPoints[0].y}`;
-      for (let i = 0; i < this.trafficPoints.length - 1; i++) {
-        const p0 = this.trafficPoints[i];
-        const p1 = this.trafficPoints[i + 1];
-        const cx = (p0.x + p1.x) / 2;
-        d += ` C ${cx} ${p0.y}, ${cx} ${p1.y}, ${p1.x} ${p1.y}`;
-      }
-      this.trafficLinePath = d;
-      this.trafficAreaPath = `${d} L ${width} 140 L 0 140 Z`;
     }
   }
 
@@ -2185,7 +1420,6 @@ export class DashHomeComponent implements OnInit, OnDestroy {
     this.analyticsService.getMetrics().subscribe({
       next: (m) => {
         this.metrics = m || this.metrics;
-        this.computeTrafficGraph();
         this.isLoading = false;
         this.cdr.markForCheck();
       },
@@ -2194,16 +1428,6 @@ export class DashHomeComponent implements OnInit, OnDestroy {
         this.cdr.markForCheck();
       }
     });
-  }
-
-  resetMetrics() {
-    if (confirm('¿Estás seguro de que deseas reiniciar todas las métricas?')) {
-      this.analyticsService.resetMetrics();
-      this.analyticsService.getMetrics().subscribe(m => {
-        this.metrics = m;
-        this.computeTrafficGraph();
-      });
-    }
   }
 
   goToLogin() {
@@ -2276,49 +1500,5 @@ export class DashHomeComponent implements OnInit, OnDestroy {
         }, 300);
       }, 10000);
     });
-  }
-
-  openStreakModal(): void {
-    this.streakService.openModalManual();
-  }
-
-  get completedStreakGoals(): number {
-    return this.streakService.getCompletedActionsCount();
-  }
-
-  updateStreakMonth(): void {
-    this.streakMonthData = this.streakService.getMonthData(this.currentCalendarMonthDate);
-  }
-
-  prevStreakMonth(): void {
-    this.currentCalendarMonthDate = new Date(
-      this.currentCalendarMonthDate.getFullYear(),
-      this.currentCalendarMonthDate.getMonth() - 1,
-      1
-    );
-    this.updateStreakMonth();
-  }
-
-  nextStreakMonth(): void {
-    this.currentCalendarMonthDate = new Date(
-      this.currentCalendarMonthDate.getFullYear(),
-      this.currentCalendarMonthDate.getMonth() + 1,
-      1
-    );
-    this.updateStreakMonth();
-  }
-
-  resetToCurrentMonth(): void {
-    this.currentCalendarMonthDate = new Date();
-    this.updateStreakMonth();
-  }
-
-  openStreakMonthModal(): void {
-    this.updateStreakMonth();
-    this.isStreakMonthModalOpen = true;
-  }
-
-  closeStreakMonthModal(): void {
-    this.isStreakMonthModalOpen = false;
   }
 }

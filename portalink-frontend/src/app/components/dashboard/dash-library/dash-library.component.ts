@@ -6,7 +6,6 @@ import { Subscription } from 'rxjs';
 import { LibraryService, NotebookFolder, NotebookModule, NotebookPage } from '../../../services/library.service';
 import { LibraryAiService } from '../../../services/library-ai.service';
 import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-body.directive';
-import { StreakService } from '../../../services/streak.service';
 import { SpanishTtsService } from '../../../services/spanish-tts.service';
 import { CopilotMarkdownService } from '../../../services/copilot-markdown.service';
 import { CopilotChatComponent } from './copilot-chat/copilot-chat.component';
@@ -197,7 +196,6 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private libraryService = inject(LibraryService);
   private libraryAiService = inject(LibraryAiService);
-  private streakService = inject(StreakService);
   private sanitizer = inject(DomSanitizer);
   public spanishTts = inject(SpanishTtsService);
   private copilotMarkdownService = inject(CopilotMarkdownService);
@@ -2680,7 +2678,6 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   autoSavePage() {
     if (!this.selectedPage || !this.selectedPage.id || typeof this.selectedPage.id === 'number' && this.selectedPage.id > 1000000000000) return;
-    this.streakService.completeAction('library');
     this.libraryService.updatePage(this.selectedPage.id, {
       title: this.selectedPage.title,
       content: this.selectedPage.content,

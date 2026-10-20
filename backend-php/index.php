@@ -74,7 +74,6 @@ use App\Controllers\LibraryController;
 use App\Controllers\ChatAdminController;
 use App\Controllers\CommandCenterController;
 use App\Controllers\RobotChatController;
-use App\Controllers\StreakController;
 
 $request = new Request();
 $response = new Response();
@@ -379,13 +378,6 @@ $router->post('/api/robot/chat', [RobotChatController::class, 'chat'], [Optional
 $router->post('/api/robot_chat.php', [RobotChatController::class, 'chat'], [OptionalAuthMiddleware::class]);
 $router->post('/api/robot/tts', [RobotChatController::class, 'generateTts'], [OptionalAuthMiddleware::class]);
 $router->post('/api/robot/transcribe', [RobotChatController::class, 'transcribe'], [OptionalAuthMiddleware::class]);
-
-
-// ──────────────────────────────────────────────────────────────
-//  RUTAS DE RACHA DIARIA (/api/streak)
-// ──────────────────────────────────────────────────────────────
-$router->get('/api/streak', [StreakController::class, 'getStreak'], [OptionalAuthMiddleware::class]);
-$router->post('/api/streak/action', [StreakController::class, 'recordAction'], [OptionalAuthMiddleware::class]);
 
 // Despachar la petición protegido contra errores fatales no capturados
 try {

@@ -229,16 +229,6 @@ export class StreakService {
 
     this.saveLocal(current);
     this.streakSubject.next(current);
-
-    // Notificar al backend en background con fecha local
-    this.http.post<{ ok: boolean; data: any }>(`${this.apiUrl}/action`, { action, today })
-      .pipe(
-        catchError(err => {
-          console.warn('[StreakService] Backend sync error (using local):', err);
-          return of(null);
-        })
-      )
-      .subscribe();
   }
 
   private saveLocal(data: DailyStreakData): void {
@@ -252,33 +242,7 @@ export class StreakService {
   }
 
   private syncWithBackend(todayStr?: string): void {
-    const today = todayStr || this.getLocalDateString();
-    this.http.get<{ ok: boolean; data: any }>(`${this.apiUrl}?today=${today}`)
-      .pipe(
-        catchError(err => {
-          // Backend no disponible o sin conexión: conservar local
-          return of(null);
-        })
-      )
-      .subscribe(res => {
-        if (res && res.ok && res.data) {
-          const backend = res.data;
-          const merged: DailyStreakData = {
-            streakCount: Math.max(backend.streakCount, this.streakSubject.value.streakCount),
-            longestStreak: Math.max(backend.longestStreak, this.streakSubject.value.longestStreak),
-            lastActiveDate: backend.lastActiveDate || this.streakSubject.value.lastActiveDate,
-            today: backend.today || today,
-            actions: {
-              login: true,
-              robot: backend.actions?.robot || this.streakSubject.value.actions.robot,
-              library: backend.actions?.library || this.streakSubject.value.actions.library
-            },
-            history: [...new Set([...(backend.history || []), ...this.streakSubject.value.history])]
-          };
-          this.saveLocal(merged);
-          this.streakSubject.next(merged);
-        }
-      });
+    // Backend endpoint de racha eliminado a petición del usuario.
   }
 
   /**
