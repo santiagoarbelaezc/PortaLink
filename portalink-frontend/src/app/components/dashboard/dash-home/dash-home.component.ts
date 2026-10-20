@@ -21,142 +21,227 @@ import { MessagesService } from '../../../services/messages.service';
       <!-- ═══════════════════════ VISTA NATIVA APP MÓVIL (< lg) ═══════════════════════ -->
       <div class="block lg:hidden mobile-home-app space-y-3.5 pb-12 tab-enter font-sans select-none">
 
-        <!-- 1. HEADER NATIVO: PERFIL + GREETING + LIVE STATUS -->
-        <div class="rounded-3xl border p-4 transition-all duration-300 relative overflow-hidden"
-             [ngClass]="isDark ? 'bg-[#0d0d11] border-neutral-800/90 text-white shadow-[0_8px_30px_rgba(0,0,0,0.5)]' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-[0_8px_25px_rgba(0,0,0,0.04)]'">
-          
-          <div class="flex items-center justify-between mb-3">
-            <!-- Avatar y Saludo -->
-            <div class="flex items-center gap-3">
-              <div class="relative">
-                <div class="w-11 h-11 rounded-2xl flex items-center justify-center font-headline font-black text-sm tracking-wider text-white shadow-md border"
-                     [ngClass]="isDark ? 'bg-gradient-to-br from-red-600 to-black border-red-500/40 shadow-red-950/40' : 'bg-gradient-to-br from-red-600 to-neutral-900 border-red-400/50 shadow-red-600/20'">
-                  SA
-                </div>
-                <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2"
-                      [ngClass]="isDark ? 'border-[#0d0d11]' : 'border-white'"></span>
+        <!-- 1. PANEL NEGRO HERO MÓVIL CON ROTBOT -->
+        <div class="bg-[#09090b] text-white rounded-[24px] border border-neutral-800 p-5 relative overflow-hidden flex flex-col justify-between min-h-[260px] shadow-xl">
+          <!-- Círculos concéntricos sutiles de fondo -->
+          <div class="absolute -right-12 -bottom-12 w-56 h-56 rounded-full border border-neutral-800/40 pointer-events-none"></div>
+          <div class="absolute -right-6 -bottom-6 w-44 h-44 rounded-full border border-neutral-800/30 pointer-events-none"></div>
+
+          <div class="relative z-10 max-w-[62%] flex flex-col justify-between h-full">
+            <div>
+              <!-- Pill Saludo -->
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-neutral-800 bg-neutral-900/90 text-[10px] font-sans text-neutral-300 mb-3">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                <span>{{ greetingPillText }}</span>
               </div>
-              <div>
-                <div class="flex items-center gap-1.5">
-                  <span class="text-xs font-headline font-bold uppercase tracking-wider text-red-500">PortaLink Pro</span>
-                  <span class="text-[10px] text-neutral-400">·</span>
-                  <span class="text-[10px] font-mono font-medium text-neutral-400">{{ sessionTimeFormatted }}</span>
-                </div>
-                <h2 class="text-base font-headline font-extrabold tracking-tight m-0 leading-tight"
-                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                  {{ greetingText }}
-                </h2>
-              </div>
+
+              <!-- Título -->
+              <h2 class="text-2xl font-headline font-black tracking-tight leading-[1.1] text-white m-0 mb-2">
+                Bienvenido,<br>
+                Santiago!
+              </h2>
+
+              <!-- Párrafo -->
+              <p class="text-[11px] font-sans text-neutral-400 leading-relaxed m-0 mb-4">
+                Gestión centralizada de catálogo, inventario y finanzas de PortaLink.
+              </p>
             </div>
 
-            <!-- Botón de Mensajes Rápido con Badge -->
-            <button (click)="navigateToTab('messages')"
-                    class="relative w-10 h-10 rounded-2xl border flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-90"
-                    [ngClass]="unreadMessages > 0 
-                      ? 'bg-red-500/15 border-red-500/40 text-red-400' 
-                      : (isDark ? 'bg-neutral-900/80 border-neutral-800 text-neutral-400' : 'bg-neutral-100 border-neutral-200 text-neutral-600')">
-              <span class="material-symbols-rounded text-xl">mail</span>
-              <span *ngIf="unreadMessages > 0" 
-                    class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-red-600 text-white text-[10px] font-black flex items-center justify-center shadow-md animate-pulse">
-                {{ unreadMessages }}
-              </span>
-            </button>
+            <!-- Fila Fecha con ícono de calendario rojo -->
+            <div class="flex items-center gap-1.5 text-[11px] font-sans text-neutral-400">
+              <span class="material-symbols-rounded text-sm text-red-500">calendar_today</span>
+              <span>{{ formattedHeroDate }}</span>
+            </div>
           </div>
 
-          <!-- Frase Rotativa Dinámica -->
-          <div class="px-3 py-2 rounded-xl text-xs font-sans flex items-center gap-2 border"
-               [ngClass]="isDark ? 'bg-neutral-950/70 border-neutral-800/80 text-neutral-300' : 'bg-neutral-50 border-neutral-200/70 text-neutral-700'">
-            <span class="text-xs select-none">💡</span>
-            <span class="truncate italic">{{ currentRotatingPhrase || 'Gestión centralizada del catálogo y módulos.' }}</span>
-          </div>
-
-          <!-- Micro Barra de Chips Horizontales -->
-          <div class="flex items-center gap-2 overflow-x-auto pt-3 no-scrollbar">
-            <span class="shrink-0 h-6.5 px-2.5 rounded-full border text-[10px] font-semibold inline-flex items-center gap-1.5"
-                  [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
-              <span class="material-symbols-rounded text-sm">visibility</span>
-              {{ (metrics.homeViews || 0) + (metrics.linktreeViews || 0) | number }} visitas
-            </span>
-            <span class="shrink-0 h-6.5 px-2.5 rounded-full border text-[10px] font-semibold inline-flex items-center gap-1.5"
-                  [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              99.9% Online
-            </span>
-            <span class="shrink-0 h-6.5 px-2.5 rounded-full border text-[10px] font-semibold inline-flex items-center gap-1.5"
-                  [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
-              <span class="material-symbols-rounded text-sm text-red-500">speed</span>
-              42ms Latencia
-            </span>
+          <!-- Imagen Rotbot 3D en móvil -->
+          <div class="absolute right-1 bottom-0 top-0 flex items-center justify-center pointer-events-none z-10">
+            <img src="assets/images/rotbot4.png"
+                 alt="RotBot Copilot"
+                 class="w-36 h-auto max-h-[220px] object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.9)]">
           </div>
         </div>
 
-        <!-- 2. HUB DE ACCESOS RÁPIDOS NATIVO (4 APP SQUIRCLES) -->
-        <div class="grid grid-cols-2 gap-2.5">
-          <!-- Finanzas -->
-          <button (click)="navigateToTab('finances')"
-                  class="p-3.5 rounded-2xl border text-left flex flex-col justify-between transition-all duration-200 cursor-pointer active:scale-95 group relative overflow-hidden"
-                  [ngClass]="isDark ? 'bg-[#111116] border-neutral-800/90 text-white shadow-[0_4px_16px_rgba(0,0,0,0.3)]' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-sm'">
-            <div class="flex items-center justify-between mb-2">
-              <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-red-500/10 text-red-500 border border-red-500/20">
-                <span class="material-symbols-rounded text-xl">payments</span>
+        <!-- 3. ACCESO RÁPIDO MÓVIL (TARJETA BLANCA / GRIS) -->
+        <div class="rounded-[24px] border p-4 transition-all duration-200"
+             [ngClass]="isDark ? 'bg-[#0e0e13] border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900 shadow-sm'">
+          <div class="text-[10px] font-headline font-extrabold uppercase tracking-widest text-neutral-500 mb-2.5">
+            Acceso Rápido
+          </div>
+          <div class="space-y-1">
+            <!-- 1. Inventario & Finanzas -->
+            <div (click)="navigateToTab('finances')"
+                 class="flex items-center justify-between p-1.5 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-900/60 transition-colors cursor-pointer group">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl border flex items-center justify-center"
+                     [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
+                  <span class="material-symbols-rounded text-lg">inventory_2</span>
+                </div>
+                <div>
+                  <p class="text-xs font-headline font-bold m-0" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Inventario & Finanzas</p>
+                  <p class="text-[10px] text-neutral-400 m-0">Ver catálogo y pagos</p>
+                </div>
               </div>
-              <span class="material-symbols-rounded text-neutral-400 group-hover:text-red-500 transition-colors text-lg">chevron_right</span>
+              <span class="material-symbols-rounded text-neutral-400 text-base">chevron_right</span>
             </div>
-            <div>
-              <p class="text-xs font-headline font-bold m-0 leading-tight">Finanzas</p>
-              <p class="text-[10px] text-neutral-400 m-0 mt-0.5 truncate">{{ formatCurrency(financeTotalPaid) }}</p>
-            </div>
-          </button>
 
-          <!-- Biblioteca -->
-          <button (click)="navigateToTab('library')"
-                  class="p-3.5 rounded-2xl border text-left flex flex-col justify-between transition-all duration-200 cursor-pointer active:scale-95 group relative overflow-hidden"
-                  [ngClass]="isDark ? 'bg-[#111116] border-neutral-800/90 text-white shadow-[0_4px_16px_rgba(0,0,0,0.3)]' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-sm'">
-            <div class="flex items-center justify-between mb-2">
-              <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-neutral-500/10 text-neutral-300 border border-neutral-500/20"
-                   [ngClass]="isDark ? 'text-white' : 'text-neutral-800'">
-                <span class="material-symbols-rounded text-xl">menu_book</span>
+            <!-- 2. Analíticas (Rojo) -->
+            <div (click)="navigateToTab('rotbot')"
+                 class="flex items-center justify-between p-1.5 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-900/60 transition-colors cursor-pointer group">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl border flex items-center justify-center bg-red-500/10 border-red-500/25 text-red-500">
+                  <span class="material-symbols-rounded text-lg">monitoring</span>
+                </div>
+                <div>
+                  <p class="text-xs font-headline font-bold m-0" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Analíticas & Métricas</p>
+                  <p class="text-[10px] text-neutral-400 m-0">Diagnóstico en tiempo real</p>
+                </div>
               </div>
-              <span class="material-symbols-rounded text-neutral-400 group-hover:text-red-500 transition-colors text-lg">chevron_right</span>
+              <span class="material-symbols-rounded text-neutral-400 text-base">chevron_right</span>
             </div>
-            <div>
-              <p class="text-xs font-headline font-bold m-0 leading-tight">Biblioteca</p>
-              <p class="text-[10px] text-neutral-400 m-0 mt-0.5 truncate">Cuadernos & SQL</p>
-            </div>
-          </button>
 
-          <!-- RotBot IA -->
-          <button (click)="navigateToTab('rotbot')"
-                  class="p-3.5 rounded-2xl border text-left flex flex-col justify-between transition-all duration-200 cursor-pointer active:scale-95 group relative overflow-hidden"
-                  [ngClass]="isDark ? 'bg-[#111116] border-neutral-800/90 text-white shadow-[0_4px_16px_rgba(0,0,0,0.3)]' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-sm'">
-            <div class="flex items-center justify-between mb-2">
-              <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-red-500/10 text-red-500 border border-red-500/20">
-                <span class="material-symbols-rounded text-xl">smart_toy</span>
+            <!-- 3. Biblioteca & SQL (Rojo) -->
+            <div (click)="navigateToTab('library')"
+                 class="flex items-center justify-between p-1.5 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-900/60 transition-colors cursor-pointer group">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl border flex items-center justify-center bg-red-500/10 border-red-500/25 text-red-500">
+                  <span class="material-symbols-rounded text-lg">category</span>
+                </div>
+                <div>
+                  <p class="text-xs font-headline font-bold m-0" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Biblioteca & SQL</p>
+                  <p class="text-[10px] text-neutral-400 m-0">Tablas y cuadernos</p>
+                </div>
               </div>
-              <span class="material-symbols-rounded text-neutral-400 group-hover:text-red-500 transition-colors text-lg">chevron_right</span>
+              <span class="material-symbols-rounded text-neutral-400 text-base">chevron_right</span>
             </div>
-            <div>
-              <p class="text-xs font-headline font-bold m-0 leading-tight">RotBot IA</p>
-              <p class="text-[10px] text-neutral-400 m-0 mt-0.5 truncate">Copiloto Activo</p>
-            </div>
-          </button>
 
-          <!-- Agenda / Itinerario -->
-          <button (click)="navigateToTab('itinerary')"
-                  class="p-3.5 rounded-2xl border text-left flex flex-col justify-between transition-all duration-200 cursor-pointer active:scale-95 group relative overflow-hidden"
-                  [ngClass]="isDark ? 'bg-[#111116] border-neutral-800/90 text-white shadow-[0_4px_16px_rgba(0,0,0,0.3)]' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-sm'">
-            <div class="flex items-center justify-between mb-2">
-              <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-neutral-500/10 text-neutral-300 border border-neutral-500/20"
-                   [ngClass]="isDark ? 'text-white' : 'text-neutral-800'">
-                <span class="material-symbols-rounded text-xl">calendar_today</span>
+            <!-- 4. Itinerario & Agenda -->
+            <div (click)="navigateToTab('itinerary')"
+                 class="flex items-center justify-between p-1.5 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-900/60 transition-colors cursor-pointer group">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl border flex items-center justify-center"
+                     [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
+                  <span class="material-symbols-rounded text-lg">layers</span>
+                </div>
+                <div>
+                  <p class="text-xs font-headline font-bold m-0" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Itinerario & Agenda</p>
+                  <p class="text-[10px] text-neutral-400 m-0">Tareas y eventos</p>
+                </div>
               </div>
-              <span class="material-symbols-rounded text-neutral-400 group-hover:text-red-500 transition-colors text-lg">chevron_right</span>
+              <span class="material-symbols-rounded text-neutral-400 text-base">chevron_right</span>
             </div>
+
+            <!-- 5. Buzón de Mensajes -->
+            <div (click)="navigateToTab('messages')"
+                 class="flex items-center justify-between p-1.5 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-900/60 transition-colors cursor-pointer group">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl border flex items-center justify-center"
+                     [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
+                  <span class="material-symbols-rounded text-lg">storefront</span>
+                </div>
+                <div>
+                  <p class="text-xs font-headline font-bold m-0" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Buzón de Mensajes</p>
+                  <p class="text-[10px] text-neutral-400 m-0">{{ unreadMessages > 0 ? (unreadMessages + ' sin leer') : 'Canal directo' }}</p>
+                </div>
+              </div>
+              <span class="material-symbols-rounded text-neutral-400 text-base">chevron_right</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. GRID DE 5 MÓDULOS MÓVIL (2 NEGROS + 3 BLANCOS) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <!-- Card 1: Black Card (Gestionar Inventario) -->
+          <div (click)="navigateToTab('finances')"
+               class="rounded-2xl p-4 flex flex-col justify-between cursor-pointer border"
+               [ngClass]="isDark ? 'bg-[#09090b] border-neutral-800 text-white' : 'bg-[#0a0a0d] border-neutral-900 text-white shadow-md'">
             <div>
-              <p class="text-xs font-headline font-bold m-0 leading-tight">Itinerario</p>
-              <p class="text-[10px] text-neutral-400 m-0 mt-0.5 truncate">Tareas & Citas</p>
+              <div class="w-9 h-9 rounded-xl border flex items-center justify-center bg-neutral-900 border-neutral-800 mb-3"
+                   style="color: #ffffff !important;">
+                <span class="material-symbols-rounded text-lg" style="color: #ffffff !important;">inventory_2</span>
+              </div>
+              <h3 class="text-sm font-headline font-bold m-0 mb-1 leading-tight dark-card-white"
+                  style="color: #ffffff !important;">Gestionar Inventario</h3>
+              <p class="text-[11px] font-sans text-neutral-400 leading-relaxed m-0 mb-4">Control detallado del catálogo, fotos y descripciones técnicas.</p>
             </div>
-          </button>
+            <div class="text-[11px] font-headline font-bold inline-flex items-center gap-1 dark-card-white"
+                 style="color: #ffffff !important;">
+              <span style="color: #ffffff !important;">Entrar al módulo</span>
+              <span class="material-symbols-rounded text-xs" style="color: #ffffff !important;">arrow_forward</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Black Card (Reporte y Analíticas) -->
+          <div (click)="navigateToTab('rotbot')"
+               class="rounded-2xl p-4 flex flex-col justify-between cursor-pointer border"
+               [ngClass]="isDark ? 'bg-[#09090b] border-neutral-800 text-white' : 'bg-[#0a0a0d] border-neutral-900 text-white shadow-md'">
+            <div>
+              <div class="w-9 h-9 rounded-xl border flex items-center justify-center bg-red-500/15 border-red-500/30 text-red-500 mb-3">
+                <span class="material-symbols-rounded text-lg text-red-500">monitoring</span>
+              </div>
+              <h3 class="text-sm font-headline font-bold m-0 mb-1 leading-tight dark-card-white"
+                  style="color: #ffffff !important;">Reporte y Analíticas</h3>
+              <p class="text-[11px] font-sans text-neutral-400 leading-relaxed m-0 mb-4">Diagnóstico de calidad, gráficos y métricas en tiempo real.</p>
+            </div>
+            <div class="text-[11px] font-headline font-bold text-red-500 inline-flex items-center gap-1">
+              <span>Entrar al módulo</span>
+              <span class="material-symbols-rounded text-xs">arrow_forward</span>
+            </div>
+          </div>
+
+          <!-- Card 3: White Card (Biblioteca & SQL) -->
+          <div (click)="navigateToTab('library')"
+               class="rounded-2xl p-4 flex flex-col justify-between cursor-pointer border"
+               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900 shadow-xs'">
+            <div>
+              <div class="w-9 h-9 rounded-xl border flex items-center justify-center mb-3"
+                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
+                <span class="material-symbols-rounded text-lg">category</span>
+              </div>
+              <h3 class="text-sm font-headline font-bold m-0 mb-1 leading-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Biblioteca & SQL</h3>
+              <p class="text-[11px] font-sans leading-relaxed m-0 mb-4" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Administra las categorías, esquemas y consultas del sistema.</p>
+            </div>
+            <div class="text-[11px] font-headline font-bold inline-flex items-center gap-1" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              <span>Entrar al módulo</span>
+              <span class="material-symbols-rounded text-xs">arrow_forward</span>
+            </div>
+          </div>
+
+          <!-- Card 4: White Card (Itinerario & Agenda) -->
+          <div (click)="navigateToTab('itinerary')"
+               class="rounded-2xl p-4 flex flex-col justify-between cursor-pointer border"
+               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900 shadow-xs'">
+            <div>
+              <div class="w-9 h-9 rounded-xl border flex items-center justify-center mb-3"
+                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
+                <span class="material-symbols-rounded text-lg">layers</span>
+              </div>
+              <h3 class="text-sm font-headline font-bold m-0 mb-1 leading-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Itinerario & Agenda</h3>
+              <p class="text-[11px] font-sans leading-relaxed m-0 mb-4" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Administra citas, tareas pendientes y cronograma diario.</p>
+            </div>
+            <div class="text-[11px] font-headline font-bold inline-flex items-center gap-1" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              <span>Entrar al módulo</span>
+              <span class="material-symbols-rounded text-xs">arrow_forward</span>
+            </div>
+          </div>
+
+          <!-- Card 5: White Card (Buzón de Mensajes) -->
+          <div (click)="navigateToTab('messages')"
+               class="rounded-2xl p-4 flex flex-col justify-between cursor-pointer border sm:col-span-2"
+               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900 shadow-xs'">
+            <div>
+              <div class="w-9 h-9 rounded-xl border flex items-center justify-center mb-3"
+                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
+                <span class="material-symbols-rounded text-lg">storefront</span>
+              </div>
+              <h3 class="text-sm font-headline font-bold m-0 mb-1 leading-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Buzón de Mensajes</h3>
+              <p class="text-[11px] font-sans leading-relaxed m-0 mb-4" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Administra solicitudes directas, mensajes y avisos del catálogo.</p>
+            </div>
+            <div class="text-[11px] font-headline font-bold inline-flex items-center gap-1" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              <span>Entrar al módulo</span>
+              <span class="material-symbols-rounded text-xs">arrow_forward</span>
+            </div>
+          </div>
         </div>
 
         <!-- 3. COMANDO IA MÓVIL (INPUT FLUIDO + VOZ + CHIPS) -->
@@ -261,7 +346,7 @@ import { MessagesService } from '../../../services/messages.service';
               <p class="text-xl font-headline font-extrabold tracking-tight m-0 leading-tight">
                 {{ (metrics.homeViews || 0) + (metrics.linktreeViews || 0) | number }}
               </p>
-              <span class="text-[10px] font-bold text-emerald-500 flex items-center gap-1 mt-1 font-sans">
+              <span class="text-[10px] font-bold text-red-500 flex items-center gap-1 mt-1 font-sans">
                 +18.4% <span class="text-neutral-400 font-normal">esta semana</span>
               </span>
             </div>
@@ -310,14 +395,14 @@ import { MessagesService } from '../../../services/messages.service';
                [ngClass]="isDark ? 'bg-[#111116] border-neutral-800/90 text-white' : 'bg-white border-neutral-200/90 text-neutral-900 shadow-sm'">
             <div class="flex items-center justify-between text-neutral-400 mb-2">
               <span class="text-[10px] font-headline font-bold uppercase tracking-wider">Sistema</span>
-              <span class="material-symbols-rounded text-emerald-500 text-base">verified</span>
+              <span class="material-symbols-rounded text-red-500 text-base">verified</span>
             </div>
             <div>
               <p class="text-xl font-headline font-extrabold tracking-tight m-0 leading-tight">
                 99.9%
               </p>
               <span class="text-[10px] text-neutral-400 flex items-center gap-1 mt-1 font-sans">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
                 Latencia: 42ms
               </span>
             </div>
@@ -574,879 +659,623 @@ import { MessagesService } from '../../../services/messages.service';
 
       </div>
 
-      <!-- ═══════════════════════ VISTA ESCRITORIO BENTO GRID (>= lg) ═══════════════════════ -->
-      <div class="hidden lg:grid grid-cols-12 gap-3.5 sm:gap-4 tab-enter font-sans">
+      <!-- ═══════════════════════ VISTA ESCRITORIO ARCHITECTURE (>= lg) ═══════════════════════ -->
+      <div class="hidden lg:flex flex-col gap-5 tab-enter font-sans">
 
-        <!-- ═══════════════════════ 1. HERO BENTO GRID (BIENVENIDA + ACCESO RÁPIDO) ═══════════════════════ -->
-        <section class="dash-bento-grid lg:col-span-12 order-1">
-          <!-- Tarjeta Negra de Bienvenida -->
-          <div class="bento-welcome group">
-            <div class="bento-badge">
-              <span class="bento-badge-dot"></span>
-              {{ greetingText }} · Panel Central
+        <!-- ════ 1. HERO PRINCIPAL: PANEL NEGRO CON ROTBOT + ACCESO RÁPIDO ════ -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+          
+          <!-- PANEL NEGRO HERO (COL-SPAN-8) -->
+          <div class="lg:col-span-8 bg-[#09090b] text-white rounded-[26px] border border-neutral-800 p-7 sm:p-9 relative overflow-hidden flex flex-col justify-between min-h-[340px] shadow-xl">
+            
+            <!-- Círculos concéntricos sutiles de fondo (igual que la captura) -->
+            <div class="absolute -right-16 -bottom-16 w-80 h-80 rounded-full border border-neutral-800/40 pointer-events-none"></div>
+            <div class="absolute -right-8 -bottom-8 w-64 h-64 rounded-full border border-neutral-800/30 pointer-events-none"></div>
+            <div class="absolute right-8 bottom-8 w-48 h-48 rounded-full border border-neutral-800/20 pointer-events-none"></div>
+
+            <!-- Contenido textual a la izquierda -->
+            <div class="relative z-10 max-w-[60%] flex flex-col justify-between h-full">
+              <div>
+                <!-- Pill Saludo con Punto Rojo -->
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-neutral-800 bg-neutral-900/90 text-xs font-sans text-neutral-300 mb-5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                  <span>{{ greetingPillText }}</span>
+                </div>
+
+                <!-- Título Bienvenido Santiago en blanco puro, sin degradados -->
+                <h2 class="text-3xl sm:text-4xl lg:text-[42px] font-headline font-black tracking-tight leading-[1.08] text-white m-0 mb-3">
+                  Bienvenido,<br>
+                  Santiago!
+                </h2>
+
+                <!-- Subtítulo en gris claro -->
+                <p class="text-xs sm:text-sm font-sans text-neutral-400 leading-relaxed m-0 mb-6 max-w-md">
+                  Gestión centralizada de catálogo, inventario, finanzas y operaciones de PortaLink.
+                </p>
+              </div>
+
+              <!-- Fila Fecha con ícono de calendario rojo -->
+              <div class="flex items-center gap-2 text-xs font-sans text-neutral-400 pt-2">
+                <span class="material-symbols-rounded text-base text-red-500">calendar_today</span>
+                <span>{{ formattedHeroDate }}</span>
+              </div>
             </div>
 
-            <div class="relative z-10 space-y-1">
-              <h2 class="bento-title">
-                Bienvenido,<br>
-                <span class="bento-username">Santiago!</span>
-              </h2>
-              <p class="bento-desc">
-                {{ currentRotatingPhrase || 'Gestión centralizada del catálogo y módulos del sistema.' }}
+            <!-- Imagen 3D Rotbot a la derecha del panel negro -->
+            <div class="absolute right-4 sm:right-8 lg:right-10 bottom-0 top-0 flex items-center justify-center pointer-events-none z-10">
+              <img src="assets/images/rotbot4.png"
+                   alt="RotBot Copilot"
+                   class="w-48 sm:w-56 lg:w-64 h-auto max-h-[300px] object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)] transform transition-transform duration-500 hover:scale-105">
+            </div>
+
+          </div>
+
+          <!-- TARJETA ACCESO RÁPIDO (COL-SPAN-4) -->
+          <div class="lg:col-span-4 rounded-[26px] border p-6 flex flex-col justify-between transition-all duration-200"
+               [ngClass]="isDark ? 'bg-[#0e0e13] border-neutral-800 text-white shadow-sm' : 'bg-white border-neutral-200 text-neutral-900 shadow-sm'">
+            
+            <div>
+              <div class="text-[11px] font-headline font-extrabold uppercase tracking-widest text-neutral-500 mb-4">
+                Acceso Rápido
+              </div>
+
+              <div class="space-y-1">
+                <!-- 1. Inventario & Finanzas -->
+                <div (click)="navigateToTab('finances')"
+                     class="flex items-center justify-between p-2 rounded-2xl hover:bg-neutral-100 dark:hover:bg-neutral-900/60 transition-colors cursor-pointer group">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl border flex items-center justify-center transition-colors"
+                         [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
+                      <span class="material-symbols-rounded text-xl">inventory_2</span>
+                    </div>
+                    <div>
+                      <p class="text-xs font-headline font-bold m-0 group-hover:text-red-500 transition-colors"
+                         [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Inventario & Finanzas</p>
+                      <p class="text-[11px] text-neutral-400 m-0">Ver y editar productos y pagos</p>
+                    </div>
+                  </div>
+                  <span class="material-symbols-rounded text-neutral-400 group-hover:text-red-500 group-hover:translate-x-0.5 transition-all text-base">chevron_right</span>
+                </div>
+
+                <!-- 2. Analíticas con acento rojo -->
+                <div (click)="navigateToTab('rotbot')"
+                     class="flex items-center justify-between p-2 rounded-2xl hover:bg-neutral-100 dark:hover:bg-neutral-900/60 transition-colors cursor-pointer group">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl border flex items-center justify-center bg-red-500/10 border-red-500/25 text-red-500">
+                      <span class="material-symbols-rounded text-xl">monitoring</span>
+                    </div>
+                    <div>
+                      <p class="text-xs font-headline font-bold m-0 group-hover:text-red-500 transition-colors"
+                         [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Analíticas & Métricas</p>
+                      <p class="text-[11px] text-neutral-400 m-0">Diagnóstico en tiempo real</p>
+                    </div>
+                  </div>
+                  <span class="material-symbols-rounded text-neutral-400 group-hover:text-red-500 group-hover:translate-x-0.5 transition-all text-base">chevron_right</span>
+                </div>
+
+                <!-- 3. Biblioteca & SQL con acento rojo -->
+                <div (click)="navigateToTab('library')"
+                     class="flex items-center justify-between p-2 rounded-2xl hover:bg-neutral-100 dark:hover:bg-neutral-900/60 transition-colors cursor-pointer group">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl border flex items-center justify-center bg-red-500/10 border-red-500/25 text-red-500">
+                      <span class="material-symbols-rounded text-xl">category</span>
+                    </div>
+                    <div>
+                      <p class="text-xs font-headline font-bold m-0 group-hover:text-red-500 transition-colors"
+                         [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Biblioteca & SQL</p>
+                      <p class="text-[11px] text-neutral-400 m-0">Consultas, tablas y apuntes</p>
+                    </div>
+                  </div>
+                  <span class="material-symbols-rounded text-neutral-400 group-hover:text-red-500 group-hover:translate-x-0.5 transition-all text-base">chevron_right</span>
+                </div>
+
+                <!-- 4. Itinerario & Agenda -->
+                <div (click)="navigateToTab('itinerary')"
+                     class="flex items-center justify-between p-2 rounded-2xl hover:bg-neutral-100 dark:hover:bg-neutral-900/60 transition-colors cursor-pointer group">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl border flex items-center justify-center transition-colors"
+                         [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
+                      <span class="material-symbols-rounded text-xl">layers</span>
+                    </div>
+                    <div>
+                      <p class="text-xs font-headline font-bold m-0 group-hover:text-red-500 transition-colors"
+                         [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Itinerario & Agenda</p>
+                      <p class="text-[11px] text-neutral-400 m-0">Tareas y eventos del día</p>
+                    </div>
+                  </div>
+                  <span class="material-symbols-rounded text-neutral-400 group-hover:text-red-500 group-hover:translate-x-0.5 transition-all text-base">chevron_right</span>
+                </div>
+
+                <!-- 5. Buzón de Mensajes -->
+                <div (click)="navigateToTab('messages')"
+                     class="flex items-center justify-between p-2 rounded-2xl hover:bg-neutral-100 dark:hover:bg-neutral-900/60 transition-colors cursor-pointer group">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl border flex items-center justify-center transition-colors"
+                         [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
+                      <span class="material-symbols-rounded text-xl">storefront</span>
+                    </div>
+                    <div>
+                      <p class="text-xs font-headline font-bold m-0 group-hover:text-red-500 transition-colors"
+                         [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Buzón de Mensajes</p>
+                      <p class="text-[11px] text-neutral-400 m-0">{{ unreadMessages > 0 ? (unreadMessages + ' mensajes sin leer') : 'Canal directo de contacto' }}</p>
+                    </div>
+                  </div>
+                  <span class="material-symbols-rounded text-neutral-400 group-hover:text-red-500 group-hover:translate-x-0.5 transition-all text-base">chevron_right</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- ════ 3. GRID DE 5 MÓDULOS (2 NEGROS + 3 BLANCOS SEGÚN LA CAPTURA) ════ -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          
+          <!-- Card 1: Black Card (Gestionar Inventario) -->
+          <div (click)="navigateToTab('finances')"
+               class="rounded-[22px] p-5 flex flex-col justify-between cursor-pointer group transition-all duration-200 hover:-translate-y-1 shadow-sm border"
+               [ngClass]="isDark ? 'bg-[#09090b] border-neutral-800 text-white hover:border-neutral-700' : 'bg-[#0a0a0d] border-neutral-900 text-white shadow-md'">
+            <div>
+              <div class="w-11 h-11 rounded-2xl border flex items-center justify-center bg-neutral-900/90 border-neutral-800 mb-4"
+                   style="color: #ffffff !important;">
+                <span class="material-symbols-rounded text-xl" style="color: #ffffff !important;">inventory_2</span>
+              </div>
+              <h3 class="text-base font-headline font-bold m-0 mb-2 leading-tight dark-card-white"
+                  style="color: #ffffff !important;">
+                Gestionar Inventario
+              </h3>
+              <p class="text-xs font-sans text-neutral-400 leading-relaxed m-0 mb-6">
+                Control detallado del catálogo, fotos, descripciones técnicas y materiales.
               </p>
             </div>
-
-            <!-- Chips de Estado Rápido (Adaptativo Premium: Modo Claro & Oscuro) -->
-            <div class="grid grid-cols-2 gap-2.5 sm:flex sm:flex-wrap items-center relative z-10 pt-3">
-              <!-- Chip 1: Vistas acumuladas -->
-              <span class="h-8 px-3.5 rounded-full border inline-flex items-center gap-2 text-xs font-semibold transition-all duration-300 group/vistas cursor-default"
-                    [ngClass]="isDark 
-                      ? 'bg-white/[0.07] hover:bg-white/[0.12] border-white/15 text-white shadow-sm' 
-                      : 'bg-white hover:bg-neutral-50 border-neutral-200/90 text-neutral-800 shadow-xs'">
-                <span class="material-symbols-rounded transition-colors"
-                      [ngClass]="isDark ? 'text-neutral-300 group-hover/vistas:text-white' : 'text-neutral-500 group-hover/vistas:text-neutral-900'"
-                      style="font-size: 16px;">visibility</span>
-                <span class="tracking-tight flex items-center gap-1">
-                  <strong class="font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                    {{ (metrics.homeViews || 0) + (metrics.linktreeViews || 0) | number }}
-                  </strong>
-                  <span [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Vistas</span>
-                </span>
-              </span>
-
-              <!-- Chip 2: Mensajes no leídos -->
-              <button type="button"
-                     (click)="navigateToTab('messages')"
-                     class="h-8 px-3.5 rounded-full border inline-flex items-center gap-2 text-xs font-semibold cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 group/msg"
-                     [ngClass]="unreadMessages > 0 
-                       ? (isDark ? 'bg-red-500/20 border-red-500/50 text-white shadow-[0_0_15px_rgba(239,68,68,0.35)]' : 'bg-red-50 border-red-200 text-red-700 shadow-xs')
-                       : (isDark ? 'bg-white/[0.07] hover:bg-white/[0.12] border-white/15 text-white shadow-sm' : 'bg-white hover:bg-neutral-50 border-neutral-200/90 text-neutral-800 shadow-xs')">
-                <span class="material-symbols-rounded transition-colors"
-                      [ngClass]="unreadMessages > 0 
-                        ? 'text-red-500 animate-pulse' 
-                        : (isDark ? 'text-neutral-300 group-hover/msg:text-red-400' : 'text-neutral-500 group-hover/msg:text-red-600')"
-                      style="font-size: 16px;">mail</span>
-                <span class="tracking-tight flex items-center gap-1">
-                  <strong *ngIf="unreadMessages > 0" class="font-bold" [ngClass]="isDark ? 'text-red-200' : 'text-red-700'">
-                    {{ unreadMessages }} Nuevos
-                  </strong>
-                  <ng-container *ngIf="unreadMessages === 0">
-                    <strong class="font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">0</strong>
-                    <span [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Mensajes</span>
-                  </ng-container>
-                </span>
-              </button>
-
-              <!-- Chip 3: Estado Online LIVE -->
-              <span class="h-8 px-3.5 rounded-full border inline-flex items-center gap-2 text-xs font-semibold transition-all duration-300 cursor-default"
-                    [ngClass]="isDark 
-                      ? 'bg-white/[0.07] hover:bg-white/[0.12] border-white/15 text-white shadow-sm' 
-                      : 'bg-white hover:bg-neutral-50 border-neutral-200/90 text-neutral-800 shadow-xs'">
-                <span class="relative flex h-2 w-2">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <span class="font-bold tracking-wide" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Online</span>
-                <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border"
-                      [ngClass]="isDark 
-                        ? 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30' 
-                        : 'text-emerald-700 bg-emerald-50 border-emerald-200/80'">LIVE</span>
-              </span>
-
-              <!-- Chip 4: Tiempo activo de sesión -->
-              <span class="h-8 px-3.5 rounded-full border inline-flex items-center gap-2 text-xs font-semibold transition-all duration-300 group/timer cursor-default"
-                    [ngClass]="isDark 
-                      ? 'bg-white/[0.07] hover:bg-white/[0.12] border-white/15 text-white shadow-sm' 
-                      : 'bg-white hover:bg-neutral-50 border-neutral-200/90 text-neutral-800 shadow-xs'">
-                <span class="material-symbols-rounded transition-colors"
-                      [ngClass]="isDark ? 'text-neutral-300 group-hover/timer:text-red-400' : 'text-neutral-500 group-hover/timer:text-red-600'"
-                      style="font-size: 16px;">timer</span>
-                <span class="font-mono font-semibold tracking-wider text-xs"
-                      [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">
-                  {{ sessionTimeFormatted || '00:00:00' }}
-                </span>
-              </span>
-            </div>
-
-            <!-- Círculos decorativos en CSS -->
-            <div class="bento-circle bento-circle--1"></div>
-            <div class="bento-circle bento-circle--2"></div>
-
-            <!-- Rotbot 3D Iluminado al fondo -->
-            <div class="absolute right-2 top-0 bottom-0 hidden lg:flex items-center justify-center pointer-events-none select-none w-[200px] opacity-75 group-hover:scale-105 transition-transform duration-500">
-              <img src="assets/images/rotbot4.png" class="h-full w-full object-contain" alt="Rotbot">
+            <div class="text-xs font-headline font-bold inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform dark-card-white"
+                 style="color: #ffffff !important;">
+              <span style="color: #ffffff !important;">Entrar al módulo</span>
+              <span class="material-symbols-rounded text-sm" style="color: #ffffff !important;">arrow_forward</span>
             </div>
           </div>
 
-          <!-- Tarjeta de Acceso Rápido con Soporte Eficiente de Tema (Dark/Light) -->
-          <div class="bento-quick-access transition-all duration-300"
-               [ngClass]="isDark 
-                 ? 'bg-[#111115] border-neutral-800 text-white shadow-[0_10px_35px_rgba(0,0,0,0.3)]' 
-                 : 'bg-white border-neutral-200/90 text-neutral-900 shadow-[0_4px_25px_rgba(0,0,0,0.03)]'">
-            
-            <div class="flex items-center justify-between mb-1">
-              <p class="bento-section-label m-0"
-                 [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
-                Acceso Rápido
+          <!-- Card 2: Black Card with Red Accent (Reporte y Analíticas) -->
+          <div (click)="navigateToTab('rotbot')"
+               class="rounded-[22px] p-5 flex flex-col justify-between cursor-pointer group transition-all duration-200 hover:-translate-y-1 shadow-sm border"
+               [ngClass]="isDark ? 'bg-[#09090b] border-neutral-800 text-white hover:border-red-500/40' : 'bg-[#0a0a0d] border-neutral-900 text-white shadow-md'">
+            <div>
+              <div class="w-11 h-11 rounded-2xl border flex items-center justify-center bg-red-500/15 border-red-500/30 text-red-500 mb-4">
+                <span class="material-symbols-rounded text-xl text-red-500">monitoring</span>
+              </div>
+              <h3 class="text-base font-headline font-bold m-0 mb-2 leading-tight dark-card-white"
+                  style="color: #ffffff !important;">
+                Reporte y Analíticas
+              </h3>
+              <p class="text-xs font-sans text-neutral-400 leading-relaxed m-0 mb-6">
+                Diagnóstico de calidad, gráficos de distribución y métricas clave en tiempo real.
               </p>
-              <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+            </div>
+            <div class="text-xs font-headline font-bold text-red-500 inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform">
+              <span>Entrar al módulo</span>
+              <span class="material-symbols-rounded text-sm">arrow_forward</span>
+            </div>
+          </div>
+
+          <!-- Card 3: White Card (Biblioteca & SQL) -->
+          <div (click)="navigateToTab('library')"
+               class="rounded-[22px] p-5 flex flex-col justify-between cursor-pointer group transition-all duration-200 hover:-translate-y-1 shadow-sm border"
+               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800 text-white hover:border-neutral-700' : 'bg-white border-neutral-200 text-neutral-900 hover:border-neutral-300'">
+            <div>
+              <div class="w-11 h-11 rounded-2xl border flex items-center justify-center mb-4 transition-colors"
+                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
+                <span class="material-symbols-rounded text-xl">category</span>
+              </div>
+              <h3 class="text-base font-headline font-bold m-0 mb-2 leading-tight"
+                  [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                Biblioteca & SQL
+              </h3>
+              <p class="text-xs font-sans leading-relaxed m-0 mb-6"
+                 [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+                Administra las categorías, esquemas y consultas de bases de datos del sistema.
+              </p>
+            </div>
+            <div class="text-xs font-headline font-bold inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform"
+                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              <span>Entrar al módulo</span>
+              <span class="material-symbols-rounded text-sm">arrow_forward</span>
+            </div>
+          </div>
+
+          <!-- Card 4: White Card (Itinerario & Agenda) -->
+          <div (click)="navigateToTab('itinerary')"
+               class="rounded-[22px] p-5 flex flex-col justify-between cursor-pointer group transition-all duration-200 hover:-translate-y-1 shadow-sm border"
+               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800 text-white hover:border-neutral-700' : 'bg-white border-neutral-200 text-neutral-900 hover:border-neutral-300'">
+            <div>
+              <div class="w-11 h-11 rounded-2xl border flex items-center justify-center mb-4 transition-colors"
+                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
+                <span class="material-symbols-rounded text-xl">layers</span>
+              </div>
+              <h3 class="text-base font-headline font-bold m-0 mb-2 leading-tight"
+                  [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                Itinerario & Agenda
+              </h3>
+              <p class="text-xs font-sans leading-relaxed m-0 mb-6"
+                 [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+                Administra las actividades programadas, citas y tareas pendientes del itinerario.
+              </p>
+            </div>
+            <div class="text-xs font-headline font-bold inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform"
+                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              <span>Entrar al módulo</span>
+              <span class="material-symbols-rounded text-sm">arrow_forward</span>
+            </div>
+          </div>
+
+          <!-- Card 5: White Card (Buzón de Mensajes) -->
+          <div (click)="navigateToTab('messages')"
+               class="rounded-[22px] p-5 flex flex-col justify-between cursor-pointer group transition-all duration-200 hover:-translate-y-1 shadow-sm border"
+               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800 text-white hover:border-neutral-700' : 'bg-white border-neutral-200 text-neutral-900 hover:border-neutral-300'">
+            <div>
+              <div class="w-11 h-11 rounded-2xl border flex items-center justify-center mb-4 transition-colors"
+                   [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'">
+                <span class="material-symbols-rounded text-xl">storefront</span>
+              </div>
+              <h3 class="text-base font-headline font-bold m-0 mb-2 leading-tight"
+                  [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                Buzón de Mensajes
+              </h3>
+              <p class="text-xs font-sans leading-relaxed m-0 mb-6"
+                 [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
+                Administra solicitudes de clientes, mensajes entrantes y alertas del catálogo.
+              </p>
+            </div>
+            <div class="text-xs font-headline font-bold inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform"
+                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              <span>Entrar al módulo</span>
+              <span class="material-symbols-rounded text-sm">arrow_forward</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ════ 4. BUSCADOR INTELIGENTE GEMINI IA & COMANDOS POR VOZ ════ -->
+        <section class="rounded-2xl border p-4 transition-all duration-200"
+                 [ngClass]="isDark ? 'bg-[#0e0e13] border-neutral-800' : 'bg-white border-neutral-200 shadow-sm'">
+          <div class="filter-inputs-row">
+            <div class="search-input-box">
+              <span class="material-symbols-rounded search-icon">search</span>
+              <input type="text"
+                     [(ngModel)]="aiQuery"
+                     (keyup.enter)="askGeminiCommand()"
+                     [disabled]="isAiSearching"
+                     [placeholder]="isAiSearching ? 'Consultando Gemini Flash...' : displayPlaceholder"
+                     class="search-field">
+              
+              <div class="absolute right-2 flex items-center gap-1.5 z-10">
+                <button *ngIf="aiQuery && !isAiSearching && !isVoiceRecording"
+                        (click)="aiQuery = ''; activeAiResponse = null;"
+                        class="p-1 rounded-lg text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 cursor-pointer"
+                        title="Borrar texto">
+                  <span class="material-symbols-rounded text-sm">close</span>
+                </button>
+
+                <!-- Micrófono Voz Gemini -->
+                <button (click)="toggleVoiceInput()"
+                        [disabled]="isAiSearching || isAiVoiceProcessing"
+                        class="p-1.5 rounded-lg transition-all cursor-pointer"
+                        [ngClass]="isVoiceRecording 
+                          ? 'bg-red-500 text-white animate-pulse' 
+                          : 'text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800'"
+                        title="Comando por voz universal">
+                  <span class="material-symbols-rounded text-base">mic</span>
+                </button>
+
+                <!-- Botón Enviar -->
+                <button (click)="askGeminiCommand()"
+                        [disabled]="isAiSearching || !aiQuery.trim() || isVoiceRecording"
+                        class="btn-action-primary text-xs !h-8 !px-3.5 !rounded-lg cursor-pointer">
+                  <span>{{ isAiSearching ? '...' : 'Preguntar' }}</span>
+                </button>
+              </div>
             </div>
 
-            <!-- Finanzas -->
-            <button class="quick-btn group transition-all duration-200 active:scale-98"
-                    (click)="navigateToTab('finances')"
-                    [ngClass]="isDark 
-                      ? 'bg-[#18181f] hover:bg-[#202028] border-neutral-800 hover:border-neutral-700' 
-                      : 'bg-neutral-50/70 hover:bg-white border-neutral-200/80 hover:border-red-500/40 hover:shadow-xs'">
-              <div class="quick-btn-icon transition-all duration-200 group-hover:scale-105"
-                   [ngClass]="isDark 
-                     ? 'bg-red-500/15 text-red-400 border border-red-500/30' 
-                     : 'bg-red-50 text-red-600 border border-red-200/80 group-hover:bg-red-600 group-hover:text-white'">
-                <span class="material-symbols-rounded text-xl">payments</span>
-              </div>
-              <span class="quick-btn-text">
-                <span class="quick-btn-title" [ngClass]="isDark ? 'text-white' : 'text-neutral-900 group-hover:text-red-600 transition-colors'">Finanzas</span>
-                <span class="quick-btn-sub" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Cartera & Facturación</span>
-              </span>
-              <span class="material-symbols-rounded quick-btn-arrow transition-all group-hover:translate-x-1"
-                    [ngClass]="isDark ? 'text-neutral-500 group-hover:text-red-400' : 'text-neutral-400 group-hover:text-red-600'">chevron_right</span>
-            </button>
+            <!-- Sugerencias rápidas tipo pill -->
+            <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
+              <button *ngFor="let sug of quickSuggestions"
+                      (click)="selectSuggestion(sug)"
+                      class="px-2.5 py-1.5 rounded-full text-[11px] font-semibold border transition-all cursor-pointer whitespace-nowrap"
+                      [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900/80 text-neutral-300 hover:border-neutral-700' : 'border-neutral-200 bg-neutral-50 text-neutral-700 hover:border-neutral-300'">
+                {{ sug }}
+              </button>
+            </div>
+          </div>
 
-            <!-- Biblioteca -->
-            <button class="quick-btn group transition-all duration-200 active:scale-98"
-                    (click)="navigateToTab('library')"
-                    [ngClass]="isDark 
-                      ? 'bg-[#18181f] hover:bg-[#202028] border-neutral-800 hover:border-neutral-700' 
-                      : 'bg-neutral-50/70 hover:bg-white border-neutral-200/80 hover:border-neutral-400 hover:shadow-xs'">
-              <div class="quick-btn-icon transition-all duration-200 group-hover:scale-105"
-                   [ngClass]="isDark 
-                     ? 'bg-white/10 text-white border border-white/15' 
-                     : 'bg-neutral-100 text-neutral-800 border border-neutral-200/80 group-hover:bg-neutral-900 group-hover:text-white'">
-                <span class="material-symbols-rounded text-xl">menu_book</span>
-              </div>
-              <span class="quick-btn-text">
-                <span class="quick-btn-title" [ngClass]="isDark ? 'text-white' : 'text-neutral-900 group-hover:text-black transition-colors'">Biblioteca</span>
-                <span class="quick-btn-sub" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Cuadernos & Apuntes</span>
-              </span>
-              <span class="material-symbols-rounded quick-btn-arrow transition-all group-hover:translate-x-1"
-                    [ngClass]="isDark ? 'text-neutral-500 group-hover:text-white' : 'text-neutral-400 group-hover:text-neutral-900'">chevron_right</span>
-            </button>
+          <!-- Visualizador de Onda de Audio en Vivo -->
+          <div *ngIf="isVoiceRecording" class="flex items-center gap-2 py-1 text-xs text-red-500 animate-pulse font-sans">
+            <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+            <span>Escuchando audio... pulsa el micrófono nuevamente para interpretar con Gemini</span>
+          </div>
 
-            <!-- RotBot IA -->
-            <button class="quick-btn group transition-all duration-200 active:scale-98"
-                    (click)="navigateToTab('rotbot')"
-                    [ngClass]="isDark 
-                      ? 'bg-[#18181f] hover:bg-[#202028] border-neutral-800 hover:border-neutral-700' 
-                      : 'bg-neutral-50/70 hover:bg-white border-neutral-200/80 hover:border-red-500/40 hover:shadow-xs'">
-              <div class="quick-btn-icon transition-all duration-200 group-hover:scale-105"
-                   [ngClass]="isDark 
-                     ? 'bg-red-500/15 text-red-400 border border-red-500/30' 
-                     : 'bg-red-50 text-red-600 border border-red-200/80 group-hover:bg-red-600 group-hover:text-white'">
-                <span class="material-symbols-rounded text-xl">smart_toy</span>
-              </div>
-              <span class="quick-btn-text">
-                <span class="quick-btn-title" [ngClass]="isDark ? 'text-white' : 'text-neutral-900 group-hover:text-red-600 transition-colors'">RotBot IA</span>
-                <span class="quick-btn-sub" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Copiloto Inteligente</span>
-              </span>
-              <span class="material-symbols-rounded quick-btn-arrow transition-all group-hover:translate-x-1"
-                    [ngClass]="isDark ? 'text-neutral-500 group-hover:text-red-400' : 'text-neutral-400 group-hover:text-red-600'">chevron_right</span>
-            </button>
+          <div *ngIf="voiceErrorMessage" class="text-xs text-red-500 bg-red-500/10 px-3 py-1 rounded-xl border border-red-500/20 font-sans">
+            {{ voiceErrorMessage }}
+          </div>
 
-            <!-- Itinerario -->
-            <button class="quick-btn group transition-all duration-200 active:scale-98"
-                    (click)="navigateToTab('itinerary')"
-                    [ngClass]="isDark 
-                      ? 'bg-[#18181f] hover:bg-[#202028] border-neutral-800 hover:border-neutral-700' 
-                      : 'bg-neutral-50/70 hover:bg-white border-neutral-200/80 hover:border-neutral-400 hover:shadow-xs'">
-              <div class="quick-btn-icon transition-all duration-200 group-hover:scale-105"
-                   [ngClass]="isDark 
-                     ? 'bg-white/10 text-neutral-300 border border-white/15' 
-                     : 'bg-neutral-100 text-neutral-800 border border-neutral-200/80 group-hover:bg-neutral-900 group-hover:text-white'">
-                <span class="material-symbols-rounded text-xl">calendar_today</span>
+          <!-- Tarjeta de Respuesta IA Dinámica -->
+          <div *ngIf="activeAiResponse"
+               class="rounded-2xl border p-4 sm:p-5 mt-2 space-y-3 animate-dropdown"
+               [ngClass]="isDark ? 'bg-neutral-950/90 border-neutral-800 text-white' : 'bg-neutral-50 border-neutral-200 text-neutral-900'">
+            <div class="flex items-center justify-between pb-2.5 border-b"
+                 [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-rounded text-red-500">auto_awesome</span>
+                <span class="text-sm font-headline font-bold">Respuesta Gemini Flash</span>
+                <span class="text-xs text-neutral-400 font-sans">· {{ activeAiResponse.query }}</span>
               </div>
-              <span class="quick-btn-text">
-                <span class="quick-btn-title" [ngClass]="isDark ? 'text-white' : 'text-neutral-900 group-hover:text-black transition-colors'">Itinerario</span>
-                <span class="quick-btn-sub" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Agenda & Tareas</span>
-              </span>
-              <span class="material-symbols-rounded quick-btn-arrow transition-all group-hover:translate-x-1"
-                    [ngClass]="isDark ? 'text-neutral-500 group-hover:text-white' : 'text-neutral-400 group-hover:text-neutral-900'">chevron_right</span>
-            </button>
+              <button (click)="activeAiResponse = null" class="text-neutral-400 hover:text-neutral-900 dark:hover:text-white p-1">
+                <span class="material-symbols-rounded text-base">close</span>
+              </button>
+            </div>
+
+            <p class="text-xs sm:text-sm font-sans leading-relaxed m-0">{{ activeAiResponse.data.summary || activeAiResponse.data.analysis }}</p>
+
+            <div *ngIf="activeAiResponse.data.targetTab" class="pt-1 flex justify-end">
+              <button (click)="navigateToTab(activeAiResponse.data.targetTab)"
+                      class="btn-action-primary text-xs !h-8 !px-4">
+                <span>{{ activeAiResponse.data.actionText || 'Ver en Módulo' }}</span>
+                <span class="material-symbols-rounded text-sm">arrow_forward</span>
+              </button>
+            </div>
           </div>
         </section>
 
-        <!-- ═══════════════════════ 2. CENTRO DE COMANDO IA (DISEÑO ORIGINAL ELEVADO) ═══════════════════════ -->
-        <div class="lg:col-span-12 order-2 rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-6 md:p-7 transition-all duration-300 relative overflow-hidden space-y-4"
-             [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800 shadow-[0_10px_35px_rgba(0,0,0,0.4)]' : 'bg-white border-neutral-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.03)]'">
-          
-          <!-- Header Clásico (Equilibrado & Elegante) -->
-          <div class="flex items-center justify-between flex-wrap gap-2.5">
-            <div class="flex items-center gap-2.5 xs:gap-3">
-              <img [src]="isDark ? 'assets/icons/logo-link-dark.png' : 'assets/icons/logo-link-light.png'" alt="AI Icon" class="w-7 h-7 sm:w-8 sm:h-8 object-contain shrink-0">
-              <div>
-                <h3 class="text-base xs:text-lg sm:text-xl font-headline font-bold tracking-tight m-0 leading-tight" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                  Centro de Comando IA
-                </h3>
-                <p class="hidden sm:block text-[11px] xs:text-xs sm:text-[13px] font-sans text-neutral-400 dark:text-neutral-500 m-0 mt-0.5">
-                  Pregúntale a nuestro motor inteligente para analizar métricas, finanzas o navegar el dashboard
-                </p>
-              </div>
-            </div>
+        <!-- ════ 5. WORKSPACE DE DOS COLUMNAS (SECTION 12 DE GUIA_DISENO_DASHBOARD) ════ -->
+        <div class="cat-workspace-grid !mb-0">
+
+          <!-- Columna 1: Rendimiento & Analítica Financiera -->
+          <div class="cat-card !min-h-0 !h-auto">
             
-            <div class="flex items-center gap-2">
-              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-headline font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                Gemini Flash
-              </span>
-            </div>
-          </div>
-
-          <!-- Barra de Búsqueda Principal (Equilibrada con Lupa Visible) -->
-          <div class="relative flex items-center w-full">
-            <div class="absolute inset-y-0 left-0 pl-3.5 sm:pl-4 flex items-center pointer-events-none z-10"
-                 [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
-              <svg *ngIf="!isAiSearching" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <svg *ngIf="isAiSearching" class="animate-spin w-5 h-5 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            </div>
-
-            <input type="text"
-                   [(ngModel)]="aiQuery"
-                   (keyup.enter)="askGeminiCommand()"
-                   [disabled]="isAiSearching"
-                   [placeholder]="isAiSearching ? 'Analizando el sistema con Gemini...' : displayPlaceholder"
-                   class="w-full pl-11 sm:pl-12 pr-32 sm:pr-40 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl border text-xs sm:text-sm transition-all duration-300 outline-none font-sans"
-                   [ngClass]="isDark ? 'bg-neutral-950/85 border-neutral-800 text-white focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600/20' : 'bg-neutral-50 border-neutral-200 text-neutral-900 focus:border-neutral-400 focus:bg-white focus:ring-1 focus:ring-neutral-400/20'">
-            
-            <div class="absolute right-1.5 sm:right-2 flex items-center gap-1">
-              <button *ngIf="aiQuery && !isAiSearching && !isVoiceRecording"
-                      (click)="aiQuery = ''; activeAiResponse = null;"
-                      class="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 cursor-pointer">
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-
-              <!-- Botón de Micrófono (Voz Universal con Gemini) -->
-              <button (click)="toggleVoiceInput()"
-                      [disabled]="isAiSearching || isAiVoiceProcessing"
-                      class="relative p-2 sm:p-2.5 rounded-xl transition-all duration-300 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-                      [ngClass]="isVoiceRecording
-                        ? 'bg-red-500 text-white shadow-lg shadow-red-500/40 scale-110'
-                        : isAiVoiceProcessing
-                          ? 'bg-red-500 text-white animate-pulse'
-                          : isDark ? 'text-neutral-400 hover:text-white hover:bg-neutral-800' : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100'"
-                      [title]="isVoiceRecording ? 'Detener y procesar audio' : 'Activar comando de voz con Gemini'">
-                
-                <!-- Ondas de pulso concéntricas cuando graba -->
-                <span *ngIf="isVoiceRecording" class="absolute inset-0 rounded-xl animate-ping bg-red-500/40"></span>
-
-                <!-- Ícono de micrófono o spinner procesando -->
-                <svg *ngIf="!isAiVoiceProcessing" class="w-4 h-4 sm:w-4.5 sm:h-4.5 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                </svg>
-                <svg *ngIf="isAiVoiceProcessing" class="animate-spin w-4 h-4 sm:w-4.5 sm:h-4.5 text-white relative z-10" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              </button>
-
-              <button (click)="askGeminiCommand()"
-                      [disabled]="isAiSearching || !aiQuery.trim() || isVoiceRecording || isAiVoiceProcessing"
-                      class="px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-headline font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-2xs active:scale-95"
-                      [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-neutral-800'">
-                {{ (isAiSearching || isAiVoiceProcessing) ? '...' : 'Preguntar' }}
-              </button>
-            </div>
-
-            <!-- Visualizador de Onda de Audio en Tiempo Real (Micrófono Activo) -->
-            <div *ngIf="isVoiceRecording" 
-                 class="absolute -bottom-8 left-0 right-0 flex items-center justify-center gap-2.5 animate-dropdown">
-              <div class="flex items-end gap-[3px] h-5 px-2 py-1 rounded-full bg-red-500/10 border border-red-500/20">
-                <span class="w-1 rounded-full bg-red-500 transition-all duration-75" [style.height.px]="getWaveBarHeight(0)"></span>
-                <span class="w-1 rounded-full bg-red-500 transition-all duration-75" [style.height.px]="getWaveBarHeight(1)"></span>
-                <span class="w-1 rounded-full bg-red-500 transition-all duration-75" [style.height.px]="getWaveBarHeight(2)"></span>
-                <span class="w-1 rounded-full bg-red-500 transition-all duration-75" [style.height.px]="getWaveBarHeight(3)"></span>
-                <span class="w-1 rounded-full bg-red-500 transition-all duration-75" [style.height.px]="getWaveBarHeight(4)"></span>
-              </div>
-              <span class="text-[10px] sm:text-[11px] font-headline font-semibold text-red-500 uppercase tracking-wider animate-pulse">
-                Escuchando audio... (habla o pulsa para enviar)
-              </span>
-            </div>
-
-            <!-- Indicador de Procesamiento IA del Audio -->
-            <div *ngIf="isAiVoiceProcessing" 
-                 class="absolute -bottom-8 left-0 right-0 flex items-center justify-center gap-2 animate-dropdown">
-              <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span>
-              <span class="text-[10px] sm:text-[11px] font-headline font-semibold text-red-500 dark:text-red-400 uppercase tracking-wider">
-                Gemini interpretando tu audio...
-              </span>
-            </div>
-
-            <!-- Toast de Error de Voz -->
-            <div *ngIf="voiceErrorMessage"
-                 class="absolute -bottom-8 left-0 right-0 flex items-center justify-center animate-dropdown">
-              <span class="text-[10px] sm:text-[11px] font-sans text-red-500 dark:text-red-400 bg-red-500/10 px-3 py-0.5 rounded-full border border-red-500/20">
-                ⚠ {{ voiceErrorMessage }}
-              </span>
-            </div>
-          </div>
-
-          <!-- ══════ RESPUESTA INTELIGENTE GEMINI (DISEÑO EJECUTIVO ELEVADO) ══════ -->
-          <div *ngIf="activeAiResponse"
-               class="rounded-[22px] sm:rounded-[26px] border p-4 sm:p-6 md:p-7 mt-2 animate-dropdown transition-all duration-300 shadow-xl space-y-4"
-               [ngClass]="isDark ? 'bg-neutral-950/95 border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900 shadow-[0_12px_45px_rgba(0,0,0,0.05)]'">
-            
-            <!-- Header de Respuesta -->
-            <div class="flex items-center justify-between gap-3 pb-3 border-b"
-                 [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
-              <div class="flex items-center gap-3">
-                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shadow-xs border"
-                     [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-red-400' : 'bg-neutral-100 border-neutral-200 text-neutral-900'">
-                  <svg class="w-4 h-4 sm:w-4.5 sm:h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
+            <div class="cat-card-header">
+              <div class="cat-card-title-group">
+                <div class="cat-card-icon-pill">
+                  <span class="material-symbols-rounded">monitoring</span>
                 </div>
-                <div>
-                  <div class="flex items-center gap-2">
-                    <h5 class="text-xs sm:text-sm md:text-base font-headline font-bold m-0 leading-tight">
-                      Análisis de RotBot IA
-                    </h5>
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-headline font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                      Gemini Flash
-                    </span>
-                  </div>
-                  <span class="text-[11px] opacity-50 block mt-0.5 font-sans">Consulta: "{{ activeAiResponse.query }}"</span>
-                </div>
+                <h2 class="cat-card-title">Rendimiento & Analítica</h2>
               </div>
-
-              <button (click)="activeAiResponse = null" 
-                      class="p-1.5 rounded-xl border transition-colors cursor-pointer"
-                      [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:bg-neutral-900 hover:text-white' : 'border-neutral-200 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900'"
-                      title="Cerrar análisis">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <!-- 1. Resumen Ejecutivo (Callout Banner) -->
-            <div *ngIf="activeAiResponse.data.summary"
-                 class="rounded-xl border p-3.5 sm:p-4 flex items-start gap-3 border-l-4 border-l-red-500 shadow-2xs"
-                 [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800/90' : 'bg-neutral-50/90 border-neutral-200/90'">
-              <div class="w-6 h-6 rounded-lg bg-red-500/10 text-red-500 flex items-center justify-center shrink-0 mt-0.5">
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-              </div>
-              <p class="text-xs sm:text-sm font-headline font-semibold leading-relaxed m-0"
-                 [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">
-                {{ activeAiResponse.data.summary }}
-              </p>
-            </div>
-
-            <!-- 2. Análisis Detallado de la IA -->
-            <div class="rounded-xl border p-3.5 sm:p-4 relative overflow-hidden"
-                 [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800/80 text-neutral-300' : 'bg-neutral-50/50 border-neutral-200/80 text-neutral-700'">
-              <div class="flex items-center gap-1.5 mb-2 text-[10px] sm:text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-500">
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <span>Evaluación de la Base de Datos</span>
-              </div>
-              <p class="text-xs sm:text-sm font-sans font-normal leading-relaxed m-0 whitespace-pre-line">
-                {{ activeAiResponse.data.analysis || activeAiResponse.data.reply }}
-              </p>
-            </div>
-
-            <!-- 3. Métricas Clave (si aplican) -->
-            <div *ngIf="activeAiResponse.data.metrics && activeAiResponse.data.metrics.length > 0"
-                 class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              <div *ngFor="let m of activeAiResponse.data.metrics"
-                   class="rounded-xl border p-2.5 text-center shadow-2xs"
-                   [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800' : 'bg-white border-neutral-200'">
-                <span class="text-[10px] opacity-50 block uppercase font-headline font-semibold truncate">{{ m.label }}</span>
-                <span class="text-xs sm:text-sm font-headline font-bold truncate block mt-0.5"
-                      [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ m.value }}</span>
-              </div>
-            </div>
-
-            <!-- 4. Resultados Encontrados (Tarjetas Monocromáticas con Íconos Dedicados) -->
-            <div *ngIf="activeAiResponse.data.items && activeAiResponse.data.items.length > 0" class="space-y-2 pt-1">
-              <div class="flex items-center justify-between">
-                <span class="text-[10px] sm:text-[11px] font-headline font-bold uppercase tracking-wider opacity-60">
-                  Resultados Encontrados ({{ activeAiResponse.data.items.length }})
-                </span>
-                <span class="text-[10px] opacity-40 hidden sm:inline">Haz clic en una tarjeta para abrirla</span>
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                <div *ngFor="let item of activeAiResponse.data.items"
-                     (click)="navigateToTab(item.targetTab || activeAiResponse.data.targetTab)"
-                     class="group rounded-2xl border p-3 sm:p-3.5 flex items-center justify-between gap-3 transition-all duration-200 cursor-pointer hover:border-neutral-400 dark:hover:border-neutral-600 hover:shadow-md active:scale-98 shadow-2xs"
-                     [ngClass]="isDark ? 'bg-neutral-950/70 border-neutral-800' : 'bg-white border-neutral-200/90'">
-                  
-                  <div class="flex items-center gap-3 min-w-0">
-                    <!-- Icono según tipo de resultado -->
-                    <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border"
-                         [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300' : 'bg-neutral-100 border-neutral-200 text-neutral-700'">
-                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="getItemIconPath(item)" />
-                      </svg>
-                    </div>
-
-                    <div class="min-w-0">
-                      <h6 class="text-xs sm:text-sm font-headline font-bold m-0 truncate leading-tight group-hover:text-red-500 transition-colors"
-                          [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                        {{ item.title }}
-                      </h6>
-                      <p class="text-[10px] sm:text-[11px] opacity-60 m-0 truncate leading-tight mt-1 font-sans">
-                        {{ item.subtitle || item.details || 'Registro verificado' }}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div class="flex items-center gap-2 shrink-0">
-                    <span *ngIf="item.badge" 
-                          class="text-[9px] sm:text-[10px] font-headline font-semibold px-2 py-0.5 rounded-full border shadow-2xs"
-                          [ngClass]="getBadgeColorClass(item.badgeColor)">
-                      {{ item.badge }}
-                    </span>
-                    <span class="text-xs font-bold text-neutral-400 group-hover:text-red-500 group-hover:translate-x-0.5 transition-all">
-                      →
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 5. Barra de Acción Principal / Redirección -->
-            <div class="flex items-center justify-between pt-3 border-t flex-wrap gap-2.5"
-                 [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
-              <span class="text-[11px] opacity-50 font-sans">Acción recomendada:</span>
-              <button (click)="navigateToTab(activeAiResponse.data.targetTab)"
-                      class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-headline font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md hover:scale-102 active:scale-95"
-                      [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-neutral-800'">
-                <span>{{ activeAiResponse.data.actionText || 'Ver en el Módulo' }}</span>
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                </svg>
-              </button>
-            </div>
-
-          </div>
-
-        </div>
-
-        <!-- ═══════════════════════ 3. STAT CARDS (ULTRA-MINIMALIST SLATE & RED) ═══════════════════════ -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 order-3 lg:col-span-12">
-          
-          <!-- Stat 1: Tráfico & Visitas -->
-          <div class="rounded-2xl border p-4 sm:p-5 transition-all duration-200 flex flex-col justify-between"
-               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200/80 hover:border-neutral-300 shadow-[0_2px_12px_rgba(0,0,0,0.02)]'">
-            <div class="flex items-center justify-between text-neutral-400 mb-3">
-              <span class="text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Tráfico Global</span>
-              <span class="material-symbols-rounded text-neutral-400" style="font-size: 19px;">visibility</span>
-            </div>
-            <div>
-              <p class="text-2xl sm:text-3xl font-headline font-extrabold tracking-tight m-0"
-                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                {{ (metrics.homeViews || 0) + (metrics.linktreeViews || 0) | number }}
-              </p>
-              <p class="text-xs text-neutral-500 m-0 mt-2 font-sans flex items-center gap-1.5">
-                <span class="font-bold text-emerald-600 dark:text-emerald-400">+18.4%</span>
-                <span class="text-neutral-400">· Visitas registradas</span>
-              </p>
-            </div>
-          </div>
-
-          <!-- Stat 2: Facturación -->
-          <div (click)="navigateToTab('finances')" 
-               class="rounded-2xl border p-4 sm:p-5 transition-all duration-200 flex flex-col justify-between cursor-pointer group"
-               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200/80 hover:border-neutral-300 shadow-[0_2px_12px_rgba(0,0,0,0.02)]'">
-            <div class="flex items-center justify-between text-neutral-400 mb-3">
-              <span class="text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Facturación</span>
-              <span class="material-symbols-rounded text-neutral-400 group-hover:text-red-500 transition-colors" style="font-size: 19px;">payments</span>
-            </div>
-            <div>
-              <p class="text-2xl sm:text-3xl font-headline font-extrabold tracking-tight m-0"
-                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                {{ formatCurrency(financeTotalPaid) }}
-              </p>
-              <p class="text-xs text-neutral-500 m-0 mt-2 font-sans flex items-center gap-1.5">
-                <span class="text-neutral-400">Pendiente:</span>
-                <span class="font-bold text-red-600 dark:text-red-400">{{ formatCurrency(financeTotalPending) }}</span>
-              </p>
-            </div>
-          </div>
-
-          <!-- Stat 3: Clientes Cartera -->
-          <div (click)="navigateToTab('finances')" 
-               class="rounded-2xl border p-4 sm:p-5 transition-all duration-200 flex flex-col justify-between cursor-pointer group"
-               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200/80 hover:border-neutral-300 shadow-[0_2px_12px_rgba(0,0,0,0.02)]'">
-            <div class="flex items-center justify-between text-neutral-400 mb-3">
-              <span class="text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Clientes Cartera</span>
-              <span class="material-symbols-rounded text-neutral-400 group-hover:text-red-500 transition-colors" style="font-size: 19px;">group</span>
-            </div>
-            <div>
-              <p class="text-2xl sm:text-3xl font-headline font-extrabold tracking-tight m-0"
-                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                {{ totalClientsCount }}
-              </p>
-              <p class="text-xs text-neutral-500 m-0 mt-2 font-sans flex items-center gap-1.5">
-                <span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500"></span>
-                <span class="font-semibold text-neutral-900 dark:text-white">Activos</span>
-                <span class="text-neutral-400">· Registros comerciales</span>
-              </p>
-            </div>
-          </div>
-
-          <!-- Stat 4: Salud del Sistema -->
-          <div (click)="navigateToTab('stats')" 
-               class="rounded-2xl border p-4 sm:p-5 transition-all duration-200 flex flex-col justify-between cursor-pointer group"
-               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200/80 hover:border-neutral-300 shadow-[0_2px_12px_rgba(0,0,0,0.02)]'">
-            <div class="flex items-center justify-between text-neutral-400 mb-3">
-              <span class="text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Estado Sistema</span>
-              <span class="material-symbols-rounded text-neutral-400 group-hover:text-emerald-500 transition-colors" style="font-size: 19px;">verified</span>
-            </div>
-            <div>
-              <p class="text-2xl sm:text-3xl font-headline font-extrabold tracking-tight m-0"
-                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                99.9%
-              </p>
-              <p class="text-xs text-neutral-500 m-0 mt-2 font-sans flex items-center gap-1.5">
-                <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                <span class="font-semibold text-neutral-900 dark:text-white">Online</span>
-                <span class="text-neutral-400">· Latencia: 42ms</span>
-              </p>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- ═══════════════════════ 4. RACHA DEL DÍA & AGENDA DE HOY (TU DÍA) ═══════════════════════ -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-4 lg:col-span-12 order-4">
-
-          <!-- Racha del Día (Adaptativo Premium: Modo Claro & Oscuro) -->
-          <div class="lg:col-span-7 rounded-[22px] border p-4 sm:p-5 flex flex-col justify-between transition-all duration-200 relative"
-               [ngClass]="isDark 
-                 ? 'racha-black-card border-neutral-800 bg-[#0c0c0e] text-white shadow-[0_8px_30px_rgba(0,0,0,0.35)]' 
-                 : 'border-neutral-200/90 bg-white text-neutral-900 shadow-[0_4px_25px_rgba(0,0,0,0.03)]'">
-
-            <div>
-              <!-- Header Minimalista -->
-              <div class="flex items-center justify-between mb-3.5">
-                <div class="flex items-center gap-2">
-                  <span class="text-base select-none">🔥</span>
-                  <h3 class="text-sm font-headline font-bold tracking-tight m-0"
-                      [ngClass]="isDark ? 'text-white' : 'text-neutral-950'">
-                    Racha
-                  </h3>
-                  <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold border"
-                        [ngClass]="isDark 
-                          ? 'bg-red-500/15 text-red-400 border-red-500/30' 
-                          : 'bg-red-50 text-red-600 border-red-200/80 font-bold'">
-                    {{ streakData?.streakCount || 1 }} días
-                  </span>
-                </div>
-
-                <div class="flex items-center gap-2.5 text-xs font-headline font-medium">
-                  <button type="button" 
-                          (click)="openStreakMonthModal()"
-                          class="hover:underline transition-colors cursor-pointer bg-transparent border-none p-0"
-                          [ngClass]="isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-red-600'"
-                          title="Ver calendario del mes">
-                    Mes
-                  </button>
-                  <span [ngClass]="isDark ? 'text-neutral-600' : 'text-neutral-300'">·</span>
-                  <button type="button" 
-                          (click)="openStreakModal()"
-                          class="hover:underline transition-colors cursor-pointer bg-transparent border-none p-0 font-bold"
-                          [ngClass]="isDark ? 'text-white hover:text-red-400' : 'text-red-600 hover:text-red-700'"
-                          title="Detalles de la racha">
-                    Detalle →
-                  </button>
-                </div>
-              </div>
-
-              <!-- Progreso Fino & Récord -->
-              <div class="mb-3.5">
-                <div class="flex items-center justify-between text-[11px] mb-1.5 font-sans">
-                  <span [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500 font-medium'">{{ completedStreakGoals }}/3 metas hoy</span>
-                  <span [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">Récord: <strong class="font-mono font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ streakData?.longestStreak || 1 }}d</strong></span>
-                </div>
-                <div class="w-full h-1.5 rounded-full overflow-hidden"
-                     [ngClass]="isDark ? 'bg-neutral-800/90' : 'bg-neutral-100'">
-                  <div class="h-full bg-gradient-to-r from-red-600 to-red-500 rounded-full transition-all duration-300 shadow-[0_0_8px_rgba(239,68,68,0.35)]"
-                       [style.width.%]="(completedStreakGoals / 3) * 100"></div>
-                </div>
-              </div>
-
-              <!-- Las 3 Metas en 3 Pastillas Minimalistas (1 fila de 3 cols) -->
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3.5">
-                <!-- Meta 1: Ingreso -->
-                <div class="rounded-xl border px-3 py-2 flex items-center justify-between transition-colors"
-                     [ngClass]="isDark ? 'border-neutral-800/80 bg-[#121216]' : 'border-neutral-200/80 bg-neutral-50/80 shadow-2xs'">
-                  <span class="text-xs font-semibold truncate" [ngClass]="isDark ? 'text-white' : 'text-neutral-800'">1. Ingreso</span>
-                  <span class="text-[10px] font-mono font-bold"
-                        [ngClass]="isDark ? 'text-red-400' : 'text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-1.5 py-0.5 rounded'">Listo</span>
-                </div>
-
-                <!-- Meta 2: Rotbot IA -->
-                <div class="rounded-xl border px-3 py-2 flex items-center justify-between transition-colors"
-                     [ngClass]="isDark ? 'border-neutral-800/80 bg-[#121216]' : 'border-neutral-200/80 bg-neutral-50/80 shadow-2xs'">
-                  <span class="text-xs font-semibold truncate" [ngClass]="isDark ? 'text-white' : 'text-neutral-800'">2. RotBot IA</span>
-                  <span *ngIf="streakData?.actions?.robot" class="text-[10px] font-mono font-bold"
-                        [ngClass]="isDark ? 'text-red-400' : 'text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-1.5 py-0.5 rounded'">Listo</span>
-                  <button *ngIf="!streakData?.actions?.robot" 
-                          type="button"
-                          (click)="tabChange.emit('rotbot')"
-                          class="text-[10px] font-headline font-bold transition-colors cursor-pointer bg-transparent border-none p-0"
-                          [ngClass]="isDark ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-700 hover:underline'">
-                    Ir al bot →
-                  </button>
-                </div>
-
-                <!-- Meta 3: Biblioteca -->
-                <div class="rounded-xl border px-3 py-2 flex items-center justify-between transition-colors"
-                     [ngClass]="isDark ? 'border-neutral-800/80 bg-[#121216]' : 'border-neutral-200/80 bg-neutral-50/80 shadow-2xs'">
-                  <span class="text-xs font-semibold truncate" [ngClass]="isDark ? 'text-white' : 'text-neutral-800'">3. Biblioteca</span>
-                  <span *ngIf="streakData?.actions?.library" class="text-[10px] font-mono font-bold"
-                        [ngClass]="isDark ? 'text-red-400' : 'text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-1.5 py-0.5 rounded'">Listo</span>
-                  <button *ngIf="!streakData?.actions?.library" 
-                          type="button"
-                          (click)="tabChange.emit('library')"
-                          class="text-[10px] font-headline font-bold transition-colors cursor-pointer bg-transparent border-none p-0"
-                          [ngClass]="isDark ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-700 hover:underline'">
-                    Repasar →
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Tira Semanal de 7 días (Minimalista por Puntos de Actividad) -->
-            <div class="pt-3 border-t" [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
-              <div class="grid grid-cols-7 gap-1 text-center">
-                <div *ngFor="let day of streakWeekDays" class="flex flex-col items-center py-0.5">
-                  <span class="text-[9px] font-headline uppercase tracking-wider"
-                        [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400 font-bold'">{{ day.name }}</span>
-                  <span class="text-xs font-mono font-semibold my-0.5"
-                        [ngClass]="day.isCompleted 
-                          ? (isDark ? 'text-white font-bold' : 'text-neutral-900 font-extrabold') 
-                          : (day.isToday ? (isDark ? 'text-red-400 font-bold' : 'text-red-600 font-extrabold') : (isDark ? 'text-neutral-400' : 'text-neutral-500'))">
-                    {{ day.dayNumber }}
-                  </span>
-                  <span class="w-1.5 h-1.5 rounded-full mt-0.5" 
-                        [ngClass]="day.isCompleted 
-                          ? 'bg-red-500' 
-                          : (day.isToday ? 'bg-red-500 animate-pulse' : (isDark ? 'bg-neutral-800' : 'bg-neutral-200'))">
-                  </span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- Agenda de Hoy (Acompañante de Racha, 5 cols en lg) -->
-          <div (click)="navigateToTab('itinerary')"
-               class="lg:col-span-5 rounded-[22px] border p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.03)] cursor-pointer group hover:border-neutral-400 dark:hover:border-neutral-700 active:scale-[0.99]"
-               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200/80'">
-            <div>
-              <div class="flex items-center justify-between mb-3.5">
-                <div class="flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                  <h4 class="text-sm sm:text-base font-headline font-bold tracking-tight m-0"
-                      [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Agenda de Hoy</h4>
-                </div>
-                <span class="text-[10px] font-headline font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border transition-colors group-hover:bg-neutral-900 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black"
-                      [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 bg-neutral-950' : 'border-neutral-200 text-neutral-600 bg-neutral-100'">
-                  Itinerario →
-                </span>
-              </div>
-
-              <!-- Tasks List Preview -->
-              <div class="space-y-2">
-                <div *ngIf="itineraryNotifs.current?.length > 0">
-                  <div *ngFor="let task of itineraryNotifs.current.slice(0, 2)"
-                       class="rounded-xl border p-2.5 flex items-center justify-between bg-red-500/10 border-red-500/25 text-red-600 dark:text-red-400">
-                    <div class="flex items-center gap-2 min-w-0">
-                      <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping shrink-0"></span>
-                      <span class="text-xs font-semibold truncate">{{ task.title }}</span>
-                    </div>
-                    <span class="text-[10px] opacity-75 font-mono shrink-0 ml-2 font-bold">{{ task.time }}</span>
-                  </div>
-                </div>
-
-                <div *ngIf="itineraryNotifs.upcoming?.length > 0">
-                  <div *ngFor="let task of itineraryNotifs.upcoming.slice(0, 2)"
-                       class="rounded-xl border p-2.5 flex items-center justify-between"
-                       [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800 text-neutral-300' : 'bg-neutral-50 border-neutral-200 text-neutral-700'">
-                    <span class="text-xs font-medium truncate">{{ task.title }}</span>
-                    <span class="text-[10px] opacity-60 font-mono shrink-0 ml-2">{{ task.time }}</span>
-                  </div>
-                </div>
-
-                <div *ngIf="!itineraryNotifs.current?.length && !itineraryNotifs.upcoming?.length"
-                     class="rounded-xl border p-4 text-center"
-                     [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800/80 text-neutral-400' : 'bg-neutral-50/70 border-neutral-200 text-neutral-600'">
-                  <p class="text-xs font-semibold m-0">No hay tareas pendientes para hoy</p>
-                  <span class="text-[10px] opacity-60">¡Todo al día en tu itinerario!</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="pt-2.5 mt-3 border-t flex items-center justify-between text-xs"
-                 [ngClass]="isDark ? 'border-neutral-800 text-neutral-400' : 'border-neutral-100 text-neutral-500'">
-              <span class="truncate">Prioridades del día</span>
-              <span class="font-bold text-red-600 dark:text-red-400 group-hover:translate-x-1 transition-transform shrink-0 ml-2">Abrir →</span>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- ═══════════════════════ 5. HIGH-PERFORMANCE CHARTS ROW ═══════════════════════ -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3.5 sm:gap-4 lg:col-span-12 order-5">
-
-          <!-- Gráfica 1: Rendimiento & Tráfico Semanal -->
-          <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 flex flex-col justify-between transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)] min-h-[250px]"
-               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200/80'">
-            <div>
-              <div class="flex items-center justify-between mb-4 sm:mb-6">
-                <div>
-                  <div class="flex items-center gap-2 mb-0.5">
-                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                    <h4 class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider"
-                        [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Rendimiento & Tráfico</h4>
-                  </div>
-                  <p class="hidden sm:block text-[10px] xs:text-xs opacity-60">Últimos 7 días</p>
-                </div>
-                <span class="text-[9px] xs:text-[10px] font-headline font-semibold uppercase tracking-wider px-2.5 xs:px-3 py-1 rounded-full border shrink-0 opacity-70"
-                      [ngClass]="isDark ? 'border-neutral-800 text-neutral-400' : 'border-neutral-200 text-neutral-500'">
-                  En Vivo
-                </span>
-              </div>
-
-              <!-- Vector Line Chart with Gradient Fill & Data Nodes -->
-              <div class="w-full h-28 sm:h-32 relative mt-1 xs:mt-2">
-                <svg class="w-full h-full" viewBox="0 0 500 140" preserveAspectRatio="none">
-                  <defs>
-                    <linearGradient id="trafficGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stop-color="#dc2626" stop-opacity="0.35"/>
-                      <stop offset="100%" stop-color="#dc2626" stop-opacity="0.0"/>
-                    </linearGradient>
-                  </defs>
-                  
-                  <line x1="0" y1="25" x2="500" y2="25" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'"/>
-                  <line x1="0" y1="65" x2="500" y2="65" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'"/>
-                  <line x1="0" y1="105" x2="500" y2="105" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'"/>
-
-                  <path [attr.d]="trafficAreaPath" fill="url(#trafficGrad)"/>
-                  <path [attr.d]="trafficLinePath" fill="none" stroke="#dc2626" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-
-                  <circle *ngFor="let pt of trafficPoints" 
-                          [attr.cx]="pt.x" 
-                          [attr.cy]="pt.y" 
-                          r="4" 
-                          [attr.fill]="isDark ? '#0f172a' : '#ffffff'" 
-                          stroke="#dc2626" 
-                          stroke-width="2.5"/>
-                </svg>
-              </div>
-
-              <!-- Days Labels -->
-              <div class="flex justify-between text-[9px] xs:text-[10px] sm:text-[11px] font-headline font-semibold uppercase tracking-wider mt-2 sm:mt-3 px-1"
-                   [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
-                <span *ngFor="let day of weekDays">{{ day }}</span>
-              </div>
-            </div>
-
-            <!-- Bottom Highlights -->
-            <div class="grid grid-cols-3 gap-1.5 xs:gap-2 pt-3 mt-3 sm:pt-4 sm:mt-4 border-t"
-                 [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
-              <div class="text-center">
-                <span class="text-[9px] xs:text-[10px] opacity-50 block uppercase">Promedio</span>
-                <span class="text-xs sm:text-sm font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ avgDailyTraffic }}</span>
-              </div>
-              <div class="text-center">
-                <span class="text-[9px] xs:text-[10px] opacity-50 block uppercase">Pico</span>
-                <span class="text-xs sm:text-sm font-bold text-red-500">{{ maxTraffic }}</span>
-              </div>
-              <div class="text-center">
-                <span class="text-[9px] xs:text-[10px] opacity-50 block uppercase">Conversión</span>
-                <span class="text-xs sm:text-sm font-bold text-red-600">{{ conversionRate }}%</span>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- Gráfica 2: Flujo Financiero & Ingresos Mensuales -->
-          <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 flex flex-col justify-between transition-all duration-300 shadow-[0_10px_35px_rgba(0,0,0,0.03)] min-h-[250px]"
-               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-white border-neutral-200/80'">
-            <div>
-              <div class="flex items-center justify-between mb-4 sm:mb-6">
-                <div>
-                  <div class="flex items-center gap-2 mb-0.5">
-                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                    <h4 class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider"
-                        [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Flujo Financiero</h4>
-                  </div>
-                  <p class="hidden sm:block text-[10px] xs:text-xs opacity-60">Histórico de facturación mensual</p>
-                </div>
-                <button (click)="navigateToTab('finances')" 
-                        class="text-[9px] xs:text-[10px] font-headline font-semibold uppercase tracking-wider px-2.5 xs:px-3 py-1 rounded-full border transition-colors hover:scale-105 cursor-pointer shrink-0"
-                        [ngClass]="isDark ? 'border-neutral-700 text-neutral-300 hover:bg-white hover:text-black' : 'border-neutral-200 text-neutral-700 hover:bg-neutral-100'">
-                  Finanzas →
+              
+              <!-- Segmented Control Bar -->
+              <div class="flex items-center gap-1 p-1 rounded-xl border"
+                   [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800' : 'bg-neutral-100 border-neutral-200'">
+                <button (click)="desktopChartTab = 'traffic'"
+                        class="px-2.5 py-1 rounded-lg text-xs font-headline font-bold transition-all cursor-pointer"
+                        [ngClass]="desktopChartTab === 'traffic'
+                          ? (isDark ? 'bg-white text-black' : 'bg-black text-white')
+                          : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-600 hover:text-black')">
+                  Tráfico (7D)
+                </button>
+                <button (click)="desktopChartTab = 'finances'"
+                        class="px-2.5 py-1 rounded-lg text-xs font-headline font-bold transition-all cursor-pointer"
+                        [ngClass]="desktopChartTab === 'finances'
+                          ? (isDark ? 'bg-white text-black' : 'bg-black text-white')
+                          : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-600 hover:text-black')">
+                  Finanzas (6M)
                 </button>
               </div>
+            </div>
 
-              <!-- Bar Chart of Monthly Revenue & Payments -->
-              <div class="w-full h-28 sm:h-32 flex items-end justify-between gap-1.5 xs:gap-2.5 sm:gap-4 px-1 xs:px-2 pt-2 xs:pt-4 relative">
-                <div *ngFor="let item of financialMonthlyBars" class="flex-1 flex flex-col items-center gap-1 xs:gap-1.5 h-full justify-end group">
-                  <span class="text-[8px] xs:text-[9px] font-bold text-red-600 opacity-80 sm:opacity-0 group-hover:opacity-100 transition-opacity">
-                    {{ item.formattedShort }}
-                  </span>
-                  <div class="w-full max-w-[22px] xs:max-w-[28px] rounded-t-md xs:rounded-t-lg transition-all duration-500 ease-out relative"
-                       [style.height.%]="item.heightPct"
-                       [ngClass]="'bg-gradient-to-t from-red-700 to-red-500 group-hover:from-red-600 group-hover:to-red-400 shadow-[0_4px_14px_rgba(220,38,38,0.25)]'">
-                  </div>
-                  <span class="text-[9px] xs:text-[10px] font-headline font-semibold uppercase tracking-wider"
-                        [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">
-                    {{ item.month }}
-                  </span>
+            <!-- Contenido Gráficas -->
+            <div class="p-5 flex flex-col justify-between flex-1 gap-4">
+              
+              <!-- Tab 1: Tráfico Semanal SVG -->
+              <div *ngIf="desktopChartTab === 'traffic'" class="space-y-4 animate-fadeIn">
+                <div class="w-full h-36 relative">
+                  <svg class="w-full h-full" viewBox="0 0 500 140" preserveAspectRatio="none">
+                    <defs>
+                      <linearGradient id="trafficGradDesk" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#dc2626" stop-opacity="0.30"/>
+                        <stop offset="100%" stop-color="#dc2626" stop-opacity="0.0"/>
+                      </linearGradient>
+                    </defs>
+                    <line x1="0" y1="25" x2="500" y2="25" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'"/>
+                    <line x1="0" y1="65" x2="500" y2="65" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'"/>
+                    <line x1="0" y1="105" x2="500" y2="105" stroke-width="1" [attr.stroke]="isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'"/>
+                    <path [attr.d]="trafficAreaPath" fill="url(#trafficGradDesk)"/>
+                    <path [attr.d]="trafficLinePath" fill="none" stroke="#dc2626" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle *ngFor="let pt of trafficPoints" 
+                            [attr.cx]="pt.x" 
+                            [attr.cy]="pt.y" 
+                            r="4.5" 
+                            [attr.fill]="isDark ? '#111116' : '#ffffff'" 
+                            stroke="#dc2626" 
+                            stroke-width="2.5"/>
+                  </svg>
                 </div>
+
+                <!-- Días de la semana -->
+                <div class="flex justify-between text-xs font-headline font-semibold uppercase text-neutral-400 px-1">
+                  <span *ngFor="let day of weekDays">{{ day }}</span>
+                </div>
+
+                <!-- Métricas destacadas -->
+                <div class="grid grid-cols-3 gap-2 pt-3 border-t text-center"
+                     [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+                  <div>
+                    <span class="text-[10px] uppercase text-neutral-400 block font-sans">Promedio Diario</span>
+                    <span class="text-sm font-bold font-headline" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ avgDailyTraffic }}</span>
+                  </div>
+                  <div>
+                    <span class="text-[10px] uppercase text-neutral-400 block font-sans">Pico Semanal</span>
+                    <span class="text-sm font-bold font-headline text-red-500">{{ maxTraffic }}</span>
+                  </div>
+                  <div>
+                    <span class="text-[10px] uppercase text-neutral-400 block font-sans">Tasa Conversión</span>
+                    <span class="text-sm font-bold font-headline text-red-600">{{ conversionRate }}%</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tab 2: Finanzas Mensuales Barras -->
+              <div *ngIf="desktopChartTab === 'finances'" class="space-y-4 animate-fadeIn">
+                <div class="w-full h-36 flex items-end justify-between gap-3 px-2 pt-2">
+                  <div *ngFor="let item of financialMonthlyBars" class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+                    <span class="text-[10px] font-bold text-red-500 transition-opacity">
+                      {{ item.formattedShort }}
+                    </span>
+                    <div class="w-full max-w-[28px] rounded-t-lg transition-all duration-500 bg-gradient-to-t from-red-700 to-red-500 group-hover:from-red-600 group-hover:to-red-400 shadow-sm"
+                         [style.height.%]="item.heightPct">
+                    </div>
+                    <span class="text-xs font-headline font-semibold uppercase text-neutral-400">
+                      {{ item.month }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Métricas Financieras -->
+                <div class="grid grid-cols-3 gap-2 pt-3 border-t text-center"
+                     [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+                  <div>
+                    <span class="text-[10px] uppercase text-neutral-400 block font-sans">Facturas</span>
+                    <span class="text-sm font-bold font-headline" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ totalInvoicesCount }}</span>
+                  </div>
+                  <div>
+                    <span class="text-[10px] uppercase text-neutral-400 block font-sans">Tasa de Cobro</span>
+                    <span class="text-sm font-bold font-headline text-red-500">{{ collectionRate }}%</span>
+                  </div>
+                  <div>
+                    <span class="text-[10px] uppercase text-neutral-400 block font-sans">Total Recaudado</span>
+                    <span class="text-sm font-bold font-headline text-red-600 truncate block">{{ formatCurrency(financeTotalPaid) }}</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Columna 2: Operaciones Diarias (Racha & Agenda de Hoy) -->
+          <div class="cat-card !min-h-0 !h-auto">
+            
+            <div class="cat-card-header">
+              <div class="cat-card-title-group">
+                <div class="cat-card-icon-pill">
+                  <span class="material-symbols-rounded text-red-500">local_fire_department</span>
+                </div>
+                <h2 class="cat-card-title">Racha Diaria & Agenda</h2>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="cat-counter-chip">{{ streakData?.streakCount || 1 }} días récord</span>
+                <button (click)="openStreakMonthModal()"
+                        class="text-xs font-headline font-bold text-neutral-500 hover:text-neutral-900 dark:hover:text-white cursor-pointer hover:underline">
+                  Mes →
+                </button>
               </div>
             </div>
 
-            <!-- Financial Summary Bar -->
-            <div class="grid grid-cols-3 gap-1.5 xs:gap-2 pt-3 mt-3 sm:pt-4 sm:mt-4 border-t"
-                 [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
-              <div class="text-center">
-                <span class="text-[9px] xs:text-[10px] opacity-50 block uppercase">Facturas</span>
-                <span class="text-xs sm:text-sm font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">{{ totalInvoicesCount }}</span>
+            <!-- Contenido Racha + Agenda -->
+            <div class="p-5 flex flex-col justify-between flex-1 gap-4">
+              
+              <!-- 1. Barra y Metas de Racha -->
+              <div class="space-y-3">
+                <div class="flex items-center justify-between text-xs font-sans text-neutral-500">
+                  <span>{{ completedStreakGoals }}/3 objetivos completados hoy</span>
+                  <span class="font-bold text-neutral-900 dark:text-white">{{ ((completedStreakGoals / 3) * 100) | number:'1.0-0' }}%</span>
+                </div>
+                <div class="w-full h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+                  <div class="h-full bg-red-600 rounded-full transition-all duration-300"
+                       [style.width.%]="(completedStreakGoals / 3) * 100"></div>
+                </div>
+
+                <!-- 3 Metas -->
+                <div class="grid grid-cols-3 gap-2">
+                  <div class="p-2.5 rounded-xl border text-center"
+                       [ngClass]="isDark ? 'bg-[#18181f] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+                    <span class="text-[10px] text-neutral-400 block font-sans">1. Ingreso</span>
+                    <span class="text-xs font-bold text-red-500">✓ Listo</span>
+                  </div>
+                  <div class="p-2.5 rounded-xl border text-center"
+                       [ngClass]="isDark ? 'bg-[#18181f] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+                    <span class="text-[10px] text-neutral-400 block font-sans">2. RotBot IA</span>
+                    <span *ngIf="streakData?.actions?.robot" class="text-xs font-bold text-red-500">✓ Listo</span>
+                    <button *ngIf="!streakData?.actions?.robot" (click)="tabChange.emit('rotbot')"
+                            class="text-xs font-bold text-red-500 hover:underline cursor-pointer">Abrir →</button>
+                  </div>
+                  <div class="p-2.5 rounded-xl border text-center"
+                       [ngClass]="isDark ? 'bg-[#18181f] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+                    <span class="text-[10px] text-neutral-400 block font-sans">3. Biblioteca</span>
+                    <span *ngIf="streakData?.actions?.library" class="text-xs font-bold text-red-500">✓ Listo</span>
+                    <button *ngIf="!streakData?.actions?.library" (click)="tabChange.emit('library')"
+                            class="text-xs font-bold text-red-500 hover:underline cursor-pointer">Repasar →</button>
+                  </div>
+                </div>
+
+                <!-- Tira 7 Días -->
+                <div class="pt-2 border-t border-neutral-200 dark:border-neutral-800">
+                  <div class="grid grid-cols-7 gap-1 text-center">
+                    <div *ngFor="let day of streakWeekDays" class="flex flex-col items-center">
+                      <span class="text-[9px] font-headline uppercase text-neutral-400">{{ day.name }}</span>
+                      <span class="text-xs font-mono font-medium my-0.5"
+                            [style.color]="day.isCompleted ? '#dc2626' : (day.isToday ? '#ef4444' : '#a1a1aa')">
+                        {{ day.dayNumber }}
+                      </span>
+                      <span class="w-1.5 h-1.5 rounded-full"
+                            [ngClass]="day.isCompleted ? 'bg-red-500' : (day.isToday ? 'bg-red-500 animate-pulse' : 'bg-neutral-300 dark:bg-neutral-700')"></span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="text-center">
-                <span class="text-[9px] xs:text-[10px] opacity-50 block uppercase">Tasa Cobro</span>
-                <span class="text-xs sm:text-sm font-bold text-red-600">{{ collectionRate }}%</span>
+
+              <!-- 2. Agenda de Hoy -->
+              <div class="pt-3 border-t border-neutral-200 dark:border-neutral-800">
+                <div class="flex items-center justify-between mb-2.5">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                    <h3 class="text-xs font-headline font-bold uppercase tracking-wider text-neutral-900 dark:text-white m-0">
+                      Agenda de Hoy
+                    </h3>
+                  </div>
+                  <button (click)="navigateToTab('itinerary')"
+                          class="text-xs font-bold text-red-600 dark:text-red-400 hover:underline cursor-pointer">
+                    Ver Itinerario →
+                  </button>
+                </div>
+
+                <div class="space-y-2">
+                  <div *ngIf="itineraryNotifs.current?.length > 0">
+                    <div *ngFor="let task of itineraryNotifs.current.slice(0, 1)"
+                         class="rounded-xl border p-2.5 flex items-center justify-between bg-red-500/10 border-red-500/20 text-red-600 dark:text-red-400 font-sans">
+                      <div class="flex items-center gap-2 min-w-0">
+                        <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping shrink-0"></span>
+                        <span class="text-xs font-semibold truncate">{{ task.title }}</span>
+                      </div>
+                      <span class="text-xs font-mono font-bold shrink-0 ml-2">{{ task.time }}</span>
+                    </div>
+                  </div>
+
+                  <div *ngIf="itineraryNotifs.upcoming?.length > 0">
+                    <div *ngFor="let task of itineraryNotifs.upcoming.slice(0, 1)"
+                         class="rounded-xl border p-2.5 flex items-center justify-between font-sans"
+                         [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800 text-neutral-300' : 'bg-neutral-50 border-neutral-200 text-neutral-700'">
+                      <span class="text-xs font-medium truncate">{{ task.title }}</span>
+                      <span class="text-xs opacity-60 font-mono shrink-0 ml-2">{{ task.time }}</span>
+                    </div>
+                  </div>
+
+                  <div *ngIf="!itineraryNotifs.current?.length && !itineraryNotifs.upcoming?.length"
+                       class="rounded-xl border p-3 text-center"
+                       [ngClass]="isDark ? 'bg-neutral-900/40 border-neutral-800 text-neutral-400' : 'bg-neutral-50 border-neutral-200 text-neutral-600'">
+                    <p class="text-xs font-semibold m-0">Sin pendientes urgentes hoy</p>
+                    <span class="text-[10px] opacity-60 font-sans">¡Itinerario al día!</span>
+                  </div>
+                </div>
               </div>
-              <div class="text-center">
-                <span class="text-[9px] xs:text-[10px] opacity-50 block uppercase">Balance</span>
-                <span class="text-xs sm:text-sm font-bold text-red-600 truncate block">{{ formatCurrency(financeTotalPaid) }}</span>
-              </div>
+
             </div>
 
           </div>
 
         </div>
 
-        <!-- ═══════════════════════ 6. FOOTER ACTIONS ═══════════════════════ -->
-        <div class="flex justify-end lg:col-span-12 order-6">
+        <!-- ════ 6. ACCIONES DEL PIE ════ -->
+        <div class="flex justify-end pt-1">
           <button (click)="resetMetrics()"
-                  class="px-5 xs:px-6 py-2 xs:py-2.5 rounded-full text-[10px] xs:text-xs font-headline font-semibold uppercase tracking-wider border transition-all duration-300 cursor-pointer hover:scale-105 active:scale-95 shadow-sm"
-                  [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:border-red-500/40 hover:text-red-400 hover:bg-red-500/10' : 'border-neutral-200 text-neutral-600 hover:border-red-300 hover:text-red-600 hover:bg-red-50'">
+                  class="px-5 py-2 rounded-full text-xs font-headline font-semibold uppercase tracking-wider border transition-all cursor-pointer active:scale-95 shadow-sm"
+                  [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:border-red-500/40 hover:text-red-400 bg-neutral-900/60' : 'border-neutral-200 text-neutral-600 hover:border-red-300 hover:text-red-600 bg-white'">
             Reiniciar Métricas
           </button>
         </div>
@@ -1467,7 +1296,7 @@ import { MessagesService } from '../../../services/messages.service';
             Por seguridad, tu sesión ha sido cerrada automáticamente. Por favor, inicia sesión nuevamente para continuar administrando tu portafolio.
           </p>
           <button (click)="goToLogin()"
-                  class="w-full py-3 px-4 rounded-xl text-xs font-bold uppercase tracking-widest text-white bg-blue-600 hover:bg-blue-500 active:bg-blue-700 transition-all duration-200 cursor-pointer shadow-lg shadow-blue-500/25">
+                  class="w-full py-3 px-4 rounded-xl text-xs font-bold uppercase tracking-widest text-white bg-red-600 hover:bg-red-500 active:bg-red-700 transition-all duration-200 cursor-pointer shadow-lg shadow-red-500/25">
             Iniciar sesión de nuevo
           </button>
         </div>
@@ -1625,108 +1454,75 @@ import { MessagesService } from '../../../services/messages.service';
 
     <!-- ═══════════════════════ SKELETON LOADER (1:1 PIXEL-PERFECT MATCH) ═══════════════════════ -->
     <ng-template #skeleton>
-      <div class="space-y-4 xs:space-y-5 sm:space-y-6 font-sans">
-        
-        <!-- 1. Welcome Banner Skeleton -->
-        <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl border p-5 xs:p-6 sm:p-8 md:p-9 min-h-[200px] xs:min-h-[220px] sm:min-h-[240px] flex flex-col justify-center"
-             [ngClass]="isDark ? 'bg-[#0f0f13] border-neutral-800/90' : 'bg-white border-neutral-200/90'">
-          <div class="space-y-3.5 max-w-[65%]">
-            <div class="h-3.5 w-28 rounded-full skeleton-shimmer"></div>
-            <div class="h-8 sm:h-10 w-52 sm:w-80 rounded-2xl skeleton-shimmer"></div>
-            <div class="h-4 w-44 rounded-full skeleton-shimmer"></div>
-            
-            <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap pt-2">
-              <div *ngFor="let _ of [1,2,3,4]" class="h-8 w-24 sm:w-28 rounded-xl skeleton-shimmer border"
-                   [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'"></div>
-            </div>
-          </div>
-          <div class="absolute right-6 top-1/2 -translate-y-1/2 hidden sm:block w-36 h-36 rounded-full skeleton-shimmer border"
-               [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'"></div>
-        </div>
+      <div class="space-y-6 font-sans">
 
-        <!-- 2. AI Command Center Skeleton -->
-        <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-6 space-y-3.5"
-             [ngClass]="isDark ? 'bg-[#0f0f13] border-neutral-800/90' : 'bg-white border-neutral-200/90'">
-          <div class="flex items-center gap-3">
-            <div class="w-7 h-7 rounded-lg skeleton-shimmer"></div>
-            <div class="h-5 w-44 rounded-lg skeleton-shimmer"></div>
-          </div>
-          <div class="h-3.5 w-72 rounded-full skeleton-shimmer"></div>
-          <div class="h-12 w-full rounded-2xl skeleton-shimmer border"
-               [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'"></div>
-          <div class="flex items-center gap-2 pt-1 flex-wrap">
-            <div class="h-3.5 w-16 rounded-full skeleton-shimmer"></div>
-            <div *ngFor="let _ of [1,2,3,4]" class="h-6 w-28 sm:w-36 rounded-full skeleton-shimmer"></div>
-          </div>
-        </div>
-
-        <!-- 3. KPI Cards Skeleton (2x2 Mobile / 4 Desktop) -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 xs:gap-3 sm:gap-5">
-          <div *ngFor="let _ of [1,2,3,4]" 
-               class="rounded-[18px] xs:rounded-[20px] sm:rounded-[24px] border p-3.5 xs:p-4 sm:p-6 flex flex-col justify-between h-28 xs:h-32 sm:h-36"
-               [ngClass]="isDark ? 'bg-[#0f0f13] border-neutral-800/90' : 'bg-white border-neutral-200/90'">
-            <div class="flex items-center justify-between">
-              <div class="h-3.5 w-16 sm:w-24 rounded-full skeleton-shimmer"></div>
-              <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl skeleton-shimmer"></div>
+        <!-- 1. Hero 2-Column Grid Skeleton (Black Panel + Quick Access) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <!-- Black Hero Panel Skeleton -->
+          <div class="lg:col-span-8 rounded-[26px] p-7 sm:p-9 min-h-[340px] flex flex-col justify-between"
+               [ngClass]="isDark ? 'bg-[#09090b] border border-neutral-800' : 'bg-neutral-900 border border-neutral-900'">
+            <div class="space-y-3 max-w-[60%]">
+              <div class="h-5 w-24 rounded-full skeleton-shimmer opacity-40"></div>
+              <div class="h-10 w-64 rounded-xl skeleton-shimmer opacity-40"></div>
+              <div class="h-10 w-44 rounded-xl skeleton-shimmer opacity-40"></div>
+              <div class="h-4 w-72 rounded-full skeleton-shimmer opacity-30"></div>
             </div>
-            <div class="space-y-2">
-              <div class="h-6 sm:h-8 w-20 sm:w-28 rounded-lg skeleton-shimmer"></div>
-              <div class="h-2.5 w-24 rounded-full skeleton-shimmer"></div>
-            </div>
+            <div class="h-4 w-40 rounded-full skeleton-shimmer opacity-30"></div>
           </div>
-        </div>
 
-        <!-- 4. High-Performance Charts Skeleton -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3.5 sm:gap-4 lg:col-span-12">
-          <div *ngFor="let _ of [1,2]" 
-               class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 flex flex-col justify-between min-h-[260px]"
-               [ngClass]="isDark ? 'bg-[#0f0f13] border-neutral-800/90' : 'bg-white border-neutral-200/90'">
-            <div class="space-y-4">
-              <div class="flex items-center justify-between">
-                <div class="space-y-2">
-                  <div class="h-4 w-36 rounded-lg skeleton-shimmer"></div>
-                  <div class="h-2.5 w-24 rounded-full skeleton-shimmer"></div>
+          <!-- Quick Access Card Skeleton -->
+          <div class="lg:col-span-4 rounded-[26px] border p-6 flex flex-col justify-between"
+               [ngClass]="isDark ? 'bg-[#0e0e13] border-neutral-800' : 'bg-white border-neutral-200'">
+            <div class="h-3.5 w-28 rounded-full skeleton-shimmer mb-4"></div>
+            <div class="space-y-3">
+              <div *ngFor="let _ of [1,2,3,4,5]" class="flex items-center justify-between p-1.5">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-2xl skeleton-shimmer"></div>
+                  <div class="space-y-1.5">
+                    <div class="h-3 w-28 rounded-full skeleton-shimmer"></div>
+                    <div class="h-2.5 w-36 rounded-full skeleton-shimmer opacity-60"></div>
+                  </div>
                 </div>
-                <div class="h-6 w-20 rounded-full skeleton-shimmer"></div>
-              </div>
-              <div class="h-36 sm:h-44 w-full rounded-2xl flex items-end justify-between p-3 gap-2.5"
-                   [ngClass]="isDark ? 'bg-black/40 border border-neutral-800/60' : 'bg-neutral-50 border border-neutral-200/60'">
-                <div *ngFor="let h of [30, 60, 45, 80, 70, 95]" class="flex-1 rounded-t-md skeleton-shimmer" [style.height.%]="h"></div>
-              </div>
-            </div>
-            <div class="grid grid-cols-3 gap-2 pt-3 border-t" [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
-              <div *ngFor="let _ of [1,2,3]" class="space-y-1.5 text-center flex flex-col items-center">
-                <div class="h-2.5 w-12 rounded-full skeleton-shimmer"></div>
-                <div class="h-3.5 w-14 rounded-lg skeleton-shimmer"></div>
+                <div class="w-4 h-4 rounded skeleton-shimmer"></div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- 5. Infrastructure & Agenda Skeleton -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3.5 sm:gap-4 lg:col-span-12">
-          <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 space-y-4"
-               [ngClass]="isDark ? 'bg-[#0f0f13] border-neutral-800/90' : 'bg-white border-neutral-200/90'">
-            <div class="flex items-center justify-between">
+        <!-- 3. 5 Module Cards Grid Skeleton -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div *ngFor="let _ of [1,2,3,4,5]" 
+               class="rounded-[22px] border p-5 flex flex-col justify-between h-48"
+               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800' : 'bg-white border-neutral-200'">
+            <div class="space-y-3">
+              <div class="w-11 h-11 rounded-2xl skeleton-shimmer"></div>
               <div class="h-4 w-32 rounded-lg skeleton-shimmer"></div>
-              <div class="h-5 w-24 rounded-full skeleton-shimmer"></div>
+              <div class="h-3 w-40 rounded-full skeleton-shimmer"></div>
             </div>
-            <div class="grid grid-cols-2 gap-2.5">
-              <div *ngFor="let _ of [1,2,3,4]" class="h-16 rounded-2xl p-3 border skeleton-shimmer"
-                   [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'"></div>
-            </div>
+            <div class="h-3 w-24 rounded-full skeleton-shimmer"></div>
           </div>
+        </div>
 
-          <div class="rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-4 xs:p-5 sm:p-7 space-y-4"
-               [ngClass]="isDark ? 'bg-[#0f0f13] border-neutral-800/90' : 'bg-white border-neutral-200/90'">
-            <div class="flex items-center justify-between">
-              <div class="h-4 w-32 rounded-lg skeleton-shimmer"></div>
-              <div class="h-5 w-20 rounded-full skeleton-shimmer"></div>
+        <!-- 4. Controls / Search Skeleton -->
+        <div class="rounded-2xl border p-4"
+             [ngClass]="isDark ? 'bg-[#111116] border-neutral-800' : 'bg-white border-neutral-200'">
+          <div class="h-10 w-full rounded-xl skeleton-shimmer"></div>
+        </div>
+
+        <!-- 5. Workspace Dual Grid Skeleton -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <div *ngFor="let _ of [1,2]" 
+               class="rounded-2xl border p-5 space-y-4 min-h-[300px]"
+               [ngClass]="isDark ? 'bg-[#111116] border-neutral-800' : 'bg-white border-neutral-200'">
+            <div class="flex items-center justify-between pb-3 border-b"
+                 [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg skeleton-shimmer"></div>
+                <div class="h-4 w-40 rounded-lg skeleton-shimmer"></div>
+              </div>
+              <div class="h-7 w-28 rounded-xl skeleton-shimmer"></div>
             </div>
-            <div class="space-y-2.5">
-              <div *ngFor="let _ of [1,2]" class="h-12 rounded-xl border p-2.5 skeleton-shimmer"
-                   [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'"></div>
-            </div>
+            <div class="h-40 w-full rounded-xl skeleton-shimmer"></div>
           </div>
         </div>
 
@@ -1766,6 +1562,29 @@ import { MessagesService } from '../../../services/messages.service';
       to   { opacity: 1; transform: scale(1); }
     }
     .animate-fadeIn { animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    /* Modo Claro: Líneas Divisoras y Bordes Definidos */
+    :host-context(.theme-light) .border-neutral-100,
+    :host-context(:root:not(.theme-dark)) .border-neutral-100 {
+      border-color: #d4d4d8 !important;
+    }
+    :host-context(.theme-light) .divide-neutral-100 > :not([hidden]) ~ :not([hidden]),
+    :host-context(:root:not(.theme-dark)) .divide-neutral-100 > :not([hidden]) ~ :not([hidden]) {
+      border-color: #d4d4d8 !important;
+    }
+    :host-context(.theme-light) .border-neutral-200,
+    :host-context(.theme-light) [class*="border-neutral-200"],
+    :host-context(:root:not(.theme-dark)) .border-neutral-200,
+    :host-context(:root:not(.theme-dark)) [class*="border-neutral-200"] {
+      border-color: #d4d4d8 !important;
+    }
+    :host-context(.theme-light) .divide-neutral-200 > :not([hidden]) ~ :not([hidden]),
+    :host-context(:root:not(.theme-dark)) .divide-neutral-200 > :not([hidden]) ~ :not([hidden]) {
+      border-color: #d4d4d8 !important;
+    }
+    .dark-card-white,
+    .dark-card-white * {
+      color: #ffffff !important;
+    }
   `]
 })
 export class DashHomeComponent implements OnInit, OnDestroy {
@@ -1828,6 +1647,33 @@ export class DashHomeComponent implements OnInit, OnDestroy {
     return 'night';
   }
 
+  get formattedCurrentDate(): string {
+    const now = new Date();
+    const weekday = now.toLocaleDateString('es-ES', { weekday: 'long' });
+    const day = now.getDate();
+    const month = now.toLocaleDateString('es-ES', { month: 'long' });
+    const year = now.getFullYear();
+    const capWeekday = weekday.charAt(0).toUpperCase() + weekday.slice(1);
+    const capMonth = month.charAt(0).toUpperCase() + month.slice(1);
+    return `${capWeekday}, ${day} de ${capMonth} de ${year}`;
+  }
+
+  get greetingPillText(): string {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return 'Buenos días';
+    if (hour >= 12 && hour < 19) return 'Buenas tardes';
+    return 'Buenas noches';
+  }
+
+  get formattedHeroDate(): string {
+    const now = new Date();
+    const weekday = now.toLocaleDateString('en-US', { weekday: 'long' });
+    const day = now.getDate();
+    const month = now.toLocaleDateString('en-US', { month: 'long' });
+    const year = now.getFullYear();
+    return `${weekday}, ${day} ${month} ${year}`;
+  }
+
   rotatingPhrases: string[] = [
     '¿qué haremos hoy?',
     '¿ya estudiaste sql?',
@@ -1856,6 +1702,7 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   avgDailyTraffic = 0;
   maxTraffic = 0;
   mobileChartTab: 'traffic' | 'finances' = 'traffic';
+  desktopChartTab: 'traffic' | 'finances' = 'traffic';
 
   // Radar Proactivo State
   radarData: RadarResponse | null = null;
@@ -2254,28 +2101,17 @@ export class DashHomeComponent implements OnInit, OnDestroy {
   }
 
   getBadgeColorClass(color?: string): string {
-    switch (color) {
-      case 'emerald':
-        return 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20';
-      case 'blue':
-        return 'bg-blue-500/10 text-blue-500 border border-blue-500/20';
-      case 'amber':
-        return 'bg-amber-500/10 text-amber-500 border border-amber-500/20';
-      case 'purple':
-        return 'bg-purple-500/10 text-purple-400 border border-purple-500/20';
-      case 'red':
-        return 'bg-red-500/10 text-red-400 border border-red-500/20';
-      default:
-        return 'bg-neutral-500/10 text-neutral-400 border border-neutral-500/20';
+    if (color === 'red') {
+      return 'bg-red-500/10 text-red-500 border border-red-500/20';
     }
+    return 'bg-neutral-500/10 text-neutral-400 border border-neutral-500/20';
   }
 
   getSectionDotColor(section: string): string {
     switch (section) {
-      case 'finances': return 'bg-amber-500';
-      case 'library': return 'bg-purple-500';
-      case 'itinerary': return 'bg-blue-500';
-      case 'messages': return 'bg-cyan-400';
+      case 'finances': return 'bg-red-500';
+      case 'rotbot': return 'bg-red-500';
+      case 'messages': return 'bg-red-500';
       default: return 'bg-neutral-400';
     }
   }
@@ -2336,6 +2172,26 @@ export class DashHomeComponent implements OnInit, OnDestroy {
         } catch {
           this.unreadMessages = 0;
         }
+      }
+    });
+  }
+
+  refreshAll() {
+    this.isLoading = true;
+    this.loadFinanceSummary();
+    this.loadBadges();
+    this.loadRadarData();
+    this.loadDynamicSuggestions();
+    this.analyticsService.getMetrics().subscribe({
+      next: (m) => {
+        this.metrics = m || this.metrics;
+        this.computeTrafficGraph();
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.isLoading = false;
+        this.cdr.markForCheck();
       }
     });
   }

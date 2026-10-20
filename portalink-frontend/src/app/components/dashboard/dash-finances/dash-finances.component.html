@@ -1,31 +1,31 @@
 <ng-container *ngIf="!isLoading || invoices.length > 0; else skeleton">
 <div class="space-y-5 tab-enter font-sans">
 
-      <!-- ═══════════════════════ HEADER & ACTION BAR ═══════════════════════ -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4"
-           [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-            <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em]"
-               [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
-              Gestión Financiera & Cobros
-            </p>
+      <!-- ═══════════════════════ HEADER: CONTENEDOR NEGRO SLIM & ACTION BAR ═══════════════════════ -->
+      <div class="bg-[#09090b] text-white rounded-[22px] border border-neutral-800 p-5 sm:p-6 relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+        <!-- Círculos concéntricos decorativos sutiles de fondo -->
+        <div class="absolute -right-8 -bottom-8 w-44 h-44 rounded-full border border-neutral-800/40 pointer-events-none"></div>
+        <div class="absolute -right-4 -bottom-4 w-32 h-32 rounded-full border border-neutral-800/25 pointer-events-none"></div>
+
+        <div class="relative z-10">
+          <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full border border-neutral-800 bg-neutral-900/90 text-[10px] font-sans text-neutral-300 mb-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+            <span>Gestión Financiera & Cobros</span>
           </div>
-          <div class="flex items-center gap-3 mt-1">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-xs"
-                 [ngClass]="isDark ? 'bg-[#141419] text-white border border-neutral-800' : 'bg-neutral-100 text-neutral-900 border border-neutral-200'">
-              <span class="material-symbols-rounded">payments</span>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl border flex items-center justify-center bg-neutral-900/90 border-neutral-800 mb-0 shrink-0"
+                 style="color: #ffffff !important;">
+              <span class="material-symbols-rounded text-xl" style="color: #ffffff !important;">payments</span>
             </div>
-            <h2 class="text-2xl sm:text-3xl font-headline font-bold uppercase tracking-tight"
-                [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+            <h2 class="text-2xl sm:text-3xl lg:text-[32px] font-headline font-black tracking-tight leading-[1.1] text-white m-0 dark-card-white"
+                style="color: #ffffff !important;">
               Finanzas
             </h2>
           </div>
         </div>
 
         <!-- Action Triggers -->
-        <div class="flex items-center gap-2.5 flex-wrap">
+        <div class="relative z-10 flex items-center gap-2.5 flex-wrap">
           <button *ngIf="subTab === 'facturas' || subTab === 'resumen'" (click)="openNewInvoice()"
                   class="btn-action-primary">
             <span class="material-symbols-rounded" style="font-size: 16px;">add</span>
@@ -780,7 +780,7 @@
           <div class="flex gap-2.5 justify-end pt-3 border-t" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
             <button (click)="showClientForm = false" class="px-3.5 py-2 rounded-xl text-xs font-headline font-medium uppercase tracking-wider border cursor-pointer transition-colors"
                     [ngClass]="isDark ? 'border-neutral-800 bg-neutral-950 text-neutral-400 hover:text-white' : 'border-neutral-200 text-neutral-600 hover:text-neutral-900'">Cancelar</button>
-            <button (click)="saveClient()" class="px-5 py-2 rounded-xl text-xs font-headline font-semibold uppercase tracking-wider cursor-pointer shadow-xs transition-all active:scale-95 flex items-center gap-1.5"
+            <button (click)="saveClient()" class="btn-modal-submit px-5 py-2 rounded-xl text-xs font-headline font-semibold uppercase tracking-wider cursor-pointer shadow-xs transition-all active:scale-95 flex items-center gap-1.5"
                     [ngClass]="isDark ? 'bg-white text-neutral-900 hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-neutral-800'">
               <span class="material-symbols-rounded" style="font-size: 15px;">check</span>
               <span>Guardar Cliente</span>
@@ -1097,7 +1097,7 @@
           <div class="flex gap-3 justify-end pt-2 border-t" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-100'">
             <button (click)="showServiceForm = false" class="px-4 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border cursor-pointer transition-colors"
                     [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-400 hover:text-white' : 'border-neutral-300 text-neutral-600 hover:text-neutral-900'">Cancelar</button>
-            <button (click)="saveService()" class="px-6 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider cursor-pointer shadow-md transition-all active:scale-95 flex items-center gap-2"
+            <button (click)="saveService()" class="btn-modal-submit px-6 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider cursor-pointer shadow-md transition-all active:scale-95 flex items-center gap-2"
                     [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-neutral-800'">
               <span class="material-symbols-rounded" style="font-size: 16px;">check</span>
               <span>Guardar Servicio</span>
@@ -1628,7 +1628,7 @@
             <!-- Modo Edición: Botón de Actualizar -->
             <ng-container *ngIf="editingInvoice.id">
               <button (click)="saveInvoice(editingInvoice.status || 'Borrador')"
-                      class="px-6 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider cursor-pointer shadow-md transition-all active:scale-95"
+                      class="btn-modal-submit px-6 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider cursor-pointer shadow-md transition-all active:scale-95"
                       [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'">
                 Actualizar Cuenta
               </button>
@@ -1638,7 +1638,7 @@
             <ng-container *ngIf="!editingInvoice.id">
               <button (click)="saveInvoice('Borrador')" class="px-4 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border cursor-pointer transition-colors"
                       [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-300 hover:bg-neutral-800 hover:text-white' : 'border-neutral-300 text-neutral-600 hover:bg-neutral-100'">Guardar Borrador</button>
-              <button (click)="saveInvoice('Enviada')" class="px-5 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider cursor-pointer shadow-md transition-all active:scale-95"
+              <button (click)="saveInvoice('Enviada')" class="btn-modal-submit px-5 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider cursor-pointer shadow-md transition-all active:scale-95"
                       [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'">Guardar como Enviada</button>
               <button (click)="saveInvoice('Pagada')" class="px-4 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider cursor-pointer border transition-colors"
                       [ngClass]="isDark ? 'border-neutral-800 bg-neutral-900 text-white hover:bg-neutral-800' : 'border-neutral-300 bg-neutral-100 text-neutral-900 hover:bg-neutral-200'">Guardar y Liquidar</button>
@@ -1887,7 +1887,7 @@
               Cancelar
             </button>
             <button (click)="confirmPayment()" [disabled]="isLoading"
-                    class="px-5 py-2 rounded-xl text-xs font-headline font-semibold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 border"
+                    class="btn-modal-submit px-5 py-2 rounded-xl text-xs font-headline font-semibold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 border"
                     [ngClass]="isDark ? 'bg-white text-neutral-900 hover:bg-neutral-200 border-white' : 'bg-neutral-900 text-white hover:bg-neutral-800 border-neutral-900'">
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
               <span>{{ isLoading ? 'Guardando Abono...' : 'Guardar Abono' }}</span>
@@ -2239,7 +2239,7 @@
               </h3>
             </div>
             <div class="flex items-center gap-2">
-              <button (click)="downloadPreviewPdf()" [disabled]="pdfLoading" class="px-3 sm:px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 shadow-md active:scale-95"
+              <button (click)="downloadPreviewPdf()" [disabled]="pdfLoading" class="btn-modal-submit px-3 sm:px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 shadow-md active:scale-95"
                       [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                 <span class="hidden xs:inline">Descargar PDF</span>
@@ -2632,7 +2632,7 @@
                                class="flex-1 min-w-0 px-3 py-2 rounded-xl text-xs border outline-none transition-colors"
                                [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-600 focus:border-neutral-500' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-black'">
                         <button (click)="addProposalItem()"
-                                class="px-4 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider cursor-pointer transition-all border shadow-xs active:scale-95 shrink-0 whitespace-nowrap"
+                                class="btn-modal-submit px-4 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider cursor-pointer transition-all border shadow-xs active:scale-95 shrink-0 whitespace-nowrap"
                                 [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200 border-white' : 'bg-black text-white hover:bg-neutral-800 border-black'">
                           + Agregar
                         </button>
@@ -2689,7 +2689,7 @@
               </button>
 
               <button (click)="downloadSoftwareProposal()" [disabled]="proposalSubmitting"
-                      class="w-full sm:w-auto px-5 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider shadow-md active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 border-0 shrink-0"
+                      class="btn-modal-submit w-full sm:w-auto px-5 py-2 rounded-xl text-xs font-headline font-bold uppercase tracking-wider shadow-md active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 border-0 shrink-0"
                       [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'">
                 <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                 <span class="truncate">{{ proposalSubmitting ? 'Guardando...' : (editingProposalServiceId ? 'Actualizar & PDF' : 'Guardar & PDF') }}</span>
@@ -2744,7 +2744,7 @@
       ══════════════════════════════════════ -->
       <div class="sm:hidden fixed bottom-6 right-5 z-40">
         <button *ngIf="subTab === 'facturas'" (click)="openNewInvoice()"
-                class="w-13 h-13 rounded-full shadow-2xl flex items-center justify-center cursor-pointer active:scale-90 transition-all border border-white/20 bg-white text-black shadow-black/40"
+                class="btn-modal-submit w-13 h-13 rounded-full shadow-2xl flex items-center justify-center cursor-pointer active:scale-90 transition-all border border-white/20 bg-white text-black shadow-black/40"
                 title="Nueva Cuenta de Cobro">
           <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
         </button>
@@ -2754,7 +2754,7 @@
           <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
         </button>
         <button *ngIf="subTab === 'clientes'" (click)="openNewClient()"
-                class="w-13 h-13 rounded-full shadow-2xl flex items-center justify-center cursor-pointer active:scale-90 transition-all border border-white/20 bg-white text-black shadow-black/40"
+                class="btn-modal-submit w-13 h-13 rounded-full shadow-2xl flex items-center justify-center cursor-pointer active:scale-90 transition-all border border-white/20 bg-white text-black shadow-black/40"
                 title="Nuevo Cliente">
           <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
         </button>

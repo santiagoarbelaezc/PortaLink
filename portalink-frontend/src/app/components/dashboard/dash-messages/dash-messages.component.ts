@@ -7,44 +7,43 @@ import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-
 @Component({
   selector: 'app-dash-messages',
   standalone: true,
-  imports: [CommonModule, FormsModule, TeleportToBodyDirective],
+  imports: [CommonModule, FormsModule],
   providers: [DatePipe],
   template: `
     <ng-container *ngIf="!isLoading || messagesList.length > 0; else skeleton">
       <div class="space-y-6 tab-enter font-sans">
 
         <!-- ══════════════════════════════════════
-             HEADER & EXECUTIVE CONTROLS
+             HEADER: CONTENEDOR NEGRO SLIM & EXECUTIVE CONTROLS
         ══════════════════════════════════════ -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4"
-             [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-              <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em]"
-                 [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-500'">
-                Centro de Comunicación & Mensajería
-              </p>
+        <div class="bg-[#09090b] text-white rounded-[22px] border border-neutral-800 p-5 sm:p-6 relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+          <!-- Círculos concéntricos decorativos sutiles de fondo -->
+          <div class="absolute -right-8 -bottom-8 w-44 h-44 rounded-full border border-neutral-800/40 pointer-events-none"></div>
+          <div class="absolute -right-4 -bottom-4 w-32 h-32 rounded-full border border-neutral-800/25 pointer-events-none"></div>
+
+          <div class="relative z-10">
+            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full border border-neutral-800 bg-neutral-900/90 text-[10px] font-sans text-neutral-300 mb-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+              <span>Centro de Comunicación & Mensajería</span>
             </div>
-            <div class="flex items-center gap-3 mt-1">
-              <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-xs"
-                   [ngClass]="isDark ? 'bg-[#141419] text-white border border-neutral-800' : 'bg-neutral-100 text-neutral-900 border border-neutral-200'">
-                <span class="material-symbols-rounded">chat</span>
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl border flex items-center justify-center bg-neutral-900/90 border-neutral-800 mb-0 shrink-0"
+                   style="color: #ffffff !important;">
+                <span class="material-symbols-rounded text-xl" style="color: #ffffff !important;">chat</span>
               </div>
-              <h2 class="text-2xl sm:text-3xl font-headline font-bold uppercase tracking-tight"
-                  [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+              <h2 class="text-2xl sm:text-3xl lg:text-[32px] font-headline font-black tracking-tight leading-[1.1] text-white m-0 dark-card-white"
+                  style="color: #ffffff !important;">
                 Mensajes
               </h2>
             </div>
           </div>
 
           <!-- Controls: Refresh & Bulk Actions -->
-          <div class="flex flex-wrap items-center gap-2.5">
+          <div class="relative z-10 flex flex-wrap items-center gap-2.5">
             <!-- Refresh Button -->
             <button type="button"
                     (click)="loadMessages()"
-                    class="inline-flex items-center gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-headline font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer border active:scale-95"
-                    [ngClass]="isDark ? 'border-neutral-800 bg-[#141419] text-neutral-300 hover:text-white hover:bg-neutral-800' : 'border-neutral-200 bg-neutral-100 text-neutral-700 hover:bg-neutral-200 hover:text-black'"
+                    class="inline-flex items-center gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-headline font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer border active:scale-95 border-neutral-800 bg-[#141419] text-neutral-300 hover:text-white hover:bg-neutral-800"
                     title="Actualizar bandeja">
               <span class="material-symbols-rounded" [class.animate-spin]="isLoading" style="font-size: 16px;">refresh</span>
               <span>Actualizar</span>
@@ -54,12 +53,10 @@ import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-
             <button *ngIf="unreadCount > 0"
                     type="button"
                     (click)="markAllAsRead()"
-                    class="inline-flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl text-xs sm:text-sm font-headline font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md active:scale-95 border"
-                    [ngClass]="isDark ? 'border-white hover:bg-neutral-200' : 'border-[#09090b] hover:bg-neutral-800'"
-                    [style.background-color]="isDark ? '#ffffff !important' : '#09090b !important'"
-                    [style.color]="isDark ? '#09090b !important' : '#ffffff !important'">
-              <span class="material-symbols-rounded" style="font-size: 16px;" [style.color]="isDark ? '#09090b !important' : '#ffffff !important'">done_all</span>
-              <span [style.color]="isDark ? '#09090b !important' : '#ffffff !important'">Marcar Leídos ({{ unreadCount }})</span>
+                    class="inline-flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl text-xs sm:text-sm font-headline font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md active:scale-95 border border-white hover:bg-neutral-200"
+                    style="background-color: #ffffff !important; color: #09090b !important;">
+              <span class="material-symbols-rounded" style="font-size: 16px; color: #09090b !important;">done_all</span>
+              <span style="color: #09090b !important;">Marcar Leídos ({{ unreadCount }})</span>
             </button>
           </div>
         </div>

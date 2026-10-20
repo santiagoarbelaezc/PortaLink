@@ -773,7 +773,7 @@ export class LoginComponent implements OnInit {
         }
         if (user && (user.rol?.toLowerCase() === 'admin' || user.rol?.toLowerCase() === 'administrador')) {
           localStorage.setItem('portalink_admin_tab', 'dashboard');
-          localStorage.setItem('portalink_admin_theme', 'dark');
+          localStorage.setItem('portalink_admin_theme', 'light');
           this.router.navigate(['/admin']);
         } else {
           this.router.navigate(['/perfil']);

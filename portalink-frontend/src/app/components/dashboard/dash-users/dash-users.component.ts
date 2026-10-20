@@ -22,33 +22,38 @@ interface User {
     <div class="space-y-6 tab-enter">
 
       <!-- ══════════════════════════════════════════════════════════════
-           HEADER: GESTIÓN DE USUARIOS & EXPORTACIÓN
+           HEADER: CONTENEDOR NEGRO SLIM & GESTIÓN DE USUARIOS
       ══════════════════════════════════════════════════════════════ -->
-      <div class="flex flex-col gap-4 border-b pb-5"
-           [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-red-500 red-pulse-dot"></span>
-              <p class="text-xs font-mono font-semibold uppercase tracking-[0.25em] text-red-500">
-                Control de Accesos & Seguridad
-              </p>
+      <div class="bg-[#09090b] text-white rounded-[22px] border border-neutral-800 p-5 sm:p-6 relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+        <!-- Círculos concéntricos decorativos sutiles de fondo -->
+        <div class="absolute -right-8 -bottom-8 w-44 h-44 rounded-full border border-neutral-800/40 pointer-events-none"></div>
+        <div class="absolute -right-4 -bottom-4 w-32 h-32 rounded-full border border-neutral-800/25 pointer-events-none"></div>
+
+        <div class="relative z-10">
+          <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full border border-neutral-800 bg-neutral-900/90 text-[10px] font-sans text-neutral-300 mb-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+            <span>Control de Accesos & Seguridad</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl border flex items-center justify-center bg-neutral-900/90 border-neutral-800 mb-0 shrink-0"
+                 style="color: #ffffff !important;">
+              <span class="material-symbols-rounded text-xl" style="color: #ffffff !important;">group</span>
             </div>
-            <h2 class="text-2xl sm:text-4xl font-headline font-bold uppercase tracking-tight mt-1"
-                [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+            <h2 class="text-2xl sm:text-3xl lg:text-[32px] font-headline font-black tracking-tight leading-[1.1] text-white m-0 dark-card-white"
+                style="color: #ffffff !important;">
               Usuarios del Sistema
             </h2>
           </div>
+        </div>
 
-          <div class="flex items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
-            <button (click)="downloadPdf()"
-                    [disabled]="pdfLoading || usersList.length === 0"
-                    class="btn-action-primary flex-1 sm:flex-initial">
-              <span *ngIf="!pdfLoading" class="material-symbols-rounded" style="font-size: 16px;">picture_as_pdf</span>
-              <span *ngIf="pdfLoading" class="material-symbols-rounded animate-spin" style="font-size: 16px;">sync</span>
-              <span>{{ pdfLoading ? 'Generando...' : 'Exportar PDF' }}</span>
-            </button>
-          </div>
+        <div class="relative z-10 flex items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
+          <button (click)="downloadPdf()"
+                  [disabled]="pdfLoading || usersList.length === 0"
+                  class="btn-action-primary flex-1 sm:flex-initial">
+            <span *ngIf="!pdfLoading" class="material-symbols-rounded" style="font-size: 16px;">picture_as_pdf</span>
+            <span *ngIf="pdfLoading" class="material-symbols-rounded animate-spin" style="font-size: 16px;">sync</span>
+            <span>{{ pdfLoading ? 'Generando...' : 'Exportar PDF' }}</span>
+          </button>
         </div>
       </div>
 

@@ -14,7 +14,7 @@
   --text-secondary: rgba(10, 10, 10, 0.6);
   --accent-color: #2563eb;
   --card-bg: rgba(0, 0, 0, 0.02);
-  --card-border: rgba(0, 0, 0, 0.08);
+  --card-border: #d4d4d8;
   --nav-bg: rgba(255, 255, 255, 0.8);
 }
 
@@ -25,7 +25,7 @@
   --text-secondary: rgba(10, 10, 10, 0.6);
   --accent-color: #2563eb;
   --card-bg: rgba(0, 0, 0, 0.02);
-  --card-border: rgba(0, 0, 0, 0.08);
+  --card-border: #d4d4d8;
   --nav-bg: rgba(255, 255, 255, 0.8);
 }
 
@@ -282,9 +282,112 @@ button.bg-red-600 *,
 .bg-\[\#09090b\],
 .bg-\[\#09090b\] *,
 .bg-\[\#0a0a0a\],
-.bg-\[\#0a0a0a\] * {
+.bg-\[\#0a0a0a\] *,
+.dark-card-white,
+.dark-card-white * {
   color: #ffffff !important;
 }
+
+/* Ensure buttons and elements with solid white background always show dark text and icons (e.g., in dark theme modals) */
+button.bg-white,
+button.bg-white *,
+a.bg-white,
+a.bg-white *,
+.btn-white,
+.btn-white *,
+.btn-modal-submit.bg-white,
+.btn-modal-submit.bg-white *,
+.bg-white.text-black,
+.bg-white.text-black *,
+.bg-white.text-neutral-900,
+.bg-white.text-neutral-900 *,
+.bg-white.text-neutral-800,
+.bg-white.text-neutral-800 * {
+  color: #09090b !important;
+}
+
+button.bg-white svg,
+button.bg-white svg *,
+.btn-white svg,
+.btn-white svg *,
+.btn-modal-submit.bg-white svg,
+.btn-modal-submit.bg-white svg *,
+.bg-white.text-black svg,
+.bg-white.text-black svg *,
+.bg-white.text-neutral-900 svg,
+.bg-white.text-neutral-900 svg * {
+  stroke: #09090b !important;
+  color: #09090b !important;
+}
+
+/* Ensure buttons with dark background always show crisp white text and icons (e.g., in light theme modals) */
+button.bg-neutral-900,
+button.bg-neutral-900 *,
+button.bg-black,
+button.bg-black *,
+.btn-modal-submit.bg-neutral-900,
+.btn-modal-submit.bg-neutral-900 *,
+.btn-modal-submit.bg-black,
+.btn-modal-submit.bg-black * {
+  color: #ffffff !important;
+}
+
+button.bg-neutral-900 svg,
+button.bg-neutral-900 svg *,
+button.bg-black svg,
+button.bg-black svg *,
+.btn-modal-submit.bg-neutral-900 svg,
+.btn-modal-submit.bg-neutral-900 svg *,
+.btn-modal-submit.bg-black svg,
+.btn-modal-submit.bg-black svg * {
+  stroke: #ffffff !important;
+  color: #ffffff !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MODO CLARO: LÍNEAS DIVISORIAS Y BORDES DEFINIDOS
+   Aplica a Dash Home y Dash Finances
+   ═══════════════════════════════════════════════════════════════ */
+.theme-light app-dash-home .border-neutral-100,
+.theme-light app-dash-finances .border-neutral-100,
+:root:not(.theme-dark) app-dash-home .border-neutral-100,
+:root:not(.theme-dark) app-dash-finances .border-neutral-100 {
+  border-color: #d4d4d8 !important;
+}
+
+.theme-light app-dash-home .divide-neutral-100 > :not([hidden]) ~ :not([hidden]),
+.theme-light app-dash-finances .divide-neutral-100 > :not([hidden]) ~ :not([hidden]),
+:root:not(.theme-dark) app-dash-home .divide-neutral-100 > :not([hidden]) ~ :not([hidden]),
+:root:not(.theme-dark) app-dash-finances .divide-neutral-100 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #d4d4d8 !important;
+}
+
+.theme-light app-dash-home .border-neutral-200,
+.theme-light app-dash-finances .border-neutral-200,
+.theme-light app-dash-home .border-neutral-200\/80,
+.theme-light app-dash-finances .border-neutral-200\/80,
+.theme-light app-dash-home .border-neutral-200\/90,
+.theme-light app-dash-finances .border-neutral-200\/90,
+.theme-light app-dash-home .border-neutral-200\/70,
+.theme-light app-dash-finances .border-neutral-200\/70,
+.theme-light app-dash-home .border-neutral-200\/60,
+.theme-light app-dash-finances .border-neutral-200\/60,
+:root:not(.theme-dark) app-dash-home .border-neutral-200,
+:root:not(.theme-dark) app-dash-finances .border-neutral-200,
+:root:not(.theme-dark) app-dash-home .border-neutral-200\/80,
+:root:not(.theme-dark) app-dash-finances .border-neutral-200\/80,
+:root:not(.theme-dark) app-dash-home .border-neutral-200\/90,
+:root:not(.theme-dark) app-dash-finances .border-neutral-200\/90 {
+  border-color: #d4d4d8 !important;
+}
+
+.theme-light app-dash-home .divide-neutral-200 > :not([hidden]) ~ :not([hidden]),
+.theme-light app-dash-finances .divide-neutral-200 > :not([hidden]) ~ :not([hidden]),
+:root:not(.theme-dark) app-dash-home .divide-neutral-200 > :not([hidden]) ~ :not([hidden]),
+:root:not(.theme-dark) app-dash-finances .divide-neutral-200 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #d4d4d8 !important;
+}
+
 
 /* Technological Creative Additions for Red Theme */
 .theme-red .dynamic-bg::after {

@@ -146,6 +146,7 @@ export class AuthService {
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem(this.TOKEN_KEY);
       localStorage.removeItem(this.USER_KEY);
+      localStorage.setItem('portalink_admin_theme', 'light');
       if (notify) {
         window.dispatchEvent(new CustomEvent('auth-change'));
       }

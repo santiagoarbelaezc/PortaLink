@@ -152,8 +152,8 @@ const TAB_LABELS: Record<string, string> = {
              style="padding: 6px 14px; font-size: 0.76rem;"
              title="Abrir sitio web público">
             <span class="relative flex h-2 w-2">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
             </span>
             <span class="hidden sm:inline">Ver sitio</span>
             <span class="material-symbols-rounded" style="font-size: 14px; opacity: 0.7;">open_in_new</span>

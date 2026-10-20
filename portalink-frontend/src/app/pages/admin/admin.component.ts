@@ -623,7 +623,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   private queryParamSub: Subscription | null = null;
 
   activeTab = 'dashboard';
-  currentTheme = 'dark';
+  currentTheme = 'light';
   isSidebarCollapsed = false;
   isMobileDrawerOpen = false;
   unreadMessages = 0;
@@ -677,12 +677,12 @@ export class AdminComponent implements OnInit, OnDestroy {
 
     this.streakService.initStreak();
     const saved = localStorage.getItem('portalink_admin_theme');
-    // Siempre modo oscuro por defecto al ingresar, a menos que el usuario lo haya cambiado a 'light'
-    if (saved === 'light') {
-      this.currentTheme = 'light';
-    } else {
+    // Siempre modo claro por defecto al iniciar sesión / ingresar, a menos que el usuario guarde 'dark'
+    if (saved === 'dark') {
       this.currentTheme = 'dark';
-      localStorage.setItem('portalink_admin_theme', 'dark');
+    } else {
+      this.currentTheme = 'light';
+      localStorage.setItem('portalink_admin_theme', 'light');
     }
 
     // Restaurar tab activo: prioridad al query param ?tab=..., luego a localStorage, o 'dashboard' por defecto

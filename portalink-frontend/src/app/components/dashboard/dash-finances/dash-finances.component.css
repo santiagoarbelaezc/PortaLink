@@ -57,3 +57,70 @@
       background: linear-gradient(90deg, #71717a 0%, rgba(113, 113, 122, 0.3) 60%, transparent 100%);
       opacity: 0.85;
     }
+
+    /* Guardar / Action Buttons: Dark text on white buttons (Dark Theme) */
+    button.bg-white,
+    button.bg-white *,
+    .btn-modal-submit.bg-white,
+    .btn-modal-submit.bg-white * {
+      color: #09090b !important;
+    }
+
+    button.bg-white svg,
+    button.bg-white svg *,
+    .btn-modal-submit.bg-white svg,
+    .btn-modal-submit.bg-white svg * {
+      stroke: #09090b !important;
+      color: #09090b !important;
+    }
+
+    /* Guardar / Action Buttons: White text on dark buttons (Light Theme) */
+    button.bg-neutral-900,
+    button.bg-neutral-900 *,
+    button.bg-black,
+    button.bg-black *,
+    .btn-modal-submit.bg-neutral-900,
+    .btn-modal-submit.bg-neutral-900 *,
+    .btn-modal-submit.bg-black,
+    .btn-modal-submit.bg-black * {
+      color: #ffffff !important;
+    }
+
+    button.bg-neutral-900 svg,
+    button.bg-neutral-900 svg *,
+    button.bg-black svg,
+    button.bg-black svg *,
+    .btn-modal-submit.bg-neutral-900 svg,
+    .btn-modal-submit.bg-neutral-900 svg *,
+    .btn-modal-submit.bg-black svg,
+    .btn-modal-submit.bg-black svg * {
+      stroke: #ffffff !important;
+      color: #ffffff !important;
+    }
+
+    /* Modo Claro: Líneas Divisoras y Bordes Definidos */
+    :host-context(.theme-light) .border-neutral-100,
+    :host-context(:root:not(.theme-dark)) .border-neutral-100 {
+      border-color: #d4d4d8 !important;
+    }
+
+    :host-context(.theme-light) .divide-neutral-100 > :not([hidden]) ~ :not([hidden]),
+    :host-context(:root:not(.theme-dark)) .divide-neutral-100 > :not([hidden]) ~ :not([hidden]) {
+      border-color: #d4d4d8 !important;
+    }
+
+    :host-context(.theme-light) .border-neutral-200,
+    :host-context(.theme-light) .border-neutral-200\/80,
+    :host-context(.theme-light) .border-neutral-200\/90,
+    :host-context(.theme-light) .border-neutral-200\/70,
+    :host-context(.theme-light) .border-neutral-200\/60,
+    :host-context(:root:not(.theme-dark)) .border-neutral-200,
+    :host-context(:root:not(.theme-dark)) .border-neutral-200\/80,
+    :host-context(:root:not(.theme-dark)) .border-neutral-200\/90 {
+      border-color: #d4d4d8 !important;
+    }
+
+    :host-context(.theme-light) .divide-neutral-200 > :not([hidden]) ~ :not([hidden]),
+    :host-context(:root:not(.theme-dark)) .divide-neutral-200 > :not([hidden]) ~ :not([hidden]) {
+      border-color: #d4d4d8 !important;
+    }

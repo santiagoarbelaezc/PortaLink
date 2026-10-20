@@ -12,12 +12,35 @@ import { AuthService } from '../../../services/auth.service';
   template: `
     <div class="space-y-6 tab-enter">
 
-      <!-- Header -->
-      <div class="border-b pb-4" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-        <p class="text-xs font-headline font-semibold uppercase tracking-[0.25em]"
-           [ngClass]="isDark ? 'text-neutral-500' : 'text-neutral-400'">Ajustes del Sistema</p>
-        <h2 class="text-3xl sm:text-4xl font-headline font-bold uppercase tracking-tight mt-0.5"
-            [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">Configuración</h2>
+      <!-- ══════════════════════════════════════════════════════════════
+           HEADER: CONTENEDOR NEGRO SLIM & CONFIGURACIÓN
+      ══════════════════════════════════════════════════════════════ -->
+      <div class="bg-[#09090b] text-white rounded-[22px] border border-neutral-800 p-5 sm:p-6 relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+        <!-- Círculos concéntricos decorativos sutiles de fondo -->
+        <div class="absolute -right-8 -bottom-8 w-44 h-44 rounded-full border border-neutral-800/40 pointer-events-none"></div>
+        <div class="absolute -right-4 -bottom-4 w-32 h-32 rounded-full border border-neutral-800/25 pointer-events-none"></div>
+
+        <div class="relative z-10">
+          <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full border border-neutral-800 bg-neutral-900/90 text-[10px] font-sans text-neutral-300 mb-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+            <span>Ajustes & Parámetros Globales</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl border flex items-center justify-center bg-neutral-900/90 border-neutral-800 mb-0 shrink-0"
+                 style="color: #ffffff !important;">
+              <span class="material-symbols-rounded text-xl" style="color: #ffffff !important;">settings</span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl lg:text-[32px] font-headline font-black tracking-tight leading-[1.1] text-white m-0 dark-card-white"
+                style="color: #ffffff !important;">
+              Configuración
+            </h2>
+          </div>
+        </div>
+
+        <div class="relative z-10 flex items-center gap-2 text-xs font-sans text-neutral-400">
+          <span class="material-symbols-rounded text-sm text-red-500">verified_user</span>
+          <span>PortaLink Enterprise Core</span>
+        </div>
       </div>
 
       <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-5">
