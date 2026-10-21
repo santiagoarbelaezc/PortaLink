@@ -70,74 +70,172 @@ import { AuthService } from '../../services/auth.service';
           <!-- User Dropdown (When authenticated) -->
           <div *ngIf="authService.isAuthenticated()" class="relative user-dropdown-container">
             <button (click)="toggleUserDropdown($event)"
-                    class="flex items-center gap-2.5 px-3.5 py-1.5 rounded-full transition-all duration-300 border hover:bg-white/5 cursor-pointer"
-                    [style.borderColor]="currentTheme === 'light' ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.3)'"
-                    [style.color]="currentTheme === 'light' ? '#1f2937' : '#ffffff'">
-              <div class="w-5 h-5 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-[9px] font-semibold text-white shadow-md">
+                    class="flex items-center gap-2.5 px-3 py-1.5 rounded-full transition-all duration-200 border cursor-pointer select-none outline-none focus:outline-none focus:ring-0"
+                    [style.outline]="'none'"
+                    [style.background]="currentTheme === 'light' ? '#ffffff' : '#000000'"
+                    [style.borderColor]="showUserDropdown ? (currentTheme === 'light' ? '#000000' : '#ffffff') : (currentTheme === 'light' ? '#d4d4d4' : '#333333')"
+                    [style.color]="currentTheme === 'light' ? '#000000' : '#ffffff'">
+              <!-- Monochromatic Avatar (Pure Black / Pure White) -->
+              <div class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold tracking-tight shadow-sm shrink-0"
+                   [style.background]="currentTheme === 'light' ? '#000000' : '#ffffff'"
+                   [style.color]="currentTheme === 'light' ? '#ffffff' : '#000000'">
                 {{ getUserInitials() }}
               </div>
-              <span class="font-headline text-xs font-semibold uppercase tracking-[0.12em] truncate max-w-[100px]">{{ authService.currentUser()?.nombre }}</span>
-              <svg class="w-3.5 h-3.5 opacity-60 transition-transform duration-300" [class.rotate-180]="showUserDropdown" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <span class="font-headline text-xs font-bold uppercase tracking-wider truncate max-w-[120px]">
+                {{ authService.currentUser()?.nombre }}
+              </span>
+              <svg class="w-3.5 h-3.5 opacity-60 transition-transform duration-200 shrink-0" 
+                   [class.rotate-180]="showUserDropdown" 
+                   fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
 
-            <!-- Dropdown Card -->
+            <!-- Dropdown Card (100% Opaque Pure Monochrome) -->
             <div *ngIf="showUserDropdown" 
-                 class="absolute right-0 top-full mt-2 w-56 rounded-2xl border p-2 shadow-2xl backdrop-blur-xl transition-all duration-200 animate-dropdown"
-                 [ngClass]="currentTheme === 'light' ? 'bg-white/95 border-neutral-200/80 text-neutral-800' : 'bg-neutral-900/95 border-neutral-800 text-white'"
+                 class="absolute right-0 top-full mt-2 w-[248px] rounded-2xl border p-2 shadow-[0_16px_40px_-6px_rgba(0,0,0,0.18)] transition-all duration-200 animate-dropdown"
+                 [style.background]="currentTheme === 'light' ? '#ffffff' : '#0a0a0a'"
+                 [style.borderColor]="currentTheme === 'light' ? '#e5e5e5' : '#262626'"
+                 [style.color]="currentTheme === 'light' ? '#000000' : '#ffffff'"
                  style="z-index: 10000;">
+              
               <!-- User Info Header -->
-              <div class="px-3 py-3 border-b mb-1" [ngClass]="currentTheme === 'light' ? 'border-neutral-100' : 'border-neutral-800'">
-                <p class="text-xs font-bold truncate">{{ authService.currentUser()?.nombre }}</p>
-                <p class="text-[9px] uppercase tracking-widest opacity-50 font-semibold truncate">{{ authService.currentUser()?.rol }}</p>
+              <div class="px-3 py-2.5 mb-1.5 rounded-xl border flex items-center gap-3"
+                   [style.background]="currentTheme === 'light' ? '#f5f5f5' : '#141414'"
+                   [style.borderColor]="currentTheme === 'light' ? '#e5e5e5' : '#262626'">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-[11px] shrink-0 shadow-sm"
+                     [style.background]="currentTheme === 'light' ? '#000000' : '#ffffff'"
+                     [style.color]="currentTheme === 'light' ? '#ffffff' : '#000000'">
+                  {{ getUserInitials() }}
+                </div>
+                <div class="min-w-0 flex-1">
+                  <p class="text-[13px] font-bold truncate leading-snug"
+                     [style.color]="currentTheme === 'light' ? '#000000' : '#ffffff'">
+                    {{ authService.currentUser()?.nombre }}
+                  </p>
+                  <p *ngIf="authService.currentUser()?.email" 
+                     class="text-[11px] truncate leading-tight mt-0.5"
+                     [style.color]="currentTheme === 'light' ? '#737373' : '#a3a3a3'">
+                    {{ authService.currentUser()?.email }}
+                  </p>
+                  <div class="flex items-center gap-1.5 mt-1">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest border"
+                          [style.background]="currentTheme === 'light' ? '#e5e5e5' : '#262626'"
+                          [style.borderColor]="currentTheme === 'light' ? '#d4d4d4' : '#404040'"
+                          [style.color]="currentTheme === 'light' ? '#000000' : '#ffffff'">
+                      <span class="w-1.5 h-1.5 rounded-full" [style.background]="currentTheme === 'light' ? '#000000' : '#ffffff'"></span>
+                      {{ authService.currentUser()?.rol }}
+                    </span>
+                  </div>
+                </div>
               </div>
 
               <!-- Menu Items -->
-              <div class="space-y-0.5">
-                <a *ngIf="authService.currentUser()?.rol === 'admin'" (click)="goToPage('/admin')" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 transition-colors cursor-pointer border border-cyan-500/30 mb-1">
-                  <svg class="w-4 h-4 text-cyan-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+              <div class="space-y-1">
+                <!-- Dashboard Admin (Pure Black / Pure White) -->
+                <a *ngIf="authService.currentUser()?.rol === 'admin'" 
+                   (click)="goToPage('/admin')" 
+                   class="flex items-center justify-between px-3 py-2 rounded-xl text-[12.5px] font-bold cursor-pointer transition-all duration-200 mb-1.5 shadow-sm"
+                   [style.background]="currentTheme === 'light' ? '#000000' : '#ffffff'"
+                   [style.color]="currentTheme === 'light' ? '#ffffff' : '#000000'">
+                  <div class="flex items-center gap-2.5">
+                    <svg class="w-[17px] h-[17px] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                    </svg>
+                    <span>{{ currentLanguage === 'es' ? 'Dashboard Admin' : 'Admin Dashboard' }}</span>
+                  </div>
+                  <svg class="w-3.5 h-3.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                   </svg>
-                  <span>{{ currentLanguage === 'es' ? 'Dashboard Admin' : 'Admin Dashboard' }}</span>
                 </a>
 
-                <a (click)="goToPage('/rotbot')" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold cursor-pointer hover:bg-neutral-500/10 transition-colors">
-                  <svg class="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2zM9 10h.01M15 10h.01" />
+                <!-- Hablar con Rotbot -->
+                <a (click)="goToPage('/rotbot')" 
+                   class="group flex items-center justify-between px-3 py-2 rounded-xl text-[12.5px] font-medium cursor-pointer transition-all duration-200"
+                   [ngClass]="currentTheme === 'light' ? 'text-neutral-700 hover:text-black hover:bg-neutral-100' : 'text-neutral-300 hover:text-white hover:bg-neutral-800'">
+                  <div class="flex items-center gap-2.5">
+                    <svg class="w-[17px] h-[17px] flex-shrink-0 transition-colors duration-200" 
+                         [ngClass]="currentTheme === 'light' ? 'text-neutral-500 group-hover:text-black' : 'text-neutral-400 group-hover:text-white'"
+                         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2zM9 10h.01M15 10h.01" />
+                    </svg>
+                    <span>{{ currentLanguage === 'es' ? 'Hablar con Rotbot' : 'Talk to Rotbot' }}</span>
+                  </div>
+                  <svg class="w-3.5 h-3.5 opacity-0 -translate-x-1 group-hover:opacity-40 group-hover:translate-x-0 transition-all duration-200 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                   </svg>
-                  <span>{{ currentLanguage === 'es' ? 'Hablar con Rotbot' : 'Talk to Rotbot' }}</span>
                 </a>
-                <a (click)="goToPage('/perfil')" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold cursor-pointer hover:bg-neutral-500/10 transition-colors">
-                  <svg class="w-4 h-4 text-indigo-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+
+                <!-- Mi Perfil -->
+                <a (click)="goToPage('/perfil')" 
+                   class="group flex items-center justify-between px-3 py-2 rounded-xl text-[12.5px] font-medium cursor-pointer transition-all duration-200"
+                   [ngClass]="currentTheme === 'light' ? 'text-neutral-700 hover:text-black hover:bg-neutral-100' : 'text-neutral-300 hover:text-white hover:bg-neutral-800'">
+                  <div class="flex items-center gap-2.5">
+                    <svg class="w-[17px] h-[17px] flex-shrink-0 transition-colors duration-200" 
+                         [ngClass]="currentTheme === 'light' ? 'text-neutral-500 group-hover:text-black' : 'text-neutral-400 group-hover:text-white'"
+                         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <span>{{ currentLanguage === 'es' ? 'Mi Perfil' : 'My Profile' }}</span>
+                  </div>
+                  <svg class="w-3.5 h-3.5 opacity-0 -translate-x-1 group-hover:opacity-40 group-hover:translate-x-0 transition-all duration-200 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                   </svg>
-                  <span>{{ currentLanguage === 'es' ? 'Mi Perfil' : 'My Profile' }}</span>
                 </a>
-                <a (click)="goToPage('/certificados')" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold cursor-pointer hover:bg-neutral-500/10 transition-colors">
-                  <svg class="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path d="M12 15l-2 5l-3 -2l-3 2l2 -5"></path>
-                    <circle cx="12" cy="9" r="6"></circle>
+
+                <!-- Certificados -->
+                <a (click)="goToPage('/certificados')" 
+                   class="group flex items-center justify-between px-3 py-2 rounded-xl text-[12.5px] font-medium cursor-pointer transition-all duration-200"
+                   [ngClass]="currentTheme === 'light' ? 'text-neutral-700 hover:text-black hover:bg-neutral-100' : 'text-neutral-300 hover:text-white hover:bg-neutral-800'">
+                  <div class="flex items-center gap-2.5">
+                    <svg class="w-[17px] h-[17px] flex-shrink-0 transition-colors duration-200" 
+                         [ngClass]="currentTheme === 'light' ? 'text-neutral-500 group-hover:text-black' : 'text-neutral-400 group-hover:text-white'"
+                         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 15l-2 5l-3 -2l-3 2l2 -5" />
+                      <circle cx="12" cy="9" r="6" />
+                    </svg>
+                    <span>{{ currentLanguage === 'es' ? 'Certificados' : 'Certificates' }}</span>
+                  </div>
+                  <svg class="w-3.5 h-3.5 opacity-0 -translate-x-1 group-hover:opacity-40 group-hover:translate-x-0 transition-all duration-200 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                   </svg>
-                  <span>{{ currentLanguage === 'es' ? 'Certificados' : 'Certificates' }}</span>
                 </a>
-                <a (click)="goToPage('/perfil?tab=password')" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold cursor-pointer hover:bg-neutral-500/10 transition-colors">
-                  <svg class="w-4 h-4 text-neutral-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+
+                <!-- Configuración -->
+                <a (click)="goToPage('/perfil?tab=password')" 
+                   class="group flex items-center justify-between px-3 py-2 rounded-xl text-[12.5px] font-medium cursor-pointer transition-all duration-200"
+                   [ngClass]="currentTheme === 'light' ? 'text-neutral-700 hover:text-black hover:bg-neutral-100' : 'text-neutral-300 hover:text-white hover:bg-neutral-800'">
+                  <div class="flex items-center gap-2.5">
+                    <svg class="w-[17px] h-[17px] flex-shrink-0 transition-colors duration-200" 
+                         [ngClass]="currentTheme === 'light' ? 'text-neutral-500 group-hover:text-black' : 'text-neutral-400 group-hover:text-white'"
+                         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span>{{ currentLanguage === 'es' ? 'Configuración' : 'Settings' }}</span>
+                  </div>
+                  <svg class="w-3.5 h-3.5 opacity-0 -translate-x-1 group-hover:opacity-40 group-hover:translate-x-0 transition-all duration-200 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                   </svg>
-                  <span>{{ currentLanguage === 'es' ? 'Configuración' : 'Settings' }}</span>
                 </a>
               </div>
 
               <!-- Logout Separator -->
-              <div class="border-t mt-1.5 pt-1.5" [ngClass]="currentTheme === 'light' ? 'border-neutral-100' : 'border-neutral-800'">
+              <div class="border-t my-1.5 pt-1.5" 
+                   [style.borderColor]="currentTheme === 'light' ? '#e5e5e5' : '#262626'">
                 <button (click)="logoutUser()" 
-                        class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer text-left border-none bg-transparent">
-                  <svg class="w-4 h-4 text-red-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                  </svg>
-                  <span>{{ currentLanguage === 'es' ? 'Cerrar Sesión' : 'Sign Out' }}</span>
+                        class="group flex items-center justify-between w-full px-3 py-2 rounded-xl text-[12.5px] font-semibold cursor-pointer transition-all duration-200 text-left border-none bg-transparent"
+                        [ngClass]="currentTheme === 'light' 
+                          ? 'text-neutral-600 hover:text-black hover:bg-neutral-100' 
+                          : 'text-neutral-400 hover:text-white hover:bg-neutral-800'">
+                  <div class="flex items-center gap-2.5">
+                    <svg class="w-[17px] h-[17px] flex-shrink-0 transition-colors duration-200" 
+                         [ngClass]="currentTheme === 'light' ? 'text-neutral-400 group-hover:text-black' : 'text-neutral-500 group-hover:text-white'"
+                         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    <span>{{ currentLanguage === 'es' ? 'Cerrar Sesión' : 'Sign Out' }}</span>
+                  </div>
                 </button>
               </div>
             </div>
@@ -478,6 +576,21 @@ import { AuthService } from '../../services/auth.service';
     @keyframes slideDown {
       from { opacity: 0; transform: translateY(-8px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-dropdown {
+      animation: dropdownSlide 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      transform-origin: top right;
+    }
+    @keyframes dropdownSlide {
+      from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.96);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
     /* Autofill Overrides para que el navegador no ponga los inputs blancos */
