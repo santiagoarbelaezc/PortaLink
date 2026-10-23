@@ -119,6 +119,126 @@ export class ContentEditableDirective implements OnChanges {
   templateUrl: './dash-library.component.html',
   host: { class: 'block w-full' },
   styles: [`
+    .library-page {
+      --library-red: #dc2626;
+      --library-ink: #09090b;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .library-tabs {
+      box-shadow: 0 12px 30px rgba(9, 9, 11, 0.08);
+    }
+
+    .library-hero {
+      min-height: 184px;
+      box-shadow: 0 18px 40px rgba(9, 9, 11, 0.18);
+    }
+
+    .library-hero::before {
+      content: '';
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      right: 8%;
+      top: -150px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 50%;
+      box-shadow: 0 0 0 34px rgba(255, 255, 255, 0.025), 0 0 0 68px rgba(255, 255, 255, 0.018);
+      pointer-events: none;
+    }
+
+    .library-hero::after {
+      content: '';
+      position: absolute;
+      left: 8%;
+      bottom: -1px;
+      width: 120px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--library-red), transparent);
+      opacity: 0.9;
+    }
+
+    .library-section-heading {
+      min-height: 38px;
+      padding: 0.35rem 0.25rem;
+    }
+
+    .library-section-heading > div:first-child {
+      position: relative;
+      padding-left: 0.75rem;
+    }
+
+    .library-section-heading > div:first-child::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.15rem;
+      bottom: 0.15rem;
+      width: 2px;
+      border-radius: 999px;
+      background: var(--library-red);
+    }
+
+    .library-filters {
+      box-shadow: 0 16px 40px rgba(9, 9, 11, 0.08);
+      backdrop-filter: blur(14px);
+    }
+
+    .library-folder-grid,
+    .library-notebook-grid {
+      align-items: stretch;
+    }
+
+    .library-folder-card,
+    .library-notebook-card {
+      min-height: 216px;
+      box-shadow: 0 8px 24px rgba(9, 9, 11, 0.045);
+      transform: translateY(0);
+    }
+
+    .library-folder-card:hover,
+    .library-notebook-card:hover {
+      transform: translateY(-5px) scale(1.012);
+      box-shadow: 0 20px 38px rgba(9, 9, 11, 0.12);
+    }
+
+    .library-folder-card:focus-within,
+    .library-notebook-card:focus-within {
+      outline: 2px solid var(--library-red);
+      outline-offset: 3px;
+    }
+
+    :host-context(.theme-dark) .library-tabs,
+    :host-context(.theme-dark) .library-filters {
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    :host-context(.theme-dark) .library-folder-card,
+    :host-context(.theme-dark) .library-notebook-card {
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+    }
+
+    @media (max-width: 640px) {
+      .library-hero {
+        min-height: 210px;
+      }
+
+      .library-section-heading {
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+
+      .library-section-heading > div:first-child {
+        max-width: 58%;
+      }
+
+      .library-folder-card,
+      .library-notebook-card {
+        min-height: 196px;
+      }
+    }
+
     .rotbot-eye-svg-box {
       width: 100%;
       height: 100%;

@@ -21,6 +21,8 @@
   <!-- Preconnect CDN Assets -->
   <link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
   <link rel="dns-prefetch" href="https://res.cloudinary.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   
   <!-- Fonts & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=Inter:wght@100..900&family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -29,6 +31,28 @@
   
   <!-- Native Mobile PWA Interceptors (No-Zoom & Standalone Navigation) -->
   <script>
+    // Prevent Material Symbols ligature names from being rendered as text
+    // while the icon font is still loading.
+    document.documentElement.classList.add('icons-loading');
+    (function loadMaterialSymbols() {
+      var revealIcons = function () {
+        document.documentElement.classList.remove('icons-loading');
+      };
+
+      if (!document.fonts) {
+        revealIcons();
+        return;
+      }
+
+      // Start the request explicitly. `document.fonts.ready` may resolve before
+      // Angular renders the first icon, leaving the loading class stuck.
+      document.fonts.load('20px "Material Symbols Rounded"', 'dashboard')
+        .then(revealIcons, revealIcons);
+
+      // Never leave icons hidden if the external font is temporarily unavailable.
+      window.setTimeout(revealIcons, 3000);
+    }());
+
     // 1. Prevent Pinch-to-Zoom gestures on iOS Safari / Chrome
     document.addEventListener('gesturestart', function (e) { e.preventDefault(); }, false);
     document.addEventListener('gesturechange', function (e) { e.preventDefault(); }, false);
