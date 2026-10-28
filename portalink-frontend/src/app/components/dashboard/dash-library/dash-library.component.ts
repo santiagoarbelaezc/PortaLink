@@ -231,6 +231,21 @@ export class ContentEditableDirective implements OnChanges {
       :host {
         overflow-x: hidden;
       }
+
+      .library-page {
+        width: 100%;
+        max-width: 100%;
+        min-height: 0;
+        overflow-x: hidden;
+        overscroll-behavior-x: none;
+      }
+
+      .library-page input,
+      .library-page textarea,
+      .library-page [contenteditable="true"] {
+        max-width: 100%;
+        min-width: 0;
+      }
     }
 
     @media (max-width: 640px) {
@@ -1126,12 +1141,14 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   showMobileBlockSheet: boolean = false;
   /** Controla el Bottom Sheet de opciones del apunte (···) en móvil */
   showMobilePageOptionsSheet: boolean = false;
+  showMobileTypeMenu = false;
 
   /** Abre el editor inmersivo móvil (navega de lista → editor) */
   openMobileEditor() {
     this.mobileNotesMode = 'editor';
     this.showMobileBlockSheet = false;
     this.showMobilePageOptionsSheet = false;
+    this.showMobileTypeMenu = false;
   }
 
   /** Vuelve a la lista de apuntes desde el editor móvil */
@@ -1139,6 +1156,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.mobileNotesMode = 'list';
     this.showMobileBlockSheet = false;
     this.showMobilePageOptionsSheet = false;
+    this.showMobileTypeMenu = false;
   }
 
   /** Alterna el Bottom Sheet para insertar bloques */
@@ -1159,6 +1177,23 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   closeMobileSheets() {
     this.showMobileBlockSheet = false;
     this.showMobilePageOptionsSheet = false;
+    this.showMobileTypeMenu = false;
+  }
+
+  toggleMobileTypeMenu(event?: Event) {
+    event?.stopPropagation();
+    if (!this.currentActiveBlock) return;
+    this.showMobileTypeMenu = !this.showMobileTypeMenu;
+    this.showMobileBlockSheet = false;
+    this.showMobilePageOptionsSheet = false;
+  }
+
+  selectMobileBlockType(type: NoteBlock['type'], event?: Event) {
+    event?.stopPropagation();
+    const block = this.currentActiveBlock;
+    if (!block) return;
+    this.changeBlockType(block, type);
+    this.showMobileTypeMenu = false;
   }
 
   @HostListener('window:resize')

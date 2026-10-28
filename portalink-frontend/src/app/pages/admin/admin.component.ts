@@ -142,7 +142,7 @@ interface Tab {
                 activeTab === 'rotbot'
                   ? 'overflow-hidden flex flex-col justify-between items-center h-full p-2 sm:p-3 md:p-5 lg:p-6 pb-[76px] md:pb-6' 
                   : (activeTab === 'library' && isNotesView
-                      ? 'overflow-y-auto overflow-x-hidden px-2 py-2 sm:p-4 md:p-6 pb-32 md:pb-8'
+                      ? 'overflow-y-auto overflow-x-hidden px-2 py-2 sm:p-4 md:p-6 pb-20 md:pb-8'
                       : 'overflow-y-auto overflow-x-hidden p-4 sm:p-6 md:p-8 pb-32 md:pb-8')
               ]">
           <div [ngClass]="activeTab === 'rotbot' ? 'w-full h-full flex flex-col justify-between items-center min-h-0' : 'w-full'">
@@ -211,7 +211,7 @@ interface Tab {
       </div>
 
       <div *ngIf="isMobileDrawerOpen"
-           class="fixed bottom-0 left-0 right-0 z-50 md:hidden rounded-t-[36px] max-h-[90vh] overflow-y-auto border-t border-[#27272a] bg-[#09090b] text-white shadow-[0_-16px_50px_rgba(0,0,0,0.98)] sheet-enter select-none flex flex-col"
+           class="mobile-dashboard-sheet fixed bottom-0 left-0 right-0 z-50 md:hidden rounded-t-[24px] max-h-[84dvh] overflow-y-auto border-t border-[#27272a] bg-[#09090b] text-white shadow-[0_-16px_50px_rgba(0,0,0,0.98)] sheet-enter select-none flex flex-col"
            style="padding-bottom: max(26px, env(safe-area-inset-bottom, 26px));">
         
         <!-- Drag Handle Pill -->
@@ -593,6 +593,26 @@ interface Tab {
     }
     .sheet-enter {
       animation: sheetSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @media (max-width: 767px) {
+      .mobile-dashboard-sheet {
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .mobile-dashboard-sheet > div:nth-child(2) {
+        padding: 0.5rem 1rem 0.75rem;
+      }
+
+      .mobile-dashboard-sheet .grid {
+        gap: 0.5rem;
+      }
+
+      .mobile-dashboard-sheet .grid button {
+        padding: 0.65rem;
+        border-radius: 0.875rem;
+      }
     }
 
     @keyframes backdropFade {
