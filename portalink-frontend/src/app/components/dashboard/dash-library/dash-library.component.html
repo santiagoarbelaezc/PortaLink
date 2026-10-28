@@ -1442,20 +1442,18 @@
     </div>
 
     <!-- SELECTOR DE FORMATO MÓVIL -->
-    <div *ngIf="showMobileTypeMenu" (click)="closeMobileSheets()"
-      class="fixed inset-0 z-[70] flex items-end bg-black/45 backdrop-blur-[2px]">
+    <div *ngIf="showMobileTypeMenu" appTeleportToBody (click)="closeMobileSheets()"
+      class="mobile-type-menu fixed inset-0 z-[9999] flex items-end bg-black/20">
       <div (click)="$event.stopPropagation()"
-        class="w-full rounded-t-[24px] border-t px-4 pt-3 pb-[max(18px,env(safe-area-inset-bottom,18px))] shadow-2xl"
-        [ngClass]="isDark ? 'bg-[#111116] border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900'">
-        <div class="w-9 h-1 rounded-full mx-auto mb-3"
-          [ngClass]="isDark ? 'bg-neutral-700' : 'bg-neutral-300'"></div>
+        class="w-full rounded-t-[22px] border-t border-neutral-200 bg-white text-neutral-900 px-4 pt-3 pb-[max(18px,env(safe-area-inset-bottom,18px))] shadow-[0_-8px_30px_rgba(15,23,42,0.12)]">
+        <div class="w-8 h-1 rounded-full mx-auto mb-3 bg-neutral-200"></div>
         <div class="flex items-center justify-between mb-3">
           <div>
             <p class="text-sm font-headline font-bold">Formato del bloque</p>
             <p class="text-[11px] opacity-50">Elige cómo quieres mostrar este contenido</p>
           </div>
           <button type="button" (click)="closeMobileSheets()"
-            class="w-8 h-8 rounded-lg flex items-center justify-center text-lg opacity-60 active:bg-neutral-500/10">×</button>
+            class="w-8 h-8 rounded-full flex items-center justify-center text-lg text-neutral-400 active:bg-neutral-100">×</button>
         </div>
         <div class="grid grid-cols-2 gap-2">
           <button *ngFor="let type of [
@@ -1469,10 +1467,10 @@
             type="button" (click)="selectMobileBlockType(type.value, $event)"
             class="min-h-[48px] rounded-xl border px-3 py-2 flex items-center gap-2 text-left transition-colors active:scale-[0.98]"
             [ngClass]="currentActiveBlock?.type === type.value
-              ? (isDark ? 'bg-red-500/20 border-red-500/50 text-red-200' : 'bg-red-50 border-red-200 text-red-700')
-              : (isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300 active:bg-neutral-800' : 'bg-neutral-50 border-neutral-200 text-neutral-700 active:bg-neutral-100')">
+              ? 'bg-red-50 border-red-200 text-red-700'
+              : 'bg-white border-neutral-200 text-neutral-700 active:bg-neutral-50'">
             <span class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-[10px] font-black font-mono"
-              [ngClass]="isDark ? 'bg-neutral-800 text-neutral-300' : 'bg-white text-neutral-600'">{{ type.hint }}</span>
+              [ngClass]="currentActiveBlock?.type === type.value ? 'bg-red-100 text-red-600' : 'bg-neutral-100 text-neutral-500'">{{ type.hint }}</span>
             <span class="text-xs font-headline font-bold">{{ type.label }}</span>
             <span *ngIf="currentActiveBlock?.type === type.value" class="ml-auto text-red-400">✓</span>
           </button>
