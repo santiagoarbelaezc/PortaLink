@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 @import 'aos/dist/aos.css';
 @import './styles/dashboard-theme.css';
 
@@ -653,6 +652,5 @@ input:-webkit-autofill:active {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
 }
-
 
 
