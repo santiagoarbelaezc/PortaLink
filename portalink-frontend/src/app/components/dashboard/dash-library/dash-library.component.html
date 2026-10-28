@@ -1,4 +1,4 @@
-<div class="space-y-4 sm:space-y-6 tab-enter font-sans">
+<div class="dash-library-root w-full max-w-full min-w-0 space-y-4 sm:space-y-6 tab-enter font-sans">
 
   <!-- ══════════════════════════════════════
        DOCK Y CONTROLES DE NIVEL 1 & 2 (CARPETAS Y CUADERNOS)
@@ -1149,7 +1149,7 @@
     </div>
 
     <!-- LISTA DE APUNTES MÓVIL TIPO APPLE NOTES -->
-    <div class="space-y-2 pb-28">
+    <div class="space-y-2 pb-4">
       <!-- Estado vacío -->
       <div *ngIf="pages.length === 0"
         class="py-16 px-4 text-center flex flex-col items-center gap-4 rounded-3xl border border-dashed mt-4"
@@ -1261,6 +1261,17 @@
       </div>
 
       <!-- Botón opciones del apunte (···) -->
+      <button (click)="toggleReadOnlyMode($event)" [title]="isReadOnlyMode ? 'Activar modo edición' : 'Ver en modo lectura'"
+        class="h-9 px-2.5 rounded-xl border flex items-center gap-1.5 transition-all cursor-pointer active:scale-95 shrink-0 text-[10px] font-headline font-bold"
+        [ngClass]="isReadOnlyMode
+          ? (isDark ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-700')
+          : (isDark ? 'border-neutral-800 bg-neutral-900 text-neutral-400 active:bg-neutral-800' : 'border-neutral-200 bg-neutral-100 text-neutral-600 active:bg-neutral-200')">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path *ngIf="!isReadOnlyMode" stroke-linecap="round" stroke-linejoin="round" d="M2.25 12s3.5-6 9.75-6 9.75 6 9.75 6-3.5 6-9.75 6-9.75-6-9.75-6zM12 14.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" />
+          <path *ngIf="isReadOnlyMode" stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M10.58 10.58a2 2 0 002.84 2.84M9.88 5.08A10.7 10.7 0 0112 4.88c6.25 0 9.75 7.12 9.75 7.12a17.7 17.7 0 01-3.03 3.86M6.1 6.1C3.72 7.72 2.25 12 2.25 12s3.5 7.12 9.75 7.12c1.01 0 1.94-.16 2.79-.43" />
+        </svg>
+        <span class="hidden sm:inline">{{ isReadOnlyMode ? 'Editar' : 'Lectura' }}</span>
+      </button>
       <button (click)="toggleMobilePageOptionsSheet($event)" title="Opciones del apunte"
         class="w-9 h-9 rounded-xl border flex items-center justify-center transition-all cursor-pointer active:scale-95 shrink-0"
         [ngClass]="showMobilePageOptionsSheet
@@ -1274,10 +1285,10 @@
 
     <!-- CANVAS DEL EDITOR EN MÓVIL (limpio, sin sidebar) -->
     <div *ngIf="selectedPage"
-      class="flex flex-col w-full min-w-0 pb-36 mt-3">
+      class="flex flex-col w-full min-w-0 pb-24 mt-3">
 
       <!-- Título del apunte (H1 editable nativo) -->
-      <input type="text" [(ngModel)]="selectedPage.title" (input)="onTitleInput()" spellcheck="false"
+      <input type="text" [(ngModel)]="selectedPage.title" (input)="onTitleInput()" [readonly]="isReadOnlyMode" spellcheck="false"
         autocorrect="off" autocapitalize="sentences" placeholder="Título..."
         style="font-size: 22px;"
         class="w-full font-headline font-bold tracking-tight bg-transparent border-none p-0 mb-4 focus:outline-none transition-all placeholder:text-neutral-400"
@@ -1285,18 +1296,18 @@
 
       <!-- BLOQUES DEL APUNTE (reutiliza el mismo canvas de bloques) -->
       <div
-        class="space-y-1.5 min-h-[320px] pb-4 rounded-2xl"
+        class="space-y-1.5 min-h-0 pb-4 rounded-2xl"
         [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
 
         <div *ngFor="let block of blocks; let i = index" (click)="setActiveBlock(block.id)"
-          class="group relative transition-all duration-150 rounded-xl px-1.5 py-1.5 border overflow-visible w-full cursor-text"
+          class="group relative transition-all duration-150 rounded-xl px-1.5 py-1.5 border overflow-visible w-full"
           [ngClass]="activeBlockId === block.id
             ? (isDark ? 'bg-neutral-900/40 border-neutral-800/80 shadow-xs' : 'bg-neutral-50/80 border-neutral-200/80 shadow-xs')
             : 'border-transparent'">
 
           <!-- 👑 TÍTULO -->
           <div *ngIf="block.type === 'titulo'">
-            <div contenteditable="true" [id]="'mb-block-' + block.id" [(appContentEditable)]="block.content"
+            <div [contenteditable]="!isReadOnlyMode" [id]="'mb-block-' + block.id" [(appContentEditable)]="block.content"
               (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
               (keydown)="onBlockKeydown($event, block, i)" spellcheck="false" autocorrect="off" autocapitalize="sentences"
               placeholder="Título..."
@@ -1306,7 +1317,7 @@
 
           <!-- 📌 SUBTÍTULO -->
           <div *ngIf="block.type === 'subtitulo'">
-            <div contenteditable="true" [id]="'mb-block-' + block.id" [(appContentEditable)]="block.content"
+            <div [contenteditable]="!isReadOnlyMode" [id]="'mb-block-' + block.id" [(appContentEditable)]="block.content"
               (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
               (keydown)="onBlockKeydown($event, block, i)" spellcheck="false" autocorrect="off" autocapitalize="sentences"
               placeholder="Subtítulo..."
@@ -1316,7 +1327,7 @@
 
           <!-- 📝 TEXTO NORMAL -->
           <div *ngIf="block.type === 'texto'">
-            <div contenteditable="true" [id]="'mb-block-' + block.id" [(appContentEditable)]="block.content"
+            <div [contenteditable]="!isReadOnlyMode" [id]="'mb-block-' + block.id" [(appContentEditable)]="block.content"
               (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
               (keydown)="onBlockKeydown($event, block, i)" spellcheck="false" autocorrect="off" autocapitalize="sentences"
               placeholder="Escribe algo..."
@@ -1329,7 +1340,7 @@
           <div *ngIf="block.type === 'alerta'"
             class="rounded-xl px-3 py-2.5 border-l-2 border-amber-400 my-0.5"
             [ngClass]="isDark ? 'bg-amber-900/20 text-amber-200' : 'bg-amber-50 text-amber-900'">
-            <div contenteditable="true" [id]="'mb-block-' + block.id" [(appContentEditable)]="block.content"
+            <div [contenteditable]="!isReadOnlyMode" [id]="'mb-block-' + block.id" [(appContentEditable)]="block.content"
               (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
               (keydown)="onBlockKeydown($event, block, i)" spellcheck="false" autocorrect="off"
               placeholder="Escribe una alerta o nota clave..."
@@ -1356,7 +1367,7 @@
               </div>
             </div>
             <div class="p-3">
-              <textarea [(ngModel)]="block.content"
+              <textarea [(ngModel)]="block.content" [readonly]="isReadOnlyMode"
                 (input)="onBlockInput(block, $event); syncBlocksToContent()"
                 (focus)="activeBlockId = block.id" spellcheck="false" placeholder="// Código..."
                 [rows]="getLineCount(block.content, 4, 'codigo')"
@@ -1373,7 +1384,7 @@
             <div *ngIf="block.columns && block.columns[0]"
               class="rounded-xl border p-2"
               [ngClass]="isDark ? 'bg-[#0f0f12]/80 border-neutral-800/80' : 'bg-white border-neutral-200'">
-              <div contenteditable="true" [(appContentEditable)]="block.columns[0].content"
+              <div [contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[0].content"
                 (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                 spellcheck="false" placeholder="Columna 1..."
                 style="font-size: 15px;"
@@ -1384,7 +1395,7 @@
             <div *ngIf="block.columns && block.columns[1]"
               class="rounded-xl border p-2"
               [ngClass]="isDark ? 'bg-[#0f0f12]/80 border-neutral-800/80' : 'bg-white border-neutral-200'">
-              <div contenteditable="true" [(appContentEditable)]="block.columns[1].content"
+              <div [contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[1].content"
                 (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                 spellcheck="false" placeholder="Columna 2..."
                 style="font-size: 15px;"
@@ -1438,7 +1449,7 @@
          BARRA INFERIOR THUMB-ZONE (Bottom Toolbar Móvil)
          Fija en la parte inferior del editor - zona del pulgar
     ════════════════════════════════════════════ -->
-    <div *ngIf="selectedPage"
+    <div *ngIf="selectedPage && !isReadOnlyMode"
       class="fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur-2xl transition-all duration-200"
       [ngClass]="isDark ? 'bg-[#09090d]/97 border-neutral-800/90' : 'bg-white/97 border-neutral-200'"
       style="padding-bottom: max(12px, env(safe-area-inset-bottom, 12px)); padding-top: 8px;">
@@ -1545,6 +1556,21 @@
           <div class="w-10 h-1.5 rounded-full mx-auto -mt-1 mb-3"
             [ngClass]="isDark ? 'bg-neutral-700' : 'bg-neutral-300'"></div>
           <h3 class="text-sm font-headline font-bold text-center mb-4">Opciones del Apunte</h3>
+
+          <button (click)="toggleReadOnlyMode($event); closeMobileSheets()"
+            class="flex items-center gap-3 w-full p-4 rounded-2xl border cursor-pointer transition-all active:scale-[0.98] text-left"
+            [ngClass]="isReadOnlyMode
+              ? (isDark ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-700')
+              : (isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300 active:bg-neutral-800' : 'bg-neutral-50 border-neutral-200 text-neutral-700 active:bg-neutral-100')">
+            <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path *ngIf="!isReadOnlyMode" stroke-linecap="round" stroke-linejoin="round" d="M2.25 12s3.5-6 9.75-6 9.75 6 9.75 6-3.5 6-9.75 6-9.75-6-9.75-6zM12 14.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" />
+              <path *ngIf="isReadOnlyMode" stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M10.58 10.58a2 2 0 002.84 2.84M9.88 5.08A10.7 10.7 0 0112 4.88c6.25 0 9.75 7.12 9.75 7.12a17.7 17.7 0 01-3.03 3.86M6.1 6.1C3.72 7.72 2.25 12 2.25 12s3.5 7.12 9.75 7.12c1.01 0 1.94-.16 2.79-.43" />
+            </svg>
+            <div>
+              <p class="text-sm font-headline font-bold">{{ isReadOnlyMode ? 'Activar edición' : 'Modo lectura' }}</p>
+              <p class="text-xs opacity-50">{{ isReadOnlyMode ? 'Volver a editar el apunte' : 'Ver el contenido sin teclado ni controles' }}</p>
+            </div>
+          </button>
 
           <!-- Leer con RotBot -->
           <button (click)="readSelectedTextOrActiveBlock(); closeMobileSheets()"
@@ -1830,7 +1856,7 @@
 
             <!-- INPUT TÍTULO DEL APUNTE -->
             <div class="min-w-0 w-full">
-              <input type="text" [(ngModel)]="selectedPage.title" (input)="onTitleInput()" spellcheck="false"
+              <input type="text" [(ngModel)]="selectedPage.title" (input)="onTitleInput()" [readonly]="isReadOnlyMode" spellcheck="false"
                 autocorrect="off" autocapitalize="off" placeholder="Título del apunte..."
                 class="w-full text-base sm:text-lg lg:text-xl font-headline font-bold tracking-tight bg-transparent border-none p-0 focus:outline-none transition-all placeholder:text-neutral-500 truncate"
                 [ngClass]="isDark ? 'text-white' : 'text-neutral-900'" />
@@ -1901,6 +1927,20 @@
 
           <!-- DERECHA: BOTONES DE ACCIÓN (PILLS UNIFICADOS h-8) -->
           <div class="flex items-center gap-2 shrink-0">
+            <!-- BOTÓN MODO LECTURA / EDICIÓN -->
+            <button (click)="toggleReadOnlyMode($event)"
+              [title]="isReadOnlyMode ? 'Activar modo edición' : 'Desactivar modo edición'"
+              class="h-8 px-3 rounded-xl border text-xs font-headline font-semibold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 hover:scale-105 active:scale-95 shadow-xs"
+              [ngClass]="isReadOnlyMode
+                ? (isDark ? 'border-emerald-500/50 bg-emerald-500/15 text-emerald-300' : 'border-emerald-300 bg-emerald-50 text-emerald-700')
+                : (isDark ? 'border-neutral-800 bg-[#0e0e13]/90 text-neutral-300 hover:bg-neutral-800 hover:text-white hover:border-neutral-700' : 'border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-100 hover:text-black')">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path *ngIf="!isReadOnlyMode" stroke-linecap="round" stroke-linejoin="round" d="M2.25 12s3.5-6 9.75-6 9.75 6 9.75 6-3.5 6-9.75 6-9.75-6-9.75-6zM12 14.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" />
+                <path *ngIf="isReadOnlyMode" stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M10.58 10.58a2 2 0 002.84 2.84M9.88 5.08A10.7 10.7 0 0112 4.88c6.25 0 9.75 7.12 9.75 7.12a17.7 17.7 0 01-3.03 3.86" />
+              </svg>
+              <span>{{ isReadOnlyMode ? 'Editar' : 'Lectura' }}</span>
+            </button>
+
             <!-- BOTÓN LEER APUNTE SELECCIONADO / COMPLETO -->
             <button (click)="readSelectedTextOrActiveBlock()"
               [title]="spanishTts.isSpeaking ? 'Detener lectura en voz alta' : 'Leer texto seleccionado o apunte completo con RotBot'"
@@ -1946,7 +1986,7 @@
               : 'border-transparent hover:border-neutral-800/30'">
 
             <!-- BOTONES FLOTANTES EXCLUSIVOS SOBRE EL BLOQUE SELECCIONADO (FORMATO, + Y BASURA) -->
-            <div *ngIf="activeBlockId === block.id"
+            <div *ngIf="activeBlockId === block.id && !isReadOnlyMode"
               class="absolute -top-3 sm:-top-3.5 right-2 sm:right-3.5 z-30 flex items-center gap-1 p-0.5 sm:p-1 rounded-xl border shadow-lg backdrop-blur-xl transition-all animate-fade-in select-none"
               [ngClass]="isDark 
                 ? 'bg-[#18181d]/95 border-neutral-700/90 text-neutral-300 shadow-black/80 ring-1 ring-white/10' 
@@ -2096,7 +2136,7 @@
 
             <!-- 👑 TÍTULO MONOCROMÁTICO COMPACTO -->
             <div *ngIf="block.type === 'titulo'">
-              <div contenteditable="true" [id]="'block-' + block.id" [(appContentEditable)]="block.content"
+              <div [contenteditable]="!isReadOnlyMode" [id]="'block-' + block.id" [(appContentEditable)]="block.content"
                 (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                 (keydown)="onBlockKeydown($event, block, i)" spellcheck="false" autocorrect="off" autocapitalize="off"
                 placeholder="Escribe el título principal..."
@@ -2106,7 +2146,7 @@
 
             <!-- 📌 SUBTÍTULO MONOCROMÁTICO COMPACTO -->
             <div *ngIf="block.type === 'subtitulo'">
-              <div contenteditable="true" [id]="'block-' + block.id" [(appContentEditable)]="block.content"
+              <div [contenteditable]="!isReadOnlyMode" [id]="'block-' + block.id" [(appContentEditable)]="block.content"
                 (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                 (keydown)="onBlockKeydown($event, block, i)" spellcheck="false" autocorrect="off" autocapitalize="off"
                 placeholder="Escribe un subtítulo..."
@@ -2128,7 +2168,7 @@
                     <span class="w-2.5 h-2.5 rounded-full bg-neutral-700"></span>
                   </div>
 
-                  <select [(ngModel)]="block.language" (change)="syncBlocksToContent()"
+                  <select [(ngModel)]="block.language" (change)="syncBlocksToContent()" [disabled]="isReadOnlyMode"
                     class="bg-transparent text-neutral-400 text-xs font-mono font-semibold outline-none cursor-pointer border-none appearance-none uppercase tracking-wider hover:text-white transition-colors px-1 py-0.5 rounded hover:bg-neutral-800/50">
                     <option value="typescript" class="bg-neutral-900">TypeScript</option>
                     <option value="javascript" class="bg-neutral-900">JavaScript</option>
@@ -2248,7 +2288,7 @@
                 </svg>
               </div>
               <div class="flex-1 min-w-0">
-                <div contenteditable="true" [id]="'block-' + block.id" [(appContentEditable)]="block.content"
+                <div [contenteditable]="!isReadOnlyMode" [id]="'block-' + block.id" [(appContentEditable)]="block.content"
                   (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                   (keydown)="onBlockKeydown($event, block, i)" spellcheck="false" autocorrect="off" autocapitalize="off"
                   placeholder="Escribe un consejo o nota importante..."
@@ -2259,7 +2299,7 @@
 
             <!-- 📝 TEXTO NORMAL MONOCROMÁTICO COMPACTO -->
             <div *ngIf="block.type === 'texto'">
-              <div contenteditable="true" [id]="'block-' + block.id" [(appContentEditable)]="block.content"
+              <div [contenteditable]="!isReadOnlyMode" [id]="'block-' + block.id" [(appContentEditable)]="block.content"
                 (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                 (keydown)="onBlockKeydown($event, block, i)" spellcheck="false" autocorrect="off" autocapitalize="off"
                 placeholder="Escribe texto normal... (Escribe '/' para cambiar de bloque)"
@@ -2438,7 +2478,7 @@
                   <!-- PIE DE FOTO / LEYENDA EDITABLE -->
                   <div class="px-3 py-2 border-t"
                     [ngClass]="isDark ? 'border-neutral-800/80 bg-[#0c0c0e]' : 'border-neutral-200/80 bg-neutral-50'">
-                    <div contenteditable="true" [id]="'block-caption-' + block.id"
+                    <div [contenteditable]="!isReadOnlyMode" [id]="'block-caption-' + block.id"
                       [(appContentEditable)]="block.content" (appContentEditableChange)="syncBlocksToContent()"
                       (focus)="activeBlockId = block.id"
                       placeholder="Añade un pie de foto o descripción de la imagen..."
@@ -2775,7 +2815,7 @@
                         </svg>
                       </div>
                       <div class="flex-1 min-w-0">
-                        <div contenteditable="true" [(appContentEditable)]="block.columns[0].content"
+                        <div [contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[0].content"
                           (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                           spellcheck="false" placeholder="Escribe un consejo o nota importante..."
                           class="w-full bg-transparent text-xs sm:text-sm font-medium leading-relaxed outline-none text-neutral-200 empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.4em]">
@@ -2785,7 +2825,7 @@
 
                     <!-- 3. TÍTULO -->
                     <div *ngIf="block.columns[0].type === 'titulo'" class="py-1 flex-1">
-                      <div contenteditable="true" [(appContentEditable)]="block.columns[0].content"
+                      <div [contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[0].content"
                         (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                         spellcheck="false" placeholder="Título Principal..."
                         class="w-full bg-transparent text-xl sm:text-2xl font-headline font-extrabold tracking-tight py-1 outline-none transition-all empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.5em]"
@@ -2794,7 +2834,7 @@
 
                     <!-- 4. SUBTÍTULO -->
                     <div *ngIf="block.columns[0].type === 'subtitulo'" class="py-1 flex-1">
-                      <div contenteditable="true" [(appContentEditable)]="block.columns[0].content"
+                      <div [contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[0].content"
                         (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                         spellcheck="false" placeholder="Subtítulo de sección..."
                         class="w-full bg-transparent text-base sm:text-lg font-headline font-bold py-1 outline-none transition-all empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.5em]"
@@ -2803,7 +2843,7 @@
 
                     <!-- 5. TEXTO NORMAL -->
                     <div *ngIf="block.columns[0].type === 'texto'" class="py-0.5 flex-1">
-                      <div contenteditable="true" [(appContentEditable)]="block.columns[0].content"
+                      <div [contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[0].content"
                         (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                         spellcheck="false" placeholder="Escribe texto..."
                         class="w-full bg-transparent text-base sm:text-lg leading-snug py-0.5 outline-none transition-all empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.5em]"
@@ -3089,7 +3129,7 @@
                         </svg>
                       </div>
                       <div class="flex-1 min-w-0">
-                        <div contenteditable="true" [(appContentEditable)]="block.columns[1].content"
+                        <div [contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[1].content"
                           (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                           spellcheck="false" placeholder="Escribe un consejo o nota importante..."
                           class="w-full bg-transparent text-xs sm:text-sm font-medium leading-relaxed outline-none text-neutral-200 empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.4em]">
@@ -3099,7 +3139,7 @@
 
                     <!-- 3. TÍTULO -->
                     <div *ngIf="block.columns[1].type === 'titulo'" class="py-1 flex-1">
-                      <div contenteditable="true" [(appContentEditable)]="block.columns[1].content"
+                      <div [contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[1].content"
                         (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                         spellcheck="false" placeholder="Título Principal..."
                         class="w-full bg-transparent text-xl sm:text-2xl font-headline font-extrabold tracking-tight py-1 outline-none transition-all empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.5em]"
@@ -3108,7 +3148,7 @@
 
                     <!-- 4. SUBTÍTULO -->
                     <div *ngIf="block.columns[1].type === 'subtitulo'" class="py-1 flex-1">
-                      <div contenteditable="true" [(appContentEditable)]="block.columns[1].content"
+                      <div [contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[1].content"
                         (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                         spellcheck="false" placeholder="Subtítulo de sección..."
                         class="w-full bg-transparent text-base sm:text-lg font-headline font-bold py-1 outline-none transition-all empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.5em]"
@@ -3117,7 +3157,7 @@
 
                     <!-- 5. TEXTO NORMAL -->
                     <div *ngIf="block.columns[1].type === 'texto'" class="py-0.5 flex-1">
-                      <div contenteditable="true" [(appContentEditable)]="block.columns[1].content"
+                      <div [contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[1].content"
                         (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                         spellcheck="false" placeholder="Escribe texto..."
                         class="w-full bg-transparent text-base sm:text-lg leading-snug py-0.5 outline-none transition-all empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.5em]"

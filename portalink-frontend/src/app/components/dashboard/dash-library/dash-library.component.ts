@@ -119,6 +119,20 @@ export class ContentEditableDirective implements OnChanges {
   templateUrl: './dash-library.component.html',
   host: { class: 'block w-full' },
   styles: [`
+    :host {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      overflow-x: clip;
+    }
+
+    @media (max-width: 767px) {
+      :host {
+        overflow-x: hidden;
+      }
+    }
+
     .rotbot-eye-svg-box {
       width: 100%;
       height: 100%;
@@ -1725,6 +1739,20 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   editorSplitRatio: number = 50;
   isSidebarCollapsed: boolean = false;
   private autoSaveTimer: any = null;
+
+  get isReadOnlyMode(): boolean {
+    return this.editorViewMode === 'preview';
+  }
+
+  toggleReadOnlyMode(event?: Event) {
+    event?.preventDefault();
+    event?.stopPropagation();
+    this.editorViewMode = this.isReadOnlyMode ? 'edit' : 'preview';
+    this.activeTypeMenuBlockId = null;
+    this.activeColTypeMenuId = null;
+    this.activeColLangMenuId = null;
+    this.closeMobileSheets();
+  }
 
   toggleSidebar() {
     this.isSidebarCollapsed = !this.isSidebarCollapsed;
