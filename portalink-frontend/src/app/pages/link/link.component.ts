@@ -14,6 +14,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
     CommonModule, 
     RouterModule
   ],
+  styleUrl: './link.component.css',
   template: `
     <div class="min-h-screen bg-white text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white pt-[28px] sm:pt-24 pb-24 sm:pb-16 px-4 sm:px-8 lg:px-12">
       <div class="max-w-[1500px] mx-auto">
@@ -92,28 +93,37 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                 <!-- Main CTA Link (Obsidian Dark) -->
                 <a routerLink="/" (click)="trackLinkClick('proyectos')" 
                    data-aos="fade-up" data-aos-delay="150"
-                   class="group relative rounded-2xl sm:rounded-3xl p-5 sm:p-7 flex items-center justify-between gap-4 transition-all duration-300 hover:scale-[1.01] shadow-md hover:shadow-lg no-underline cursor-pointer border-none"
+                   class="portfolio-cta-btn group relative rounded-2xl sm:rounded-3xl p-5 sm:p-7 flex items-center justify-between gap-4 no-underline cursor-pointer border border-neutral-800/90 overflow-hidden"
                    style="background-color: #09090b !important; color: #ffffff !important;">
                   
-                  <div class="flex items-center gap-3.5 sm:gap-5">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white/10 flex items-center justify-center flex-shrink-0">
-                      <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color: #ffffff !important;">
+                  <!-- Shimmer sweep effect on hover -->
+                  <div class="cta-shimmer-sweep pointer-events-none"></div>
+                  <div class="pointer-events-none absolute -right-10 -bottom-10 w-44 h-44 rounded-full bg-white/[0.03] group-hover:bg-white/[0.06] transition-colors duration-500 blur-2xl"></div>
+
+                  <div class="relative z-10 flex items-center gap-3.5 sm:gap-5">
+                    <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-white/10 border border-white/10 group-hover:bg-white/15 group-hover:scale-105 transition-all duration-300 flex items-center justify-center flex-shrink-0 shadow-inner">
+                      <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white transition-transform duration-300 group-hover:scale-105" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color: #ffffff !important; stroke: #ffffff !important;">
                         <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
                         <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
                       </svg>
                     </div>
                     <div>
-                      <h3 class="text-lg sm:text-2xl font-headline font-semibold tracking-tight text-white m-0" style="color: #ffffff !important;">
-                        {{ getTranslation().descubre }}
-                      </h3>
+                      <div class="flex items-center gap-2">
+                        <h3 class="text-lg sm:text-2xl font-headline font-semibold tracking-tight text-white m-0" style="color: #ffffff !important;">
+                          {{ getTranslation().descubre }}
+                        </h3>
+                        <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-sans font-medium bg-white/15 text-white/90 border border-white/15 tracking-wide">
+                          PORTFOLIO
+                        </span>
+                      </div>
                       <p class="text-[11px] sm:text-xs font-sans text-neutral-400 m-0 mt-0.5 sm:mt-1">
                         {{ getTranslation().ingenieria }}
                       </p>
                     </div>
                   </div>
 
-                  <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/15 flex items-center justify-center transition-transform duration-300 group-hover:translate-x-1 flex-shrink-0">
-                    <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important;">
+                  <div class="portfolio-cta-arrow relative z-10 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/15 border border-white/10 flex items-center justify-center transition-all duration-300 flex-shrink-0 shadow-sm">
+                    <svg class="w-4 h-4 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="color: #ffffff !important; stroke: #ffffff !important;">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
                     </svg>
                   </div>
@@ -123,44 +133,68 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                 <!-- Social Links Grid (2-by-2 on mobile and desktop) -->
                 <div class="grid grid-cols-2 gap-3.5 sm:gap-4">
                   
-                  <a *ngFor="let link of getLinks(); let idx = index" [href]="link.url" target="_blank" (click)="trackLinkClick(link)"
-                     data-aos="fade-up" [attr.data-aos-delay]="200 + (idx * 50)"
-                     class="group rounded-2xl p-4 sm:p-5 bg-white border border-neutral-200/80 shadow-sm hover:shadow-md hover:border-neutral-900 hover:scale-[1.01] transition-all duration-300 flex flex-col justify-between gap-3.5 sm:gap-4 no-underline cursor-pointer">
+                  <a *ngFor="let link of getLinks(); let idx = index" 
+                     [href]="link.url" 
+                     target="_blank" 
+                     rel="noopener noreferrer"
+                     (click)="trackLinkClick(link)"
+                     data-aos="fade-up" 
+                     [attr.data-aos-delay]="200 + (idx * 50)"
+                     class="linktree-card group relative rounded-2xl sm:rounded-3xl p-4 sm:p-5 flex flex-col justify-between gap-3.5 sm:gap-4 no-underline cursor-pointer overflow-hidden border border-neutral-200/90"
+                     [ngClass]="getCardBrandClass(link.icon)">
                     
-                    <div class="flex items-center justify-between">
-                      <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-neutral-100 flex items-center justify-center text-neutral-900 transition-colors group-hover:bg-neutral-900 group-hover:text-white">
-                        <svg *ngIf="link.icon === 'tiktok'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
+                    <!-- Ambient subtle hover glow in corner -->
+                    <div class="linktree-corner-glow pointer-events-none absolute -top-8 -right-8 w-24 h-24 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
+
+                    <!-- Top Row: Brand Icon + Modern Diagonal Action Pill -->
+                    <div class="relative z-10 flex items-center justify-between">
+                      
+                      <!-- Brand Icon Badge -->
+                      <div class="linktree-icon-badge w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-neutral-100/90 text-neutral-800 border border-neutral-200/70 flex items-center justify-center flex-shrink-0 shadow-2xs">
+                        
+                        <!-- TikTok -->
+                        <svg *ngIf="link.icon === 'tiktok'" class="w-5 h-5 fill-current shrink-0" viewBox="0 0 24 24">
+                          <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.98-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.82.57-1.32 1.55-1.36 2.55-.01.55.15 1.1.44 1.56.59.88 1.68 1.41 2.74 1.34 1.07-.02 2.07-.58 2.6-1.5.33-.57.47-1.24.46-1.9-.02-3.87-.01-7.74-.01-11.61z"/>
                         </svg>
-                        <svg *ngIf="link.icon === 'instagram'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+
+                        <!-- Instagram -->
+                        <svg *ngIf="link.icon === 'instagram'" class="w-5 h-5 fill-current shrink-0" viewBox="0 0 24 24">
+                          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                         </svg>
-                        <svg *ngIf="link.icon === 'whatsapp'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+
+                        <!-- WhatsApp -->
+                        <svg *ngIf="link.icon === 'whatsapp'" class="w-5 h-5 fill-current shrink-0" viewBox="0 0 24 24">
+                          <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-1.002 3.66 3.745-.983z"/>
                         </svg>
-                        <svg *ngIf="link.icon === 'linkedin'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-                          <rect x="2" y="9" width="4" height="12"></rect>
-                          <circle cx="4" cy="4" r="2"></circle>
+
+                        <!-- LinkedIn -->
+                        <svg *ngIf="link.icon === 'linkedin'" class="w-5 h-5 fill-current shrink-0" viewBox="0 0 24 24">
+                          <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
                         </svg>
-                        <svg *ngIf="link.icon !== 'tiktok' && link.icon !== 'instagram' && link.icon !== 'whatsapp' && link.icon !== 'linkedin'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+
+                        <!-- Fallback Generic Icon -->
+                        <svg *ngIf="link.icon !== 'tiktok' && link.icon !== 'instagram' && link.icon !== 'whatsapp' && link.icon !== 'linkedin'" class="w-5 h-5 fill-none stroke-current" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                        </svg>
+
+                      </div>
+
+                      <!-- Action Pill Arrow Badge -->
+                      <div class="linktree-arrow-pill w-8 h-8 rounded-full bg-neutral-100/90 text-neutral-400 border border-neutral-200/70 flex items-center justify-center flex-shrink-0 shadow-2xs">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5L19.5 4.5m0 0H8.25m11.25 0v11.25"/>
                         </svg>
                       </div>
 
-                      <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-neutral-400 group-hover:text-neutral-900 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
-                      </svg>
                     </div>
 
-                    <div>
-                      <h4 class="text-sm sm:text-base font-headline font-semibold tracking-tight text-neutral-900 m-0 truncate" style="color: #0a0a0a !important;">
+                    <!-- Bottom Row: Title and Subtitle -->
+                    <div class="relative z-10 pt-1">
+                      <h4 class="linktree-title text-sm sm:text-base font-headline font-semibold tracking-tight m-0 truncate">
                         {{ link.title }}
                       </h4>
-                      <p class="text-[10px] sm:text-xs font-sans text-neutral-500 m-0 mt-0.5 truncate">
+                      <p class="linktree-subtitle text-[10px] sm:text-xs font-sans m-0 mt-0.5 truncate">
                         {{ link.subtitle }}
                       </p>
                     </div>
@@ -609,6 +643,15 @@ export class LinkComponent implements OnInit, OnDestroy, AfterViewInit {
 
   getLinks() {
     return this.configService.data()?.links?.items || [];
+  }
+
+  getCardBrandClass(icon: string): string {
+    const norm = (icon || '').toLowerCase();
+    if (norm.includes('tiktok')) return 'linktree-card-tiktok';
+    if (norm.includes('instagram')) return 'linktree-card-instagram';
+    if (norm.includes('whatsapp') || norm.includes('wa')) return 'linktree-card-whatsapp';
+    if (norm.includes('linkedin')) return 'linktree-card-linkedin';
+    return 'linktree-card-default';
   }
 
   getProfileAvatar() {

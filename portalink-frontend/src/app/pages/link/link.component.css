@@ -3,3 +3,279 @@
   width: 100%;
   min-height: 100vh;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   PORTFOLIO MAIN CTA BUTTON
+   ═══════════════════════════════════════════════════════════════ */
+.portfolio-cta-btn {
+  background-color: #09090b !important;
+  color: #ffffff !important;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.35s ease;
+  will-change: transform, box-shadow;
+}
+
+.portfolio-cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.portfolio-cta-btn:active {
+  transform: translateY(0) scale(0.99);
+}
+
+.cta-shimmer-sweep {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  pointer-events: none;
+  transition: left 0.8s ease;
+}
+
+.portfolio-cta-btn:hover .cta-shimmer-sweep {
+  left: 180%;
+}
+
+.portfolio-cta-btn:hover .portfolio-cta-arrow {
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #09090b !important;
+  transform: translateX(4px) scale(1.05);
+}
+
+.portfolio-cta-btn:hover .portfolio-cta-arrow svg {
+  color: #09090b !important;
+  stroke: #09090b !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LINKTREE SOCIAL CARDS
+   ═══════════════════════════════════════════════════════════════ */
+.linktree-card {
+  position: relative;
+  background-color: #ffffff !important;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.35s ease,
+              background-color 0.35s ease;
+  will-change: transform, box-shadow;
+}
+
+.linktree-card:hover {
+  transform: translateY(-4px);
+  background-color: #ffffff !important;
+  box-shadow: 0 14px 30px -8px rgba(15, 23, 42, 0.08),
+              0 4px 10px -2px rgba(15, 23, 42, 0.03);
+}
+
+.linktree-card:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+/* Brand-specific hover borders and ambient glow */
+.linktree-card-tiktok:hover {
+  border-color: rgba(15, 23, 42, 0.4) !important;
+  box-shadow: 0 14px 30px -8px rgba(0, 0, 0, 0.12),
+              0 0 25px -5px rgba(0, 0, 0, 0.06);
+}
+
+.linktree-card-instagram:hover {
+  border-color: rgba(225, 48, 108, 0.35) !important;
+  box-shadow: 0 14px 30px -8px rgba(225, 48, 108, 0.12),
+              0 0 25px -5px rgba(225, 48, 108, 0.08);
+}
+
+.linktree-card-whatsapp:hover {
+  border-color: rgba(37, 211, 102, 0.4) !important;
+  box-shadow: 0 14px 30px -8px rgba(37, 211, 102, 0.12),
+              0 0 25px -5px rgba(37, 211, 102, 0.08);
+}
+
+.linktree-card-linkedin:hover {
+  border-color: rgba(10, 102, 194, 0.4) !important;
+  box-shadow: 0 14px 30px -8px rgba(10, 102, 194, 0.12),
+              0 0 25px -5px rgba(10, 102, 194, 0.08);
+}
+
+.linktree-card-default:hover {
+  border-color: rgba(15, 23, 42, 0.3) !important;
+  box-shadow: 0 14px 30px -8px rgba(0, 0, 0, 0.1);
+}
+
+/* Ambient corner glow */
+.linktree-card-tiktok .linktree-corner-glow {
+  background: rgba(0, 0, 0, 0.08);
+}
+.linktree-card-instagram .linktree-corner-glow {
+  background: rgba(225, 48, 108, 0.15);
+}
+.linktree-card-whatsapp .linktree-corner-glow {
+  background: rgba(37, 211, 102, 0.18);
+}
+.linktree-card-linkedin .linktree-corner-glow {
+  background: rgba(10, 102, 194, 0.18);
+}
+.linktree-card-default .linktree-corner-glow {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ICON BADGES (Immune to global styles.css overrides!)
+   ═══════════════════════════════════════════════════════════════ */
+.linktree-icon-badge {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.35s ease,
+              color 0.35s ease,
+              box-shadow 0.35s ease,
+              border-color 0.35s ease;
+}
+
+.linktree-icon-badge svg {
+  color: #171717;
+  fill: currentColor;
+  transition: transform 0.35s ease, color 0.35s ease, fill 0.35s ease, stroke 0.35s ease;
+}
+
+.linktree-icon-badge svg[fill="none"] {
+  fill: none !important;
+  stroke: currentColor;
+}
+
+.linktree-card:hover .linktree-icon-badge {
+  transform: scale(1.1) rotate(-1deg);
+}
+
+/* TikTok hover */
+.linktree-card-tiktok:hover .linktree-icon-badge {
+  background: #09090b !important;
+  color: #ffffff !important;
+  border-color: #09090b !important;
+  box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.3);
+}
+
+.linktree-card-tiktok:hover .linktree-icon-badge svg {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* Instagram hover */
+.linktree-card-instagram:hover .linktree-icon-badge {
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+  box-shadow: 0 8px 18px -4px rgba(220, 39, 67, 0.4);
+}
+
+.linktree-card-instagram:hover .linktree-icon-badge svg {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* WhatsApp hover */
+.linktree-card-whatsapp:hover .linktree-icon-badge {
+  background: #25d366 !important;
+  color: #ffffff !important;
+  border-color: #25d366 !important;
+  box-shadow: 0 8px 18px -4px rgba(37, 211, 102, 0.4);
+}
+
+.linktree-card-whatsapp:hover .linktree-icon-badge svg {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* LinkedIn hover */
+.linktree-card-linkedin:hover .linktree-icon-badge {
+  background: #0a66c2 !important;
+  color: #ffffff !important;
+  border-color: #0a66c2 !important;
+  box-shadow: 0 8px 18px -4px rgba(10, 102, 194, 0.4);
+}
+
+.linktree-card-linkedin:hover .linktree-icon-badge svg {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* Fallback hover */
+.linktree-card-default:hover .linktree-icon-badge {
+  background: #09090b !important;
+  color: #ffffff !important;
+  border-color: #09090b !important;
+  box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.3);
+}
+
+.linktree-card-default:hover .linktree-icon-badge svg {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ARROW ACTION BUTTON
+   ═══════════════════════════════════════════════════════════════ */
+.linktree-arrow-pill {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.35s ease,
+              border-color 0.35s ease,
+              color 0.35s ease,
+              box-shadow 0.35s ease;
+}
+
+.linktree-arrow-pill svg {
+  color: #a3a3a3;
+  stroke: currentColor;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.35s ease,
+              stroke 0.35s ease;
+}
+
+.linktree-card:hover .linktree-arrow-pill {
+  background-color: #09090b !important;
+  border-color: #09090b !important;
+  color: #ffffff !important;
+  transform: translate(2px, -2px) scale(1.06);
+  box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.25);
+}
+
+.linktree-card:hover .linktree-arrow-pill svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  stroke-width: 2.5;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CARD TEXT LABELS
+   ═══════════════════════════════════════════════════════════════ */
+.linktree-title {
+  color: #0a0a0a !important;
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+
+.linktree-subtitle {
+  color: #737373 !important;
+  transition: color 0.25s ease;
+}
+
+.linktree-card:hover .linktree-title {
+  color: #000000 !important;
+}
+
+.linktree-card:hover .linktree-subtitle {
+  color: #404040 !important;
+}
