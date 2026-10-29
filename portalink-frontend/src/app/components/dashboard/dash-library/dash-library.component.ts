@@ -879,7 +879,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     // Sincronizar bloque activo
     const targetBlock = block || (this.activeBlockId ? this.blocks.find(b => b.id === this.activeBlockId) : null);
     if (targetBlock) {
-      const blockEl = document.getElementById('block-' + targetBlock.id);
+      const blockEl = document.getElementById('block-' + targetBlock.id) || document.getElementById('mb-block-' + targetBlock.id);
       if (blockEl) {
         targetBlock.content = blockEl.innerHTML;
       }
@@ -908,7 +908,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
       event.stopPropagation();
     }
     const targetBlock = this.activeBlockId ? this.blocks.find(b => b.id === this.activeBlockId) : null;
-    const blockEl = targetBlock ? document.getElementById('block-' + targetBlock.id) : null;
+    const blockEl = targetBlock ? (document.getElementById('block-' + targetBlock.id) || document.getElementById('mb-block-' + targetBlock.id)) : null;
     if (blockEl) {
       const selection = window.getSelection();
       if (!selection || selection.rangeCount === 0 || !blockEl.contains(selection.anchorNode)) {
@@ -2362,7 +2362,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     } else if (event.key === 'Backspace') {
-      const blockEl = document.getElementById('block-' + block.id);
+      const blockEl = document.getElementById('block-' + block.id) || document.getElementById('mb-block-' + block.id);
       const isContentEmpty = !block.content || block.content.trim() === '' || (blockEl && (blockEl.innerText.trim() === '' || blockEl.innerHTML === '<br>'));
       if (isContentEmpty && this.blocks.length > 1) {
         event.preventDefault();
@@ -2425,7 +2425,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activeBlockId = newBlock.id;
     this.syncBlocksToContent();
     setTimeout(() => {
-      const el = document.getElementById('block-' + newBlock.id);
+      const el = document.getElementById('block-' + newBlock.id) || document.getElementById('mb-block-' + newBlock.id);
       if (el) {
         el.focus();
       }
@@ -2504,7 +2504,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.syncActiveBlockToService();
     this.showToast(`Formato cambiado a ${this.getBlockTypeLabel(block.type)}`);
     setTimeout(() => {
-      const el = document.getElementById('block-' + block.id);
+      const el = document.getElementById('block-' + block.id) || document.getElementById('mb-block-' + block.id);
       if (el) {
         el.focus();
       }
