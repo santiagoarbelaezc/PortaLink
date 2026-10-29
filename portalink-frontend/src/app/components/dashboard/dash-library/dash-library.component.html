@@ -1323,7 +1323,7 @@
 
           <!-- 👑 TÍTULO -->
           <div *ngIf="block.type === 'titulo'">
-            <div [contenteditable]="!isReadOnlyMode" [id]="'mb-block-' + block.id" [(appContentEditable)]="block.content"
+            <div [attr.contenteditable]="!isReadOnlyMode" [id]="'mb-block-' + block.id" [(appContentEditable)]="block.content"
               (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
               (keydown)="onBlockKeydown($event, block, i)" spellcheck="false" autocorrect="off" autocapitalize="sentences"
               placeholder="Título..."
@@ -1333,7 +1333,7 @@
 
           <!-- 📌 SUBTÍTULO -->
           <div *ngIf="block.type === 'subtitulo'">
-            <div [contenteditable]="!isReadOnlyMode" [id]="'mb-block-' + block.id" [(appContentEditable)]="block.content"
+            <div [attr.contenteditable]="!isReadOnlyMode" [id]="'mb-block-' + block.id" [(appContentEditable)]="block.content"
               (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
               (keydown)="onBlockKeydown($event, block, i)" spellcheck="false" autocorrect="off" autocapitalize="sentences"
               placeholder="Subtítulo..."
@@ -1343,7 +1343,7 @@
 
           <!-- 📝 TEXTO NORMAL -->
           <div *ngIf="block.type === 'texto'">
-            <div [contenteditable]="!isReadOnlyMode" [id]="'mb-block-' + block.id" [(appContentEditable)]="block.content"
+            <div [attr.contenteditable]="!isReadOnlyMode" [id]="'mb-block-' + block.id" [(appContentEditable)]="block.content"
               (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
               (keydown)="onBlockKeydown($event, block, i)" spellcheck="false" autocorrect="off" autocapitalize="sentences"
               placeholder="Escribe algo..."
@@ -1356,7 +1356,7 @@
           <div *ngIf="block.type === 'alerta'"
             class="rounded-xl px-3 py-2.5 border-l-2 border-amber-400 my-0.5"
             [ngClass]="isDark ? 'bg-amber-900/20 text-amber-200' : 'bg-amber-50 text-amber-900'">
-            <div [contenteditable]="!isReadOnlyMode" [id]="'mb-block-' + block.id" [(appContentEditable)]="block.content"
+            <div [attr.contenteditable]="!isReadOnlyMode" [id]="'mb-block-' + block.id" [(appContentEditable)]="block.content"
               (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
               (keydown)="onBlockKeydown($event, block, i)" spellcheck="false" autocorrect="off"
               placeholder="Escribe una alerta o nota clave..."
@@ -1400,7 +1400,7 @@
             <div *ngIf="block.columns && block.columns[0]"
               class="rounded-xl border p-2"
               [ngClass]="isDark ? 'bg-[#0f0f12]/80 border-neutral-800/80' : 'bg-white border-neutral-200'">
-              <div [contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[0].content"
+              <div [attr.contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[0].content"
                 (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                 spellcheck="false" placeholder="Columna 1..."
                 style="font-size: 15px;"
@@ -1411,7 +1411,7 @@
             <div *ngIf="block.columns && block.columns[1]"
               class="rounded-xl border p-2"
               [ngClass]="isDark ? 'bg-[#0f0f12]/80 border-neutral-800/80' : 'bg-white border-neutral-200'">
-              <div [contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[1].content"
+              <div [attr.contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[1].content"
                 (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                 spellcheck="false" placeholder="Columna 2..."
                 style="font-size: 15px;"
@@ -2189,7 +2189,7 @@
 
             <!-- 👑 TÍTULO MONOCROMÁTICO COMPACTO -->
             <div *ngIf="block.type === 'titulo'">
-              <div [contenteditable]="!isReadOnlyMode" [id]="'block-' + block.id" [(appContentEditable)]="block.content"
+              <div [attr.contenteditable]="!isReadOnlyMode" [id]="'block-' + block.id" [(appContentEditable)]="block.content"
                 (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                 (keydown)="onBlockKeydown($event, block, i)" spellcheck="false" autocorrect="off" autocapitalize="off"
                 placeholder="Escribe el título principal..."
@@ -2199,7 +2199,7 @@
 
             <!-- 📌 SUBTÍTULO MONOCROMÁTICO COMPACTO -->
             <div *ngIf="block.type === 'subtitulo'">
-              <div [contenteditable]="!isReadOnlyMode" [id]="'block-' + block.id" [(appContentEditable)]="block.content"
+              <div [attr.contenteditable]="!isReadOnlyMode" [id]="'block-' + block.id" [(appContentEditable)]="block.content"
                 (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                 (keydown)="onBlockKeydown($event, block, i)" spellcheck="false" autocorrect="off" autocapitalize="off"
                 placeholder="Escribe un subtítulo..."
@@ -2274,7 +2274,7 @@
                 </div>
               </div>
 
-              <textarea [(ngModel)]="block.content" (focus)="activeBlockId = block.id"
+              <textarea [(ngModel)]="block.content" [readonly]="isReadOnlyMode" (focus)="activeBlockId = block.id"
                 (input)="onBlockInput(block, $event)" (keydown)="onBlockKeydown($event, block, i)" spellcheck="false"
                 autocorrect="off" autocapitalize="off" [rows]="getLineCount(block.content, 2, 'codigo')"
                 placeholder="// Escribe tu código aqui..."
@@ -2341,7 +2341,7 @@
                 </svg>
               </div>
               <div class="flex-1 min-w-0">
-                <div [contenteditable]="!isReadOnlyMode" [id]="'block-' + block.id" [(appContentEditable)]="block.content"
+                <div [attr.contenteditable]="!isReadOnlyMode" [id]="'block-' + block.id" [(appContentEditable)]="block.content"
                   (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                   (keydown)="onBlockKeydown($event, block, i)" spellcheck="false" autocorrect="off" autocapitalize="off"
                   placeholder="Escribe un consejo o nota importante..."
@@ -2352,7 +2352,7 @@
 
             <!-- 📝 TEXTO NORMAL MONOCROMÁTICO COMPACTO -->
             <div *ngIf="block.type === 'texto'">
-              <div [contenteditable]="!isReadOnlyMode" [id]="'block-' + block.id" [(appContentEditable)]="block.content"
+              <div [attr.contenteditable]="!isReadOnlyMode" [id]="'block-' + block.id" [(appContentEditable)]="block.content"
                 (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                 (keydown)="onBlockKeydown($event, block, i)" spellcheck="false" autocorrect="off" autocapitalize="off"
                 placeholder="Escribe texto normal... (Escribe '/' para cambiar de bloque)"
@@ -2531,7 +2531,7 @@
                   <!-- PIE DE FOTO / LEYENDA EDITABLE -->
                   <div class="px-3 py-2 border-t"
                     [ngClass]="isDark ? 'border-neutral-800/80 bg-[#0c0c0e]' : 'border-neutral-200/80 bg-neutral-50'">
-                    <div [contenteditable]="!isReadOnlyMode" [id]="'block-caption-' + block.id"
+                    <div [attr.contenteditable]="!isReadOnlyMode" [id]="'block-caption-' + block.id"
                       [(appContentEditable)]="block.content" (appContentEditableChange)="syncBlocksToContent()"
                       (focus)="activeBlockId = block.id"
                       placeholder="Añade un pie de foto o descripción de la imagen..."
@@ -2825,7 +2825,7 @@
                         </div>
                       </div>
                       <div class="p-2 sm:p-3 flex-1 flex flex-col">
-                        <textarea [(ngModel)]="block.columns[0].content"
+                        <textarea [(ngModel)]="block.columns[0].content" [readonly]="isReadOnlyMode"
                           (input)="onBlockInput(block, $event); syncBlocksToContent()"
                           (focus)="activeBlockId = block.id" spellcheck="false" placeholder="// Código columna 1..."
                           [rows]="getLineCount(block.columns[0].content, 4, 'codigo')"
@@ -2868,7 +2868,7 @@
                         </svg>
                       </div>
                       <div class="flex-1 min-w-0">
-                        <div [contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[0].content"
+                        <div [attr.contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[0].content"
                           (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                           spellcheck="false" placeholder="Escribe un consejo o nota importante..."
                           class="w-full bg-transparent text-xs sm:text-sm font-medium leading-relaxed outline-none text-neutral-200 empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.4em]">
@@ -2878,7 +2878,7 @@
 
                     <!-- 3. TÍTULO -->
                     <div *ngIf="block.columns[0].type === 'titulo'" class="py-1 flex-1">
-                      <div [contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[0].content"
+                      <div [attr.contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[0].content"
                         (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                         spellcheck="false" placeholder="Título Principal..."
                         class="w-full bg-transparent text-xl sm:text-2xl font-headline font-extrabold tracking-tight py-1 outline-none transition-all empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.5em]"
@@ -2887,7 +2887,7 @@
 
                     <!-- 4. SUBTÍTULO -->
                     <div *ngIf="block.columns[0].type === 'subtitulo'" class="py-1 flex-1">
-                      <div [contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[0].content"
+                      <div [attr.contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[0].content"
                         (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                         spellcheck="false" placeholder="Subtítulo de sección..."
                         class="w-full bg-transparent text-base sm:text-lg font-headline font-bold py-1 outline-none transition-all empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.5em]"
@@ -2896,7 +2896,7 @@
 
                     <!-- 5. TEXTO NORMAL -->
                     <div *ngIf="block.columns[0].type === 'texto'" class="py-0.5 flex-1">
-                      <div [contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[0].content"
+                      <div [attr.contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[0].content"
                         (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                         spellcheck="false" placeholder="Escribe texto..."
                         class="w-full bg-transparent text-base sm:text-lg leading-snug py-0.5 outline-none transition-all empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.5em]"
@@ -3140,7 +3140,7 @@
                         </div>
                       </div>
                       <div class="p-2 sm:p-3 flex-1 flex flex-col">
-                        <textarea [(ngModel)]="block.columns[1].content"
+                        <textarea [(ngModel)]="block.columns[1].content" [readonly]="isReadOnlyMode"
                           (input)="onBlockInput(block, $event); syncBlocksToContent()"
                           (focus)="activeBlockId = block.id" spellcheck="false" placeholder="// Código columna 2..."
                           [rows]="getLineCount(block.columns[1].content, 4, 'codigo')"
@@ -3182,7 +3182,7 @@
                         </svg>
                       </div>
                       <div class="flex-1 min-w-0">
-                        <div [contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[1].content"
+                        <div [attr.contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[1].content"
                           (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                           spellcheck="false" placeholder="Escribe un consejo o nota importante..."
                           class="w-full bg-transparent text-xs sm:text-sm font-medium leading-relaxed outline-none text-neutral-200 empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.4em]">
@@ -3192,7 +3192,7 @@
 
                     <!-- 3. TÍTULO -->
                     <div *ngIf="block.columns[1].type === 'titulo'" class="py-1 flex-1">
-                      <div [contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[1].content"
+                      <div [attr.contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[1].content"
                         (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                         spellcheck="false" placeholder="Título Principal..."
                         class="w-full bg-transparent text-xl sm:text-2xl font-headline font-extrabold tracking-tight py-1 outline-none transition-all empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.5em]"
@@ -3201,7 +3201,7 @@
 
                     <!-- 4. SUBTÍTULO -->
                     <div *ngIf="block.columns[1].type === 'subtitulo'" class="py-1 flex-1">
-                      <div [contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[1].content"
+                      <div [attr.contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[1].content"
                         (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                         spellcheck="false" placeholder="Subtítulo de sección..."
                         class="w-full bg-transparent text-base sm:text-lg font-headline font-bold py-1 outline-none transition-all empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.5em]"
@@ -3210,7 +3210,7 @@
 
                     <!-- 5. TEXTO NORMAL -->
                     <div *ngIf="block.columns[1].type === 'texto'" class="py-0.5 flex-1">
-                      <div [contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[1].content"
+                      <div [attr.contenteditable]="!isReadOnlyMode" [(appContentEditable)]="block.columns[1].content"
                         (appContentEditableChange)="syncBlocksToContent()" (focus)="activeBlockId = block.id"
                         spellcheck="false" placeholder="Escribe texto..."
                         class="w-full bg-transparent text-base sm:text-lg leading-snug py-0.5 outline-none transition-all empty:before:content-[attr(placeholder)] empty:before:opacity-40 empty:before:pointer-events-none min-h-[1.5em]"
