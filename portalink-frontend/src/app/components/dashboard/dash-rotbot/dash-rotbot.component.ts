@@ -1,0 +1,872 @@
+import { Component, Input, Output, EventEmitter, OnInit, AfterViewInit, OnDestroy, OnChanges, SimpleChanges, inject, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RobotChatService, RobotChatResponse, RotbotMode } from '../../../services/robot-chat.service';
+import { AudioRecorderService, RecordedAudio } from '../../../services/audio-recorder.service';
+import { CommandCenterService } from '../../../services/command-center.service';
+import { Subscription } from 'rxjs';
+
+interface ChatEntry {
+  id: string;
+  sender: 'user' | 'rotbot';
+  text: string;
+  emotion?: string;
+  audio?: string | null;
+  time: string;
+}
+
+@Component({
+  selector: 'app-dash-rotbot',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  template: `
+    <!-- Main Cockpit Container (Full Width & Locked Scroll) -->
+    <div class="w-full h-full flex flex-col justify-between tab-enter font-sans min-h-0">
+
+      <!-- ═══════════════════════ ROTBOT COCKPIT (COMPACT STAGE ON MOBILE, 2-COL ON DESKTOP) ═══════════════════════ -->
+      <div class="flex-1 flex flex-col lg:grid lg:grid-cols-12 gap-2.5 sm:gap-3.5 lg:gap-6 items-stretch min-h-0 h-full w-full overflow-hidden">
+
+        <!-- ─────────── 3D ROTBOT HEAD STAGE (Compacto en móvil h-125px, Col 5 en desktop) ─────────── -->
+        <!-- Móvil: Altura e imagen ampliadas para presencia visual óptima sin quitar espacio al chat -->
+        <div class="lg:col-span-5 shrink-0 h-[125px] sm:h-[155px] lg:h-full flex flex-col justify-center items-center rounded-2xl sm:rounded-[24px] lg:rounded-[28px] border overflow-hidden transition-all duration-300 shadow-md lg:shadow-xl relative"
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-neutral-900 border-neutral-800 text-white'">
+          
+          <!-- Subtle Executive Pedestal Glow -->
+          <div class="absolute inset-0 bg-radial-gradient from-white/[0.04] via-transparent to-transparent pointer-events-none"></div>
+
+
+          <!-- 3D Rotbot Head Stage -->
+          <div class="w-full h-full relative flex items-center justify-center p-2 sm:p-3.5 lg:p-6 min-h-0 overflow-hidden select-none">
+            
+            <!-- Head Container with Scaled Dimensions -->
+            <div class="relative h-full max-h-[114px] sm:max-h-[142px] lg:max-h-none w-auto lg:w-full max-w-[340px] sm:max-w-[420px] md:max-w-[480px] lg:max-w-[520px] xl:max-w-[560px] aspect-square flex items-center justify-center my-auto">
+              
+              <!-- 1. The Official 3D Rotbot Head Image -->
+              <img src="https://res.cloudinary.com/doxdjiyvi/image/upload/v1787626350/rotbot-img_j54b0d.png" 
+                   alt="Rotbot Face" 
+                   class="w-full h-full object-contain pointer-events-none drop-shadow-[0_16px_32px_rgba(0,0,0,0.85)] filter transition-transform duration-500 hover:scale-[1.02]" />
+
+              <!-- 2. Overlay Visor Eyes Container (Ojos flotantes ampliados proporcionalmente) -->
+              <div class="absolute top-[55.8%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[48%] h-[24%] flex items-center justify-center gap-[15%] pointer-events-none z-20">
+
+                <!-- LEFT EYE -->
+                <div class="eye-slot flex items-center justify-center w-1/2 h-full">
+                  <div *ngIf="currentEmotion === 'happy'" class="rotbot-eye-svg-box crescent" [class.talking]="isSpeaking">
+                    <svg viewBox="0 0 100 52" class="w-full h-full">
+                      <path d="M 14 36 C 24 10, 76 10, 86 36 C 74 22, 26 22, 14 36 Z" fill="#00f0ff" stroke="#00f0ff" stroke-width="5.5" stroke-linejoin="round" stroke-linecap="round" />
+                    </svg>
+                  </div>
+                  <div *ngIf="currentEmotion === 'neutral'" class="rotbot-eye-svg-box neutral" [class.talking]="isSpeaking">
+                    <div class="w-6 h-6 sm:w-8 sm:h-8 lg:w-11 lg:h-11 rounded-lg sm:rounded-xl lg:rounded-2xl bg-[#00f0ff] shadow-[0_0_14px_#00f0ff,0_0_32px_rgba(0,240,255,0.85)]"></div>
+                  </div>
+                  <div *ngIf="currentEmotion === 'thinking'" class="rotbot-eye-svg-box thinking">
+                    <div class="w-5 h-4 sm:w-7 sm:h-6 lg:w-10 lg:h-8 rounded-full bg-[#00f0ff] shadow-[0_0_14px_#00f0ff,0_0_32px_rgba(0,240,255,0.8)]"></div>
+                  </div>
+                  <div *ngIf="currentEmotion === 'surprised'" class="rotbot-eye-svg-box surprised" [class.talking]="isSpeaking">
+                    <div class="w-6 h-6 sm:w-9 sm:h-9 lg:w-12 lg:h-12 rounded-full bg-[#00f0ff] shadow-[0_0_16px_#00f0ff,0_0_36px_rgba(0,240,255,0.95)]"></div>
+                  </div>
+                  <div *ngIf="currentEmotion === 'talking'" class="rotbot-eye-svg-box crescent talking">
+                    <svg viewBox="0 0 100 52" class="w-full h-full">
+                      <path d="M 14 36 C 24 10, 76 10, 86 36 C 74 22, 26 22, 14 36 Z" fill="#00f0ff" stroke="#00f0ff" stroke-width="5.5" stroke-linejoin="round" stroke-linecap="round" />
+                    </svg>
+                  </div>
+                </div>
+
+                <!-- RIGHT EYE -->
+                <div class="eye-slot flex items-center justify-center w-1/2 h-full">
+                  <div *ngIf="currentEmotion === 'happy'" class="rotbot-eye-svg-box crescent" [class.talking]="isSpeaking">
+                    <svg viewBox="0 0 100 52" class="w-full h-full">
+                      <path d="M 14 36 C 24 10, 76 10, 86 36 C 74 22, 26 22, 14 36 Z" fill="#00f0ff" stroke="#00f0ff" stroke-width="5.5" stroke-linejoin="round" stroke-linecap="round" />
+                    </svg>
+                  </div>
+                  <div *ngIf="currentEmotion === 'neutral'" class="rotbot-eye-svg-box neutral" [class.talking]="isSpeaking">
+                    <div class="w-6 h-6 sm:w-8 sm:h-8 lg:w-11 lg:h-11 rounded-lg sm:rounded-xl lg:rounded-2xl bg-[#00f0ff] shadow-[0_0_14px_#00f0ff,0_0_32px_rgba(0,240,255,0.85)]"></div>
+                  </div>
+                  <div *ngIf="currentEmotion === 'thinking'" class="rotbot-eye-svg-box thinking">
+                    <div class="w-5 h-4 sm:w-7 sm:h-6 lg:w-10 lg:h-8 rounded-full bg-[#00f0ff] shadow-[0_0_14px_#00f0ff,0_0_32px_rgba(0,240,255,0.8)]"></div>
+                  </div>
+                  <div *ngIf="currentEmotion === 'surprised'" class="rotbot-eye-svg-box surprised" [class.talking]="isSpeaking">
+                    <div class="w-6 h-6 sm:w-9 sm:h-9 lg:w-12 lg:h-12 rounded-full bg-[#00f0ff] shadow-[0_0_16px_#00f0ff,0_0_36px_rgba(0,240,255,0.95)]"></div>
+                  </div>
+                  <div *ngIf="currentEmotion === 'talking'" class="rotbot-eye-svg-box crescent talking">
+                    <svg viewBox="0 0 100 52" class="w-full h-full">
+                      <path d="M 14 36 C 24 10, 76 10, 86 36 C 74 22, 26 22, 14 36 Z" fill="#00f0ff" stroke="#00f0ff" stroke-width="5.5" stroke-linejoin="round" stroke-linecap="round" />
+                    </svg>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Dynamic Speech & Thinking Floating Indicator -->
+          <div *ngIf="isSpeaking || isProcessing" 
+               class="absolute bottom-2 lg:bottom-5 left-1/2 -translate-x-1/2 px-2.5 py-1 lg:px-4 lg:py-2 rounded-full border bg-[#141419]/95 backdrop-blur-md border-neutral-700 shadow-[0_12px_32px_rgba(0,0,0,0.8)] flex items-center gap-2 z-30 transition-all">
+             <ng-container *ngIf="isSpeaking">
+               <div class="flex items-center gap-1">
+                 <span *ngFor="let _ of [1,2,3,4,5,6]" 
+                       class="w-0.5 sm:w-1 bg-white rounded-full animate-voice-bar" 
+                       [style.animation-delay]="(_ * 0.08) + 's'"></span>
+               </div>
+               <span class="text-[10px] sm:text-xs font-headline font-bold uppercase tracking-wider text-white">Hablando...</span>
+             </ng-container>
+             <ng-container *ngIf="!isSpeaking && isProcessing">
+               <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white animate-ping"></span>
+               <span class="text-[10px] sm:text-xs font-headline font-bold uppercase tracking-wider text-neutral-300">Procesando...</span>
+             </ng-container>
+          </div>
+
+        </div>
+
+        <!-- ─────────── CHAT CONSOLE (Col 7 on desktop, Flex-1 on mobile) ─────────── -->
+        <!-- Móvil: flex-1 permite que el chat use todo el alto restante de la pantalla -->
+        <div class="lg:col-span-7 flex-1 min-h-0 h-full flex flex-col rounded-2xl sm:rounded-[24px] lg:rounded-[28px] border overflow-hidden transition-all duration-300 shadow-xl"
+             [ngClass]="isDark ? 'bg-[#0c0c0e] border-neutral-800' : 'bg-white border-neutral-200'">
+
+          <!-- Chat Top Header (Limpio y sin badges que recorten el título en móvil) -->
+          <div class="px-3.5 sm:px-5 py-2.5 sm:py-3.5 border-b flex items-center justify-between flex-shrink-0 relative z-30"
+               [ngClass]="isDark ? 'border-neutral-800 bg-[#141419]/90 backdrop-blur-md' : 'border-neutral-200 bg-neutral-50/80'">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+              <span class="text-xs sm:text-sm font-headline font-bold uppercase tracking-wider truncate"
+                    [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                English Lounge
+              </span>
+            </div>
+
+            <!-- Botón único: 'Nuevo Chat' para reiniciar conversación sin saturar la barra -->
+            <button (click)="clearChat()" 
+                    class="text-xs font-headline font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 px-3 py-1.5 rounded-xl border active:scale-95 shadow-xs"
+                    [ngClass]="isDark ? 'text-neutral-300 hover:text-white border-neutral-700/80 bg-neutral-900 hover:bg-neutral-800' : 'text-neutral-700 hover:text-neutral-900 border-neutral-300 bg-neutral-100 hover:bg-neutral-200'"
+                    title="Reiniciar conversación e iniciar nuevo chat">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              <span>Nuevo Chat</span>
+            </button>
+          </div>
+
+          <!-- 📌 AVISO ELEGANTE: CONVERSACIÓN EXTENSA (RECOMENDACIÓN DE REINICIO) -->
+          <div *ngIf="chatHistory.length >= 12" 
+               class="mx-3 sm:mx-5 mt-2.5 sm:mt-3 p-2.5 sm:p-3 rounded-2xl border flex items-center justify-between gap-3 text-xs shadow-md animate-fadeIn"
+               [ngClass]="chatHistory.length >= 20 ? 
+                 (isDark ? 'bg-rose-500/10 border-rose-500/30 text-rose-200' : 'bg-rose-50 border-rose-300 text-rose-900') : 
+                 (isDark ? 'bg-amber-500/10 border-amber-500/30 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-900')">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-7 h-7 rounded-xl flex items-center justify-center shrink-0"
+                   [ngClass]="chatHistory.length >= 20 ? 'bg-rose-500/20 text-rose-400' : 'bg-amber-500/20 text-amber-400'">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+              </div>
+              <div class="min-w-0">
+                <p class="font-headline font-bold text-[11px] uppercase tracking-wider m-0">
+                  {{ chatHistory.length >= 20 ? 'Conversación muy extensa (' + chatHistory.length + ' mensajes)' : 'Conversación extensa (' + chatHistory.length + ' mensajes)' }}
+                </p>
+                <p class="text-[10.5px] opacity-80 m-0 font-sans truncate">
+                  Para mantener la máxima rapidez y precisión de Rotbot, te sugerimos reiniciar el chat.
+                </p>
+              </div>
+            </div>
+            <button type="button" 
+                    (click)="clearChat()" 
+                    class="shrink-0 px-3 py-1.5 rounded-xl font-headline font-bold text-[10px] sm:text-[10.5px] uppercase tracking-wider transition-all cursor-pointer border flex items-center gap-1.5 shadow-sm active:scale-95"
+                    [ngClass]="chatHistory.length >= 20 ? 
+                      'bg-rose-500 text-white hover:bg-rose-600 border-rose-400 shadow-rose-500/20' : 
+                      'bg-amber-500 text-white hover:bg-amber-600 border-amber-400 shadow-amber-500/20'">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span>Reiniciar</span>
+            </button>
+          </div>
+
+
+          <!-- Chat Message Thread (Internal Scrollable Area) -->
+          <div #chatContainer class="flex-1 p-3 sm:p-5 lg:p-6 overflow-y-auto space-y-3.5 sm:space-y-5 no-scrollbar min-h-0">
+            
+            <div *ngFor="let entry of chatHistory" 
+                 class="flex flex-col"
+                 [ngClass]="entry.sender === 'user' ? 'items-end' : 'items-start'">
+              
+              <!-- Sender Header -->
+              <div class="flex items-center gap-2 mb-1.5 px-1">
+                <span class="text-[10px] font-headline uppercase tracking-widest font-bold"
+                      [ngClass]="entry.sender === 'user' ? (isDark ? 'text-neutral-400' : 'text-neutral-500') : (isDark ? 'text-white' : 'text-neutral-900')">
+                  {{ entry.sender === 'user' ? 'Tú' : 'Rotbot IA' }}
+                </span>
+                <span class="text-[10px] text-neutral-500 font-mono">{{ entry.time }}</span>
+              </div>
+
+              <!-- Message Bubble (Higher Font Size & Better Readability) -->
+              <div class="max-w-[92%] sm:max-w-[85%] rounded-2xl p-3 sm:p-4 text-[13.5px] sm:text-[15px] font-sans leading-relaxed shadow-sm transition-all"
+                   [ngClass]="entry.sender === 'user'
+                     ? (isDark ? 'bg-white text-black font-medium rounded-tr-xs' : 'bg-neutral-900 text-white rounded-tr-xs')
+                     : (isDark ? 'bg-[#141419] border border-neutral-800 text-neutral-100 rounded-tl-xs shadow-md' : 'bg-neutral-50 border border-neutral-200 text-neutral-900 rounded-tl-xs')">
+                
+                <p class="whitespace-pre-line m-0">{{ entry.text }}</p>
+
+                <!-- Replay Audio Button -->
+                <div *ngIf="entry.audio" class="mt-3.5 pt-3 flex items-center justify-between"
+                     [ngClass]="isDark ? 'border-t border-neutral-800' : 'border-t border-neutral-200'">
+                  <button (click)="reproduceAudio(entry.audio!)" 
+                          class="px-3.5 py-1.5 rounded-xl border text-xs font-headline font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer flex items-center gap-2 active:scale-95 shadow-2xs"
+                          [ngClass]="isDark 
+                            ? 'bg-neutral-900 hover:bg-neutral-800 border-neutral-700 text-white shadow-xs' 
+                            : 'bg-neutral-100 hover:bg-neutral-200 border-neutral-300 text-neutral-800 shadow-xs'">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                    <span>Escuchar Voz</span>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Bottom Message Input Bar (Fixed at bottom of Card) -->
+          <div class="border-t flex-shrink-0 relative z-20"
+               [ngClass]="isDark ? 'bg-[#141419] border-neutral-800' : 'bg-neutral-50 border-neutral-200'">
+            
+            <!-- Aviso rápido si supera los 20 mensajes -->
+            <div *ngIf="chatHistory.length >= 20" 
+                 class="px-4 py-2 border-b flex items-center justify-between text-[11px] font-mono transition-colors"
+                 [ngClass]="isDark ? 'bg-rose-500/10 border-rose-500/25 text-rose-300' : 'bg-rose-50 border-rose-200 text-rose-800'">
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span>
+                <span>Chat extenso ({{ chatHistory.length }} mensajes). Se aconseja reiniciar para mantener respuestas inmediatas.</span>
+              </div>
+              <button (click)="clearChat()" class="font-headline font-bold uppercase tracking-wider text-[10px] underline hover:opacity-80 cursor-pointer ml-2">
+                Reiniciar
+              </button>
+            </div>
+
+            <!-- Móvil: Barra de entrada fija y siempre visible con padding ergonómico (p-2.5) -->
+            <div class="p-2.5 sm:p-4">
+              <div class="relative flex items-center gap-2 sm:gap-2.5">
+              
+              <!-- High-Visibility Microphone Action Button -->
+              <button (click)="toggleVoiceInput()"
+                      [disabled]="isProcessing || isSpeaking"
+                      class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl border transition-all duration-300 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center shrink-0 relative group"
+                      [ngClass]="isVoiceRecording 
+                        ? 'bg-rose-500 text-white shadow-[0_0_20px_rgba(244,63,94,0.5)] border-rose-400 scale-105' 
+                        : (isDark ? 'bg-neutral-900 border-neutral-700 text-white hover:bg-neutral-800 hover:border-neutral-600 shadow-xs' : 'bg-white border-neutral-300 text-neutral-800 hover:bg-neutral-100 shadow-xs')"
+                      [title]="isVoiceRecording ? 'Detener grabación' : 'Hablar'">
+                
+                <!-- Radar Ping Ripples while active -->
+                <span *ngIf="isVoiceRecording" class="absolute -inset-1 rounded-2xl bg-rose-500/40 animate-ping pointer-events-none"></span>
+
+                <!-- Crisp SVG Microphone Vector Icon -->
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 relative z-10 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15a3 3 0 003-3V4.5a3 3 0 00-6 0V12a3 3 0 003 3z" />
+                </svg>
+              </button>
+
+              <!-- Text Input -->
+              <input type="text"
+                     [(ngModel)]="userMessage"
+                     (keyup.enter)="send(userMessage)"
+                     [disabled]="isProcessing || isSpeaking"
+                     [placeholder]="getInputPlaceholder()"
+                     class="flex-1 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl border text-xs sm:text-sm md:text-base outline-none transition-all font-sans"
+                     [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 text-white placeholder-neutral-500 focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500/20' : 'bg-white border-neutral-300 text-neutral-900 placeholder-neutral-400 focus:border-neutral-400 shadow-xs'" />
+
+              <!-- Send Button -->
+              <button (click)="send(userMessage)"
+                      [disabled]="isProcessing || isSpeaking || !userMessage.trim()"
+                      class="px-3.5 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-headline font-bold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-md active:scale-95 flex items-center gap-1.5 shrink-0"
+                      [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-neutral-900 text-white hover:bg-black'">
+                <span>{{ isProcessing ? '...' : 'Enviar' }}</span>
+                <svg *ngIf="!isProcessing" class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                </svg>
+              </button>
+
+            </div>
+
+            <!-- Voice Recording Live Audio Visualizer Banner -->
+            <div *ngIf="isVoiceRecording" 
+                 class="mt-2.5 px-4 py-2.5 rounded-2xl border flex items-center justify-between shadow-lg transition-all animate-fadeIn"
+                 [ngClass]="isDark ? 'bg-rose-500/10 border-rose-500/30 text-rose-400' : 'bg-rose-50 border-rose-200 text-rose-700'">
+              
+              <div class="flex items-center gap-3">
+                <span class="relative flex h-3 w-3 shrink-0">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
+                </span>
+                <div class="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+                  <span class="text-xs font-headline font-bold uppercase tracking-wider">Escuchando micrófono...</span>
+                  <span class="text-[11px] opacity-80 font-sans hidden sm:inline">Habla claramente</span>
+                </div>
+              </div>
+
+              <!-- Dynamic 5-Bar Equalizer Animation -->
+              <div class="flex items-center gap-1 h-4 shrink-0">
+                <span class="w-1 bg-rose-500 rounded-full animate-mic-bar" style="animation-delay: 0.05s"></span>
+                <span class="w-1 bg-rose-500 rounded-full animate-mic-bar" style="animation-delay: 0.25s"></span>
+                <span class="w-1 bg-rose-500 rounded-full animate-mic-bar" style="animation-delay: 0.12s"></span>
+                <span class="w-1 bg-rose-500 rounded-full animate-mic-bar" style="animation-delay: 0.35s"></span>
+                <span class="w-1 bg-rose-500 rounded-full animate-mic-bar" style="animation-delay: 0.18s"></span>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  `,
+  styles: [`
+    .tab-enter { animation: tabEnter 0.25s ease-out forwards; }
+    @keyframes tabEnter {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ═══════════════════════ SUBTLE VECTOR CYAN ROTBOT EYES ═══════════════════════ */
+    .rotbot-eye-svg-box {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      filter: drop-shadow(0 0 10px #00f0ff) drop-shadow(0 0 24px rgba(0, 240, 255, 0.8));
+    }
+
+    .rotbot-eye-svg-box.crescent {
+      animation: aliveCrescentBlink 4.2s infinite ease-in-out;
+    }
+
+    .rotbot-eye-svg-box.neutral {
+      animation: aliveNeutralBlink 3.8s infinite ease-in-out;
+    }
+
+    .rotbot-eye-svg-box.thinking {
+      animation: thinkPulse 1.2s infinite alternate ease-in-out;
+    }
+
+    .rotbot-eye-svg-box.surprised {
+      animation: aliveSurprise 4.5s infinite ease-in-out;
+    }
+
+    .rotbot-eye-svg-box.talking {
+      animation: talkingBounce 0.24s infinite alternate ease-in-out !important;
+    }
+
+    @keyframes aliveCrescentBlink {
+      0%, 82%, 100% { transform: translate(0, 0) scaleY(1); }
+      25% { transform: translate(-2px, -1px) scaleY(1); }
+      50% { transform: translate(2px, -1px) scaleY(1); }
+      88% { transform: translate(0, 0) scaleY(0.08); }
+      92% { transform: translate(0, 0) scaleY(1); }
+      95% { transform: translate(0, 0) scaleY(0.08); }
+    }
+
+    @keyframes aliveNeutralBlink {
+      0%, 80%, 100% { transform: translate(0, 0) scaleY(1); }
+      30% { transform: translate(-3px, 0) scaleY(1); }
+      60% { transform: translate(3px, 0) scaleY(1); }
+      88% { transform: translate(0, 0) scaleY(0.06); }
+      92% { transform: translate(0, 0) scaleY(1); }
+    }
+
+    @keyframes aliveSurprise {
+      0%, 88%, 100% { transform: scale(1.1) translate(0, 0); }
+      93% { transform: scale(1.1) scaleY(0.1); }
+    }
+
+    @keyframes thinkPulse {
+      0% { transform: translateY(-5px) scale(0.85); opacity: 0.75; }
+      100% { transform: translateY(4px) scale(1); opacity: 1; }
+    }
+
+    @keyframes talkingBounce {
+      0% { transform: scaleY(1) scaleX(1); }
+      50% { transform: scaleY(0.6) scaleX(1.08); }
+      100% { transform: scaleY(1.15) scaleX(0.94); }
+    }
+
+    @keyframes voiceBar {
+      0%, 100% { height: 4px; }
+      50% { height: 18px; }
+    }
+
+    .animate-voice-bar {
+      animation: voiceBar 0.45s ease-in-out infinite alternate;
+    }
+
+    @keyframes micBar {
+      0%, 100% { height: 4px; }
+      50% { height: 16px; }
+    }
+
+    .animate-mic-bar {
+      animation: micBar 0.4s ease-in-out infinite alternate;
+    }
+  `]
+})
+export class DashRotbotComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
+  @Input() theme = 'dark';
+  @Input() currentMode: RotbotMode = 'charla';
+  @Output() currentModeChange = new EventEmitter<RotbotMode>();
+  @Input() isMuted = false;
+  @Output() isMutedChange = new EventEmitter<boolean>();
+
+  private robotService = inject(RobotChatService);
+  private audioRecorder = inject(AudioRecorderService);
+  private commandCenter = inject(CommandCenterService);
+
+  @ViewChild('chatContainer') private chatContainer!: ElementRef;
+
+  currentEmotion: string = 'happy';
+  isSpeaking = false;
+  isProcessing = false;
+  isVoiceRecording = false;
+
+  lastAudio: string | null = null;
+
+  userMessage = '';
+  selectedVoiceId = 'bIHbv24MWmeRgasZH58o';
+
+  chatHistory: ChatEntry[] = [
+    {
+      id: 'welcome',
+      sender: 'rotbot',
+      text: "Hey! Ready to practice English? Let's have a conversation — you can talk to me via microphone or write anything in English.",
+      emotion: 'happy',
+      time: 'Just now'
+    }
+  ];
+
+  private currentAudio: HTMLAudioElement | null = null;
+  private voiceSub!: Subscription;
+  private recognition: any = null;
+  private englishVoice: any = null;
+
+  get isDark() { return this.theme === 'dark'; }
+
+  ngOnInit() {
+    this.initVoices();
+    const loaded = this.loadChatFromStorage(this.currentMode);
+    if (!loaded) {
+      this.initDefaultChat(this.currentMode);
+    }
+    this.voiceSub = this.audioRecorder.recordedAudio$.subscribe(rec => {
+      this.handleVoiceTranscript(rec);
+    });
+    this.scrollToBottom(true);
+  }
+
+  private initVoices() {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    const findEng = () => {
+      const voices = window.speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        this.englishVoice = voices.find(v => (v.lang === 'en-US' || v.lang.startsWith('en')) && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('David') || v.name.includes('Zira') || v.name.includes('Jenny') || v.name.includes('Guy') || v.name.includes('English')))
+                          || voices.find(v => v.lang === 'en-US')
+                          || voices.find(v => v.lang.startsWith('en'))
+                          || null;
+      }
+    };
+    findEng();
+    window.speechSynthesis.onvoiceschanged = () => findEng();
+  }
+
+  ngAfterViewInit() {
+    this.scrollToBottom(true);
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['currentMode'] && !changes['currentMode'].firstChange) {
+      this.switchMode(this.currentMode, false);
+    }
+  }
+
+  ngOnDestroy() {
+    this.stopAudio();
+    if (this.recognition) {
+      try { this.recognition.abort(); } catch {}
+    }
+    if (this.voiceSub) {
+      this.voiceSub.unsubscribe();
+    }
+  }
+
+  private saveChatToStorage() {
+    if (typeof localStorage === 'undefined') return;
+    try {
+      const toSave = this.chatHistory.map(entry => ({
+        id: entry.id,
+        sender: entry.sender,
+        text: entry.text,
+        emotion: entry.emotion,
+        time: entry.time
+      }));
+      localStorage.setItem(`rotbot_chat_${this.currentMode}`, JSON.stringify(toSave));
+    } catch (e) {
+      console.warn('[DashRotbot] Error saving chat to localStorage:', e);
+    }
+  }
+
+  private loadChatFromStorage(mode: RotbotMode): boolean {
+    if (typeof localStorage === 'undefined') return false;
+    try {
+      const raw = localStorage.getItem(`rotbot_chat_${mode}`);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this.chatHistory = parsed;
+          return true;
+        }
+      }
+    } catch (e) {
+      console.warn('[DashRotbot] Error loading chat from localStorage:', e);
+    }
+    return false;
+  }
+
+  private initDefaultChat(mode: RotbotMode = 'charla') {
+    this.chatHistory = [
+      {
+        id: 'welcome_' + Date.now(),
+        sender: 'rotbot',
+        text: "Welcome to English Chat! I'm your native conversation partner. Talk or write to me in English about anything you'd like to practice!",
+        emotion: 'happy',
+        time: 'Just now'
+      }
+    ];
+    this.saveChatToStorage();
+  }
+
+  switchMode(mode: RotbotMode, emit = true) {
+    if (this.currentMode === mode && !emit && this.chatHistory.length > 1) return;
+    this.currentMode = mode;
+    if (emit) {
+      this.currentModeChange.emit(mode);
+    }
+    this.stopAudio();
+    this.lastAudio = null;
+
+    const loaded = this.loadChatFromStorage(mode);
+    if (!loaded) {
+      this.initDefaultChat(mode);
+    }
+    setTimeout(() => this.scrollToBottom(), 50);
+  }
+
+  clearChat() {
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.removeItem(`rotbot_chat_${this.currentMode}`);
+      } catch {}
+    }
+    this.initDefaultChat(this.currentMode);
+  }
+
+  getInputPlaceholder(): string {
+    return 'Write or speak to Rotbot in English...';
+  }
+
+  send(msg: string) {
+    const text = msg.trim();
+    if (!text || this.isProcessing || this.isSpeaking) return;
+
+    this.userMessage = '';
+    this.isProcessing = true;
+    this.currentEmotion = 'thinking';
+
+    // Añadir mensaje del usuario
+    this.chatHistory.push({
+      id: 'usr_' + Date.now(),
+      sender: 'user',
+      text,
+      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+    });
+    this.saveChatToStorage();
+    this.scrollToBottom();
+
+    // Construir historial reciente para memoria conversacional
+    const history = this.chatHistory.slice(-8).map(entry => ({
+      role: entry.sender === 'user' ? 'user' : 'model',
+      content: entry.text
+    }));
+
+    this.robotService.sendMessage(text, this.selectedVoiceId, history, 'charla').subscribe({
+      next: (res: RobotChatResponse) => {
+        this.isProcessing = false;
+        this.currentEmotion = res.emotion || 'happy';
+        if (res.audio) {
+          this.lastAudio = res.audio;
+        }
+
+        // Guardar mensaje de Rotbot
+        this.chatHistory.push({
+          id: 'bot_' + Date.now(),
+          sender: 'rotbot',
+          text: res.reply,
+          emotion: res.emotion,
+          audio: res.audio,
+          time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+        });
+        this.saveChatToStorage();
+        this.scrollToBottom();
+
+        // Reproducir voz si viene audio y no está silenciado
+        if (res.audio && !this.isMuted) {
+          this.reproduceAudio(res.audio);
+        } else if (!this.isMuted && res.reply) {
+          this.pronouncePhrase(res.reply);
+        } else {
+          setTimeout(() => {
+            if (!this.isSpeaking) this.currentEmotion = 'happy';
+          }, 3500);
+        }
+      },
+      error: () => {
+        this.isProcessing = false;
+        this.currentEmotion = 'neutral';
+      }
+    });
+  }
+
+  private getEnglishVoice(): any {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return null;
+    const voices = window.speechSynthesis.getVoices();
+    if (!voices || voices.length === 0) return null;
+
+    // 1. Filtrar todas las voces en inglés (en-US, en-GB, en-AU, en_US, etc.)
+    const englishVoices = voices.filter(v => {
+      const lang = (v.lang || '').toLowerCase().replace('_', '-');
+      return lang.startsWith('en');
+    });
+
+    if (englishVoices.length > 0) {
+      // Prioridad 1: Voces Naturales / Google US / Edge Natural / David / Zira / Jenny / Guy
+      const topVoice = englishVoices.find(v => 
+        v.name.includes('Natural') || 
+        v.name.includes('Google US') || 
+        v.name.includes('Google UK') || 
+        v.name.includes('Online') ||
+        v.name.includes('Jenny') || 
+        v.name.includes('Guy') || 
+        v.name.includes('Aria') ||
+        v.name.includes('David') || 
+        v.name.includes('Zira') || 
+        v.name.includes('Mark') ||
+        v.name.includes('George')
+      );
+      if (topVoice) return topVoice;
+
+      // Prioridad 2: Cualquier voz con locale en-US
+      const usVoice = englishVoices.find(v => (v.lang || '').toLowerCase().replace('_', '-').includes('en-us'));
+      if (usVoice) return usVoice;
+
+      return englishVoices[0];
+    }
+
+    // 2. Búsqueda por nombre de voz si el idioma no fue reportado con código 'en'
+    const byName = voices.find(v => 
+      v.name.toLowerCase().includes('english') || 
+      v.name.toLowerCase().includes('united states') || 
+      v.name.toLowerCase().includes('united kingdom')
+    );
+    if (byName) return byName;
+
+    // 3. Fallback a la primera voz que NO sea español para evitar pronunciación errónea
+    const nonSpanish = voices.find(v => !(v.lang || '').toLowerCase().startsWith('es'));
+    if (nonSpanish) return nonSpanish;
+
+    return null;
+  }
+
+  private cleanSpeechText(text: string): string {
+    if (!text) return '';
+    return text
+      .replace(/(\*\[.*?\]\*|\[.*?\]|\(.*?\))/g, '')
+      .replace(/[*#`_~>]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  /**
+   * Pronuncia EXCLUSIVAMENTE la frase en inglés seleccionada.
+   * Utiliza el audio sintetizado de ElevenLabs o el motor de síntesis de voz nativo en inglés.
+   */
+  pronouncePhrase(phrase?: string | null, phraseAudio?: string | null) {
+    this.stopAudio();
+
+    if (phraseAudio) {
+      this.reproduceAudio(phraseAudio);
+      return;
+    }
+
+    const rawText = (phrase || '').trim();
+    if (!rawText) return;
+    const textToSpeak = this.cleanSpeechText(rawText);
+    if (!textToSpeak) return;
+
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel();
+
+        const doSpeak = () => {
+          const utterance = new SpeechSynthesisUtterance(textToSpeak);
+          utterance.rate = 0.92;
+          utterance.pitch = 1.0;
+
+          const voice = this.getEnglishVoice();
+          if (voice) {
+            utterance.voice = voice;
+            utterance.lang = voice.lang || 'en-US';
+          } else {
+            utterance.lang = 'en-US';
+          }
+
+          this.isSpeaking = true;
+          this.currentEmotion = 'talking';
+
+          utterance.onend = () => {
+            this.isSpeaking = false;
+            this.currentEmotion = 'happy';
+          };
+
+          utterance.onerror = () => {
+            this.isSpeaking = false;
+            this.currentEmotion = 'happy';
+          };
+
+          window.speechSynthesis.speak(utterance);
+        };
+
+        const voices = window.speechSynthesis.getVoices();
+        if (!voices || voices.length === 0) {
+          window.speechSynthesis.onvoiceschanged = () => {
+            window.speechSynthesis.onvoiceschanged = null;
+            doSpeak();
+          };
+        } else {
+          doSpeak();
+        }
+      } catch {
+        this.isSpeaking = false;
+        this.currentEmotion = 'happy';
+      }
+    }
+  }
+
+  reproduceAudio(audioBase64: string) {
+    this.stopAudio();
+
+    try {
+      this.currentAudio = new Audio(audioBase64);
+      this.isSpeaking = true;
+      this.currentEmotion = 'talking';
+
+      this.currentAudio.onended = () => {
+        this.isSpeaking = false;
+        this.currentEmotion = 'happy';
+      };
+
+      this.currentAudio.onerror = () => {
+        this.isSpeaking = false;
+        this.currentEmotion = 'happy';
+      };
+
+      this.currentAudio.play().catch(() => {
+        this.isSpeaking = false;
+        this.currentEmotion = 'happy';
+      });
+    } catch {
+      this.isSpeaking = false;
+      this.currentEmotion = 'happy';
+    }
+  }
+
+  stopAudio() {
+    if (this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio = null;
+    }
+    this.isSpeaking = false;
+  }
+
+  toggleMute() {
+    this.isMuted = !this.isMuted;
+    if (this.isMuted) this.stopAudio();
+  }
+
+  toggleVoiceInput() {
+    if (this.isVoiceRecording) {
+      this.isVoiceRecording = false;
+      this.audioRecorder.stopRecording();
+      return;
+    }
+
+    this.userMessage = '';
+    this.isVoiceRecording = true;
+    this.audioRecorder.startRecording();
+  }
+
+  private handleVoiceTranscript(audio: RecordedAudio) {
+    this.isVoiceRecording = false;
+    this.isProcessing = true;
+    this.currentEmotion = 'thinking';
+
+    // Transcribir audio con el backend y colocar el texto en el input
+    this.robotService.transcribeAudio(audio.base64, audio.mimeType).subscribe({
+      next: (res) => {
+        if (res && res.transcript && res.transcript.trim()) {
+          // 1. Colocar lo interpretado dentro de la caja de texto (input)
+          this.userMessage = res.transcript.trim();
+          this.isProcessing = false;
+          this.currentEmotion = 'happy';
+
+          // 2. Despachar el mensaje a Rotbot
+          setTimeout(() => {
+            if (this.userMessage.trim()) {
+              this.send(this.userMessage);
+            }
+          }, 450);
+        } else {
+          this.isProcessing = false;
+          this.currentEmotion = 'happy';
+        }
+      },
+      error: (err) => {
+        console.warn('[DashRotbot] Transcribe error:', err);
+        this.isProcessing = false;
+        this.currentEmotion = 'neutral';
+      }
+    });
+  }
+
+  private scrollToBottom(instant = false) {
+    const doScroll = () => {
+      if (this.chatContainer && this.chatContainer.nativeElement) {
+        const el = this.chatContainer.nativeElement;
+        if (instant) {
+          el.scrollTop = el.scrollHeight;
+        } else {
+          el.scrollTo({
+            top: el.scrollHeight,
+            behavior: 'smooth'
+          });
+        }
+      }
+    };
+
+    doScroll();
+    setTimeout(doScroll, 40);
+    setTimeout(doScroll, 150);
+    setTimeout(doScroll, 350);
+  }
+}

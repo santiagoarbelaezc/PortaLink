@@ -1,0 +1,656 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import 'aos/dist/aos.css';
+@import './styles/dashboard-theme.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #fcfcfc;
+  --bg-secondary: #f3f4f6;
+  --text-primary: #0a0a0a;
+  --text-secondary: rgba(10, 10, 10, 0.6);
+  --accent-color: #2563eb;
+  --card-bg: rgba(0, 0, 0, 0.02);
+  --card-border: #d4d4d8;
+  --nav-bg: rgba(255, 255, 255, 0.8);
+}
+
+.theme-light {
+  --bg-primary: #fcfcfc;
+  --bg-secondary: #f3f4f6;
+  --text-primary: #0a0a0a;
+  --text-secondary: rgba(10, 10, 10, 0.6);
+  --accent-color: #2563eb;
+  --card-bg: rgba(0, 0, 0, 0.02);
+  --card-border: #d4d4d8;
+  --nav-bg: rgba(255, 255, 255, 0.8);
+}
+
+.theme-dark {
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  --accent-color: #00F5FF;
+  --card-bg: rgba(255, 255, 255, 0.02);
+  --card-border: rgba(255, 255, 255, 0.15);
+  --nav-bg: rgba(0, 0, 0, 0.8);
+}
+
+.theme-red {
+  --bg-primary: #ffffff;
+  --bg-secondary: #fafafa;
+  --text-primary: #121212;
+  --text-secondary: rgba(18, 18, 18, 0.6);
+  --accent-color: #ff003c;
+  --card-bg: rgba(255, 0, 60, 0.01);
+  --card-border: rgba(255, 0, 60, 0.25);
+  --nav-bg: rgba(255, 255, 255, 0.85);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    cursor: auto;
+    background: var(--bg-primary); 
+    color: var(--text-primary);
+    transition: background 0.8s ease, color 0.8s ease;
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body.is-chat-dragging,
+  body.is-chat-dragging * {
+    cursor: grabbing !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+  }
+
+  body {
+    @apply font-sans;
+    background: transparent;
+    color: var(--text-primary);
+    overflow-x: hidden;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    transition: background 0.8s ease, color 0.8s ease;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  ::selection {
+    background-color: var(--accent-color);
+    color: #000000;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-headline;
+    color: var(--text-primary);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    transition: color 0.8s ease;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--text-primary) !important;
+    -webkit-box-shadow: 0 0 0px 1000px var(--bg-primary) inset !important;
+    background-color: var(--bg-primary) !important;
+    transition: background-color 5000s ease-in-out 0s;
+    caret-color: var(--text-primary) !important;
+  }
+}
+
+@layer components {
+  .noise-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  }
+
+  .glass {
+    background: var(--card-bg);
+    border-color: var(--card-border);
+    backdrop-filter: blur(10px);
+    transition: background 0.8s ease, border-color 0.8s ease;
+  }
+
+  .glass-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 0;
+    transition: background 0.8s ease, border-color 0.8s ease;
+  }
+
+  .glass-card:hover {
+    border-color: var(--accent-color);
+  }
+
+  /* Dashboard Unified Theme Classes (Apple Style) */
+  .dash-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .dash-card:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.05);
+  }
+
+  .dash-pill {
+    @apply inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-headline font-semibold text-xs tracking-wider transition-all duration-300;
+  }
+
+  .magnetic-area {
+    @apply relative flex items-center justify-center;
+    padding: 2rem;
+    margin: -2rem;
+  }
+
+  .btn-primary {
+    @apply px-8 py-4 rounded-full border relative overflow-hidden transition-all duration-300;
+    border-color: var(--card-border);
+    color: var(--text-primary);
+  }
+  .btn-primary:hover {
+    border-color: var(--accent-color);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #222222;
+  border: 1px solid #000000;
+  border-radius: 0px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #444444;
+}
+
+/* Global Theme Overrides for Text & Accents */
+.text-white\/80, .text-white\/70 {
+  color: var(--text-primary) !important;
+  opacity: 0.85;
+}
+.text-white\/60, .text-white\/55, .text-white\/50, .text-white\/40 {
+  color: var(--text-secondary) !important;
+}
+.border-white\/10, .border-white\/20, .border-white\/5 {
+  border-color: var(--card-border) !important;
+}
+.bg-white\/5 {
+  background-color: var(--card-bg) !important;
+}
+.bg-white\/10 {
+  background-color: var(--card-border) !important;
+}
+
+/* Specific component elements adjustments */
+.cta-button {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--card-border) !important;
+  transition: all 0.4s ease !important;
+}
+.cta-button::before {
+  background: var(--text-primary) !important;
+}
+.cta-button:hover .cta-text {
+  color: var(--bg-primary) !important;
+}
+.cta-button:hover .cta-icon {
+  stroke: var(--bg-primary) !important;
+}
+.cta-icon {
+  stroke: var(--text-primary) !important;
+}
+
+/* Accent lines and indicators */
+.h-px.bg-white, .h-px.bg-white\/50 {
+  background-color: var(--text-primary) !important;
+  opacity: 0.5;
+}
+
+/* Theme classes for the theme switcher ring outlines */
+.ring-white {
+  ring-color: #ffffff !important;
+}
+.ring-blue-500 {
+  ring-color: #2563eb !important;
+}
+.ring-yellow-400 {
+  ring-color: #ff003c !important;
+}
+
+/* Map hardcoded text-white class to the theme-aware variable */
+.text-white {
+  color: var(--text-primary) !important;
+}
+
+/* Preserve strict white text inside modal backdrops, dark cards, black bento widgets, and red/black buttons */
+.modal-backdrop .text-white,
+.racha-black-card,
+.racha-black-card .text-white,
+.racha-black-card h3,
+.racha-black-card strong,
+.force-white,
+.force-white *,
+.btn-action-primary,
+.btn-action-primary *,
+button.bg-red-600,
+button.bg-red-600 *,
+.bg-red-600,
+.bg-red-600 *,
+.bg-red-500,
+.bg-red-500 *,
+.bg-rose-500,
+.bg-rose-500 *,
+.bg-rose-600,
+.bg-rose-600 *,
+.bg-black,
+.bg-black *,
+.bg-neutral-900,
+.bg-neutral-900 *,
+.bg-neutral-950,
+.bg-neutral-950 *,
+.bg-\[\#09090b\],
+.bg-\[\#09090b\] *,
+.bg-\[\#0a0a0a\],
+.bg-\[\#0a0a0a\] *,
+.dark-card-white,
+.dark-card-white * {
+  color: #ffffff !important;
+}
+
+/* Ensure buttons and elements with solid white background always show dark text and icons (e.g., in dark theme modals) */
+button.bg-white,
+button.bg-white *,
+a.bg-white,
+a.bg-white *,
+.btn-white,
+.btn-white *,
+.btn-modal-submit.bg-white,
+.btn-modal-submit.bg-white *,
+button.bg-white.text-black,
+button.bg-white.text-black *,
+button.bg-white.text-neutral-900,
+button.bg-white.text-neutral-900 *,
+button.bg-white.text-neutral-800,
+button.bg-white.text-neutral-800 *,
+a.bg-white.text-black,
+a.bg-white.text-black *,
+a.bg-white.text-neutral-900,
+a.bg-white.text-neutral-900 *,
+a.bg-white.text-neutral-800,
+a.bg-white.text-neutral-800 * {
+  color: #09090b !important;
+}
+
+button.bg-white svg,
+button.bg-white svg *,
+.btn-white svg,
+.btn-white svg *,
+.btn-modal-submit.bg-white svg,
+.btn-modal-submit.bg-white svg *,
+button.bg-white.text-black svg,
+button.bg-white.text-black svg *,
+button.bg-white.text-neutral-900 svg,
+button.bg-white.text-neutral-900 svg *,
+a.bg-white.text-black svg,
+a.bg-white.text-black svg *,
+a.bg-white.text-neutral-900 svg,
+a.bg-white.text-neutral-900 svg * {
+  stroke: #09090b !important;
+  color: #09090b !important;
+}
+
+/* Ensure buttons with dark background always show crisp white text and icons (e.g., in light theme modals) */
+button.bg-neutral-900,
+button.bg-neutral-900 *,
+button.bg-black,
+button.bg-black *,
+button.bg-neutral-950,
+button.bg-neutral-950 *,
+button.bg-\[\#09090b\],
+button.bg-\[\#09090b\] *,
+button.bg-\[\#0a0a0a\],
+button.bg-\[\#0a0a0a\] *,
+button[class*="bg-[#09090b]"],
+button[class*="bg-[#09090b]"] *,
+button[class*="bg-[#0a0a0a]"],
+button[class*="bg-[#0a0a0a]"] *,
+button.force-white,
+button.force-white *,
+.force-white,
+.force-white *,
+.btn-modal-submit.bg-neutral-900,
+.btn-modal-submit.bg-neutral-900 *,
+.btn-modal-submit.bg-black,
+.btn-modal-submit.bg-black * {
+  color: #ffffff !important;
+}
+
+button.bg-neutral-900 svg,
+button.bg-neutral-900 svg *,
+button.bg-black svg,
+button.bg-black svg *,
+button.bg-neutral-950 svg,
+button.bg-neutral-950 svg *,
+button.bg-\[\#09090b\] svg,
+button.bg-\[\#09090b\] svg *,
+button.bg-\[\#0a0a0a\] svg,
+button.bg-\[\#0a0a0a\] svg *,
+button[class*="bg-[#09090b]"] svg,
+button[class*="bg-[#09090b]"] svg *,
+button[class*="bg-[#0a0a0a]"] svg,
+button[class*="bg-[#0a0a0a]"] svg *,
+button.force-white svg,
+button.force-white svg *,
+.force-white svg,
+.force-white svg *,
+.btn-modal-submit.bg-neutral-900 svg,
+.btn-modal-submit.bg-neutral-900 svg *,
+.btn-modal-submit.bg-black svg,
+.btn-modal-submit.bg-black svg * {
+  stroke: #ffffff !important;
+  color: #ffffff !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MODO CLARO: LÍNEAS DIVISORIAS Y BORDES DEFINIDOS
+   Aplica a Dash Home y Dash Finances
+   ═══════════════════════════════════════════════════════════════ */
+.theme-light app-dash-home .border-neutral-100,
+.theme-light app-dash-finances .border-neutral-100,
+:root:not(.theme-dark) app-dash-home .border-neutral-100,
+:root:not(.theme-dark) app-dash-finances .border-neutral-100 {
+  border-color: #d4d4d8 !important;
+}
+
+.theme-light app-dash-home .divide-neutral-100 > :not([hidden]) ~ :not([hidden]),
+.theme-light app-dash-finances .divide-neutral-100 > :not([hidden]) ~ :not([hidden]),
+:root:not(.theme-dark) app-dash-home .divide-neutral-100 > :not([hidden]) ~ :not([hidden]),
+:root:not(.theme-dark) app-dash-finances .divide-neutral-100 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #d4d4d8 !important;
+}
+
+.theme-light app-dash-home .border-neutral-200,
+.theme-light app-dash-finances .border-neutral-200,
+.theme-light app-dash-home .border-neutral-200\/80,
+.theme-light app-dash-finances .border-neutral-200\/80,
+.theme-light app-dash-home .border-neutral-200\/90,
+.theme-light app-dash-finances .border-neutral-200\/90,
+.theme-light app-dash-home .border-neutral-200\/70,
+.theme-light app-dash-finances .border-neutral-200\/70,
+.theme-light app-dash-home .border-neutral-200\/60,
+.theme-light app-dash-finances .border-neutral-200\/60,
+:root:not(.theme-dark) app-dash-home .border-neutral-200,
+:root:not(.theme-dark) app-dash-finances .border-neutral-200,
+:root:not(.theme-dark) app-dash-home .border-neutral-200\/80,
+:root:not(.theme-dark) app-dash-finances .border-neutral-200\/80,
+:root:not(.theme-dark) app-dash-home .border-neutral-200\/90,
+:root:not(.theme-dark) app-dash-finances .border-neutral-200\/90 {
+  border-color: #d4d4d8 !important;
+}
+
+.theme-light app-dash-home .divide-neutral-200 > :not([hidden]) ~ :not([hidden]),
+.theme-light app-dash-finances .divide-neutral-200 > :not([hidden]) ~ :not([hidden]),
+:root:not(.theme-dark) app-dash-home .divide-neutral-200 > :not([hidden]) ~ :not([hidden]),
+:root:not(.theme-dark) app-dash-finances .divide-neutral-200 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #d4d4d8 !important;
+}
+
+
+/* Technological Creative Additions for Red Theme */
+.theme-red .dynamic-bg::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-image: 
+    linear-gradient(rgba(255, 0, 60, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 0, 60, 0.02) 1px, transparent 1px);
+  background-size: 30px 30px;
+  background-position: center center;
+  pointer-events: none;
+}
+
+/* CRT Scanlines Overlay for red theme */
+.theme-red::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.18) 50%
+  );
+  background-size: 100% 4px;
+  z-index: 99999;
+  pointer-events: none;
+  opacity: 0.2;
+}
+
+/* Holographic Pulse Animation */
+@keyframes red-glitch {
+  0% { text-shadow: 0 0 6px rgba(255, 0, 60, 0.35); }
+  50% { text-shadow: 0 0 15px rgba(255, 0, 60, 0.65), 0 0 2px rgba(255, 0, 60, 0.4); }
+  100% { text-shadow: 0 0 6px rgba(255, 0, 60, 0.35); }
+}
+
+.theme-red h1, .theme-red h2, .theme-red h3 {
+  animation: red-glitch 3s infinite alternate;
+}
+
+
+.theme-red .glass, .theme-red .glass-card, .theme-red .cta-button, .theme-red .btn-primary {
+  box-shadow: 0 0 15px rgba(255, 0, 60, 0.08);
+  border-color: rgba(255, 0, 60, 0.3) !important;
+}
+
+.theme-red .glass-card:hover, .theme-red .cta-button:hover, .theme-red .btn-primary:hover {
+  box-shadow: 0 0 25px rgba(255, 0, 60, 0.25);
+  border-color: var(--accent-color) !important;
+}
+
+.theme-red ::selection {
+  background-color: var(--accent-color);
+  color: #ffffff;
+}
+
+/* Chat & Rotbot Components Theme Light Overrides */
+.theme-light .chat-panel,
+.theme-light .page-container {
+  background: var(--bg-primary) !important;
+  border-color: var(--card-border) !important;
+}
+
+.theme-light .chat-header {
+  background: var(--bg-primary) !important;
+  border-color: var(--card-border) !important;
+}
+
+.theme-light .chat-sidebar {
+  background: var(--bg-secondary) !important;
+  border-color: var(--card-border) !important;
+}
+
+.theme-light .chat-input-area {
+  background: var(--bg-primary) !important;
+  border-color: var(--card-border) !important;
+}
+
+.theme-light .avatar-bg {
+  background: var(--card-bg) !important;
+  border-color: var(--card-border) !important;
+}
+
+.theme-light .shortcut-btn {
+  background: var(--card-bg) !important;
+  border-color: var(--card-border) !important;
+}
+
+.theme-light .shortcut-btn:hover {
+  background: var(--bg-secondary) !important;
+  border-color: var(--accent-color) !important;
+}
+
+.theme-light .welcome-border {
+  border-color: var(--card-border) !important;
+}
+
+.theme-light .chat-input {
+  background: var(--bg-secondary) !important;
+  border-color: var(--card-border) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Prevenir que el autocompletado del navegador ponga fondo blanco en inputs oscuros */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #121217 inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Forzar color-scheme para evitar fondos o controles nativos blancos en Windows/Mac */
+.theme-dark input,
+.theme-dark select,
+.theme-dark textarea {
+  color-scheme: dark;
+}
+
+.theme-light input,
+.theme-light select,
+.theme-light textarea {
+  color-scheme: light;
+}
+
+/* Ocultar barra de scroll nativa pero mantener desplazamiento */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+/* Ocultar scrollbars globales en móviles y dashboards */
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  background: transparent;
+}
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Dashboard Modal Backdrops - Garantizar cobertura 100% de la pantalla con desenfoque de cristal premium */
+.modal-backdrop,
+.portalink-modal-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 99999 !important;
+  background-color: rgba(0, 0, 0, 0.72) !important;
+  backdrop-filter: blur(16px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+}
+
+@keyframes tabEnter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Dashboard Scroll & Hardware Acceleration */
+.dash-scroll-viewport {
+  contain: layout paint;
+  will-change: scroll-position;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  transform: translateZ(0);
+}
+
+/* Universal Premium Skeleton Shimmer Loader (Nítido y visible en temas oscuro y claro) */
+.skeleton-shimmer {
+  position: relative !important;
+  overflow: hidden !important;
+  background-color: #1a1a20 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.theme-light .skeleton-shimmer {
+  background-color: #e5e7eb !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+.skeleton-shimmer::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  transform: translateX(-100%) !important;
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.08) 25%,
+    rgba(255, 255, 255, 0.18) 50%,
+    rgba(255, 255, 255, 0.08) 75%,
+    rgba(255, 255, 255, 0) 100%
+  ) !important;
+  animation: pl-shimmer 1.6s infinite ease-in-out !important;
+  pointer-events: none !important;
+}
+
+.theme-light .skeleton-shimmer::after {
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 25%,
+    rgba(255, 255, 255, 0.9) 50%,
+    rgba(255, 255, 255, 0.6) 75%,
+    rgba(255, 255, 255, 0) 100%
+  ) !important;
+}
+
+@keyframes pl-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+

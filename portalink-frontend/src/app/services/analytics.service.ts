@@ -1,0 +1,160 @@
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+
+export interface SectionMetrics {
+  [key: string]: number;
+}
+
+export interface LinkClicks {
+  [key: string]: number;
+}
+
+export interface DailyTrendPoint {
+  day: string;
+  date?: string;
+  linktree: number;
+  home: number;
+  total: number;
+}
+
+export interface DeviceMetric {
+  name: string;
+  count: number;
+  pct: number;
+}
+
+export interface SystemMetrics {
+  homeViews: number;
+  linktreeViews: number;
+  rotbotOpens: number;
+  rotbotMessagesSent: number;
+  sectionViews: SectionMetrics;
+  linktreeClicks: LinkClicks;
+  loadTimes: number[];
+  themeSelections: { light: number; dark: number };
+  dailyTrend?: DailyTrendPoint[];
+  devices?: DeviceMetric[];
+  topLink?: { name: string; count: number };
+  totalClicks?: number;
+  linkCtr?: number;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AnalyticsService {
+  private platformId = inject(PLATFORM_ID);
+  private http = inject(HttpClient);
+  private apiUrl = `${environment.apiUrl}/analytics`;
+  
+  private sessionId = '';
+  private eventQueue: any[] = [];
+  private batchInterval: any;
+
+  constructor() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.initSession();
+      // Enviar eventos cada 30 segundos en lote
+      this.batchInterval = setInterval(() => this.flushEvents(), 30000);
+      
+      // Enviar eventos antes de cerrar
+      window.addEventListener('beforeunload', () => this.flushEvents());
+    }
+  }
+
+  private initSession() {
+    const key = 'portalink_session_id';
+    let sid = sessionStorage.getItem(key);
+    const isNewSession = !sid;
+    if (!sid) {
+      sid = 'sess_' + Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
+      sessionStorage.setItem(key, sid);
+    }
+    this.sessionId = sid;
+
+    if (isNewSession && isPlatformBrowser(this.platformId)) {
+      const ua = navigator.userAgent.toLowerCase();
+      let dev = 'desktop';
+      if (/(ipad|tablet|(android(?!.*mobile))|(windows(?!.*phone)(.*touch))|kindle|playbook|silk|(puffin(?!.*(IP|AP|R))))/.test(ua)) {
+        dev = 'tablet';
+      } else if (/(mobi|ipod|phone|blackberry|opera mini|fennec|minimo|symbian|psp|nintendo ds|archos|skyfire|puffin|blazer|bolt|gobrowser|iris|maemo|semc|teashark|uzard)/.test(ua)) {
+        dev = 'mobile';
+      }
+      this.queueEvent('device', dev, 1);
+    }
+  }
+
+  private queueEvent(category: string, label?: string, value?: number) {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.eventQueue.push({
+      sessionId: this.sessionId,
+      category,
+      label,
+      value
+    });
+  }
+
+  private flushEvents() {
+    this.eventQueue = [];
+  }
+
+  getMetrics(): Observable<SystemMetrics> {
+    return of(this.defaultMetrics());
+  }
+
+  private defaultMetrics(): SystemMetrics {
+    return {
+      homeViews: 0,
+      linktreeViews: 0,
+      rotbotOpens: 0,
+      rotbotMessagesSent: 0,
+      sectionViews: { hero: 0, portfolio: 0, about: 0, skills: 0, contact: 0 },
+      linktreeClicks: { tiktok: 0, instagram: 0, whatsapp: 0, linkedin: 0, proyectos: 0 },
+      loadTimes: [],
+      themeSelections: { light: 0, dark: 0 },
+      dailyTrend: [],
+      devices: [
+        { name: 'Mobile', count: 0, pct: 0 },
+        { name: 'Desktop', count: 0, pct: 0 },
+        { name: 'Tablet', count: 0, pct: 0 }
+      ],
+      topLink: { name: 'N/A', count: 0 },
+      totalClicks: 0,
+      linkCtr: 0
+    };
+  }
+
+  incrementMetric(key: keyof Omit<SystemMetrics, 'sectionViews' | 'linktreeClicks' | 'loadTimes' | 'themeSelections' | 'dailyTrend' | 'devices' | 'topLink' | 'totalClicks' | 'linkCtr'>): void {
+    if (key === 'homeViews') this.queueEvent('page_view', 'home');
+    else if (key === 'linktreeViews') this.queueEvent('page_view', 'linktree');
+    else if (key === 'rotbotOpens') this.queueEvent('rotbot', 'open');
+    else if (key === 'rotbotMessagesSent') this.queueEvent('rotbot', 'message_sent');
+  }
+
+  incrementSectionView(sectionId: string): void {
+    const cleanId = sectionId.replace('#', '');
+    this.queueEvent('section_view', cleanId);
+  }
+
+  incrementLinkClick(linkId: string): void {
+    const cleanId = linkId.toLowerCase();
+    this.queueEvent('link_click', cleanId);
+  }
+
+  recordLoadTime(timeMs: number): void {
+    this.queueEvent('performance', 'load_time', timeMs);
+  }
+
+  recordThemeSelection(theme: string): void {
+    this.queueEvent('theme', theme);
+  }
+
+  resetMetrics(): void {
+    // Only visual reset or admin function? 
+    // Usually we don't reset DB analytics.
+  }
+}

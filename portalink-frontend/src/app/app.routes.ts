@@ -1,0 +1,130 @@
+import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth.guard';
+
+export const routes: Routes = [
+  {
+    path: 'cv-digital-software-enginering',
+    loadComponent: () => import('./pages/cv-web/cv-web.component').then(m => m.CvWebComponent),
+    data: { animation: 'CvWebPage', showNavbar: true }
+  },
+  {
+    path: 'cv-web',
+    redirectTo: 'cv-digital-software-enginering',
+    pathMatch: 'full'
+  },
+  {
+    path: 'certificados',
+    loadComponent: () => import('./pages/certificados/certificados.component').then(m => m.CertificadosComponent),
+    data: { animation: 'CertificadosPage', showNavbar: true }
+  },
+  {
+    path: 'terminos',
+    loadComponent: () => import('./pages/terminos-condiciones/terminos-condiciones.component').then(m => m.TerminosCondicionesComponent),
+    data: { animation: 'TerminosPage', showNavbar: true }
+  },
+  {
+    path: 'privacidad',
+    loadComponent: () => import('./pages/politica-privacidad/politica-privacidad.component').then(m => m.PoliticaPrivacidadComponent),
+    data: { animation: 'PrivacidadPage', showNavbar: true }
+  },
+  {
+    path: 'tratamiento-datos',
+    loadComponent: () => import('./pages/tratamiento-datos/tratamiento-datos.component').then(m => m.TratamientoDatosComponent),
+    data: { animation: 'TratamientoDatosPage', showNavbar: true }
+  },
+  {
+    path: 'deslinde-ia',
+    loadComponent: () => import('./pages/deslinde-ia/deslinde-ia.component').then(m => m.DeslindeIaComponent),
+    data: { animation: 'DeslindeIaPage', showNavbar: true }
+  },
+  {
+    path: 'prototipos',
+    loadComponent: () => import('./pages/disenos/disenos.component').then(m => m.DisenosComponent),
+    data: { animation: 'DisenosPage', showNavbar: true }
+  },
+  { 
+    path: '', 
+    loadComponent: () => import('./pages/proyectos/proyectos.component').then(m => m.ProyectosComponent), 
+    data: { animation: 'ProyectosPage', showNavbar: true } 
+  },
+  { 
+    path: 'proyectos', 
+    redirectTo: '',
+    pathMatch: 'full'
+  },
+  {
+    path: 'portfolio',
+    redirectTo: '',
+    pathMatch: 'full'
+  },
+  { 
+    path: 'links', 
+    loadComponent: () => import('./pages/link/link.component').then(m => m.LinkComponent), 
+    data: { animation: 'LinkPage', showNavbar: true } 
+  },
+  {
+    path: 'rotbot',
+    loadComponent: () => import('./pages/rotbot/rotbot.component').then(m => m.RotbotComponent),
+    data: { animation: 'RotbotPage', showNavbar: false }
+  },
+  {
+    path: 'planes',
+    loadComponent: () => import('./pages/planes/planes.component').then(m => m.PlanesComponent),
+    data: { animation: 'PlanesPage', showNavbar: true }
+  },
+  {
+    path: 'planes-galeria',
+    loadComponent: () => import('./pages/planes-galeria/planes-galeria.component').then(m => m.PlanesGaleriaComponent),
+    data: { animation: 'PlanesGaleriaPage', showNavbar: true }
+  },
+  {
+    path: 'proyecto/:id',
+    loadComponent: () => import('./pages/descripcion-proyecto/descripcion-proyecto.component').then(m => m.DescripcionProyectoComponent),
+    data: { animation: 'ProyectoDetallePage', showNavbar: true }
+  },
+  {
+    path: 'descripcion-proyecto/:id',
+    loadComponent: () => import('./pages/descripcion-proyecto/descripcion-proyecto.component').then(m => m.DescripcionProyectoComponent),
+    data: { animation: 'ProyectoDetallePage', showNavbar: true }
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent),
+    data: { animation: 'LoginPage', showNavbar: true }
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent),
+    data: { animation: 'LoginPage', showNavbar: true }
+  },
+  {
+    path: 'perfil',
+    loadComponent: () => import('./pages/perfil/perfil.component').then(m => m.PerfilComponent),
+    canActivate: [authGuard],
+    data: { animation: 'PerfilPage', showNavbar: false }
+  },
+  {
+    path: 'admin',
+    loadComponent: () => import('./pages/admin/admin.component').then(m => m.AdminComponent),
+    canActivate: [authGuard],
+    data: { animation: 'AdminPage', showNavbar: false }
+  },
+  {
+    path: 'verify-email',
+    loadComponent: () => import('./pages/verify-email/verify-email.component').then(m => m.VerifyEmailComponent),
+    data: { animation: 'VerifyEmailPage', showNavbar: false }
+  },
+  {
+    path: 'forgot-password',
+    loadComponent: () => import('./pages/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent),
+    data: { animation: 'ForgotPasswordPage', showNavbar: false }
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () => import('./pages/reset-password/reset-password.component').then(m => m.ResetPasswordComponent),
+    data: { animation: 'ResetPasswordPage', showNavbar: false }
+  },
+  { path: '**', redirectTo: '' }
+];
+
+

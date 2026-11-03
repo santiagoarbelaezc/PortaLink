@@ -1,0 +1,4733 @@
+import { Component, Input, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, inject, HostListener, Directive, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Subscription } from 'rxjs';
+import { LibraryService, NotebookFolder, NotebookModule, NotebookPage } from '../../../services/library.service';
+import { LibraryAiService } from '../../../services/library-ai.service';
+import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-body.directive';
+import { SpanishTtsService } from '../../../services/spanish-tts.service';
+import { CopilotMarkdownService } from '../../../services/copilot-markdown.service';
+import { CopilotChatComponent } from './copilot-chat/copilot-chat.component';
+
+export interface SlashCommandItem {
+  key: string;
+  title: string;
+  desc: string;
+  icon: string;
+}
+
+export interface LibraryTab {
+  id: string;
+  title: string;
+  icon?: string;
+  color?: string;
+  folderId: number | null;
+  notebookId: number | null;
+  pageId: number | null;
+  folderTitle?: string;
+  notebookTitle?: string;
+  pageTitle?: string;
+  scrollTop?: number;
+  scrollPositions?: { [pageId: number]: number };
+}
+
+export interface CodeValidationIssue {
+  line: number;
+  message: string;
+  severity: string;
+}
+
+export interface CodeValidationResult {
+  isValid: boolean;
+  status: 'valid' | 'warning' | 'error';
+  summary: string;
+  issues: CodeValidationIssue[];
+  fixedCode: string;
+  explanation: string;
+}
+
+export interface NoteBlockColumn {
+  id: string;
+  type: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'imagen';
+  content: string;
+  language?: string;
+  imageUrl?: string;
+  isUploading?: boolean;
+  isValidatingCode?: boolean;
+  codeValidation?: CodeValidationResult | null;
+}
+
+export interface NoteBlock {
+  id: string;
+  type: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'columnas' | 'imagen';
+  content: string;
+  language?: string;
+  columns?: NoteBlockColumn[];
+  columnRatio?: '50-50' | '33-66' | '66-33' | '40-60' | '60-40';
+  imageUrl?: string;
+  imageSize?: 'sm' | 'md' | 'lg' | 'full';
+  isUploading?: boolean;
+  uploadProgress?: number;
+  isValidatingCode?: boolean;
+  codeValidation?: CodeValidationResult | null;
+}
+
+@Directive({
+  selector: '[appContentEditable]',
+  standalone: true
+})
+export class ContentEditableDirective implements OnChanges {
+  @Input() appContentEditable: string = '';
+  @Output() appContentEditableChange = new EventEmitter<string>();
+
+  private isFocused = false;
+
+  constructor(private el: ElementRef<HTMLElement>) {}
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['appContentEditable'] && !this.isFocused) {
+      let val = this.appContentEditable || '';
+      val = val.replace(/<red>(.*?)<\/red>/gi, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
+      val = val.replace(/\[red\](.*?)\[\/red\]/gi, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
+      val = val.replace(/&lt;red&gt;(.*?)&lt;\/red&gt;/gi, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
+      this.el.nativeElement.innerHTML = val;
+    }
+  }
+
+  @HostListener('focus')
+  onFocus() {
+    this.isFocused = true;
+  }
+
+  @HostListener('blur')
+  onBlur() {
+    this.isFocused = false;
+    this.appContentEditableChange.emit(this.el.nativeElement.innerHTML);
+  }
+
+  @HostListener('input')
+  onInput() {
+    this.appContentEditableChange.emit(this.el.nativeElement.innerHTML);
+  }
+}
+
+@Component({
+  selector: 'app-dash-library',
+  standalone: true,
+  imports: [CommonModule, FormsModule, ContentEditableDirective, TeleportToBodyDirective, CopilotChatComponent],
+  templateUrl: './dash-library.component.html',
+  host: { class: 'block w-full' },
+  styles: [`
+    :host {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      overflow-x: clip;
+    }
+
+    .library-page {
+      --library-red: #dc2626;
+      --library-ink: #09090b;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .library-tabs {
+      box-shadow: 0 12px 30px rgba(9, 9, 11, 0.08);
+    }
+
+    .library-hero {
+      min-height: 184px;
+      box-shadow: 0 18px 40px rgba(9, 9, 11, 0.18);
+    }
+
+    .library-hero::before {
+      content: '';
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      right: 8%;
+      top: -150px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 50%;
+      box-shadow: 0 0 0 34px rgba(255, 255, 255, 0.025), 0 0 0 68px rgba(255, 255, 255, 0.018);
+      pointer-events: none;
+    }
+
+    .library-hero::after {
+      content: '';
+      position: absolute;
+      left: 8%;
+      bottom: -1px;
+      width: 120px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--library-red), transparent);
+      opacity: 0.9;
+    }
+
+    .library-section-heading {
+      min-height: 38px;
+      padding: 0.35rem 0.25rem;
+    }
+
+    .library-section-heading > div:first-child {
+      position: relative;
+      padding-left: 0.75rem;
+    }
+
+    .library-section-heading > div:first-child::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.15rem;
+      bottom: 0.15rem;
+      width: 2px;
+      border-radius: 999px;
+      background: var(--library-red);
+    }
+
+    .library-filters {
+      box-shadow: 0 16px 40px rgba(9, 9, 11, 0.08);
+      backdrop-filter: blur(14px);
+    }
+
+    .library-folder-grid,
+    .library-notebook-grid {
+      align-items: stretch;
+    }
+
+    .library-folder-card,
+    .library-notebook-card {
+      min-height: 216px;
+      box-shadow: 0 8px 24px rgba(9, 9, 11, 0.045);
+      transform: translateY(0);
+    }
+
+    .library-folder-card:hover,
+    .library-notebook-card:hover {
+      transform: translateY(-5px) scale(1.012);
+      box-shadow: 0 20px 38px rgba(9, 9, 11, 0.12);
+    }
+
+    .library-folder-card:focus-within,
+    .library-notebook-card:focus-within {
+      outline: 2px solid var(--library-red);
+      outline-offset: 3px;
+    }
+
+    :host-context(.theme-dark) .library-tabs,
+    :host-context(.theme-dark) .library-filters {
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    :host-context(.theme-dark) .library-folder-card,
+    :host-context(.theme-dark) .library-notebook-card {
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+    }
+
+    @media (max-width: 767px) {
+      :host {
+        overflow-x: hidden;
+      }
+
+      .library-page {
+        width: 100%;
+        max-width: 100%;
+        min-height: 0;
+        overflow-x: hidden;
+        overscroll-behavior-x: none;
+      }
+
+      .library-page input,
+      .library-page textarea,
+      .library-page [contenteditable="true"] {
+        max-width: 100%;
+        min-width: 0;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .library-hero {
+        min-height: 210px;
+      }
+
+      .library-section-heading {
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+
+      .library-section-heading > div:first-child {
+        max-width: 58%;
+      }
+
+      .library-folder-card,
+      .library-notebook-card {
+        min-height: 196px;
+      }
+    }
+
+    .rotbot-eye-svg-box {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      filter: drop-shadow(0 0 4px #00f0ff) drop-shadow(0 0 10px rgba(0, 240, 255, 0.5));
+    }
+    .rotbot-eye-svg-box.crescent { animation: aliveCrescentBlink 4.2s infinite ease-in-out; }
+    .rotbot-eye-svg-box.neutral { animation: aliveNeutralBlink 3.8s infinite ease-in-out; }
+    .rotbot-eye-svg-box.thinking { animation: thinkPulse 1.2s infinite alternate ease-in-out; }
+    .rotbot-eye-svg-box.surprised { animation: aliveSurprise 4.5s infinite ease-in-out; }
+    .rotbot-eye-svg-box.talking { animation: talkingBounce 0.24s infinite alternate ease-in-out !important; }
+
+    @keyframes aliveCrescentBlink {
+      0%, 82%, 100% { transform: translate(0, 0) scaleY(1); }
+      25% { transform: translate(-2px, -1px) scaleY(1); }
+      50% { transform: translate(2px, -1px) scaleY(1); }
+      88% { transform: translate(0, 0) scaleY(0.08); }
+      92% { transform: translate(0, 0) scaleY(1); }
+      95% { transform: translate(0, 0) scaleY(0.08); }
+    }
+    @keyframes aliveNeutralBlink {
+      0%, 80%, 100% { transform: translate(0, 0) scaleY(1); }
+      30% { transform: translate(-3px, 0) scaleY(1); }
+      60% { transform: translate(3px, 0) scaleY(1); }
+      88% { transform: translate(0, 0) scaleY(0.06); }
+      92% { transform: translate(0, 0) scaleY(1); }
+    }
+    @keyframes aliveSurprise {
+      0%, 88%, 100% { transform: scale(1.1) translate(0, 0); }
+      93% { transform: scale(1.1) scaleY(0.1); }
+    }
+    @keyframes thinkPulse {
+      0% { transform: translateY(-5px) scale(0.85); opacity: 0.75; }
+      100% { transform: translateY(4px) scale(1); opacity: 1; }
+    }
+    @keyframes talkingBounce {
+      0% { transform: scaleY(1) scaleX(1); }
+      50% { transform: scaleY(0.6) scaleX(1.08); }
+      100% { transform: scaleY(1.15) scaleX(0.94); }
+    }
+    @keyframes voiceBar {
+      0%, 100% { height: 4px; }
+      50% { height: 18px; }
+    }
+    .animate-voice-bar {
+      animation: voiceBar 0.45s ease-in-out infinite alternate;
+    }
+    .chat-header {
+      cursor: grab;
+    }
+    .chat-header:active,
+    body.is-chat-dragging .chat-header {
+      cursor: grabbing;
+    }
+    .copilot-panel.is-fullscreen .chat-header {
+      cursor: default !important;
+    }
+  `]
+})
+// Optimización de rendimiento activa: DashLibrary modularizado y aislado con @defer
+export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('editorTextarea') editorTextarea?: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('copilotMessagesContainer') copilotMessagesContainer?: ElementRef<HTMLDivElement>;
+  @ViewChild('copilotTextarea') copilotTextareaElement?: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('leftReaderMessagesContainer') leftReaderMessagesContainer?: ElementRef<HTMLDivElement>;
+  @ViewChild('leftReaderTextarea') leftReaderTextareaElement?: ElementRef<HTMLTextAreaElement>;
+
+  @Input() theme: string = 'light';
+  get isDark(): boolean {
+    return this.theme === 'dark';
+  }
+
+  private libraryService = inject(LibraryService);
+  private libraryAiService = inject(LibraryAiService);
+  private sanitizer = inject(DomSanitizer);
+  public spanishTts = inject(SpanishTtsService);
+  private copilotMarkdownService = inject(CopilotMarkdownService);
+
+  // ── LEFT ROTBOT READER STATE ─────────────────────────────
+  isLeftReaderOpen = false;
+  isLeftReaderLoading = false;
+  leftReaderInput = '';
+  currentlyReadingBlockId: string | null = null;
+  leftReaderSpeed = 1.0;
+  leftReaderMessages: { id: string; role: 'user' | 'assistant'; text: string; time: string }[] = [
+    {
+      id: 'welcome',
+      role: 'assistant',
+      text: '¡Listo! Haz clic en **Leer apunte activo** o escribe cualquier texto para escucharlo.',
+      time: 'Ahora'
+    }
+  ];
+
+  // Block-level AI action state
+  activeAiBlockId: string | null = null;
+  activeAiTargetColIndex: number | null = null;
+  aiCustomInstruction = '';
+  isAiLoading = false;
+  aiResultPreview = '';
+  aiError = '';
+
+  // Image block & Lightbox modal state
+  lightboxImageUrl: string | null = null;
+  imageUploadError: string | null = null;
+
+  // Code block validation & copy state
+  copiedCodeBlockId: string | null = null;
+
+  // Floating Copilot State
+  isCopilotOpen = false;
+  isCopilotLoading = false;
+  isResettingCopilot = false;
+  showCopilotResetOverlay = false;
+  copilotOverlayOpacity = '1';
+  copilotInput = '';
+  copilotMessages: { role: 'user' | 'assistant'; content: string }[] = [
+    { role: 'assistant', content: '¡Hola! Soy **RotBot**. ¿En qué puedo ayudarte a resumir, explicar o estructurar tus notas de estudio hoy?' }
+  ];
+
+
+  folders: NotebookFolder[] = [];
+  notebooks: NotebookModule[] = [];
+  pages: NotebookPage[] = [];
+
+  private subs = new Subscription();
+
+  private _selectedFolder: NotebookFolder | null = null;
+  get selectedFolder(): NotebookFolder | null {
+    return this._selectedFolder;
+  }
+  set selectedFolder(val: NotebookFolder | null) {
+    this._selectedFolder = val;
+    this.libraryService.setSelectedFolder(val);
+  }
+
+  private _selectedNotebook: NotebookModule | null = null;
+
+  @Output() inNotesViewChange = new EventEmitter<boolean>();
+
+  get selectedNotebook(): NotebookModule | null {
+    return this._selectedNotebook;
+  }
+  set selectedNotebook(val: NotebookModule | null) {
+    const wasInNotes = !!this._selectedNotebook;
+    this._selectedNotebook = val;
+    this.libraryService.setSelectedNotebook(val);
+    const nowInNotes = !!val;
+    if (wasInNotes !== nowInNotes) {
+      setTimeout(() => {
+        this.inNotesViewChange.emit(nowInNotes);
+      }, 0);
+    }
+  }
+
+  selectedPage: NotebookPage | null = null;
+
+  isLoading = false;
+  searchQuery = '';
+  noteSearchQuery = '';
+
+  get filteredPages(): NotebookPage[] {
+    if (!this.noteSearchQuery || !this.noteSearchQuery.trim()) {
+      return this.pages;
+    }
+    const q = this.noteSearchQuery.toLowerCase().trim();
+    return this.pages.filter(p => 
+      (p.title && p.title.toLowerCase().includes(q)) || 
+      (p.content && p.content.toLowerCase().includes(q))
+    );
+  }
+
+  get currentActiveBlock(): NoteBlock | null {
+    if (!this.blocks || this.blocks.length === 0) return null;
+    if (this.activeBlockId) {
+      const found = this.blocks.find(b => b.id === this.activeBlockId);
+      if (found) return found;
+    }
+    return this.blocks[0];
+  }
+
+  get currentActiveBlockIndex(): number {
+    if (!this.blocks || this.blocks.length === 0) return -1;
+    if (this.activeBlockId) {
+      const idx = this.blocks.findIndex(b => b.id === this.activeBlockId);
+      if (idx !== -1) return idx;
+    }
+    return 0;
+  }
+
+  setActiveBlock(id: string) {
+    this.activeBlockId = id;
+    if (this.activeAiBlockId) {
+      this.activeAiBlockId = id;
+      this.activeAiTargetColIndex = null;
+    }
+    this.syncActiveBlockToService();
+  }
+
+  syncActiveBlockToService() {
+    const block = this.currentActiveBlock;
+    const idx = this.currentActiveBlockIndex;
+    if (block) {
+      this.libraryService.setActiveBlockMeta({
+        id: block.id,
+        type: block.type,
+        content: block.content || ''
+      }, idx, this.blocks.length);
+      this.libraryService.setIsRedTextActive(this.isRedTextActive());
+      this.libraryService.setIsReadingBlock(this.isReadingThisBlock(block));
+    } else {
+      this.libraryService.setActiveBlockMeta(null, -1, this.blocks.length);
+      this.libraryService.setIsRedTextActive(false);
+      this.libraryService.setIsReadingBlock(false);
+    }
+  }
+  searchResults: any[] = [];
+  isSearching = false;
+  private searchDebounceTimer: any = null;
+  isPreviewMode = false;
+  activeFilter: 'all' | 'favorites' | 'pinned' = 'all';
+
+  // ── Folder Filtering & Sorting Suite ──────────────────────────────────
+  showFolderFilters: boolean = false;
+  folderSearchQuery: string = '';
+  folderFilterStatus: 'all' | 'with-notebooks' | 'empty' | 'with-notes' = 'all';
+  folderFilterColor: string = 'all';
+  folderSortBy: 'name-asc' | 'name-desc' | 'notebooks-desc' | 'pages-desc' | 'recent' | 'oldest' = 'name-asc';
+  folderViewLayout: 'grid' | 'list' = 'grid';
+
+  get displayedFolders(): NotebookFolder[] {
+    let list = [...this.folders];
+
+    // 1. Text search
+    if (this.folderSearchQuery.trim()) {
+      const q = this.folderSearchQuery.toLowerCase().trim();
+      list = list.filter(f => 
+        (f.name && f.name.toLowerCase().includes(q)) || 
+        (f.description && f.description.toLowerCase().includes(q))
+      );
+    }
+
+    // 2. Status filter
+    if (this.folderFilterStatus === 'with-notebooks') {
+      list = list.filter(f => (f.notebook_count || 0) > 0);
+    } else if (this.folderFilterStatus === 'empty') {
+      list = list.filter(f => (f.notebook_count || 0) === 0);
+    } else if (this.folderFilterStatus === 'with-notes') {
+      list = list.filter(f => (f.pages_count || 0) > 0);
+    }
+
+    // 3. Color filter
+    if (this.folderFilterColor !== 'all') {
+      list = list.filter(f => f.color?.toLowerCase() === this.folderFilterColor.toLowerCase());
+    }
+
+    // 4. Sorting
+    list.sort((a, b) => {
+      switch (this.folderSortBy) {
+        case 'name-asc':
+          return (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' });
+        case 'name-desc':
+          return (b.name || '').localeCompare(a.name || '', undefined, { sensitivity: 'base' });
+        case 'notebooks-desc':
+          return (b.notebook_count || 0) - (a.notebook_count || 0);
+        case 'pages-desc':
+          return (b.pages_count || 0) - (a.pages_count || 0);
+        case 'recent': {
+          const dateA = new Date(a.created_at || a.updated_at || 0).getTime();
+          const dateB = new Date(b.created_at || b.updated_at || 0).getTime();
+          return dateB - dateA;
+        }
+        case 'oldest': {
+          const dateA = new Date(a.created_at || a.updated_at || 0).getTime();
+          const dateB = new Date(b.created_at || b.updated_at || 0).getTime();
+          return dateA - dateB;
+        }
+        default:
+          return 0;
+      }
+    });
+
+    return list;
+  }
+
+  get countWithNotebooks(): number {
+    return this.folders.filter(f => (f.notebook_count || 0) > 0).length;
+  }
+
+  get countWithNotes(): number {
+    return this.folders.filter(f => (f.pages_count || 0) > 0).length;
+  }
+
+  get countEmpty(): number {
+    return this.folders.filter(f => (f.notebook_count || 0) === 0).length;
+  }
+
+  get availableFolderColors(): string[] {
+    const colors = new Set<string>();
+    for (const f of this.folders) {
+      if (f.color) colors.add(f.color.toLowerCase());
+    }
+    return Array.from(colors);
+  }
+
+  get isFolderFilterActive(): boolean {
+    return !!this.folderSearchQuery.trim() || this.folderFilterStatus !== 'all' || this.folderFilterColor !== 'all' || this.folderSortBy !== 'name-asc';
+  }
+
+  resetFolderFilters() {
+    this.folderSearchQuery = '';
+    this.folderFilterStatus = 'all';
+    this.folderFilterColor = 'all';
+    this.folderSortBy = 'name-asc';
+    this.isSortDropdownOpen = false;
+  }
+
+  // ── Custom Dropdown Combobox Suite ──
+  isSortDropdownOpen = false;
+  sortOptions = [
+    { id: 'name-asc', label: 'Nombre (A - Z)', desc: 'Orden alfabético normal', icon: 'az' },
+    { id: 'name-desc', label: 'Nombre (Z - A)', desc: 'Orden alfabético inverso', icon: 'za' },
+    { id: 'notebooks-desc', label: 'Más Cuadernos', desc: 'Por cantidad de módulos', icon: 'notebooks' },
+    { id: 'pages-desc', label: 'Más Notas', desc: 'Por volumen de apuntes', icon: 'notes' },
+    { id: 'recent', label: 'Más Recientes', desc: 'Editados recientemente', icon: 'recent' },
+    { id: 'oldest', label: 'Más Antiguas', desc: 'Primeras materias creadas', icon: 'oldest' },
+  ];
+
+  get currentSortLabel(): string {
+    return this.sortOptions.find(o => o.id === this.folderSortBy)?.label || 'Nombre (A - Z)';
+  }
+
+  toggleSortDropdown(event?: MouseEvent) {
+    if (event) event.stopPropagation();
+    this.isSortDropdownOpen = !this.isSortDropdownOpen;
+  }
+
+  selectSortOption(optionId: any, event?: MouseEvent) {
+    if (event) event.stopPropagation();
+    this.folderSortBy = optionId;
+    this.isSortDropdownOpen = false;
+  }
+
+  @HostListener('document:click')
+  onDocumentClick() {
+    if (this.isSortDropdownOpen) {
+      this.isSortDropdownOpen = false;
+    }
+    this.activeColTypeMenuId = null;
+    this.activeColLangMenuId = null;
+    this.activeTypeMenuBlockId = null;
+    this.showCopilotSizeMenu = false;
+  }
+
+  // Toast feedback
+  toastMessage = '';
+  toastType: 'success' | 'error' = 'success';
+
+  // Form states (Create / Edit)
+  isFolderModalOpen = false;
+  editingFolderId: number | null = null;
+  folderForm = { name: '', description: '', color: '#10b981', icon: 'folder' };
+
+  isNotebookModalOpen = false;
+  editingNotebookId: number | null = null;
+  notebookForm = { title: '', description: '', color: '#3b82f6', icon: 'book' };
+
+  // Confirmation Delete Modal state
+  isDeleteModalOpen = false;
+  deleteTargetType: 'folder' | 'notebook' | 'page' | null = null;
+  deleteItemTitle = '';
+  deleteItemRef: any = null;
+
+  // Visual Block-Based Slate State
+  blocks: NoteBlock[] = [];
+  private _activeBlockId: string | null = null;
+  get activeBlockId(): string | null {
+    return this._activeBlockId;
+  }
+  set activeBlockId(val: string | null) {
+    this._activeBlockId = val;
+    this.syncActiveBlockToService();
+  }
+  activeTypeMenuBlockId: string | null = null;
+
+  // ── Posición de la barra flotante de herramientas (top/bottom) ──────
+  toolbarPosition: 'top' | 'bottom' = 'top';
+
+  toggleToolbarPosition(event?: MouseEvent) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    this.toolbarPosition = this.toolbarPosition === 'top' ? 'bottom' : 'top';
+  }
+
+
+  toggleBlockTypeMenu(blockId: string, event?: MouseEvent) {
+    if (event) event.stopPropagation();
+    this.activeTypeMenuBlockId = (this.activeTypeMenuBlockId === blockId) ? null : blockId;
+    this.activeColTypeMenuId = null;
+    this.activeColLangMenuId = null;
+  }
+
+  // ── CUSTOM COLUMN TYPE & LANGUAGE SELECTOR MENUS ──────────────
+  activeColTypeMenuId: string | null = null;
+  activeColLangMenuId: string | null = null;
+
+  toggleColTypeMenu(colId: string, event: Event) {
+    event.stopPropagation();
+    event.preventDefault();
+    this.activeColTypeMenuId = (this.activeColTypeMenuId === colId) ? null : colId;
+    this.activeColLangMenuId = null;
+    this.activeTypeMenuBlockId = null;
+  }
+
+  selectColType(col: NoteBlockColumn, newType: string, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    this.setColumnType(col, newType);
+    this.activeColTypeMenuId = null;
+  }
+
+  toggleColLangMenu(colId: string, event: Event) {
+    event.stopPropagation();
+    event.preventDefault();
+    this.activeColLangMenuId = (this.activeColLangMenuId === colId) ? null : colId;
+    this.activeColTypeMenuId = null;
+    this.activeTypeMenuBlockId = null;
+  }
+
+  selectColLang(col: NoteBlockColumn, newLang: string, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    col.language = newLang;
+    this.syncBlocksToContent();
+    this.activeColLangMenuId = null;
+  }
+
+  selectBlockType(block: NoteBlock, newType: string, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    this.changeBlockType(block, newType);
+    this.activeTypeMenuBlockId = null;
+  }
+
+  // ── Helper para renderizar contenido con colores en contenteditable ──
+  getSafeBlockHtml(block: NoteBlock): SafeHtml {
+    if (!block.content) return '';
+    let content = block.content;
+    
+    // Convertir etiquetas legadas <red>...</red> o [red]...[/red] a HTML estilizado en rojo
+    content = content.replace(/<red>(.*?)<\/red>/gi, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
+    content = content.replace(/\[red\](.*?)\[\/red\]/gi, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
+    content = content.replace(/&lt;red&gt;(.*?)&lt;\/red&gt;/gi, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
+    
+    // Convertir etiquetas legadas [b]...[/b] y [i]...[/i]
+    content = content.replace(/\[b\](.*?)\[\/b\]/gi, '<strong class="font-bold">$1</strong>');
+    content = content.replace(/\[i\](.*?)\[\/i\]/gi, '<em class="italic">$1</em>');
+    
+    return this.sanitizer.bypassSecurityTrustHtml(content);
+  }
+
+  onBlockContentEditableInput(block: NoteBlock, event: Event) {
+    const el = event.target as HTMLElement;
+    if (!el) return;
+    block.content = el.innerHTML;
+    this.syncBlocksToContent();
+  }
+
+  // ── Formateo de Texto Enriquecido: Negrilla, Cursiva y Rojo ──────────────
+  applyTextStyleToSelection(type: 'bold' | 'italic' | 'red', block?: NoteBlock) {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) {
+      return;
+    }
+
+    const range = selection.getRangeAt(0);
+    const selectedText = selection.toString();
+
+    let container = range.commonAncestorContainer as HTMLElement;
+    if (container.nodeType === Node.TEXT_NODE) {
+      container = container.parentElement as HTMLElement;
+    }
+
+    if (type === 'bold') {
+      const boldElement = container?.closest('strong, b, .font-bold') as HTMLElement | null;
+      if (boldElement) {
+        // Deshacer negrilla
+        const plainText = boldElement.innerText || boldElement.textContent || '';
+        const textNode = document.createTextNode(plainText);
+        boldElement.parentNode?.replaceChild(textNode, boldElement);
+      } else if (selectedText && selectedText.trim().length > 0) {
+        const strong = document.createElement('strong');
+        strong.className = 'font-bold';
+        try {
+          range.surroundContents(strong);
+        } catch (e) {
+          const fragment = range.extractContents();
+          strong.appendChild(fragment);
+          range.insertNode(strong);
+        }
+      } else {
+        const strong = document.createElement('strong');
+        strong.className = 'font-bold';
+        strong.textContent = 'texto en negrilla';
+        range.insertNode(strong);
+
+        const newRange = document.createRange();
+        newRange.selectNodeContents(strong);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+      }
+    } else if (type === 'italic') {
+      const italicElement = container?.closest('em, i, .italic') as HTMLElement | null;
+      if (italicElement) {
+        // Deshacer cursiva
+        const plainText = italicElement.innerText || italicElement.textContent || '';
+        const textNode = document.createTextNode(plainText);
+        italicElement.parentNode?.replaceChild(textNode, italicElement);
+      } else if (selectedText && selectedText.trim().length > 0) {
+        const em = document.createElement('em');
+        em.className = 'italic';
+        try {
+          range.surroundContents(em);
+        } catch (e) {
+          const fragment = range.extractContents();
+          em.appendChild(fragment);
+          range.insertNode(em);
+        }
+      } else {
+        const em = document.createElement('em');
+        em.className = 'italic';
+        em.textContent = 'texto en cursiva';
+        range.insertNode(em);
+
+        const newRange = document.createRange();
+        newRange.selectNodeContents(em);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+      }
+    } else if (type === 'red') {
+      const redElement = container?.closest('.text-red-500, [style*="239, 68, 68"], [style*="#ef4444"], red') as HTMLElement | null;
+      
+      if (selectedText && selectedText.trim().length > 0) {
+        if (redElement) {
+          // Toggle: Deshacer color rojo en la selección
+          const plainText = redElement.innerText || redElement.textContent || '';
+          const textNode = document.createTextNode(plainText);
+          redElement.parentNode?.replaceChild(textNode, redElement);
+        } else {
+          // Aplicar color rojo al texto seleccionado
+          const span = document.createElement('span');
+          span.className = 'text-red-500 font-bold';
+          span.style.color = '#ef4444';
+          try {
+            range.surroundContents(span);
+          } catch (e) {
+            const fragment = range.extractContents();
+            span.appendChild(fragment);
+            range.insertNode(span);
+          }
+          const keepRange = document.createRange();
+          keepRange.selectNodeContents(span);
+          selection.removeAllRanges();
+          selection.addRange(keepRange);
+        }
+      } else {
+        // MODO IPHONE NOTES: Si no hay texto seleccionado, alternar modo de escritura
+        if (redElement) {
+          // Salir del modo rojo para escribir normal
+          const zeroWidth = document.createTextNode('\u200B');
+          if (redElement.nextSibling) {
+            redElement.parentNode?.insertBefore(zeroWidth, redElement.nextSibling);
+          } else {
+            redElement.parentNode?.appendChild(zeroWidth);
+          }
+          const afterRange = document.createRange();
+          afterRange.setStart(zeroWidth, 1);
+          afterRange.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(afterRange);
+        } else {
+          // Entrar en modo rojo: lo siguiente que se escriba será rojo
+          const span = document.createElement('span');
+          span.className = 'text-red-500 font-bold';
+          span.style.color = '#ef4444';
+          const zeroWidth = document.createTextNode('\u200B');
+          span.appendChild(zeroWidth);
+          range.insertNode(span);
+
+          const innerRange = document.createRange();
+          innerRange.setStart(zeroWidth, 1);
+          innerRange.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(innerRange);
+        }
+      }
+    }
+
+    // Sincronizar bloque activo
+    const targetBlock = block || (this.activeBlockId ? this.blocks.find(b => b.id === this.activeBlockId) : null);
+    if (targetBlock) {
+      const blockEl = document.getElementById('block-' + targetBlock.id);
+      if (blockEl) {
+        targetBlock.content = blockEl.innerHTML;
+      }
+      this.syncBlocksToContent();
+    }
+  }
+
+  isRedTextActive(): boolean {
+    if (typeof window === 'undefined') return false;
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return false;
+    let node: Node | null = selection.anchorNode;
+    if (!node) return false;
+    if (node.nodeType === Node.TEXT_NODE) node = node.parentElement;
+    return !!(node as HTMLElement)?.closest?.('.text-red-500, [style*="239, 68, 68"], [style*="#ef4444"], red');
+  }
+
+  // Métodos puente para compatibilidad
+  applyRedTextColorToSelection(block?: NoteBlock) {
+    this.applyTextStyleToSelection('red', block);
+  }
+
+  applyRedTextToActiveBlock(event?: Event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    const targetBlock = this.activeBlockId ? this.blocks.find(b => b.id === this.activeBlockId) : null;
+    const blockEl = targetBlock ? document.getElementById('block-' + targetBlock.id) : null;
+    if (blockEl) {
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0 || !blockEl.contains(selection.anchorNode)) {
+        blockEl.focus();
+        const newRange = document.createRange();
+        newRange.selectNodeContents(blockEl);
+        newRange.collapse(false);
+        const sel = window.getSelection();
+        sel?.removeAllRanges();
+        sel?.addRange(newRange);
+      }
+    }
+    this.applyTextStyleToSelection('red', targetBlock || undefined);
+  }
+
+  applyBoldTextToActiveBlock(block?: NoteBlock, event?: Event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.applyTextStyleToSelection('bold', block);
+  }
+
+  applyItalicTextToActiveBlock(block?: NoteBlock, event?: Event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.applyTextStyleToSelection('italic', block);
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  onGlobalTypeMenuKeydown(event: KeyboardEvent) {
+    // Cerrar modales con tecla Escape
+    if (event.key === 'Escape' || event.key === 'Esc') {
+      if (this.activeAiBlockId) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.closeAiModal();
+        return;
+      }
+      if (this.isFolderModalOpen) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.isFolderModalOpen = false;
+        return;
+      }
+      if (this.isNotebookModalOpen) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.isNotebookModalOpen = false;
+        return;
+      }
+      if (this.isDeleteModalOpen) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.closeDeleteModal();
+        return;
+      }
+      if (this.lightboxImageUrl) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.closeImageLightbox();
+        return;
+      }
+      if (this.isCopilotFullscreen) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.toggleCopilotFullscreen();
+        return;
+      }
+    }
+
+    // Atajo global Ctrl + Shift + D / Cmd + Shift + D (Rojo)
+    if ((event.ctrlKey || event.metaKey) && event.shiftKey && (event.key === 'D' || event.key === 'd')) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.applyTextStyleToSelection('red');
+      return;
+    }
+
+    // Atajo global Ctrl + B / Cmd + B (Negrilla)
+    if ((event.ctrlKey || event.metaKey) && (event.key === 'B' || event.key === 'b') && !event.shiftKey && !event.altKey) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.applyTextStyleToSelection('bold');
+      return;
+    }
+
+    // Atajo global Ctrl + I / Cmd + I (Cursiva)
+    if ((event.ctrlKey || event.metaKey) && (event.key === 'I' || event.key === 'i') && !event.shiftKey && !event.altKey) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.applyTextStyleToSelection('italic');
+      return;
+    }
+
+    if (!this.activeTypeMenuBlockId) return;
+
+    const block = this.blocks.find(b => b.id === this.activeTypeMenuBlockId);
+    if (!block) return;
+
+    const key = event.key.toLowerCase();
+
+    if (key === 't') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.selectBlockType(block, 'titulo');
+    } else if (key === 's') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.selectBlockType(block, 'subtitulo');
+    } else if (key === 'c') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.selectBlockType(block, 'codigo');
+    } else if (key === 'a') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.selectBlockType(block, 'alerta');
+    } else if (key === 'n') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.selectBlockType(block, 'texto');
+    } else if (key === 'i') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.selectBlockType(block, 'imagen');
+    } else if (key === '2') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.selectBlockType(block, 'columnas');
+    } else if (key === 'escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.activeTypeMenuBlockId = null;
+    }
+  }
+
+  getBlockTypeLabel(type: string): string {
+    switch (type) {
+      case 'titulo': return 'Título';
+      case 'subtitulo': return 'Subtítulo';
+      case 'codigo': return 'Código';
+      case 'alerta': return 'Alerta';
+      case 'texto': return 'Texto';
+      case 'columnas': return '2 Columnas';
+      case 'imagen': return 'Imagen';
+      default: return 'Texto';
+    }
+  }
+
+  // Notion Slash Command State with Keyboard Selection
+  showSlashMenu = false;
+  slashMenuQuery = '';
+  slashSelectedIndex = 0;
+  slashCommands: SlashCommandItem[] = [
+    { key: 'titulo', title: 'Título', desc: 'Encabezado principal de sección', icon: 'H1' },
+    { key: 'subtitulo', title: 'Subtítulo', desc: 'Subtítulo secundario de sección', icon: 'H2' },
+    { key: 'codigo', title: 'Código / Tabla', desc: 'Bloque de código o tabla estructurada', icon: '</>' },
+    { key: 'alerta', title: 'Alerta / Nota', desc: 'Caja destacada con consejo o idea', icon: '!' },
+    { key: 'texto', title: 'Texto normal', desc: 'Párrafo de texto libre', icon: 'T' },
+    { key: 'columnas', title: '2 Columnas Paralelas', desc: 'Colocar dos tablas o bloques lado a lado', icon: '◫' },
+    { key: 'imagen', title: 'Imagen', desc: 'Subir foto o captura con Cloudinary', icon: '🖼️' }
+  ];
+
+  // Color Swatches Palette
+  presetColors = [
+    '#10b981', // Emerald
+    '#3b82f6', // Sapphire Blue
+    '#8b5cf6', // Violet Purple
+    '#ec4899', // Rose Pink
+    '#f59e0b', // Amber Gold
+    '#ef4444', // Crimson Red
+    '#06b6d4', // Cyan
+    '#6366f1', // Indigo
+    '#14b8a6', // Teal
+    '#84cc16'  // Lime
+  ];
+
+  // Elegant Vector Icon Presets
+  presetIcons = [
+    'folder',
+    'book',
+    'code',
+    'database',
+    'tech',
+    'globe',
+    'academic',
+    'layers',
+    'star',
+    'sparkles',
+    'chart',
+    'shield',
+    'bookmark',
+    'pencil'
+  ];
+
+  // Summary metrics for executive KPI grid
+  get totalFoldersCount(): number {
+    return this.folders.length;
+  }
+
+  get totalNotebooksCount(): number {
+    return this.folders.reduce((acc, f) => acc + (f.notebook_count || 0), 0);
+  }
+
+  get totalPagesCount(): number {
+    return this.folders.reduce((acc, f) => acc + (f.pages_count || 0), 0);
+  }
+
+  get totalPinnedPagesCount(): number {
+    return this.pages.filter(p => p.is_pinned).length;
+  }
+
+  get filteredSlashCommands(): SlashCommandItem[] {
+    if (!this.slashMenuQuery.trim()) return this.slashCommands;
+    const q = this.slashMenuQuery.toLowerCase().replace('/', '');
+    return this.slashCommands.filter(c => 
+      c.title.toLowerCase().includes(q) || c.key.toLowerCase().includes(q)
+    );
+  }
+
+  isMobileScreen: boolean = false;
+
+  // ── MOBILE NAVIGATION STATE (Master-Detail App Pattern) ────────────────
+  /** En móvil: 'list' muestra la lista de apuntes, 'editor' muestra el editor inmersivo */
+  mobileNotesMode: 'list' | 'editor' = 'list';
+  /** Controla el Bottom Sheet para añadir bloques en móvil */
+  showMobileBlockSheet: boolean = false;
+  /** Controla el Bottom Sheet de opciones del apunte (···) en móvil */
+  showMobilePageOptionsSheet: boolean = false;
+  showMobileTypeMenu = false;
+
+  /** Abre el editor inmersivo móvil (navega de lista → editor) */
+  openMobileEditor() {
+    this.mobileNotesMode = 'editor';
+    this.showMobileBlockSheet = false;
+    this.showMobilePageOptionsSheet = false;
+    this.showMobileTypeMenu = false;
+  }
+
+  /** Vuelve a la lista de apuntes desde el editor móvil */
+  closeMobileEditor() {
+    this.mobileNotesMode = 'list';
+    this.showMobileBlockSheet = false;
+    this.showMobilePageOptionsSheet = false;
+    this.showMobileTypeMenu = false;
+  }
+
+  /** Alterna el Bottom Sheet para insertar bloques */
+  toggleMobileBlockSheet(event?: MouseEvent) {
+    if (event) event.stopPropagation();
+    this.showMobileBlockSheet = !this.showMobileBlockSheet;
+    this.showMobilePageOptionsSheet = false;
+  }
+
+  /** Alterna el Bottom Sheet de opciones del apunte */
+  toggleMobilePageOptionsSheet(event?: MouseEvent) {
+    if (event) event.stopPropagation();
+    this.showMobilePageOptionsSheet = !this.showMobilePageOptionsSheet;
+    this.showMobileBlockSheet = false;
+  }
+
+  /** Cierra todos los Bottom Sheets móviles */
+  closeMobileSheets() {
+    this.showMobileBlockSheet = false;
+    this.showMobilePageOptionsSheet = false;
+    this.showMobileTypeMenu = false;
+  }
+
+  toggleMobileTypeMenu(event?: Event) {
+    event?.stopPropagation();
+    if (!this.currentActiveBlock) return;
+    this.showMobileTypeMenu = !this.showMobileTypeMenu;
+    this.showMobileBlockSheet = false;
+    this.showMobilePageOptionsSheet = false;
+  }
+
+  selectMobileBlockType(type: NoteBlock['type'], event?: Event) {
+    event?.stopPropagation();
+    const block = this.currentActiveBlock;
+    if (!block) return;
+    this.changeBlockType(block, type);
+    this.showMobileTypeMenu = false;
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    this.checkMobileScreen();
+  }
+
+  checkMobileScreen() {
+    this.isMobileScreen = typeof window !== 'undefined' && window.innerWidth < 768;
+    if (this.isMobileScreen && this.editorViewMode === 'split') {
+      this.editorViewMode = 'edit';
+    }
+    if (this.isMobileScreen) {
+      this.isSidebarCollapsed = true;
+    }
+  }
+
+  loadCopilotChatFromStorage() {
+    if (typeof window === 'undefined') return;
+    try {
+      const saved = localStorage.getItem('portalink_copilot_chat');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this.copilotMessages = parsed;
+        }
+      }
+    } catch (e) {
+      console.error('Error cargando chat copilot de localStorage:', e);
+    }
+  }
+
+  saveCopilotChatToStorage() {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem('portalink_copilot_chat', JSON.stringify(this.copilotMessages));
+    } catch (e) {
+      console.error('Error guardando chat copilot en localStorage:', e);
+    }
+  }
+
+  ngOnInit() {
+    this.checkMobileScreen();
+    const savedRatio = localStorage.getItem('portalink_lib_split_ratio');
+    if (savedRatio) {
+      this.editorSplitRatio = parseInt(savedRatio, 10) || 50;
+    }
+    if (!this.isMobileScreen) {
+      const savedSidebar = localStorage.getItem('portalink_lib_sidebar_collapsed');
+      if (savedSidebar === 'true') {
+        this.isSidebarCollapsed = true;
+      }
+    }
+    this.loadCopilotChatFromStorage();
+    try {
+      const savedWidth = localStorage.getItem('portalink_copilot_width');
+      if (savedWidth) {
+        const parsedW = parseInt(savedWidth, 10);
+        if (parsedW >= 360 && parsedW <= 1100) {
+          this.copilotWidth = parsedW;
+        }
+      }
+      const savedHeight = localStorage.getItem('portalink_copilot_height');
+      if (savedHeight) {
+        const parsedH = parseInt(savedHeight, 10);
+        if (parsedH >= 340 && parsedH <= 1200) {
+          this.copilotHeight = parsedH;
+        }
+      }
+    } catch {}
+    this.initTabs();
+    this.loadFolders();
+
+    this.subs.add(
+      this.libraryService.switchTab$.subscribe(id => this.switchTab(id))
+    );
+    this.subs.add(
+      this.libraryService.closeTab$.subscribe(({ id, event }) => this.closeTab(id, event))
+    );
+    this.subs.add(
+      this.libraryService.openNewTab$.subscribe(() => this.openNewTab())
+    );
+    this.subs.add(
+      this.libraryService.closeOtherTabs$.subscribe(id => this.closeOtherTabs(id))
+    );
+    this.subs.add(
+      this.libraryService.createNewNote$.subscribe(() => this.createNewPage())
+    );
+    this.subs.add(
+      this.libraryService.breadcrumbNav$.subscribe(level => this.goToBreadcrumb(level))
+    );
+    this.subs.add(
+      this.libraryService.searchQuery$.subscribe(q => {
+        if (this.searchQuery !== q) {
+          this.searchQuery = q;
+          this.onSearchInput();
+        }
+      })
+    );
+    this.subs.add(
+      this.libraryService.blockAction$.subscribe(({ action, payload }) => {
+        const block = this.currentActiveBlock;
+        const idx = this.currentActiveBlockIndex;
+        switch (action) {
+          case 'changeType':
+            if (block && payload) {
+              this.changeBlockType(block, payload);
+            } else if (!block && payload && this.blocks && this.blocks.length > 0) {
+              this.changeBlockType(this.blocks[0], payload);
+            } else if (payload) {
+              this.addBlock(payload);
+            }
+            break;
+          case 'ai':
+            if (this.activeAiBlockId) {
+              this.closeAiModal();
+            } else if (block) {
+              this.activeBlockId = block.id;
+              this.activeAiBlockId = block.id;
+              this.activeAiTargetColIndex = null;
+              this.aiCustomInstruction = '';
+              this.aiResultPreview = '';
+              this.aiError = '';
+            } else if (this.blocks && this.blocks.length > 0) {
+              this.activeBlockId = this.blocks[0].id;
+              this.activeAiBlockId = this.blocks[0].id;
+              this.activeAiTargetColIndex = null;
+              this.aiCustomInstruction = '';
+              this.aiResultPreview = '';
+              this.aiError = '';
+            } else {
+              this.showToast('Crea o selecciona un bloque primero');
+            }
+            break;
+          case 'bold':
+            if (block) this.applyBoldTextToActiveBlock(block);
+            break;
+          case 'italic':
+            if (block) this.applyItalicTextToActiveBlock(block);
+            break;
+          case 'red':
+            this.applyRedTextToActiveBlock();
+            break;
+          case 'read':
+            if (block) this.readBlockWithRotBot(block);
+            break;
+          case 'addBelow':
+            this.addBlock('texto', idx >= 0 ? idx : undefined);
+            break;
+          case 'moveUp':
+            if (idx > 0) this.moveBlock(idx, 'up');
+            break;
+          case 'moveDown':
+            if (idx < this.blocks.length - 1) this.moveBlock(idx, 'down');
+            break;
+          case 'duplicate':
+            if (idx >= 0) this.duplicateBlock(idx);
+            break;
+          case 'delete':
+            if (idx >= 0) this.removeBlock(idx);
+            break;
+        }
+        this.syncActiveBlockToService();
+      })
+    );
+  }
+
+  ngAfterViewInit() {
+    this.setupScrollListener();
+  }
+
+  ngOnDestroy() {
+    if (this.spanishTts) {
+      this.spanishTts.stop();
+    }
+    if (this.cleanUpScroll) {
+      this.cleanUpScroll();
+    }
+    this.subs.unsubscribe();
+    if (this._selectedNotebook) {
+      this.inNotesViewChange.emit(false);
+    }
+    document.body.classList.remove('is-chat-dragging');
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  }
+
+  // ── GESTIÓN DE SCROLL INDEPENDIENTE POR PESTAÑA / VENTANA Y APUNTE ──
+  private isRestoringScroll = false;
+  private scrollDebounceTimer: any = null;
+  private cleanUpScroll?: () => void;
+
+  private setupScrollListener() {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
+    const handleScroll = () => {
+      if (this.isRestoringScroll) return;
+      this.recordCurrentScroll();
+
+      if (this.scrollDebounceTimer) {
+        clearTimeout(this.scrollDebounceTimer);
+      }
+      this.scrollDebounceTimer = setTimeout(() => {
+        this.saveTabsToStorage();
+      }, 500);
+    };
+
+    // Usamos capture: true en document para capturar scroll de <main>, window o sub-contenedores
+    document.addEventListener('scroll', handleScroll, { passive: true, capture: true });
+
+    this.cleanUpScroll = () => {
+      document.removeEventListener('scroll', handleScroll, { capture: true } as any);
+      if (this.scrollDebounceTimer) {
+        clearTimeout(this.scrollDebounceTimer);
+      }
+    };
+  }
+
+  getCurrentScrollTop(): number {
+    if (typeof document === 'undefined') return 0;
+    const mainEl = document.querySelector('main');
+    if (mainEl && mainEl.scrollTop > 0) {
+      return mainEl.scrollTop;
+    }
+    if (typeof window !== 'undefined' && window.pageYOffset > 0) {
+      return window.pageYOffset;
+    }
+    if (document.documentElement && document.documentElement.scrollTop > 0) {
+      return document.documentElement.scrollTop;
+    }
+    return mainEl ? mainEl.scrollTop : 0;
+  }
+
+  restoreScrollTop(top: number) {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    const mainEl = document.querySelector('main');
+    if (mainEl) {
+      mainEl.scrollTop = top;
+    }
+    window.scrollTo(0, top);
+    if (document.documentElement) {
+      document.documentElement.scrollTop = top;
+    }
+  }
+
+  recordCurrentScroll() {
+    if (this.isRestoringScroll || !this.activeTabId) return;
+    const currentScroll = this.getCurrentScrollTop();
+    const tab = this.tabs.find(t => t.id === this.activeTabId);
+    if (!tab) return;
+
+    tab.scrollTop = currentScroll;
+    if (!tab.scrollPositions) {
+      tab.scrollPositions = {};
+    }
+    if (this.selectedPage?.id) {
+      tab.scrollPositions[this.selectedPage.id] = currentScroll;
+    }
+  }
+
+  restoreScrollForCurrentTabAndPage(explicitScroll?: number) {
+    if (typeof window === 'undefined') return;
+
+    const tab = this.tabs.find(t => t.id === this.activeTabId);
+    let targetScroll = 0;
+
+    if (explicitScroll !== undefined) {
+      targetScroll = explicitScroll;
+    } else if (tab) {
+      const pageId = this.selectedPage?.id;
+      if (pageId && tab.scrollPositions && tab.scrollPositions[pageId] !== undefined) {
+        targetScroll = tab.scrollPositions[pageId];
+      } else if (tab.scrollTop !== undefined) {
+        targetScroll = tab.scrollTop;
+      }
+    }
+
+    this.isRestoringScroll = true;
+
+    const applyScroll = () => {
+      this.restoreScrollTop(targetScroll);
+    };
+
+    applyScroll();
+    setTimeout(() => {
+      applyScroll();
+      requestAnimationFrame(() => {
+        applyScroll();
+        setTimeout(() => {
+          this.isRestoringScroll = false;
+        }, 120);
+      });
+    }, 40);
+  }
+
+  // ── MULTI-TAB WORKSPACE NAVIGATION ──────────────────────────
+  tabs: LibraryTab[] = [];
+  activeTabId: string = '';
+
+  initTabs() {
+    try {
+      const savedTabs = localStorage.getItem('portalink_lib_tabs');
+      const savedActiveTabId = localStorage.getItem('portalink_lib_active_tab_id');
+      if (savedTabs) {
+        const parsed = JSON.parse(savedTabs);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this.tabs = parsed;
+          this.activeTabId = (savedActiveTabId && this.tabs.some(t => t.id === savedActiveTabId)) 
+            ? savedActiveTabId 
+            : this.tabs[0].id;
+          this.libraryService.setTabs(this.tabs);
+          this.libraryService.setActiveTabId(this.activeTabId);
+          return;
+        }
+      }
+    } catch (e) {
+      console.error('Error cargando pestañas:', e);
+    }
+
+    const defaultTab: LibraryTab = {
+      id: 'tab_' + Date.now(),
+      title: 'Biblioteca',
+      icon: 'folder',
+      color: '#737373',
+      folderId: null,
+      notebookId: null,
+      pageId: null,
+      scrollTop: 0,
+      scrollPositions: {}
+    };
+    this.tabs = [defaultTab];
+    this.activeTabId = defaultTab.id;
+    this.saveTabsToStorage();
+  }
+
+  saveTabsToStorage() {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem('portalink_lib_tabs', JSON.stringify(this.tabs));
+      localStorage.setItem('portalink_lib_active_tab_id', this.activeTabId);
+    } catch (e) {}
+    this.libraryService.setTabs(this.tabs);
+    this.libraryService.setActiveTabId(this.activeTabId);
+  }
+
+  syncActiveTabMeta() {
+    const tab = this.tabs.find(t => t.id === this.activeTabId);
+    if (!tab) return;
+
+    tab.folderId = this.selectedFolder?.id || null;
+    tab.folderTitle = this.selectedFolder?.name;
+    tab.notebookId = this.selectedNotebook?.id || null;
+    tab.notebookTitle = this.selectedNotebook?.title;
+    tab.pageId = this.selectedPage?.id || null;
+    tab.pageTitle = this.selectedPage?.title;
+
+    tab.color = this.selectedNotebook?.color || this.selectedFolder?.color || '#737373';
+    tab.icon = this.selectedNotebook?.icon || this.selectedFolder?.icon || 'folder';
+
+    if (this.selectedPage && this.selectedPage.title) {
+      tab.title = this.selectedPage.title;
+    } else if (this.selectedNotebook && this.selectedNotebook.title) {
+      tab.title = this.selectedNotebook.title;
+    } else if (this.selectedFolder && this.selectedFolder.name) {
+      tab.title = this.selectedFolder.name;
+    } else {
+      tab.title = 'Biblioteca';
+    }
+
+    this.saveTabsToStorage();
+  }
+
+  openNewTab(folderId?: number | null, notebookId?: number | null, pageId?: number | null) {
+    this.recordCurrentScroll();
+    this.syncActiveTabMeta();
+
+    const newTabId = 'tab_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+    let title = 'Nueva Pestaña';
+    let color = '#737373';
+    let icon = 'folder';
+
+    if (pageId && this.pages.length > 0) {
+      const p = this.pages.find(pg => pg.id === pageId);
+      if (p) {
+        title = p.title || 'Apunte';
+      }
+    } else if (notebookId && this.notebooks.length > 0) {
+      const nb = this.notebooks.find(n => n.id === notebookId);
+      if (nb) {
+        title = nb.title;
+        color = nb.color || color;
+        icon = nb.icon || icon;
+      }
+    } else if (folderId && this.folders.length > 0) {
+      const f = this.folders.find(fold => fold.id === folderId);
+      if (f) {
+        title = f.name;
+        color = f.color || color;
+        icon = f.icon || icon;
+      }
+    }
+
+    const newTab: LibraryTab = {
+      id: newTabId,
+      title,
+      icon,
+      color,
+      folderId: folderId ?? null,
+      notebookId: notebookId ?? null,
+      pageId: pageId ?? null,
+      scrollTop: 0,
+      scrollPositions: {}
+    };
+
+    this.tabs.push(newTab);
+    this.switchTab(newTabId);
+  }
+
+  openNotebookInNewTab(notebook: NotebookModule, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    this.openNewTab(this.selectedFolder?.id, notebook.id, null);
+  }
+
+  openPageInNewTab(page: NotebookPage, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    this.openNewTab(this.selectedFolder?.id, this.selectedNotebook?.id, page.id);
+  }
+
+  switchTab(tabId: string) {
+    if (this.activeTabId === tabId && this.selectedNotebook) return;
+
+    this.recordCurrentScroll();
+    this.syncActiveTabMeta();
+    this.activeTabId = tabId;
+    this.saveTabsToStorage();
+
+    const tab = this.tabs.find(t => t.id === tabId);
+    if (!tab) return;
+
+    if (tab.folderId) {
+      const folder = this.folders.find(f => f.id === tab.folderId);
+      this.selectedFolder = folder || null;
+
+      if (this.selectedFolder && tab.notebookId) {
+        // Optimización si ya estamos en el mismo cuaderno cargado
+        if (this.selectedNotebook && this.selectedNotebook.id === tab.notebookId && this.pages.length > 0) {
+          if (tab.pageId) {
+            const targetPage = this.pages.find(p => p.id === tab.pageId);
+            if (targetPage) {
+              this.selectPage(targetPage, false);
+              return;
+            }
+          } else {
+            this.selectedPage = null;
+            this.restoreScrollForCurrentTabAndPage(0);
+            return;
+          }
+        }
+
+        this.libraryService.getNotebooks(tab.folderId).subscribe({
+          next: (res) => {
+            if (res.ok) {
+              this.notebooks = res.data;
+              const nb = this.notebooks.find(n => n.id === tab.notebookId);
+              this.selectedNotebook = nb || null;
+              if (this.selectedNotebook && typeof this.selectedNotebook.id === 'number') {
+                this.loadPages(this.selectedNotebook.id, tab.pageId || undefined);
+              }
+            }
+          }
+        });
+      } else if (this.selectedFolder) {
+        this.selectedNotebook = null;
+        this.selectedPage = null;
+        this.pages = [];
+        this.restoreScrollForCurrentTabAndPage(0);
+        this.loadNotebooks(tab.folderId);
+      }
+    } else {
+      this.selectedFolder = null;
+      this.selectedNotebook = null;
+      this.selectedPage = null;
+      this.notebooks = [];
+      this.pages = [];
+      this.restoreScrollForCurrentTabAndPage(0);
+    }
+  }
+
+  closeTab(tabId: string, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+
+    if (this.tabs.length <= 1) {
+      // Si solo queda una pestaña, reiniciar a la vista raíz de Biblioteca
+      this.selectedFolder = null;
+      this.selectedNotebook = null;
+      this.selectedPage = null;
+      this.notebooks = [];
+      this.pages = [];
+      this.syncActiveTabMeta();
+      return;
+    }
+
+    const idx = this.tabs.findIndex(t => t.id === tabId);
+    if (idx === -1) return;
+
+    if (this.activeTabId === tabId) {
+      const nextIdx = idx === this.tabs.length - 1 ? idx - 1 : idx + 1;
+      const nextTab = this.tabs[nextIdx];
+      this.tabs.splice(idx, 1);
+      this.switchTab(nextTab.id);
+    } else {
+      this.tabs.splice(idx, 1);
+      this.saveTabsToStorage();
+    }
+  }
+
+  closeOtherTabs(keepTabId: string, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    this.tabs = this.tabs.filter(t => t.id === keepTabId);
+    this.switchTab(keepTabId);
+    this.saveTabsToStorage();
+    this.showToast('Pestañas secundarias cerradas');
+  }
+
+  showToast(msg: string, type: 'success' | 'error' = 'success') {
+    this.toastMessage = msg;
+    this.toastType = type;
+    setTimeout(() => {
+      if (this.toastMessage === msg) this.toastMessage = '';
+    }, 3500);
+  }
+
+  saveStateInLocalStorage() {
+    this.syncActiveTabMeta();
+
+    if (this.selectedFolder?.id) {
+      localStorage.setItem('portalink_lib_folder_id', this.selectedFolder.id.toString());
+    } else {
+      localStorage.removeItem('portalink_lib_folder_id');
+    }
+
+    if (this.selectedNotebook?.id) {
+      localStorage.setItem('portalink_lib_notebook_id', this.selectedNotebook.id.toString());
+    } else {
+      localStorage.removeItem('portalink_lib_notebook_id');
+    }
+
+    if (this.selectedPage?.id) {
+      localStorage.setItem('portalink_lib_page_id', this.selectedPage.id.toString());
+    } else {
+      localStorage.removeItem('portalink_lib_page_id');
+    }
+  }
+
+  restoreSavedState() {
+    const activeTab = this.tabs.find(t => t.id === this.activeTabId);
+    const targetFolderId = activeTab?.folderId ?? (localStorage.getItem('portalink_lib_folder_id') ? parseInt(localStorage.getItem('portalink_lib_folder_id')!, 10) : null);
+    const targetNotebookId = activeTab?.notebookId ?? (localStorage.getItem('portalink_lib_notebook_id') ? parseInt(localStorage.getItem('portalink_lib_notebook_id')!, 10) : null);
+    const targetPageId = activeTab?.pageId ?? (localStorage.getItem('portalink_lib_page_id') ? parseInt(localStorage.getItem('portalink_lib_page_id')!, 10) : undefined);
+
+    if (!targetFolderId) return;
+    const folder = this.folders.find(f => f.id === targetFolderId);
+
+    if (folder) {
+      this.selectedFolder = folder;
+      if (!targetNotebookId) return;
+
+      this.libraryService.getNotebooks(targetFolderId).subscribe({
+        next: (res) => {
+          if (res.ok) {
+            this.notebooks = res.data;
+            const nb = this.notebooks.find(n => n.id === targetNotebookId);
+            if (nb) {
+              this.selectedNotebook = nb;
+              this.loadPages(targetNotebookId, targetPageId);
+            }
+          }
+        }
+      });
+    }
+  }
+
+  loadFolders() {
+    this.isLoading = true;
+    this.libraryService.getFolders().subscribe({
+      next: (res) => {
+        if (res.ok) {
+          this.folders = res.data;
+          this.restoreSavedState();
+        }
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+        this.showToast('Error al cargar carpetas', 'error');
+      }
+    });
+  }
+
+  selectFolder(folder: NotebookFolder | null) {
+    this.selectedFolder = folder;
+    this.selectedNotebook = null;
+    this.selectedPage = null;
+    this.notebooks = [];
+    this.pages = [];
+    this.saveStateInLocalStorage();
+
+    if (folder && folder.id) {
+      this.loadNotebooks(folder.id);
+    } else {
+      this.loadFolders();
+    }
+  }
+
+  loadNotebooks(folderId: number) {
+    this.isLoading = true;
+    this.libraryService.getNotebooks(folderId).subscribe({
+      next: (res) => {
+        if (res.ok) this.notebooks = res.data;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+        this.showToast('Error al cargar cuadernos', 'error');
+      }
+    });
+  }
+
+  selectNotebook(notebook: NotebookModule | null) {
+    this.selectedNotebook = notebook;
+    this.selectedPage = null;
+    this.pages = [];
+    // Siempre empezar en la lista al entrar a un cuaderno en móvil
+    this.mobileNotesMode = 'list';
+    this.closeMobileSheets();
+
+    if (notebook && notebook.id) {
+      this.loadPages(notebook.id);
+    }
+    this.saveStateInLocalStorage();
+  }
+
+  loadPages(notebookId: number, targetPageId?: number) {
+    this.libraryService.getPages(notebookId).subscribe({
+      next: (res) => {
+        if (res.ok) {
+          this.pages = res.data;
+          if (this.pages.length > 0) {
+            if (targetPageId) {
+              const found = this.pages.find(p => p.id === targetPageId);
+              this.selectedPage = found || this.pages[0];
+            } else if (!this.selectedPage) {
+              this.selectedPage = this.pages[0];
+            }
+          }
+          if (this.selectedPage) {
+            this.blocks = this.parseContentToBlocks(this.selectedPage.content || '');
+            this.activeBlockId = (this.blocks && this.blocks.length > 0) ? this.blocks[0].id : null;
+            this.restoreScrollForCurrentTabAndPage();
+          }
+          this.saveStateInLocalStorage();
+        }
+      }
+    });
+  }
+
+  selectPage(page: NotebookPage, savePreviousScroll: boolean = true) {
+    if (savePreviousScroll) {
+      this.recordCurrentScroll();
+    }
+    this.selectedPage = page;
+    this.showSlashMenu = false;
+    this.blocks = this.parseContentToBlocks(page.content || '');
+    this.activeBlockId = (this.blocks && this.blocks.length > 0) ? this.blocks[0].id : null;
+    if (this.isMobileScreen) {
+      this.isSidebarCollapsed = true;
+      // En móvil: al seleccionar un apunte, navegar directamente al editor inmersivo
+      this.openMobileEditor();
+    }
+    this.syncActiveTabMeta();
+    this.saveStateInLocalStorage();
+    this.restoreScrollForCurrentTabAndPage();
+  }
+
+  editorViewMode: 'edit' | 'split' | 'preview' = 'edit';
+  editorSplitRatio: number = 50;
+  isSidebarCollapsed: boolean = false;
+  private autoSaveTimer: any = null;
+
+  get isReadOnlyMode(): boolean {
+    return this.editorViewMode === 'preview';
+  }
+
+  toggleReadOnlyMode(event?: Event) {
+    event?.preventDefault();
+    event?.stopPropagation();
+    this.editorViewMode = this.isReadOnlyMode ? 'edit' : 'preview';
+    this.activeTypeMenuBlockId = null;
+    this.activeColTypeMenuId = null;
+    this.activeColLangMenuId = null;
+    this.closeMobileSheets();
+  }
+
+  toggleSidebar() {
+    this.isSidebarCollapsed = !this.isSidebarCollapsed;
+    localStorage.setItem('portalink_lib_sidebar_collapsed', this.isSidebarCollapsed ? 'true' : 'false');
+  }
+
+  setSplitRatio(ratio: number) {
+    this.editorSplitRatio = Math.max(25, Math.min(75, ratio));
+    localStorage.setItem('portalink_lib_split_ratio', this.editorSplitRatio.toString());
+  }
+
+  onTitleInput() {
+    if (!this.selectedPage) return;
+    const match = this.pages.find(p => p.id === this.selectedPage?.id);
+    if (match) {
+      match.title = this.selectedPage.title;
+    }
+    if (this.autoSaveTimer) clearTimeout(this.autoSaveTimer);
+    this.autoSaveTimer = setTimeout(() => {
+      this.autoSavePage();
+    }, 400);
+  }
+
+  // ── BLOCK-BASED SLATE ENGINE (NO RAW MD VISIBLE ON CANVAS) ──────
+  generateBlockId(): string {
+    return 'blk_' + Math.random().toString(36).substring(2, 9);
+  }
+
+  parseContentToBlocks(content: string): NoteBlock[] {
+    if (!content || !content.trim()) {
+      return [{ id: this.generateBlockId(), type: 'texto', content: '' }];
+    }
+
+    const blocks: NoteBlock[] = [];
+    const lines = content.split('\n');
+    let i = 0;
+
+    while (i < lines.length) {
+      const line = lines[i];
+
+      // Bloque de Columnas Paralelas: :::columns ratio=50-50 ... :::
+      if (line.trim().startsWith(':::columns')) {
+        const ratioMatch = line.trim().match(/ratio=([0-9-]+)/);
+        const columnRatio = (ratioMatch && ratioMatch[1]) ? (ratioMatch[1] as any) : '50-50';
+        const colBlocks: NoteBlockColumn[] = [];
+        i++; // avanzar después de :::columns
+
+        let currentColType: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'imagen' = 'texto';
+        let currentColLang: string | undefined = undefined;
+        let currentColLines: string[] = [];
+        let hasActiveCol = false;
+
+        const flushCol = () => {
+          if (hasActiveCol) {
+            let imgUrl: string | undefined = undefined;
+            let colContent = currentColLines.join('\n');
+            if (currentColType === 'imagen') {
+              const matchImg = colContent.match(/!\[(.*?)\]\((.*?)\)/);
+              if (matchImg) {
+                colContent = matchImg[1];
+                imgUrl = matchImg[2];
+              }
+            }
+            colBlocks.push({
+              id: this.generateBlockId(),
+              type: currentColType,
+              language: currentColLang,
+              content: colContent,
+              imageUrl: imgUrl
+            });
+            currentColLines = [];
+            currentColType = 'texto';
+            currentColLang = undefined;
+            hasActiveCol = false;
+          }
+        };
+
+        while (i < lines.length && lines[i].trim() !== ':::' && !lines[i].trim().startsWith(':::columns')) {
+          const l = lines[i];
+          if (l.trim().startsWith(':::column')) {
+            flushCol();
+            hasActiveCol = true;
+            const typeMatch = l.trim().match(/type=([a-z]+)/);
+            if (typeMatch && ['titulo', 'subtitulo', 'codigo', 'alerta', 'texto', 'imagen'].includes(typeMatch[1])) {
+              currentColType = typeMatch[1] as any;
+            }
+            const langMatch = l.trim().match(/language=([a-zA-Z0-9_-]+)/);
+            if (langMatch) currentColLang = langMatch[1];
+            i++;
+            continue;
+          }
+          if (hasActiveCol) {
+            currentColLines.push(l);
+          }
+          i++;
+        }
+        flushCol();
+
+        if (i < lines.length && lines[i].trim() === ':::') {
+          i++;
+        }
+
+        // Asegurar que siempre tenga exactamente 2 columnas
+        while (colBlocks.length < 2) {
+          colBlocks.push({
+            id: this.generateBlockId(),
+            type: 'texto',
+            content: ''
+          });
+        }
+
+        blocks.push({
+          id: this.generateBlockId(),
+          type: 'columnas',
+          content: '',
+          columnRatio: columnRatio || '50-50',
+          columns: colBlocks.slice(0, 2)
+        });
+        continue;
+      }
+
+      // Bloque de Código: ```lang ... ```
+      if (line.trim().startsWith('```')) {
+        const langMatch = line.trim().match(/^```([a-zA-Z0-9_-]*)/);
+        const language = (langMatch && langMatch[1]) ? langMatch[1] : 'typescript';
+        const codeLines: string[] = [];
+        i++;
+        while (i < lines.length && !lines[i].trim().startsWith('```')) {
+          codeLines.push(lines[i]);
+          i++;
+        }
+        if (i < lines.length && lines[i].trim().startsWith('```')) {
+          i++;
+        }
+        blocks.push({
+          id: this.generateBlockId(),
+          type: 'codigo',
+          language,
+          content: codeLines.join('\n')
+        });
+        continue;
+      }
+
+      // Título (# o ##)
+      if (line.startsWith('# ') || line.startsWith('## ')) {
+        const text = line.replace(/^#{1,2}\s+/, '');
+        blocks.push({
+          id: this.generateBlockId(),
+          type: 'titulo',
+          content: text
+        });
+        i++;
+        continue;
+      }
+
+      // Subtítulo (### o ####)
+      if (line.startsWith('### ') || line.startsWith('#### ')) {
+        const text = line.replace(/^#{3,4}\s+/, '');
+        blocks.push({
+          id: this.generateBlockId(),
+          type: 'subtitulo',
+          content: text
+        });
+        i++;
+        continue;
+      }
+
+      // Alerta (> o > 💡)
+      if (line.startsWith('> ')) {
+        const alertLines: string[] = [];
+        while (i < lines.length && lines[i].startsWith('> ')) {
+          alertLines.push(lines[i].replace(/^>\s*(💡\s*|⚠️\s*|ℹ️\s*)?/, ''));
+          i++;
+        }
+        blocks.push({
+          id: this.generateBlockId(),
+          type: 'alerta',
+          content: alertLines.join('\n')
+        });
+        continue;
+      }
+
+      // Imagen: ![caption](url) o ![caption|size=md](url)
+      const imgMatch = line.trim().match(/^!\[(.*?)\]\((.*?)\)/);
+      if (imgMatch) {
+        let rawCaption = imgMatch[1] || '';
+        let size: 'sm' | 'md' | 'lg' | 'full' = 'lg';
+        if (rawCaption.includes('|size=')) {
+          const parts = rawCaption.split('|size=');
+          rawCaption = parts[0];
+          size = (parts[1] as any) || 'lg';
+        }
+        blocks.push({
+          id: this.generateBlockId(),
+          type: 'imagen',
+          content: rawCaption,
+          imageUrl: imgMatch[2] || '',
+          imageSize: size
+        });
+        i++;
+        continue;
+      }
+
+      // Skip blank lines outside blocks
+      if (line.trim() === '') {
+        i++;
+        continue;
+      }
+
+      // Texto normal
+      const textLines: string[] = [];
+      while (
+        i < lines.length &&
+        !lines[i].trim().startsWith(':::columns') &&
+        !lines[i].trim().startsWith('```') &&
+        !lines[i].startsWith('# ') &&
+        !lines[i].startsWith('## ') &&
+        !lines[i].startsWith('### ') &&
+        !lines[i].startsWith('#### ') &&
+        !lines[i].startsWith('> ') &&
+        !lines[i].trim().startsWith('![') &&
+        lines[i].trim() !== ''
+      ) {
+        textLines.push(lines[i]);
+        i++;
+      }
+
+      if (textLines.length > 0) {
+        blocks.push({
+          id: this.generateBlockId(),
+          type: 'texto',
+          content: textLines.join('\n')
+        });
+      }
+    }
+
+    if (blocks.length === 0) {
+      blocks.push({ id: this.generateBlockId(), type: 'texto', content: '' });
+    }
+
+    return blocks;
+  }
+
+  syncBlocksToContent() {
+    if (!this.selectedPage) return;
+
+    const mdParts = this.blocks.map(b => {
+      const rawContent = (b.content || '').trim();
+      if (b.type === 'titulo') {
+        return `# ${rawContent}`;
+      } else if (b.type === 'subtitulo') {
+        return `### ${rawContent}`;
+      } else if (b.type === 'codigo') {
+        const lang = b.language || 'typescript';
+        return `\`\`\`${lang}\n${b.content || ''}\n\`\`\``;
+      } else if (b.type === 'alerta') {
+        const lines = (b.content || '').split('\n');
+        return lines.map(l => `> 💡 ${l}`).join('\n');
+      } else if (b.type === 'imagen') {
+        const sizeAttr = b.imageSize && b.imageSize !== 'lg' ? `|size=${b.imageSize}` : '';
+        return `![${rawContent}${sizeAttr}](${b.imageUrl || ''})`;
+      } else if (b.type === 'columnas') {
+        const ratio = b.columnRatio || '50-50';
+        const cols = (b.columns || []).slice(0, 2);
+        const colsStr = cols.map(c => {
+          if (c.type === 'imagen') {
+            return `:::column type=imagen\n![${(c.content || '').trim()}](${c.imageUrl || ''})`;
+          }
+          const langAttr = c.language ? ` language=${c.language}` : '';
+          return `:::column type=${c.type || 'texto'}${langAttr}\n${c.content || ''}`;
+        }).join('\n');
+        return `:::columns ratio=${ratio}\n${colsStr}\n:::`;
+      } else {
+        return rawContent;
+      }
+    });
+
+    this.selectedPage.content = mdParts.join('\n\n');
+    this.onTitleInput();
+    this.syncActiveBlockToService();
+  }
+
+  onBlockInput(block: NoteBlock, event?: any) {
+    if (event && event.target && event.target.tagName === 'TEXTAREA') {
+      const el = event.target as HTMLTextAreaElement;
+      el.style.height = 'auto';
+      el.style.height = el.scrollHeight + 'px';
+    }
+
+    if (event && event.target && typeof event.target.value === 'string' && event.target.value.includes('/')) {
+      const val: string = event.target.value;
+      if (val.trim().startsWith('/')) {
+        this.showSlashMenu = true;
+        this.slashMenuQuery = val.trim();
+        this.slashSelectedIndex = 0;
+        this.activeBlockId = block.id;
+      }
+    }
+    this.syncBlocksToContent();
+  }
+
+  getLineCount(content: string, minRows: number = 1, type: string = 'texto'): number {
+    if (!content) return minRows;
+
+    const isMobile = this.isMobileScreen || (typeof window !== 'undefined' && window.innerWidth < 768);
+
+    let maxCharsPerLine = isMobile ? 38 : 110;
+    if (type === 'titulo') maxCharsPerLine = isMobile ? 20 : 55;
+    else if (type === 'subtitulo') maxCharsPerLine = isMobile ? 26 : 75;
+    else if (type === 'alerta') maxCharsPerLine = isMobile ? 34 : 100;
+    else if (type === 'codigo') maxCharsPerLine = isMobile ? 32 : 90;
+
+    const lines = content.split('\n');
+    let totalRows = 0;
+
+    for (const line of lines) {
+      if (line.length === 0) {
+        totalRows += 1;
+      } else {
+        totalRows += Math.max(1, Math.ceil(line.length / maxCharsPerLine));
+      }
+    }
+
+    return Math.max(minRows, totalRows);
+  }
+
+  // ─── INSPECCIÓN Y AUDITORÍA DE CÓDIGO CON IA ───
+  copyCodeBlock(content: string, blockId?: string, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    if (!content) return;
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(content).then(() => {
+        this.showToast('Código copiado al portapapeles');
+        if (blockId) {
+          this.copiedCodeBlockId = blockId;
+          setTimeout(() => {
+            if (this.copiedCodeBlockId === blockId) {
+              this.copiedCodeBlockId = null;
+            }
+          }, 2000);
+        }
+      });
+    }
+  }
+
+  validateCodeBlock(block: NoteBlock | NoteBlockColumn, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    const code = block.content ? block.content.trim() : '';
+    if (!code) return;
+
+    const lang = block.language || 'code';
+    block.isValidatingCode = true;
+    block.codeValidation = null;
+
+    this.libraryService.validateCode(code, lang).subscribe({
+      next: (res) => {
+        block.isValidatingCode = false;
+        if (res && res.ok && res.data) {
+          block.codeValidation = res.data;
+        }
+      },
+      error: (err) => {
+        block.isValidatingCode = false;
+        block.codeValidation = {
+          isValid: false,
+          status: 'error',
+          summary: 'No se pudo conectar con el auditor de código',
+          issues: [{ line: 1, message: err?.error?.message || 'Error al comunicarse con la IA', severity: 'error' }],
+          fixedCode: block.content,
+          explanation: 'Ocurrió un error temporal al procesar el código con Gemini IA. Por favor, intenta de nuevo.'
+        };
+      }
+    });
+  }
+
+  applyCodeFix(block: NoteBlock | NoteBlockColumn, fixedCode: string, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    if (!fixedCode) return;
+    block.content = fixedCode;
+    block.codeValidation = null;
+    this.syncBlocksToContent();
+  }
+
+  clearCodeValidation(block: NoteBlock | NoteBlockColumn, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    block.codeValidation = null;
+  }
+
+  onBlockKeydown(event: KeyboardEvent, block: NoteBlock, index: number) {
+    if (this.showSlashMenu) {
+      this.onTextareaKeydown(event);
+      return;
+    }
+
+    // Atajo Ctrl + Shift + D / Cmd + Shift + D para colorear texto en rojo
+    if ((event.ctrlKey || event.metaKey) && event.shiftKey && (event.key === 'D' || event.key === 'd')) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.applyRedTextColorToSelection(block);
+      return;
+    }
+
+    // Atajo Ctrl + B / Cmd + B para Negrilla
+    if ((event.ctrlKey || event.metaKey) && (event.key === 'B' || event.key === 'b') && !event.shiftKey && !event.altKey) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.applyBoldTextToActiveBlock(block);
+      return;
+    }
+
+    // Atajo Ctrl + I / Cmd + I para Cursiva
+    if ((event.ctrlKey || event.metaKey) && (event.key === 'I' || event.key === 'i') && !event.shiftKey && !event.altKey) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.applyItalicTextToActiveBlock(block);
+      return;
+    }
+
+    // ─── ATAJOS CREAR BLOQUE DEBAJO: Ctrl + Shift + Atajo (T/S/C/A/N/2) ───
+    if (event.shiftKey && (event.ctrlKey || event.metaKey) && !event.altKey) {
+      const key = event.key.toUpperCase();
+      const typeMap: Record<string, string> = {
+        'T': 'titulo',
+        'S': 'subtitulo',
+        'C': 'codigo',
+        'A': 'alerta',
+        'N': 'texto',
+        '@': 'columnas',
+        '2': 'columnas',
+      };
+      if (typeMap[key]) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.addBlock(typeMap[key], index);
+        return;
+      }
+    }
+
+    if (event.key === 'Enter') {
+      if (block.type === 'titulo' || block.type === 'subtitulo') {
+        if (!event.shiftKey) {
+          event.preventDefault();
+          this.addBlock('texto', index);
+        }
+      }
+    } else if (event.key === 'Backspace') {
+      const blockEl = document.getElementById('block-' + block.id);
+      const isContentEmpty = !block.content || block.content.trim() === '' || (blockEl && (blockEl.innerText.trim() === '' || blockEl.innerHTML === '<br>'));
+      if (isContentEmpty && this.blocks.length > 1) {
+        event.preventDefault();
+        this.removeBlock(index);
+      }
+    }
+  }
+
+  addBlock(type: string, index?: number) {
+    const validTypes: ('titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'columnas' | 'imagen')[] = [
+      'titulo', 'subtitulo', 'codigo', 'alerta', 'texto', 'columnas', 'imagen'
+    ];
+    const blockType = validTypes.includes(type as any) ? (type as any) : 'texto';
+
+    let newBlock: NoteBlock;
+    if (blockType === 'columnas') {
+      newBlock = {
+        id: this.generateBlockId(),
+        type: 'columnas',
+        content: '',
+        columnRatio: '50-50',
+        columns: [
+          {
+            id: this.generateBlockId(),
+            type: 'codigo',
+            language: 'sql',
+            content: ''
+          },
+          {
+            id: this.generateBlockId(),
+            type: 'codigo',
+            language: 'sql',
+            content: ''
+          }
+        ]
+      };
+    } else if (blockType === 'imagen') {
+      newBlock = {
+        id: this.generateBlockId(),
+        type: 'imagen',
+        content: '',
+        imageUrl: '',
+        imageSize: 'lg'
+      };
+    } else {
+      newBlock = {
+        id: this.generateBlockId(),
+        type: blockType,
+        content: blockType === 'codigo' ? '// Tu código aquí\n' : '',
+        language: blockType === 'codigo' ? 'typescript' : undefined
+      };
+    }
+
+    if (typeof index === 'number') {
+      this.blocks.splice(index + 1, 0, newBlock);
+    } else {
+      this.blocks.push(newBlock);
+    }
+
+    this.activeBlockId = newBlock.id;
+    this.syncBlocksToContent();
+    setTimeout(() => {
+      const el = document.getElementById('block-' + newBlock.id);
+      if (el) {
+        el.focus();
+      }
+    }, 60);
+  }
+
+  removeBlock(index: number) {
+    if (this.blocks.length <= 1) {
+      this.blocks[0] = { id: this.generateBlockId(), type: 'texto', content: '' };
+    } else {
+      this.blocks.splice(index, 1);
+    }
+    this.syncBlocksToContent();
+  }
+
+
+  moveBlock(index: number, direction: 'up' | 'down') {
+    if (direction === 'up' && index > 0) {
+      const temp = this.blocks[index];
+      this.blocks[index] = this.blocks[index - 1];
+      this.blocks[index - 1] = temp;
+    } else if (direction === 'down' && index < this.blocks.length - 1) {
+      const temp = this.blocks[index];
+      this.blocks[index] = this.blocks[index + 1];
+      this.blocks[index + 1] = temp;
+    }
+    this.syncBlocksToContent();
+  }
+
+  duplicateBlock(index: number) {
+    const target = this.blocks[index];
+    if (!target) return;
+    const clone: NoteBlock = {
+      id: this.generateBlockId(),
+      type: target.type,
+      content: target.content,
+      imageUrl: target.imageUrl,
+      imageSize: target.imageSize,
+      language: target.language,
+      columnRatio: target.columnRatio,
+      columns: target.columns ? target.columns.map(c => ({ ...c, id: this.generateBlockId() })) : undefined
+    };
+    this.blocks.splice(index + 1, 0, clone);
+    this.syncBlocksToContent();
+  }
+
+  changeBlockType(block: NoteBlock, newType: string) {
+    if (!block) return;
+    this.activeBlockId = block.id;
+
+    if (newType === 'columnas') {
+      this.convertToColumns(block);
+      this.syncActiveBlockToService();
+      this.showToast('Convertido a 2 columnas');
+      return;
+    }
+    const validTypes: ('titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'imagen')[] = [
+      'titulo', 'subtitulo', 'codigo', 'alerta', 'texto', 'imagen'
+    ];
+    block.type = validTypes.includes(newType as any) ? (newType as any) : 'texto';
+    if (block.type === 'codigo' && !block.language) {
+      block.language = 'typescript';
+    }
+    if (block.type === 'imagen' && !block.imageSize) {
+      block.imageSize = 'lg';
+    }
+    // Si viene de columnas, limpiar estructura de columnas
+    if (block.columns) {
+      if (block.columns[0] && block.columns[0].content) {
+        block.content = block.columns[0].content;
+      }
+      delete block.columns;
+      delete block.columnRatio;
+    }
+    this.syncBlocksToContent();
+    this.syncActiveBlockToService();
+    this.showToast(`Formato cambiado a ${this.getBlockTypeLabel(block.type)}`);
+    setTimeout(() => {
+      const el = document.getElementById('block-' + block.id);
+      if (el) {
+        el.focus();
+      }
+    }, 50);
+  }
+
+  convertToColumns(block: NoteBlock) {
+    if (block.type === 'columnas') return;
+    const currentContent = block.content || '';
+    const currentType = block.type;
+    const currentLang = block.language;
+
+    block.type = 'columnas';
+    block.columnRatio = '50-50';
+    block.content = '';
+    block.columns = [
+      {
+        id: this.generateBlockId(),
+        type: currentType,
+        language: currentLang,
+        content: currentContent
+      },
+      {
+        id: this.generateBlockId(),
+        type: 'codigo',
+        language: 'sql',
+        content: ''
+      }
+    ];
+    this.syncBlocksToContent();
+    this.syncActiveBlockToService();
+  }
+
+  setColumnRatio(block: NoteBlock, ratio: '50-50' | '33-66' | '66-33' | '40-60' | '60-40') {
+    block.columnRatio = ratio;
+    this.syncBlocksToContent();
+  }
+
+  setColumnType(col: NoteBlockColumn, newType: string) {
+    const validTypes: ('titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'imagen')[] = [
+      'titulo', 'subtitulo', 'codigo', 'alerta', 'texto', 'imagen'
+    ];
+    col.type = validTypes.includes(newType as any) ? (newType as any) : 'texto';
+    if (col.type === 'codigo' && !col.language) {
+      col.language = 'sql';
+    }
+    if (col.type === 'imagen') {
+      col.imageUrl = col.imageUrl || '';
+    }
+    this.syncBlocksToContent();
+  }
+
+  onColumnInput(col: NoteBlockColumn, event: Event) {
+    const target = event.target as HTMLElement;
+    if (target) {
+      col.content = target.innerText || target.innerHTML || '';
+    }
+    this.syncBlocksToContent();
+  }
+
+  // ── GESTIÓN DE IMÁGENES & CLOUDINARY ─────────────────────────
+
+  @HostListener('paste', ['$event'])
+  onEditorPaste(event: ClipboardEvent) {
+    if (!this.selectedPage) return;
+    const items = event.clipboardData?.items;
+    if (!items) return;
+
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        const file = items[i].getAsFile();
+        if (file) {
+          event.preventDefault();
+          event.stopPropagation();
+
+          const newBlock: NoteBlock = {
+            id: this.generateBlockId(),
+            type: 'imagen',
+            content: '',
+            imageUrl: '',
+            imageSize: 'lg',
+            isUploading: true
+          };
+
+          const activeIndex = this.activeBlockId ? this.blocks.findIndex(b => b.id === this.activeBlockId) : -1;
+          if (activeIndex >= 0) {
+            this.blocks.splice(activeIndex + 1, 0, newBlock);
+          } else {
+            this.blocks.push(newBlock);
+          }
+
+          this.activeBlockId = newBlock.id;
+          this.syncBlocksToContent();
+          this.uploadImageFile(file, newBlock);
+          break;
+        }
+      }
+    }
+  }
+
+  /**
+   * Optimiza imágenes pesadas antes de subirlas para evitar superar límites de red o PHP.
+   * Si es SVG o GIF (animado) o pesa menos de 1.5MB con dimensiones razonables, la deja intacta.
+   */
+  private async optimizeImageFile(file: File): Promise<File> {
+    if (!file.type.startsWith('image/') || file.type === 'image/svg+xml' || file.type === 'image/gif') {
+      return file;
+    }
+
+    if (file.size <= 1.5 * 1024 * 1024) {
+      return file;
+    }
+
+    try {
+      const bitmap = await createImageBitmap(file);
+      const maxDim = 1920;
+      let width = bitmap.width;
+      let height = bitmap.height;
+
+      if (width > maxDim || height > maxDim) {
+        if (width > height) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        } else {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return file;
+
+      ctx.drawImage(bitmap, 0, 0, width, height);
+
+      const mimeType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+      const quality = 0.85;
+
+      const blob = await new Promise<Blob | null>((resolve) => {
+        canvas.toBlob(resolve, mimeType, quality);
+      });
+
+      if (blob && blob.size < file.size) {
+        return new File([blob], file.name.replace(/\.[^/.]+$/, '') + (mimeType === 'image/png' ? '.png' : '.jpg'), {
+          type: mimeType,
+          lastModified: Date.now()
+        });
+      }
+
+      return file;
+    } catch {
+      return file;
+    }
+  }
+
+  /**
+   * Convierte un archivo File a Data URI Base64
+   */
+  private fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (err) => reject(err);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async uploadImageFile(file: File, block: NoteBlock) {
+    block.isUploading = true;
+    this.imageUploadError = null;
+
+    const fileToUpload = await this.optimizeImageFile(file);
+
+    this.libraryService.uploadImage(fileToUpload).subscribe({
+      next: (res) => {
+        block.isUploading = false;
+        if (res && (res.url || res.secure_url)) {
+          block.imageUrl = res.secure_url || res.url;
+          this.syncBlocksToContent();
+          this.showToast('Imagen subida a Cloudinary');
+        } else {
+          this.imageUploadError = res?.message || 'Error al obtener la URL de Cloudinary';
+          this.showToast(this.imageUploadError, 'error');
+        }
+      },
+      error: async (err) => {
+        console.warn('Fallo upload multipart, intentando fallback Base64...', err);
+        // Fallback: Si multipart falla o es rechazado por límites del servidor, enviar como Base64
+        try {
+          const base64 = await this.fileToBase64(fileToUpload);
+          this.libraryService.uploadImageBase64(base64, fileToUpload.name).subscribe({
+            next: (res) => {
+              block.isUploading = false;
+              if (res && (res.url || res.secure_url)) {
+                block.imageUrl = res.secure_url || res.url;
+                this.syncBlocksToContent();
+                this.showToast('Imagen subida a Cloudinary');
+              } else {
+                this.imageUploadError = res?.message || 'Error al obtener la URL de Cloudinary';
+                this.showToast(this.imageUploadError, 'error');
+              }
+            },
+            error: (fallbackErr) => {
+              block.isUploading = false;
+              console.error('Error al subir imagen a Cloudinary (fallback):', fallbackErr);
+              const errMsg = fallbackErr?.error?.message || err?.error?.message || 'Error al subir la imagen a Cloudinary';
+              this.imageUploadError = errMsg;
+              this.showToast(errMsg, 'error');
+            }
+          });
+        } catch {
+          block.isUploading = false;
+          console.error('Error al subir imagen a Cloudinary:', err);
+          const errMsg = err?.error?.message || 'Error de conexión al subir la imagen';
+          this.imageUploadError = errMsg;
+          this.showToast(errMsg, 'error');
+        }
+      }
+    });
+  }
+
+  onImageFileSelected(block: NoteBlock, event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input && input.files && input.files[0]) {
+      const file = input.files[0];
+      this.uploadImageFile(file, block);
+      input.value = '';
+    }
+  }
+
+  triggerImageUpload(blockId: string) {
+    const fileInput = document.getElementById('image-file-input-' + blockId) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  }
+
+  onImageDrop(block: NoteBlock, event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]) {
+      const file = event.dataTransfer.files[0];
+      if (file.type.startsWith('image/')) {
+        this.uploadImageFile(file, block);
+      }
+    }
+  }
+
+  setImageSize(block: NoteBlock, size: 'sm' | 'md' | 'lg' | 'full') {
+    block.imageSize = size;
+    this.syncBlocksToContent();
+  }
+
+  openImageLightbox(url: string) {
+    if (!url) return;
+    this.lightboxImageUrl = url;
+  }
+
+  closeImageLightbox() {
+    this.lightboxImageUrl = null;
+  }
+
+  setDirectImageUrl(block: NoteBlock, url: string) {
+    if (url && url.trim()) {
+      block.imageUrl = url.trim();
+      this.syncBlocksToContent();
+      this.showToast('Enlace de imagen guardado');
+    }
+  }
+
+  copyImageUrl(url: string) {
+    if (!url) return;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(() => {
+        this.showToast('Enlace de imagen copiado');
+      });
+    }
+  }
+
+  createNewPage() {
+    if (!this.selectedNotebook || !this.selectedNotebook.id) return;
+
+    const tempId = Date.now();
+
+    const tempPage: NotebookPage = {
+      id: tempId,
+      notebook_id: this.selectedNotebook.id,
+      title: 'Nuevo Apunte',
+      content: '',
+      tags: '',
+      is_pinned: false
+    };
+
+    // ⚡ INSTANT OPTIMISTIC CREATION IN UI (0 ms)
+    this.pages.unshift(tempPage);
+    this.selectedPage = tempPage;
+    this.blocks = this.parseContentToBlocks('');
+    if (this.blocks.length > 0) {
+      this.activeBlockId = this.blocks[0].id;
+    }
+    this.syncActiveTabMeta();
+    this.restoreScrollForCurrentTabAndPage(0);
+    this.showToast('Apunte creado exitosamente');
+    // En móvil: al crear un nuevo apunte, ir directamente al editor inmersivo
+    if (this.isMobileScreen) {
+      this.openMobileEditor();
+    }
+
+    this.libraryService.createPage({
+      notebook_id: this.selectedNotebook.id,
+      title: tempPage.title,
+      content: tempPage.content,
+      tags: tempPage.tags,
+      is_pinned: false
+    }).subscribe({
+      next: (res) => {
+        if (res.ok && res.data) {
+          const idx = this.pages.findIndex(p => p.id === tempId);
+          
+          const currentTitle = (this.selectedPage && this.selectedPage.id === tempId) ? this.selectedPage.title : tempPage.title;
+          const currentContent = (this.selectedPage && this.selectedPage.id === tempId) ? this.selectedPage.content : tempPage.content;
+          const currentTags = (this.selectedPage && this.selectedPage.id === tempId) ? this.selectedPage.tags : tempPage.tags;
+
+          const mergedPage: NotebookPage = {
+            ...res.data,
+            title: currentTitle,
+            content: currentContent,
+            tags: currentTags
+          };
+
+          if (idx !== -1) {
+            this.pages[idx] = mergedPage;
+          }
+          if (this.selectedPage && this.selectedPage.id === tempId) {
+            this.selectedPage = mergedPage;
+            if (currentTitle !== res.data.title || currentContent !== res.data.content) {
+              this.autoSavePage();
+            }
+          }
+          this.saveStateInLocalStorage();
+        }
+      },
+      error: () => {
+        this.pages = this.pages.filter(p => p.id !== tempId);
+        if (this.selectedPage?.id === tempId) {
+          this.selectedPage = this.pages.length > 0 ? this.pages[0] : null;
+        }
+        this.showToast('Error al crear apunte en servidor', 'error');
+      }
+    });
+  }
+
+  autoSavePage() {
+    if (!this.selectedPage || !this.selectedPage.id || typeof this.selectedPage.id === 'number' && this.selectedPage.id > 1000000000000) return;
+    this.libraryService.updatePage(this.selectedPage.id, {
+      title: this.selectedPage.title,
+      content: this.selectedPage.content,
+      tags: this.selectedPage.tags,
+      is_pinned: this.selectedPage.is_pinned
+    }).subscribe({
+      error: (err) => console.error('Error autoguardando apunte:', err)
+    });
+  }
+
+  togglePinPage(page: NotebookPage) {
+    if (!page.id) return;
+    page.is_pinned = !page.is_pinned;
+    this.libraryService.updatePage(page.id, { is_pinned: page.is_pinned }).subscribe(() => {
+      this.showToast(page.is_pinned ? 'Apunte fijado al inicio' : 'Apunte desfijado');
+      if (this.selectedNotebook?.id) this.loadPages(this.selectedNotebook.id);
+    });
+  }
+
+  // ── NOTION SLASH COMMANDS MENU WITH ARROW + ENTER NAVIGATION ────
+  onTextareaInput(e: any) {
+    this.autoSavePage();
+  }
+
+  onTextareaKeydown(event: KeyboardEvent) {
+    if (!this.showSlashMenu) return;
+
+    const list = this.filteredSlashCommands;
+    if (list.length === 0) return;
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      this.slashSelectedIndex = (this.slashSelectedIndex + 1) % list.length;
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.slashSelectedIndex = (this.slashSelectedIndex - 1 + list.length) % list.length;
+    } else if (event.key === 'Enter') {
+      event.preventDefault();
+      const selectedItem = list[this.slashSelectedIndex];
+      if (selectedItem) {
+        this.executeSlashCommand(selectedItem.key);
+      }
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      this.showSlashMenu = false;
+    }
+  }
+
+  executeSlashCommand(cmdKey: string) {
+    if (cmdKey === 'columnas') {
+      if (this.activeBlockId) {
+        const targetBlock = this.blocks.find(b => b.id === this.activeBlockId);
+        if (targetBlock) {
+          this.convertToColumns(targetBlock);
+        } else {
+          this.addBlock('columnas');
+        }
+      } else {
+        this.addBlock('columnas');
+      }
+      this.showSlashMenu = false;
+      this.slashMenuQuery = '';
+      this.slashSelectedIndex = 0;
+      return;
+    }
+
+    const validTypes: ('titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'imagen')[] = [
+      'titulo', 'subtitulo', 'codigo', 'alerta', 'texto', 'imagen'
+    ];
+    const targetType = validTypes.includes(cmdKey as any) ? (cmdKey as 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'imagen') : 'texto';
+
+    if (this.activeBlockId) {
+      const targetBlock = this.blocks.find(b => b.id === this.activeBlockId);
+      if (targetBlock) {
+        targetBlock.content = targetBlock.content.replace(/^\/[a-zA-Z0-9_-]*/, '').trim();
+        targetBlock.type = targetType;
+        if (targetType === 'imagen') {
+          targetBlock.imageUrl = targetBlock.imageUrl || '';
+          targetBlock.imageSize = targetBlock.imageSize || 'lg';
+        }
+      } else {
+        this.addBlock(targetType);
+      }
+    } else {
+      this.addBlock(targetType);
+    }
+
+    this.showSlashMenu = false;
+    this.slashMenuQuery = '';
+    this.slashSelectedIndex = 0;
+    this.syncBlocksToContent();
+  }
+
+  // ── CONFIRMATION DELETE MODAL HELPERS ─────────────────────────
+  openDeleteModal(type: 'folder' | 'notebook' | 'page', item: any) {
+    this.deleteTargetType = type;
+    this.deleteItemRef = item;
+    if (type === 'folder') this.deleteItemTitle = item.name;
+    else if (type === 'notebook') this.deleteItemTitle = item.title;
+    else if (type === 'page') this.deleteItemTitle = item.title;
+    this.isDeleteModalOpen = true;
+  }
+
+  closeDeleteModal() {
+    this.isDeleteModalOpen = false;
+    this.deleteTargetType = null;
+    this.deleteItemTitle = '';
+    this.deleteItemRef = null;
+  }
+
+  executeDelete() {
+    if (!this.deleteTargetType || !this.deleteItemRef) return;
+
+    if (this.deleteTargetType === 'folder') {
+      const folder = this.deleteItemRef as NotebookFolder;
+      if (!folder.id) return;
+      this.libraryService.deleteFolder(folder.id).subscribe({
+        next: () => {
+          this.loadFolders();
+          this.showToast('Carpeta eliminada permanentemente');
+          this.closeDeleteModal();
+        },
+        error: () => this.showToast('Error al eliminar la carpeta', 'error')
+      });
+
+    } else if (this.deleteTargetType === 'notebook') {
+      const nb = this.deleteItemRef as NotebookModule;
+      if (!nb.id) return;
+      this.libraryService.deleteNotebook(nb.id).subscribe({
+        next: () => {
+          if (this.selectedFolder?.id) this.loadNotebooks(this.selectedFolder.id);
+          this.showToast('Cuaderno eliminado permanentemente');
+          this.closeDeleteModal();
+        },
+        error: () => this.showToast('Error al eliminar el cuaderno', 'error')
+      });
+
+    } else if (this.deleteTargetType === 'page') {
+      const page = this.deleteItemRef as NotebookPage;
+      if (!page.id) return;
+      this.libraryService.deletePage(page.id).subscribe({
+        next: () => {
+          this.pages = this.pages.filter(p => p.id !== page.id);
+          if (this.selectedPage?.id === page.id) {
+            if (this.pages.length > 0) {
+              this.selectedPage = this.pages[0];
+              this.blocks = this.parseContentToBlocks(this.selectedPage.content || '');
+              this.activeBlockId = null;
+            } else {
+              this.selectedPage = null;
+              this.blocks = [];
+              this.activeBlockId = null;
+            }
+          }
+          this.showToast('Apunte eliminado correctamente');
+          this.closeDeleteModal();
+        },
+        error: () => this.showToast('Error al eliminar el apunte', 'error')
+      });
+    }
+  }
+
+  // ── MODAL CARPETAS ──────────────────────────────────────────────
+  openFolderModal(folder?: NotebookFolder) {
+    if (folder && folder.id) {
+      this.editingFolderId = folder.id;
+      this.folderForm = {
+        name: folder.name,
+        description: folder.description || '',
+        color: folder.color || '#10b981',
+        icon: folder.icon || 'folder'
+      };
+    } else {
+      this.editingFolderId = null;
+      this.folderForm = { name: '', description: '', color: '#10b981', icon: 'folder' };
+    }
+    this.isFolderModalOpen = true;
+  }
+
+  selectFolderColor(color: string) {
+    this.folderForm.color = color;
+  }
+
+  selectFolderIcon(icon: string) {
+    this.folderForm.icon = icon;
+  }
+
+  saveFolder() {
+    if (!this.folderForm.name.trim()) {
+      this.showToast('Ingresa un nombre para la carpeta', 'error');
+      return;
+    }
+
+    if (this.editingFolderId) {
+      this.libraryService.updateFolder(this.editingFolderId, this.folderForm).subscribe({
+        next: (res) => {
+          if (res.ok) {
+            this.loadFolders();
+            this.isFolderModalOpen = false;
+            this.showToast('Carpeta actualizada');
+          }
+        }
+      });
+    } else {
+      this.libraryService.createFolder(this.folderForm).subscribe({
+        next: (res) => {
+          if (res.ok) {
+            this.loadFolders();
+            this.isFolderModalOpen = false;
+            this.showToast('Carpeta creada exitosamente');
+          }
+        }
+      });
+    }
+  }
+
+  // ── MODAL CUADERNOS ──────────────────────────────────────────────
+  openNotebookModal(notebook?: NotebookModule) {
+    if (notebook && notebook.id) {
+      this.editingNotebookId = notebook.id;
+      this.notebookForm = {
+        title: notebook.title,
+        description: notebook.description || '',
+        color: notebook.color || '#3b82f6',
+        icon: notebook.icon || 'book'
+      };
+    } else {
+      this.editingNotebookId = null;
+      this.notebookForm = { title: '', description: '', color: '#3b82f6', icon: 'book' };
+    }
+    this.isNotebookModalOpen = true;
+  }
+
+  selectNotebookColor(color: string) {
+    this.notebookForm.color = color;
+  }
+
+  selectNotebookIcon(icon: string) {
+    this.notebookForm.icon = icon;
+  }
+
+  saveNotebook() {
+    if (!this.notebookForm.title.trim() || !this.selectedFolder?.id) {
+      this.showToast('Ingresa un título para el cuaderno', 'error');
+      return;
+    }
+
+    if (this.editingNotebookId) {
+      this.libraryService.updateNotebook(this.editingNotebookId, this.notebookForm).subscribe({
+        next: (res) => {
+          if (res.ok && this.selectedFolder?.id) {
+            this.loadNotebooks(this.selectedFolder.id);
+            this.isNotebookModalOpen = false;
+            this.showToast('Cuaderno actualizado');
+          }
+        }
+      });
+    } else {
+      const data = { ...this.notebookForm, folder_id: this.selectedFolder.id };
+      this.libraryService.createNotebook(data).subscribe({
+        next: (res) => {
+          if (res.ok && this.selectedFolder?.id) {
+            this.loadNotebooks(this.selectedFolder.id);
+            this.isNotebookModalOpen = false;
+            this.showToast('Cuaderno creado exitosamente');
+          }
+        }
+      });
+    }
+  }
+
+  toggleFavoriteNotebook(nb: NotebookModule) {
+    if (!nb.id) return;
+    nb.is_favorite = !nb.is_favorite;
+    this.libraryService.updateNotebook(nb.id, { is_favorite: nb.is_favorite }).subscribe({
+      next: () => this.showToast(nb.is_favorite ? 'Agregado a favoritos' : 'Removido de favoritos')
+    });
+  }
+
+  // ── BUSCADOR & UTILIDADES ───────────────────────────────────────
+  onSearchInput() {
+    if (this.searchDebounceTimer) {
+      clearTimeout(this.searchDebounceTimer);
+    }
+
+    const q = this.searchQuery.trim();
+    if (q.length === 0) {
+      this.searchResults = [];
+      this.isSearching = false;
+      return;
+    }
+
+    this.isSearching = true;
+    this.searchDebounceTimer = setTimeout(() => {
+      this.libraryService.search(q).subscribe({
+        next: (res) => {
+          this.isSearching = false;
+          if (res.ok) {
+            this.searchResults = res.data || [];
+          }
+        },
+        error: () => {
+          this.isSearching = false;
+          this.showToast('Error al buscar en la biblioteca', 'error');
+        }
+      });
+    }, 220);
+  }
+
+  clearSearch() {
+    this.searchQuery = '';
+    this.searchResults = [];
+    this.isSearching = false;
+    if (this.searchDebounceTimer) {
+      clearTimeout(this.searchDebounceTimer);
+    }
+  }
+
+  getSearchSnippet(content: string, query: string): string {
+    if (!content) return 'Sin contenido adicional';
+    if (!query) return content.replace(/[#*`_>]/g, '').trim().slice(0, 140);
+
+    const q = query.trim().toLowerCase();
+    const lowerContent = content.toLowerCase();
+    const idx = lowerContent.indexOf(q);
+
+    if (idx === -1) {
+      const clean = content.replace(/[#*`_>]/g, '').trim();
+      return clean.slice(0, 140) + (clean.length > 140 ? '...' : '');
+    }
+
+    const start = Math.max(0, idx - 45);
+    const end = Math.min(content.length, idx + q.length + 65);
+    let snippet = content.substring(start, end).replace(/\n/g, ' ');
+    if (start > 0) snippet = '...' + snippet;
+    if (end < content.length) snippet = snippet + '...';
+    return snippet;
+  }
+
+  isCodeMatch(content: string, query: string): boolean {
+    if (!content || !query) return false;
+    const lowerContent = content.toLowerCase();
+    const q = query.trim().toLowerCase();
+    return content.includes('```') || lowerContent.includes('select') || lowerContent.includes('join') || lowerContent.includes('table') || lowerContent.includes('from');
+  }
+
+  selectSearchResult(item: any) {
+    this.clearSearch();
+
+    // 1. Sincronizar carpeta
+    const existingFolder = this.folders.find(f => f.id === item.folder_id);
+    this.selectedFolder = existingFolder || { 
+      id: item.folder_id, 
+      name: item.folder_name, 
+      color: '#737373', 
+      icon: 'folder' 
+    };
+
+    if (item.folder_id) {
+      this.libraryService.getNotebooks(item.folder_id).subscribe({
+        next: (res) => {
+          if (res.ok) this.notebooks = res.data;
+        }
+      });
+    }
+
+    // 2. Sincronizar cuaderno
+    this.selectedNotebook = { 
+      id: item.notebook_id, 
+      folder_id: item.folder_id, 
+      title: item.notebook_title, 
+      color: item.notebook_color || '#737373', 
+      icon: 'book' 
+    };
+
+    // 3. Cargar páginas y seleccionar el apunte
+    this.loadPages(item.notebook_id, item.page_id);
+    this.saveStateInLocalStorage();
+    this.showToast(`Apunte "${item.page_title}" abierto`);
+  }
+
+  goToBreadcrumb(target: 'root' | 'folder') {
+    if (target === 'root') {
+      this.selectedFolder = null;
+      this.selectedNotebook = null;
+      this.selectedPage = null;
+      this.saveStateInLocalStorage();
+      this.loadFolders();
+    } else if (target === 'folder') {
+      this.selectedNotebook = null;
+      this.selectedPage = null;
+      this.saveStateInLocalStorage();
+      if (this.selectedFolder?.id) this.loadNotebooks(this.selectedFolder.id);
+    }
+  }
+
+  getTagsArray(tagsStr?: string): string[] {
+    if (!tagsStr) return [];
+    return tagsStr.split(',').map(t => t.trim()).filter(Boolean);
+  }
+
+  exportPageToMarkdown() {
+    if (!this.selectedPage) return;
+    const blob = new Blob([this.selectedPage.content || ''], { type: 'text/markdown;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${this.selectedPage.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.md`;
+    link.click();
+    this.showToast('Archivo Markdown exportado');
+  }
+
+  isGeneratingPdf: boolean = false;
+
+  private cleanTextForPdf(raw: string): string {
+    if (!raw) return '';
+    let str = raw;
+    str = str.replace(/<red>(.*?)<\/red>/gi, '$1');
+    str = str.replace(/\[red\](.*?)\[\/red\]/gi, '$1');
+    str = str.replace(/<span[^>]*>(.*?)<\/span>/gi, '$1');
+    str = str.replace(/<br\s*[\/]?>/gi, '\n');
+    str = str.replace(/<\/p>/gi, '\n');
+    str = str.replace(/<p[^>]*>/gi, '');
+    str = str.replace(/<\/div>/gi, '\n');
+    str = str.replace(/<div[^>]*>/gi, '');
+    str = str.replace(/<[^>]+>/g, '');
+    str = str.replace(/&nbsp;/g, ' ');
+    str = str.replace(/&amp;/g, '&');
+    str = str.replace(/&lt;/g, '<');
+    str = str.replace(/&gt;/g, '>');
+    str = str.replace(/&quot;/g, '"');
+    return str.trim();
+  }
+
+  private async getImageBase64(url: string): Promise<{ data: string; format: string; width: number; height: number } | null> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth || img.width;
+          canvas.height = img.naturalHeight || img.height;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) { resolve(null); return; }
+          ctx.drawImage(img, 0, 0);
+          const data = canvas.toDataURL('image/jpeg', 0.85);
+          resolve({ data, format: 'JPEG', width: canvas.width, height: canvas.height });
+        } catch {
+          resolve(null);
+        }
+      };
+      img.onerror = () => resolve(null);
+      img.src = url;
+      setTimeout(() => resolve(null), 3000);
+    });
+  }
+
+  async exportPageToPdf() {
+    if (!this.selectedPage) {
+      this.showToast('No hay ningún apunte abierto para exportar', 'error');
+      return;
+    }
+
+    this.isGeneratingPdf = true;
+    this.showToast('Generando PDF...', 'success');
+
+    try {
+      const { jsPDF } = await import('jspdf');
+      const doc: any = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      const pageWidth = 210;
+      const pageHeight = 297;
+      const marginX = 18;
+      const contentWidth = pageWidth - (marginX * 2); // 174mm
+      let y = 24;
+
+      const checkPageBreak = (neededHeight: number) => {
+        if (y + neededHeight > pageHeight - 24) {
+          doc.addPage();
+          y = 24;
+          return true;
+        }
+        return false;
+      };
+
+      // 1. ENCABEZADO SUPERIOR DE MARCA Y CUADERNO
+      const notebookName = this.selectedNotebook?.title || 'Cuaderno de Estudio';
+      const folderName = this.selectedFolder?.name ? `${this.selectedFolder.name} • ` : '';
+      
+      doc.setFontSize(8.5);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(115, 115, 115);
+      doc.text(`${folderName}${notebookName}`.toUpperCase(), marginX, y);
+
+      const dateStr = new Date().toLocaleDateString('es-CO', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      });
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(160, 160, 160);
+      const dateWidth = doc.getStringUnitWidth(dateStr) * 8 / doc.internal.scaleFactor;
+      doc.text(dateStr, pageWidth - marginX - dateWidth, y);
+
+      y += 4;
+      doc.setDrawColor(229, 231, 235);
+      doc.setLineWidth(0.3);
+      doc.line(marginX, y, pageWidth - marginX, y);
+
+      y += 10;
+
+      // 2. TÍTULO DEL APUNTE
+      const noteTitle = this.selectedPage.title || 'Apunte sin título';
+      doc.setFontSize(22);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(17, 24, 39);
+      
+      const titleLines = doc.splitTextToSize(noteTitle, contentWidth);
+      doc.text(titleLines, marginX, y);
+      y += (titleLines.length * 8.5) + 6;
+
+      // 3. RENDERIZADO DE BLOQUES
+      const blocksToRender = (this.blocks && this.blocks.length > 0)
+        ? this.blocks
+        : this.parseContentToBlocks(this.selectedPage.content || '');
+
+      for (const block of blocksToRender) {
+        if (!block) continue;
+
+        if (block.type === 'titulo') {
+          const rawText = this.cleanTextForPdf(block.content);
+          if (!rawText) continue;
+          checkPageBreak(16);
+          y += 3;
+          doc.setFontSize(14);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(17, 24, 39);
+          const lines = doc.splitTextToSize(rawText, contentWidth);
+          doc.text(lines, marginX, y);
+          y += (lines.length * 6) + 2;
+          doc.setDrawColor(220, 220, 225);
+          doc.setLineWidth(0.2);
+          doc.line(marginX, y, marginX + contentWidth, y);
+          y += 5;
+
+        } else if (block.type === 'subtitulo') {
+          const rawText = this.cleanTextForPdf(block.content);
+          if (!rawText) continue;
+          checkPageBreak(13);
+          y += 2;
+          doc.setFontSize(11.5);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(55, 65, 81);
+          const lines = doc.splitTextToSize(rawText, contentWidth);
+          doc.text(lines, marginX, y);
+          y += (lines.length * 5) + 4;
+
+        } else if (block.type === 'texto') {
+          const rawText = this.cleanTextForPdf(block.content);
+          if (!rawText) {
+            y += 2;
+            continue;
+          }
+          doc.setFontSize(9.5);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(31, 41, 55);
+          const paragraphs = rawText.split('\n');
+          for (const para of paragraphs) {
+            if (!para.trim()) {
+              y += 3;
+              continue;
+            }
+            const lines = doc.splitTextToSize(para, contentWidth);
+            for (const line of lines) {
+              checkPageBreak(5);
+              doc.text(line, marginX, y);
+              y += 4.8;
+            }
+            y += 1.5;
+          }
+          y += 2;
+
+        } else if (block.type === 'alerta') {
+          const rawText = this.cleanTextForPdf(block.content);
+          if (!rawText) continue;
+          
+          doc.setFontSize(9);
+          doc.setFont('helvetica', 'normal');
+          const lines = doc.splitTextToSize(rawText, contentWidth - 10);
+          const boxHeight = (lines.length * 4.6) + 8;
+          checkPageBreak(boxHeight + 4);
+
+          doc.setFillColor(248, 250, 252);
+          doc.setDrawColor(226, 232, 240);
+          doc.setLineWidth(0.2);
+          doc.roundedRect(marginX, y, contentWidth, boxHeight, 2, 2, 'FD');
+
+          doc.setFillColor(79, 70, 229);
+          doc.rect(marginX, y, 2.5, boxHeight, 'F');
+
+          doc.setTextColor(30, 41, 59);
+          doc.setFont('helvetica', 'italic');
+          doc.text(lines, marginX + 6, y + 5.5);
+
+          y += boxHeight + 4;
+
+        } else if (block.type === 'codigo') {
+          const rawCode = block.content || '';
+          if (!rawCode.trim()) continue;
+
+          const lang = (block.language || 'CÓDIGO').toUpperCase();
+          const codeLines = rawCode.split('\n');
+          const headerHeight = 6;
+          const bodyHeight = (codeLines.length * 4.2) + 6;
+          const totalBoxHeight = headerHeight + bodyHeight;
+
+          checkPageBreak(Math.min(totalBoxHeight, 50));
+
+          doc.setFillColor(24, 24, 27);
+          doc.roundedRect(marginX, y, contentWidth, totalBoxHeight, 2, 2, 'F');
+
+          doc.setFontSize(7.5);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(161, 161, 170);
+          doc.text(lang, marginX + 4, y + 4.5);
+
+          doc.setFont('courier', 'normal');
+          doc.setFontSize(8);
+          doc.setTextColor(244, 244, 245);
+
+          let codeY = y + headerHeight + 3.5;
+          for (const cLine of codeLines) {
+            if (codeY > pageHeight - 24) {
+              doc.addPage();
+              codeY = 24;
+              doc.setFillColor(24, 24, 27);
+              doc.roundedRect(marginX, codeY - 4, contentWidth, pageHeight - codeY - 20, 2, 2, 'F');
+            }
+            doc.text(cLine.substring(0, 95), marginX + 4, codeY);
+            codeY += 4.2;
+          }
+
+          y = codeY + 4;
+
+        } else if (block.type === 'columnas') {
+          if (block.columns && block.columns.length > 0) {
+            checkPageBreak(25);
+            const colWidth = (contentWidth - 6) / 2;
+            let maxColY = y;
+
+            block.columns.forEach((col, cIdx) => {
+              const colX = marginX + (cIdx * (colWidth + 6));
+              let currentY = y;
+
+              doc.setFontSize(8);
+              doc.setFont('helvetica', 'bold');
+              doc.setTextColor(100, 116, 139);
+              doc.text(`COLUMNA ${cIdx + 1}`, colX, currentY);
+              currentY += 4;
+
+              const colText = this.cleanTextForPdf(col.content);
+              if (colText) {
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(31, 41, 55);
+                const colLines = doc.splitTextToSize(colText, colWidth);
+                doc.text(colLines, colX, currentY);
+                currentY += (colLines.length * 4.5) + 2;
+              }
+
+              if (currentY > maxColY) maxColY = currentY;
+            });
+
+            y = maxColY + 4;
+          }
+
+        } else if (block.type === 'imagen') {
+          if (block.imageUrl) {
+            const imgInfo = await this.getImageBase64(block.imageUrl);
+            if (imgInfo) {
+              let imgW = contentWidth;
+              let imgH = (imgInfo.height / imgInfo.width) * imgW;
+              if (imgH > 100) {
+                imgH = 100;
+                imgW = (imgInfo.width / imgInfo.height) * imgH;
+              }
+              checkPageBreak(imgH + 10);
+              try {
+                doc.addImage(imgInfo.data, imgInfo.format, marginX, y, imgW, imgH);
+                y += imgH + 4;
+              } catch (imgErr) {
+                console.warn('Error embedding image in PDF:', imgErr);
+              }
+            }
+          }
+        }
+      }
+
+      // 4. PIE DE PÁGINA EN TODAS LAS PÁGINAS
+      const totalPages = doc.internal.getNumberOfPages();
+      for (let p = 1; p <= totalPages; p++) {
+        doc.setPage(p);
+        doc.setFontSize(7.5);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(160, 160, 160);
+
+        doc.setDrawColor(229, 231, 235);
+        doc.setLineWidth(0.2);
+        doc.line(marginX, pageHeight - 16, pageWidth - marginX, pageHeight - 16);
+
+        const footerLeft = `PortaLink Biblioteca • ${notebookName}`;
+        doc.text(footerLeft, marginX, pageHeight - 11);
+
+        const footerRight = `Página ${p} de ${totalPages}`;
+        const frWidth = doc.getStringUnitWidth(footerRight) * 7.5 / doc.internal.scaleFactor;
+        doc.text(footerRight, pageWidth - marginX - frWidth, pageHeight - 11);
+      }
+
+      // 5. EXPORTACIÓN COMPATIBLE CON IPHONE ARCHIVOS (WEB SHARE API) Y DESKTOP
+      const cleanTitle = (this.selectedPage.title || 'apunte')
+        .replace(/[^a-zA-Z0-9áéíóúñÁÉÍÓÚÑ_-]/g, '_')
+        .replace(/_+/g, '_')
+        .trim()
+        .toLowerCase() || 'apunte';
+      const fileName = `${cleanTitle}.pdf`;
+
+      const pdfBlob = doc.output('blob');
+      const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+
+      // En iPhone / Safari móvil, navigator.share con files abre directamente el menú nativo con "Guardar en Archivos"
+      if (typeof navigator !== 'undefined' && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+        try {
+          await navigator.share({
+            files: [pdfFile],
+            title: this.selectedPage.title || 'Apunte PDF',
+            text: `Apunte: ${this.selectedPage.title || ''}`
+          });
+          this.showToast('¡Apunte listo! Puedes guardarlo en Archivos');
+          this.isGeneratingPdf = false;
+          return;
+        } catch (shareErr: any) {
+          if (shareErr && shareErr.name === 'AbortError') {
+            this.isGeneratingPdf = false;
+            return;
+          }
+          console.warn('Share API falló o se canceló, aplicando descarga directa:', shareErr);
+        }
+      }
+
+      // Descarga directa para Desktop o navegadores móviles sin Web Share File API
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      const downloadLink = document.createElement('a');
+      downloadLink.href = blobUrl;
+      downloadLink.download = fileName;
+      downloadLink.target = '_blank';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 15000);
+
+      this.showToast('PDF descargado correctamente');
+      this.isGeneratingPdf = false;
+
+    } catch (error: any) {
+      console.error('Error generando PDF:', error);
+      this.showToast('Error al generar el PDF. Puedes intentar imprimirlo.', 'error');
+      this.isGeneratingPdf = false;
+    }
+  }
+
+  printPage() {
+    this.exportPageToPdf();
+  }
+
+  getNotebookColor(): string {
+    return this.selectedNotebook?.color || '#737373';
+  }
+
+  formatMarkdown(content: string, darkTheme: boolean = this.isDark): string {
+    if (!content) return '';
+    const headingTextClass = darkTheme ? 'text-white' : 'text-neutral-900';
+    const borderClass = darkTheme ? 'border-neutral-800/80' : 'border-neutral-200';
+    const codeBgClass = darkTheme ? 'bg-[#09090b]' : 'bg-neutral-100 text-neutral-900';
+    const codeTextClass = darkTheme ? 'text-neutral-200 font-bold' : 'text-neutral-800 font-bold';
+
+    const codeBlocks: string[] = [];
+    const inlineCodes: string[] = [];
+
+    // 1. Extraer bloques de código primero para que no sean afectados por cursivas o asteriscos
+    let html = content.replace(/```([a-z0-9_\-+]*)\n?([\s\S]*?)```/gim, (_m, _lang, code) => {
+      const escaped = code
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      const block = `<pre class="p-4 my-2.5 rounded-xl ${codeBgClass} border ${borderClass} ${codeTextClass} font-mono text-xs sm:text-sm overflow-x-auto shadow-inner relative group"><code>${escaped}</code></pre>`;
+      const ph = `__FMT_CODEBLOCK_${codeBlocks.length}__`;
+      codeBlocks.push(block);
+      return ph;
+    });
+
+    // 2. Extraer código inline
+    html = html.replace(/`([^`\n]+)`/g, (_m, inline) => {
+      const escaped = inline
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      const badge = `<code class="px-1.5 py-0.5 rounded text-xs font-mono font-semibold bg-neutral-200/80 dark:bg-neutral-800 text-pink-600 dark:text-pink-400 border border-neutral-300/60 dark:border-neutral-700/60">${escaped}</code>`;
+      const ph = `__FMT_INLINE_${inlineCodes.length}__`;
+      inlineCodes.push(badge);
+      return ph;
+    });
+
+    html = html
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    // Headings (COMPACT & ELEGANT NOTION SPACING WITH DYNAMIC DARK/LIGHT TEXT COLOR)
+    html = html.replace(/^### (.*$)/gim, `<h3 class="text-base sm:text-lg font-bold mt-2.5 mb-1 ${headingTextClass} font-headline">$1</h3>`);
+    html = html.replace(/^## (.*$)/gim, `<h2 class="text-lg sm:text-xl font-bold mt-3 mb-1.5 pb-1 border-b ${borderClass} font-headline ${headingTextClass}">$1</h2>`);
+    html = html.replace(/^# (.*$)/gim, `<h1 class="text-xl sm:text-2xl font-black mt-4 mb-2 ${headingTextClass} font-headline tracking-tight border-b pb-1 ${borderClass}">$1</h1>`);
+
+    // Horizontal Divider ---
+    html = html.replace(/^---$/gim, `<hr class="my-3 ${borderClass}">`);
+
+    // Red Highlight / Text Color (<red>...</red> o [red]...[/red])
+    html = html.replace(/<red>(.*?)<\/red>/gim, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
+    html = html.replace(/\[red\](.*?)\[\/red\]/gim, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
+    html = html.replace(/&lt;red&gt;(.*?)&lt;\/red&gt;/gim, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
+    html = html.replace(/&lt;\[red\]&gt;(.*?)&lt;\[\/red\]&gt;/gim, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
+
+    // Bold & Italics
+    html = html.replace(/\*\*(.+?)\*\*/g, `<strong class="font-bold ${headingTextClass}">$1</strong>`);
+    html = html.replace(/(?<=^|[\s(])\*(?!\s)([^*\n]+?)(?<!\s)\*(?=[.,!?;:\s)]|$)/g, '<em class="italic opacity-80">$1</em>');
+
+    // Callouts / Blockquotes
+    html = html.replace(/^> (.*$)/gim, `<blockquote class="p-3 my-2 rounded-xl bg-neutral-800/40 border-l-4 border-neutral-600 text-xs sm:text-sm ${headingTextClass} font-medium flex items-start gap-2 shadow-sm">$1</blockquote>`);
+
+    // Checkboxes
+    html = html.replace(/- \[ \]/g, ' <input type="checkbox" disabled class="mr-2 rounded text-neutral-500 w-3.5 h-3.5">');
+    html = html.replace(/- \[x\]/g, ' <input type="checkbox" checked disabled class="mr-2 rounded text-neutral-500 w-3.5 h-3.5">');
+
+    // Line breaks conversion
+    html = html.replace(/\n/g, '<br>');
+
+    // Clean up excess breaks surrounding block elements (<h1-3>, <blockquote>, <pre>, <hr>)
+    html = html.replace(/(<\/h[1-3]>|<\/blockquote>|<\/pre>|<hr[^>]*>)\s*(<br\s*\/?>)+/gim, '$1');
+    html = html.replace(/(<br\s*\/?>)+\s*(<h[1-3]>|<blockquote|<pre|<hr)/gim, '$2');
+    html = html.replace(/(<br\s*\/?>){3,}/gim, '<br><br>');
+
+    // Restaurar código inline y bloques
+    inlineCodes.forEach((code, i) => {
+      html = html.replace(`__FMT_INLINE_${i}__`, code);
+    });
+    codeBlocks.forEach((code, i) => {
+      html = html.replace(`__FMT_CODEBLOCK_${i}__`, code);
+    });
+
+    return html;
+  }
+
+  // ════════════════════════════════════════════════════════
+  // GROQ AI INTEGRATION METHODS (Bloque e IA Flotante)
+  // ════════════════════════════════════════════════════════
+
+  get activeAiBlockSnippet(): string {
+    const block = this.currentActiveBlock;
+    if (!block) return '';
+    if (block.type === 'columnas' && block.columns) {
+      if (this.activeAiTargetColIndex !== null && this.activeAiTargetColIndex !== undefined && block.columns[this.activeAiTargetColIndex]) {
+        return block.columns[this.activeAiTargetColIndex].content || '';
+      }
+      const c1 = block.columns[0]?.content || '';
+      const c2 = block.columns[1]?.content || '';
+      return `Columna 1:\n${c1}\n\nColumna 2:\n${c2}`;
+    }
+    return block.content || '';
+  }
+
+  closeAiModal() {
+    this.activeAiBlockId = null;
+    this.activeAiTargetColIndex = null;
+    this.aiCustomInstruction = '';
+    this.aiResultPreview = '';
+    this.aiError = '';
+  }
+
+  copyAiResult() {
+    if (!this.aiResultPreview) return;
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(this.aiResultPreview).then(() => {
+        this.showToast('Resultado copiado al portapapeles');
+      }).catch(() => {
+        this.fallbackCopyText(this.aiResultPreview);
+      });
+    } else {
+      this.fallbackCopyText(this.aiResultPreview);
+    }
+  }
+
+  private fallbackCopyText(text: string) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-9999px';
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      this.showToast('Resultado copiado al portapapeles');
+    } catch {
+      this.showToast('No se pudo copiar el texto', 'error');
+    }
+    document.body.removeChild(textArea);
+  }
+
+  toggleAiBlockMenu(blockId: string, event: Event, targetColIndex?: number) {
+    event.stopPropagation();
+    if (this.activeAiBlockId === blockId && this.activeAiTargetColIndex === (targetColIndex ?? null)) {
+      this.closeAiModal();
+    } else {
+      this.activeBlockId = blockId;
+      this.activeAiBlockId = blockId;
+      this.activeAiTargetColIndex = targetColIndex ?? null;
+      this.aiCustomInstruction = '';
+      this.aiResultPreview = '';
+      this.aiError = '';
+    }
+    this.activeTypeMenuBlockId = null;
+  }
+
+  applyAiTransform(block: NoteBlock, presetInstruction: string) {
+    const instruction = presetInstruction || this.aiCustomInstruction.trim();
+    if (!instruction) return;
+
+    this.isAiLoading = true;
+    this.aiResultPreview = '';
+    this.aiError = '';
+
+    let contentToSend = block.content || '';
+    let blockTypeToSend = block.type;
+
+    if (block.type === 'columnas' && block.columns) {
+      if (this.activeAiTargetColIndex !== null && block.columns[this.activeAiTargetColIndex]) {
+        const targetCol = block.columns[this.activeAiTargetColIndex];
+        contentToSend = targetCol.content || '';
+        blockTypeToSend = targetCol.type || 'codigo';
+      } else {
+        const c1 = block.columns[0];
+        const c2 = block.columns[1];
+        contentToSend = `[COLUMNA IZQUIERDA (${c1?.type || 'texto'}${c1?.language ? ' ' + c1.language : ''})]:\n${c1?.content || ''}\n\n[COLUMNA DERECHA (${c2?.type || 'texto'}${c2?.language ? ' ' + c2.language : ''})]:\n${c2?.content || ''}`;
+      }
+    }
+
+    this.libraryAiService.transformBlockContent(contentToSend, blockTypeToSend, instruction).subscribe(res => {
+      this.isAiLoading = false;
+      if (res.success) {
+        this.aiResultPreview = res.result;
+      } else {
+        this.aiError = res.error || 'No se pudo procesar la solicitud con la IA.';
+        this.showToast(this.aiError, 'error');
+      }
+    });
+  }
+
+  replaceBlockContentWithAi(block: NoteBlock, targetColIndex?: number) {
+    if (!this.aiResultPreview) return;
+    const colIdx = targetColIndex !== undefined ? targetColIndex : this.activeAiTargetColIndex;
+
+    if (block.type === 'columnas' && block.columns) {
+      if (colIdx !== null && colIdx !== undefined && block.columns[colIdx]) {
+        // Update specific target column
+        block.columns[colIdx].content = this.aiResultPreview;
+        if (this.aiResultPreview.startsWith('|') && this.aiResultPreview.includes('-|')) {
+          block.columns[colIdx].type = 'codigo';
+          if (!block.columns[colIdx].language) block.columns[colIdx].language = 'sql';
+        } else if (this.aiResultPreview.startsWith('```')) {
+          block.columns[colIdx].type = 'codigo';
+        }
+        this.showToast(`Columna ${colIdx + 1} actualizada con IA`);
+      } else {
+        // Check if AI output formatted both columns
+        if (this.aiResultPreview.includes('[COLUMNA IZQUIERDA') || this.aiResultPreview.includes('[COLUMNA DERECHA')) {
+          const parts = this.aiResultPreview.split(/\[COLUMNA DERECHA[^\]]*\]:?/i);
+          if (parts.length >= 2) {
+            const leftText = parts[0].replace(/\[COLUMNA IZQUIERDA[^\]]*\]:?/i, '').trim();
+            const rightText = parts[1].trim();
+            block.columns[0].content = leftText;
+            block.columns[1].content = rightText;
+            this.showToast('Ambas columnas actualizadas con IA');
+          }
+        } else {
+          // Default to first column or column 2 if column 1 has content
+          const destCol = (block.columns[0].content && !block.columns[1].content) ? 1 : 0;
+          block.columns[destCol].content = this.aiResultPreview;
+          if (this.aiResultPreview.startsWith('|')) {
+            block.columns[destCol].type = 'codigo';
+            if (!block.columns[destCol].language) block.columns[destCol].language = 'sql';
+          }
+          this.showToast(`Columna ${destCol + 1} actualizada con IA`);
+        }
+      }
+    } else {
+      block.content = this.aiResultPreview;
+      // Auto detect block type if AI generated a Markdown table or Code
+      if (this.aiResultPreview.startsWith('|') && this.aiResultPreview.includes('-|')) {
+        block.type = 'codigo';
+      } else if (this.aiResultPreview.startsWith('```')) {
+        block.type = 'codigo';
+      }
+      this.showToast('Contenido actualizado por la IA');
+    }
+
+    this.activeAiBlockId = null;
+    this.activeAiTargetColIndex = null;
+    this.aiResultPreview = '';
+    this.syncBlocksToContent();
+  }
+
+  insertAiResultAsNewBlock(blockIndex: number) {
+    if (!this.aiResultPreview) return;
+    
+    let blockType: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' = 'texto';
+    if (this.aiResultPreview.startsWith('|') && this.aiResultPreview.includes('-|')) {
+      blockType = 'codigo';
+    } else if (this.aiResultPreview.startsWith('```')) {
+      blockType = 'codigo';
+    }
+
+    const newBlock: NoteBlock = {
+      id: 'block-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
+      type: blockType,
+      content: this.aiResultPreview
+    };
+
+    this.blocks.splice(blockIndex + 1, 0, newBlock);
+    this.activeAiBlockId = null;
+    this.aiResultPreview = '';
+    this.syncBlocksToContent();
+    this.showToast('Nuevo bloque insertado por la IA');
+  }
+
+  // Copilot Assistant Methods
+  toggleCopilot() {
+    this.isCopilotOpen = !this.isCopilotOpen;
+    if (this.isCopilotOpen) {
+      if (this.isMobileScreen) {
+        this.isCopilotCustomPositioned = false;
+      }
+      this.scrollToBottomCopilot();
+    } else {
+      this.isCopilotFullscreen = false;
+    }
+  }
+
+  closeCopilot() {
+    this.isCopilotOpen = false;
+    this.isCopilotFullscreen = false;
+  }
+
+  @HostListener('window:keydown.escape', ['$event'])
+  handleGlobalEscape(event?: KeyboardEvent) {
+    if (this.lightboxImageUrl) {
+      this.closeImageLightbox();
+      return;
+    }
+    if (this.isDeleteModalOpen) {
+      this.closeDeleteModal();
+      return;
+    }
+    if (this.activeAiBlockId) {
+      this.closeAiModal();
+      return;
+    }
+    if (this.isCopilotOpen) {
+      this.closeCopilot();
+      return;
+    }
+    if (this.isLeftReaderOpen) {
+      this.closeLeftReader();
+      return;
+    }
+  }
+
+  resetCopilotWithEffect() {
+    if (this.isResettingCopilot) return;
+    this.isResettingCopilot = true;
+    this.showCopilotResetOverlay = true;
+    this.copilotOverlayOpacity = '1';
+
+    setTimeout(() => {
+      this.copilotMessages = [
+        {
+          role: 'assistant',
+          content: '¡Hola! Soy **RotBot**. ¿En qué puedo ayudarte a resumir, explicar o estructurar tus notas de estudio hoy?'
+        }
+      ];
+      this.saveCopilotChatToStorage();
+      this.scrollToBottomCopilot();
+    }, 300);
+
+    setTimeout(() => {
+      this.copilotOverlayOpacity = '0';
+      setTimeout(() => {
+        this.showCopilotResetOverlay = false;
+        this.isResettingCopilot = false;
+      }, 500);
+    }, 1600);
+  }
+
+  private copilotHtmlCache = new Map<string, SafeHtml>();
+
+  handleCopilotContainerClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const copyBtn = target.closest('.copilot-copy-code-btn') as HTMLElement;
+    if (copyBtn) {
+      event.preventDefault();
+      event.stopPropagation();
+      const codeToCopy = copyBtn.getAttribute('data-code');
+      if (codeToCopy) {
+        const decoded = decodeURIComponent(codeToCopy);
+        navigator.clipboard.writeText(decoded).then(() => {
+          const originalContent = copyBtn.innerHTML;
+          copyBtn.innerHTML = `
+            <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            <span class="text-emerald-400 font-medium">¡Copiado!</span>
+          `;
+          copyBtn.classList.add('bg-emerald-500/20');
+          setTimeout(() => {
+            copyBtn.innerHTML = originalContent;
+            copyBtn.classList.remove('bg-emerald-500/20');
+          }, 2000);
+        }).catch(() => {
+          this.showToast('No se pudo copiar el código al portapapeles', 'error');
+        });
+      }
+    }
+  }
+
+  formatCopilotMessage(content: string): SafeHtml {
+    return this.copilotMarkdownService.format(content, this.isDark);
+  }
+
+  private escapeCopilotHtml(text: string): string {
+    return this.copilotMarkdownService.escapeHtml(text);
+  }
+
+  parseCopilotMarkdown(content: string, darkTheme: boolean = this.isDark): string {
+    return this.copilotMarkdownService.parse(content, darkTheme);
+  }
+
+  focusCopilotInput() {
+    setTimeout(() => {
+      if (this.copilotTextareaElement?.nativeElement) {
+        this.copilotTextareaElement.nativeElement.focus();
+      }
+    }, 50);
+  }
+  scrollToBottomCopilot() {
+    setTimeout(() => {
+      if (this.copilotMessagesContainer?.nativeElement) {
+        const el = this.copilotMessagesContainer.nativeElement;
+        el.scrollTop = el.scrollHeight;
+      }
+    }, 80);
+  }
+
+  adjustCopilotTextareaHeight(event?: Event) {
+    const el = this.copilotTextareaElement?.nativeElement || (event?.target as HTMLTextAreaElement);
+    if (el) {
+      el.style.height = 'auto';
+      const newHeight = Math.min(Math.max(el.scrollHeight, 24), 140);
+      el.style.height = `${newHeight}px`;
+    }
+  }
+
+  onCopilotKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.sendCopilotMessage();
+    } else if (event.key === 'Enter' && event.shiftKey) {
+      setTimeout(() => this.adjustCopilotTextareaHeight(), 0);
+    }
+  }
+
+  sendCopilotMessage() {
+    const text = this.copilotInput.trim();
+    if (!text || this.isCopilotLoading) return;
+
+    this.copilotMessages.push({ role: 'user', content: text });
+    this.saveCopilotChatToStorage();
+    this.copilotInput = '';
+    if (this.copilotTextareaElement?.nativeElement) {
+      this.copilotTextareaElement.nativeElement.style.height = 'auto';
+    }
+    this.focusCopilotInput();
+    this.isCopilotLoading = true;
+    this.scrollToBottomCopilot();
+
+    const historyPayload = this.copilotMessages.slice(1, -1);
+
+    let noteContentSnapshot = '';
+    if (this.selectedPage) {
+      noteContentSnapshot = this.blocks.map((b, idx) => {
+        if (b.type === 'columnas') {
+          const col1 = b.columns?.[0];
+          const col2 = b.columns?.[1];
+          return `[BLOQUE ${idx + 1}: 2 COLUMNAS PARALELAS (Proporción ${b.columnRatio || '50-50'})]\n` +
+                 `  ◀ COLUMNA IZQUIERDA (Tipo: ${col1?.type || 'texto'}${col1?.language ? ', Lenguaje: ' + col1.language : ''}):\n` +
+                 `${col1?.content || '(vacía)'}\n\n` +
+                 `  ▶ COLUMNA DERECHA (Tipo: ${col2?.type || 'texto'}${col2?.language ? ', Lenguaje: ' + col2.language : ''}):\n` +
+                 `${col2?.content || '(vacía)'}`;
+        } else if (b.type === 'codigo') {
+          return `[BLOQUE ${idx + 1}: CÓDIGO / TABLA (${b.language || 'sql'})]:\n${b.content || ''}`;
+        } else if (b.type === 'alerta') {
+          return `[BLOQUE ${idx + 1}: ALERTA / CONSEJO]:\n${b.content || ''}`;
+        } else if (b.type === 'titulo') {
+          return `[BLOQUE ${idx + 1}: TÍTULO]:\n# ${b.content || ''}`;
+        } else if (b.type === 'subtitulo') {
+          return `[BLOQUE ${idx + 1}: SUBTÍTULO]:\n### ${b.content || ''}`;
+        } else {
+          return `[BLOQUE ${idx + 1}: TEXTO]:\n${b.content || ''}`;
+        }
+      }).join('\n\n------------------------\n\n');
+    }
+
+    this.libraryAiService.askCopilot(text, this.selectedPage?.title, historyPayload, noteContentSnapshot).subscribe(res => {
+      this.isCopilotLoading = false;
+      if (res.success) {
+        this.copilotMessages.push({ role: 'assistant', content: res.result });
+      } else {
+        const errorText = res.error || 'El servicio de IA ha alcanzado su límite temporal de consultas. Intenta de nuevo en unos momentos.';
+        this.copilotMessages.push({ role: 'assistant', content: '⚠️ **Aviso de IA**: ' + errorText });
+        this.showToast(errorText, 'error');
+      }
+      this.saveCopilotChatToStorage();
+      this.scrollToBottomCopilot();
+      this.focusCopilotInput();
+    });
+  }
+
+  // ── COPILOT DRAG & RESIZE LOGIC (ASISTIDO CON IMÁN MAGNÉTICO & PRESETS) ────
+  copilotWidth = 400;
+  copilotHeight = 575;
+  isCopilotFullscreen = false;
+  isDraggingCopilot = false;
+  isResizingCopilot = false;
+  showCopilotSizeMenu = false;
+  copilotResizeDir: 'width' | 'height' | 'both' = 'width';
+  copilotPos = { x: 0, y: 0 };
+  isCopilotCustomPositioned = false;
+  private dragStartOffset = { x: 0, y: 0 };
+  private resizeStartX = 0;
+  private resizeStartY = 0;
+  private resizeStartWidth = 400;
+  private resizeStartHeight = 575;
+  private resizeStartPosY = 0;
+  private resizeRafId: number | null = null;
+
+  // Presets recomendados para asistencia magnética
+  readonly copilotWidthPresets = [
+    { label: 'Compacto', width: 400, desc: '400px' },
+    { label: 'Equilibrado', width: 540, desc: '540px' },
+    { label: 'Amplio', width: 680, desc: '680px' },
+    { label: 'Panorámico', width: 860, desc: '860px' }
+  ];
+
+  get copilotMaxHeight(): number {
+    return Math.max(500, Math.min(window.innerHeight - 70, 880));
+  }
+
+  get copilotHeightPresets() {
+    return [
+      { label: 'Compacto', height: 440, desc: '440px' },
+      { label: 'Estándar', height: 575, desc: '575px' },
+      { label: 'Alto', height: 720, desc: '720px' },
+      { label: 'Máximo', height: this.copilotMaxHeight, desc: `${this.copilotMaxHeight}px` }
+    ];
+  }
+
+  copilotResizeInfo = {
+    isSnappedWidth: false,
+    isSnappedHeight: false,
+    activeSnapWidth: null as number | null,
+    activeSnapHeight: null as number | null
+  };
+
+  get isCopilotSnapped(): boolean {
+    return this.copilotResizeInfo.isSnappedWidth || this.copilotResizeInfo.isSnappedHeight;
+  }
+
+  get copilotCurrentSizeLabel(): string {
+    const matchedW = this.copilotWidthPresets.find(p => Math.abs(p.width - this.copilotWidth) <= 14);
+    const matchedH = this.copilotHeightPresets.find(p => Math.abs(p.height - this.copilotHeight) <= 14);
+
+    if (matchedW && matchedH) {
+      return `${matchedW.label} • ${matchedH.label}`;
+    }
+    if (matchedW) {
+      return `Ancho ${matchedW.label}`;
+    }
+    if (matchedH) {
+      return `Alto ${matchedH.label}`;
+    }
+    return 'Libre';
+  }
+
+  private snapToPoints(value: number, points: number[], threshold: number = 20): { value: number; isSnapped: boolean; snapPoint: number | null } {
+    for (const point of points) {
+      const dist = Math.abs(value - point);
+      if (dist <= 6) {
+        return { value: point, isSnapped: true, snapPoint: point };
+      }
+      if (dist <= threshold) {
+        // Atracción magnética suave (amortiguación) para movimiento ultra fluido sin saltos
+        const attraction = point + (value - point) * 0.45;
+        return { value: Math.round(attraction), isSnapped: true, snapPoint: point };
+      }
+    }
+    return { value, isSnapped: false, snapPoint: null };
+  }
+
+  toggleCopilotSizeMenu(event?: MouseEvent) {
+    if (event) event.stopPropagation();
+    this.showCopilotSizeMenu = !this.showCopilotSizeMenu;
+  }
+
+  applyCopilotPreset(width: number, height?: number) {
+    this.copilotWidth = width;
+    if (height) {
+      this.copilotHeight = height;
+      try { localStorage.setItem('portalink_copilot_height', String(height)); } catch {}
+    }
+    try { localStorage.setItem('portalink_copilot_width', String(width)); } catch {}
+    this.showCopilotSizeMenu = false;
+    this.scrollToBottomCopilot();
+  }
+
+  applyCopilotWidth(width: number) {
+    this.copilotWidth = width;
+    try { localStorage.setItem('portalink_copilot_width', String(width)); } catch {}
+    this.scrollToBottomCopilot();
+  }
+
+  applyCopilotHeight(height: number) {
+    this.copilotHeight = height;
+    try { localStorage.setItem('portalink_copilot_height', String(height)); } catch {}
+    this.scrollToBottomCopilot();
+  }
+
+  isCurrentWidth(w: number): boolean {
+    return Math.abs(this.copilotWidth - w) <= 8;
+  }
+
+  isCurrentHeight(h: number): boolean {
+    return Math.abs(this.copilotHeight - h) <= 8;
+  }
+
+  startResizeCopilot(event: MouseEvent | TouchEvent, dir: 'width' | 'height' | 'both' = 'width') {
+    event.stopPropagation();
+    event.preventDefault();
+    this.isResizingCopilot = true;
+    this.showCopilotSizeMenu = false;
+    this.copilotResizeDir = dir;
+    this.resizeStartX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+    this.resizeStartY = 'touches' in event ? event.touches[0].clientY : event.clientY;
+    this.resizeStartWidth = this.copilotWidth;
+    this.resizeStartHeight = this.copilotHeight;
+    this.resizeStartPosY = this.copilotPos.y;
+    this.copilotResizeInfo.isSnappedWidth = false;
+    this.copilotResizeInfo.isSnappedHeight = false;
+    document.body.classList.add('is-chat-dragging');
+    if (dir === 'height') {
+      document.body.style.cursor = 'ns-resize';
+    } else if (dir === 'both') {
+      document.body.style.cursor = 'nwse-resize';
+    } else {
+      document.body.style.cursor = 'ew-resize';
+    }
+    document.body.style.userSelect = 'none';
+  }
+
+  toggleCopilotWidthPreset() {
+    if (this.copilotWidth < 480) {
+      this.copilotWidth = 540;
+    } else if (this.copilotWidth < 620) {
+      this.copilotWidth = 680;
+    } else if (this.copilotWidth < 800) {
+      this.copilotWidth = 860;
+    } else {
+      this.copilotWidth = 400;
+    }
+    try {
+      localStorage.setItem('portalink_copilot_width', String(this.copilotWidth));
+    } catch {}
+  }
+
+  toggleCopilotHeightPreset() {
+    if (this.copilotHeight < 510) {
+      this.copilotHeight = 575;
+    } else if (this.copilotHeight < 650) {
+      this.copilotHeight = 720;
+    } else if (this.copilotHeight < 800) {
+      this.copilotHeight = this.copilotMaxHeight;
+    } else {
+      this.copilotHeight = 440;
+    }
+    try {
+      localStorage.setItem('portalink_copilot_height', String(this.copilotHeight));
+    } catch {}
+  }
+
+  toggleCopilotFullscreen() {
+    this.isCopilotFullscreen = !this.isCopilotFullscreen;
+    this.showCopilotSizeMenu = false;
+    this.scrollToBottomCopilot();
+  }
+
+  // ── LEFT READER DRAG LOGIC ─────────────────────────────
+  isDraggingLeftReader = false;
+  leftReaderPos = { x: 0, y: 0 };
+  isLeftReaderCustomPositioned = false;
+  private leftReaderDragStartOffset = { x: 0, y: 0 };
+
+  startDragLeftReader(event: MouseEvent | TouchEvent) {
+    if (this.isMobileScreen) return;
+    const target = event.target as HTMLElement;
+    if (target.closest('button') || target.closest('select')) return;
+
+    this.isDraggingLeftReader = true;
+    document.body.classList.add('is-chat-dragging');
+    document.body.style.cursor = 'grabbing';
+    document.body.style.userSelect = 'none';
+
+    const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+    const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
+
+    const chatEl = document.querySelector('.left-reader-panel') as HTMLElement;
+    if (chatEl) {
+      const rect = chatEl.getBoundingClientRect();
+      this.leftReaderDragStartOffset = {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+      if (!this.isLeftReaderCustomPositioned) {
+        this.leftReaderPos = { x: rect.left, y: rect.top };
+        this.isLeftReaderCustomPositioned = true;
+      }
+    }
+  }
+
+  startDragCopilot(event: MouseEvent | TouchEvent) {
+    if (this.isMobileScreen || this.isCopilotFullscreen) return;
+    const target = event.target as HTMLElement;
+    if (target.closest('button')) return;
+
+    this.isDraggingCopilot = true;
+    document.body.classList.add('is-chat-dragging');
+    document.body.style.cursor = 'grabbing';
+    document.body.style.userSelect = 'none';
+
+    const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+    const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
+
+    const chatEl = document.querySelector('.copilot-panel') as HTMLElement;
+    if (chatEl) {
+      const rect = chatEl.getBoundingClientRect();
+      this.dragStartOffset = {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+      if (!this.isCopilotCustomPositioned) {
+        this.copilotPos = { x: rect.left, y: rect.top };
+        this.isCopilotCustomPositioned = true;
+      }
+    }
+  }
+
+  @HostListener('window:mousemove', ['$event'])
+  @HostListener('window:touchmove', ['$event'])
+  onDragCopilotMove(event: MouseEvent | TouchEvent) {
+    if (this.isResizingCopilot) {
+      const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+      const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
+
+      if (this.resizeRafId) {
+        cancelAnimationFrame(this.resizeRafId);
+      }
+
+      this.resizeRafId = requestAnimationFrame(() => {
+        if (!this.isResizingCopilot) return;
+
+        if (this.copilotResizeDir === 'width' || this.copilotResizeDir === 'both') {
+          const deltaX = this.resizeStartX - clientX;
+          const minW = 360;
+          const maxW = Math.min(window.innerWidth - 30, 1100);
+          const rawW = Math.max(minW, Math.min(this.resizeStartWidth + deltaX, maxW));
+          
+          // Asistencia magnética fluida y suave
+          const snap = this.snapToPoints(rawW, this.copilotWidthPresets.map(p => p.width), 20);
+          this.copilotWidth = snap.value;
+          this.copilotResizeInfo.isSnappedWidth = snap.isSnapped;
+          this.copilotResizeInfo.activeSnapWidth = snap.snapPoint;
+        }
+
+        if (this.copilotResizeDir === 'height' || this.copilotResizeDir === 'both') {
+          const deltaY = this.resizeStartY - clientY;
+          const minH = 340;
+          const maxH = Math.max(minH, window.innerHeight - 50);
+          const rawH = Math.max(minH, Math.min(this.resizeStartHeight + deltaY, maxH));
+
+          // Asistencia magnética fluida y suave
+          const snap = this.snapToPoints(rawH, this.copilotHeightPresets.map(p => p.height), 20);
+          const newHeight = snap.value;
+          this.copilotHeight = newHeight;
+          this.copilotResizeInfo.isSnappedHeight = snap.isSnapped;
+          this.copilotResizeInfo.activeSnapHeight = snap.snapPoint;
+
+          if (this.isCopilotCustomPositioned) {
+            const heightDiff = newHeight - this.resizeStartHeight;
+            const newY = Math.max(12, this.resizeStartPosY - heightDiff);
+            this.copilotPos.y = newY;
+          }
+        }
+      });
+      return;
+    }
+
+    if (this.isDraggingLeftReader) {
+      const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+      const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
+
+      const chatEl = document.querySelector('.left-reader-panel') as HTMLElement;
+      const chatWidth = chatEl ? chatEl.offsetWidth : 385;
+      const chatHeight = chatEl ? chatEl.offsetHeight : 515;
+
+      const margin = 12;
+      const maxX = window.innerWidth - chatWidth - margin;
+      const maxY = window.innerHeight - chatHeight - margin;
+
+      let newX = clientX - this.leftReaderDragStartOffset.x;
+      let newY = clientY - this.leftReaderDragStartOffset.y;
+
+      newX = Math.max(margin, Math.min(newX, maxX));
+      newY = Math.max(margin, Math.min(newY, maxY));
+
+      this.leftReaderPos = { x: newX, y: newY };
+      return;
+    }
+
+    if (!this.isDraggingCopilot) return;
+
+    const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+    const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
+
+    const chatEl = document.querySelector('.copilot-panel') as HTMLElement;
+    const chatWidth = chatEl ? chatEl.offsetWidth : this.copilotWidth;
+    const chatHeight = chatEl ? chatEl.offsetHeight : this.copilotHeight;
+
+    const margin = 12;
+    const maxX = window.innerWidth - chatWidth - margin;
+    const maxY = window.innerHeight - chatHeight - margin;
+
+    let newX = clientX - this.dragStartOffset.x;
+    let newY = clientY - this.dragStartOffset.y;
+
+    newX = Math.max(margin, Math.min(newX, maxX));
+    newY = Math.max(margin, Math.min(newY, maxY));
+
+    this.copilotPos = { x: newX, y: newY };
+  }
+
+  @HostListener('window:mouseup')
+  @HostListener('window:touchend')
+  onDragCopilotEnd() {
+    if (this.resizeRafId) {
+      cancelAnimationFrame(this.resizeRafId);
+      this.resizeRafId = null;
+    }
+
+    if (this.isResizingCopilot) {
+      // Si soltó dentro de zona magnética, acoplar limpio al preset
+      if (this.copilotResizeInfo.activeSnapWidth) {
+        this.copilotWidth = this.copilotResizeInfo.activeSnapWidth;
+      }
+      if (this.copilotResizeInfo.activeSnapHeight) {
+        this.copilotHeight = this.copilotResizeInfo.activeSnapHeight;
+      }
+      try {
+        localStorage.setItem('portalink_copilot_width', String(this.copilotWidth));
+        localStorage.setItem('portalink_copilot_height', String(this.copilotHeight));
+      } catch {}
+    }
+
+    this.isDraggingCopilot = false;
+    this.isDraggingLeftReader = false;
+    this.isResizingCopilot = false;
+    this.copilotResizeInfo.isSnappedWidth = false;
+    this.copilotResizeInfo.isSnappedHeight = false;
+    this.copilotResizeInfo.activeSnapWidth = null;
+    this.copilotResizeInfo.activeSnapHeight = null;
+    document.body.classList.remove('is-chat-dragging');
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  }
+
+  // ── ROTBOT LECTOR EN ESPAÑOL (MÉTODOS) ───────────────────
+  toggleLeftReader() {
+    this.isLeftReaderOpen = !this.isLeftReaderOpen;
+    if (this.isLeftReaderOpen) {
+      setTimeout(() => this.scrollToBottomLeftReader(), 100);
+    }
+  }
+
+  openLeftReader() {
+    this.isLeftReaderOpen = true;
+    setTimeout(() => this.scrollToBottomLeftReader(), 100);
+  }
+
+  closeLeftReader() {
+    this.isLeftReaderOpen = false;
+  }
+
+  scrollToBottomLeftReader() {
+    setTimeout(() => {
+      if (this.leftReaderMessagesContainer?.nativeElement) {
+        const el = this.leftReaderMessagesContainer.nativeElement;
+        el.scrollTop = el.scrollHeight;
+      }
+    }, 80);
+  }
+
+  setReaderSpeed(speed: number) {
+    this.leftReaderSpeed = speed;
+    this.spanishTts.rate = speed;
+  }
+
+  setReaderVoice(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const voiceName = select.value;
+    const voices = window.speechSynthesis?.getVoices() || [];
+    const found = voices.find(v => v.name === voiceName);
+    if (found) {
+      this.spanishTts.setSelectedVoice(found);
+    }
+  }
+
+  isReadingThisBlock(block?: NoteBlock | null): boolean {
+    if (!block) return false;
+    return this.currentlyReadingBlockId === block.id && this.spanishTts.isSpeaking;
+  }
+
+  readBlockWithRotBot(block?: NoteBlock | null, event?: Event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    if (!block) return;
+
+    if (this.isReadingThisBlock(block)) {
+      this.spanishTts.stop();
+      this.currentlyReadingBlockId = null;
+      return;
+    }
+
+    let textToRead = '';
+    if (block.type === 'columnas') {
+      const c1 = block.columns?.[0]?.content || '';
+      const c2 = block.columns?.[1]?.content || '';
+      textToRead = `Columna uno: ${c1}. Columna dos: ${c2}`;
+    } else {
+      textToRead = block.content || '';
+    }
+
+    const clean = this.spanishTts.cleanTextForSpeech(textToRead);
+    if (!clean) {
+      this.showToast('Este bloque no contiene texto para leer');
+      return;
+    }
+
+    this.currentlyReadingBlockId = block.id;
+    this.spanishTts.rate = this.leftReaderSpeed;
+
+    const preview = clean.length > 120 ? clean.substring(0, 120) + '...' : clean;
+    this.leftReaderMessages.push({
+      id: 'read_' + Date.now(),
+      role: 'assistant',
+      text: `🔊 **Leyendo apunte:** "${preview}"`,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    });
+    this.scrollToBottomLeftReader();
+
+    this.spanishTts.speak(clean, () => {
+      this.currentlyReadingBlockId = null;
+    });
+  }
+
+  readSelectedTextOrActiveBlock() {
+    if (this.spanishTts.isSpeaking) {
+      this.spanishTts.stop();
+      this.currentlyReadingBlockId = null;
+      return;
+    }
+
+    // 1. Verificar si hay texto seleccionado con el ratón
+    const selection = window.getSelection()?.toString()?.trim();
+    if (selection) {
+      this.openLeftReader();
+      this.currentlyReadingBlockId = null;
+      this.spanishTts.rate = this.leftReaderSpeed;
+
+      const preview = selection.length > 120 ? selection.substring(0, 120) + '...' : selection;
+      this.leftReaderMessages.push({
+        id: 'sel_' + Date.now(),
+        role: 'assistant',
+        text: `🎯 **Leyendo texto seleccionado:** "${preview}"`,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+      this.scrollToBottomLeftReader();
+
+      this.spanishTts.speak(selection, () => {
+        this.currentlyReadingBlockId = null;
+      });
+      return;
+    }
+
+    // 2. Si hay un bloque activo, leer ese bloque
+    if (this.activeBlockId) {
+      const activeBlock = this.blocks.find(b => b.id === this.activeBlockId);
+      if (activeBlock) {
+        this.readBlockWithRotBot(activeBlock);
+        return;
+      }
+    }
+
+    // 3. Si no hay selección ni bloque activo, leer el apunte completo
+    if (this.blocks.length > 0) {
+      const fullText = (this.selectedPage?.title ? `${this.selectedPage.title}. ` : '') + 
+        this.blocks.map(b => {
+          if (b.type === 'columnas') {
+            return `${b.columns?.[0]?.content || ''}. ${b.columns?.[1]?.content || ''}`;
+          }
+          return b.content || '';
+        }).join('. ');
+
+      const clean = this.spanishTts.cleanTextForSpeech(fullText);
+      if (clean) {
+        this.openLeftReader();
+        this.spanishTts.rate = this.leftReaderSpeed;
+        this.leftReaderMessages.push({
+          id: 'full_' + Date.now(),
+          role: 'assistant',
+          text: `📚 **Leyendo apunte completo:** ${this.selectedPage?.title || 'Notas'}`,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        this.scrollToBottomLeftReader();
+
+        this.spanishTts.speak(clean, () => {
+          this.currentlyReadingBlockId = null;
+        });
+        return;
+      }
+    }
+
+    this.showToast('No hay contenido disponible para leer');
+  }
+
+  sendLeftReaderText(mode: 'read-only' | 'ask-ai') {
+    const text = this.leftReaderInput.trim();
+    if (!text) return;
+
+    this.leftReaderInput = '';
+    if (this.leftReaderTextareaElement?.nativeElement) {
+      this.leftReaderTextareaElement.nativeElement.style.height = 'auto';
+    }
+
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    if (mode === 'read-only') {
+      this.leftReaderMessages.push({
+        id: 'user_' + Date.now(),
+        role: 'user',
+        text: text,
+        time: timeStr
+      });
+      this.leftReaderMessages.push({
+        id: 'bot_' + Date.now(),
+        role: 'assistant',
+        text: `🔊 ${text}`,
+        time: timeStr
+      });
+      this.scrollToBottomLeftReader();
+
+      this.spanishTts.rate = this.leftReaderSpeed;
+      this.spanishTts.speak(text);
+    } else {
+      this.leftReaderMessages.push({
+        id: 'user_' + Date.now(),
+        role: 'user',
+        text: text,
+        time: timeStr
+      });
+      this.scrollToBottomLeftReader();
+      this.isLeftReaderLoading = true;
+      this.spanishTts.setEmotion('thinking');
+
+      const history = this.leftReaderMessages.slice(-6).map(m => ({ role: m.role, content: m.text }));
+      this.libraryAiService.askCopilot(text, this.selectedPage?.title, history).subscribe({
+        next: (res) => {
+          this.isLeftReaderLoading = false;
+          if (res.success && res.result) {
+            this.leftReaderMessages.push({
+              id: 'bot_' + Date.now(),
+              role: 'assistant',
+              text: res.result,
+              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+            this.scrollToBottomLeftReader();
+            this.spanishTts.rate = this.leftReaderSpeed;
+            this.spanishTts.speak(res.result);
+          } else {
+            this.leftReaderMessages.push({
+              id: 'err_' + Date.now(),
+              role: 'assistant',
+              text: '⚠️ ' + (res.error || 'No pude procesar la respuesta en este momento.'),
+              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+            this.spanishTts.setEmotion('neutral');
+          }
+        },
+        error: () => {
+          this.isLeftReaderLoading = false;
+          this.spanishTts.setEmotion('neutral');
+        }
+      });
+    }
+  }
+
+  repeatMessageSpeech(msg: { text: string }) {
+    const clean = this.spanishTts.cleanTextForSpeech(msg.text);
+    if (clean) {
+      this.spanishTts.rate = this.leftReaderSpeed;
+      this.spanishTts.speak(clean);
+    }
+  }
+
+  clearLeftReaderChat() {
+    this.spanishTts.stop();
+    this.leftReaderMessages = [
+      {
+        id: 'welcome',
+        role: 'assistant',
+        text: 'Historial reiniciado. Haz clic en **Leer apunte activo** o escribe cualquier texto para escucharlo.',
+        time: 'Ahora'
+      }
+    ];
+  }
+
+  onLeftReaderKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter' && event.ctrlKey) {
+      event.preventDefault();
+      this.sendLeftReaderText('read-only');
+    }
+  }
+}

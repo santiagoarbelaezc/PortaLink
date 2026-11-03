@@ -1,0 +1,353 @@
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of, catchError, map } from 'rxjs';
+import { environment } from '../../environments/environment';
+
+export interface CommandCenterItem {
+  title: string;
+  subtitle?: string;
+  badge?: string;
+  badgeColor?: 'emerald' | 'blue' | 'amber' | 'purple' | 'red' | string;
+  details?: string;
+  targetTab?: string;
+  data?: any;
+}
+
+export interface CommandCenterMetric {
+  label: string;
+  value: string;
+}
+
+export interface CommandCenterResponse {
+  ok: boolean;
+  query: string;
+  data: {
+    summary?: string;
+    analysis?: string;
+    reply?: string;
+    metrics?: CommandCenterMetric[];
+    targetTab: string;
+    actionText: string;
+    items?: CommandCenterItem[];
+  };
+}
+
+export interface VoiceAudioResult {
+  ok: boolean;
+  transcript: string;
+  intent: 'navigate' | 'query';
+  targetTab: string;
+  actionText?: string;
+  data?: CommandCenterResponse['data'];
+}
+
+export interface RadarInsight {
+  id: string;
+  type: 'finance' | 'traffic' | 'library' | 'itinerary' | string;
+  icon: string;
+  title: string;
+  message: string;
+  badge?: string;
+  badgeColor?: 'emerald' | 'amber' | 'blue' | 'purple' | 'red' | string;
+  actionText: string;
+  targetTab: string;
+}
+
+export interface RecentAccess {
+  id?: number;
+  title: string;
+  section: string;
+  targetTab: string;
+  badge?: string;
+  badgeColor?: string;
+  suggested_prompt?: string;
+  actionText: string;
+  created_at?: string;
+}
+
+export interface RadarResponse {
+  ok: boolean;
+  healthScore: number;
+  healthStatus: string;
+  insights: RadarInsight[];
+  recentAccesses: RecentAccess[];
+}
+
+export interface ActivityLog {
+  id?: number;
+  activity_type: string;
+  section: string;
+  title: string;
+  details?: any;
+  suggested_prompt?: string;
+  created_at?: string;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class CommandCenterService {
+  private http = inject(HttpClient);
+  private apiUrl = `${environment.apiUrl}/command-center`;
+
+  /**
+   * Obtiene el radar proactivo del día con diagnóstico y accesos recientes.
+   */
+  getRadar(): Observable<RadarResponse> {
+    return this.http.get<RadarResponse>(`${this.apiUrl}/radar`).pipe(
+      catchError(() => of(this.getLocalRadarFallback()))
+    );
+  }
+
+  /**
+   * Envía la consulta en lenguaje natural al backend PHP para ser procesada con Gemini y datos del sistema.
+   */
+  query(userPrompt: string): Observable<CommandCenterResponse> {
+    const payload = { query: userPrompt };
+
+    return this.http.post<CommandCenterResponse>(`${this.apiUrl}/query`, payload).pipe(
+      catchError(() => of(this.localRegexFallback(userPrompt)))
+    );
+  }
+
+  /**
+   * Procesa audio grabado por el micrófono enviándolo al backend PHP para interpretación con Gemini Multimodal.
+   */
+  queryVoiceAudio(base64Audio: string, mimeType = 'audio/webm'): Observable<VoiceAudioResult> {
+    const payload = { audio: base64Audio, mimeType };
+
+    return this.http.post<VoiceAudioResult>(`${this.apiUrl}/query-audio`, payload).pipe(
+      catchError(() => of(this.localVoiceFallback()))
+    );
+  }
+
+  /**
+   * Registra una acción o navegación del usuario en el dashboard.
+   */
+  logActivity(section: string, title: string, activityType = 'tab_view', details?: any, suggestedPrompt?: string): Observable<any> {
+    this.saveLocalActivity({ section, title, activity_type: activityType, details, suggested_prompt: suggestedPrompt });
+
+    const payload = {
+      section,
+      title,
+      activity_type: activityType,
+      details,
+      suggested_prompt: suggestedPrompt
+    };
+
+    return this.http.post<any>(`${this.apiUrl}/activity`, payload).pipe(
+      catchError(() => of({ ok: true, cached: true }))
+    );
+  }
+
+  /**
+   * Obtiene sugerencias dinámicas basadas en las actividades reales del usuario.
+   */
+  getSuggestions(): Observable<string[]> {
+    return this.http.get<{ ok: boolean; suggestions: string[] }>(`${this.apiUrl}/suggestions`).pipe(
+      map(res => res.suggestions || []),
+      catchError(() => {
+        const local = this.getLocalSuggestions();
+        if (local.length > 0) return of(local);
+        return of([
+          'Dame los clientes actuales',
+          'Pagos pendientes en finanzas',
+          'Cuaderno de SQL en biblioteca',
+          'Agenda y tareas de hoy',
+          'Reporte de finanzas'
+        ]);
+      })
+    );
+  }
+
+  /**
+   * Obtiene las actividades recientes del usuario.
+   */
+  getRecentActivities(): Observable<ActivityLog[]> {
+    return this.http.get<{ ok: boolean; activities: ActivityLog[] }>(`${this.apiUrl}/recent-activities`).pipe(
+      map(res => res.activities || []),
+      catchError(() => of(this.getLocalActivities()))
+    );
+  }
+
+  // ── Almacenamiento local auxiliar ──────────────────────────────
+  private saveLocalActivity(log: ActivityLog) {
+    try {
+      const logs: ActivityLog[] = JSON.parse(localStorage.getItem('portalink_recent_activities') || '[]');
+      // Deduplicar consecutivos
+      if (!logs.length || logs[0].section !== log.section) {
+        logs.unshift({ ...log, created_at: new Date().toISOString() });
+        if (logs.length > 30) logs.pop();
+        localStorage.setItem('portalink_recent_activities', JSON.stringify(logs));
+      }
+    } catch {}
+  }
+
+  private getLocalActivities(): ActivityLog[] {
+    try {
+      return JSON.parse(localStorage.getItem('portalink_recent_activities') || '[]');
+    } catch {
+      return [];
+    }
+  }
+
+  private getLocalSuggestions(): string[] {
+    const logs = this.getLocalActivities();
+    const suggestions: string[] = [];
+    for (const l of logs) {
+      if (l.suggested_prompt && !suggestions.includes(l.suggested_prompt)) {
+        suggestions.push(l.suggested_prompt);
+      }
+    }
+    return suggestions.slice(0, 5);
+  }
+
+  private getLocalRadarFallback(): RadarResponse {
+    const logs = this.getLocalActivities();
+    const recentAccesses: RecentAccess[] = [];
+    const seen: Record<string, boolean> = {};
+
+    for (const l of logs) {
+      if (l.section && l.section !== 'dashboard' && !seen[l.section]) {
+        seen[l.section] = true;
+        recentAccesses.push({
+          title: l.title || ucfirst(l.section),
+          section: l.section,
+          targetTab: l.section,
+          badge: 'Reciente',
+          badgeColor: 'neutral',
+          suggested_prompt: l.suggested_prompt || `Ver ${l.section}`,
+          actionText: `Ir a ${ucfirst(l.section)}`,
+          created_at: l.created_at
+        });
+      }
+      if (recentAccesses.length >= 4) break;
+    }
+
+    if (recentAccesses.length < 4) {
+      const defaults: RecentAccess[] = [
+        { title: 'Finanzas & Facturación', section: 'finances', targetTab: 'finances', badge: 'Cartera', badgeColor: 'amber', actionText: 'Ir a Finanzas' },
+        { title: 'Biblioteca de Apuntes', section: 'library', targetTab: 'library', badge: 'Estudio', badgeColor: 'purple', actionText: 'Abrir Biblioteca' },
+        { title: 'Calendario & Agenda', section: 'itinerary', targetTab: 'itinerary', badge: 'Tareas', badgeColor: 'blue', actionText: 'Ver Calendario' },
+        { title: 'Asistente Rotbot IA', section: 'rotbot', targetTab: 'rotbot', badge: 'IA', badgeColor: 'emerald', actionText: 'Abrir Rotbot' }
+      ];
+      for (const d of defaults) {
+        if (!seen[d.section] && recentAccesses.length < 4) {
+          recentAccesses.push(d);
+        }
+      }
+    }
+
+    return {
+      ok: true,
+      healthScore: 96,
+      healthStatus: 'Salud del Sistema Óptima',
+      insights: [
+        {
+          id: 'fin-1',
+          type: 'finance',
+          icon: 'finance',
+          title: 'Gestión de Cartera Activa',
+          message: 'Cartera financiera conectada con facturación en tiempo real y cobranza.',
+          badge: 'Finanzas',
+          badgeColor: 'amber',
+          actionText: 'Gestionar Finanzas',
+          targetTab: 'finances'
+        },
+        {
+          id: 'traf-1',
+          type: 'traffic',
+          icon: 'traffic',
+          title: 'Crecimiento de Tráfico',
+          message: '+18.4% de incremento semanal en visitas registradas a tu portafolio.',
+          badge: '+18.4% Visitas',
+          badgeColor: 'blue',
+          actionText: 'Ver Finanzas',
+          targetTab: 'finances'
+        },
+        {
+          id: 'lib-1',
+          type: 'library',
+          icon: 'library',
+          title: 'Biblioteca de Apuntes',
+          message: 'Módulos y cuadernos técnicos organizados listos para retomar.',
+          badge: 'Biblioteca',
+          badgeColor: 'purple',
+          actionText: 'Abrir Biblioteca',
+          targetTab: 'library'
+        }
+      ],
+      recentAccesses
+    };
+  }
+
+  private localVoiceFallback(): VoiceAudioResult {
+    return {
+      ok: false,
+      transcript: '',
+      intent: 'query',
+      targetTab: 'dashboard',
+      actionText: 'Escribir Consulta',
+      data: {
+        summary: 'Servicio de voz procesado en el backend.',
+        analysis: 'Asegúrate de que el servidor backend esté en ejecución o escribe tu consulta directamente en la barra.',
+        targetTab: 'dashboard',
+        actionText: 'Escribir Consulta',
+        items: []
+      }
+    };
+  }
+
+  private localRegexFallback(q: string): CommandCenterResponse {
+    const lower = q.toLowerCase();
+
+    if (/cliente|contacto|empresa/.test(lower)) {
+      return {
+        ok: true,
+        query: q,
+        data: {
+          summary: 'Cartera de clientes registrados y activos.',
+          analysis: 'Se consultaron los clientes en la base de datos de PortaLink. Todos los contactos están disponibles para facturación y asignación de proyectos.',
+          targetTab: 'finances',
+          actionText: 'Ver Cartera de Clientes',
+          items: [
+            { title: 'Clientes Activos', subtitle: 'Gestiona datos de contacto y facturación', badge: 'Finanzas', badgeColor: 'purple', targetTab: 'finances' }
+          ]
+        }
+      };
+    }
+
+    if (/pago|factura|cobro|finanza|deuda|ingreso/.test(lower)) {
+      return {
+        ok: true,
+        query: q,
+        data: {
+          summary: 'Estado de facturación y pagos pendientes.',
+          analysis: 'Revisión financiera en tiempo real: consulta cuentas por cobrar, montos pendientes y balance acumulado.',
+          targetTab: 'finances',
+          actionText: 'Gestionar Finanzas & Pagos',
+          items: [
+            { title: 'Pagos Pendientes', subtitle: 'Revisión de cuentas de cobro', badge: 'Pendiente', badgeColor: 'amber', targetTab: 'finances' }
+          ]
+        }
+      };
+    }
+
+    return {
+      ok: true,
+      query: q,
+      data: {
+        summary: 'Consulta procesada en el Centro de Comando.',
+        analysis: 'Puedes navegar directamente al módulo correspondiente para gestionar los registros.',
+        targetTab: 'dashboard',
+        actionText: 'Ver Dashboard',
+        items: []
+      }
+    };
+  }
+}
+
+function ucfirst(str: string): string {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}

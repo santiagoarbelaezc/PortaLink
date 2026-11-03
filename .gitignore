@@ -1,0 +1,64 @@
+# Compiled output
+dist/
+tmp/
+out-tsc/
+bazel-out/
+
+# Node
+# Logs & Environment
+.env
+.env.*
+!.env.example
+*.log
+backend-php/logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Angular specific
+.angular/
+.angular/cache/
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# Miscellaneous
+.sass-cache/
+connect.lock
+coverage/
+libpeerconnection.log
+testem.log
+typings/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Archives & compressed files
+*.zip
+*.rar
+*.tar.gz
+*.7z
+
+# Database backups
+backups/
+backend-php/backups/
+backup_*.sql
+*backup*.sql
+backend-php/backup_*.sql
+*.dump
+*.sql.gz
+

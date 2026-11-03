@@ -1,0 +1,871 @@
+import { Component, inject, signal, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
+import { AuthService, RememberedAccount } from '../../services/auth.service';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+
+@Component({
+  selector: 'app-login',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule],
+  template: `
+    <div class="min-h-screen lg:h-screen pt-[68px] overflow-y-auto lg:overflow-hidden bg-white text-neutral-900 font-sans grid grid-cols-1 lg:grid-cols-12">
+
+      <!-- Left Side (Showcase Visual Estilo Apple - Alineado Seamless con Navbar) -->
+      <div class="relative hidden lg:flex flex-col justify-center overflow-hidden bg-neutral-50/70 border-r border-neutral-200/80 px-10 lg:px-14 xl:px-16 py-6 lg:py-8 lg:col-span-7 xl:col-span-7 h-[calc(100vh-68px)]">
+
+        <!-- Center Main Content Showcase (Full Width Spanning) -->
+        <div class="my-auto py-2 z-10 space-y-4 w-full max-w-2xl xl:max-w-3xl mx-auto">
+          
+          <!-- Headlines Requested by User -->
+          <div class="space-y-2">
+            <h1 class="text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight text-neutral-900 leading-[1.15]">
+              Regístrate y obtén descuentos
+            </h1>
+            <p class="text-lg lg:text-2xl font-semibold tracking-tight text-neutral-600 leading-snug">
+              Empieza la digitalización de tu negocio hoy
+            </p>
+          </div>
+
+          <!-- Description -->
+          <p class="text-xs sm:text-sm font-sans text-neutral-600 leading-relaxed m-0 w-full max-w-2xl">
+            Soluciones completas, conectadas y escalables que ofrecen la mejor experiencia en cualquier dispositivo para potenciar tus clientes.
+          </p>
+
+          <!-- Single Project Showcase Image (proyecto-0.png) -->
+          <div class="relative pt-1 pb-1 w-full">
+            <div class="relative w-full rounded-2xl border border-neutral-200/90 bg-white p-2.5 shadow-md overflow-hidden">
+              <img src="assets/images/proyecto-0.png" class="w-full h-auto max-h-[340px] xl:max-h-[380px] object-cover object-top rounded-xl border border-neutral-100" alt="Proyecto Showcase">
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Right Side (Forms Panel - Correctly Spaced Below Navbar) -->
+      <div class="flex flex-col justify-start px-5 sm:px-12 lg:px-14 xl:px-16 relative bg-white lg:col-span-5 xl:col-span-5 min-h-[calc(100vh-68px)] lg:h-[calc(100vh-68px)] overflow-y-auto pt-4 lg:pt-6 pb-24 sm:pb-8 no-scrollbar">
+        <div class="w-full max-w-sm xl:max-w-md mx-auto flex flex-col justify-start min-h-full">
+
+          <!-- Header Back Link (Top - Always Visible) -->
+          <div class="flex items-center justify-between mb-3 pt-2 shrink-0">
+            <a (click)="goHome($event)" routerLink="/" class="inline-flex items-center gap-2 text-xs font-semibold text-neutral-700 hover:text-black transition-colors no-underline cursor-pointer group">
+              <span class="w-7 h-7 rounded-full bg-neutral-100 group-hover:bg-neutral-200 flex items-center justify-center transition-colors">
+                <svg class="w-3.5 h-3.5 text-neutral-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
+                </svg>
+              </span>
+              <span class="font-semibold text-neutral-800">Volver al Inicio</span>
+            </a>
+          </div>
+
+          <!-- Main Card Content (Alineado un poco más abajo con my-auto) -->
+          <div class="my-auto py-2">
+
+          <!-- Title Header Group -->
+          <div class="text-center mb-6 space-y-1">
+            <span class="text-xs font-semibold text-neutral-400 uppercase tracking-widest">
+              {{ activeTab === 'login' ? (useRememberedAccount ? 'Cuenta recordada' : 'Bienvenido de nuevo') : 'Comienza hoy' }}
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900">
+              {{ activeTab === 'login' ? (useRememberedAccount ? '¡Hola, ' + getFirstName() + '!' : 'Conéctate a tu cuenta') : 'Crea tu cuenta' }}
+            </h2>
+            <p class="text-xs font-sans text-neutral-500 max-w-xs mx-auto leading-relaxed m-0">
+              {{ activeTab === 'login' ? (useRememberedAccount ? 'Ingresa tu contraseña para acceder a tu cuenta.' : 'Ingresa tus credenciales para acceder a tu cuenta.') : 'Regístrate en segundos para acceder a la plataforma.' }}
+            </p>
+          </div>
+
+          <!-- Switch Tabs (Capsule Bar with Explicit Style Color) -->
+          <div class="grid grid-cols-2 gap-1.5 p-1.5 rounded-full bg-neutral-100 border border-neutral-200/80 mb-6">
+            <button type="button" (click)="switchTab('login')" 
+                    class="py-2.5 text-xs font-semibold rounded-full transition-all duration-300 cursor-pointer border-none shadow-2xs"
+                    [style.background-color]="activeTab === 'login' ? '#09090b' : 'transparent'">
+              <span [style.color]="activeTab === 'login' ? '#ffffff !important' : '#52525b !important'" style="font-weight: 600;">Ingresar</span>
+            </button>
+            <button type="button" (click)="switchTab('register')" 
+                    class="py-2.5 text-xs font-semibold rounded-full transition-all duration-300 cursor-pointer border-none shadow-2xs"
+                    [style.background-color]="activeTab === 'register' ? '#09090b' : 'transparent'">
+              <span [style.color]="activeTab === 'register' ? '#ffffff !important' : '#52525b !important'" style="font-weight: 600;">Registrarse</span>
+            </button>
+          </div>
+
+          <!-- Messages (Error / Success) -->
+          <div *ngIf="error" class="mb-5 flex items-center gap-2.5 text-xs text-red-700 bg-red-50 border border-red-200 rounded-2xl px-4 py-3 animate-shake">
+            <svg class="w-4 h-4 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            </svg>
+            <span class="font-medium">{{ error }}</span>
+          </div>
+          
+          <div *ngIf="successMsg" class="mb-5 flex items-center gap-2.5 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-3 animate-slide-down">
+            <svg class="w-4 h-4 shrink-0 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="font-medium">{{ successMsg }}</span>
+          </div>
+
+          <!-- Login / Register Slider Container -->
+          <div class="relative overflow-hidden w-full transition-all duration-300 ease-out"
+               [style.max-height]="activeTab === 'login' ? '460px' : 'none'">
+            <div class="flex items-start w-[200%] transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"
+                 [style.transform]="activeTab === 'login' ? 'translateX(0)' : 'translateX(-50%)'">
+              
+              <!-- Login Form (1/2 width) -->
+              <div class="w-1/2 pr-2">
+                <form (submit)="login($event)" class="space-y-4">
+
+                  <!-- CASO 1: CUENTA RECORDADA ACTIVA (Solo contraseña) -->
+                  <div *ngIf="useRememberedAccount && rememberedAccount" class="space-y-3.5 animate-slide-down">
+                    <!-- Tarjeta de Identidad del Usuario Recordado -->
+                    <div class="p-3.5 rounded-2xl bg-neutral-50/90 border border-neutral-200/90 flex items-center justify-between gap-2.5 shadow-2xs hover:border-neutral-300 transition-all">
+                      <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-10 h-10 rounded-full bg-neutral-900 text-white flex items-center justify-center font-bold text-xs tracking-wider shrink-0 shadow-xs border border-neutral-800 select-none">
+                          {{ getInitials(rememberedAccount.nombre) }}
+                        </div>
+                        <div class="min-w-0 text-left">
+                          <div class="flex items-center gap-1.5 flex-wrap">
+                            <h4 class="text-xs sm:text-sm font-bold text-neutral-900 m-0 truncate max-w-[140px] sm:max-w-[180px]">
+                              {{ rememberedAccount.nombre }}
+                            </h4>
+                            <span *ngIf="rememberedAccount.rol" 
+                                  class="text-[9px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-neutral-200/70 text-neutral-700">
+                              {{ rememberedAccount.rol }}
+                            </span>
+                          </div>
+                          <p class="text-[11px] text-neutral-500 m-0 truncate max-w-[160px] sm:max-w-[200px] font-sans">
+                            {{ rememberedAccount.email }}
+                          </p>
+                        </div>
+                      </div>
+
+                      <!-- Botones de Acción -->
+                      <div class="flex items-center gap-1 shrink-0">
+                        <button type="button" 
+                                (click)="switchAccount()" 
+                                class="px-2.5 py-1 rounded-lg text-[11px] font-semibold text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200/60 transition-colors border-none bg-transparent cursor-pointer"
+                                title="Ingresar con otro correo">
+                          Cambiar
+                        </button>
+                        <button type="button" 
+                                (click)="forgetAccount($event)" 
+                                class="p-1 rounded-lg text-neutral-400 hover:text-rose-600 hover:bg-rose-50 transition-colors border-none bg-transparent cursor-pointer"
+                                title="Olvidar esta cuenta de este equipo">
+                          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="space-y-1.5">
+                      <div class="flex justify-between items-center">
+                        <label class="text-xs font-semibold text-neutral-700">Contraseña</label>
+                        <a routerLink="/forgot-password" class="text-xs font-medium text-neutral-500 hover:text-neutral-900 transition-colors no-underline">¿Olvidaste tu contraseña?</a>
+                      </div>
+                      <div class="relative">
+                        <input [type]="showLoginPassword ? 'text' : 'password'"
+                               [(ngModel)]="password" name="password"
+                               placeholder="Ingresa tu contraseña"
+                               autofocus
+                               [disabled]="isLoading()"
+                               class="w-full bg-neutral-50 border border-neutral-200/80 rounded-xl pl-4 pr-11 py-3 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all disabled:opacity-50">
+                        <button type="button" (click)="showLoginPassword = !showLoginPassword" tabindex="-1" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-neutral-400 hover:text-neutral-800 transition-colors cursor-pointer border-none bg-transparent">
+                          <svg *ngIf="!showLoginPassword" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                          <svg *ngIf="showLoginPassword" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Submit Login Button para Cuenta Recordada -->
+                    <button type="submit"
+                            [disabled]="isLoading()"
+                            class="w-full py-3.5 mt-2 rounded-full font-semibold text-xs shadow-md hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 border-none cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+                            style="background-color: #09090b !important; color: #ffffff !important;">
+                      <svg *ngIf="isLoading()" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span style="color: #ffffff !important; font-weight: 600;">{{ isLoading() ? 'Autenticando...' : 'Ingresar como ' + getFirstName() }}</span>
+                    </button>
+                  </div>
+
+                  <!-- CASO 2: FORMULARIO COMPLETO (Correo + Contraseña + Opción de recordar) -->
+                  <div *ngIf="!useRememberedAccount" class="space-y-3.5 animate-slide-down">
+                    <!-- Banner de acceso rápido si hay cuenta guardada previamente -->
+                    <div *ngIf="rememberedAccount" class="flex items-center justify-between text-xs bg-neutral-100/90 border border-neutral-200/80 px-3.5 py-2.5 rounded-xl">
+                      <span class="text-neutral-600 truncate text-[11px] sm:text-xs">
+                        ¿Ingresar como <strong>{{ rememberedAccount.nombre }}</strong>?
+                      </span>
+                      <button type="button" (click)="selectRememberedAccount()" class="text-xs font-bold text-neutral-900 hover:underline bg-transparent border-none cursor-pointer p-0 shrink-0 ml-2">
+                        Usar cuenta
+                      </button>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="space-y-1.5">
+                      <label class="text-xs font-semibold text-neutral-700">Correo Electrónico</label>
+                      <div class="relative">
+                        <input type="email"
+                               [(ngModel)]="email" name="email"
+                               placeholder="usuario@ejemplo.com"
+                               [disabled]="isLoading()"
+                               class="w-full bg-neutral-50 border border-neutral-200/80 rounded-xl px-4 py-3 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all disabled:opacity-50">
+                      </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="space-y-1.5">
+                      <div class="flex justify-between items-center">
+                        <label class="text-xs font-semibold text-neutral-700">Contraseña</label>
+                        <a routerLink="/forgot-password" class="text-xs font-medium text-neutral-500 hover:text-neutral-900 transition-colors no-underline">¿Olvidaste tu contraseña?</a>
+                      </div>
+                      <div class="relative">
+                        <input [type]="showLoginPassword ? 'text' : 'password'"
+                               [(ngModel)]="password" name="password"
+                               placeholder="••••••••••••"
+                               [disabled]="isLoading()"
+                               class="w-full bg-neutral-50 border border-neutral-200/80 rounded-xl pl-4 pr-11 py-3 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all disabled:opacity-50">
+                        <button type="button" (click)="showLoginPassword = !showLoginPassword" tabindex="-1" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-neutral-400 hover:text-neutral-800 transition-colors cursor-pointer border-none bg-transparent">
+                          <svg *ngIf="!showLoginPassword" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                          <svg *ngIf="showLoginPassword" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Recordar Usuario Checkbox -->
+                    <div class="flex items-center gap-2 pt-0.5">
+                      <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                        <input type="checkbox"
+                               [(ngModel)]="rememberDevice" name="rememberDevice"
+                               class="w-4 h-4 rounded border-neutral-300 text-neutral-900 focus:ring-black accent-neutral-900 cursor-pointer">
+                        <span class="text-xs text-neutral-600 font-medium">Recordar mi cuenta en este equipo</span>
+                      </label>
+                    </div>
+
+                    <!-- Submit Login Button Estándar -->
+                    <button type="submit"
+                            [disabled]="isLoading()"
+                            class="w-full py-3.5 mt-2 rounded-full font-semibold text-xs shadow-md hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 border-none cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+                            style="background-color: #09090b !important; color: #ffffff !important;">
+                      <svg *ngIf="isLoading()" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span style="color: #ffffff !important; font-weight: 600;">{{ isLoading() ? 'Autenticando...' : 'Iniciar sesión' }}</span>
+                    </button>
+                  </div>
+
+                  <!-- Política de Tratamiento de Datos -->
+                  <p class="text-center text-[11px] font-sans text-neutral-500 mt-2.5 m-0 leading-normal">
+                    Al ingresar, aceptas nuestra 
+                    <a routerLink="/tratamiento-datos" class="text-neutral-900 font-semibold underline hover:text-black transition-colors">Política de Tratamiento de Datos</a>.
+                  </p>
+                </form>
+              </div>
+
+              <!-- Register Form (1/2 width) -->
+              <div class="w-1/2 pl-2">
+                <form (submit)="register($event)" class="space-y-3">
+                  <!-- Name -->
+                  <div class="space-y-1.5">
+                    <label class="text-xs font-semibold text-neutral-700">Nombre Completo</label>
+                    <input type="text"
+                           [(ngModel)]="registerName" name="registerName"
+                           placeholder="Tu nombre completo"
+                           [disabled]="isLoading()"
+                           class="w-full bg-neutral-50 border border-neutral-200/80 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all disabled:opacity-50">
+                  </div>
+
+                  <!-- Email -->
+                  <div class="space-y-1.5">
+                    <label class="text-xs font-semibold text-neutral-700">Correo Electrónico</label>
+                    <input type="email"
+                           [(ngModel)]="registerEmail" name="registerEmail"
+                           placeholder="usuario@ejemplo.com"
+                           [disabled]="isLoading()"
+                           class="w-full bg-neutral-50 border border-neutral-200/80 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all disabled:opacity-50">
+                  </div>
+
+                  <!-- Phone Number -->
+                  <div class="space-y-1.5">
+                    <label class="text-xs font-semibold text-neutral-700">Número de Teléfono</label>
+                    <input type="text"
+                           [(ngModel)]="registerPhone" name="registerPhone"
+                           placeholder="3054078225"
+                           [disabled]="isLoading()"
+                           class="w-full bg-neutral-50 border border-neutral-200/80 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all disabled:opacity-50">
+                  </div>
+
+                  <!-- Passwords Grid (Stacked on Mobile, 2 Cols on SM+) -->
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                    <div class="space-y-1.5">
+                      <label class="text-xs font-semibold text-neutral-700">Contraseña</label>
+                      <div class="relative">
+                        <input [type]="showRegisterPassword ? 'text' : 'password'"
+                               [(ngModel)]="registerPassword" name="registerPassword"
+                               placeholder="••••••••"
+                               [disabled]="isLoading()"
+                               class="w-full bg-neutral-50 border border-neutral-200/80 rounded-xl pl-3 pr-8 py-2.5 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all disabled:opacity-50">
+                        <button type="button" (click)="showRegisterPassword = !showRegisterPassword" tabindex="-1" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-neutral-400 hover:text-neutral-800 cursor-pointer border-none bg-transparent">
+                          <svg *ngIf="!showRegisterPassword" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                          <svg *ngIf="showRegisterPassword" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div class="space-y-1.5">
+                      <label class="text-xs font-semibold text-neutral-700">Confirmar</label>
+                      <div class="relative">
+                        <input [type]="showRegisterConfirmPassword ? 'text' : 'password'"
+                               [(ngModel)]="registerConfirmPassword" name="registerConfirmPassword"
+                               placeholder="••••••••"
+                               [disabled]="isLoading()"
+                               class="w-full bg-neutral-50 border border-neutral-200/80 rounded-xl pl-3 pr-8 py-2.5 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all disabled:opacity-50">
+                        <button type="button" (click)="showRegisterConfirmPassword = !showRegisterConfirmPassword" tabindex="-1" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-neutral-400 hover:text-neutral-800 cursor-pointer border-none bg-transparent">
+                          <svg *ngIf="!showRegisterConfirmPassword" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                          <svg *ngIf="showRegisterConfirmPassword" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Barra de Progreso y Control de Nivel de Seguridad (Registro) -->
+                  <div *ngIf="registerPassword" class="space-y-1.5 pt-0.5 pb-0.5 animate-slide-down">
+                    <div class="flex items-center justify-between text-[11px]">
+                      <span class="text-neutral-500 font-medium">Nivel de seguridad:</span>
+                      <span class="font-semibold text-xs transition-colors duration-300" [ngClass]="regStrengthTextColor">
+                        {{ regStrengthLabel }}
+                      </span>
+                    </div>
+
+                    <!-- Segmented Progress Bar -->
+                    <div class="grid grid-cols-4 gap-1.5 h-1.5 w-full">
+                      <div class="rounded-full transition-all duration-300"
+                           [ngClass]="regStrengthScore >= 1 ? regStrengthBgColor : 'bg-neutral-200'"></div>
+                      <div class="rounded-full transition-all duration-300"
+                           [ngClass]="regStrengthScore >= 2 ? regStrengthBgColor : 'bg-neutral-200'"></div>
+                      <div class="rounded-full transition-all duration-300"
+                           [ngClass]="regStrengthScore >= 3 ? regStrengthBgColor : 'bg-neutral-200'"></div>
+                      <div class="rounded-full transition-all duration-300"
+                           [ngClass]="regStrengthScore >= 4 ? regStrengthBgColor : 'bg-neutral-200'"></div>
+                    </div>
+
+                    <!-- Checklist de Requisitos -->
+                    <div class="grid grid-cols-2 gap-x-2 gap-y-1 pt-1 text-[10px] sm:text-[11px]">
+                      <div class="flex items-center gap-1.5 transition-colors duration-200"
+                           [ngClass]="regHasMinLength ? 'text-emerald-700 font-medium' : 'text-neutral-400'">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                          <path *ngIf="regHasMinLength" stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                          <circle *ngIf="!regHasMinLength" cx="12" cy="12" r="3.5" fill="currentColor"/>
+                        </svg>
+                        <span>Mínimo 6 caracteres</span>
+                      </div>
+                      <div class="flex items-center gap-1.5 transition-colors duration-200"
+                           [ngClass]="regHasUppercase ? 'text-emerald-700 font-medium' : 'text-neutral-400'">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                          <path *ngIf="regHasUppercase" stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                          <circle *ngIf="!regHasUppercase" cx="12" cy="12" r="3.5" fill="currentColor"/>
+                        </svg>
+                        <span>Una mayúscula (A-Z)</span>
+                      </div>
+                      <div class="flex items-center gap-1.5 transition-colors duration-200"
+                           [ngClass]="regHasNumber ? 'text-emerald-700 font-medium' : 'text-neutral-400'">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                          <path *ngIf="regHasNumber" stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                          <circle *ngIf="!regHasNumber" cx="12" cy="12" r="3.5" fill="currentColor"/>
+                        </svg>
+                        <span>Un número (0-9)</span>
+                      </div>
+                      <div class="flex items-center gap-1.5 transition-colors duration-200"
+                           [ngClass]="regHasSpecial ? 'text-emerald-700 font-medium' : 'text-neutral-400'">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                          <path *ngIf="regHasSpecial" stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                          <circle *ngIf="!regHasSpecial" cx="12" cy="12" r="3.5" fill="currentColor"/>
+                        </svg>
+                        <span>Carácter especial (!@#$)</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Captcha de Seguridad -->
+                  <div class="space-y-1.5 pt-1">
+                    <label class="text-xs font-semibold text-neutral-700">Código de Seguridad</label>
+                    <div class="flex items-center gap-2">
+                      <div class="h-10 border border-neutral-200/80 bg-neutral-50 rounded-xl overflow-hidden flex items-center justify-center select-none shrink-0" 
+                           [innerHTML]="captchaSvg" style="width: 100px;">
+                      </div>
+                      <button type="button" (click)="loadCaptcha()" class="p-2 rounded-xl border border-neutral-200/80 bg-white hover:bg-neutral-100 transition-colors text-neutral-700 cursor-pointer flex items-center justify-center h-10 w-10 shrink-0" title="Regenerar Captcha">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                        </svg>
+                      </button>
+                      <input type="text"
+                             [(ngModel)]="captchaCode" name="captchaCode"
+                             placeholder="CÓDIGO"
+                             autocomplete="off"
+                             [disabled]="isLoading()"
+                             maxlength="5"
+                             class="flex-grow min-w-0 h-10 bg-neutral-50 border border-neutral-200/80 rounded-xl px-3 text-xs font-bold text-neutral-900 focus:outline-none focus:border-neutral-900 focus:bg-white transition-all disabled:opacity-50 text-center uppercase tracking-widest">
+                    </div>
+                  </div>
+
+                  <!-- Submit Register Button -->
+                  <button type="submit"
+                          [disabled]="isLoading()"
+                          class="w-full py-3.5 mt-2 rounded-full font-semibold text-xs shadow-md hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 border-none cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+                          style="background-color: #09090b !important; color: #ffffff !important;">
+                    <svg *ngIf="isLoading()" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span style="color: #ffffff !important; font-weight: 600;">{{ isLoading() ? 'Registrando...' : 'Crear mi cuenta' }}</span>
+                  </button>
+
+                  <!-- Política de Tratamiento de Datos -->
+                  <p class="text-center text-[11px] font-sans text-neutral-500 mt-2.5 m-0 leading-normal">
+                    Al registrarte, aceptas nuestra 
+                    <a routerLink="/tratamiento-datos" class="text-neutral-900 font-semibold underline hover:text-black transition-colors">Política de Tratamiento de Datos</a>.
+                  </p>
+                </form>
+              </div>
+
+            </div>
+          </div>
+
+          <p class="text-center text-[11px] font-sans text-neutral-400 mt-5 sm:mt-6 pb-2 shrink-0">
+            &copy; 2026 PortaLink. Todos los derechos reservados.
+          </p>
+          </div> <!-- Close my-auto py-2 wrapper -->
+
+        </div>
+      </div>
+
+      <!-- MODAL DE VERIFICACIÓN DE CORREO (ESTILO APPLE) -->
+      <div *ngIf="showVerificationModal" class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-neutral-900/60 backdrop-blur-md animate-fade-in">
+        <div class="relative w-full max-w-md bg-white border border-neutral-200/80 rounded-[28px] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.12)] text-center overflow-hidden animate-slide-down space-y-4">
+          
+          <!-- Icono de correo -->
+          <div class="w-14 h-14 rounded-full bg-neutral-100 border border-neutral-200/80 flex items-center justify-center mx-auto text-neutral-900 shadow-2xs">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+            </svg>
+          </div>
+
+          <div class="space-y-1.5">
+            <span class="inline-block px-3 py-0.5 text-[11px] font-medium text-emerald-800 bg-emerald-50 border border-emerald-200/60 rounded-full">
+              Verificación requerida
+            </span>
+            <h3 class="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900">
+              ¡Revisa tu correo!
+            </h3>
+          </div>
+
+          <p class="text-xs sm:text-sm font-sans text-neutral-600 leading-relaxed max-w-xs mx-auto">
+            Hemos enviado un enlace de confirmación a <strong class="text-neutral-900 font-semibold">{{ registeredEmailDisplay }}</strong>.
+          </p>
+
+          <div class="p-3.5 rounded-2xl bg-neutral-50 border border-neutral-200/80 text-xs text-neutral-600 text-left space-y-1">
+            <p class="font-bold text-neutral-900 m-0">⚠️ Revisa tu carpeta de Spam</p>
+            <p class="m-0 text-[11px] leading-relaxed">Sin la verificación tu cuenta no estará activa. Si no lo ves en tu bandeja principal, revisa la carpeta de Spam o Correo No Deseado.</p>
+          </div>
+
+          <button type="button" (click)="closeVerificationModal()"
+                  class="w-full py-3.5 rounded-full font-semibold text-xs shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border-none cursor-pointer text-center"
+                  style="background-color: #09090b !important; color: #ffffff !important;">
+            <span style="color: #ffffff !important; font-weight: 600;">Entendido, ir a Iniciar sesión</span>
+          </button>
+
+        </div>
+      </div>
+    </div>
+  `,
+  styles: [`
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+    .animate-slide-down { animation: slideDown 0.3s cubic-bezier(0.16,1,0.3,1) forwards; }
+  `]
+})
+export class LoginComponent implements OnInit {
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private authService = inject(AuthService);
+  private sanitizer = inject(DomSanitizer);
+
+  goHome(event?: Event) {
+    if (event) event.preventDefault();
+    this.router.navigate(['/']);
+  }
+
+  activeTab: 'login' | 'register' = 'login';
+
+  // Remembered Account State
+  rememberedAccount: RememberedAccount | null = null;
+  useRememberedAccount = false;
+  rememberDevice = true;
+
+  // Login
+  email = '';
+  password = '';
+  loginCaptchaCode = '';
+  
+  // Register
+  registerName = '';
+  registerEmail = '';
+  registerPassword = '';
+  registerConfirmPassword = '';
+  registerPhone = '';
+
+  // Captcha
+  captchaId = '';
+  captchaSvg: SafeHtml = '';
+  captchaCode = '';
+
+  error = '';
+  successMsg = '';
+  isLoading = signal<boolean>(false);
+  
+  showLoginPassword = false;
+  showRegisterPassword = false;
+  showRegisterConfirmPassword = false;
+
+  showVerificationModal = false;
+  registeredEmailDisplay = '';
+
+  getInitials(name?: string): string {
+    if (!name) return 'U';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+
+  getFirstName(): string {
+    if (!this.rememberedAccount?.nombre) return 'Usuario';
+    return this.rememberedAccount.nombre.trim().split(/\s+/)[0];
+  }
+
+  switchAccount(): void {
+    this.useRememberedAccount = false;
+    this.email = '';
+    this.password = '';
+    this.error = '';
+  }
+
+  selectRememberedAccount(): void {
+    if (this.rememberedAccount) {
+      this.useRememberedAccount = true;
+      this.email = this.rememberedAccount.email;
+      this.password = '';
+      this.error = '';
+    }
+  }
+
+  forgetAccount(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.authService.forgetRememberedAccount();
+    this.rememberedAccount = null;
+    this.useRememberedAccount = false;
+    this.email = '';
+    this.password = '';
+  }
+
+  closeVerificationModal() {
+    this.showVerificationModal = false;
+    this.switchTab('login');
+  }
+
+  // Password Security Criteria for Register
+  get regHasMinLength(): boolean {
+    return this.registerPassword.length >= 6;
+  }
+
+  get regHasUppercase(): boolean {
+    return /[A-Z]/.test(this.registerPassword);
+  }
+
+  get regHasNumber(): boolean {
+    return /[0-9]/.test(this.registerPassword);
+  }
+
+  get regHasSpecial(): boolean {
+    return /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`!¡¿]/.test(this.registerPassword);
+  }
+
+  get regStrengthScore(): number {
+    let score = 0;
+    if (this.regHasMinLength) score++;
+    if (this.regHasUppercase) score++;
+    if (this.regHasNumber) score++;
+    if (this.regHasSpecial) score++;
+    return score;
+  }
+
+  get regIsPasswordValid(): boolean {
+    return this.regHasMinLength && this.regHasUppercase && this.regHasNumber && this.regHasSpecial;
+  }
+
+  get regStrengthLabel(): string {
+    switch (this.regStrengthScore) {
+      case 1: return 'Débil';
+      case 2: return 'Media';
+      case 3: return 'Buena';
+      case 4: return 'Fuerte y Segura ✨';
+      default: return 'Muy débil';
+    }
+  }
+
+  get regStrengthTextColor(): string {
+    switch (this.regStrengthScore) {
+      case 1: return 'text-rose-600';
+      case 2: return 'text-amber-600';
+      case 3: return 'text-blue-600';
+      case 4: return 'text-emerald-600';
+      default: return 'text-neutral-400';
+    }
+  }
+
+  get regStrengthBgColor(): string {
+    switch (this.regStrengthScore) {
+      case 1: return 'bg-rose-500';
+      case 2: return 'bg-amber-500';
+      case 3: return 'bg-blue-500';
+      case 4: return 'bg-emerald-500';
+      default: return 'bg-neutral-200';
+    }
+  }
+
+  ngOnInit() {
+    const queryParams = this.route.snapshot.queryParams;
+
+    // Si ya existe una sesión activa y válida, redirigir automáticamente al panel adecuado
+    if (this.authService.hasValidToken()) {
+      const user = this.authService.currentUser();
+      const returnUrl = queryParams['returnUrl'];
+      if (returnUrl && returnUrl !== '/login') {
+        this.router.navigateByUrl(returnUrl);
+        return;
+      }
+      if (user && (user.rol?.toLowerCase() === 'admin' || user.rol?.toLowerCase() === 'administrador')) {
+        this.router.navigate(['/admin']);
+        return;
+      } else if (user) {
+        this.router.navigate(['/perfil']);
+        return;
+      }
+    }
+
+    // Comprobar si existe cuenta recordada para inicio directo con contraseña
+    const remembered = this.authService.getRememberedAccount();
+    if (remembered && remembered.email) {
+      this.rememberedAccount = remembered;
+      this.email = remembered.email;
+      this.useRememberedAccount = true;
+    }
+
+    // Manejar expiración de sesión y mensajes
+    if (queryParams['expired'] === '1' || queryParams['expired'] === 'true') {
+      this.error = 'Tu sesión ha expirado por seguridad. Por favor ingresa tu contraseña nuevamente.';
+      this.activeTab = 'login';
+    } else if (queryParams['verified'] === 'true' || queryParams['verified'] === '1') {
+      this.successMsg = '¡Cuenta verificada exitosamente! Ya puedes iniciar sesión con tus credenciales.';
+      this.activeTab = 'login';
+    } else if (queryParams['already_verified'] === 'true') {
+      this.successMsg = 'Tu cuenta ya fue verificada previamente. Puedes ingresar con tu contraseña.';
+      this.activeTab = 'login';
+    } else if (queryParams['verification_error']) {
+      const errCode = queryParams['verification_error'];
+      if (errCode === 'expired') {
+        this.error = 'El enlace de verificación ha expirado. Por favor solicita uno nuevo.';
+      } else if (errCode === 'already_used') {
+        this.error = 'Este enlace de verificación ya fue utilizado previamente.';
+      } else {
+        this.error = 'El enlace de verificación es inválido o no existe.';
+      }
+      this.activeTab = 'login';
+    }
+
+    this.route.url.subscribe(urlSegments => {
+      const path = urlSegments[0]?.path || '';
+      const queryTab = this.route.snapshot.queryParams['tab'];
+      const targetTab: 'login' | 'register' = (path === 'register' || queryTab === 'register') ? 'register' : 'login';
+
+      if (queryTab === 'register' && path === 'login') {
+        this.router.navigate(['/register'], { replaceUrl: true });
+        return;
+      }
+
+      if (this.activeTab !== targetTab || !this.captchaId) {
+        this.activeTab = targetTab;
+        if (!queryParams['verified'] && !queryParams['already_verified'] && !queryParams['verification_error'] && !queryParams['expired']) {
+          this.error = '';
+          this.successMsg = '';
+        }
+        this.captchaCode = '';
+        this.loginCaptchaCode = '';
+        this.loadCaptcha();
+      }
+    });
+  }
+
+  loadCaptcha() {
+    this.authService.getCaptcha().subscribe({
+      next: (res) => {
+        this.captchaId = res.id;
+        this.captchaSvg = this.sanitizer.bypassSecurityTrustHtml(res.svg);
+      },
+      error: () => {
+        this.showError('Error al cargar la verificación de seguridad.');
+      }
+    });
+  }
+
+  switchTab(tab: 'login' | 'register') {
+    if (this.activeTab !== tab) {
+      this.activeTab = tab;
+      this.error = '';
+      this.successMsg = '';
+      this.captchaCode = '';
+      this.loginCaptchaCode = '';
+      this.loadCaptcha();
+      this.router.navigate([`/${tab}`]);
+    }
+  }
+
+  login(event: Event) {
+    event.preventDefault();
+    if (!this.email) {
+      this.showError('Por favor ingresa tu correo electrónico.');
+      return;
+    }
+    if (!this.password) {
+      this.showError('Por favor ingresa tu contraseña.');
+      return;
+    }
+
+    this.isLoading.set(true);
+    this.error = '';
+    this.successMsg = '';
+
+    const payload = {
+      email: this.email,
+      password: this.password
+    };
+
+    const shouldRemember = this.useRememberedAccount ? true : this.rememberDevice;
+
+    this.authService.login(payload, shouldRemember).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        const user = this.authService.currentUser();
+        const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+        if (returnUrl && returnUrl !== '/login') {
+          this.router.navigateByUrl(returnUrl);
+          return;
+        }
+        if (user && (user.rol?.toLowerCase() === 'admin' || user.rol?.toLowerCase() === 'administrador')) {
+          localStorage.setItem('portalink_admin_tab', 'dashboard');
+          localStorage.setItem('portalink_admin_theme', 'light');
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/perfil']);
+        }
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        const message = err.error?.message || 'Contraseña incorrecta o error al conectar con el servidor.';
+        this.showError(message);
+      }
+    });
+  }
+
+  register(event: Event) {
+    event.preventDefault();
+    
+    if (!this.registerName || !this.registerEmail || !this.registerPassword || !this.registerConfirmPassword || !this.registerPhone || !this.captchaCode) {
+      this.showError('Por favor completa todos los campos.');
+      return;
+    }
+
+    const email = this.registerEmail.trim().toLowerCase();
+    if (!email.includes('@')) {
+      this.showError('El correo electrónico debe contener un "@".');
+      return;
+    }
+
+    const allowedDomains = /@(gmail|hotmail|outlook|live|msn|yahoo|icloud|protonmail|proton|aol|zoho|gmx|yandex)\.[a-zA-Z]{2,}/;
+    if (!allowedDomains.test(email)) {
+      this.showError('Proveedor de correo inválido (ej: gmail, hotmail, yahoo).');
+      return;
+    }
+
+    const phone = this.registerPhone.trim();
+    const phoneRegex = /^[0-9+() -]{7,15}$/;
+    if (!phoneRegex.test(phone)) {
+      this.showError('Número de teléfono inválido (debe tener entre 7 y 15 dígitos).');
+      return;
+    }
+
+    if (this.registerPassword !== this.registerConfirmPassword) {
+      this.showError('Las contraseñas no coinciden.');
+      return;
+    }
+
+    if (!this.regIsPasswordValid) {
+      this.showError('La contraseña debe tener al menos 6 caracteres, una mayúscula, un número y un carácter especial.');
+      return;
+    }
+
+    this.isLoading.set(true);
+    this.error = '';
+    this.successMsg = '';
+
+    const payload = {
+      nombre: this.registerName,
+      email: this.registerEmail,
+      password: this.registerPassword,
+      telefono: this.registerPhone,
+      captchaId: this.captchaId,
+      captchaCode: this.captchaCode
+    };
+
+    this.authService.register(payload).subscribe({
+      next: (res: any) => {
+        this.isLoading.set(false);
+        if (res?.requireVerification) {
+          this.registeredEmailDisplay = this.registerEmail;
+          this.showVerificationModal = true;
+          this.registerPassword = '';
+          this.registerConfirmPassword = '';
+          this.loadCaptcha();
+          this.captchaCode = '';
+        } else {
+          this.successMsg = '¡Cuenta creada exitosamente! Redirigiendo...';
+          setTimeout(() => {
+            this.router.navigate(['/admin']);
+          }, 1500);
+        }
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        const message = err.error?.message || 'Error al registrarse. Intenta de nuevo.';
+        this.showError(message);
+        this.loadCaptcha();
+        this.captchaCode = '';
+      }
+    });
+  }
+
+  private showError(msg: string) {
+    this.error = msg;
+    setTimeout(() => (this.error = ''), 4000);
+  }
+}

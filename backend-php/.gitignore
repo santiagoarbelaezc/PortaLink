@@ -1,0 +1,15 @@
+# Backend PHP environment & vendor
+.env
+vendor/
+*.zip
+*.rar
+*.tar.gz
+*.7z
+
+# Database backups
+backups/
+backup/
+backup_*.sql
+*backup*.sql
+*.dump
+*.sql.gz

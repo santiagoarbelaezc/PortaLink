@@ -1,0 +1,19 @@
+/* ══════════════════════════════════════════════════════════════
+   CV-WEB: EDITORIAL SHOWCASE & CLEAN HORIZONTAL CAROUSEL
+   ══════════════════════════════════════════════════════════════ */
+
+:host {
+  display: block;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #ffffff;
+  color: #171717;
+  overflow-x: hidden;
+}
+
+/* Custom horizontal transitions */
+.carousel-track {
+  display: flex;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}

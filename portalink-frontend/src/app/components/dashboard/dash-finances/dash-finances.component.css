@@ -1,0 +1,126 @@
+    .tab-enter { animation: tabEnter 0.25s ease-out forwards; }
+    @keyframes tabEnter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+    .animate-ticker { animation: ticker 25s linear infinite; }
+    .animate-fadeIn { animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal-enter { animation: modalEnter 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes modalEnter { from { opacity: 0; transform: scale(0.95) translateY(12px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    @keyframes gadgetProgress { from { width: 100%; } to { width: 0%; } }
+    .gadget-progress-bar { animation: gadgetProgress 4.2s linear forwards; }
+
+    /* Red, Gray & White Chart Aesthetics */
+    .chart-glow-red { filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.55)); }
+    .chart-glow-white { filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.35)); }
+    .chart-glow-subtle { filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35)); }
+    .donut-segment { transition: stroke-dasharray 0.6s cubic-bezier(0.16, 1, 0.3, 1), stroke-dashoffset 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+    .bar-hover-lift { transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+    .bar-hover-lift:hover { transform: translateY(-3px); }
+    .red-pulse-dot {
+      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6);
+      animation: redPulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
+    }
+    @keyframes redPulse {
+      to {
+        box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+      }
+    }
+
+    /* Executive Theme Styles (Rojo, Gris y Blanco) */
+    .card-executive {
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .card-executive:hover {
+      transform: translateY(-2px);
+    }
+    .red-accent-top {
+      position: relative;
+      overflow: hidden;
+    }
+    .red-accent-top::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #ef4444 0%, rgba(239, 68, 68, 0.4) 60%, transparent 100%);
+      opacity: 0.85;
+    }
+    .gray-accent-top::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #71717a 0%, rgba(113, 113, 122, 0.3) 60%, transparent 100%);
+      opacity: 0.85;
+    }
+
+    /* Guardar / Action Buttons: Dark text on white buttons (Dark Theme) */
+    button.bg-white,
+    button.bg-white *,
+    .btn-modal-submit.bg-white,
+    .btn-modal-submit.bg-white * {
+      color: #09090b !important;
+    }
+
+    button.bg-white svg,
+    button.bg-white svg *,
+    .btn-modal-submit.bg-white svg,
+    .btn-modal-submit.bg-white svg * {
+      stroke: #09090b !important;
+      color: #09090b !important;
+    }
+
+    /* Guardar / Action Buttons: White text on dark buttons (Light Theme) */
+    button.bg-neutral-900,
+    button.bg-neutral-900 *,
+    button.bg-black,
+    button.bg-black *,
+    .btn-modal-submit.bg-neutral-900,
+    .btn-modal-submit.bg-neutral-900 *,
+    .btn-modal-submit.bg-black,
+    .btn-modal-submit.bg-black * {
+      color: #ffffff !important;
+    }
+
+    button.bg-neutral-900 svg,
+    button.bg-neutral-900 svg *,
+    button.bg-black svg,
+    button.bg-black svg *,
+    .btn-modal-submit.bg-neutral-900 svg,
+    .btn-modal-submit.bg-neutral-900 svg *,
+    .btn-modal-submit.bg-black svg,
+    .btn-modal-submit.bg-black svg * {
+      stroke: #ffffff !important;
+      color: #ffffff !important;
+    }
+
+    /* Modo Claro: Líneas Divisoras y Bordes Definidos */
+    :host-context(.theme-light) .border-neutral-100,
+    :host-context(:root:not(.theme-dark)) .border-neutral-100 {
+      border-color: #d4d4d8 !important;
+    }
+
+    :host-context(.theme-light) .divide-neutral-100 > :not([hidden]) ~ :not([hidden]),
+    :host-context(:root:not(.theme-dark)) .divide-neutral-100 > :not([hidden]) ~ :not([hidden]) {
+      border-color: #d4d4d8 !important;
+    }
+
+    :host-context(.theme-light) .border-neutral-200,
+    :host-context(.theme-light) .border-neutral-200\/80,
+    :host-context(.theme-light) .border-neutral-200\/90,
+    :host-context(.theme-light) .border-neutral-200\/70,
+    :host-context(.theme-light) .border-neutral-200\/60,
+    :host-context(:root:not(.theme-dark)) .border-neutral-200,
+    :host-context(:root:not(.theme-dark)) .border-neutral-200\/80,
+    :host-context(:root:not(.theme-dark)) .border-neutral-200\/90 {
+      border-color: #d4d4d8 !important;
+    }
+
+    :host-context(.theme-light) .divide-neutral-200 > :not([hidden]) ~ :not([hidden]),
+    :host-context(:root:not(.theme-dark)) .divide-neutral-200 > :not([hidden]) ~ :not([hidden]) {
+      border-color: #d4d4d8 !important;
+    }
