@@ -1,4 +1,4 @@
-name: Deploy Backend PHP a Hostinger (colchonesdistricol.com/api2)
+name: Deploy Backend PHP a Hostinger (backend-portalink + gateway /api)
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
       - master
     paths:
       - 'backend-php/**'
+      - 'api-gateway/**'
       - '.github/workflows/deploy-backend.yml'
   workflow_dispatch:
 
@@ -16,7 +17,7 @@ concurrency:
 
 jobs:
   deploy-backend:
-    name: Build & Deploy Backend (api2/)
+    name: Build & Deploy Backend (backend-portalink/ + public_html/api/)
     runs-on: ubuntu-latest
 
     steps:
@@ -36,7 +37,7 @@ jobs:
             composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
           fi
 
-      - name: 🚀 Desplegar Backend a colchonesdistricol.com/public_html/api2/ vía SSH / rsync
+      - name: 🚀 Desplegar backend-portalink/ (fuera de public_html) y gateway public_html/api/ vía SSH / rsync
         env:
           SSH_HOST: ${{ secrets.SSH_HOST || '147.93.14.220' }}
           SSH_PORT: ${{ secrets.SSH_PORT || '65002' }}
@@ -61,24 +62,24 @@ jobs:
             RSYNC_PREFIX="sshpass -p $SSH_PASSWORD"
           fi
 
-          # Detectar la ruta raíz del dominio en Hostinger
+          # Detectar la raíz del dominio (carpeta que CONTIENE a public_html)
           if $SSH_EXEC "[ -d domains/colchonesdistricol.com/public_html ]"; then
-            TARGET_API="domains/colchonesdistricol.com/public_html/api2/"
-          elif $SSH_EXEC "[ -d public_html ]"; then
-            TARGET_API="public_html/api2/"
+            DOMAIN_ROOT="domains/colchonesdistricol.com"
           else
-            TARGET_API="domains/colchonesdistricol.com/public_html/api2/"
+            DOMAIN_ROOT="."
           fi
 
-          echo "📍 Destino del Backend en Hostinger: $TARGET_API"
+          TARGET_BACKEND="$DOMAIN_ROOT/backend-portalink/"   # FUERA de public_html
+          TARGET_GATEWAY="$DOMAIN_ROOT/public_html/api/"     # solo el gateway
 
-          # Asegurar que la carpeta api2/ exista en Hostinger
-          $SSH_EXEC "mkdir -p $TARGET_API"
+          echo "📍 Backend (fuera de public_html): $TARGET_BACKEND"
+          echo "📍 Gateway (dentro de public_html): $TARGET_GATEWAY"
 
-          # Sincronizar ÚNICAMENTE el contenido de backend-php/ hacia api2/
+          $SSH_EXEC "mkdir -p $TARGET_BACKEND $TARGET_GATEWAY"
+
+          # 1) Backend -> backend-portalink/
           # GARANTÍAS DE SEGURIDAD:
-          # - El destino es estrictamente api2/, por lo que NUNCA toca otros archivos ni el frontend de colchonesdistricol.com
-          # - --filter='protect .env*' y --exclude=".env*" protegen el archivo .env con credenciales de producción
+          # - --filter='protect .env*' y --exclude=".env*" protegen el .env de producción
           # - Se protegen logs/ y uploads/ existentes en el servidor
           $RSYNC_PREFIX rsync -avz --delete \
             --filter='protect .env' \
@@ -94,11 +95,20 @@ jobs:
             --exclude=".git*" \
             -e "$SSH_CMD" \
             backend-php/ \
-            "$SSH_USER@$SSH_HOST:$TARGET_API"
+            "$SSH_USER@$SSH_HOST:$TARGET_BACKEND"
 
-          # Ajustar permisos adecuados en Hostinger
-          $SSH_EXEC "find $TARGET_API -type d -exec chmod 755 {} + 2>/dev/null || true"
-          $SSH_EXEC "find $TARGET_API -type f -exec chmod 644 {} + 2>/dev/null || true"
-          $SSH_EXEC "chmod 600 ${TARGET_API}.env 2>/dev/null || true"
+          # 2) Gateway -> public_html/api/ (solo index.php + .htaccess, sin --delete
+          #    sobre archivos ajenos más allá de esa carpeta)
+          $RSYNC_PREFIX rsync -avz --delete \
+            -e "$SSH_CMD" \
+            api-gateway/ \
+            "$SSH_USER@$SSH_HOST:$TARGET_GATEWAY"
 
-          echo "✅ Backend API desplegado con éxito en $TARGET_API"
+          # Permisos
+          $SSH_EXEC "find $TARGET_BACKEND -type d -exec chmod 755 {} + 2>/dev/null || true"
+          $SSH_EXEC "find $TARGET_BACKEND -type f -exec chmod 644 {} + 2>/dev/null || true"
+          $SSH_EXEC "chmod 600 ${TARGET_BACKEND}.env 2>/dev/null || true"
+          $SSH_EXEC "find $TARGET_GATEWAY -type d -exec chmod 755 {} + 2>/dev/null || true"
+          $SSH_EXEC "find $TARGET_GATEWAY -type f -exec chmod 644 {} + 2>/dev/null || true"
+
+          echo "✅ Backend desplegado en $TARGET_BACKEND y gateway en $TARGET_GATEWAY"
