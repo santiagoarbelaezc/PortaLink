@@ -1,0 +1,20 @@
+# ==============================================================================
+#  PORTALINK API GATEWAY (public_html/api-gateway/.htaccess)
+#  Envía todas las peticiones a index.php, que las reenvía a ../../backend-portalink
+# ==============================================================================
+Options -Indexes -MultiViews
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Conservar el header Authorization (JWT) para PHP en Apache/LiteSpeed
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # No exponer archivos ocultos
+    RewriteRule (^|/)\.(?!well-known) - [F,L]
+
+    # Todo (incluido OPTIONS / preflight CORS) pasa por el gateway
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>

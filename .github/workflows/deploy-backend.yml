@@ -1,4 +1,4 @@
-name: Deploy Backend PHP a Hostinger (backend-portalink + gateway /api)
+name: Deploy Backend PHP a Hostinger (backend-portalink + gateway /api-gateway)
 
 on:
   push:
@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   deploy-backend:
-    name: Build & Deploy Backend (backend-portalink/ + public_html/api/)
+    name: Build & Deploy Backend (backend-portalink/ + public_html/api-gateway/)
     runs-on: ubuntu-latest
 
     steps:
@@ -37,7 +37,7 @@ jobs:
             composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction
           fi
 
-      - name: 🚀 Desplegar backend-portalink/ (fuera de public_html) y gateway public_html/api/ vía SSH / rsync
+      - name: 🚀 Desplegar backend-portalink/ (fuera de public_html) y gateway public_html/api-gateway/ vía SSH / rsync
         env:
           SSH_HOST: ${{ secrets.SSH_HOST || '147.93.14.220' }}
           SSH_PORT: ${{ secrets.SSH_PORT || '65002' }}
@@ -70,7 +70,7 @@ jobs:
           fi
 
           TARGET_BACKEND="$DOMAIN_ROOT/backend-portalink/"   # FUERA de public_html
-          TARGET_GATEWAY="$DOMAIN_ROOT/public_html/api/"     # solo el gateway
+          TARGET_GATEWAY="$DOMAIN_ROOT/public_html/api-gateway/"     # solo el gateway
 
           echo "📍 Backend (fuera de public_html): $TARGET_BACKEND"
           echo "📍 Gateway (dentro de public_html): $TARGET_GATEWAY"
@@ -97,7 +97,7 @@ jobs:
             backend-php/ \
             "$SSH_USER@$SSH_HOST:$TARGET_BACKEND"
 
-          # 2) Gateway -> public_html/api/ (solo index.php + .htaccess, sin --delete
+          # 2) Gateway -> public_html/api-gateway/ (solo index.php + .htaccess, sin --delete
           #    sobre archivos ajenos más allá de esa carpeta)
           $RSYNC_PREFIX rsync -avz --delete \
             -e "$SSH_CMD" \

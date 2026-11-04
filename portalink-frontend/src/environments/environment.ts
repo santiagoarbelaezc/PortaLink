@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://colchonesdistricol.com/api'
+  apiUrl: 'https://colchonesdistricol.com/api-gateway'
 };
