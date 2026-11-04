@@ -14,9 +14,22 @@
  * Así el código fuente, vendor/ y el .env nunca quedan expuestos por la web.
  */
 
-$backendDir = realpath(__DIR__ . '/../../backend-portalink');
+$candidates = [
+    __DIR__ . '/../../backend-portalink',
+    dirname(__DIR__, 2) . '/backend-portalink',
+    __DIR__ . '/../backend-portalink',
+];
 
-if ($backendDir === false || !is_file($backendDir . '/index.php')) {
+$backendDir = false;
+foreach ($candidates as $cand) {
+    $real = realpath($cand);
+    if ($real !== false && is_file($real . '/index.php')) {
+        $backendDir = $real;
+        break;
+    }
+}
+
+if ($backendDir === false) {
     http_response_code(503);
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode([
@@ -26,8 +39,8 @@ if ($backendDir === false || !is_file($backendDir . '/index.php')) {
     exit;
 }
 
-// Hace que el router del backend elimine el prefijo "/api" del gateway
-// (Request.php usa dirname(SCRIPT_NAME) como base) y luego lo reponga.
+// Hace que el router del backend elimine el prefijo "/api-gateway"
+// (Request.php usa dirname(SCRIPT_NAME) como base) y luego reponga "/api".
 $_SERVER['SCRIPT_NAME'] = '/api-gateway/index.php';
 $_SERVER['PHP_SELF']    = '/api-gateway/index.php';
 
@@ -35,4 +48,3 @@ $_SERVER['PHP_SELF']    = '/api-gateway/index.php';
 chdir($backendDir);
 
 require $backendDir . '/index.php';
-
