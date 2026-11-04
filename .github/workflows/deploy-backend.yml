@@ -44,6 +44,7 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER || 'u870397049' }}
           SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
           SSH_KEY: ${{ secrets.SSH_KEY }}
+          BACKEND_ENV: ${{ secrets.BACKEND_ENV || '' }}
         run: |
           sudo apt-get update && sudo apt-get install -y sshpass rsync
 
@@ -103,6 +104,43 @@ jobs:
             -e "$SSH_CMD" \
             api-gateway/ \
             "$SSH_USER@$SSH_HOST:$TARGET_GATEWAY"
+
+          # 3) Migración o inyección de .env hacia backend-portalink/ si no existe
+          if [ -n "$BACKEND_ENV" ]; then
+            echo "🔐 Sincronizando .env desde secreto BACKEND_ENV de GitHub..."
+            printf "%s\n" "$BACKEND_ENV" > /tmp/portalink_backend.env
+            $RSYNC_PREFIX rsync -avz -e "$SSH_CMD" /tmp/portalink_backend.env "$SSH_USER@$SSH_HOST:${TARGET_BACKEND}.env"
+            rm -f /tmp/portalink_backend.env
+          else
+            $SSH_EXEC "
+              if [ ! -s '${TARGET_BACKEND}.env' ]; then
+                echo '🔍 Buscando .env previo para migrar a ${TARGET_BACKEND}...'
+                for OLD_ENV in \
+                  '${DOMAIN_ROOT}/public_html/api2/.env' \
+                  '${DOMAIN_ROOT}/public_html/api/.env' \
+                  '${DOMAIN_ROOT}/public_html/.env' \
+                  'domains/colchonesdistricol.com/public_html/api2/.env' \
+                  'domains/colchonesdistricol.com/public_html/.env' \
+                  'public_html/api2/.env' \
+                  'public_html/.env'
+                do
+                  if [ -s \"\$OLD_ENV\" ]; then
+                    echo \"📋 Migrando .env desde \$OLD_ENV a ${TARGET_BACKEND}.env\"
+                    cp \"\$OLD_ENV\" \"${TARGET_BACKEND}.env\"
+                    chmod 600 \"${TARGET_BACKEND}.env\"
+                    break
+                  fi
+                done
+              fi
+
+              # Migrar uploads de api2/ si existen
+              if [ -d '${DOMAIN_ROOT}/public_html/api2/uploads' ] && [ -z \"\$(ls -A ${TARGET_BACKEND}uploads 2>/dev/null)\" ]; then
+                echo '📦 Migrando uploads/ desde api2/ hacia ${TARGET_BACKEND}uploads/'
+                mkdir -p '${TARGET_BACKEND}uploads'
+                cp -r '${DOMAIN_ROOT}/public_html/api2/uploads/'* '${TARGET_BACKEND}uploads/' 2>/dev/null || true
+              fi
+            "
+          fi
 
           # Permisos
           $SSH_EXEC "find $TARGET_BACKEND -type d -exec chmod 755 {} + 2>/dev/null || true"
