@@ -179,9 +179,9 @@ const TAB_LABELS: Record<string, string> = {
           </button>
         </ng-container>
 
-        <!-- C. LIBRARY NOTES VIEW: TOOLBAR DE TAREAS Y ACCIONES DEL BLOQUE (A LA IZQUIERDA DEL BOTON DE TEMA) -->
+        <!-- C. LIBRARY NOTES VIEW: TOOLBAR DE TAREAS Y ACCIONES DEL BLOQUE (A LA IZQUIERDA DEL BOTON DE TEMA) - SOLO DESKTOP/TABLET -->
         <ng-container *ngIf="activeTab === 'library' && isNotesView && (activeBlockMeta$ | async) as currentBlock">
-          <div class="relative flex items-center gap-1.5 sm:gap-2 px-2 sm:px-2.5 py-1 rounded-2xl border backdrop-blur-2xl shadow-xl text-xs sm:text-[13px] font-headline font-bold transition-all max-w-[calc(100vw-130px)] sm:max-w-none overflow-x-auto sm:overflow-visible scrollbar-none select-none shrink-0"
+          <div class="hidden md:flex relative items-center gap-1.5 sm:gap-2 px-2 sm:px-2.5 py-1 rounded-2xl border backdrop-blur-2xl shadow-xl text-xs sm:text-[13px] font-headline font-bold transition-all max-w-[calc(100vw-130px)] sm:max-w-none overflow-x-auto sm:overflow-visible scrollbar-none select-none shrink-0"
                [ngClass]="theme === 'dark' 
                  ? 'bg-[#101015]/95 border-neutral-800/90 text-neutral-100 shadow-black/60 ring-1 ring-white/[0.08]' 
                  : 'bg-white/95 border-neutral-200/90 text-neutral-800 shadow-neutral-300/40 ring-1 ring-black/[0.04]'">

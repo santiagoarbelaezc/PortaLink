@@ -1882,7 +1882,8 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activeBlockId = (this.blocks && this.blocks.length > 0) ? this.blocks[0].id : null;
     if (this.isMobileScreen) {
       this.isSidebarCollapsed = true;
-      // En móvil: al seleccionar un apunte, navegar directamente al editor inmersivo
+      this.editorViewMode = 'preview';
+      // En móvil: al seleccionar un apunte, navegar en Modo Lectura Zen
       this.openMobileEditor();
     }
     this.syncActiveTabMeta();
@@ -2810,8 +2811,9 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.syncActiveTabMeta();
     this.restoreScrollForCurrentTabAndPage(0);
     this.showToast('Apunte creado exitosamente');
-    // En móvil: al crear un nuevo apunte, ir directamente al editor inmersivo
+    // En móvil: al crear un nuevo apunte, ir directamente al editor inmersivo en modo edición
     if (this.isMobileScreen) {
+      this.editorViewMode = 'edit';
       this.openMobileEditor();
     }
 
