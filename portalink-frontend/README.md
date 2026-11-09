@@ -2,200 +2,191 @@
   <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=120&section=header&animation=fadeIn" />
 </div>
 
-<h1 align="center">🖤 Santiago Arbelaez — Portfolio</h1>
+<h1 align="center">🌌 PortaLink — Frontend</h1>
 
-<h3 align="center">🚀 Portfolio personal ultra-premium con fondo dinámico blanco/negro por scroll</h3>
+<h3 align="center">🚀 Plataforma Web Full-Stack & Sistema Operativo Personal (PortaLink OS)</h3>
 
 <p align="center">
-  Aplicación web de una sola página (SPA) construida con Angular 18 y Tailwind CSS.<br>
-  Estética "Luxury Tech meets Editorial Fashion" — fondo interpolado en tiempo real según la sección activa.
+  Aplicación web de una sola página (SPA) y Progressive Web App (PWA) de alto rendimiento construida con <b>Angular 21</b> y <b>Tailwind CSS</b>.<br>
+  Integra un portafolio interactivo de servicios tecnológicos y un robusto panel de control administrativo (Dashboard) para gestión de finanzas, biblioteca de apuntes con IA, itinerario de actividades, mensajería y asistente robótico.
 </p>
 
 ---
 
 ## 📋 **Descripción del Proyecto**
 
-**SantiagoArbelaez** es un portafolio personal de alta gama que presenta mis proyectos, habilidades y servicios como desarrollador frontend. El sitio implementa un sistema de fondo dinámico que transiciona suavemente entre blanco y negro según la sección visible, creando una experiencia visual elegante y cinematográfica.
+**PortaLink Frontend** es la interfaz de usuario moderna de la plataforma PortaLink. Ofrece una doble experiencia:
+1. **Cara Pública (Portafolio & Servicios):** Experiencia interactiva y estética inspirada en *Luxury Tech*, con navegación suave, animaciones AOS, vitrina de proyectos de software, cotizaciones de planes y contacto directo.
+2. **Cara Privada (PortaLink OS / Dashboard Administrativo):** Sistema centralizado para gestionar el flujo de trabajo del desarrollador: finanzas profesionales, biblioteca de conocimiento jerárquica con asistente IA (Copilot), itinerario dinámico de tareas y asistente conversacional RotBot.
 
-> ✅ **Estado del Proyecto:** En desarrollo activo — disponible localmente vía `npm start`
+> ⚡ **Estado del Proyecto:** En producción activa y desarrollo continuo — desplegado en Firebase Hosting y consumiendo APIs RESTful seguras.
 
 ---
 
-## 🏗️ **Arquitectura del Sistema**
+## 🏗️ **Módulos del Sistema (Dashboard)**
 
-### **Sistema de Fondo Dinámico**
+El panel administrativo de PortaLink está dividido en componentes modulares de alto nivel:
 
-El rasgo más distintivo del portafolio es el `ScrollColorService`, un servicio singleton que interpola colores entre secciones en tiempo real:
+```
+dashboard/
+├── dash-home/          # Resumen general, métricas clave y radar de actividad
+├── dash-library/       # Biblioteca de apuntes Pro (Carpetas > Cuadernos > Notas Notion-style)
+│   └── copilot-chat/   # Asistente de IA para código, validación y explicaciones
+├── dash-finances/      # Control de ingresos, egresos, clientes, propuestas y facturas PDF
+├── dash-itinerary/     # Planificador de tareas semanales, metas diarias y recordatorios
+├── dash-messages/      # Bandeja de entrada de contactos y prospectos con gestión de estados
+├── dash-rotbot/        # Asistente con IA conversacional, síntesis de voz (TTS) y animaciones
+├── dash-ai-search/     # Motor de búsqueda semántica transversal en toda la plataforma
+├── dash-db-viewer/     # Monitor de estado y estructura de base de datos
+├── dash-users/         # Gestión de usuarios, roles y permisos de acceso
+└── dash-config/        # Configuración general de perfil y personalización
+```
 
-| Sección | Color asignado |
-|---------|---------------|
-| `#hero` | `#FFFFFF` — Blanco puro |
-| `#services` | `#000000` — Negro |
-| `#portfolio` | `#080808` — Negro profundo |
-| `#about` | `#F5F5F5` — Blanco cálido |
-| `#skills` | `#000000` — Negro |
-| `#contact` | `#080808` — Negro profundo |
-| `#footer` | `#000000` — Negro |
+### 📚 **Biblioteca de Apuntes Pro (Dash-Library)**
+- **Estructura Jerárquica:** Organización de 3 niveles (*Carpetas ➔ Cuadernos ➔ Apuntes*).
+- **Editor Notion-Style:** Bloques de texto enriquecido, listas de tareas, llamadas (callouts) y bloques de código con sintaxis resaltada y botón de copiado.
+- **Experiencia Móvil Nativa:** Rediseño responsivo enfocado en usabilidad móvil (barra de herramientas inferior sticky, menú hamburguesa flotante y gestos táctiles).
+- **Copilot de IA:** Asistencia contextual integrada para analizar, explicar o autocompletar fragmentos de código.
 
-El servicio escucha el evento `scroll`, calcula en qué zona de transición se encuentra el viewport, e interpola los canales RGB con easing `easeInOut` para una transición cinematográfica fluida.
+### 💰 **Gestión Financiera Integral (Dash-Finances)**
+- **Flujo de Caja:** Control estricto de ingresos y egresos categorizados con gráficos interactivos (`Chart.js`).
+- **Cotizaciones y Facturación:** Generación de propuestas de software y emisión de facturas profesionales exportables en formato PDF de alta resolución (`jsPDF` y `jspdf-autotable`).
+- **Control de Abonos:** Registro de pagos parciales por cliente con cálculo automático de saldos pendientes.
 
-### **Navbar Adaptativo**
-
-El navbar es suscriptor de `isDark$` (un `BehaviorSubject<boolean>` del servicio). Cambia automáticamente entre texto oscuro (secciones blancas) y texto claro (secciones negras) usando `[style]` bindings directos para máxima fluidez.
+### 🤖 **Asistente Inteligente (Dash-RotBot & AI Floating Chat)**
+- **Chat Flotante y Dashboard:** Comunicación fluida con modelos de lenguaje avanzados.
+- **Voz y Expresividad:** Soporte para transcripción y síntesis de voz (TTS), sincronizado con animaciones visuales de ojos OLED.
 
 ---
 
 ## 🔧 **Stack Tecnológico**
 
-### **Framework & Lenguaje**
+### **Framework & Lenguajes**
 <div align="center">
-  <img src="https://img.shields.io/badge/Angular_18-DD0031?style=for-the-badge&logo=angular&logoColor=white" />
+  <img src="https://img.shields.io/badge/Angular_21-DD0031?style=for-the-badge&logo=angular&logoColor=white" />
   <img width="8" />
-  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" />
+  <img src="https://img.shields.io/badge/TypeScript_5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
   <img width="8" />
-  <img src="https://img.shields.io/badge/RxJS-B7178C?style=for-the-badge&logo=reactivex&logoColor=white" />
-</div>
-
-### **Estilos & Diseño**
-<div align="center">
-  <img src="https://img.shields.io/badge/Tailwind_CSS_v3-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" />
+  <img src="https://img.shields.io/badge/RxJS_7.8-B7178C?style=for-the-badge&logo=reactivex&logoColor=white" />
+  <img width="8" />
+  <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" />
   <img width="8" />
   <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" />
-  <img width="8" />
-  <img src="https://img.shields.io/badge/Google_Fonts-4285F4?style=for-the-badge&logo=google&logoColor=white" />
 </div>
 
-### **Tipografías**
+### **Estilos & Librerías de UI**
 <div align="center">
-  <img src="https://img.shields.io/badge/Bebas_Neue-Headlines-black?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS_3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" />
   <img width="8" />
-  <img src="https://img.shields.io/badge/DM_Serif_Display-Editorial-black?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/AOS_Animations-000000?style=for-the-badge&logo=scrollreveal&logoColor=white" />
   <img width="8" />
-  <img src="https://img.shields.io/badge/Inter-Body_Text-black?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Chart.js_4.5-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white" />
+  <img width="8" />
+  <img src="https://img.shields.io/badge/jsPDF-FF0000?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" />
+</div>
+
+### **Infraestructura & Despliegue**
+<div align="center">
+  <img src="https://img.shields.io/badge/Firebase_Hosting-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" />
+  <img width="8" />
+  <img src="https://img.shields.io/badge/PWA_Ready-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white" />
 </div>
 
 ---
 
-## 🧩 **Componentes**
+## 🚀 **Estado Actual de Despliegue**
 
-| Componente | Descripción |
-|------------|-------------|
-| `HeroComponent` | Sección full-screen con texto staggered, foto con efecto parallax 3D y badge flotante |
-| `NavbarComponent` | Navbar fijo con glassmorphism adaptativo (oscuro/claro según sección) |
-| `ServicesComponent` | Grid de tarjetas con animación de sweep al hover |
-| `PortfolioComponent` | Grilla editorial asimétrica con overlay en hover |
-| `AboutComponent` | Split-screen con clip-path diagonal y bio con reveals por scroll |
-| `SkillsComponent` | Dos marquees infinitos en sentidos opuestos (tech stack + soft skills) |
-| `ContactComponent` | Formulario minimalista con floating labels animados |
-| `FooterComponent` | Footer con texto tipográfico gigante en ghost mode |
+| Componente | Plataforma | Estado | Entorno / URL |
+| :--- | :--- | :--- | :--- |
+| **Frontend SPA / PWA** | Firebase Hosting | ✅ Desplegado | `https://portfolio-santiagoa.web.app` |
+| **Consumo de API** | Hostinger (API Gateway) | ✅ Conectado | Endpoint seguro vía Gateway reverso |
+| **Dominio Personalizado** | DNS Configurado | 📝 Planificado | Dominio productivo enrutado |
 
 ---
 
-## 🛠️ **Directivas & Servicios**
+## 🏛️ **Arquitectura del Frontend**
 
-| Archivo | Tipo | Descripción |
-|---------|------|-------------|
-| `scroll-color.service.ts` | Service | Motor del fondo dinámico — interpola colores RGB por scroll con zona de transición fija |
-| `reveal.directive.ts` | Directive | `IntersectionObserver` para animar elementos al entrar al viewport |
-| `magnetic.directive.ts` | Directive | Efecto magnético de atracción del cursor en botones y links |
+- **Componentes Standalone:** Arquitectura moderna sin módulos innecesarios (`NgModule`), maximizando la carga diferida (*Lazy Loading*) y optimizando el bundle de producción.
+- **Autenticación JWT:** Interceptores HTTP (`AuthInterceptor`) que inyectan el encabezado `Authorization: Bearer <token>` de forma transparente en peticiones protegidas.
+- **Guardias de Ruta:** Protección de rutas mediante `AuthGuard` para restringir el acceso no autorizado a áreas administrativas.
+- **Gestión de Entornos Dinámica:** Script `set-env.js` para compilar variables de entorno desde `.env` hacia `src/environments/environment.ts` durante el build.
 
 ---
 
-## 📁 **Estructura del Proyecto**
+## 📁 **Estructura de Directorios**
 
 ```
-src/
-├── app/
-│   ├── components/
-│   │   ├── hero/
-│   │   ├── navbar/
-│   │   ├── services/
-│   │   ├── portfolio/
-│   │   ├── about/
-│   │   ├── skills/
-│   │   ├── contact/
-│   │   ├── footer/
-│   │   └── cursor/
-│   ├── services/
-│   │   └── scroll-color.service.ts
-│   ├── shared/
-│   │   └── directives/
-│   │       ├── reveal.directive.ts
-│   │       └── magnetic.directive.ts
-│   ├── app.component.ts
-│   ├── app.component.html
-│   └── app.component.css
-├── styles.css
-└── index.html
+portalink-frontend/
+├── src/
+│   ├── app/
+│   │   ├── components/         # Componentes UI transversales (Navbar, Footer, Hero, Chat)
+│   │   │   └── dashboard/      # Módulos del PortaLink OS (Library, Finances, Itinerary, etc.)
+│   │   ├── core/               # Guards de seguridad e Interceptores HTTP
+│   │   ├── models/             # Interfaces y tipos de TypeScript
+│   │   ├── pages/              # Vistas principales y rutas públicas (Login, Proyectos, CV Web)
+│   │   ├── pipes/              # Pipes para formateo de datos
+│   │   ├── services/           # Servicios de negocio y comunicación con la API REST
+│   │   └── shared/             # Directivas y utilidades compartidas
+│   ├── assets/                 # Recursos estáticos (imágenes, iconos, audios)
+│   └── environments/           # Archivos de configuración de entorno
+├── angular.json                # Configuración del workspace de Angular
+├── firebase.json               # Reglas de despliegue y reescritura para Firebase Hosting
+├── ngsw-config.json            # Configuración de Service Worker y caché PWA
+├── package.json                # Dependencias y scripts de npm
+├── set-env.js                  # Inyector de variables de entorno para CI/CD
+└── tailwind.config.js          # Configuración de paleta de colores y plugins Tailwind
 ```
 
 ---
 
-## 🚀 **Instalación & Uso**
+## 💻 **Cómo Ejecutar el Proyecto Localmente**
 
-### **Prerrequisitos**
-- Node.js v18+
-- Angular CLI v18+
-
-### **Clonar e instalar**
-
+### 1. Clonar e ingresar al directorio
 ```bash
-git clone https://github.com/santiagoarbelaezc/SantiagoArbelaez.git
-cd SantiagoArbelaez
+git clone https://github.com/santiagoarbelaezc/PortaLink.git
+cd PortaLink/portalink-frontend
+```
+
+### 2. Instalar dependencias
+```bash
 npm install
 ```
 
-### **Correr en local**
+### 3. Configurar variables de entorno
+Crea un archivo `.env` en la raíz de `portalink-frontend` tomando como referencia `.env.example`:
 
+```env
+API_URL=http://localhost:8000
+NODE_ENV=development
+```
+
+Genera los archivos de entorno de Angular ejecutando:
+```bash
+node set-env.js
+```
+
+### 4. Iniciar servidor de desarrollo
 ```bash
 npm start
-# http://localhost:4200
 ```
+La aplicación estará disponible en `http://localhost:4200/`.
 
-### **Build de producción**
-
+### 5. Compilar para producción
 ```bash
 npm run build
-# Output en: dist/santiago-arbelaez/
 ```
-
----
-
-## 🎨 **Paleta de Colores**
-
-| Token | Hex | Uso |
-|-------|-----|-----|
-| `--accent-cyan` | `#00F5FF` | Acentos, hover, detalles activos |
-| `--accent-gold` | `#FFD700` | Numeración, detalles secundarios |
-| `#FFFFFF` | Blanco puro | Sección Hero y About |
-| `#000000` | Negro puro | Secciones oscuras |
-
----
-
-## ✨ **Features Destacados**
-
-- **Fondo dinámico por scroll** — interpolación RGB con easing entre blanco y negro
-- **Navbar adaptativo** — cambia texto y bordes automáticamente según el `isDark$` observable
-- **Efecto parallax 3D** — foto del hero que se inclina según el movimiento del mouse
-- **Magnetic hover** — directiva personalizada que atrae los elementos al cursor
-- **Scroll reveal** — `IntersectionObserver` con staggered delays para entradas cinematográficas
-- **Marquee infinito** — dos filas en sentidos contrarios para el stack tecnológico
-- **Tipografía editorial** — mix de Bebas Neue (display) y DM Serif Display (italic) para estética luxury
+Los archivos de distribución se generarán en la carpeta `dist/`.
 
 ---
 
 ## 👨‍💻 **Desarrollador**
 
 <div align="center">
-
-**Santiago Arbelaez Contreras**
-
-Junior Full Stack Developer
-
+Santiago Arbelaez Contreras  
+Junior Full Stack Developer  
 Estudiante de Ingeniería de Sistemas – Universidad del Quindío
 
 <br>
-
 <a href="https://github.com/santiagoarbelaezc">
   <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" />
 </a>
@@ -207,10 +198,7 @@ Estudiante de Ingeniería de Sistemas – Universidad del Quindío
 <a href="https://portfolio-santiagoa.web.app/portfolio">
   <img src="https://img.shields.io/badge/Portfolio-6C63FF?style=for-the-badge&logo=sparkles&logoColor=white" />
 </a>
-
 </div>
-
----
 
 <div align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=90&section=footer&animation=fadeIn" />
