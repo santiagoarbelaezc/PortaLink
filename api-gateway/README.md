@@ -197,3 +197,4 @@ Estudiante de Ingeniería de Sistemas – Universidad del Quindío
 <div align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=90&section=footer&animation=fadeIn" />
 </div>
+
