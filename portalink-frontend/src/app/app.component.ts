@@ -26,7 +26,7 @@ import { CookieConsentComponent } from './components/cookie-consent/cookie-conse
     <app-ai-chat-floating *ngIf="!isAdminRoute() && !isLoginRoute() && !isLinkRoute() && !isPerfilRoute()"></app-ai-chat-floating>
 
     <!-- Cookie Consent Banner & Legal Preferences Modal -->
-    <app-cookie-consent></app-cookie-consent>
+    <app-cookie-consent *ngIf="!isAdminRoute()"></app-cookie-consent>
  
     <!-- Main Content Area -->
     <div class="content-container">
@@ -161,30 +161,42 @@ export class AppComponent implements OnInit {
 
   isLoading = false;
   isFinished = false;
-  private navbarVisible = this.shouldShowNavbar(this.router.url);
+  private navbarVisible = this.shouldShowNavbar(this.getActiveUrl());
   private loadingSafetyTimeout: any;
 
+  private getActiveUrl(): string {
+    const routerUrl = this.router.url || '';
+    if (typeof window !== 'undefined') {
+      const browserPath = window.location.pathname || '';
+      if ((!routerUrl || routerUrl === '/') && browserPath && browserPath !== '/') {
+        return browserPath + (window.location.search || '');
+      }
+    }
+    return routerUrl;
+  }
+
   isAdminRoute(): boolean {
-    const url = this.router.url || '';
+    const url = this.getActiveUrl();
     return url.includes('/admin');
   }
 
   isLoginRoute(): boolean {
-    const url = this.router.url || '';
+    const url = this.getActiveUrl();
     return url.includes('/login') || url.includes('/register');
   }
 
   isLinkRoute(): boolean {
-    const url = this.router.url || '';
+    const url = this.getActiveUrl();
     return url.includes('/links') || url.includes('/link');
   }
 
   isPerfilRoute(): boolean {
-    const url = this.router.url || '';
+    const url = this.getActiveUrl();
     return url.includes('/perfil');
   }
 
   showNavbar(): boolean {
+    if (this.isAdminRoute()) return false;
     return this.navbarVisible;
   }
 
@@ -204,8 +216,10 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.navbarVisible = this.shouldShowNavbar(this.getActiveUrl());
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
+        this.navbarVisible = this.shouldShowNavbar(event.url);
         this.isLoading = true;
         this.isFinished = false;
         if (this.loadingSafetyTimeout) clearTimeout(this.loadingSafetyTimeout);

@@ -6,8 +6,8 @@
      [ngClass]="[
        isCopilotFullscreen 
          ? 'fixed inset-0 w-screen h-screen max-w-none max-h-none rounded-none border-0 shadow-2xl z-[1000]' 
-         : 'fixed inset-x-0 bottom-0 md:inset-x-auto md:bottom-auto w-full md:w-auto max-w-full md:max-w-[94vw] h-[80vh] max-h-[calc(100vh-30px)] overflow-visible rounded-t-[32px] md:rounded-[32px] border border-b-0 md:border-b shadow-[0_30px_70px_rgba(0,0,0,0.22)] z-[1000] animate-slide-up md:animate-fade-in',
-       isDark ? 'bg-[#121215] border-neutral-800 text-white' : 'bg-white border-neutral-200/90 text-neutral-900'
+         : 'fixed inset-x-0 bottom-0 md:inset-x-auto md:bottom-auto w-full md:w-auto max-w-full md:max-w-[94vw] h-[80vh] max-h-[calc(100vh-30px)] overflow-visible rounded-t-[32px] md:rounded-[32px] border border-b-0 md:border-b shadow-[0_30px_80px_rgba(0,0,0,0.85)] z-[1000] animate-slide-up md:animate-fade-in',
+       isDark ? 'bg-[#16161b] border-[#2c2c36] text-white' : 'bg-white border-neutral-300 text-neutral-900 shadow-[0_28px_70px_rgba(0,0,0,0.16)]'
      ]"
      [style.width]="isCopilotFullscreen ? '100vw' : (!isMobileScreen ? (copilotWidth + 'px') : null)"
      [style.height]="isCopilotFullscreen ? '100vh' : (!isMobileScreen ? (copilotHeight + 'px') : null)"
@@ -112,8 +112,8 @@
           </h3>
           <div class="flex items-center gap-1.5 mt-1">
             <span class="px-2 py-0.5 rounded-full text-[9.5px] font-semibold inline-flex items-center gap-1 border truncate"
-                  [ngClass]="isDark ? 'bg-neutral-800 text-neutral-300 border-neutral-700' : 'bg-neutral-100 text-neutral-700 border-neutral-300'">
-              <span class="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-pulse shrink-0"></span>
+                  [ngClass]="isDark ? 'bg-red-500/10 text-neutral-200 border-red-500/30' : 'bg-red-50/70 text-neutral-800 border-red-200'">
+              <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shrink-0"></span>
               <span class="truncate">Copilot Apuntes • {{ selectedPage?.title || 'Biblioteca' }}</span>
             </span>
             <span *ngIf="isCopilotFullscreen" class="hidden sm:inline-flex px-1.5 py-0.5 rounded-md text-[9px] font-mono border"
@@ -244,11 +244,14 @@
              [ngClass]="isDark ? 'bg-neutral-800 border-neutral-700' : 'bg-neutral-100 border-neutral-200'">
           <img src="assets/icons/logo-link-light.png" class="w-full h-full object-contain" alt="Rotbot">
         </div>
-        <div class="px-4 py-3 rounded-2xl flex items-center gap-1.5 border"
+        <div class="px-4 py-3 rounded-2xl flex items-center gap-2 border"
              [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-neutral-100 border-neutral-200/70 text-neutral-900'">
-          <div class="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-bounce"></div>
-          <div class="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-bounce [animation-delay:0.2s]"></div>
-          <div class="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-bounce [animation-delay:0.4s]"></div>
+          <div class="flex items-center gap-1.5">
+            <div class="w-1.5 h-1.5 rounded-full bg-red-500 animate-bounce"></div>
+            <div class="w-1.5 h-1.5 rounded-full bg-red-500 animate-bounce [animation-delay:0.2s]"></div>
+            <div class="w-1.5 h-1.5 rounded-full bg-red-500 animate-bounce [animation-delay:0.4s]"></div>
+          </div>
+          <span *ngIf="isGeneratingQuiz" class="text-xs font-medium opacity-80">Preparando tu cuestionario para la pizarra...</span>
         </div>
       </div>
     </div>
@@ -257,10 +260,24 @@
 
   <!-- ÁREA DE ENTRADA / INPUT BAR MULTILÍNEA CON SHIFT + ENTER -->
   <div class="px-3.5 py-2.5 border-t flex-shrink-0"
-       [ngClass]="isDark ? 'border-neutral-800 bg-[#18181c]' : 'border-neutral-100 bg-white'">
+       [ngClass]="isDark ? 'border-[#262630] bg-[#16161b]' : 'border-neutral-200 bg-white'">
     <div [class.max-w-4xl]="isCopilotFullscreen" [class.mx-auto]="isCopilotFullscreen">
+      <!-- Chip rápido para crear cuestionario en la pizarra -->
+      <div class="flex items-center gap-1.5 pb-2 overflow-x-auto scrollbar-none">
+        <button type="button"
+                (click)="requestQuickQuiz()"
+                [disabled]="isCopilotLoading"
+                title="Crear cuestionario de 5 preguntas en la pizarra"
+                class="px-3 py-1 rounded-full border text-[11px] font-headline font-bold inline-flex items-center gap-1.5 shrink-0 transition-all cursor-pointer active:scale-95 disabled:opacity-40"
+                [ngClass]="isDark
+                  ? 'bg-[#0e0e12] border-red-500/30 text-neutral-200 hover:border-red-500 hover:bg-red-500/10 hover:text-white'
+                  : 'bg-red-50/70 border-red-200 text-neutral-800 hover:border-red-400 hover:bg-red-50'">
+          <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+          <span>Crear cuestionario en pizarra</span>
+        </button>
+      </div>
       <form (submit)="$event.preventDefault(); sendCopilotMessage()" class="relative flex items-end gap-2 border rounded-2xl p-2 sm:p-2.5 transition-colors shadow-xs"
-            [ngClass]="isDark ? 'bg-neutral-900 border-neutral-700 focus-within:border-neutral-400' : 'bg-neutral-50 border-neutral-300/80 focus-within:border-neutral-900'">
+            [ngClass]="isDark ? 'bg-[#0e0e12] border-[#262630] focus-within:border-red-500/70 focus-within:ring-1 focus-within:ring-red-500/30' : 'bg-neutral-50 border-neutral-300 focus-within:border-red-500 focus-within:ring-1 focus-within:ring-red-500/20'">
         <textarea 
           #copilotTextarea
           [(ngModel)]="copilotInput"
@@ -280,8 +297,8 @@
           type="button"
           (click)="sendCopilotMessage()"
           [disabled]="!copilotInput.trim() || isCopilotLoading"
-          class="w-8 h-8 rounded-full flex items-center justify-center transition-all disabled:opacity-30 cursor-pointer flex-shrink-0 border-none shadow-sm mb-0.5"
-          [ngClass]="isDark ? 'bg-white text-black hover:bg-neutral-200' : 'bg-[#09090b] text-white hover:bg-neutral-800'"
+          class="w-8 h-8 rounded-full flex items-center justify-center transition-all disabled:opacity-80 cursor-pointer flex-shrink-0 border-none shadow-sm mb-0.5 bg-red-600 hover:bg-red-500 text-white shadow-red-600/30 active:scale-95"
+          style="color: #ffffff !important;"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="22" y1="2" x2="11" y2="13"></line>

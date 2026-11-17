@@ -42,6 +42,36 @@ export class CopilotMarkdownService {
   }
 
   /**
+   * Formatea el contenido inline (negrita, cursiva, enlaces, <br>) dentro de celdas de tabla
+   */
+  private formatCellContent(cell: string, darkTheme: boolean): string {
+    if (!cell) return '';
+    const headingTextClass = darkTheme ? 'text-white' : 'text-neutral-900';
+    const italicTextClass = darkTheme ? 'text-neutral-200' : 'text-neutral-800';
+
+    // Preservar etiquetas <br> que el modelo pueda incluir dentro de celdas
+    let formatted = cell.replace(/<br\s*\/?>/gi, '__COPILOT_CELL_BR__');
+
+    // Escapar HTML especial
+    formatted = this.escapeHtml(formatted);
+
+    // Negrita: **texto**
+    formatted = formatted.replace(/\*\*((?:[^*\n]|\*(?!\*))+?)\*\*/g, `<strong class="font-bold ${headingTextClass}">$1</strong>`);
+
+    // Cursiva: *texto* o _texto_ (sin coincidir con multiplicación ni placeholders __COPILOT_INLINE_X__)
+    formatted = formatted.replace(/(?<=^|[\s(])\*(?!\s)([^*\n]+?)(?<!\s)\*(?=[.,!?;:\s)]|$)/g, `<em class="italic ${italicTextClass}">$1</em>`);
+    formatted = formatted.replace(/(?<=^|[\s(])_(?!\s|_)([^_\n]+?)(?<!\s|_)_(?=[.,!?;:\s)]|$)/g, `<em class="italic ${italicTextClass}">$1</em>`);
+
+    // Enlaces: [Texto](URL)
+    formatted = formatted.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-red-500 hover:text-red-600 dark:text-red-400 underline font-medium">$1</a>');
+
+    // Restaurar <br>
+    formatted = formatted.replace(/__COPILOT_CELL_BR__/g, '<br>');
+
+    return formatted;
+  }
+
+  /**
    * Parser Markdown especializado para las respuestas de RotBot Copilot
    */
   parse(content: string, darkTheme: boolean = true): string {
@@ -51,13 +81,13 @@ export class CopilotMarkdownService {
     const inlineCodes: string[] = [];
     const tables: string[] = [];
 
-    // Constantes de estilo según el tema
+    // Constantes de estilo según el tema (Color secundario Rojo PortaLink)
     const headingTextClass = darkTheme ? 'text-white' : 'text-neutral-900';
-    const subtitleClass = darkTheme ? 'text-pink-400' : 'text-pink-600';
+    const subtitleClass = darkTheme ? 'text-red-500' : 'text-red-600';
     const borderClass = darkTheme ? 'border-neutral-800' : 'border-neutral-200';
     const inlineCodeClass = darkTheme 
-      ? 'bg-neutral-800 text-pink-400 border border-neutral-700/70' 
-      : 'bg-neutral-200/90 text-pink-600 border border-neutral-300/80';
+      ? 'bg-neutral-800 text-red-400 border border-neutral-700/70' 
+      : 'bg-neutral-200/90 text-red-600 border border-neutral-300/80';
     const listTextClass = darkTheme ? 'text-neutral-200' : 'text-neutral-800';
 
     // 0. Pre-procesar: normalizar saltos de línea, eliminar emojis/iconos decorativos y recortar espacios
@@ -109,17 +139,31 @@ export class CopilotMarkdownService {
       return placeholder;
     });
 
-    // 3. Extraer tablas Markdown
-    const tableRegex = /((?:^[ \t]*\|[^\n]+\|[ \t]*\n)(?:^[ \t]*\|[-: |]+\|[ \t]*\n)(?:^[ \t]*\|[^\n]+\|[ \t]*(?:\n|$))+)/gm;
+    // 3. Extraer tablas Markdown (con o sin pipes extremos, parseando formato inline dentro de cada celda)
+    const tableRegex = /((?:^[ \t]*\|?[^\n|]+\|[^\n]+\n)(?:^[ \t]*\|?[ \t]*:?-+:?[ \t]*(?:\|[ \t]*:?-+:?[ \t]*)+\|?[ \t]*\n)(?:^[ \t]*\|?[^\n|]+\|[^\n]*(?:\n|$))+)/gm;
     text = text.replace(tableRegex, (match) => {
-      const lines = match.trim().split('\n').map(l => l.trim());
+      const lines = match.trim().split('\n').map(l => l.trim()).filter(l => l.length > 0);
       if (lines.length >= 2) {
-        const headerCols = lines[0].replace(/^\||\\|$/g, '').split('|').map(c => c.trim());
-        const bodyRows = lines.slice(2).map(row => 
-          row.replace(/^\||\\|$/g, '').split('|').map(c => c.trim())
-        );
+        const splitRow = (rowStr: string): string[] =>
+          rowStr
+            .replace(/^\s*\||\|\s*$/g, '')
+            .split(/(?<!\\)\|/)
+            .map(c => c.replace(/\\\|/g, '|').trim());
 
-        const tableThBg = darkTheme ? 'bg-neutral-800/80 text-neutral-200 border-neutral-700' : 'bg-neutral-100 text-neutral-800 border-neutral-200';
+        const headerCols = splitRow(lines[0]);
+        const colCount = headerCols.length;
+        const bodyRows = lines.slice(2).map(row => {
+          const cols = splitRow(row);
+          if (cols.length > colCount) {
+            return cols.slice(0, colCount);
+          }
+          while (cols.length < colCount) {
+            cols.push('');
+          }
+          return cols;
+        });
+
+        const tableThBg = darkTheme ? 'bg-neutral-800/80 text-neutral-100 border-neutral-700' : 'bg-neutral-100 text-neutral-900 border-neutral-200';
         const tableBorder = darkTheme ? 'border-neutral-700' : 'border-neutral-200';
         const tableBodyText = darkTheme ? 'text-neutral-300' : 'text-neutral-700';
         const tableRowHover = darkTheme ? 'hover:bg-neutral-800/40' : 'hover:bg-neutral-50';
@@ -127,11 +171,11 @@ export class CopilotMarkdownService {
         const tableHtml = `<div class="my-3 overflow-x-auto rounded-xl border ${borderClass} shadow-xs">` +
           `<table class="w-full text-left text-[13px] sm:text-[14.5px] border-collapse">` +
             `<thead class="${tableThBg} font-semibold border-b ${tableBorder}">` +
-              `<tr>${headerCols.map(c => `<th class="px-3 py-2 border-r last:border-r-0 ${tableBorder}">${this.escapeHtml(c)}</th>`).join('')}</tr>` +
+              `<tr>${headerCols.map(c => `<th class="px-3.5 py-2.5 align-top border-r last:border-r-0 ${tableBorder}">${this.formatCellContent(c, darkTheme)}</th>`).join('')}</tr>` +
             `</thead>` +
             `<tbody class="divide-y ${darkTheme ? 'divide-neutral-800' : 'divide-neutral-200'} ${tableBodyText}">` +
               bodyRows.map(row => 
-                `<tr class="${tableRowHover}">${row.map(c => `<td class="px-3 py-2 border-r last:border-r-0 ${tableBorder}">${this.escapeHtml(c)}</td>`).join('')}</tr>`
+                `<tr class="${tableRowHover}">${row.map(c => `<td class="px-3.5 py-2.5 align-top leading-relaxed border-r last:border-r-0 ${tableBorder}">${this.formatCellContent(c, darkTheme)}</td>`).join('')}</tr>`
               ).join('') +
             `</tbody>` +
           `</table>` +
@@ -147,13 +191,13 @@ export class CopilotMarkdownService {
     // 4. Escapar caracteres HTML en el texto restante
     text = this.escapeHtml(text);
 
-    // 5. Encabezados (#, ##, ###) - Subtítulos rosados característicos de Rotbot
+    // 5. Encabezados (#, ##, ###) - Subtítulos rojos característicos de PortaLink
     text = text.replace(/^###[ \t]+(.*)$/gm, `<h3 class="text-[15px] sm:text-base font-bold mt-3 mb-1.5 ${subtitleClass} font-headline">$1</h3>`);
     text = text.replace(/^##[ \t]+(.*)$/gm, `<h2 class="text-base sm:text-[17px] font-bold mt-3.5 mb-2 pb-1 border-b ${borderClass} ${subtitleClass} font-headline">$1</h2>`);
     text = text.replace(/^#[ \t]+(.*)$/gm, `<h1 class="text-lg sm:text-[21px] font-extrabold mt-4 mb-2 ${subtitleClass} font-headline tracking-tight">$1</h1>`);
 
     // 6. Citas / Blockquotes
-    text = text.replace(/^&gt;[ \t]+(.*)$/gm, `<blockquote class="my-2.5 pl-3 py-1 border-l-2 border-neutral-400 ${darkTheme ? 'bg-neutral-800/40 text-neutral-300' : 'bg-neutral-100 text-neutral-700'} rounded-r text-[13.5px] sm:text-[14.5px] italic">$1</blockquote>`);
+    text = text.replace(/^&gt;[ \t]+(.*)$/gm, `<blockquote class="my-2.5 pl-3 py-1 border-l-2 border-red-500 ${darkTheme ? 'bg-neutral-800/40 text-neutral-300' : 'bg-neutral-100 text-neutral-700'} rounded-r text-[13.5px] sm:text-[14.5px] italic">$1</blockquote>`);
 
     // 7. Separadores horizontales (--- o ***)
     text = text.replace(/^(?:---|___|----)$/gm, `<hr class="my-3 ${borderClass}">`);
@@ -166,7 +210,7 @@ export class CopilotMarkdownService {
     text = text.replace(/(?<=^|[\s(])_(?!\s)([^_\n]+?)(?<!\s)_(?=[.,!?;:\s)]|$)/g, `<em class="italic ${darkTheme ? 'text-neutral-200' : 'text-neutral-800'}">$1</em>`);
 
     // 10. Enlaces [Texto](URL)
-    text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:text-blue-600 dark:text-blue-400 underline font-medium">$1</a>');
+    text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-red-500 hover:text-red-600 dark:text-red-400 underline font-medium">$1</a>');
 
     // 11. Listas desordenadas y numeradas
     const lines = text.split('\n');

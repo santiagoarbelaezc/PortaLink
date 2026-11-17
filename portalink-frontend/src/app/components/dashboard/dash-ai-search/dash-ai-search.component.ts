@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { RotbotMode } from '../../../services/robot-chat.service';
 import { LibraryService } from '../../../services/library.service';
 import { AuthService } from '../../../services/auth.service';
+import { SessionTimerService } from '../../../services/session-timer.service';
 
 export type { RotbotMode };
 
@@ -31,7 +32,7 @@ const TAB_LABELS: Record<string, string> = {
     <header class="flex-shrink-0 flex items-center justify-between px-3.5 sm:px-5 md:px-7 border-b relative z-30 transition-all duration-300 gap-2 sm:gap-3"
             [style.padding-top]="isMobileScreen ? 'calc(env(safe-area-inset-top, 0px) + 0.45rem)' : null"
             [ngClass]="[
-              theme === 'dark' ? 'bg-[#07070a]/95 backdrop-blur-xl border-neutral-800' : 'bg-white/95 backdrop-blur-xl border-neutral-200',
+              theme === 'dark' ? 'bg-[#0a0a0a]/95 backdrop-blur-xl border-[#1a1a1a]' : 'bg-white/95 backdrop-blur-xl border-neutral-200',
               activeTab === 'library' && isNotesView ? 'py-2.5 sm:py-3 min-h-[66px] sm:min-h-[64px]' : 'py-3.5 sm:py-3.5 min-h-[62px] sm:min-h-[56px]'
             ]">
 
@@ -39,23 +40,31 @@ const TAB_LABELS: Record<string, string> = {
       <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
         
         <!-- Sidebar Toggle (Hamburguesa) -->
-        <button (click)="toggleSidebar.emit()" class="w-10 h-10 sm:w-auto sm:h-auto p-2 sm:p-2.5 -ml-1 sm:-ml-1.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center shrink-0"
-                [ngClass]="theme === 'dark' ? 'hover:bg-white/10 text-neutral-200 hover:text-white' : 'hover:bg-black/5 text-neutral-700 hover:text-black'"
+        <button (click)="toggleSidebar.emit()"
+                class="w-9 h-9 rounded-xl border transition-all duration-200 cursor-pointer flex items-center justify-center shrink-0 active:scale-95"
+                [ngClass]="theme === 'dark'
+                  ? 'bg-[#121215] border-[#222226] text-neutral-300 hover:text-white hover:border-neutral-700'
+                  : 'bg-neutral-50 border-neutral-200/90 text-neutral-700 hover:text-black hover:bg-neutral-100'"
                 title="Alternar menú lateral">
-          <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+          <svg class="w-4 h-4 sm:w-[18px] sm:h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
 
         <!-- A. Standard Breadcrumb (Non-Rotbot Tabs & Non-Notes-View) -->
         <ng-container *ngIf="activeTab !== 'rotbot' && !(activeTab === 'library' && isNotesView)">
-          <span class="text-xs font-headline font-semibold uppercase tracking-widest hidden sm:inline-block"
-                [ngClass]="theme === 'dark' ? 'text-neutral-500' : 'text-neutral-400'">Consola</span>
-          <svg class="w-3.5 h-3.5 flex-shrink-0 hidden sm:inline-block" [ngClass]="theme === 'dark' ? 'text-neutral-700' : 'text-neutral-300'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-          </svg>
-          <span class="text-sm font-headline font-bold uppercase tracking-wider truncate"
-                [ngClass]="theme === 'dark' ? 'text-neutral-200' : 'text-neutral-800'">{{ currentLabel }}</span>
+          <div class="h-4 w-px hidden sm:block shrink-0" [ngClass]="theme === 'dark' ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="text-[11px] font-headline font-semibold uppercase tracking-[0.14em] hidden sm:inline-block"
+                  [ngClass]="theme === 'dark' ? 'text-neutral-500' : 'text-neutral-400'">Consola</span>
+            <span class="text-xs opacity-30 hidden sm:inline-block"
+                  [ngClass]="theme === 'dark' ? 'text-neutral-500' : 'text-neutral-400'">/</span>
+            <div class="inline-flex items-center gap-2 min-w-0">
+              <span class="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></span>
+              <span class="text-xs sm:text-[13px] font-headline font-extrabold uppercase tracking-wider truncate"
+                    [ngClass]="theme === 'dark' ? 'text-white' : 'text-neutral-950'">{{ currentLabel }}</span>
+            </div>
+          </div>
         </ng-container>
 
         <!-- B. Rotbot English Coach Identity in Top Header -->
@@ -79,33 +88,32 @@ const TAB_LABELS: Record<string, string> = {
           </div>
         </ng-container>
 
-        <!-- C. LIBRARY NOTES VIEW: BREADCRUMBS -->
+        <!-- C. LIBRARY NOTES VIEW: BREADCRUMBS MINIMALISTAS -->
         <ng-container *ngIf="activeTab === 'library' && isNotesView">
-          
+          <div class="h-4 w-px hidden sm:block shrink-0" [ngClass]="theme === 'dark' ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+
           <!-- Migas de pan compactas (Desktop/Tablet) -->
-          <div class="hidden sm:flex items-center gap-1.5 text-xs font-headline font-semibold shrink-0 select-none"
-               [ngClass]="theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'">
+          <div class="hidden sm:flex items-center gap-2 text-xs font-headline shrink-0 select-none"
+               [ngClass]="theme === 'dark' ? 'text-neutral-400' : 'text-neutral-500'">
             <button (click)="libraryService.triggerBreadcrumb('root')" 
-                    class="transition-colors flex items-center gap-1 cursor-pointer"
-                    [ngClass]="theme === 'dark' ? 'hover:text-white' : 'hover:text-black'">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+                    class="transition-colors inline-flex items-center gap-1.5 cursor-pointer font-medium"
+                    [ngClass]="theme === 'dark' ? 'hover:text-white' : 'hover:text-neutral-950'">
+              <svg class="w-3.5 h-3.5 opacity-75" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
               <span>Biblioteca</span>
             </button>
-            <span class="opacity-40">/</span>
+            <span class="opacity-30">/</span>
             <button *ngIf="selectedFolder$ | async as folder" 
                     (click)="libraryService.triggerBreadcrumb('folder')"
-                    class="transition-colors truncate max-w-[140px] cursor-pointer"
-                    [ngClass]="theme === 'dark' ? 'hover:text-white' : 'hover:text-black'">
+                    class="transition-colors truncate max-w-[140px] cursor-pointer font-medium"
+                    [ngClass]="theme === 'dark' ? 'hover:text-white' : 'hover:text-neutral-950'">
               {{ folder.name }}
             </button>
-            <span *ngIf="selectedFolder$ | async" class="opacity-40">/</span>
+            <span *ngIf="selectedFolder$ | async" class="opacity-30">/</span>
             <span *ngIf="(selectedNotebook$ | async) as notebook"
-                  class="font-bold truncate max-w-[220px] flex items-center gap-1.5"
-                  [ngClass]="theme === 'dark' ? 'text-white' : 'text-neutral-900'">
-              <span class="w-2.5 h-2.5 rounded-full shrink-0" 
-                    [style.backgroundColor]="notebook.color || '#3b82f6'"
-                    [style.boxShadow]="'0 0 8px ' + (notebook.color || '#3b82f6')"></span>
-              {{ notebook.title }}
+                  class="font-extrabold truncate max-w-[200px] inline-flex items-center gap-2 px-2.5 py-1 rounded-full border text-[11.5px]"
+                  [ngClass]="theme === 'dark' ? 'bg-[#121215] border-[#222226] text-white' : 'bg-neutral-50 border-neutral-200/90 text-neutral-950'">
+              <span class="w-2 h-2 rounded-full shrink-0 bg-red-500"></span>
+              <span class="truncate">{{ notebook.title }}</span>
             </span>
           </div>
 
@@ -121,16 +129,14 @@ const TAB_LABELS: Record<string, string> = {
               </svg>
             </button>
             <ng-container *ngIf="(selectedNotebook$ | async) as notebook; else defaultNotesMobileTitle">
-              <span class="w-2.5 h-2.5 rounded-full shrink-0"
-                    [style.backgroundColor]="notebook.color || '#3b82f6'"
-                    [style.boxShadow]="'0 0 8px ' + (notebook.color || '#3b82f6')"></span>
+              <span class="w-2.5 h-2.5 rounded-full shrink-0 bg-red-500"></span>
               <span class="font-headline font-bold text-xs tracking-tight truncate max-w-[120px]"
                     [ngClass]="theme === 'dark' ? 'text-white' : 'text-neutral-900'">
                 {{ notebook.title }}
               </span>
             </ng-container>
             <ng-template #defaultNotesMobileTitle>
-              <span class="w-2 h-2 rounded-full shrink-0 bg-blue-500"></span>
+              <span class="w-2 h-2 rounded-full shrink-0 bg-red-500"></span>
               <span class="font-headline font-bold text-xs tracking-tight truncate"
                     [ngClass]="theme === 'dark' ? 'text-white' : 'text-neutral-900'">
                 Apuntes
@@ -148,15 +154,17 @@ const TAB_LABELS: Record<string, string> = {
         <!-- A. Non-Rotbot & Non-Notes Action: Ver Sitio en Vivo -->
         <ng-container *ngIf="activeTab !== 'rotbot' && !(activeTab === 'library' && isNotesView)">
           <a routerLink="/"
-             class="btn-action-primary"
-             style="padding: 6px 14px; font-size: 0.76rem;"
+             class="group/site inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-headline font-bold tracking-tight border transition-all duration-200"
+             [ngClass]="theme === 'dark'
+               ? 'bg-[#121215] border-[#222226] text-neutral-200 hover:text-white hover:border-neutral-600'
+               : 'bg-[#09090b] border-[#09090b] text-white hover:bg-neutral-800 shadow-2xs force-white'"
              title="Abrir sitio web público">
-            <span class="relative flex h-2 w-2">
+            <span class="relative flex h-2 w-2 shrink-0">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
             </span>
             <span class="hidden sm:inline">Ver sitio</span>
-            <span class="material-symbols-rounded" style="font-size: 14px; opacity: 0.7;">open_in_new</span>
+            <span class="material-symbols-rounded transition-transform duration-200 group-hover/site:translate-x-0.5 group-hover/site:-translate-y-0.5" style="font-size: 14px; opacity: 0.85;">open_in_new</span>
           </a>
         </ng-container>
 
@@ -179,64 +187,68 @@ const TAB_LABELS: Record<string, string> = {
           </button>
         </ng-container>
 
-        <!-- C. LIBRARY NOTES VIEW: TOOLBAR DE TAREAS Y ACCIONES DEL BLOQUE (A LA IZQUIERDA DEL BOTON DE TEMA) - SOLO DESKTOP/TABLET -->
+        <!-- C. LIBRARY NOTES VIEW: TOOLBAR MINIMALISTA DEL BLOQUE (SOLO DESKTOP/TABLET) -->
         <ng-container *ngIf="activeTab === 'library' && isNotesView && (activeBlockMeta$ | async) as currentBlock">
-          <div class="hidden md:flex relative items-center gap-1.5 sm:gap-2 px-2 sm:px-2.5 py-1 rounded-2xl border backdrop-blur-2xl shadow-xl text-xs sm:text-[13px] font-headline font-bold transition-all max-w-[calc(100vw-130px)] sm:max-w-none overflow-x-auto sm:overflow-visible scrollbar-none select-none shrink-0"
+          <div class="hidden md:flex relative items-center gap-1.5 px-2 py-1.5 rounded-full border text-xs font-headline font-semibold transition-all max-w-[calc(100vw-130px)] sm:max-w-none overflow-x-auto sm:overflow-visible scrollbar-none select-none shrink-0"
                [ngClass]="theme === 'dark' 
-                 ? 'bg-[#101015]/95 border-neutral-800/90 text-neutral-100 shadow-black/60 ring-1 ring-white/[0.08]' 
-                 : 'bg-white/95 border-neutral-200/90 text-neutral-800 shadow-neutral-300/40 ring-1 ring-black/[0.04]'">
+                 ? 'bg-[#121215] border-[#222226] text-neutral-200' 
+                 : 'bg-neutral-50 border-neutral-200/90 text-neutral-800 shadow-2xs'">
             
-            <!-- ════ CLUSTER 1: SELECTOR INTEGRADO DE TIPO DE BLOQUE CON MENÚ DESPLEGABLE ════ -->
+            <!-- ════ CLUSTER 1: SELECTOR DE TIPO DE BLOQUE ════ -->
             <div class="relative">
               <button type="button"
                       (click)="toggleTypeDropdown($event)"
                       title="Cambiar formato del bloque (Atajos: T, S, N, C, A, 2, I)"
-                      class="h-8 px-2.5 rounded-xl border flex items-center gap-2 text-xs font-headline font-bold transition-all cursor-pointer hover:scale-102 active:scale-98 shadow-xs"
+                      class="h-8 px-3 rounded-full flex items-center gap-2 text-xs font-headline font-bold transition-all cursor-pointer active:scale-95"
                       [ngClass]="isTypeDropdownOpen 
-                        ? (theme === 'dark' ? 'bg-neutral-800 text-white border-neutral-600 ring-2 ring-neutral-700/50' : 'bg-neutral-100 text-black border-neutral-300 ring-2 ring-neutral-200')
-                        : (theme === 'dark' ? 'bg-neutral-900/90 hover:bg-neutral-800 border-neutral-800 text-neutral-200 hover:text-white' : 'bg-neutral-50 hover:bg-white border-neutral-200 text-neutral-800 hover:text-black')">
+                        ? (theme === 'dark' ? 'bg-neutral-800 text-white' : 'bg-white text-black shadow-2xs')
+                        : (theme === 'dark' ? 'hover:bg-neutral-800/80 text-neutral-200 hover:text-white' : 'hover:bg-white text-neutral-800 hover:text-black')">
                 
-                <!-- Ícono dinámico refinado según el tipo actual -->
+                <!-- Ícono dinámico según el tipo actual -->
                 <div class="w-4 h-4 flex items-center justify-center shrink-0"
                      [ngClass]="getBlockTypeIconColorClass(currentBlock.type)">
                   <!-- Columnas -->
-                  <svg *ngIf="currentBlock.type === 'columnas'" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                  <svg *ngIf="currentBlock.type === 'columnas'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
                     <rect x="3.5" y="4.5" width="7" height="15" rx="1.5" />
                     <rect x="13.5" y="4.5" width="7" height="15" rx="1.5" />
                   </svg>
                   <!-- Título H1 -->
-                  <svg *ngIf="currentBlock.type === 'titulo'" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+                  <svg *ngIf="currentBlock.type === 'titulo'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.5v13M12.75 5.5v13M3.75 12h9M18.75 18.5V9.75l-2.25 1.5" />
                   </svg>
                   <!-- Subtítulo H2 -->
-                  <svg *ngIf="currentBlock.type === 'subtitulo'" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
+                  <svg *ngIf="currentBlock.type === 'subtitulo'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.3">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.5v13M12 5.5v13M3.75 12h8.25M17.25 10a2 2 0 114 0c0 1.5-2.25 2.5-4 4.5h4" />
                   </svg>
                   <!-- Texto -->
-                  <svg *ngIf="currentBlock.type === 'texto'" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                  <svg *ngIf="currentBlock.type === 'texto'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h11" />
                   </svg>
                   <!-- Código -->
-                  <svg *ngIf="currentBlock.type === 'codigo'" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                  <svg *ngIf="currentBlock.type === 'codigo'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 8.5L4 12l4 3.5m8-7l4 3.5-4 3.5m-5.5 1.5l3-10" />
                   </svg>
                   <!-- Alerta -->
-                  <svg *ngIf="currentBlock.type === 'alerta'" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                  <svg *ngIf="currentBlock.type === 'alerta'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0 3.75h.007M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
                   </svg>
                   <!-- Imagen -->
-                  <svg *ngIf="currentBlock.type === 'imagen'" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                  <svg *ngIf="currentBlock.type === 'imagen'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
                     <rect x="3" y="4.5" width="18" height="15" rx="2.5" />
                     <circle cx="8.5" cy="9" r="1.5" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 15.5l-5-5L5 20.5" />
                   </svg>
+                  <!-- Cuestionario -->
+                  <svg *ngIf="currentBlock.type === 'cuestionario'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
                 </div>
 
-                <span class="font-sans font-bold tracking-tight text-[11.5px] truncate max-w-[85px] sm:max-w-none">
+                <span class="font-sans font-bold tracking-tight text-xs truncate max-w-[95px] sm:max-w-none">
                   {{ getBlockTypeDisplay(currentBlock.type) }}
                 </span>
 
-                <svg class="w-3.5 h-3.5 opacity-60 transition-transform duration-200 -mr-0.5"
+                <svg class="w-3.5 h-3.5 opacity-50 transition-transform duration-200"
                      [class.rotate-180]="isTypeDropdownOpen"
                      fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -379,29 +391,28 @@ const TAB_LABELS: Record<string, string> = {
             <button type="button"
                     (click)="triggerAction('ai', null, $event)"
                     title="Asistente RotBot IA para este bloque"
-                    class="h-8 px-2.5 sm:px-3 rounded-xl border text-xs font-headline font-bold transition-all cursor-pointer flex items-center gap-1.5 shrink-0 hover:scale-105 active:scale-95 shadow-xs group"
+                    class="h-8 px-3 rounded-full text-xs font-headline font-bold transition-all cursor-pointer flex items-center gap-1.5 shrink-0 active:scale-95 group"
                     [ngClass]="theme === 'dark' 
-                      ? 'border-purple-500/40 bg-purple-500/10 text-purple-200 hover:bg-purple-500/20 hover:border-purple-400/60 ring-1 ring-purple-500/20' 
-                      : 'border-purple-200/90 bg-purple-50/90 text-purple-700 hover:bg-purple-100 hover:border-purple-300 shadow-purple-500/5'">
-              <svg class="w-3.5 h-3.5 text-purple-500 dark:text-purple-300 transition-transform group-hover:rotate-12" viewBox="0 0 24 24" fill="currentColor">
+                      ? 'text-neutral-200 hover:text-white hover:bg-neutral-800/80' 
+                      : 'text-neutral-700 hover:text-black hover:bg-white'">
+              <svg class="w-4 h-4 text-red-500 transition-transform group-hover:rotate-12" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M10 2.5l1.6 4.9 4.9 1.6-4.9 1.6L10 15.5l-1.6-4.9-4.9-1.6 4.9-1.6zM17 14l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z" />
               </svg>
-              <span class="tracking-wide">IA</span>
+              <span class="tracking-wide text-xs">IA</span>
             </button>
 
             <!-- Separador -->
             <div class="h-4 w-px mx-0.5 shrink-0" [ngClass]="theme === 'dark' ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
 
-            <!-- ════ CLUSTER 3: FORMATO DE TEXTO (DOCK SEGMENTADO B, I, COLOR ROJO) ════ -->
-            <div class="flex items-center h-8 rounded-xl border p-0.5 shrink-0"
-                 [ngClass]="theme === 'dark' ? 'border-neutral-800 bg-neutral-900/90' : 'border-neutral-200 bg-neutral-100/90'">
+            <!-- ════ CLUSTER 3: FORMATO DE TEXTO (B, I, COLOR ROJO) ════ -->
+            <div class="flex items-center gap-1 shrink-0">
               
               <!-- Negrita (B) -->
               <button type="button"
                       (click)="triggerAction('bold', null, $event)"
                       title="Negrita (Ctrl + B)"
-                      class="w-7 h-7 rounded-lg flex items-center justify-center transition-all cursor-pointer font-serif font-black text-[13px] leading-none"
-                      [ngClass]="theme === 'dark' ? 'text-neutral-300 hover:text-white hover:bg-white/10' : 'text-neutral-700 hover:text-black hover:bg-neutral-200/70'">
+                      class="w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer font-serif font-black text-sm leading-none"
+                      [ngClass]="theme === 'dark' ? 'text-neutral-300 hover:text-white hover:bg-neutral-800/80' : 'text-neutral-700 hover:text-black hover:bg-white'">
                 B
               </button>
 
@@ -409,26 +420,24 @@ const TAB_LABELS: Record<string, string> = {
               <button type="button"
                       (click)="triggerAction('italic', null, $event)"
                       title="Cursiva (Ctrl + I)"
-                      class="w-7 h-7 rounded-lg flex items-center justify-center transition-all cursor-pointer font-serif italic font-black text-[13px] leading-none"
-                      [ngClass]="theme === 'dark' ? 'text-neutral-300 hover:text-white hover:bg-white/10' : 'text-neutral-700 hover:text-black hover:bg-neutral-200/70'">
+                      class="w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer font-serif italic font-black text-sm leading-none"
+                      [ngClass]="theme === 'dark' ? 'text-neutral-300 hover:text-white hover:bg-neutral-800/80' : 'text-neutral-700 hover:text-black hover:bg-white'">
                 I
               </button>
 
-              <div class="h-3 w-px mx-0.5" [ngClass]="theme === 'dark' ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
-
-              <!-- Resaltado Rojo (Estilo Editor Tipográfico A con barra) -->
+              <!-- Resaltado Rojo -->
               <button type="button"
                       (click)="triggerAction('red', null, $event)"
                       title="Resaltar en rojo (Ctrl + Shift + D)"
-                      class="h-7 px-2 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer"
+                      class="h-8 px-2.5 rounded-full flex items-center gap-1.5 transition-all cursor-pointer"
                       [ngClass]="(libraryService.isRedTextActive$ | async) 
-                        ? 'bg-rose-500/20 text-rose-500 ring-1 ring-rose-500/40' 
-                        : (theme === 'dark' ? 'text-neutral-300 hover:text-rose-400 hover:bg-rose-500/10' : 'text-neutral-700 hover:text-rose-600 hover:bg-rose-50')">
+                        ? 'bg-red-500/15 text-red-500' 
+                        : (theme === 'dark' ? 'text-neutral-300 hover:text-white hover:bg-neutral-800/80' : 'text-neutral-700 hover:text-black hover:bg-white')">
                 <div class="flex flex-col items-center justify-center leading-none">
-                  <span class="font-serif font-bold text-[11.5px]" [ngClass]="(libraryService.isRedTextActive$ | async) ? 'text-rose-500 font-black' : ''">A</span>
-                  <span class="w-2.5 h-0.5 rounded-full bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.6)]"></span>
+                  <span class="font-serif font-bold text-xs" [ngClass]="(libraryService.isRedTextActive$ | async) ? 'text-red-500 font-black' : ''">A</span>
+                  <span class="w-3 h-0.5 rounded-full bg-red-500"></span>
                 </div>
-                <span class="text-[11px] font-sans font-bold hidden md:inline">Rojo</span>
+                <span class="text-xs font-sans font-semibold hidden md:inline">Rojo</span>
               </button>
             </div>
 
@@ -439,75 +448,72 @@ const TAB_LABELS: Record<string, string> = {
             <button type="button"
                     (click)="triggerAction('read', null, $event)"
                     [title]="(libraryService.isReadingBlock$ | async) ? 'Detener lectura en voz alta' : 'Escuchar bloque con RotBot'"
-                    class="h-8 px-2.5 sm:px-3 rounded-xl border text-xs font-headline font-bold transition-all cursor-pointer flex items-center gap-1.5 shrink-0 hover:scale-105 active:scale-95 shadow-xs"
+                    class="h-8 px-3 rounded-full text-xs font-headline font-bold transition-all cursor-pointer flex items-center gap-1.5 shrink-0 active:scale-95"
                     [ngClass]="(libraryService.isReadingBlock$ | async) 
-                      ? 'border-cyan-500 bg-cyan-500/20 text-cyan-300 ring-2 ring-cyan-400/40 animate-pulse' 
-                      : (theme === 'dark' ? 'border-neutral-800 bg-neutral-900/90 text-cyan-400 hover:border-cyan-500/40 hover:bg-cyan-500/10' : 'border-neutral-200 bg-neutral-50 text-cyan-700 hover:border-cyan-300 hover:bg-cyan-50')">
-              <svg *ngIf="!(libraryService.isReadingBlock$ | async)" class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                      ? 'bg-red-500/15 text-red-400 animate-pulse' 
+                      : (theme === 'dark' ? 'text-neutral-300 hover:text-white hover:bg-neutral-800/80' : 'text-neutral-700 hover:text-black hover:bg-white')">
+              <svg *ngIf="!(libraryService.isReadingBlock$ | async)" class="w-4 h-4 shrink-0 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.414 0-.75-.336-.75-.75V8.25c0-.414.336-.75.75-.75h2.24z" />
               </svg>
               <div *ngIf="libraryService.isReadingBlock$ | async" class="flex items-center gap-0.5 h-3 shrink-0">
-                <span class="w-0.5 bg-cyan-400 rounded-full animate-voice-bar h-2"></span>
-                <span class="w-0.5 bg-cyan-400 rounded-full animate-voice-bar h-3" style="animation-delay: 0.1s"></span>
-                <span class="w-0.5 bg-cyan-400 rounded-full animate-voice-bar h-1.5" style="animation-delay: 0.2s"></span>
+                <span class="w-0.5 bg-red-400 rounded-full animate-voice-bar h-2"></span>
+                <span class="w-0.5 bg-red-400 rounded-full animate-voice-bar h-3" style="animation-delay: 0.1s"></span>
+                <span class="w-0.5 bg-red-400 rounded-full animate-voice-bar h-1.5" style="animation-delay: 0.2s"></span>
               </div>
-              <span class="text-[11px] font-sans font-bold">{{ (libraryService.isReadingBlock$ | async) ? 'Parar' : 'Leer' }}</span>
+              <span class="text-xs font-sans font-semibold">{{ (libraryService.isReadingBlock$ | async) ? 'Parar' : 'Leer' }}</span>
             </button>
 
             <!-- Separador -->
             <div class="h-4 w-px mx-0.5 shrink-0" [ngClass]="theme === 'dark' ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
 
             <!-- ════ CLUSTER 5: ESTRUCTURA & ACCIONES (+ TEXTO DEBAJO, REORDENAR, DUPLICAR, ELIMINAR) ════ -->
-            <div class="flex items-center gap-1.5 shrink-0">
+            <div class="flex items-center gap-1 shrink-0">
               
               <!-- + Texto debajo -->
               <button type="button"
                       (click)="triggerAction('addBelow', null, $event)"
                       title="Añadir bloque de texto debajo"
-                      class="h-8 px-2 sm:px-2.5 rounded-xl border text-xs font-headline font-bold transition-all cursor-pointer flex items-center gap-1.5 shrink-0 hover:scale-105 active:scale-95 shadow-xs"
+                      class="h-8 px-3 rounded-full text-xs font-headline font-bold transition-all cursor-pointer flex items-center gap-1.5 shrink-0 active:scale-95"
                       [ngClass]="theme === 'dark' 
-                        ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 hover:border-emerald-500/50' 
-                        : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:border-emerald-300'">
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        ? 'text-neutral-200 hover:text-white hover:bg-neutral-800/80' 
+                        : 'text-neutral-700 hover:text-black hover:bg-white'">
+                <svg class="w-4 h-4 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.25">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
-                <span class="text-[11px] font-sans font-bold hidden lg:inline">Texto debajo</span>
-                <span class="text-[11px] font-sans font-bold lg:hidden hidden sm:inline">Texto</span>
+                <span class="text-xs font-sans font-semibold hidden lg:inline">Bloque</span>
               </button>
 
-              <!-- Subir / Bajar (Segmented Dual Button) -->
-              <div class="flex items-center h-8 rounded-xl border p-0.5 shrink-0"
-                   [ngClass]="theme === 'dark' ? 'border-neutral-800 bg-neutral-900/90' : 'border-neutral-200 bg-neutral-100/90'">
-                <button type="button"
-                        (click)="triggerAction('moveUp', null, $event)"
-                        [disabled]="(libraryService.activeBlockIndex$ | async)! <= 0"
-                        title="Mover bloque arriba"
-                        class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/10 dark:hover:bg-white/10 text-neutral-400 hover:text-white dark:text-neutral-400 disabled:opacity-25 disabled:hover:bg-transparent transition-all cursor-pointer">
-                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
-                  </svg>
-                </button>
-                <div class="h-3 w-px mx-0.5" [ngClass]="theme === 'dark' ? 'bg-neutral-800' : 'bg-neutral-300'"></div>
-                <button type="button"
-                        (click)="triggerAction('moveDown', null, $event)"
-                        [disabled]="(libraryService.activeBlockIndex$ | async)! >= ((libraryService.totalBlocksCount$ | async)! - 1)"
-                        title="Mover bloque abajo"
-                        class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/10 dark:hover:bg-white/10 text-neutral-400 hover:text-white dark:text-neutral-400 disabled:opacity-25 disabled:hover:bg-transparent transition-all cursor-pointer">
-                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                  </svg>
-                </button>
-              </div>
+              <!-- Subir / Bajar -->
+              <button type="button"
+                      (click)="triggerAction('moveUp', null, $event)"
+                      [disabled]="(libraryService.activeBlockIndex$ | async)! <= 0"
+                      title="Mover bloque arriba"
+                      class="w-8 h-8 flex items-center justify-center rounded-full disabled:opacity-25 transition-all cursor-pointer"
+                      [ngClass]="theme === 'dark' ? 'text-neutral-400 hover:text-white hover:bg-neutral-800/80' : 'text-neutral-600 hover:text-black hover:bg-white'">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.25">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+                </svg>
+              </button>
+              <button type="button"
+                      (click)="triggerAction('moveDown', null, $event)"
+                      [disabled]="(libraryService.activeBlockIndex$ | async)! >= ((libraryService.totalBlocksCount$ | async)! - 1)"
+                      title="Mover bloque abajo"
+                      class="w-8 h-8 flex items-center justify-center rounded-full disabled:opacity-25 transition-all cursor-pointer"
+                      [ngClass]="theme === 'dark' ? 'text-neutral-400 hover:text-white hover:bg-neutral-800/80' : 'text-neutral-600 hover:text-black hover:bg-white'">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.25">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                </svg>
+              </button>
 
               <!-- Duplicar -->
               <button type="button"
                       (click)="triggerAction('duplicate', null, $event)"
                       title="Duplicar bloque"
-                      class="w-8 h-8 rounded-xl border flex items-center justify-center transition-all cursor-pointer hover:scale-105 active:scale-95 shadow-xs"
+                      class="w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer active:scale-95"
                       [ngClass]="theme === 'dark' 
-                        ? 'border-neutral-800 bg-neutral-900/90 text-neutral-400 hover:text-white hover:bg-neutral-800 hover:border-neutral-700' 
-                        : 'border-neutral-200 bg-white text-neutral-600 hover:text-black hover:bg-neutral-50 hover:border-neutral-300'">
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        ? 'text-neutral-400 hover:text-white hover:bg-neutral-800/80' 
+                        : 'text-neutral-600 hover:text-black hover:bg-white'">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <rect x="8" y="8" width="12" height="12" rx="2.5" stroke-linecap="round" stroke-linejoin="round" />
                   <path stroke-linecap="round" stroke-linejoin="round" d="M16 8V5.5A2.5 2.5 0 0013.5 3h-8A2.5 2.5 0 005.5 16H8" />
                 </svg>
@@ -517,11 +523,11 @@ const TAB_LABELS: Record<string, string> = {
               <button type="button"
                       (click)="triggerAction('delete', null, $event)"
                       title="Eliminar bloque"
-                      class="w-8 h-8 rounded-xl border flex items-center justify-center transition-all cursor-pointer hover:scale-105 active:scale-95 shadow-xs"
+                      class="w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer active:scale-95"
                       [ngClass]="theme === 'dark' 
-                        ? 'border-neutral-800 bg-neutral-900/90 text-neutral-400 hover:text-rose-400 hover:bg-rose-500/15 hover:border-rose-500/40' 
-                        : 'border-neutral-200 bg-white text-neutral-500 hover:text-rose-600 hover:bg-rose-50 hover:border-rose-200'">
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        ? 'text-neutral-400 hover:text-red-400 hover:bg-red-500/15' 
+                        : 'text-neutral-500 hover:text-red-600 hover:bg-red-50'">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                 </svg>
               </button>
@@ -530,24 +536,43 @@ const TAB_LABELS: Record<string, string> = {
           </div>
         </ng-container>
 
-        <!-- Status Pill Pulsante -->
-        <div class="dash-status-pill hidden md:flex">
-          <span class="dash-status-dot"></span>
-          <span>Sistema Activo</span>
+        <!-- Tiempo de Sesión en Vivo (Reemplaza Sistema Activo) -->
+        <div *ngIf="!(activeTab === 'library' && isNotesView)"
+             class="hidden md:inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-headline transition-colors select-none"
+             [ngClass]="((sessionTimeLeft$ | async) || 0) > 0 && ((sessionTimeLeft$ | async) || 0) < 900
+               ? (theme === 'dark' ? 'bg-red-950/30 border-red-500/30 text-red-300' : 'bg-red-50 border-red-200 text-red-700')
+               : (theme === 'dark' ? 'bg-[#121215] border-[#222226] text-neutral-300' : 'bg-neutral-50 border-neutral-200/90 text-neutral-700')"
+             title="Tiempo restante de sesión activa">
+          <span class="w-2 h-2 rounded-full shrink-0"
+                [ngClass]="((sessionTimeLeft$ | async) || 0) > 0 && ((sessionTimeLeft$ | async) || 0) < 900 ? 'bg-red-500 animate-ping' : 'bg-emerald-500 animate-pulse'"></span>
+          <span class="text-[10.5px] font-semibold uppercase tracking-wider opacity-60">Sesión</span>
+          <span class="font-mono font-bold text-[11.5px] tabular-nums tracking-tight"
+                [ngClass]="theme === 'dark' ? 'text-white' : 'text-neutral-950'">
+            {{ formatSessionTime((sessionTimeLeft$ | async) || 0) }}
+          </span>
         </div>
 
-        <!-- User Chip -->
-        <div class="dash-user-chip hidden sm:flex" (click)="tabChange.emit('config')" title="Configuración de usuario">
-          <div class="dash-avatar-mini">{{ userInitials }}</div>
-          <span class="truncate max-w-[120px]">{{ userName }}</span>
+        <!-- User Chip Minimalista -->
+        <div *ngIf="!(activeTab === 'library' && isNotesView)"
+             (click)="tabChange.emit('config')"
+             title="Configuración de usuario"
+             class="hidden sm:inline-flex items-center gap-2.5 pl-1.5 pr-3.5 py-1 rounded-full border cursor-pointer transition-all duration-200 group/chip"
+             [ngClass]="theme === 'dark'
+               ? 'bg-[#121215] border-[#222226] hover:border-neutral-600 text-neutral-200 hover:text-white'
+               : 'bg-white border-neutral-200/90 hover:border-neutral-400 text-neutral-900 shadow-2xs'">
+          <div class="relative w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-headline font-extrabold shrink-0"
+               [ngClass]="theme === 'dark' ? 'bg-white text-black' : 'bg-[#09090b] text-white force-white'">
+            <span>{{ userInitials }}</span>
+          </div>
+          <span class="text-xs font-headline font-bold truncate max-w-[130px] tracking-tight">{{ userName }}</span>
         </div>
 
         <!-- Theme Toggle Button -->
         <button (click)="themeChange.emit()"
-                class="w-9 h-9 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center border transition-all duration-200 cursor-pointer hover:scale-105 active:scale-95 shrink-0"
+                class="w-9 h-9 rounded-full flex items-center justify-center border transition-all duration-200 cursor-pointer hover:scale-105 active:scale-95 shrink-0"
                 [ngClass]="theme === 'dark'
-                  ? 'bg-white/5 border-white/10 hover:border-white/20'
-                  : 'bg-black/5 border-black/10 hover:border-black/20'"
+                  ? 'bg-[#121215] border-[#222226] text-neutral-200 hover:text-white hover:border-neutral-600'
+                  : 'bg-white border-neutral-200/90 text-neutral-700 hover:text-black hover:border-neutral-400 shadow-2xs'"
                 title="Cambiar tema">
           <!-- Moon Icon (Light Mode) -->
           <svg *ngIf="theme === 'light'" class="w-4 h-4 text-neutral-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -584,6 +609,18 @@ const TAB_LABELS: Record<string, string> = {
 export class DashAiSearchComponent {
   public libraryService = inject(LibraryService);
   private authService = inject(AuthService);
+  private sessionTimer = inject(SessionTimerService);
+
+  sessionTimeLeft$ = this.sessionTimer.sessionTimeLeft$;
+
+  formatSessionTime(seconds: number): string {
+    if (!seconds || seconds <= 0) return '00m 00s';
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
+    return h > 0 ? `${h}h ${pad(m)}m ${pad(s)}s` : `${pad(m)}m ${pad(s)}s`;
+  }
 
   get userName(): string {
     const user = this.authService.currentUser();
@@ -707,6 +744,7 @@ export class DashAiSearchComponent {
       case 'texto': return 'TEXTO';
       case 'columnas': return '2 COLUMNAS';
       case 'imagen': return 'IMAGEN';
+      case 'cuestionario': return 'CUESTIONARIO';
       default: return 'BLOQUE';
     }
   }
@@ -720,6 +758,7 @@ export class DashAiSearchComponent {
       case 'texto': return 'Texto';
       case 'columnas': return '2 Columnas';
       case 'imagen': return 'Imagen';
+      case 'cuestionario': return 'Cuestionario';
       default: return 'Bloque';
     }
   }
@@ -733,6 +772,7 @@ export class DashAiSearchComponent {
       case 'texto': return 'text-neutral-600 dark:text-neutral-300';
       case 'columnas': return 'text-purple-500 dark:text-purple-400';
       case 'imagen': return 'text-emerald-500 dark:text-emerald-400';
+      case 'cuestionario': return 'text-red-500 dark:text-red-400';
       default: return 'text-neutral-500';
     }
   }
@@ -746,6 +786,7 @@ export class DashAiSearchComponent {
         case 'alerta': return 'bg-amber-500/15 border-amber-500/40 text-amber-300';
         case 'columnas': return 'bg-purple-500/15 border-purple-500/40 text-purple-300';
         case 'imagen': return 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300';
+        case 'cuestionario': return 'bg-red-500/15 border-red-500/40 text-red-300';
         default: return 'bg-neutral-800 border-neutral-700 text-neutral-200';
       }
     } else {
@@ -756,6 +797,7 @@ export class DashAiSearchComponent {
         case 'alerta': return 'bg-amber-50 border-amber-200 text-amber-700';
         case 'columnas': return 'bg-purple-50 border-purple-200 text-purple-700';
         case 'imagen': return 'bg-emerald-50 border-emerald-200 text-emerald-700';
+        case 'cuestionario': return 'bg-red-50 border-red-200 text-red-700';
         default: return 'bg-neutral-100 border-neutral-200 text-neutral-800';
       }
     }

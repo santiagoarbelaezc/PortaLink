@@ -64,7 +64,7 @@ export interface LibraryTab {
 
 export interface ActiveBlockMeta {
   id: string;
-  type: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'columnas' | 'imagen';
+  type: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'columnas' | 'imagen' | 'cuestionario';
   content: string;
 }
 

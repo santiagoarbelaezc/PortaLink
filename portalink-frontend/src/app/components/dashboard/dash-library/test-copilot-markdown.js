@@ -183,7 +183,7 @@ test('Código inline con `variable`', () => {
   const res = parse('Usa la función `calculateTotal()` para obtener el valor.');
   assert(res.includes('<code class='), 'Debe crear etiqueta <code>');
   assert(res.includes('calculateTotal()'), 'Debe contener el nombre de la función');
-  assert(res.includes('text-pink-400'), 'En modo oscuro debe tener texto rosado');
+  assert(res.includes('text-red-400'), 'En modo oscuro debe tener texto rojo');
 });
 
 test('Código inline con asterisco de multiplicación interior `p * q`', () => {
@@ -207,6 +207,22 @@ test('Tabla Markdown se transforma en HTML <table> responsiva', () => {
   assert(res.includes('<thead'), 'Debe tener encabezado thead');
   assert(res.includes('<th') && res.includes('Función'), 'Debe tener columnas de encabezado');
   assert(res.includes('<tbody') && res.includes('SUM(total)'), 'Debe tener cuerpo tbody con datos');
+});
+
+test('Tabla Markdown parsea negritas (**texto**), cursivas y código inline sin columnas vacías extra', () => {
+  const input = `
+| Característica | Descripción |
+| :--- | :--- |
+| **Eloquent ORM** | Mapeo objeto-relacional mediante **modelos** y \`$user = User::first()\` |
+| **Security** | Protección contra **CSRF**, **XSS**, **SQL injection** y **bcrypt**. |
+  `.trim();
+  const res = parse(input, false);
+  assert(!res.includes('**Eloquent ORM**') && !res.includes('**Security**'), 'No debe dejar asteriscos ** sin formatear en celdas');
+  assert(res.includes('<strong class="font-bold text-neutral-900">Eloquent ORM</strong>'), 'Debe convertir **Eloquent ORM** en <strong>');
+  assert(res.includes('<strong class="font-bold text-neutral-900">CSRF</strong>'), 'Debe convertir múltiples negritas en la misma celda');
+  assert(res.includes('<code') && res.includes('$user = User::first()'), 'Debe preservar código inline dentro de celdas');
+  const thMatches = res.match(/<th /g) || [];
+  assert(thMatches.length === 2, `Debe generar exactamente 2 columnas de encabezado, generó ${thMatches.length}`);
 });
 
 // ─── GRUPO 7: Listas desordenadas y ordenadas ───
@@ -237,16 +253,16 @@ test('Lista numerada (1. 2. 3.)', () => {
 // ─── GRUPO 8: Encabezados y Enlaces ───
 console.log('\n\x1b[1m[8] Encabezados (#, ##, ###) y Enlaces [Texto](URL)\x1b[0m');
 
-test('Encabezados H1, H2, H3 tienen estilo de subtítulos rosados característicos', () => {
+test('Encabezados H1, H2, H3 tienen estilo de subtítulos rojos característicos', () => {
   const input = '# Título Principal\n## Subtítulo\n### Sección Menor';
   const resDark = parse(input, true);
   assert(resDark.includes('<h1') && resDark.includes('font-extrabold'), 'Debe generar H1');
   assert(resDark.includes('<h2') && resDark.includes('font-bold'), 'Debe generar H2');
   assert(resDark.includes('<h3') && resDark.includes('font-bold'), 'Debe generar H3');
-  assert(resDark.includes('text-pink-400'), 'En modo oscuro los subtítulos deben ser rosados (text-pink-400)');
+  assert(resDark.includes('text-red-500'), 'En modo oscuro los subtítulos deben ser rojos (text-red-500)');
 
   const resLight = parse(input, false);
-  assert(resLight.includes('text-pink-600'), 'En modo claro los subtítulos deben ser rosados (text-pink-600)');
+  assert(resLight.includes('text-red-600'), 'En modo claro los subtítulos deben ser rojos (text-red-600)');
 });
 
 test('Enlaces markdown se transforman en <a> con target="_blank" y rel seguro', () => {
@@ -269,13 +285,13 @@ test('Elimina saltos de línea vacíos al inicio (trim leading newlines)', () =>
 test('Modo Claro (darkTheme = false) aplica paleta de texto oscuro', () => {
   const resLight = parse('**Título Claro**\n`código`', false);
   assert(resLight.includes('text-neutral-900'), 'En modo claro los títulos usan text-neutral-900');
-  assert(resLight.includes('bg-neutral-200/90 text-pink-600'), 'En modo claro el código inline usa bg claro');
+  assert(resLight.includes('bg-neutral-200/90 text-red-600'), 'En modo claro el código inline usa bg claro y texto rojo');
 });
 
 test('Modo Oscuro (darkTheme = true) aplica paleta de texto blanco/contraste', () => {
   const resDark = parse('**Título Oscuro**\n`código`', true);
   assert(resDark.includes('text-white'), 'En modo oscuro los títulos usan text-white');
-  assert(resDark.includes('bg-neutral-800 text-pink-400'), 'En modo oscuro el código inline usa bg oscuro');
+  assert(resDark.includes('bg-neutral-800 text-red-400'), 'En modo oscuro el código inline usa bg oscuro y texto rojo');
 });
 
 // ─── GRUPO 10: Casos límite y Respuesta Real Completa ───

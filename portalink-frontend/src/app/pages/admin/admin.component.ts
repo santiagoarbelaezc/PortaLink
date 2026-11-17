@@ -52,64 +52,84 @@ interface Tab {
       ══════════════════════════════════════ -->
       <aside class="dash-sidebar fixed top-0 left-0 h-screen z-[200] flex flex-col">
 
-        <!-- Brand -->
-        <div class="sidebar-brand" (click)="reloadDashboard()" title="Recargar Dashboard">
-          <div class="sidebar-logo">
-            <span class="material-symbols-rounded">dashboard</span>
-          </div>
-          <span class="sidebar-brand-text">PortaLink</span>
-        </div>
-
         <!-- Botón Toggle en el borde -->
         <button class="sidebar-toggle" (click)="handleToggleSidebar()" [title]="isSidebarCollapsed ? 'Expandir barra lateral' : 'Colapsar barra lateral'">
-          <span class="material-symbols-rounded" style="font-size: 18px;">
+          <span class="material-symbols-rounded" style="font-size: 16px;">
             {{ isSidebarCollapsed ? 'chevron_right' : 'chevron_left' }}
           </span>
         </button>
 
         <!-- Items de Navegación -->
         <nav class="sidebar-nav">
+          <!-- Botón Destacado de Inicio (Encima de Navegación) -->
+          <button (click)="setTab('dashboard')"
+                  class="sidebar-home-btn group/home"
+                  [class.sidebar-home-btn--active]="activeTab === 'dashboard'"
+                  title="Inicio · Vista General">
+            <div class="sidebar-home-icon-box">
+              <span class="material-symbols-rounded" style="font-size: 19px; color: #ffffff !important;">space_dashboard</span>
+            </div>
+            <div class="flex flex-col min-w-0 flex-1" *ngIf="!isSidebarCollapsed">
+              <span class="sidebar-home-title">Inicio</span>
+              <span class="sidebar-home-sub">Panel principal</span>
+            </div>
+            <span *ngIf="activeTab === 'dashboard' && !isSidebarCollapsed" class="sidebar-nav-active-dot animate-pulse"></span>
+            <span *ngIf="activeTab !== 'dashboard' && !isSidebarCollapsed"
+                  class="material-symbols-rounded group-hover/home:translate-x-0.5 transition-all"
+                  style="font-size: 16px; color: rgba(255, 255, 255, 0.55) !important;">
+              chevron_right
+            </span>
+          </button>
+
           <ng-container *ngFor="let tab of tabs; let i = index">
-            <!-- Section Header: Principal -->
-            <p *ngIf="i === 0 && !isSidebarCollapsed" class="sidebar-nav-label">
-              Navegación
-            </p>
+            <ng-container *ngIf="tab.id !== 'dashboard'">
+              <!-- Section Header: Navegación -->
+              <p *ngIf="i === 1 && !isSidebarCollapsed" class="sidebar-nav-label" style="margin-top: 8px;">
+                <span>Navegación</span>
+              </p>
 
-            <!-- Section Divider: Herramientas -->
-            <p *ngIf="tab.section === 'herramientas' && (i === 0 || tabs[i-1].section !== 'herramientas') && !isSidebarCollapsed"
-               class="sidebar-nav-label" style="margin-top: 10px;">
-              Herramientas
-            </p>
+              <!-- Section Divider: Herramientas -->
+              <p *ngIf="tab.section === 'herramientas' && (i === 0 || tabs[i-1].section !== 'herramientas') && !isSidebarCollapsed"
+                 class="sidebar-nav-label" style="margin-top: 12px;">
+                <span>Herramientas</span>
+              </p>
 
-            <button (click)="setTab(tab.id)"
-                    class="sidebar-nav-item"
-                    [class.sidebar-nav-item--active]="activeTab === tab.id"
-                    [title]="tab.name">
-              <span class="material-symbols-rounded sidebar-nav-icon">{{ tab.icon }}</span>
-              <span class="sidebar-nav-label-text">{{ tab.name }}</span>
-              <span *ngIf="activeTab === tab.id" class="sidebar-nav-active-dot"></span>
-              
-              <!-- Badges -->
-              <span *ngIf="tab.id === 'messages' && unreadMessages > 0 && activeTab !== 'messages' && !isSidebarCollapsed"
-                    class="badge-new-pill" style="margin-left: auto;">
-                {{ unreadMessages }}
-              </span>
-            </button>
+              <button (click)="setTab(tab.id)"
+                      class="sidebar-nav-item group/nav"
+                      [class.sidebar-nav-item--active]="activeTab === tab.id"
+                      [title]="tab.name">
+                <span class="material-symbols-rounded sidebar-nav-icon">{{ tab.icon }}</span>
+                <span class="sidebar-nav-label-text">{{ tab.name }}</span>
+                <span *ngIf="activeTab === tab.id" class="sidebar-nav-active-dot animate-pulse"></span>
+                
+                <!-- Badges -->
+                <span *ngIf="tab.id === 'messages' && unreadMessages > 0 && activeTab !== 'messages' && !isSidebarCollapsed"
+                      class="badge-new-pill" style="margin-left: auto;">
+                  {{ unreadMessages }}
+                </span>
+              </button>
+            </ng-container>
           </ng-container>
         </nav>
 
         <!-- Perfil de Usuario en el pie del sidebar -->
-        <div class="sidebar-user-card" *ngIf="!isSidebarCollapsed">
-          <div class="sidebar-avatar">{{ getUserInitials() }}</div>
-          <div class="sidebar-user-info">
-            <span class="sidebar-username">{{ getUserName() }}</span>
-            <span class="sidebar-role">Administrador</span>
+        <div class="sidebar-user-card cursor-pointer group/user" *ngIf="!isSidebarCollapsed" (click)="setTab('config')" title="Ajustes de cuenta">
+          <div class="sidebar-avatar">
+            <span>{{ getUserInitials() }}</span>
+            <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-[#09090c]"></span>
+          </div>
+          <div class="sidebar-user-info flex-1">
+            <span class="sidebar-username group-hover/user:text-white transition-colors">{{ getUserName() }}</span>
+            <span class="sidebar-role">
+              <span class="w-1.5 h-1.5 rounded-full bg-red-500/80"></span>
+              <span>Administrador</span>
+            </span>
           </div>
         </div>
 
         <!-- Logout Button -->
-        <div class="p-2 border-t border-[#18181b] shrink-0">
-          <button (click)="logout()" class="sidebar-nav-item text-red-400 hover:text-red-300 hover:bg-red-500/10" [title]="'Cerrar Sesión'">
+        <div class="p-2.5 border-t border-white/[0.06] shrink-0 relative z-10">
+          <button (click)="logout()" class="sidebar-nav-item text-red-400/90 hover:text-red-300 hover:bg-red-500/10" [title]="'Cerrar Sesión'">
             <span class="material-symbols-rounded sidebar-nav-icon text-red-400">logout</span>
             <span class="sidebar-nav-label-text" *ngIf="!isSidebarCollapsed">Cerrar Sesión</span>
           </button>
@@ -138,7 +158,7 @@ interface Tab {
         <main class="flex-1 min-h-0 relative z-10 dash-scroll-viewport no-scrollbar touch-pan-y"
               style="-webkit-overflow-scrolling: touch;"
               [ngClass]="[
-                isDark ? 'bg-[#020204]' : 'bg-white',
+                isDark ? 'bg-[#0a0a0a]' : 'bg-white',
                 activeTab === 'rotbot'
                   ? 'overflow-hidden flex flex-col justify-between items-center h-full p-2 sm:p-3 md:p-5 lg:p-6 pb-[76px] md:pb-6' 
                   : (activeTab === 'library' && isNotesView
@@ -216,7 +236,7 @@ interface Tab {
       <div *ngIf="isMobileDrawerOpen"
            class="mobile-dashboard-sheet fixed bottom-0 left-0 right-0 z-50 md:hidden rounded-t-[28px] max-h-[88dvh] overflow-y-auto sheet-enter select-none flex flex-col transition-colors duration-200 border-t shadow-2xl"
            [ngClass]="isDark
-             ? 'bg-[#0b0b0e] text-neutral-100 border-neutral-800 shadow-[0_-16px_50px_rgba(0,0,0,0.9)]'
+             ? 'bg-[#0a0a0a] text-neutral-100 border-[#1a1a1a] shadow-[0_-16px_50px_rgba(0,0,0,0.9)]'
              : 'bg-white text-neutral-900 border-neutral-200/90 shadow-[0_-16px_40px_rgba(0,0,0,0.12)]'"
            style="padding-bottom: max(20px, env(safe-area-inset-bottom, 20px));">
         
@@ -581,7 +601,7 @@ interface Tab {
       <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur-2xl select-none transition-all duration-300 shadow-[0_-4px_25px_rgba(0,0,0,0.08)]"
            [class.hidden]="isNotesView || isMobileDrawerOpen"
            [ngClass]="[
-             isDark ? 'bg-[#09090d]/95 border-neutral-800/80 text-neutral-400' : 'bg-white/95 border-neutral-200/90 text-neutral-600'
+             isDark ? 'bg-[#0a0a0a]/95 border-[#1a1a1a] text-neutral-400' : 'bg-white/95 border-neutral-200/90 text-neutral-600'
            ]"
            style="padding-top: 6px; padding-bottom: max(10px, env(safe-area-inset-bottom, 10px));">
         <!-- Grid de 4 columnas equilibradas para móvil -->
@@ -755,7 +775,9 @@ export class AdminComponent implements OnInit, OnDestroy {
     }
 
     // Restaurar tab activo: prioridad al query param ?tab=..., luego a localStorage, o 'dashboard' por defecto
-    const queryTab = this.normalizeTab(this.route.snapshot.queryParamMap.get('tab'));
+    const rawQueryTab = this.route.snapshot.queryParamMap.get('tab')
+      || (typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('tab') : null);
+    const queryTab = this.normalizeTab(rawQueryTab);
     const savedTab = this.normalizeTab(typeof localStorage !== 'undefined' ? localStorage.getItem('portalink_admin_tab') : null);
     const initialTab = queryTab || savedTab || 'dashboard';
 
@@ -764,13 +786,11 @@ export class AdminComponent implements OnInit, OnDestroy {
       localStorage.setItem('portalink_admin_tab', initialTab);
     }
 
-    if (this.route.snapshot.queryParamMap.get('tab') !== initialTab) {
-      this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: { tab: initialTab },
-        queryParamsHandling: 'merge',
-        replaceUrl: true
-      });
+    if (rawQueryTab !== initialTab && typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.pathname = '/admin';
+      url.searchParams.set('tab', initialTab);
+      window.history.replaceState(window.history.state, '', url.pathname + url.search);
     }
 
     // Sincronizar si cambia el parámetro de URL (ej. botones atrás / adelante del navegador)
@@ -866,8 +886,7 @@ export class AdminComponent implements OnInit, OnDestroy {
 
     if (updateUrl) {
       try {
-        this.router.navigate([], {
-          relativeTo: this.route,
+        this.router.navigate(['/admin'], {
           queryParams: { tab: id },
           queryParamsHandling: 'merge',
           replaceUrl: true

@@ -88,11 +88,18 @@
       }, false);
     }
 
-    // 4. Default Theme Initialization (Always Light Theme for Public App)
+    // 4. Default Theme Initialization (Respects Admin Theme on /admin, Light Theme for Public App)
     (function() {
-      localStorage.setItem('portfolio-theme', 'light');
-      document.documentElement.classList.remove('theme-dark', 'theme-red');
-      document.documentElement.classList.add('theme-light');
+      var isAdminPath = window.location.pathname && window.location.pathname.indexOf('/admin') === 0;
+      var savedAdminTheme = localStorage.getItem('portalink_admin_theme');
+      if (isAdminPath && savedAdminTheme === 'dark') {
+        document.documentElement.classList.remove('theme-light', 'theme-red');
+        document.documentElement.classList.add('theme-dark');
+      } else {
+        localStorage.setItem('portfolio-theme', 'light');
+        document.documentElement.classList.remove('theme-dark', 'theme-red');
+        document.documentElement.classList.add('theme-light');
+      }
     })();
   </script>
 </head>

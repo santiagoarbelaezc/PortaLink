@@ -9,6 +9,14 @@ import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-
 import { SpanishTtsService } from '../../../services/spanish-tts.service';
 import { CopilotMarkdownService } from '../../../services/copilot-markdown.service';
 import { CopilotChatComponent } from './copilot-chat/copilot-chat.component';
+import { QuizBlockComponent } from './quiz-block/quiz-block.component';
+import {
+  QuizData,
+  isQuizFenceStart,
+  parseQuizFence,
+  quizToContextText,
+  serializeQuizBlock
+} from './quiz.utils';
 
 export interface SlashCommandItem {
   key: string;
@@ -60,7 +68,7 @@ export interface NoteBlockColumn {
 
 export interface NoteBlock {
   id: string;
-  type: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'columnas' | 'imagen';
+  type: 'titulo' | 'subtitulo' | 'codigo' | 'alerta' | 'texto' | 'columnas' | 'imagen' | 'cuestionario';
   content: string;
   language?: string;
   columns?: NoteBlockColumn[];
@@ -71,6 +79,7 @@ export interface NoteBlock {
   uploadProgress?: number;
   isValidatingCode?: boolean;
   codeValidation?: CodeValidationResult | null;
+  quiz?: QuizData;
 }
 
 @Directive({
@@ -115,7 +124,7 @@ export class ContentEditableDirective implements OnChanges {
 @Component({
   selector: 'app-dash-library',
   standalone: true,
-  imports: [CommonModule, FormsModule, ContentEditableDirective, TeleportToBodyDirective, CopilotChatComponent],
+  imports: [CommonModule, FormsModule, ContentEditableDirective, TeleportToBodyDirective, CopilotChatComponent, QuizBlockComponent],
   templateUrl: './dash-library.component.html',
   host: { class: 'block w-full' },
   styles: [`
@@ -135,80 +144,97 @@ export class ContentEditableDirective implements OnChanges {
     }
 
     .library-tabs {
-      box-shadow: 0 12px 30px rgba(9, 9, 11, 0.08);
-    }
-
-    .library-hero {
-      min-height: 184px;
-      box-shadow: 0 18px 40px rgba(9, 9, 11, 0.18);
-    }
-
-    .library-hero::before {
-      content: '';
-      position: absolute;
-      width: 260px;
-      height: 260px;
-      right: 8%;
-      top: -150px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 50%;
-      box-shadow: 0 0 0 34px rgba(255, 255, 255, 0.025), 0 0 0 68px rgba(255, 255, 255, 0.018);
-      pointer-events: none;
-    }
-
-    .library-hero::after {
-      content: '';
-      position: absolute;
-      left: 8%;
-      bottom: -1px;
-      width: 120px;
-      height: 2px;
-      background: linear-gradient(90deg, var(--library-red), transparent);
-      opacity: 0.9;
+      box-shadow: 0 4px 20px rgba(9, 9, 11, 0.04);
     }
 
     .library-section-heading {
       min-height: 38px;
-      padding: 0.35rem 0.25rem;
-    }
-
-    .library-section-heading > div:first-child {
-      position: relative;
-      padding-left: 0.75rem;
-    }
-
-    .library-section-heading > div:first-child::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0.15rem;
-      bottom: 0.15rem;
-      width: 2px;
-      border-radius: 999px;
-      background: var(--library-red);
+      padding: 0.25rem 0;
     }
 
     .library-filters {
-      box-shadow: 0 16px 40px rgba(9, 9, 11, 0.08);
+      box-shadow: 0 12px 32px rgba(9, 9, 11, 0.06);
       backdrop-filter: blur(14px);
     }
 
-    .library-folder-grid,
+    .library-carousel-track {
+      overflow-x: auto;
+      overflow-y: hidden;
+      overscroll-behavior-x: contain;
+      overscroll-behavior-y: auto;
+      touch-action: pan-x pan-y;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .library-carousel-track::-webkit-scrollbar {
+      display: none;
+    }
+
     .library-notebook-grid {
       align-items: stretch;
     }
 
-    .library-folder-card,
-    .library-notebook-card {
-      min-height: 216px;
-      box-shadow: 0 8px 24px rgba(9, 9, 11, 0.045);
+    .library-folder-card {
       transform: translateY(0);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.25s ease;
     }
 
-    .library-folder-card:hover,
+    .library-folder-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .library-notebook-card {
+      min-height: 365px;
+      transform: translateY(0);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.25s ease;
+    }
+
     .library-notebook-card:hover {
-      transform: translateY(-5px) scale(1.012);
-      box-shadow: 0 20px 38px rgba(9, 9, 11, 0.12);
+      transform: translateY(-6px) rotate(-0.3deg);
+    }
+
+    /* Efecto de hojas de papel apiladas en el borde derecho del cuaderno */
+    .notebook-pages-edge-light {
+      box-shadow:
+        3px 0 0 -1px #ffffff,
+        4px 0 0 -1px #c4c4cc,
+        7px 0 0 -2px #f8f8fa,
+        8px 0 0 -2px #c4c4cc,
+        0 10px 28px -6px rgba(9, 9, 11, 0.08);
+    }
+
+    .notebook-pages-edge-light:hover {
+      box-shadow:
+        4px 0 0 -1px #ffffff,
+        5px 0 0 -1px #a1a1aa,
+        9px 0 0 -2px #f8f8fa,
+        10px 0 0 -2px #a1a1aa,
+        0 22px 44px -10px rgba(9, 9, 11, 0.15);
+    }
+
+    .notebook-pages-edge-dark {
+      box-shadow:
+        3px 0 0 -1px #161618,
+        4px 0 0 -1px #222226,
+        7px 0 0 -2px #121215,
+        8px 0 0 -2px #222226,
+        0 14px 34px rgba(0, 0, 0, 0.55);
+    }
+
+    .notebook-pages-edge-dark:hover {
+      box-shadow:
+        4px 0 0 -1px #1c1c20,
+        5px 0 0 -1px #323238,
+        9px 0 0 -2px #161618,
+        10px 0 0 -2px #323238,
+        0 24px 48px rgba(0, 0, 0, 0.75);
     }
 
     .library-folder-card:focus-within,
@@ -220,11 +246,6 @@ export class ContentEditableDirective implements OnChanges {
     :host-context(.theme-dark) .library-tabs,
     :host-context(.theme-dark) .library-filters {
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
-    }
-
-    :host-context(.theme-dark) .library-folder-card,
-    :host-context(.theme-dark) .library-notebook-card {
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
     }
 
     @media (max-width: 767px) {
@@ -249,22 +270,17 @@ export class ContentEditableDirective implements OnChanges {
     }
 
     @media (max-width: 640px) {
-      .library-hero {
-        min-height: 210px;
-      }
-
       .library-section-heading {
-        align-items: flex-start;
+        align-items: center;
         gap: 0.75rem;
       }
 
-      .library-section-heading > div:first-child {
-        max-width: 58%;
+      .library-folder-card {
+        min-height: 360px;
       }
 
-      .library-folder-card,
       .library-notebook-card {
-        min-height: 196px;
+        min-height: 345px;
       }
     }
 
@@ -337,6 +353,28 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('copilotTextarea') copilotTextareaElement?: ElementRef<HTMLTextAreaElement>;
   @ViewChild('leftReaderMessagesContainer') leftReaderMessagesContainer?: ElementRef<HTMLDivElement>;
   @ViewChild('leftReaderTextarea') leftReaderTextareaElement?: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('foldersCarousel1') foldersCarousel1?: ElementRef<HTMLDivElement>;
+  @ViewChild('foldersCarousel2') foldersCarousel2?: ElementRef<HTMLDivElement>;
+
+  scrollFoldersCarousel(direction: 'left' | 'right', carouselIndex: 1 | 2 = 1) {
+    const el = carouselIndex === 2 ? this.foldersCarousel2?.nativeElement : this.foldersCarousel1?.nativeElement;
+    if (!el) return;
+    const scrollAmount = Math.max(el.clientWidth * 0.72, 320);
+    el.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth'
+    });
+  }
+
+  onCarouselWheel(event: WheelEvent) {
+    if (!event.shiftKey && Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
+      const mainEl = (event.currentTarget as HTMLElement)?.closest('main') || document.querySelector('main.dash-scroll-viewport');
+      if (mainEl) {
+        event.preventDefault();
+        mainEl.scrollTop += event.deltaY;
+      }
+    }
+  }
 
   @Input() theme: string = 'light';
   get isDark(): boolean {
@@ -553,6 +591,14 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     return list;
+  }
+
+  get firstCarouselFolders(): NotebookFolder[] {
+    return this.displayedFolders.slice(0, 6);
+  }
+
+  get secondCarouselFolders(): NotebookFolder[] {
+    return this.displayedFolders.slice(6, 12);
   }
 
   get countWithNotebooks(): number {
@@ -1057,6 +1103,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
       case 'texto': return 'Texto';
       case 'columnas': return '2 Columnas';
       case 'imagen': return 'Imagen';
+      case 'cuestionario': return 'Cuestionario';
       default: return 'Texto';
     }
   }
@@ -1949,6 +1996,27 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     while (i < lines.length) {
       const line = lines[i];
 
+      // Bloque de Cuestionario Interactivo: :::quiz ... :::
+      if (isQuizFenceStart(line)) {
+        const parsedQuiz = parseQuizFence(lines, i);
+        i = parsedQuiz.nextIndex;
+        if (parsedQuiz.quiz) {
+          blocks.push({
+            id: this.generateBlockId(),
+            type: 'cuestionario',
+            content: parsedQuiz.quiz.title,
+            quiz: parsedQuiz.quiz
+          });
+        } else if (parsedQuiz.raw) {
+          blocks.push({
+            id: this.generateBlockId(),
+            type: 'texto',
+            content: parsedQuiz.raw
+          });
+        }
+        continue;
+      }
+
       // Bloque de Columnas Paralelas: :::columns ratio=50-50 ... :::
       if (line.trim().startsWith(':::columns')) {
         const ratioMatch = line.trim().match(/ratio=([0-9-]+)/);
@@ -2122,6 +2190,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
       const textLines: string[] = [];
       while (
         i < lines.length &&
+        !isQuizFenceStart(lines[i]) &&
         !lines[i].trim().startsWith(':::columns') &&
         !lines[i].trim().startsWith('```') &&
         !lines[i].startsWith('# ') &&
@@ -2170,6 +2239,8 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
       } else if (b.type === 'imagen') {
         const sizeAttr = b.imageSize && b.imageSize !== 'lg' ? `|size=${b.imageSize}` : '';
         return `![${rawContent}${sizeAttr}](${b.imageUrl || ''})`;
+      } else if (b.type === 'cuestionario' && b.quiz) {
+        return serializeQuizBlock(b.quiz);
       } else if (b.type === 'columnas') {
         const ratio = b.columnRatio || '50-50';
         const cols = (b.columns || []).slice(0, 2);
@@ -2467,7 +2538,13 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
       imageSize: target.imageSize,
       language: target.language,
       columnRatio: target.columnRatio,
-      columns: target.columns ? target.columns.map(c => ({ ...c, id: this.generateBlockId() })) : undefined
+      columns: target.columns ? target.columns.map(c => ({ ...c, id: this.generateBlockId() })) : undefined,
+      quiz: target.quiz
+        ? {
+            ...target.quiz,
+            questions: target.quiz.questions.map(q => ({ ...q, options: [...q.options], selectedIndex: null }))
+          }
+        : undefined
     };
     this.blocks.splice(index + 1, 0, clone);
     this.syncBlocksToContent();
@@ -2513,7 +2590,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   convertToColumns(block: NoteBlock) {
-    if (block.type === 'columnas') return;
+    if (block.type === 'columnas' || block.type === 'cuestionario') return;
     const currentContent = block.content || '';
     const currentType = block.type;
     const currentLang = block.language;
@@ -3674,7 +3751,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
-      const badge = `<code class="px-1.5 py-0.5 rounded text-xs font-mono font-semibold bg-neutral-200/80 dark:bg-neutral-800 text-pink-600 dark:text-pink-400 border border-neutral-300/60 dark:border-neutral-700/60">${escaped}</code>`;
+      const badge = `<code class="px-1.5 py-0.5 rounded text-xs font-mono font-semibold bg-neutral-200/80 dark:bg-neutral-800 text-red-600 dark:text-red-400 border border-neutral-300/60 dark:border-neutral-700/60">${escaped}</code>`;
       const ph = `__FMT_INLINE_${inlineCodes.length}__`;
       inlineCodes.push(badge);
       return ph;
@@ -3908,6 +3985,72 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.aiResultPreview = '';
     this.syncBlocksToContent();
     this.showToast('Nuevo bloque insertado por la IA');
+  }
+
+  onInsertQuiz(quiz: QuizData) {
+    if (!quiz || !quiz.questions?.length) return;
+
+    const newBlock: NoteBlock = {
+      id: this.generateBlockId(),
+      type: 'cuestionario',
+      content: quiz.title || 'Cuestionario de estudio',
+      quiz
+    };
+
+    if (this.blocks.length === 1 && this.blocks[0].type === 'texto' && !(this.blocks[0].content || '').trim()) {
+      this.blocks[0] = newBlock;
+    } else {
+      const insertIdx = this.activeBlockId ? this.currentActiveBlockIndex : this.blocks.length - 1;
+      this.blocks.splice(insertIdx + 1, 0, newBlock);
+    }
+
+    this.activeBlockId = newBlock.id;
+    this.syncBlocksToContent();
+    this.showToast(`Cuestionario de ${quiz.questions.length} preguntas agregado a la pizarra`);
+
+    setTimeout(() => {
+      const el = document.getElementById('block-' + newBlock.id) || document.getElementById('mb-block-' + newBlock.id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 120);
+  }
+
+  regenerateQuizFromBlock(blockIndex: number) {
+    const target = this.blocks[blockIndex];
+    const currentQuiz = target?.quiz;
+    const count = currentQuiz?.questions?.length || 5;
+    const topicHint = currentQuiz?.topic || currentQuiz?.title || this.selectedPage?.title || 'lo estudiado';
+
+    this.showToast('Generando nuevo cuestionario con IA...');
+
+    const noteSnapshot = this.blocks
+      .filter((_, idx) => idx !== blockIndex)
+      .map((b, idx) => `[BLOQUE ${idx + 1} (${b.type})]:\n${b.content || ''}`)
+      .join('\n\n');
+
+    this.libraryAiService
+      .generateQuiz(
+        `Genera un nuevo cuestionario diferente sobre "${topicHint}" con preguntas nuevas que no repitan las anteriores.`,
+        this.selectedPage?.title,
+        [],
+        noteSnapshot,
+        count
+      )
+      .subscribe(res => {
+        if (res.success && res.quiz) {
+          if (this.blocks[blockIndex] && this.blocks[blockIndex].type === 'cuestionario') {
+            this.blocks[blockIndex].quiz = res.quiz;
+            this.blocks[blockIndex].content = res.quiz.title;
+            this.syncBlocksToContent();
+            this.showToast('Nuevo cuestionario listo');
+          } else {
+            this.onInsertQuiz(res.quiz);
+          }
+        } else {
+          this.showToast(res.error || 'No se pudo generar otro cuestionario', 'error');
+        }
+      });
   }
 
   // Copilot Assistant Methods

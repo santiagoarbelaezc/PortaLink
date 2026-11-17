@@ -7,6 +7,7 @@ use App\Core\Response;
 use App\Config\Groq;
 use App\Config\Gemini;
 use App\Utils\AiLogger;
+use App\Utils\QuizBuilder;
 use Exception;
 use Throwable;
 
@@ -194,6 +195,102 @@ PROMPT;
                     'result' => $reply,
                     'provider' => $providerUsed,
                     'model' => $modelUsed
+                ]);
+                return;
+
+            } elseif ($mode === 'quiz') {
+                if (empty($prompt)) {
+                    $prompt = 'Crea un cuestionario de lo que venimos estudiando.';
+                }
+
+                $numQuestions = QuizBuilder::clampQuestions($body['num_questions'] ?? $body['numQuestions'] ?? null);
+                $numOptions = QuizBuilder::DEFAULT_OPTIONS;
+                $systemPrompt = QuizBuilder::systemPrompt($numQuestions, $numOptions);
+
+                $messages = [
+                    ['role' => 'system', 'content' => $systemPrompt]
+                ];
+
+                // Historial reciente: da contexto de "lo que venimos estudiando"
+                if (!empty($history) && is_array($history)) {
+                    foreach (array_slice($history, -10) as $msg) {
+                        $role = (($msg['role'] ?? '') === 'user') ? 'user' : 'assistant';
+                        $text = trim($msg['content'] ?? '');
+                        if ($text !== '') {
+                            if (mb_strlen($text) > 1500) {
+                                $text = mb_substr($text, 0, 1500) . '...';
+                            }
+                            $messages[] = ['role' => $role, 'content' => $text];
+                        }
+                    }
+                }
+
+                $userPrompt = '';
+                if (!empty($noteContent)) {
+                    $userPrompt .= "CONTENIDO DEL APUNTE ACTUAL:\n\"\"\"\n{$noteContent}\n\"\"\"\n\n";
+                } elseif (!empty($noteTitle)) {
+                    $userPrompt .= "[Apunte Actual: {$noteTitle}]\n\n";
+                }
+                $userPrompt .= "PEDIDO DEL USUARIO:\n{$prompt}\n\nGenera el cuestionario ahora, solo con el JSON.";
+                $messages[] = ['role' => 'user', 'content' => $userPrompt];
+
+                $quiz = null;
+                $providerUsed = 'groq';
+                $lastError = '';
+
+                // Hasta 2 intentos por proveedor para obtener un JSON válido
+                $attempts = [
+                    ['provider' => 'groq', 'options' => ['temperature' => 0.6, 'max_tokens' => 3000]],
+                    ['provider' => 'gemini'],
+                    ['provider' => 'groq', 'options' => ['model' => 'llama-3.1-8b-instant', 'temperature' => 0.4, 'max_tokens' => 3000]],
+                ];
+
+                foreach ($attempts as $attempt) {
+                    try {
+                        if ($attempt['provider'] === 'groq') {
+                            $out = Groq::callGroq($messages, $attempt['options']);
+                            $rawReply = trim($out['content'] ?? '');
+                            $providerUsed = isset($attempt['options']['model']) ? 'groq-fallback' : 'groq';
+                        } else {
+                            $geminiHistory = [];
+                            foreach (array_slice($messages, 1, -1) as $m) {
+                                $geminiHistory[] = [
+                                    'role' => $m['role'] === 'user' ? 'user' : 'model',
+                                    'content' => $m['content']
+                                ];
+                            }
+                            $out = Gemini::callGemini($userPrompt, $systemPrompt, $geminiHistory, false);
+                            $rawReply = trim($out['content'] ?? '');
+                            $providerUsed = 'gemini';
+                        }
+
+                        $decoded = QuizBuilder::extractJson($rawReply);
+                        $quiz = $decoded ? QuizBuilder::normalize($decoded, $numQuestions, $numOptions, true) : null;
+                        if ($quiz !== null) {
+                            break;
+                        }
+                        $lastError = 'La IA devolvió un cuestionario incompleto o con formato inválido.';
+                        AiLogger::warning('ChatAdminController', "Quiz inválido desde {$providerUsed}. Probando siguiente proveedor...");
+                    } catch (Throwable $eQuiz) {
+                        $lastError = $eQuiz->getMessage();
+                        AiLogger::warning('ChatAdminController', "Quiz: {$providerUsed} falló ({$lastError}). Probando siguiente proveedor...");
+                    }
+                }
+
+                if ($quiz === null) {
+                    $res->status(200)->json([
+                        'success' => false,
+                        'error_type' => 'quiz_generation_failed',
+                        'error' => 'No pude generar el cuestionario esta vez. Intenta de nuevo en un momento.',
+                        'technical_detail' => $lastError
+                    ]);
+                    return;
+                }
+
+                $res->json([
+                    'success' => true,
+                    'quiz' => $quiz,
+                    'provider' => $providerUsed
                 ]);
                 return;
 

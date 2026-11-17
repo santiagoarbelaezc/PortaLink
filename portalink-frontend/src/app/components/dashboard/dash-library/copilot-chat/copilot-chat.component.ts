@@ -6,6 +6,7 @@ import { LibraryAiService } from '../../../../services/library-ai.service';
 import { CopilotMarkdownService } from '../../../../services/copilot-markdown.service';
 import { NotebookPage } from '../../../../services/library.service';
 import { NoteBlock } from '../dash-library.component';
+import { QuizData, detectQuizIntent, quizToContextText } from '../quiz.utils';
 
 @Component({
   selector: 'app-copilot-chat',
@@ -27,6 +28,7 @@ export class CopilotChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Output() closeChat = new EventEmitter<void>();
   @Output() toast = new EventEmitter<{ message: string; type: 'success' | 'error' }>();
+  @Output() insertQuiz = new EventEmitter<QuizData>();
 
   private libraryAiService = inject(LibraryAiService);
   private markdownService = inject(CopilotMarkdownService);
@@ -36,6 +38,7 @@ export class CopilotChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Floating Copilot State
   isCopilotLoading = false;
+  isGeneratingQuiz = false;
   isResettingCopilot = false;
   showCopilotResetOverlay = false;
   copilotOverlayOpacity = '1';
@@ -48,8 +51,8 @@ export class CopilotChatComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
 
   // Drag & Resize State
-  copilotWidth = 400;
-  copilotHeight = 575;
+  copilotWidth = 430;
+  copilotHeight = 680;
   isCopilotFullscreen = false;
   isDraggingCopilot = false;
   isResizingCopilot = false;
@@ -275,6 +278,12 @@ export class CopilotChatComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  requestQuickQuiz() {
+    if (this.isCopilotLoading) return;
+    this.copilotInput = 'Hazme un cuestionario de 5 preguntas sobre lo que venimos estudiando en este apunte';
+    this.sendCopilotMessage();
+  }
+
   sendCopilotMessage() {
     const text = this.copilotInput.trim();
     if (!text || this.isCopilotLoading) return;
@@ -302,6 +311,8 @@ export class CopilotChatComponent implements OnInit, AfterViewInit, OnDestroy {
                  `${col1?.content || '(vacía)'}\n\n` +
                  `  ▶ COLUMNA DERECHA (Tipo: ${col2?.type || 'texto'}${col2?.language ? ', Lenguaje: ' + col2.language : ''}):\n` +
                  `${col2?.content || '(vacía)'}`;
+        } else if (b.type === 'cuestionario' && b.quiz) {
+          return `[BLOQUE ${idx + 1}: ${quizToContextText(b.quiz)}]`;
         } else if (b.type === 'codigo') {
           return `[BLOQUE ${idx + 1}: CÓDIGO / TABLA (${b.language || 'sql'})]:\n${b.content || ''}`;
         } else if (b.type === 'alerta') {
@@ -314,6 +325,33 @@ export class CopilotChatComponent implements OnInit, AfterViewInit, OnDestroy {
           return `[BLOQUE ${idx + 1}: TEXTO]:\n${b.content || ''}`;
         }
       }).join('\n\n------------------------\n\n');
+    }
+
+    const quizIntent = detectQuizIntent(text);
+    if (quizIntent.isQuiz) {
+      this.isGeneratingQuiz = true;
+      this.libraryAiService.generateQuiz(text, this.selectedPage?.title, historyPayload, noteContentSnapshot, quizIntent.count).subscribe(res => {
+        this.isCopilotLoading = false;
+        this.isGeneratingQuiz = false;
+        if (res.success && res.quiz) {
+          this.insertQuiz.emit(res.quiz);
+          this.copilotMessages.push({
+            role: 'assistant',
+            content:
+              `### Cuestionario agregado a la pizarra\n\n` +
+              `He creado **${res.quiz.title}** con **${res.quiz.questions.length} preguntas** y 3 opciones cada una directamente en tu pizarra.\n\n` +
+              `Elige una opción en cada pregunta para comprobar al instante si es correcta o incorrecta y ver su explicación.`
+          });
+        } else {
+          const errorText = res.error || 'No se pudo generar el cuestionario en este momento. Intenta de nuevo.';
+          this.copilotMessages.push({ role: 'assistant', content: '⚠️ **Aviso de IA**: ' + errorText });
+          this.toast.emit({ message: errorText, type: 'error' });
+        }
+        this.saveChatToStorage();
+        this.scrollToBottom();
+        this.focusInput();
+      });
+      return;
     }
 
     this.libraryAiService.askCopilot(text, this.selectedPage?.title, historyPayload, noteContentSnapshot).subscribe(res => {
