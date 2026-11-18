@@ -4,35 +4,54 @@ namespace App\Middleware;
 
 use App\Core\Request;
 use App\Core\Response;
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
+use App\Core\JwtSecurity;
+use Firebase\JWT\ExpiredException;
+use RuntimeException;
 use Exception;
 
 class AuthMiddleware
 {
     public function handle(Request $request, Response $response): bool
     {
-        $authHeader = $request->getHeader('authorization');
-        
-        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
-            $response->status(401)->json(['message' => 'Token no proporcionado']);
-            return false;
-        }
+        $token = JwtSecurity::extractBearerToken($request);
 
-        $token = substr($authHeader, 7);
-        $secret = $_ENV['JWT_SECRET'] ?? getenv('JWT_SECRET');
-
-        if (!$secret) {
-            $response->status(500)->json(['message' => 'Error de configuración de seguridad (JWT_SECRET)']);
+        if (!$token) {
+            $response->status(401)->json([
+                'message' => 'Token de autenticación no proporcionado o formato Bearer inválido'
+            ]);
             return false;
         }
 
         try {
-            $decoded = JWT::decode($token, new Key($secret, 'HS256'));
+            $decoded = JwtSecurity::verifyToken($token);
+
+            if (JwtSecurity::isTokenRevoked($decoded->jti ?? null)) {
+                $response->status(401)->json([
+                    'message' => 'La sesión ha sido cerrada o revocada. Inicia sesión nuevamente.',
+                    'expired' => true
+                ]);
+                return false;
+            }
+
             $request->user = $decoded;
             return true;
+        } catch (RuntimeException $e) {
+            error_log('[AuthMiddleware] Error de configuración JWT: ' . $e->getMessage());
+            $response->status(500)->json([
+                'message' => 'Error de configuración de seguridad en el servidor (JWT_SECRET)'
+            ]);
+            return false;
+        } catch (ExpiredException $e) {
+            $response->status(401)->json([
+                'message' => 'Tu sesión ha expirado. Por favor inicia sesión nuevamente.',
+                'expired' => true
+            ]);
+            return false;
         } catch (Exception $e) {
-            $response->status(401)->json(['message' => 'Token inválido o expirado', 'expired' => true]);
+            $response->status(401)->json([
+                'message' => 'Token JWT inválido, manipulado o expirado',
+                'expired' => true
+            ]);
             return false;
         }
     }

@@ -48,6 +48,10 @@ Options -Indexes -MultiViews
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    # Conservar el header Authorization (JWT) para PHP en Apache/LiteSpeed/FastCGI
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
     # Responder inmediatamente 200 OK a peticiones OPTIONS (CORS preflight)
     RewriteCond %{REQUEST_METHOD} OPTIONS
     RewriteRule ^(.*)$ index.php [QSA,L]

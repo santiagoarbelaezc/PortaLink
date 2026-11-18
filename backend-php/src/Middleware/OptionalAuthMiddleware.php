@@ -4,33 +4,28 @@ namespace App\Middleware;
 
 use App\Core\Request;
 use App\Core\Response;
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
+use App\Core\JwtSecurity;
 use Exception;
 
 class OptionalAuthMiddleware
 {
     public function handle(Request $request, Response $response): bool
     {
-        $authHeader = $request->getHeader('authorization');
-        
-        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
-            $request->user = null;
-            return true;
-        }
+        $token = JwtSecurity::extractBearerToken($request);
 
-        $token = substr($authHeader, 7);
-        $secret = $_ENV['JWT_SECRET'] ?? getenv('JWT_SECRET');
-
-        if (!$secret) {
+        if (!$token) {
             $request->user = null;
             return true;
         }
 
         try {
-            $decoded = JWT::decode($token, new Key($secret, 'HS256'));
+            $decoded = JwtSecurity::verifyToken($token);
+            if (JwtSecurity::isTokenRevoked($decoded->jti ?? null)) {
+                $request->user = null;
+                return true;
+            }
             $request->user = $decoded;
-        } catch (Exception $e) {
+        } catch (Exception) {
             $request->user = null;
         }
 

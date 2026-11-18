@@ -11,27 +11,27 @@ import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-
   providers: [DatePipe],
   template: `
     <ng-container *ngIf="!isLoading || messagesList.length > 0; else skeleton">
-      <div class="space-y-6 tab-enter font-sans">
+      <div class="space-y-3.5 tab-enter font-sans">
 
         <!-- ══════════════════════════════════════
              HEADER: CONTENEDOR NEGRO SLIM & EXECUTIVE CONTROLS
         ══════════════════════════════════════ -->
-        <div class="bg-[#09090b] text-white rounded-[22px] border border-neutral-800 p-5 sm:p-6 relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+        <div class="bg-[#09090b] text-white rounded-[20px] border border-neutral-800 px-4 py-3.5 sm:px-5 sm:py-4 relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xl">
           <!-- Círculos concéntricos decorativos sutiles de fondo -->
-          <div class="absolute -right-8 -bottom-8 w-44 h-44 rounded-full border border-neutral-800/40 pointer-events-none"></div>
-          <div class="absolute -right-4 -bottom-4 w-32 h-32 rounded-full border border-neutral-800/25 pointer-events-none"></div>
+          <div class="absolute -right-8 -bottom-8 w-36 h-36 rounded-full border border-neutral-800/40 pointer-events-none"></div>
+          <div class="absolute -right-4 -bottom-4 w-24 h-24 rounded-full border border-neutral-800/25 pointer-events-none"></div>
 
-          <div class="relative z-10">
-            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full border border-neutral-800 bg-neutral-900/90 text-[10px] font-sans text-neutral-300 mb-2">
-              <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-              <span>Centro de Comunicación & Mensajería</span>
+          <div class="relative z-10 flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl border flex items-center justify-center bg-neutral-900/90 border-neutral-800 shrink-0"
+                 style="color: #ffffff !important;">
+              <span class="material-symbols-rounded text-lg" style="color: #ffffff !important;">chat</span>
             </div>
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-2xl border flex items-center justify-center bg-neutral-900/90 border-neutral-800 mb-0 shrink-0"
-                   style="color: #ffffff !important;">
-                <span class="material-symbols-rounded text-xl" style="color: #ffffff !important;">chat</span>
+            <div>
+              <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-neutral-800 bg-neutral-900/90 text-[9px] font-sans text-neutral-300 mb-0.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                <span>Centro de Comunicación & Mensajería</span>
               </div>
-              <h2 class="text-2xl sm:text-3xl lg:text-[32px] font-headline font-bold tracking-tight leading-[1.1] text-white m-0 dark-card-white"
+              <h2 class="text-xl sm:text-2xl font-headline font-bold tracking-tight leading-none text-white m-0 dark-card-white"
                   style="color: #ffffff !important;">
                 Mensajes
               </h2>
@@ -39,254 +39,288 @@ import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-
           </div>
 
           <!-- Controls: Refresh & Bulk Actions -->
-          <div class="relative z-10 flex flex-wrap items-center gap-2.5">
-            <!-- Refresh Button -->
+          <div class="relative z-10 flex flex-wrap items-center gap-2">
             <button type="button"
                     (click)="loadMessages()"
-                    class="inline-flex items-center gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-headline font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer border active:scale-95 border-neutral-800 bg-[#141419] text-neutral-300 hover:text-white hover:bg-neutral-800"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs font-headline font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer border active:scale-95 border-neutral-800 bg-[#141419] text-neutral-300 hover:text-white hover:bg-neutral-800"
                     title="Actualizar bandeja">
-              <span class="material-symbols-rounded" [class.animate-spin]="isLoading" style="font-size: 16px;">refresh</span>
+              <span class="material-symbols-rounded" [class.animate-spin]="isLoading" style="font-size: 15px;">refresh</span>
               <span>Actualizar</span>
             </button>
 
-            <!-- Mark all as read button -->
             <button *ngIf="unreadCount > 0"
                     type="button"
                     (click)="markAllAsRead()"
-                    class="inline-flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl text-xs sm:text-sm font-headline font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md active:scale-95 border border-white hover:bg-neutral-200"
+                    class="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-headline font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md active:scale-95 border border-white hover:bg-neutral-200"
                     style="background-color: #ffffff !important; color: #09090b !important;">
-              <span class="material-symbols-rounded" style="font-size: 16px; color: #09090b !important;">done_all</span>
+              <span class="material-symbols-rounded" style="font-size: 15px; color: #09090b !important;">done_all</span>
               <span style="color: #09090b !important;">Marcar Leídos ({{ unreadCount }})</span>
             </button>
           </div>
         </div>
 
         <!-- Feedback Toast Notification -->
-        <div *ngIf="toastMessage" class="p-4 rounded-2xl border flex items-center justify-between shadow-lg transition-all animate-dropdown"
+        <div *ngIf="toastMessage" class="px-4 py-2.5 rounded-xl border flex items-center justify-between shadow-lg transition-all animate-dropdown"
              [ngClass]="toastType === 'error' ? 'bg-red-500/10 border-red-500/30 text-red-400' : (toastType === 'info' ? 'bg-neutral-800 border-neutral-700 text-neutral-200' : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400')">
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2.5">
             <span class="w-2 h-2 rounded-full" [ngClass]="toastType === 'error' ? 'bg-red-400' : (toastType === 'info' ? 'bg-neutral-400' : 'bg-emerald-400')"></span>
-            <span class="text-xs font-headline font-bold uppercase tracking-wider">{{ toastMessage }}</span>
+            <span class="text-xs font-headline font-semibold uppercase tracking-wider">{{ toastMessage }}</span>
           </div>
           <button (click)="toastMessage = ''" class="text-xs opacity-70 hover:opacity-100 p-1 cursor-pointer">✕</button>
         </div>
 
         <!-- ══════════════════════════════════════
-             4 KPI STAT CARDS (ULTRA-MINIMALIST SLATE & RED)
+             4 KPI STAT CARDS (COMPACT MINIMALIST FINTECH STYLE)
         ══════════════════════════════════════ -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 xs:gap-3 sm:gap-5">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
 
           <!-- Stat 1: Nuevos Sin Leer -->
-          <div class="rounded-2xl border p-4 sm:p-5 transition-all duration-200 flex flex-col justify-between"
-               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200/80 hover:border-neutral-300 shadow-[0_2px_12px_rgba(0,0,0,0.02)]'">
-            <div class="flex items-center justify-between text-neutral-400 mb-2">
-              <span class="text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Mensajes Nuevos</span>
-              <span class="material-symbols-rounded text-neutral-400" style="font-size: 19px;">mark_email_unread</span>
+          <div (click)="activeFilter = 'unread'"
+               class="rounded-2xl border p-3.5 sm:p-4 transition-all duration-300 flex flex-col justify-between group hover:-translate-y-0.5 cursor-pointer"
+               [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800 hover:border-red-900/40 shadow-[0_2px_12px_rgba(0,0,0,0.2)]' : 'bg-white border-neutral-200/80 hover:border-red-200 shadow-[0_2px_10px_rgba(0,0,0,0.02)]'">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[10px] sm:text-[11px] font-headline font-semibold uppercase tracking-wider text-neutral-400">Mensajes Nuevos</span>
+              <div class="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+                   [ngClass]="unreadCount > 0
+                     ? (isDark ? 'bg-red-950/30 border border-red-500/25 text-red-400' : 'bg-red-50 border border-red-200 text-red-600')
+                     : (isDark ? 'bg-neutral-800/80 text-neutral-300 group-hover:text-white' : 'bg-neutral-100 text-neutral-600 group-hover:text-neutral-900')">
+                <span class="material-symbols-rounded" style="font-size: 16px;">mark_email_unread</span>
+              </div>
             </div>
             <div>
-              <p class="text-xl sm:text-2xl md:text-3xl font-headline font-extrabold tracking-tight m-0"
-                 [ngClass]="unreadCount > 0 ? (isDark ? 'text-white' : 'text-neutral-900') : (isDark ? 'text-neutral-400' : 'text-neutral-500')">
+              <p class="text-xl sm:text-2xl font-headline font-semibold tracking-tight leading-none m-0"
+                 [ngClass]="unreadCount > 0 ? 'text-red-500 dark:text-red-400' : (isDark ? 'text-white' : 'text-neutral-900')">
                 {{ unreadCount }}
               </p>
-              <p class="text-xs text-neutral-500 m-0 mt-2 font-sans flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></span>
-                <span class="text-neutral-400">{{ unreadCount > 0 ? 'Requieren atención' : 'Bandeja al día' }}</span>
-              </p>
+              <div class="mt-2 pt-2 border-t flex items-center justify-between text-[11px]"
+                   [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+                <span class="text-neutral-500 flex items-center gap-1.5 truncate">
+                  <span class="w-1.5 h-1.5 rounded-full shrink-0" [ngClass]="unreadCount > 0 ? 'bg-red-500' : 'bg-neutral-400'"></span>
+                  <span class="truncate">{{ unreadCount > 0 ? 'Por atender' : 'Bandeja al día' }}</span>
+                </span>
+                <span class="text-[10px] font-headline font-semibold px-2 py-0.5 rounded-full border shrink-0"
+                      [ngClass]="unreadCount > 0
+                        ? 'border-red-500/30 bg-red-500/10 text-red-500 dark:text-red-400'
+                        : (isDark ? 'bg-neutral-950/60 border-neutral-800 text-neutral-400' : 'bg-neutral-50 border-neutral-200 text-neutral-600')">
+                  {{ unreadCount > 0 ? 'Pendientes' : '0 sin leer' }}
+                </span>
+              </div>
             </div>
           </div>
 
           <!-- Stat 2: Tasa de Respuesta -->
-          <div class="rounded-2xl border p-4 sm:p-5 transition-all duration-200 flex flex-col justify-between"
-               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200/80 hover:border-neutral-300 shadow-[0_2px_12px_rgba(0,0,0,0.02)]'">
-            <div class="flex items-center justify-between text-neutral-400 mb-2">
-              <span class="text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Tasa de Respuesta</span>
-              <span class="material-symbols-rounded text-neutral-400" style="font-size: 19px;">speed</span>
+          <div class="rounded-2xl border p-3.5 sm:p-4 transition-all duration-300 flex flex-col justify-between group hover:-translate-y-0.5 relative overflow-hidden"
+               [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800 hover:border-red-900/30 shadow-[0_2px_12px_rgba(0,0,0,0.2)]' : 'bg-white border-neutral-200/80 hover:border-red-200 shadow-[0_2px_10px_rgba(0,0,0,0.02)]'">
+            <div class="absolute top-0 left-0 right-0 h-[2px] bg-red-500 opacity-80"></div>
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[10px] sm:text-[11px] font-headline font-semibold uppercase tracking-wider text-neutral-400">Tasa de Respuesta</span>
+              <div class="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+                   [ngClass]="isDark ? 'bg-red-950/30 border border-red-500/20 text-red-400' : 'bg-red-50 border border-red-100 text-red-600'">
+                <span class="material-symbols-rounded" style="font-size: 16px;">speed</span>
+              </div>
             </div>
             <div>
-              <p class="text-xl sm:text-2xl md:text-3xl font-headline font-extrabold tracking-tight m-0"
+              <p class="text-xl sm:text-2xl font-headline font-semibold tracking-tight leading-none m-0"
                  [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
                 {{ responseRate }}%
               </p>
-              <p class="text-xs text-neutral-500 m-0 mt-2 font-sans flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></span>
-                <span class="text-neutral-400">{{ repliedCount }} de {{ messagesList.length }} atendidos</span>
-              </p>
+              <div class="mt-2 pt-2 border-t flex items-center justify-between text-[11px]"
+                   [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+                <span class="text-neutral-500 flex items-center gap-1.5 truncate">
+                  <span class="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></span>
+                  <span class="truncate"><strong class="font-medium" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ repliedCount }}</strong> de <strong class="font-medium" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ messagesList.length }}</strong></span>
+                </span>
+                <span class="text-[10px] font-headline font-semibold px-2 py-0.5 rounded-full border border-red-500/30 bg-red-500/10 text-red-500 dark:text-red-400 shrink-0">
+                  {{ responseRate }}% Atendido
+                </span>
+              </div>
             </div>
           </div>
 
           <!-- Stat 3: Mensajes Respondidos -->
-          <div class="rounded-2xl border p-4 sm:p-5 transition-all duration-200 flex flex-col justify-between"
-               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200/80 hover:border-neutral-300 shadow-[0_2px_12px_rgba(0,0,0,0.02)]'">
-            <div class="flex items-center justify-between text-neutral-400 mb-2">
-              <span class="text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Atendidos</span>
-              <span class="material-symbols-rounded text-neutral-400" style="font-size: 19px;">check_circle</span>
+          <div (click)="activeFilter = 'replied'"
+               class="rounded-2xl border p-3.5 sm:p-4 transition-all duration-300 flex flex-col justify-between group hover:-translate-y-0.5 cursor-pointer"
+               [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800 hover:border-neutral-700 shadow-[0_2px_12px_rgba(0,0,0,0.2)]' : 'bg-white border-neutral-200/80 hover:border-neutral-300 shadow-[0_2px_10px_rgba(0,0,0,0.02)]'">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[10px] sm:text-[11px] font-headline font-semibold uppercase tracking-wider text-neutral-400">Atendidos</span>
+              <div class="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+                   [ngClass]="isDark ? 'bg-neutral-800/80 text-neutral-300 group-hover:text-white' : 'bg-neutral-100 text-neutral-600 group-hover:text-neutral-900'">
+                <span class="material-symbols-rounded" style="font-size: 16px;">check_circle</span>
+              </div>
             </div>
             <div>
-              <p class="text-xl sm:text-2xl md:text-3xl font-headline font-extrabold tracking-tight m-0"
+              <p class="text-xl sm:text-2xl font-headline font-semibold tracking-tight leading-none m-0"
                  [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
                 {{ repliedCount }}
               </p>
-              <p class="text-xs text-neutral-500 m-0 mt-2 font-sans flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></span>
-                <span class="text-neutral-400">Respuestas gestionadas</span>
-              </p>
+              <div class="mt-2 pt-2 border-t flex items-center justify-between text-[11px]"
+                   [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+                <span class="text-neutral-500 flex items-center gap-1.5 truncate">
+                  <span class="w-1.5 h-1.5 rounded-full bg-neutral-400 shrink-0"></span>
+                  <span class="truncate">Respuestas enviadas</span>
+                </span>
+                <span class="text-[10px] font-sans font-medium px-2 py-0.5 rounded-full border shrink-0"
+                      [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800 text-neutral-400' : 'bg-neutral-50 border-neutral-200 text-neutral-600'">
+                  Gestionados
+                </span>
+              </div>
             </div>
           </div>
 
           <!-- Stat 4: Total Mensajes -->
-          <div class="rounded-2xl border p-4 sm:p-5 transition-all duration-200 flex flex-col justify-between"
-               [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800 hover:border-neutral-700' : 'bg-white border-neutral-200/80 hover:border-neutral-300 shadow-[0_2px_12px_rgba(0,0,0,0.02)]'">
-            <div class="flex items-center justify-between text-neutral-400 mb-2">
-              <span class="text-[11px] font-headline font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Total Recibidos</span>
-              <span class="material-symbols-rounded text-neutral-400" style="font-size: 19px;">inbox</span>
+          <div (click)="activeFilter = 'all'"
+               class="rounded-2xl border p-3.5 sm:p-4 transition-all duration-300 flex flex-col justify-between group hover:-translate-y-0.5 cursor-pointer"
+               [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800 hover:border-neutral-700 shadow-[0_2px_12px_rgba(0,0,0,0.2)]' : 'bg-white border-neutral-200/80 hover:border-neutral-300 shadow-[0_2px_10px_rgba(0,0,0,0.02)]'">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[10px] sm:text-[11px] font-headline font-semibold uppercase tracking-wider text-neutral-400">Total Recibidos</span>
+              <div class="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+                   [ngClass]="isDark ? 'bg-neutral-800/80 text-neutral-300 group-hover:text-red-400' : 'bg-neutral-100 text-neutral-600 group-hover:text-red-600'">
+                <span class="material-symbols-rounded" style="font-size: 16px;">inbox</span>
+              </div>
             </div>
             <div>
-              <p class="text-xl sm:text-2xl md:text-3xl font-headline font-extrabold tracking-tight m-0"
+              <p class="text-xl sm:text-2xl font-headline font-semibold tracking-tight leading-none m-0"
                  [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
                 {{ messagesList.length }}
               </p>
-              <p class="text-xs text-neutral-500 m-0 mt-2 font-sans flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></span>
-                <span class="text-neutral-400">{{ readCount }} leídos en sistema</span>
-              </p>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- ══════════════════════════════════════
-             SEARCH & FILTER DOCK
-        ══════════════════════════════════════ -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <!-- Search Input -->
-          <div class="relative flex-1">
-            <span class="material-symbols-rounded absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400" style="font-size: 18px;">search</span>
-            <input type="text" [(ngModel)]="searchQuery" placeholder="Buscar por remitente, correo o contenido..."
-                   class="w-full pl-10 pr-4 py-2.5 rounded-2xl text-xs font-sans border outline-none transition-colors"
-                   [ngClass]="isDark ? 'bg-[#141419] border-neutral-800 text-white placeholder-neutral-500 focus:border-white' : 'bg-white border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-black'">
-            <button *ngIf="searchQuery" (click)="searchQuery = ''"
-                    class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white text-xs cursor-pointer">
-              ✕
-            </button>
-          </div>
-
-          <!-- Filter Options Dock -->
-          <div class="flex items-center gap-1 p-1 rounded-2xl border backdrop-blur-xl overflow-x-auto no-scrollbar shrink-0"
-               [ngClass]="isDark ? 'bg-[#141419] border-neutral-800' : 'bg-neutral-100 border-neutral-200'">
-            <button *ngFor="let f of filterOptions; trackBy: trackByFilter"
-                    (click)="activeFilter = f.id"
-                    class="px-3.5 py-1.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer border flex items-center gap-1.5 whitespace-nowrap shrink-0"
-                    [ngClass]="activeFilter === f.id
-                      ? (isDark ? 'shadow-md border-white' : 'shadow-md border-[#09090b]')
-                      : (isDark ? 'border-transparent text-neutral-400 hover:text-white' : 'border-transparent text-neutral-600 hover:text-black')"
-                    [style.background-color]="activeFilter === f.id ? (isDark ? '#ffffff !important' : '#09090b !important') : 'transparent'"
-                    [style.color]="activeFilter === f.id ? (isDark ? '#09090b !important' : '#ffffff !important') : (isDark ? '#a1a1aa !important' : '#52525b !important')">
-              <span *ngIf="activeFilter === f.id" class="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></span>
-              <span>{{ f.label }}</span>
-              <span *ngIf="f.id === 'unread' && unreadCount > 0" class="text-[10px] px-1.5 py-0.2 rounded-full font-bold ml-0.5"
-                    [ngClass]="activeFilter === 'unread' ? 'bg-red-500 text-white' : 'bg-red-500/20 text-red-400'">
-                {{ unreadCount }}
-              </span>
-            </button>
-          </div>
-        </div>
-
-        <!-- ══════════════════════════════════════
-             SPLIT INBOX LAYOUT (List + Detail Pane)
-        ══════════════════════════════════════ -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-start">
-          
-          <!-- LEFT COLUMN: Messages Feed (5 of 12 cols) -->
-          <div class="lg:col-span-5 rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border overflow-hidden flex flex-col max-h-[680px] transition-all duration-300"
-               [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800 shadow-[0_10px_35px_rgba(0,0,0,0.4)]' : 'bg-white border-neutral-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.03)]'">
-            
-            <!-- Feed Header -->
-            <div class="px-5 py-3.5 border-b flex items-center justify-between text-xs font-headline font-bold uppercase tracking-wider"
-                 [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 bg-neutral-950/40' : 'border-neutral-200 text-neutral-500 bg-neutral-50'">
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                <span>Bandeja ({{ filtered.length }})</span>
+              <div class="mt-2 pt-2 border-t flex items-center justify-between text-[11px]"
+                   [ngClass]="isDark ? 'border-neutral-800/80' : 'border-neutral-100'">
+                <span class="text-neutral-500 flex items-center gap-1.5 truncate">
+                  <span class="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></span>
+                  <span class="truncate"><strong class="font-medium" [ngClass]="isDark ? 'text-neutral-200' : 'text-neutral-800'">{{ readCount }}</strong> leídos</span>
+                </span>
+                <span class="text-[10px] font-sans font-medium px-2 py-0.5 rounded-full border shrink-0"
+                      [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800 text-neutral-400' : 'bg-neutral-50 border-neutral-200 text-neutral-600'">
+                  Bandeja global
+                </span>
               </div>
-              <span class="font-mono text-[10px] opacity-60">Recientes</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ══════════════════════════════════════
+             UNIFIED WORKSPACE: SPLIT INBOX + READER (ZERO-SCROLL VIEWPORT FIT)
+        ══════════════════════════════════════ -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-stretch lg:h-[calc(100vh-285px)] lg:min-h-[430px] lg:max-h-[580px]">
+          
+          <!-- LEFT COLUMN: Search, Filters & Messages Feed (5 of 12 cols) -->
+          <div class="lg:col-span-5 rounded-2xl border overflow-hidden flex flex-col h-[420px] lg:h-full transition-all duration-300"
+               [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800 shadow-[0_2px_12px_rgba(0,0,0,0.2)]' : 'bg-white border-neutral-200/80 shadow-[0_2px_10px_rgba(0,0,0,0.02)]'">
+            
+            <!-- Integrated Search & Filter Header inside Left Pane -->
+            <div class="p-3 border-b space-y-2.5 shrink-0"
+                 [ngClass]="isDark ? 'border-neutral-800 bg-neutral-950/40' : 'border-neutral-200/80 bg-neutral-50/60'">
+              
+              <!-- Search Input + Counter -->
+              <div class="flex items-center gap-2">
+                <div class="relative flex-1">
+                  <span class="material-symbols-rounded absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" style="font-size: 15px;">search</span>
+                  <input type="text" [(ngModel)]="searchQuery" placeholder="Buscar remitente, correo o texto..."
+                         class="w-full pl-8 pr-7 py-1.5 rounded-xl text-xs font-sans border outline-none transition-colors"
+                         [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white placeholder-neutral-500 focus:border-red-500/60' : 'bg-white border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-neutral-400'">
+                  <button *ngIf="searchQuery" (click)="searchQuery = ''"
+                          class="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white text-[11px] cursor-pointer">
+                    ✕
+                  </button>
+                </div>
+                <span class="text-[10px] font-headline font-semibold px-2.5 py-1.5 rounded-xl border shrink-0"
+                      [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-neutral-300' : 'bg-white border-neutral-200 text-neutral-700'"
+                      title="Mensajes en lista">
+                  {{ filtered.length }}
+                </span>
+              </div>
+
+              <!-- Compact Filter Tabs -->
+              <div class="flex items-center gap-1 p-0.5 rounded-xl border overflow-x-auto no-scrollbar"
+                   [ngClass]="isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-neutral-100 border-neutral-200'">
+                <button *ngFor="let f of filterOptions; trackBy: trackByFilter"
+                        (click)="activeFilter = f.id"
+                        class="flex-1 px-2.5 py-1 rounded-lg text-[10px] font-headline font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer flex items-center justify-center gap-1 whitespace-nowrap"
+                        [ngClass]="activeFilter === f.id
+                          ? (isDark ? 'bg-white text-neutral-900 shadow-xs' : 'bg-neutral-900 text-white shadow-xs')
+                          : (isDark ? 'text-neutral-400 hover:text-white' : 'text-neutral-600 hover:text-neutral-900')">
+                  <span *ngIf="activeFilter === f.id" class="w-1 h-1 rounded-full bg-red-500 shrink-0"></span>
+                  <span>{{ f.label }}</span>
+                  <span *ngIf="f.id === 'unread' && unreadCount > 0"
+                        class="text-[9px] font-headline font-semibold px-1.5 py-0.2 rounded-full"
+                        [ngClass]="activeFilter === 'unread' ? 'bg-red-500 text-white' : 'bg-red-500/15 text-red-500 dark:text-red-400'">
+                    {{ unreadCount }}
+                  </span>
+                </button>
+              </div>
             </div>
 
-            <!-- Feed Items List -->
-            <div class="divide-y overflow-y-auto custom-scrollbar flex-grow" [ngClass]="isDark ? 'divide-neutral-800/80' : 'divide-neutral-100'">
+            <!-- Feed Items List (Scrolls internally) -->
+            <div class="divide-y overflow-y-auto custom-scrollbar flex-1 min-h-0" [ngClass]="isDark ? 'divide-neutral-800/70' : 'divide-neutral-100'">
               
               <div *ngFor="let msg of filtered; trackBy: trackByMsg"
                    (click)="selectMessage(msg)"
-                   class="p-4 transition-all duration-200 cursor-pointer relative group"
+                   class="px-3.5 py-3 transition-all duration-150 cursor-pointer relative group"
                    [ngClass]="[
                      selectedMessage?.id === msg.id 
-                       ? (isDark ? 'bg-neutral-800/90' : 'bg-neutral-100') 
-                       : (isDark ? 'hover:bg-neutral-800/40' : 'hover:bg-neutral-50'),
-                     msg.status === 'unread' ? 'border-l-4 border-l-red-500' : 'border-l-4 border-l-transparent'
+                       ? (isDark ? 'bg-neutral-800/80' : 'bg-neutral-100/90') 
+                       : (isDark ? 'hover:bg-neutral-800/35' : 'hover:bg-neutral-50'),
+                     msg.status === 'unread' ? 'border-l-[3px] border-l-red-500' : 'border-l-[3px] border-l-transparent'
                    ]">
 
-                <div class="flex items-start gap-3">
+                <div class="flex items-start gap-2.5">
                   <!-- Avatar Initials -->
-                  <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold shrink-0 border"
+                  <div class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-headline font-semibold shrink-0 border mt-0.5"
                        [ngClass]="msg.status === 'unread' 
                          ? (isDark ? 'bg-red-500/15 text-red-400 border-red-500/30' : 'bg-red-50 text-red-600 border-red-200')
-                         : (isDark ? 'bg-[#141419] text-neutral-300 border-neutral-800' : 'bg-neutral-100 text-neutral-700 border-neutral-200')">
+                         : (isDark ? 'bg-neutral-950 text-neutral-300 border-neutral-800' : 'bg-neutral-100 text-neutral-700 border-neutral-200')">
                     {{ msg.nombre ? msg.nombre.charAt(0).toUpperCase() : 'U' }}
                   </div>
 
                   <!-- Text & Meta -->
-                  <div class="min-w-0 flex-grow">
-                    <div class="flex items-center justify-between gap-1 mb-1">
-                      <h4 class="text-xs font-headline font-bold truncate" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                        {{ msg.nombre || 'Anónimo' }}
-                      </h4>
-                      <span class="text-[10px] opacity-50 shrink-0 font-mono">
-                        {{ msg.created_at | date:'shortTime' }}
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-center justify-between gap-1.5">
+                      <div class="flex items-center gap-1.5 min-w-0">
+                        <h4 class="text-xs font-headline font-semibold truncate m-0" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                          {{ msg.nombre || 'Anónimo' }}
+                        </h4>
+                        <span *ngIf="msg.status === 'unread'" class="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" title="Nuevo"></span>
+                        <span *ngIf="msg.status === 'replied'" class="text-[9px] font-headline font-semibold px-1.5 py-0.2 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shrink-0">
+                          Respondido
+                        </span>
+                      </div>
+                      <span class="text-[10px] text-neutral-400 shrink-0 font-mono">
+                        {{ msg.created_at | date:'dd/MM HH:mm' }}
                       </span>
                     </div>
 
-                    <p class="text-[11px] truncate mb-1 opacity-70" [ngClass]="isDark ? 'text-neutral-400' : 'text-neutral-600'">
+                    <p class="text-[11px] truncate m-0 mt-0.5 text-neutral-400 font-mono">
                       {{ msg.correo }}
                     </p>
 
-                    <p class="text-xs line-clamp-2 leading-relaxed opacity-80" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-700'">
+                    <p class="text-xs line-clamp-1 leading-snug m-0 mt-1" [ngClass]="isDark ? 'text-neutral-300' : 'text-neutral-600'">
                       {{ msg.mensaje }}
                     </p>
-
-                    <!-- Status badges -->
-                    <div class="flex items-center gap-2 mt-2.5">
-                      <span *ngIf="msg.status === 'unread'" class="text-[9px] font-headline font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-500 text-white shadow-xs">
-                        Nuevo
-                      </span>
-                      <span *ngIf="msg.status === 'replied'" class="text-[9px] font-headline font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                        Respondido
-                      </span>
-                      <span *ngIf="msg.status === 'read'" class="text-[9px] font-headline font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-400 border border-neutral-700">
-                        Leído
-                      </span>
-                    </div>
                   </div>
                 </div>
               </div>
 
               <!-- Empty State -->
-              <div *ngIf="filtered.length === 0" class="p-12 text-center text-xs opacity-50 space-y-2">
-                <span class="material-symbols-rounded text-neutral-500" style="font-size: 32px;">inbox</span>
-                <p class="font-headline font-medium">No se encontraron mensajes en esta vista.</p>
+              <div *ngIf="filtered.length === 0" class="p-10 text-center text-xs opacity-50 space-y-1.5">
+                <span class="material-symbols-rounded text-neutral-500" style="font-size: 28px;">inbox</span>
+                <p class="font-headline font-medium m-0">No se encontraron mensajes en esta vista.</p>
               </div>
 
             </div>
           </div>
 
           <!-- RIGHT COLUMN: Message Detail & Reply Reader (7 of 12 cols) -->
-          <div class="lg:col-span-7 rounded-[20px] xs:rounded-[24px] sm:rounded-[28px] border p-5 sm:p-7 flex flex-col space-y-6 transition-all duration-300 min-h-[550px]"
-               [ngClass]="isDark ? 'bg-neutral-900/70 border-neutral-800 shadow-[0_10px_35px_rgba(0,0,0,0.4)]' : 'bg-white border-neutral-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.03)]'">
+          <div class="lg:col-span-7 rounded-2xl border flex flex-col h-[460px] lg:h-full overflow-hidden transition-all duration-300"
+               [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800 shadow-[0_2px_12px_rgba(0,0,0,0.2)]' : 'bg-white border-neutral-200/80 shadow-[0_2px_10px_rgba(0,0,0,0.02)]'">
             
             <ng-container *ngIf="selectedMessage; else noSelection">
               
-              <!-- Message Reader Header -->
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4"
-                   [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-                <div class="flex items-center gap-3.5">
-                  <div class="w-11 h-11 rounded-xl flex items-center justify-center text-base font-bold shrink-0 border shadow-xs"
+              <!-- Message Reader Header (Compact & Fixed at Top) -->
+              <div class="px-4 py-3 sm:px-5 sm:py-3.5 border-b flex flex-wrap items-center justify-between gap-3 shrink-0"
+                   [ngClass]="isDark ? 'border-neutral-800 bg-neutral-950/30' : 'border-neutral-200/80 bg-neutral-50/50'">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-headline font-semibold shrink-0 border shadow-xs"
                        [ngClass]="isDark ? 'border-white' : 'border-[#09090b]'"
                        [style.background-color]="isDark ? '#ffffff !important' : '#09090b !important'"
                        [style.color]="isDark ? '#09090b !important' : '#ffffff !important'">
@@ -294,110 +328,130 @@ import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-
                       {{ selectedMessage.nombre ? selectedMessage.nombre.charAt(0).toUpperCase() : 'U' }}
                     </span>
                   </div>
-                  <div>
-                    <h3 class="text-base font-headline font-bold" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
-                      {{ selectedMessage.nombre }}
-                    </h3>
-                    <p class="text-xs font-mono opacity-70">{{ selectedMessage.correo }}</p>
-                    <p class="text-[10px] opacity-40 mt-0.5 font-sans">{{ selectedMessage.created_at | date:'fullDate' }} · {{ selectedMessage.created_at | date:'shortTime' }}</p>
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                      <h3 class="text-sm font-headline font-semibold truncate m-0" [ngClass]="isDark ? 'text-white' : 'text-neutral-900'">
+                        {{ selectedMessage.nombre }}
+                      </h3>
+                      <span class="text-[9px] font-headline font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border shrink-0"
+                            [ngClass]="selectedMessage.status === 'unread'
+                              ? 'bg-red-500/10 text-red-500 border-red-500/30'
+                              : (selectedMessage.status === 'replied'
+                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                                : (isDark ? 'bg-neutral-800 text-neutral-400 border-neutral-700' : 'bg-neutral-100 text-neutral-600 border-neutral-200'))">
+                        {{ selectedMessage.status === 'unread' ? 'Nuevo' : (selectedMessage.status === 'replied' ? 'Respondido' : 'Leído') }}
+                      </span>
+                    </div>
+                    <div class="flex items-center gap-2 text-[11px] text-neutral-400 truncate mt-0.5">
+                      <span class="font-mono truncate">{{ selectedMessage.correo }}</span>
+                      <span>·</span>
+                      <span class="font-sans shrink-0">{{ selectedMessage.created_at | date:'dd MMM yyyy, HH:mm' }}</span>
+                    </div>
                   </div>
                 </div>
 
                 <!-- Quick Contact Actions Toolbar -->
-                <div class="flex items-center gap-2 flex-wrap">
+                <div class="flex items-center gap-1.5 shrink-0">
+                  <button type="button"
+                          (click)="toggleRead(selectedMessage.id!)"
+                          class="p-1.5 rounded-lg border transition-all cursor-pointer active:scale-95"
+                          [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:text-white bg-neutral-900' : 'border-neutral-200 text-neutral-600 hover:text-black bg-white'"
+                          [title]="selectedMessage.status === 'read' || selectedMessage.status === 'replied' ? 'Marcar como no leído' : 'Marcar como leído'">
+                    <span class="material-symbols-rounded" style="font-size: 16px;">
+                      {{ selectedMessage.status === 'unread' ? 'mark_email_read' : 'mark_email_unread' }}
+                    </span>
+                  </button>
+
                   <button type="button"
                           (click)="copyEmail(selectedMessage.correo)"
-                          class="px-3 py-1.5 rounded-xl text-xs font-headline font-semibold border transition-all duration-200 cursor-pointer flex items-center gap-1.5 active:scale-95"
-                          [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:text-white hover:bg-neutral-800 bg-[#141419]' : 'border-neutral-200 text-neutral-700 hover:bg-neutral-100 bg-neutral-50'"
+                          class="px-2.5 py-1.5 rounded-lg text-[11px] font-headline font-semibold border transition-all duration-200 cursor-pointer flex items-center gap-1 active:scale-95"
+                          [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:text-white hover:bg-neutral-800 bg-neutral-900' : 'border-neutral-200 text-neutral-700 hover:bg-neutral-100 bg-white'"
                           title="Copiar Correo">
-                    <span class="material-symbols-rounded" style="font-size: 15px;">content_copy</span>
-                    <span>Copiar Email</span>
+                    <span class="material-symbols-rounded" style="font-size: 14px;">content_copy</span>
+                    <span class="hidden sm:inline">Copiar</span>
                   </button>
 
                   <a [href]="'mailto:' + selectedMessage.correo"
-                     class="px-3.5 py-1.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider border transition-all duration-200 cursor-pointer inline-flex items-center gap-1.5 active:scale-95 shadow-sm"
+                     class="px-3 py-1.5 rounded-lg text-[11px] font-headline font-semibold uppercase tracking-wider border transition-all duration-200 cursor-pointer inline-flex items-center gap-1 active:scale-95 shadow-xs"
                      [ngClass]="isDark ? 'border-white hover:bg-neutral-200' : 'border-[#09090b] hover:bg-neutral-800'"
                      [style.background-color]="isDark ? '#ffffff !important' : '#09090b !important'"
                      [style.color]="isDark ? '#09090b !important' : '#ffffff !important'">
-                    <span class="material-symbols-rounded" style="font-size: 15px;" [style.color]="isDark ? '#09090b !important' : '#ffffff !important'">mail</span>
-                    <span [style.color]="isDark ? '#09090b !important' : '#ffffff !important'">Redactar</span>
+                    <span class="material-symbols-rounded" style="font-size: 14px;" [style.color]="isDark ? '#09090b !important' : '#ffffff !important'">mail</span>
+                    <span [style.color]="isDark ? '#09090b !important' : '#ffffff !important'">Correo</span>
                   </a>
 
                   <button type="button"
                           (click)="selectedMessage.id && confirmDelete(selectedMessage.id)"
-                          class="p-2 rounded-xl border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 cursor-pointer transition-all duration-200 active:scale-95"
+                          class="p-1.5 rounded-lg border border-red-500/25 text-red-400 hover:bg-red-500/10 cursor-pointer transition-all duration-200 active:scale-95"
                           title="Eliminar Mensaje">
                     <span class="material-symbols-rounded" style="font-size: 16px;">delete</span>
                   </button>
                 </div>
               </div>
 
-              <!-- Message Content Box -->
-              <div class="rounded-2xl p-5 border flex-grow space-y-3 leading-relaxed text-sm whitespace-pre-wrap font-sans"
-                   [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800 text-neutral-200' : 'bg-neutral-50 border-neutral-200 text-neutral-800'">
-                <p>{{ selectedMessage.mensaje }}</p>
+              <!-- Message Content Box (Scrolls internally without stretching page) -->
+              <div class="p-4 sm:p-5 flex-1 min-h-0 overflow-y-auto custom-scrollbar">
+                <div class="rounded-xl p-4 border leading-relaxed text-xs sm:text-sm whitespace-pre-wrap font-sans"
+                     [ngClass]="isDark ? 'bg-neutral-950/60 border-neutral-800/80 text-neutral-200' : 'bg-neutral-50/80 border-neutral-200/80 text-neutral-800'">
+                  <p class="m-0">{{ selectedMessage.mensaje }}</p>
+                </div>
               </div>
 
-              <!-- Response / Reply Area -->
-              <div class="border-t pt-4 space-y-3.5" [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
+              <!-- Compact Response / Reply Area (Docked at Bottom) -->
+              <div class="px-4 py-3 sm:px-5 sm:py-3.5 border-t space-y-2.5 shrink-0"
+                   [ngClass]="isDark ? 'border-neutral-800 bg-neutral-950/40' : 'border-neutral-200/80 bg-neutral-50/40'">
                 
                 <!-- Quick Response Templates -->
-                <div class="flex items-center gap-2 flex-wrap text-xs">
-                  <span class="text-[10px] font-headline font-bold uppercase tracking-wider opacity-50 flex items-center gap-1">
-                    <span class="material-symbols-rounded" style="font-size: 14px;">bolt</span>
-                    Plantillas:
+                <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs">
+                  <span class="text-[10px] font-headline font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-1 shrink-0 mr-1">
+                    <span class="material-symbols-rounded text-red-500" style="font-size: 13px;">bolt</span>
+                    <span>Plantillas:</span>
                   </span>
                   
                   <button type="button"
                           (click)="applyTemplate('Gracias por contactarnos. Hemos recibido tu mensaje y nos pondremos en contacto a la brevedad.')"
-                          class="px-3 py-1 rounded-xl border text-[10px] font-headline font-semibold transition-all duration-200 cursor-pointer active:scale-95"
-                          [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:text-white bg-[#141419]' : 'border-neutral-200 text-neutral-600 hover:text-black bg-neutral-50'">
+                          class="px-2.5 py-1 rounded-lg border text-[10px] font-headline font-medium transition-all duration-200 cursor-pointer active:scale-95 whitespace-nowrap shrink-0"
+                          [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:text-white hover:border-neutral-700 bg-neutral-900' : 'border-neutral-200 text-neutral-600 hover:text-black bg-white'">
                     Agradecimiento
                   </button>
 
                   <button type="button"
                           (click)="applyTemplate('Hola, con gusto podemos agendar una reunión o llamada para revisar los detalles del proyecto.')"
-                          class="px-3 py-1 rounded-xl border text-[10px] font-headline font-semibold transition-all duration-200 cursor-pointer active:scale-95"
-                          [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:text-white bg-[#141419]' : 'border-neutral-200 text-neutral-600 hover:text-black bg-neutral-50'">
+                          class="px-2.5 py-1 rounded-lg border text-[10px] font-headline font-medium transition-all duration-200 cursor-pointer active:scale-95 whitespace-nowrap shrink-0"
+                          [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:text-white hover:border-neutral-700 bg-neutral-900' : 'border-neutral-200 text-neutral-600 hover:text-black bg-white'">
                     Agendar Llamada
                   </button>
 
                   <button type="button"
                           (click)="applyTemplate('Hemos revisado tu requerimiento. Adjuntamos la información solicitada para tu consulta.')"
-                          class="px-3 py-1 rounded-xl border text-[10px] font-headline font-semibold transition-all duration-200 cursor-pointer active:scale-95"
-                          [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:text-white bg-[#141419]' : 'border-neutral-200 text-neutral-600 hover:text-black bg-neutral-50'">
+                          class="px-2.5 py-1 rounded-lg border text-[10px] font-headline font-medium transition-all duration-200 cursor-pointer active:scale-95 whitespace-nowrap shrink-0"
+                          [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:text-white hover:border-neutral-700 bg-neutral-900' : 'border-neutral-200 text-neutral-600 hover:text-black bg-white'">
                     Info Solicitada
                   </button>
 
                   <button type="button"
                           (click)="applyTemplate('Con gusto podemos preparar una propuesta formal a la medida de tus necesidades.')"
-                          class="px-3 py-1 rounded-xl border text-[10px] font-headline font-semibold transition-all duration-200 cursor-pointer active:scale-95"
-                          [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:text-white bg-[#141419]' : 'border-neutral-200 text-neutral-600 hover:text-black bg-neutral-50'">
+                          class="px-2.5 py-1 rounded-lg border text-[10px] font-headline font-medium transition-all duration-200 cursor-pointer active:scale-95 whitespace-nowrap shrink-0"
+                          [ngClass]="isDark ? 'border-neutral-800 text-neutral-300 hover:text-white hover:border-neutral-700 bg-neutral-900' : 'border-neutral-200 text-neutral-600 hover:text-black bg-white'">
                     Cotización
                   </button>
                 </div>
 
-                <textarea [(ngModel)]="replyText" rows="3"
-                          placeholder="Escribe una respuesta o nota interna registrada en sistema..."
-                          class="w-full px-4 py-3 rounded-2xl text-xs font-sans border outline-none transition-all resize-none"
-                          [ngClass]="isDark ? 'bg-neutral-950 border-neutral-800 text-white placeholder-neutral-600 focus:border-white' : 'bg-neutral-50 border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-black'"></textarea>
-
-                <div class="flex items-center justify-between gap-3 flex-wrap">
-                  <button type="button"
-                          (click)="toggleRead(selectedMessage.id!)"
-                          class="text-xs font-headline font-semibold border px-3.5 py-2 rounded-xl transition-all cursor-pointer active:scale-95"
-                          [ngClass]="isDark ? 'border-neutral-800 text-neutral-400 hover:text-white bg-[#141419]' : 'border-neutral-200 text-neutral-600 hover:text-black bg-neutral-50'">
-                    {{ selectedMessage.status === 'read' || selectedMessage.status === 'replied' ? 'Marcar como no leído' : 'Marcar como leído' }}
-                  </button>
+                <!-- Inline Textarea + Submit Button -->
+                <div class="flex items-end gap-2">
+                  <textarea [(ngModel)]="replyText" rows="2"
+                            placeholder="Escribe una respuesta o nota interna para registrar..."
+                            class="flex-1 px-3.5 py-2 rounded-xl text-xs font-sans border outline-none transition-all resize-none"
+                            [ngClass]="isDark ? 'bg-neutral-900 border-neutral-800 text-white placeholder-neutral-500 focus:border-red-500/60' : 'bg-white border-neutral-200 text-neutral-900 placeholder-neutral-400 focus:border-neutral-400'"></textarea>
 
                   <button type="button"
                           (click)="sendReply(selectedMessage)" [disabled]="!replyText.trim()"
-                          class="px-5 py-2.5 rounded-xl text-xs font-headline font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer border shadow-sm disabled:opacity-40 flex items-center gap-2 active:scale-95"
+                          class="px-4 py-2.5 rounded-xl text-xs font-headline font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer border shadow-xs disabled:opacity-40 flex items-center gap-1.5 active:scale-95 shrink-0 h-[54px]"
                           [ngClass]="isDark ? 'border-white hover:bg-neutral-200' : 'border-[#09090b] hover:bg-neutral-800'"
                           [style.background-color]="isDark ? '#ffffff !important' : '#09090b !important'"
                           [style.color]="isDark ? '#09090b !important' : '#ffffff !important'">
                     <span class="material-symbols-rounded" style="font-size: 16px;" [style.color]="isDark ? '#09090b !important' : '#ffffff !important'">send</span>
-                    <span [style.color]="isDark ? '#09090b !important' : '#ffffff !important'">Registrar Respuesta</span>
+                    <span class="hidden sm:inline" [style.color]="isDark ? '#09090b !important' : '#ffffff !important'">Responder</span>
                   </button>
                 </div>
 
@@ -406,10 +460,10 @@ import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-
             </ng-container>
 
             <ng-template #noSelection>
-              <div class="my-auto text-center py-16 space-y-3 opacity-50">
-                <span class="material-symbols-rounded text-neutral-400" style="font-size: 44px;">mark_chat_unread</span>
-                <h4 class="text-sm font-headline font-bold">Selecciona un mensaje</h4>
-                <p class="text-xs">Haz clic en un remitente de la lista lateral para leer el contenido y registrar respuestas.</p>
+              <div class="my-auto text-center p-10 space-y-2 opacity-50">
+                <span class="material-symbols-rounded text-neutral-400" style="font-size: 36px;">mark_chat_unread</span>
+                <h4 class="text-sm font-headline font-semibold m-0">Selecciona un mensaje</h4>
+                <p class="text-xs m-0">Haz clic en un remitente de la lista izquierda para leer el mensaje y responder.</p>
               </div>
             </ng-template>
 
@@ -461,55 +515,51 @@ import { TeleportToBodyDirective } from '../../../shared/directives/teleport-to-
          SKELETON LOADER
     ══════════════════════════════════════ -->
     <ng-template #skeleton>
-      <div class="space-y-6 animate-pulse font-sans">
+      <div class="space-y-3.5 animate-pulse font-sans">
         
         <!-- Header Skeleton -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4"
-             [ngClass]="isDark ? 'border-neutral-800' : 'border-neutral-200'">
-          <div class="space-y-2">
-            <div class="h-3 w-36 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
-            <div class="h-7 w-48 rounded-xl" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+        <div class="h-16 w-full rounded-[20px] border px-5 flex items-center justify-between"
+             [ngClass]="isDark ? 'bg-neutral-900/80 border-neutral-800' : 'bg-neutral-900 border-neutral-800'">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-neutral-800"></div>
+            <div class="space-y-1.5">
+              <div class="h-2.5 w-32 rounded-full bg-neutral-800"></div>
+              <div class="h-5 w-28 rounded-lg bg-neutral-800"></div>
+            </div>
           </div>
-          <div class="flex items-center gap-2">
-            <div class="h-10 w-28 rounded-xl" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
-            <div class="h-10 w-36 rounded-xl" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
-          </div>
+          <div class="h-8 w-28 rounded-xl bg-neutral-800"></div>
         </div>
 
         <!-- 4 KPI Stat Cards Skeleton -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 xs:gap-3 sm:gap-5">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <div *ngFor="let _ of [1,2,3,4]" 
-               class="rounded-2xl border p-4 sm:p-5 flex flex-col justify-between h-28 xs:h-32 sm:h-36"
+               class="rounded-2xl border p-3.5 sm:p-4 flex flex-col justify-between h-24 sm:h-28"
                [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800/80' : 'bg-white border-neutral-200/80'">
             <div class="flex items-center justify-between">
-              <div class="h-3 w-20 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
-              <div class="w-6 h-6 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+              <div class="h-2.5 w-20 rounded-full" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+              <div class="w-7 h-7 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
             </div>
             <div class="space-y-1.5">
-              <div class="h-6 sm:h-7 w-20 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
-              <div class="h-2.5 w-24 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/60' : 'bg-neutral-200/60'"></div>
+              <div class="h-6 w-16 rounded-lg" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
+              <div class="h-2 w-24 rounded-full" [ngClass]="isDark ? 'bg-neutral-800/60' : 'bg-neutral-200/60'"></div>
             </div>
           </div>
-        </div>
-
-        <!-- Search & Filter Skeleton -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div class="h-10 w-full sm:w-80 rounded-2xl" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
-          <div class="h-10 w-64 rounded-2xl" [ngClass]="isDark ? 'bg-neutral-800' : 'bg-neutral-200'"></div>
         </div>
 
         <!-- Split Layout Skeleton -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-          <div class="lg:col-span-5 rounded-[24px] border p-4 h-[500px]" [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
-            <div class="space-y-3">
-              <div *ngFor="let _ of [1,2,3,4]" class="h-20 rounded-xl" [ngClass]="isDark ? 'bg-neutral-800/50' : 'bg-neutral-100'"></div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 lg:h-[calc(100vh-285px)] lg:min-h-[430px] lg:max-h-[580px]">
+          <div class="lg:col-span-5 rounded-2xl border p-3.5 h-[420px] lg:h-full" [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
+            <div class="space-y-2.5">
+              <div class="h-8 w-full rounded-xl" [ngClass]="isDark ? 'bg-neutral-800/60' : 'bg-neutral-100'"></div>
+              <div class="h-7 w-full rounded-xl" [ngClass]="isDark ? 'bg-neutral-800/40' : 'bg-neutral-100'"></div>
+              <div *ngFor="let _ of [1,2,3,4]" class="h-16 rounded-xl" [ngClass]="isDark ? 'bg-neutral-800/50' : 'bg-neutral-100'"></div>
             </div>
           </div>
-          <div class="lg:col-span-7 rounded-[24px] border p-6 h-[500px]" [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
+          <div class="lg:col-span-7 rounded-2xl border p-5 h-[460px] lg:h-full" [ngClass]="isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200'">
             <div class="space-y-4">
-              <div class="h-12 w-48 rounded-xl" [ngClass]="isDark ? 'bg-neutral-800/60' : 'bg-neutral-200/60'"></div>
-              <div class="h-44 w-full rounded-2xl" [ngClass]="isDark ? 'bg-neutral-800/40' : 'bg-neutral-100'"></div>
-              <div class="h-24 w-full rounded-2xl" [ngClass]="isDark ? 'bg-neutral-800/40' : 'bg-neutral-100'"></div>
+              <div class="h-11 w-48 rounded-xl" [ngClass]="isDark ? 'bg-neutral-800/60' : 'bg-neutral-200/60'"></div>
+              <div class="h-40 w-full rounded-xl" [ngClass]="isDark ? 'bg-neutral-800/40' : 'bg-neutral-100'"></div>
+              <div class="h-20 w-full rounded-xl" [ngClass]="isDark ? 'bg-neutral-800/40' : 'bg-neutral-100'"></div>
             </div>
           </div>
         </div>

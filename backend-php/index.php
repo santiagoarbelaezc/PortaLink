@@ -89,11 +89,13 @@ $router->get('/', function (Request $req, Response $res) {
 });
 
 // ──────────────────────────────────────────────────────────────
-//  RUTA TEMPORAL: TEST DE CONEXIÓN + CARGA DEL SCHEMA MYSQL
-//  Acceder en: http://localhost:8000/api/setup-db
-//  ⚠️  ELIMINAR ANTES DE PRODUCCIÓN
+//  RUTA DE DIAGNÓSTICO DE BD (PROTEGIDA SOLO PARA ADMINISTRADOR)
 // ──────────────────────────────────────────────────────────────
 $router->get('/api/setup-db', function (Request $req, Response $res) {
+    if (!$req->user || strtolower((string)($req->user->rol ?? '')) !== 'admin') {
+        $res->status(403)->json(['ok' => false, 'message' => 'Acceso restringido a administradores']);
+        return;
+    }
     $log = [];
     $error = null;
 
@@ -232,15 +234,17 @@ $router->get('/api/setup-db', function (Request $req, Response $res) {
         'admin' => $admin ?: null,
         'log' => $log
     ]);
-});
+}, [AuthMiddleware::class]);
 
 // ──────────────────────────────────────────────────────────────
 //  RUTAS DE AUTENTICACIÓN (/api/auth)
 // ──────────────────────────────────────────────────────────────
 $router->post('/api/auth/login', [AuthController::class, 'login']);
+$router->post('/api/auth/logout', [AuthController::class, 'logout']);
+$router->get('/api/auth/verify', [AuthController::class, 'verifySession'], [AuthMiddleware::class]);
 $router->get('/api/auth/captcha', [AuthController::class, 'getCaptcha']);
 $router->post('/api/auth/register', [AuthController::class, 'register']);
-$router->get('/api/auth/users', [AuthController::class, 'getUsers']);
+$router->get('/api/auth/users', [AuthController::class, 'getUsers'], [AuthMiddleware::class]);
 $router->put('/api/auth/users/:id/role', [AuthController::class, 'updateUserRole'], [AuthMiddleware::class]);
 $router->delete('/api/auth/users/:id', [AuthController::class, 'deleteUser'], [AuthMiddleware::class]);
 $router->put('/api/auth/password', [AuthController::class, 'updatePassword'], [AuthMiddleware::class]);

@@ -5,14 +5,31 @@ namespace App\Controllers;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Database;
+use App\Core\JwtSecurity;
 use App\Config\Mailer;
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 use Exception;
 
 class AuthController
 {
     private static bool $schemaEnsured = false;
+
+    /**
+     * Hash Bcrypt precalculado (costo 12) para mitigar ataques de temporización (Timing Attacks)
+     * cuando se intenta iniciar sesión con un correo electrónico que no existe.
+     */
+    private const DUMMY_BCRYPT_HASH = '$2y$12$R9h/cIPz0gi.URNNX3kh2OPST9/PgBkqquzi.Ss7KIUgO2t0jWMUW';
+
+    private const MAX_LOGIN_ATTEMPTS = 5;
+    private const LOCKOUT_WINDOW_SECONDS = 900; // 15 minutos
+
+    private static function getClientIp(): string
+    {
+        $ip = $_SERVER['HTTP_CF_CONNECTING_IP']
+            ?? $_SERVER['HTTP_X_REAL_IP']
+            ?? $_SERVER['REMOTE_ADDR']
+            ?? '0.0.0.0';
+        return substr(trim((string)$ip), 0, 64);
+    }
 
     private static function ensureAuthSchema(): void
     {
@@ -63,6 +80,23 @@ class AuthController
                   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                   INDEX (email),
                   INDEX (token)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+                CREATE TABLE IF NOT EXISTS login_attempts (
+                  id INT AUTO_INCREMENT PRIMARY KEY,
+                  email VARCHAR(255) NOT NULL,
+                  ip_address VARCHAR(64) NOT NULL,
+                  attempted_at DATETIME NOT NULL,
+                  INDEX idx_login_email_time (email, attempted_at),
+                  INDEX idx_login_ip_time (ip_address, attempted_at)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+                CREATE TABLE IF NOT EXISTS jwt_revoked_tokens (
+                  jti VARCHAR(64) PRIMARY KEY,
+                  user_id INT NOT NULL,
+                  expires_at DATETIME NOT NULL,
+                  revoked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                  INDEX idx_jwt_revoked_exp (expires_at)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
             ");
             self::$schemaEnsured = true;
@@ -120,45 +154,135 @@ class AuthController
         return ['text' => $text, 'svg' => $svg];
     }
 
+    private static function checkLoginRateLimit(string $email, string $ip): ?int
+    {
+        try {
+            $cutoff = date('Y-m-d H:i:s', time() - self::LOCKOUT_WINDOW_SECONDS);
+            Database::query('DELETE FROM login_attempts WHERE attempted_at < $1', [$cutoff]);
+
+            $stmt = Database::query(
+                'SELECT COUNT(*) as total, MAX(attempted_at) as last_attempt
+                 FROM login_attempts
+                 WHERE (email = $1 OR ip_address = $2) AND attempted_at >= $3',
+                [$email, $ip, $cutoff]
+            );
+            $row = $stmt->fetch();
+            $attempts = (int)($row['total'] ?? 0);
+
+            if ($attempts >= self::MAX_LOGIN_ATTEMPTS && !empty($row['last_attempt'])) {
+                $elapsed = max(0, time() - strtotime((string)$row['last_attempt']));
+                $remaining = max(1, self::LOCKOUT_WINDOW_SECONDS - $elapsed);
+                return $remaining;
+            }
+        } catch (Exception $e) {
+            error_log('[AuthController] Aviso en rate limit de login: ' . $e->getMessage());
+        }
+        return null;
+    }
+
+    private static function recordFailedLoginAttempt(string $email, string $ip): void
+    {
+        try {
+            Database::query(
+                'INSERT INTO login_attempts (email, ip_address, attempted_at) VALUES ($1, $2, $3)',
+                [$email, $ip, date('Y-m-d H:i:s')]
+            );
+        } catch (Exception $e) {
+            error_log('[AuthController] Aviso al registrar intento fallido: ' . $e->getMessage());
+        }
+    }
+
+    private static function clearLoginAttempts(string $email, string $ip): void
+    {
+        try {
+            Database::query(
+                'DELETE FROM login_attempts WHERE email = $1 OR ip_address = $2',
+                [$email, $ip]
+            );
+        } catch (Exception $e) {
+            error_log('[AuthController] Aviso al limpiar intentos de login: ' . $e->getMessage());
+        }
+    }
+
     public function login(Request $request, Response $response): void
     {
         self::ensureAuthSchema();
-        $email = $request->body['email'] ?? null;
+        $rawEmail = $request->body['email'] ?? null;
         $password = $request->body['password'] ?? null;
 
-        if (!$email || !$password) {
+        if (!is_string($rawEmail) || !is_string($password) || trim($rawEmail) === '' || $password === '') {
             $response->status(400)->json(['message' => 'Todos los campos son obligatorios']);
             return;
         }
 
+        $email = strtolower(trim($rawEmail));
+        if (strlen($email) > 254 || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $response->status(400)->json(['message' => 'El formato del correo electrónico no es válido']);
+            return;
+        }
+
+        // Prevención contra ataques DoS o truncamiento de Bcrypt (> 72 bytes)
+        if (strlen($password) > 72) {
+            $response->status(401)->json(['message' => 'Credenciales inválidas']);
+            return;
+        }
+
+        $clientIp = self::getClientIp();
+
         try {
-            $stmt = Database::query('SELECT * FROM usuarios WHERE email = $1', [$email]);
+            // 1. Control de Fuerza Bruta (Rate Limiting por Email + IP)
+            $lockoutRemaining = self::checkLoginRateLimit($email, $clientIp);
+            if ($lockoutRemaining !== null) {
+                $minutes = (int)ceil($lockoutRemaining / 60);
+                $response->status(429)->json([
+                    'message' => "Demasiados intentos fallidos. Por seguridad, espera {$minutes} min ({$lockoutRemaining}s) antes de volver a intentarlo.",
+                    'retry_after' => $lockoutRemaining
+                ]);
+                return;
+            }
+
+            // 2. Consulta parametrizada segura y prevención de Timing Attack (tiempo constante)
+            $stmt = Database::query('SELECT * FROM usuarios WHERE email = $1 LIMIT 1', [$email]);
             $usuario = $stmt->fetch();
 
-            if (!$usuario || !password_verify($password, $usuario['password'])) {
+            $targetHash = ($usuario && !empty($usuario['password']))
+                ? (string)$usuario['password']
+                : self::DUMMY_BCRYPT_HASH;
+
+            $passwordMatches = password_verify($password, $targetHash);
+
+            if (!$usuario || !$passwordMatches) {
+                self::recordFailedLoginAttempt($email, $clientIp);
                 $response->status(401)->json(['message' => 'Credenciales inválidas']);
                 return;
             }
 
+            // 3. Verificación de estado de cuenta activa
             if (isset($usuario['verified']) && ((int)$usuario['verified'] === 0 || $usuario['verified'] === false || $usuario['verified'] === '0')) {
-                $response->status(403)->json(['message' => 'Tu cuenta aún no está verificada. Revisa tu correo electrónico para verificar tu cuenta.']);
+                $response->status(403)->json([
+                    'message' => 'Tu cuenta aún no está verificada. Revisa tu correo electrónico para verificar tu cuenta.'
+                ]);
                 return;
             }
 
-            $secret = $_ENV['JWT_SECRET'] ?? getenv('JWT_SECRET');
-            $payload = [
-                'id' => $usuario['id'],
-                'rol' => $usuario['rol'],
-                'email' => $usuario['email'],
-                'telefono' => $usuario['telefono'],
-                'exp' => time() + (24 * 3600)
-            ];
+            // 4. Actualización transparente de costo Bcrypt si es necesario
+            if (password_needs_rehash($usuario['password'], PASSWORD_BCRYPT, ['cost' => 12])) {
+                $upgradedHash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
+                Database::query('UPDATE usuarios SET password = $1 WHERE id = $2', [$upgradedHash, $usuario['id']]);
+            }
 
-            $token = JWT::encode($payload, $secret, 'HS256');
+            // 5. Limpiar historial de intentos fallidos tras login legítimo
+            self::clearLoginAttempts($email, $clientIp);
+
+            // 6. Emitir JWT seguro (Cabecera + Payload RFC 7519 + Firma HMAC-SHA256 con HKDF)
+            $jwtData = JwtSecurity::issueToken($usuario);
 
             $response->json([
-                'token' => $token,
+                'token' => $jwtData['token'],
+                'token_type' => 'Bearer',
+                'expires_in' => $jwtData['expires_in'],
                 'usuario' => [
+                    'id' => (int)$usuario['id'],
                     'nombre' => $usuario['nombre'],
                     'rol' => $usuario['rol'],
                     'email' => $usuario['email'],
@@ -169,6 +293,59 @@ class AuthController
             error_log("Error en login: " . $e->getMessage());
             $response->status(500)->json(['message' => 'Error en el servidor']);
         }
+    }
+
+    public function logout(Request $request, Response $response): void
+    {
+        self::ensureAuthSchema();
+        $token = JwtSecurity::extractBearerToken($request);
+        if ($token) {
+            try {
+                $decoded = JwtSecurity::verifyToken($token);
+                JwtSecurity::revokeToken($decoded);
+            } catch (Exception) {
+                // Si el token ya expiró o es inválido, continuamos con el cierre de sesión limpio
+            }
+        }
+
+        $response->json([
+            'ok' => true,
+            'message' => 'Sesión cerrada y token revocado correctamente'
+        ]);
+    }
+
+    public function verifySession(Request $request, Response $response): void
+    {
+        if (!$request->user) {
+            $response->status(401)->json(['valid' => false, 'message' => 'Sesión no válida']);
+            return;
+        }
+
+        $response->json([
+            'valid' => true,
+            'jwt' => [
+                'header' => $request->user->_jwt_header ?? [
+                    'alg' => JwtSecurity::ALGORITHM,
+                    'typ' => JwtSecurity::TOKEN_TYPE,
+                    'kid' => JwtSecurity::KEY_ID,
+                ],
+                'claims' => [
+                    'iss' => $request->user->iss ?? JwtSecurity::ISSUER,
+                    'aud' => $request->user->aud ?? JwtSecurity::AUDIENCE,
+                    'sub' => $request->user->sub ?? (string)($request->user->id ?? ''),
+                    'iat' => $request->user->iat ?? null,
+                    'nbf' => $request->user->nbf ?? null,
+                    'exp' => $request->user->exp ?? null,
+                    'jti' => $request->user->jti ?? null,
+                ]
+            ],
+            'usuario' => [
+                'id' => (int)($request->user->id ?? 0),
+                'rol' => $request->user->rol ?? 'usuario',
+                'email' => $request->user->email ?? '',
+                'telefono' => $request->user->telefono ?? '',
+            ]
+        ]);
     }
 
     public function getCaptcha(Request $request, Response $response): void
@@ -232,6 +409,17 @@ class AuthController
                 return;
             }
 
+            $email = strtolower(trim((string)$email));
+            if (strlen($email) > 254 || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $response->status(400)->json(['message' => 'El formato del correo electrónico no es válido']);
+                return;
+            }
+
+            if (strlen((string)$password) > 72) {
+                $response->status(400)->json(['message' => 'La contraseña no debe exceder 72 caracteres.']);
+                return;
+            }
+
             $pwdError = self::validatePasswordStrength($password);
             if ($pwdError) {
                 $response->status(400)->json(['message' => $pwdError]);
@@ -245,10 +433,10 @@ class AuthController
             }
 
             self::ensureAuthSchema();
-            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+            $hashedPassword = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
             Database::query(
                 'INSERT INTO usuarios (nombre, email, password, telefono, rol, verified) VALUES ($1, $2, $3, $4, $5, 0)',
-                [$nombre, $email, $hashedPassword, $telefono, 'usuario']
+                [trim((string)$nombre), $email, $hashedPassword, trim((string)$telefono), 'usuario']
             );
             $nuevoUsuarioId = (int)Database::getConnection()->lastInsertId();
 
@@ -278,18 +466,18 @@ class AuthController
 
     public function getUsers(Request $request, Response $response): void
     {
-        $authHeader = $request->getHeader('authorization');
-        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
-            $response->status(401)->json(['message' => 'No autorizado']);
-            return;
-        }
-
-        $token = substr($authHeader, 7);
-        $secret = $_ENV['JWT_SECRET'] ?? getenv('JWT_SECRET');
-
         try {
-            $decoded = JWT::decode($token, new Key($secret, 'HS256'));
-            if ($decoded->rol !== 'admin') {
+            $decoded = $request->user;
+            if (!$decoded) {
+                $token = JwtSecurity::extractBearerToken($request);
+                if (!$token) {
+                    $response->status(401)->json(['message' => 'No autorizado']);
+                    return;
+                }
+                $decoded = JwtSecurity::verifyToken($token);
+            }
+
+            if (strtolower((string)($decoded->rol ?? '')) !== 'admin') {
                 $response->status(403)->json(['message' => 'Acceso denegado']);
                 return;
             }
@@ -304,12 +492,24 @@ class AuthController
 
     public function updatePassword(Request $request, Response $response): void
     {
+        self::ensureAuthSchema();
         $currentPassword = $request->body['currentPassword'] ?? null;
         $newPassword = $request->body['newPassword'] ?? null;
         $userId = $request->user->id ?? null;
 
-        if (!$currentPassword || !$newPassword || !$userId) {
+        if (!is_string($currentPassword) || !is_string($newPassword) || !$currentPassword || !$newPassword || !$userId) {
             $response->status(400)->json(['message' => 'Datos incompletos para actualizar contraseña']);
+            return;
+        }
+
+        if (strlen($newPassword) > 72) {
+            $response->status(400)->json(['message' => 'La contraseña no debe exceder 72 caracteres.']);
+            return;
+        }
+
+        $pwdError = self::validatePasswordStrength($newPassword);
+        if ($pwdError) {
+            $response->status(400)->json(['message' => $pwdError]);
             return;
         }
 
@@ -327,10 +527,19 @@ class AuthController
                 return;
             }
 
-            $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
+            $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT, ['cost' => 12]);
             Database::query('UPDATE usuarios SET password = $1 WHERE id = $2', [$hashedPassword, $userId]);
 
-            $response->json(['message' => 'Contraseña actualizada exitosamente']);
+            // Revocar el JWT anterior y emitir uno nuevo tras el cambio de contraseña
+            if ($request->user) {
+                JwtSecurity::revokeToken($request->user);
+            }
+            $jwtData = JwtSecurity::issueToken($user);
+
+            $response->json([
+                'message' => 'Contraseña actualizada exitosamente',
+                'token' => $jwtData['token']
+            ]);
         } catch (Exception $e) {
             error_log('Error al actualizar contraseña: ' . $e->getMessage());
             $response->status(500)->json(['message' => 'Error en el servidor al actualizar la contraseña']);
@@ -339,6 +548,7 @@ class AuthController
 
     public function updateProfile(Request $request, Response $response): void
     {
+        self::ensureAuthSchema();
         $nombre = $request->body['nombre'] ?? null;
         $email = $request->body['email'] ?? null;
         $telefono = $request->body['telefono'] ?? null;
@@ -380,20 +590,19 @@ class AuthController
             );
             $updatedUser = $stmtUpdate->fetch();
 
-            $secret = $_ENV['JWT_SECRET'] ?? getenv('JWT_SECRET');
-            $payload = [
-                'id' => $updatedUser['id'],
-                'rol' => $updatedUser['rol'],
-                'email' => $updatedUser['email'],
-                'telefono' => $updatedUser['telefono'],
-                'exp' => time() + (24 * 3600)
-            ];
-            $token = JWT::encode($payload, $secret, 'HS256');
+            // Revocar token anterior y emitir nuevo JWT con claims actualizados
+            if ($request->user) {
+                JwtSecurity::revokeToken($request->user);
+            }
+            $jwtData = JwtSecurity::issueToken($updatedUser);
 
             $response->json([
                 'message' => 'Perfil actualizado exitosamente',
-                'token' => $token,
+                'token' => $jwtData['token'],
+                'token_type' => 'Bearer',
+                'expires_in' => $jwtData['expires_in'],
                 'usuario' => [
+                    'id' => (int)$updatedUser['id'],
                     'nombre' => $updatedUser['nombre'],
                     'rol' => $updatedUser['rol'],
                     'email' => $updatedUser['email'],
@@ -699,9 +908,9 @@ class AuthController
                 return;
             }
 
-            $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
+            $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT, ['cost' => 12]);
             Database::query('UPDATE usuarios SET password = $1 WHERE email = $2', [$hashedPassword, $resetRecord['email']]);
-            Database::query('UPDATE password_resets SET used = true WHERE id = $1', [$resetRecord['id']]);
+            Database::query('UPDATE password_resets SET used = 1 WHERE id = $1', [$resetRecord['id']]);
 
             $response->json(['message' => '¡Contraseña actualizada con éxito! Ya puedes iniciar sesión con tu nueva contraseña.']);
         } catch (Exception $e) {

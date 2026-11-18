@@ -74,6 +74,16 @@ class Request
             }
         }
 
+        // Respaldo garantizado para cabecera Authorization en Apache / LiteSpeed / PHP-FPM
+        if (empty($this->headers['authorization'])) {
+            $authFallback = $_SERVER['HTTP_AUTHORIZATION']
+                ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION']
+                ?? null;
+            if (is_string($authFallback) && trim($authFallback) !== '') {
+                $this->headers['authorization'] = trim($authFallback);
+            }
+        }
+
         // Parse body (JSON input or $_POST)
         $contentType = $this->getHeader('content-type') ?? '';
         if (str_contains($contentType, 'application/json')) {
