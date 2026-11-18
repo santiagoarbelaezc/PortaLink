@@ -1657,15 +1657,17 @@
 
 /* ═══════════════════════════════════════════════════════════════
    MODO CLARO: LÍNEAS DIVISORIAS Y BORDES DEFINIDOS
-   Aplica a Dash Home, Dash Finances, Dash Library y Dash AI Search
+   Aplica a Dash Home, Dash Finances, Dash Library, Dash Itinerary y Dash AI Search
    ═══════════════════════════════════════════════════════════════ */
 .theme-light app-dash-home .border-neutral-100,
 .theme-light app-dash-finances .border-neutral-100,
 .theme-light app-dash-library .border-neutral-100,
+.theme-light app-dash-itinerary .border-neutral-100,
 .theme-light app-dash-ai-search .border-neutral-100,
 :root:not(.theme-dark) app-dash-home .border-neutral-100,
 :root:not(.theme-dark) app-dash-finances .border-neutral-100,
 :root:not(.theme-dark) app-dash-library .border-neutral-100,
+:root:not(.theme-dark) app-dash-itinerary .border-neutral-100,
 :root:not(.theme-dark) app-dash-ai-search .border-neutral-100 {
   border-color: #d4d4d8 !important;
 }
@@ -1673,48 +1675,64 @@
 .theme-light app-dash-home .divide-neutral-100 > :not([hidden]) ~ :not([hidden]),
 .theme-light app-dash-finances .divide-neutral-100 > :not([hidden]) ~ :not([hidden]),
 .theme-light app-dash-library .divide-neutral-100 > :not([hidden]) ~ :not([hidden]),
+.theme-light app-dash-itinerary .divide-neutral-100 > :not([hidden]) ~ :not([hidden]),
 :root:not(.theme-dark) app-dash-home .divide-neutral-100 > :not([hidden]) ~ :not([hidden]),
 :root:not(.theme-dark) app-dash-finances .divide-neutral-100 > :not([hidden]) ~ :not([hidden]),
-:root:not(.theme-dark) app-dash-library .divide-neutral-100 > :not([hidden]) ~ :not([hidden]) {
+:root:not(.theme-dark) app-dash-library .divide-neutral-100 > :not([hidden]) ~ :not([hidden]),
+:root:not(.theme-dark) app-dash-itinerary .divide-neutral-100 > :not([hidden]) ~ :not([hidden]) {
   border-color: #d4d4d8 !important;
 }
 
 .theme-light app-dash-home .border-neutral-200,
 .theme-light app-dash-finances .border-neutral-200,
 .theme-light app-dash-library .border-neutral-200,
+.theme-light app-dash-itinerary .border-neutral-200,
 .theme-light app-dash-ai-search .border-neutral-200,
 .theme-light app-dash-home .border-neutral-200\/80,
 .theme-light app-dash-finances .border-neutral-200\/80,
 .theme-light app-dash-library .border-neutral-200\/80,
+.theme-light app-dash-itinerary .border-neutral-200\/80,
 .theme-light app-dash-ai-search .border-neutral-200\/80,
 .theme-light app-dash-home .border-neutral-200\/90,
 .theme-light app-dash-finances .border-neutral-200\/90,
 .theme-light app-dash-library .border-neutral-200\/90,
+.theme-light app-dash-itinerary .border-neutral-200\/90,
 .theme-light app-dash-ai-search .border-neutral-200\/90,
 .theme-light app-dash-library .border-neutral-200\/95,
+.theme-light app-dash-itinerary .border-neutral-200\/95,
 .theme-light app-dash-library .border-neutral-200\/75,
+.theme-light app-dash-itinerary .border-neutral-200\/75,
 .theme-light app-dash-home .border-neutral-200\/70,
 .theme-light app-dash-finances .border-neutral-200\/70,
 .theme-light app-dash-library .border-neutral-200\/70,
+.theme-light app-dash-itinerary .border-neutral-200\/70,
 .theme-light app-dash-home .border-neutral-200\/60,
 .theme-light app-dash-finances .border-neutral-200\/60,
 .theme-light app-dash-library .border-neutral-200\/60,
+.theme-light app-dash-itinerary .border-neutral-200\/60,
 :root:not(.theme-dark) app-dash-home .border-neutral-200,
 :root:not(.theme-dark) app-dash-finances .border-neutral-200,
 :root:not(.theme-dark) app-dash-library .border-neutral-200,
+:root:not(.theme-dark) app-dash-itinerary .border-neutral-200,
 :root:not(.theme-dark) app-dash-ai-search .border-neutral-200,
 :root:not(.theme-dark) app-dash-home .border-neutral-200\/80,
 :root:not(.theme-dark) app-dash-finances .border-neutral-200\/80,
 :root:not(.theme-dark) app-dash-library .border-neutral-200\/80,
+:root:not(.theme-dark) app-dash-itinerary .border-neutral-200\/80,
 :root:not(.theme-dark) app-dash-ai-search .border-neutral-200\/80,
 :root:not(.theme-dark) app-dash-home .border-neutral-200\/90,
 :root:not(.theme-dark) app-dash-finances .border-neutral-200\/90,
 :root:not(.theme-dark) app-dash-library .border-neutral-200\/90,
+:root:not(.theme-dark) app-dash-itinerary .border-neutral-200\/90,
 :root:not(.theme-dark) app-dash-ai-search .border-neutral-200\/90,
 :root:not(.theme-dark) app-dash-library .border-neutral-200\/95,
+:root:not(.theme-dark) app-dash-itinerary .border-neutral-200\/95,
 :root:not(.theme-dark) app-dash-library .border-neutral-200\/75,
+:root:not(.theme-dark) app-dash-itinerary .border-neutral-200\/75,
 :root:not(.theme-dark) app-dash-library .border-neutral-200\/70,
-:root:not(.theme-dark) app-dash-library .border-neutral-200\/60 {
+:root:not(.theme-dark) app-dash-itinerary .border-neutral-200\/70,
+:root:not(.theme-dark) app-dash-library .border-neutral-200\/60,
+:root:not(.theme-dark) app-dash-itinerary .border-neutral-200\/60 {
   border-color: #d4d4d8 !important;
 }
 
