@@ -59,7 +59,8 @@ class CommandCenterController
             }
 
             // 1. Recopilar contexto en vivo del sistema
-            $systemContext = $this->gatherSystemContext();
+            $userId = (int)($request->user->id ?? 0);
+            $systemContext = $this->gatherSystemContext($userId);
 
             // 2. Consultar a Gemini con el contexto inyectado
             $aiResponse = $this->callGemini($userQuery, $systemContext);
@@ -111,7 +112,8 @@ class CommandCenterController
             }
 
             // 1. Recopilar contexto en vivo
-            $systemContext = $this->gatherSystemContext();
+            $userId = (int)($request->user->id ?? 0);
+            $systemContext = $this->gatherSystemContext($userId);
 
             // 2. Procesar audio con Gemini Multimodal
             $result = $this->callGeminiAudio($base64Audio, $mimeType, $systemContext);
@@ -270,7 +272,8 @@ class CommandCenterController
     {
         try {
             $this->ensureActivityTable();
-            $context = $this->gatherSystemContext();
+            $userId = (int)($request->user->id ?? 0);
+            $context = $this->gatherSystemContext($userId);
 
             // 1. Calcular Puntaje de Salud del Negocio
             $invoices = $context['invoices'] ?? [];
@@ -458,7 +461,7 @@ class CommandCenterController
     /**
      * Extrae información consolidada de la base de datos para todas las áreas del dashboard.
      */
-    private function gatherSystemContext(): array
+    private function gatherSystemContext(int $userId = 0): array
     {
         $context = [
             'recent_user_activities' => [],
@@ -519,23 +522,29 @@ class CommandCenterController
             }
         } catch (\Throwable $e) {}
 
-        // C. Biblioteca (Cuadernos, Apuntes y Páginas)
+        // C. Biblioteca (Cuadernos, Apuntes y Páginas — filtrado estrictamente por usuario)
         try {
-            $notebooks = Database::query("
-                SELECT m.id, m.title, m.description, f.name as folder_name,
-                       (SELECT COUNT(*) FROM notebook_pages p WHERE p.notebook_id = m.id) as pages_count
-                FROM notebook_modules m
-                LEFT JOIN notebook_folders f ON m.folder_id = f.id
-                ORDER BY m.id DESC LIMIT 30
-            ")->fetchAll(\PDO::FETCH_ASSOC);
-            $context['library_notebooks'] = $notebooks;
+            if ($userId > 0) {
+                $notebooks = Database::query("
+                    SELECT m.id, m.title, m.description, f.name as folder_name,
+                           (SELECT COUNT(*) FROM notebook_pages p WHERE p.notebook_id = m.id) as pages_count
+                    FROM notebook_modules m
+                    JOIN notebook_folders f ON m.folder_id = f.id
+                    WHERE f.user_id = $1
+                    ORDER BY m.id DESC LIMIT 30
+                ", [$userId])->fetchAll(\PDO::FETCH_ASSOC);
+                $context['library_notebooks'] = $notebooks;
 
-            $pages = Database::query("
-                SELECT id, notebook_id, title, tags, is_pinned, created_at 
-                FROM notebook_pages 
-                ORDER BY id DESC LIMIT 30
-            ")->fetchAll(\PDO::FETCH_ASSOC);
-            $context['library_pages'] = $pages;
+                $pages = Database::query("
+                    SELECT p.id, p.notebook_id, p.title, p.tags, p.is_pinned, p.created_at 
+                    FROM notebook_pages p
+                    JOIN notebook_modules m ON m.id = p.notebook_id
+                    JOIN notebook_folders f ON f.id = m.folder_id
+                    WHERE f.user_id = $1
+                    ORDER BY p.id DESC LIMIT 30
+                ", [$userId])->fetchAll(\PDO::FETCH_ASSOC);
+                $context['library_pages'] = $pages;
+            }
         } catch (\Throwable $e) {}
 
         // D. Itinerario / Tareas de Hoy

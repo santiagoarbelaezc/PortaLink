@@ -44,10 +44,14 @@ class Cors
         header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Accept, Origin');
         header('Vary: Origin');
 
-        // Cabeceras de seguridad HTTP
+        // Cabeceras de seguridad HTTP y transporte seguro (HSTS, CSP, No-Sniff, Anti-Clickjacking)
         header('X-Content-Type-Options: nosniff');
-        header('X-Frame-Options: SAMEORIGIN');
+        header('X-Frame-Options: DENY');
         header('X-XSS-Protection: 1; mode=block');
+        header('Referrer-Policy: strict-origin-when-cross-origin');
+        header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+        header("Content-Security-Policy: default-src 'none'; frame-ancestors 'none'");
+        header('Permissions-Policy: geolocation=(), camera=(), usb=()');
 
         // Responder inmediatamente a peticiones preflight (OPTIONS)
         if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {

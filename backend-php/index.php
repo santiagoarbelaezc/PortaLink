@@ -258,7 +258,7 @@ $router->post('/api/auth/reset-password', [AuthController::class, 'resetPassword
 //  RUTAS DE CHAT & IA (/api/chat)
 // ──────────────────────────────────────────────────────────────
 $router->post('/api/chat/send', [ChatController::class, 'sendMessage'], [OptionalAuthMiddleware::class]);
-$router->post('/api/admin/chat', [ChatAdminController::class, 'handle'], [OptionalAuthMiddleware::class]);
+$router->post('/api/admin/chat', [ChatAdminController::class, 'handle'], [AuthMiddleware::class]);
 $router->get('/api/chat/history', [ChatController::class, 'getHistory'], [AuthMiddleware::class]);
 $router->get('/api/chat/usage', [ChatController::class, 'getUsage'], [OptionalAuthMiddleware::class]);
 $router->delete('/api/chat/clear', [ChatController::class, 'clearHistory'], [OptionalAuthMiddleware::class]);
@@ -336,44 +336,44 @@ $router->post('/api/site/save', [SiteController::class, 'saveMySite'], [AuthMidd
 $router->get('/api/site/:slug', [SiteController::class, 'getBySlug']);
 
 // ──────────────────────────────────────────────────────────────
-//  RUTAS DE BIBLIOTECA DE ESTUDIO (/api/library)
+//  RUTAS DE BIBLIOTECA DE ESTUDIO (/api/library) — PROTEGIDAS CON JWT ESTRICTO
 // ──────────────────────────────────────────────────────────────
 // Carpetas (Nivel 1)
-$router->get('/api/library/folders', [LibraryController::class, 'getFolders'], [OptionalAuthMiddleware::class]);
-$router->post('/api/library/folders', [LibraryController::class, 'createFolder'], [OptionalAuthMiddleware::class]);
-$router->put('/api/library/folders/:id', [LibraryController::class, 'updateFolder'], [OptionalAuthMiddleware::class]);
-$router->delete('/api/library/folders/:id', [LibraryController::class, 'deleteFolder'], [OptionalAuthMiddleware::class]);
+$router->get('/api/library/folders', [LibraryController::class, 'getFolders'], [AuthMiddleware::class]);
+$router->post('/api/library/folders', [LibraryController::class, 'createFolder'], [AuthMiddleware::class]);
+$router->put('/api/library/folders/:id', [LibraryController::class, 'updateFolder'], [AuthMiddleware::class]);
+$router->delete('/api/library/folders/:id', [LibraryController::class, 'deleteFolder'], [AuthMiddleware::class]);
 
 // Cuadernos (Nivel 2)
-$router->get('/api/library/notebooks', [LibraryController::class, 'getNotebooks'], [OptionalAuthMiddleware::class]);
-$router->post('/api/library/notebooks', [LibraryController::class, 'createNotebook'], [OptionalAuthMiddleware::class]);
-$router->put('/api/library/notebooks/:id', [LibraryController::class, 'updateNotebook'], [OptionalAuthMiddleware::class]);
-$router->delete('/api/library/notebooks/:id', [LibraryController::class, 'deleteNotebook'], [OptionalAuthMiddleware::class]);
+$router->get('/api/library/notebooks', [LibraryController::class, 'getNotebooks'], [AuthMiddleware::class]);
+$router->post('/api/library/notebooks', [LibraryController::class, 'createNotebook'], [AuthMiddleware::class]);
+$router->put('/api/library/notebooks/:id', [LibraryController::class, 'updateNotebook'], [AuthMiddleware::class]);
+$router->delete('/api/library/notebooks/:id', [LibraryController::class, 'deleteNotebook'], [AuthMiddleware::class]);
 
 // Apuntes / Páginas (Nivel 3)
-$router->get('/api/library/pages', [LibraryController::class, 'getPages'], [OptionalAuthMiddleware::class]);
-$router->post('/api/library/pages', [LibraryController::class, 'createPage'], [OptionalAuthMiddleware::class]);
-$router->put('/api/library/pages/:id', [LibraryController::class, 'updatePage'], [OptionalAuthMiddleware::class]);
-$router->delete('/api/library/pages/:id', [LibraryController::class, 'deletePage'], [OptionalAuthMiddleware::class]);
+$router->get('/api/library/pages', [LibraryController::class, 'getPages'], [AuthMiddleware::class]);
+$router->post('/api/library/pages', [LibraryController::class, 'createPage'], [AuthMiddleware::class]);
+$router->put('/api/library/pages/:id', [LibraryController::class, 'updatePage'], [AuthMiddleware::class]);
+$router->delete('/api/library/pages/:id', [LibraryController::class, 'deletePage'], [AuthMiddleware::class]);
 
 // Buscador Global
-$router->get('/api/library/search', [LibraryController::class, 'searchLibrary'], [OptionalAuthMiddleware::class]);
+$router->get('/api/library/search', [LibraryController::class, 'searchLibrary'], [AuthMiddleware::class]);
 
 // Subida de imágenes a Cloudinary para notas
-$router->post('/api/library/upload-image', [LibraryController::class, 'uploadImage'], [OptionalAuthMiddleware::class]);
+$router->post('/api/library/upload-image', [LibraryController::class, 'uploadImage'], [AuthMiddleware::class]);
 
 // Validación e inspección de código con IA
-$router->post('/api/library/validate-code', [LibraryController::class, 'validateCode'], [OptionalAuthMiddleware::class]);
+$router->post('/api/library/validate-code', [LibraryController::class, 'validateCode'], [AuthMiddleware::class]);
 
 // ──────────────────────────────────────────────────────────────
-//  RUTAS DE CENTRO DE COMANDO IA (/api/command-center)
+//  RUTAS DE CENTRO DE COMANDO IA (/api/command-center) — PROTEGIDAS CON JWT ESTRICTO
 // ──────────────────────────────────────────────────────────────
-$router->post('/api/command-center/query', [CommandCenterController::class, 'query'], [OptionalAuthMiddleware::class]);
-$router->post('/api/command-center/query-audio', [CommandCenterController::class, 'queryAudio'], [OptionalAuthMiddleware::class]);
-$router->post('/api/command-center/activity', [CommandCenterController::class, 'logActivity'], [OptionalAuthMiddleware::class]);
-$router->get('/api/command-center/radar', [CommandCenterController::class, 'getRadar'], [OptionalAuthMiddleware::class]);
-$router->get('/api/command-center/suggestions', [CommandCenterController::class, 'getSuggestions'], [OptionalAuthMiddleware::class]);
-$router->get('/api/command-center/recent-activities', [CommandCenterController::class, 'getRecentActivities'], [OptionalAuthMiddleware::class]);
+$router->post('/api/command-center/query', [CommandCenterController::class, 'query'], [AuthMiddleware::class]);
+$router->post('/api/command-center/query-audio', [CommandCenterController::class, 'queryAudio'], [AuthMiddleware::class]);
+$router->post('/api/command-center/activity', [CommandCenterController::class, 'logActivity'], [AuthMiddleware::class]);
+$router->get('/api/command-center/radar', [CommandCenterController::class, 'getRadar'], [AuthMiddleware::class]);
+$router->get('/api/command-center/suggestions', [CommandCenterController::class, 'getSuggestions'], [AuthMiddleware::class]);
+$router->get('/api/command-center/recent-activities', [CommandCenterController::class, 'getRecentActivities'], [AuthMiddleware::class]);
 
 // ──────────────────────────────────────────────────────────────
 //  RUTAS DE ROTBOT IA CON ELEVENLABS & OJOS OLED (/api/robot)
@@ -390,7 +390,6 @@ try {
     error_log('[Global Dispatch Error] ' . $e->getMessage() . ' en ' . $e->getFile() . ':' . $e->getLine());
     $response->status(500)->json([
         'ok' => false,
-        'message' => 'Error interno del servidor',
-        'error' => $e->getMessage()
+        'message' => 'Error interno del servidor'
     ]);
 }

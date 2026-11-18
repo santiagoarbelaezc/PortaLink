@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Core\Request;
 use App\Core\Response;
+use App\Core\VaultCrypto;
 use App\Config\Groq;
 use App\Config\Gemini;
 use App\Utils\AiLogger;
@@ -22,6 +23,16 @@ class ChatAdminController
         // Enviar cabeceras CORS estrictas y de seguridad de forma preventiva
         \App\Core\Cors::handle();
 
+        // Exigir usuario autenticado mediante JWT
+        $userId = (int)($req->user->id ?? 0);
+        if ($userId <= 0) {
+            $res->status(401)->json([
+                'success' => false,
+                'error' => 'Acceso no autorizado: sesión JWT requerida.'
+            ]);
+            return;
+        }
+
         $body = $req->body ?? [];
         if (empty($body)) {
             $raw = file_get_contents('php://input');
@@ -31,13 +42,22 @@ class ChatAdminController
         }
 
         $mode = $body['mode'] ?? 'transform_block';
-        $content = trim($body['content'] ?? '');
+        $content = VaultCrypto::redactSecretsForAi(trim($body['content'] ?? ''));
         $blockType = trim($body['block_type'] ?? 'texto');
-        $instruction = trim($body['instruction'] ?? '');
-        $prompt = trim($body['prompt'] ?? '');
+        $instruction = VaultCrypto::redactSecretsForAi(trim($body['instruction'] ?? ''));
+        $prompt = VaultCrypto::redactSecretsForAi(trim($body['prompt'] ?? ''));
         $noteTitle = trim($body['note_title'] ?? $body['noteTitle'] ?? '');
-        $noteContent = trim($body['note_content'] ?? $body['noteContent'] ?? '');
+        $noteContent = VaultCrypto::redactSecretsForAi(trim($body['note_content'] ?? $body['noteContent'] ?? ''));
         $history = $body['history'] ?? [];
+
+        if (is_array($history)) {
+            foreach ($history as &$msg) {
+                if (isset($msg['content']) && is_string($msg['content'])) {
+                    $msg['content'] = VaultCrypto::redactSecretsForAi($msg['content']);
+                }
+            }
+            unset($msg);
+        }
 
         // Limpieza de seguridad: evitar que imágenes en base64 o apuntes masivos saturen el TPM de tokens
         if (!empty($noteContent)) {

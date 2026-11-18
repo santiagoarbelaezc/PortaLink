@@ -94,9 +94,18 @@ export class ContentEditableDirective implements OnChanges {
 
   constructor(private el: ElementRef<HTMLElement>) {}
 
+  private sanitizeEditableHtml(raw: string): string {
+    if (!raw) return '';
+    return raw
+      .replace(/<\s*(script|iframe|object|embed|svg|math|style|link|meta|base|form)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi, '')
+      .replace(/<\s*\/?\s*(script|iframe|object|embed|svg|math|style|link|meta|base|form)[^>]*>/gi, '')
+      .replace(/\s+on[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+      .replace(/(?:href|src|xlink:href|action|formaction)\s*=\s*(?:"\s*javascript:[^"]*"|'\s*javascript:[^']*'|javascript:[^\s>]+)/gi, '');
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes['appContentEditable'] && !this.isFocused) {
-      let val = this.appContentEditable || '';
+      let val = this.sanitizeEditableHtml(this.appContentEditable || '');
       val = val.replace(/<red>(.*?)<\/red>/gi, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
       val = val.replace(/\[red\](.*?)\[\/red\]/gi, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
       val = val.replace(/&lt;red&gt;(.*?)&lt;\/red&gt;/gi, '<span class="text-red-500 font-bold" style="color: #ef4444 !important;">$1</span>');
