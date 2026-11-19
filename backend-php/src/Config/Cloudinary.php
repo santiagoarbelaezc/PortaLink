@@ -27,11 +27,6 @@ class Cloudinary
             }
         }
 
-        // Fallbacks de seguridad con las credenciales registradas
-        if (empty($cloudName)) $cloudName = 'doxdjiyvi';
-        if (empty($apiKey)) $apiKey = '897355973954513';
-        if (empty($apiSecret)) $apiSecret = 'qbtdurAEWk46ZoJdJ5WkfryZYi8';
-
         return [
             'cloud_name' => $cloudName,
             'api_key' => $apiKey,

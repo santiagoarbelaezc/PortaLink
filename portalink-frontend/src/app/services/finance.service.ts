@@ -215,7 +215,7 @@ export class FinanceService {
   updateInvoiceStatus(id: string, status: string, paymentData?: { paid_at?: string; payment_method?: string; payment_notes?: string }): Observable<any> {
     let backendStatus = status.toUpperCase();
     if (backendStatus === 'BORRADOR') backendStatus = 'DRAFT';
-    return this.http.put<any>(`${this.apiUrl}/invoices/${id}/status`, { 
+    return this.http.patch<any>(`${this.apiUrl}/invoices/${id}/status`, { 
       status: backendStatus,
       paid_at: paymentData?.paid_at,
       payment_method: paymentData?.payment_method,

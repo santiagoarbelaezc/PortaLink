@@ -1180,20 +1180,38 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
 
   isLoading = false;
 
-  private loadCachedData() {
+  private getCurrentSessionUserTag(): string {
     try {
       if (typeof localStorage !== 'undefined') {
-        const cached = localStorage.getItem('portalink_cached_finances');
+        const rawUser = localStorage.getItem('portalink_user');
+        if (rawUser) {
+          const parsed = JSON.parse(rawUser);
+          return String(parsed?.email || parsed?.nombre || '').trim().toLowerCase();
+        }
+      }
+    } catch (e) {}
+    return '';
+  }
+
+  private loadCachedData() {
+    try {
+      // Eliminar caché heredada en texto plano de localStorage
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem('portalink_cached_finances');
+      }
+      if (typeof sessionStorage !== 'undefined') {
+        const userTag = this.getCurrentSessionUserTag();
+        if (!userTag) return;
+        const cached = sessionStorage.getItem('portalink_cached_finances');
         if (cached) {
           const parsed = JSON.parse(cached);
-          // Purge any mock/sample items from previous sessions
           const hasMock = Array.isArray(parsed.invoices) && parsed.invoices.some((inv: any) => inv.id === 'PL-2026-101' || inv.clientId === 'c1');
-          if (!hasMock) {
+          if (!hasMock && parsed.owner === userTag) {
             if (Array.isArray(parsed.clients) && parsed.clients.length > 0) this.clients = parsed.clients;
             if (Array.isArray(parsed.services) && parsed.services.length > 0) this.allServices = parsed.services;
             if (Array.isArray(parsed.invoices) && parsed.invoices.length > 0) this.invoices = parsed.invoices;
           } else {
-            localStorage.removeItem('portalink_cached_finances');
+            sessionStorage.removeItem('portalink_cached_finances');
           }
         }
       }
@@ -1205,7 +1223,13 @@ export class DashFinancesComponent implements OnInit, OnChanges, OnDestroy {
   private saveCachedData() {
     try {
       if (typeof localStorage !== 'undefined') {
-        localStorage.setItem('portalink_cached_finances', JSON.stringify({
+        localStorage.removeItem('portalink_cached_finances');
+      }
+      if (typeof sessionStorage !== 'undefined') {
+        const userTag = this.getCurrentSessionUserTag();
+        if (!userTag) return;
+        sessionStorage.setItem('portalink_cached_finances', JSON.stringify({
+          owner: userTag,
           clients: this.clients,
           services: this.allServices,
           invoices: this.invoices

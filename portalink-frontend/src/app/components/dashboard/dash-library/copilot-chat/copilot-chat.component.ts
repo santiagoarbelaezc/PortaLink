@@ -166,23 +166,37 @@ export class CopilotChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
   loadChatFromStorage() {
     try {
-      const saved = localStorage.getItem('portalink_copilot_chat');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          this.copilotMessages = parsed;
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem('portalink_copilot_chat');
+      }
+      if (typeof sessionStorage !== 'undefined') {
+        const saved = sessionStorage.getItem('portalink_copilot_chat');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            this.copilotMessages = parsed;
+          }
         }
       }
     } catch (e) {
-      console.error('Error cargando chat copilot de localStorage:', e);
+      console.error('Error cargando chat copilot de sessionStorage:', e);
     }
   }
 
   saveChatToStorage() {
     try {
-      localStorage.setItem('portalink_copilot_chat', JSON.stringify(this.copilotMessages));
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem('portalink_copilot_chat');
+      }
+      if (typeof sessionStorage !== 'undefined') {
+        const sanitized = this.copilotMessages.map(m => ({
+          role: m.role,
+          content: this.libraryAiService.redactSecretsClientSide(m.content)
+        }));
+        sessionStorage.setItem('portalink_copilot_chat', JSON.stringify(sanitized));
+      }
     } catch (e) {
-      console.error('Error guardando chat copilot en localStorage:', e);
+      console.error('Error guardando chat copilot en sessionStorage:', e);
     }
   }
 

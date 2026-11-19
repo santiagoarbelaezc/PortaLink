@@ -5,12 +5,203 @@ namespace App\Controllers;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Database;
+use App\Core\VaultCrypto;
 use Exception;
 use PDO;
 
 class FinanceController
 {
     private static bool $paymentColumnsEnsured = false;
+    private static bool $clientColumnsEnsured = false;
+
+    /**
+     * Verifica estrictamente que exista un usuario autenticado con ID numérico válido.
+     */
+    private function requireAuthenticatedUser(Request $request, Response $response): ?int
+    {
+        if (!$request->user || empty($request->user->id) || (int)$request->user->id <= 0) {
+            $response->status(401)->json([
+                'ok' => false,
+                'message' => 'Autenticación requerida para acceder al módulo financiero'
+            ]);
+            return null;
+        }
+        return (int)$request->user->id;
+    }
+
+    /**
+     * Verifica que un client_id pertenezca estrictamente al usuario autenticado (Anti-IDOR).
+     */
+    private function userOwnsClient(int $clientId, int $userId): bool
+    {
+        if ($clientId <= 0 || $userId <= 0) return false;
+        $stmt = Database::query(
+            'SELECT id FROM finance_clients WHERE id = $1 AND user_id = $2 LIMIT 1',
+            [$clientId, $userId]
+        );
+        return (bool)$stmt->fetch();
+    }
+
+    /**
+     * Verifica que un service_id pertenezca estrictamente al usuario autenticado (Anti-IDOR).
+     */
+    private function userOwnsService(int $serviceId, int $userId): bool
+    {
+        if ($serviceId <= 0 || $userId <= 0) return false;
+        $stmt = Database::query(
+            'SELECT id FROM finance_services WHERE id = $1 AND user_id = $2 LIMIT 1',
+            [$serviceId, $userId]
+        );
+        return (bool)$stmt->fetch();
+    }
+
+    /**
+     * Verifica que una cuenta de cobro (invoice_id) pertenezca al usuario autenticado (Anti-IDOR).
+     */
+    private function userOwnsInvoice(int $invoiceId, int $userId): bool
+    {
+        if ($invoiceId <= 0 || $userId <= 0) return false;
+        $stmt = Database::query(
+            'SELECT id FROM finance_invoices WHERE id = $1 AND user_id = $2 LIMIT 1',
+            [$invoiceId, $userId]
+        );
+        return (bool)$stmt->fetch();
+    }
+
+    /**
+     * Cifra un campo sensible en reposo con AES-256-GCM (VaultCrypto).
+     */
+    public static function encryptField(?string $value): ?string
+    {
+        if ($value === null) return null;
+        $trimmed = trim($value);
+        if ($trimmed === '') return null;
+        return VaultCrypto::encryptContent($trimmed);
+    }
+
+    /**
+     * Descifra un campo sensible en memoria (compatible con texto plano histórico).
+     */
+    public static function decryptField(?string $value): ?string
+    {
+        if ($value === null || $value === '') return $value;
+        return VaultCrypto::decryptContent($value);
+    }
+
+    public static function decryptClientRow(array $row): array
+    {
+        if (isset($row['tax_id']) && is_string($row['tax_id'])) {
+            $row['tax_id'] = self::decryptField($row['tax_id']);
+        }
+        if (isset($row['address']) && is_string($row['address'])) {
+            $row['address'] = self::decryptField($row['address']);
+        }
+        if (isset($row['notes']) && is_string($row['notes'])) {
+            $row['notes'] = self::decryptField($row['notes']);
+        }
+        return $row;
+    }
+
+    public static function decryptPaymentRow(array $row): array
+    {
+        if (isset($row['notes']) && is_string($row['notes'])) {
+            $row['notes'] = self::decryptField($row['notes']);
+        }
+        return $row;
+    }
+
+    public static function decryptInvoiceRow(array $row): array
+    {
+        if (isset($row['notes']) && is_string($row['notes'])) {
+            $row['notes'] = self::decryptField($row['notes']);
+        }
+        if (isset($row['payment_notes']) && is_string($row['payment_notes'])) {
+            $row['payment_notes'] = self::decryptField($row['payment_notes']);
+        }
+        if (isset($row['tax_id']) && is_string($row['tax_id'])) {
+            $row['tax_id'] = self::decryptField($row['tax_id']);
+        }
+        if (isset($row['payments']) && is_array($row['payments'])) {
+            $row['payments'] = array_map([self::class, 'decryptPaymentRow'], $row['payments']);
+        }
+        return $row;
+    }
+
+    public static function decryptTransactionRow(array $row): array
+    {
+        if (isset($row['notes']) && is_string($row['notes'])) {
+            $row['notes'] = self::decryptField($row['notes']);
+        }
+        return $row;
+    }
+
+    /**
+     * Valida estrictamente ítems, cantidades, precios unitarios e impuestos de una cuenta de cobro.
+     */
+    public static function validateInvoiceItemsAndAmounts(array $items, float $taxAmount): array
+    {
+        if (!is_finite($taxAmount) || $taxAmount < 0 || $taxAmount > 999999999999.99) {
+            return [
+                'ok' => false,
+                'message' => 'El monto de impuestos no puede ser negativo ni exceder el límite permitido'
+            ];
+        }
+
+        $subtotal = 0.0;
+        foreach ($items as $item) {
+            if (!is_array($item)) {
+                return ['ok' => false, 'message' => 'Formato de ítem de cuenta de cobro inválido'];
+            }
+            $qty = isset($item['quantity']) ? (float)$item['quantity'] : 1.0;
+            $unitPrice = isset($item['unit_price']) ? (float)$item['unit_price'] : 0.0;
+
+            if (!is_finite($qty) || $qty <= 0 || $qty > 1000000) {
+                return [
+                    'ok' => false,
+                    'message' => 'La cantidad de cada ítem debe ser mayor a cero'
+                ];
+            }
+            if (!is_finite($unitPrice) || $unitPrice < 0 || $unitPrice > 999999999999.99) {
+                return [
+                    'ok' => false,
+                    'message' => 'El precio unitario de los ítems no puede ser negativo'
+                ];
+            }
+
+            $subtotal += ($qty * $unitPrice);
+        }
+
+        $totalAmount = $subtotal + $taxAmount;
+        if (!is_finite($totalAmount) || $totalAmount < 0 || $totalAmount > 999999999999.99) {
+            return [
+                'ok' => false,
+                'message' => 'El monto total calculado de la cuenta de cobro es inválido'
+            ];
+        }
+
+        return [
+            'ok' => true,
+            'subtotal' => round($subtotal, 2),
+            'tax_amount' => round($taxAmount, 2),
+            'total_amount' => round($totalAmount, 2)
+        ];
+    }
+
+    private function ensureClientColumns(): void
+    {
+        if (self::$clientColumnsEnsured) return;
+        try {
+            try {
+                Database::query('ALTER TABLE finance_clients ADD COLUMN IF NOT EXISTS notes TEXT;');
+            } catch (\Throwable $e) {}
+            try {
+                Database::query('ALTER TABLE finance_clients MODIFY COLUMN tax_id TEXT NULL;');
+            } catch (\Throwable $e) {}
+            self::$clientColumnsEnsured = true;
+        } catch (\Throwable $e) {
+            error_log('[Finance] ensureClientColumns error: ' . $e->getMessage());
+        }
+    }
 
     private function ensureInvoicePaymentColumns(): void
     {
@@ -45,9 +236,11 @@ class FinanceController
     // ════════════════════════════════════════════════════════════
     public function getDashboard(Request $request, Response $response): void
     {
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
         try {
             $this->ensureInvoicePaymentColumns();
-            $userId = $request->user->id;
             $search = $request->query['search'] ?? null;
             $minPrice = $request->query['min_price'] ?? null;
             $maxPrice = $request->query['max_price'] ?? null;
@@ -63,14 +256,14 @@ class FinanceController
                 $params[] = "%{$search}%";
                 $idx++;
             }
-            if ($minPrice) {
+            if ($minPrice !== null && $minPrice !== '') {
                 $conditions[] = "i.total_amount >= \${$idx}";
-                $params[] = $minPrice;
+                $params[] = (float)$minPrice;
                 $idx++;
             }
-            if ($maxPrice) {
+            if ($maxPrice !== null && $maxPrice !== '') {
                 $conditions[] = "i.total_amount <= \${$idx}";
-                $params[] = $maxPrice;
+                $params[] = (float)$maxPrice;
                 $idx++;
             }
             if ($dateFrom) {
@@ -91,12 +284,12 @@ class FinanceController
                 SELECT 
                     COALESCE(SUM(i.total_amount), 0) AS total_facturado,
                     COALESCE(SUM(
-                        COALESCE((SELECT SUM(p.amount) FROM finance_invoice_payments p WHERE p.invoice_id = i.id), 
+                        COALESCE((SELECT SUM(p.amount) FROM finance_invoice_payments p WHERE p.invoice_id = i.id AND p.user_id = i.user_id), 
                                  CASE WHEN i.status = 'PAGADA' THEN i.total_amount ELSE 0 END)
                     ), 0) AS total_pagado,
                     COUNT(DISTINCT i.client_id) AS clientes_facturados
                 FROM finance_invoices i
-                LEFT JOIN finance_clients c ON i.client_id = c.id
+                LEFT JOIN finance_clients c ON i.client_id = c.id AND c.user_id = i.user_id
                 WHERE {$whereClause}
             ";
             $stmtKpi = Database::query($kpiQuery, $params);
@@ -112,16 +305,16 @@ class FinanceController
                     i.id, i.invoice_number, i.title, i.total_amount, i.status, i.issue_date, i.due_date,
                     i.paid_at, i.payment_method, i.payment_notes, i.created_at AS updated_at,
                     COALESCE(c.name, 'Cliente') as client_name,
-                    COALESCE((SELECT SUM(p.amount) FROM finance_invoice_payments p WHERE p.invoice_id = i.id), 
+                    COALESCE((SELECT SUM(p.amount) FROM finance_invoice_payments p WHERE p.invoice_id = i.id AND p.user_id = i.user_id), 
                              CASE WHEN i.status = 'PAGADA' THEN i.total_amount ELSE 0 END) AS paid_amount
                 FROM finance_invoices i
-                LEFT JOIN finance_clients c ON i.client_id = c.id
+                LEFT JOIN finance_clients c ON i.client_id = c.id AND c.user_id = i.user_id
                 WHERE {$whereClause}
                 ORDER BY i.created_at DESC
                 LIMIT 50
             ";
             $stmtLedger = Database::query($ledgerQuery, $params);
-            $ledger = $stmtLedger->fetchAll();
+            $ledger = array_map([self::class, 'decryptInvoiceRow'], $stmtLedger->fetchAll());
 
             $response->json([
                 'ok' => true,
@@ -144,38 +337,57 @@ class FinanceController
     // ════════════════════════════════════════════════════════════
     public function getClients(Request $request, Response $response): void
     {
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
         try {
             $stmt = Database::query(
                 'SELECT * FROM finance_clients WHERE user_id = $1 ORDER BY name ASC',
-                [$request->user->id]
+                [$userId]
             );
-            $response->json(['ok' => true, 'clients' => $stmt->fetchAll()]);
+            $clients = array_map([self::class, 'decryptClientRow'], $stmt->fetchAll());
+            $response->json(['ok' => true, 'clients' => $clients]);
         } catch (Exception $error) {
+            error_log('[Finance] getClients error: ' . $error->getMessage());
             $response->status(500)->json(['ok' => false, 'message' => 'Error al obtener clientes']);
         }
     }
 
     public function createClient(Request $request, Response $response): void
     {
-        $name = $request->body['name'] ?? null;
-        $email = $request->body['email'] ?? null;
-        $phone = $request->body['phone'] ?? null;
-        $company = $request->body['company'] ?? null;
-        $taxId = $request->body['tax_id'] ?? null;
-        $address = $request->body['address'] ?? null;
-        $notes = $request->body['notes'] ?? null;
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
+        $name = trim((string)($request->body['name'] ?? ''));
+        $email = isset($request->body['email']) ? trim((string)$request->body['email']) : null;
+        $phone = isset($request->body['phone']) ? trim((string)$request->body['phone']) : null;
+        $company = isset($request->body['company']) ? trim((string)$request->body['company']) : null;
+        $taxId = isset($request->body['tax_id']) ? trim((string)$request->body['tax_id']) : null;
+        $address = isset($request->body['address']) ? trim((string)$request->body['address']) : null;
+        $notes = isset($request->body['notes']) ? trim((string)$request->body['notes']) : null;
+
+        if ($name === '') {
+            $response->status(400)->json(['ok' => false, 'message' => 'El nombre del cliente es obligatorio']);
+            return;
+        }
 
         try {
-            try {
-                Database::query('ALTER TABLE finance_clients ADD COLUMN IF NOT EXISTS notes TEXT;');
-            } catch (Exception $e) {}
+            $this->ensureClientColumns();
+
+            $encTaxId = self::encryptField($taxId);
+            $encAddress = self::encryptField($address);
+            $encNotes = self::encryptField($notes);
 
             $stmt = Database::query(
                 "INSERT INTO finance_clients (user_id, name, email, phone, company, tax_id, address, notes) 
                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
-                [$request->user->id, $name, $email, $phone, $company, $taxId, $address, $notes ?: null]
+                [$userId, $name, $email ?: null, $phone ?: null, $company ?: null, $encTaxId, $encAddress, $encNotes]
             );
-            $response->status(201)->json(['ok' => true, 'client' => $stmt->fetch()]);
+            $client = $stmt->fetch();
+            if ($client) {
+                $client = self::decryptClientRow($client);
+            }
+            $response->status(201)->json(['ok' => true, 'client' => $client]);
         } catch (Exception $error) {
             error_log('Error al crear cliente: ' . $error->getMessage());
             $response->status(500)->json(['ok' => false, 'message' => 'Error al crear cliente']);
@@ -184,32 +396,47 @@ class FinanceController
 
     public function updateClient(Request $request, Response $response): void
     {
-        $id = $request->params['id'] ?? null;
-        $name = $request->body['name'] ?? null;
-        $email = $request->body['email'] ?? null;
-        $phone = $request->body['phone'] ?? null;
-        $company = $request->body['company'] ?? null;
-        $taxId = $request->body['tax_id'] ?? null;
-        $address = $request->body['address'] ?? null;
-        $notes = $request->body['notes'] ?? null;
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
+        $id = (int)($request->params['id'] ?? 0);
+        $name = trim((string)($request->body['name'] ?? ''));
+        $email = isset($request->body['email']) ? trim((string)$request->body['email']) : null;
+        $phone = isset($request->body['phone']) ? trim((string)$request->body['phone']) : null;
+        $company = isset($request->body['company']) ? trim((string)$request->body['company']) : null;
+        $taxId = isset($request->body['tax_id']) ? trim((string)$request->body['tax_id']) : null;
+        $address = isset($request->body['address']) ? trim((string)$request->body['address']) : null;
+        $notes = isset($request->body['notes']) ? trim((string)$request->body['notes']) : null;
+
+        if ($id <= 0 || $name === '') {
+            $response->status(400)->json(['ok' => false, 'message' => 'Datos de cliente inválidos']);
+            return;
+        }
 
         try {
-            try {
-                Database::query('ALTER TABLE finance_clients ADD COLUMN IF NOT EXISTS notes TEXT;');
-            } catch (Exception $e) {}
+            $this->ensureClientColumns();
+
+            if (!$this->userOwnsClient($id, $userId)) {
+                $response->status(404)->json(['ok' => false, 'message' => 'Cliente no encontrado']);
+                return;
+            }
+
+            $encTaxId = self::encryptField($taxId);
+            $encAddress = self::encryptField($address);
+            $encNotes = self::encryptField($notes);
 
             $stmt = Database::query(
                 "UPDATE finance_clients 
                  SET name = $1, email = $2, phone = $3, company = $4, tax_id = $5, address = $6, notes = $7 
                  WHERE id = $8 AND user_id = $9 RETURNING *",
-                [$name, $email, $phone, $company, $taxId, $address, $notes ?: null, $id, $request->user->id]
+                [$name, $email ?: null, $phone ?: null, $company ?: null, $encTaxId, $encAddress, $encNotes, $id, $userId]
             );
             $client = $stmt->fetch();
             if (!$client) {
                 $response->status(404)->json(['ok' => false, 'message' => 'Cliente no encontrado']);
                 return;
             }
-            $response->json(['ok' => true, 'client' => $client]);
+            $response->json(['ok' => true, 'client' => self::decryptClientRow($client)]);
         } catch (Exception $error) {
             error_log('Error al actualizar cliente: ' . $error->getMessage());
             $response->status(500)->json(['ok' => false, 'message' => 'Error al actualizar cliente']);
@@ -218,15 +445,23 @@ class FinanceController
 
     public function deleteClient(Request $request, Response $response): void
     {
-        $id = $request->params['id'] ?? null;
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
+        $id = (int)($request->params['id'] ?? 0);
         try {
-            $stmt = Database::query('DELETE FROM finance_clients WHERE id = $1 AND user_id = $2 RETURNING id', [$id, $request->user->id]);
+            if (!$this->userOwnsClient($id, $userId)) {
+                $response->status(404)->json(['ok' => false, 'message' => 'Cliente no encontrado']);
+                return;
+            }
+            $stmt = Database::query('DELETE FROM finance_clients WHERE id = $1 AND user_id = $2 RETURNING id', [$id, $userId]);
             if (!$stmt->fetch()) {
                 $response->status(404)->json(['ok' => false, 'message' => 'Cliente no encontrado']);
                 return;
             }
             $response->json(['ok' => true, 'message' => 'Cliente eliminado']);
         } catch (Exception $error) {
+            error_log('[Finance] deleteClient error: ' . $error->getMessage());
             $response->status(500)->json(['ok' => false, 'message' => 'Error al eliminar cliente. Verifica que no tenga facturas asociadas.']);
         }
     }
@@ -296,6 +531,9 @@ class FinanceController
 
     public function getServices(Request $request, Response $response): void
     {
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
         try {
             $this->ensureServicesTable();
             $this->ensureSoftwareProposalsTable();
@@ -322,7 +560,7 @@ class FinanceController
                 WHERE s.user_id = ? 
                 ORDER BY s.id DESC
             ');
-            $stmt->execute([$request->user->id]);
+            $stmt->execute([$userId]);
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             $services = array_map(function ($row) {
@@ -335,22 +573,30 @@ class FinanceController
             $response->json(['ok' => true, 'services' => $services]);
         } catch (\Throwable $error) {
             error_log('Error al obtener servicios: ' . $error->getMessage());
-            $response->status(500)->json(['ok' => false, 'message' => 'Error al obtener servicios: ' . $error->getMessage()]);
+            $response->status(500)->json(['ok' => false, 'message' => 'Error al obtener servicios']);
         }
     }
 
     public function createService(Request $request, Response $response): void
     {
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
         $this->ensureServicesTable();
-        $name = $request->body['name'] ?? null;
-        $description = $request->body['description'] ?? null;
-        $price = $request->body['price'] ?? $request->body['unitPrice'] ?? 0;
-        $category = $request->body['category'] ?? 'desarrollo';
+        $name = trim((string)($request->body['name'] ?? ''));
+        $description = isset($request->body['description']) ? trim((string)$request->body['description']) : null;
+        $price = (float)($request->body['price'] ?? $request->body['unitPrice'] ?? 0);
+        $category = trim((string)($request->body['category'] ?? 'desarrollo'));
+
+        if ($name === '' || $price < 0 || !is_finite($price)) {
+            $response->status(400)->json(['ok' => false, 'message' => 'Nombre y precio válido del servicio son obligatorios']);
+            return;
+        }
 
         try {
             $pdo = Database::getConnection();
             $stmt = $pdo->prepare("INSERT INTO finance_services (user_id, name, description, price, category) VALUES (?, ?, ?, ?, ?)");
-            $stmt->execute([$request->user->id, $name, $description, (float)$price, $category]);
+            $stmt->execute([$userId, $name, $description, $price, $category]);
             $id = $pdo->lastInsertId();
 
             if ($category === 'adquisicion') {
@@ -361,55 +607,68 @@ class FinanceController
                     (user_id, service_id, project_title, client_name, total_amount, items)
                     VALUES (?, ?, ?, 'Cliente Particular / Corporativo', ?, '[]')
                 ");
-                $stmtProp->execute([$request->user->id, $id, $cleanTitle ?: 'Propuesta Comercial de Software', (float)$price]);
+                $stmtProp->execute([$userId, $id, $cleanTitle ?: 'Propuesta Comercial de Software', $price]);
             }
 
-            $stmtFetch = $pdo->prepare("SELECT * FROM finance_services WHERE id = ?");
-            $stmtFetch->execute([$id]);
+            $stmtFetch = $pdo->prepare("SELECT * FROM finance_services WHERE id = ? AND user_id = ?");
+            $stmtFetch->execute([$id, $userId]);
             $service = $stmtFetch->fetch(PDO::FETCH_ASSOC);
 
             $response->status(201)->json(['ok' => true, 'service' => $service]);
         } catch (\Throwable $error) {
             error_log('Error al crear servicio: ' . $error->getMessage());
-            $response->status(500)->json(['ok' => false, 'message' => 'Error al crear servicio: ' . $error->getMessage()]);
+            $response->status(500)->json(['ok' => false, 'message' => 'Error al crear servicio']);
         }
     }
 
     public function updateService(Request $request, Response $response): void
     {
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
         $this->ensureServicesTable();
-        $id = $request->params['id'] ?? null;
-        $name = $request->body['name'] ?? null;
-        $description = $request->body['description'] ?? null;
-        $price = $request->body['price'] ?? $request->body['unitPrice'] ?? 0;
-        $category = $request->body['category'] ?? 'desarrollo';
+        $id = (int)($request->params['id'] ?? 0);
+        $name = trim((string)($request->body['name'] ?? ''));
+        $description = isset($request->body['description']) ? trim((string)$request->body['description']) : null;
+        $price = (float)($request->body['price'] ?? $request->body['unitPrice'] ?? 0);
+        $category = trim((string)($request->body['category'] ?? 'desarrollo'));
+
+        if ($id <= 0 || $name === '' || $price < 0 || !is_finite($price)) {
+            $response->status(400)->json(['ok' => false, 'message' => 'Datos de servicio inválidos']);
+            return;
+        }
 
         try {
+            if (!$this->userOwnsService($id, $userId)) {
+                $response->status(404)->json(['ok' => false, 'message' => 'Servicio no encontrado']);
+                return;
+            }
+
             $pdo = Database::getConnection();
             $stmt = $pdo->prepare("UPDATE finance_services SET name = ?, description = ?, price = ?, category = ? WHERE id = ? AND user_id = ?");
-            $stmt->execute([$name, $description, (float)$price, $category, $id, $request->user->id]);
+            $stmt->execute([$name, $description, $price, $category, $id, $userId]);
 
             if ($category === 'adquisicion') {
                 $this->ensureSoftwareProposalsTable();
                 $cleanTitle = preg_replace('/^\[(Adquisición|Adquisicion)\]\s*/i', '', $name);
                 $stmtCheck = $pdo->prepare("SELECT id FROM finance_software_proposals WHERE service_id = ? AND user_id = ?");
-                $stmtCheck->execute([$id, $request->user->id]);
+                $stmtCheck->execute([$id, $userId]);
                 $propRow = $stmtCheck->fetch(PDO::FETCH_ASSOC);
                 if ($propRow) {
                     $stmtUpP = $pdo->prepare("UPDATE finance_software_proposals SET project_title = ?, total_amount = ? WHERE id = ? AND user_id = ?");
-                    $stmtUpP->execute([$cleanTitle ?: 'Propuesta Comercial de Software', (float)$price, $propRow['id'], $request->user->id]);
+                    $stmtUpP->execute([$cleanTitle ?: 'Propuesta Comercial de Software', $price, $propRow['id'], $userId]);
                 } else {
                     $stmtInP = $pdo->prepare("
                         INSERT INTO finance_software_proposals 
                         (user_id, service_id, project_title, client_name, total_amount, items)
                         VALUES (?, ?, ?, 'Cliente Particular / Corporativo', ?, '[]')
                     ");
-                    $stmtInP->execute([$request->user->id, $id, $cleanTitle ?: 'Propuesta Comercial de Software', (float)$price]);
+                    $stmtInP->execute([$userId, $id, $cleanTitle ?: 'Propuesta Comercial de Software', $price]);
                 }
             }
 
             $stmtFetch = $pdo->prepare("SELECT * FROM finance_services WHERE id = ? AND user_id = ?");
-            $stmtFetch->execute([$id, $request->user->id]);
+            $stmtFetch->execute([$id, $userId]);
             $service = $stmtFetch->fetch(PDO::FETCH_ASSOC);
 
             if (!$service) {
@@ -419,7 +678,7 @@ class FinanceController
             $response->json(['ok' => true, 'service' => $service]);
         } catch (\Throwable $error) {
             error_log('Error al actualizar servicio: ' . $error->getMessage());
-            $response->status(500)->json(['ok' => false, 'message' => 'Error al actualizar servicio: ' . $error->getMessage()]);
+            $response->status(500)->json(['ok' => false, 'message' => 'Error al actualizar servicio']);
         }
     }
 
@@ -428,11 +687,14 @@ class FinanceController
     // ════════════════════════════════════════════════════════════
     public function getSoftwareProposals(Request $request, Response $response): void
     {
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
         try {
             $this->ensureSoftwareProposalsTable();
             $pdo = Database::getConnection();
             $stmt = $pdo->prepare('SELECT * FROM finance_software_proposals WHERE user_id = ? ORDER BY created_at DESC');
-            $stmt->execute([$request->user->id]);
+            $stmt->execute([$userId]);
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             $proposals = array_map(function ($row) {
@@ -445,7 +707,7 @@ class FinanceController
             $response->json(['ok' => true, 'proposals' => $proposals]);
         } catch (\Throwable $error) {
             error_log('Error al obtener propuestas de software: ' . $error->getMessage());
-            $response->status(500)->json(['ok' => false, 'message' => 'Error al obtener propuestas: ' . $error->getMessage()]);
+            $response->status(500)->json(['ok' => false, 'message' => 'Error al obtener propuestas']);
         }
     }
 
@@ -474,6 +736,9 @@ class FinanceController
 
     public function createSoftwareProposal(Request $request, Response $response): void
     {
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
         $this->ensureServicesTable();
         $this->ensureSoftwareProposalsTable();
 
@@ -487,6 +752,11 @@ class FinanceController
         $deliveryTime = trim($request->body['deliveryTime'] ?? $request->body['delivery_time'] ?? '');
         $warranty = trim($request->body['warranty'] ?? '');
         $items = $request->body['items'] ?? [];
+
+        if ($totalAmount < 0 || !is_finite($totalAmount)) {
+            $response->status(400)->json(['ok' => false, 'message' => 'El monto total de la propuesta no puede ser negativo']);
+            return;
+        }
 
         try {
             $pdo = Database::getConnection();
@@ -512,11 +782,11 @@ class FinanceController
                 INSERT INTO finance_services (user_id, name, description, price, category) 
                 VALUES (?, ?, ?, ?, 'adquisicion')
             ");
-            $stmtService->execute([$request->user->id, $serviceName, $serviceDesc, $totalAmount]);
+            $stmtService->execute([$userId, $serviceName, $serviceDesc, $totalAmount]);
             $serviceId = $pdo->lastInsertId();
 
-            $stmtFetchS = $pdo->prepare("SELECT * FROM finance_services WHERE id = ?");
-            $stmtFetchS->execute([$serviceId]);
+            $stmtFetchS = $pdo->prepare("SELECT * FROM finance_services WHERE id = ? AND user_id = ?");
+            $stmtFetchS->execute([$serviceId, $userId]);
             $savedService = $stmtFetchS->fetch(PDO::FETCH_ASSOC);
 
             // 3. Insertar en finance_software_proposals con entregables validados
@@ -526,7 +796,7 @@ class FinanceController
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
             $stmtProposal->execute([
-                $request->user->id,
+                $userId,
                 $serviceId,
                 $projectTitle,
                 $clientName,
@@ -552,14 +822,17 @@ class FinanceController
             error_log('Error al guardar propuesta de software en backend: ' . $error->getMessage());
             $response->status(500)->json([
                 'ok' => false,
-                'message' => 'Error al guardar la propuesta de software: ' . $error->getMessage()
+                'message' => 'Error al guardar la propuesta de software'
             ]);
         }
     }
 
     public function updateSoftwareProposal(Request $request, Response $response): void
     {
-        $id = $request->params['id'] ?? null;
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
+        $id = (int)($request->params['id'] ?? 0);
         $this->ensureServicesTable();
         $this->ensureSoftwareProposalsTable();
 
@@ -573,6 +846,11 @@ class FinanceController
         $deliveryTime = trim($request->body['deliveryTime'] ?? $request->body['delivery_time'] ?? '');
         $warranty = trim($request->body['warranty'] ?? '');
         $items = $request->body['items'] ?? [];
+
+        if ($id <= 0 || $totalAmount < 0 || !is_finite($totalAmount)) {
+            $response->status(400)->json(['ok' => false, 'message' => 'Datos de propuesta inválidos']);
+            return;
+        }
 
         try {
             $pdo = Database::getConnection();
@@ -593,14 +871,14 @@ class FinanceController
             $serviceDesc = "[Adquisición de Software] Propuesta para {$clientName}{$companyStr}{$paymentStr}{$timeStr}{$itemsSummary}";
             $serviceName = "[Adquisición] {$projectTitle}";
 
-            // 2. Buscar propuesta por id o por service_id
+            // 2. Buscar propuesta por id o por service_id perteneciente al usuario
             $stmtCheck = $pdo->prepare("SELECT id, service_id FROM finance_software_proposals WHERE id = ? AND user_id = ?");
-            $stmtCheck->execute([$id, $request->user->id]);
+            $stmtCheck->execute([$id, $userId]);
             $prop = $stmtCheck->fetch(PDO::FETCH_ASSOC);
 
             if (!$prop) {
                 $stmtCheckS = $pdo->prepare("SELECT id, service_id FROM finance_software_proposals WHERE service_id = ? AND user_id = ? ORDER BY id DESC LIMIT 1");
-                $stmtCheckS->execute([$id, $request->user->id]);
+                $stmtCheckS->execute([$id, $userId]);
                 $prop = $stmtCheckS->fetch(PDO::FETCH_ASSOC);
             }
 
@@ -617,7 +895,7 @@ class FinanceController
                 $stmtUp->execute([
                     $projectTitle, $clientName, $clientCompany, $clientEmail, $clientPhone,
                     $totalAmount, $paymentTerms, $deliveryTime, $warranty, json_encode($dedupedItems, JSON_UNESCAPED_UNICODE),
-                    $propId, $request->user->id
+                    $propId, $userId
                 ]);
 
                 if (!empty($serviceId)) {
@@ -626,30 +904,26 @@ class FinanceController
                         SET name = ?, description = ?, price = ?, category = 'adquisicion'
                         WHERE id = ? AND user_id = ?
                     ");
-                    $stmtS->execute([$serviceName, $serviceDesc, $totalAmount, $serviceId, $request->user->id]);
+                    $stmtS->execute([$serviceName, $serviceDesc, $totalAmount, $serviceId, $userId]);
                 }
             } else {
-                // Si solo existía en finance_services con ID $id
+                // Verificar que si el ID correspondía a finance_services, realmente pertenezca al usuario
                 $stmtCheckServ = $pdo->prepare("SELECT id FROM finance_services WHERE id = ? AND user_id = ?");
-                $stmtCheckServ->execute([$id, $request->user->id]);
+                $stmtCheckServ->execute([$id, $userId]);
                 $hasService = $stmtCheckServ->fetch(PDO::FETCH_ASSOC);
 
-                if ($hasService) {
-                    $serviceId = $id;
-                    $stmtS = $pdo->prepare("
-                        UPDATE finance_services 
-                        SET name = ?, description = ?, price = ?, category = 'adquisicion'
-                        WHERE id = ? AND user_id = ?
-                    ");
-                    $stmtS->execute([$serviceName, $serviceDesc, $totalAmount, $serviceId, $request->user->id]);
-                } else {
-                    $stmtInS = $pdo->prepare("
-                        INSERT INTO finance_services (user_id, name, description, price, category) 
-                        VALUES (?, ?, ?, ?, 'adquisicion')
-                    ");
-                    $stmtInS->execute([$request->user->id, $serviceName, $serviceDesc, $totalAmount]);
-                    $serviceId = $pdo->lastInsertId();
+                if (!$hasService) {
+                    $response->status(404)->json(['ok' => false, 'message' => 'Propuesta o servicio no encontrado']);
+                    return;
                 }
+
+                $serviceId = $id;
+                $stmtS = $pdo->prepare("
+                    UPDATE finance_services 
+                    SET name = ?, description = ?, price = ?, category = 'adquisicion'
+                    WHERE id = ? AND user_id = ?
+                ");
+                $stmtS->execute([$serviceName, $serviceDesc, $totalAmount, $serviceId, $userId]);
 
                 $stmtProposal = $pdo->prepare("
                     INSERT INTO finance_software_proposals 
@@ -657,7 +931,7 @@ class FinanceController
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ");
                 $stmtProposal->execute([
-                    $request->user->id,
+                    $userId,
                     $serviceId,
                     $projectTitle,
                     $clientName,
@@ -681,17 +955,20 @@ class FinanceController
             ]);
         } catch (\Throwable $error) {
             error_log('Error al actualizar propuesta de software: ' . $error->getMessage());
-            $response->status(500)->json(['ok' => false, 'message' => 'Error al actualizar propuesta: ' . $error->getMessage()]);
+            $response->status(500)->json(['ok' => false, 'message' => 'Error al actualizar propuesta']);
         }
     }
 
     public function deleteSoftwareProposal(Request $request, Response $response): void
     {
-        $id = $request->params['id'] ?? null;
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
+        $id = (int)($request->params['id'] ?? 0);
         try {
             $pdo = Database::getConnection();
             $stmtCheck = $pdo->prepare("SELECT id, service_id FROM finance_software_proposals WHERE id = ? AND user_id = ?");
-            $stmtCheck->execute([$id, $request->user->id]);
+            $stmtCheck->execute([$id, $userId]);
             $prop = $stmtCheck->fetch(PDO::FETCH_ASSOC);
 
             if (!$prop) {
@@ -702,26 +979,29 @@ class FinanceController
             // Eliminar servicio asociado si existe
             if (!empty($prop['service_id'])) {
                 $delService = $pdo->prepare("DELETE FROM finance_services WHERE id = ? AND user_id = ?");
-                $delService->execute([$prop['service_id'], $request->user->id]);
+                $delService->execute([$prop['service_id'], $userId]);
             }
 
             $delProp = $pdo->prepare("DELETE FROM finance_software_proposals WHERE id = ? AND user_id = ?");
-            $delProp->execute([$id, $request->user->id]);
+            $delProp->execute([$id, $userId]);
 
             $response->json(['ok' => true, 'message' => 'Propuesta eliminada correctamente']);
         } catch (\Throwable $error) {
             error_log('Error al eliminar propuesta de software: ' . $error->getMessage());
-            $response->status(500)->json(['ok' => false, 'message' => 'Error al eliminar propuesta: ' . $error->getMessage()]);
+            $response->status(500)->json(['ok' => false, 'message' => 'Error al eliminar propuesta']);
         }
     }
 
     public function deleteService(Request $request, Response $response): void
     {
-        $id = $request->params['id'] ?? null;
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
+        $id = (int)($request->params['id'] ?? 0);
         try {
             $pdo = Database::getConnection();
             $stmtCheck = $pdo->prepare("SELECT id FROM finance_services WHERE id = ? AND user_id = ?");
-            $stmtCheck->execute([$id, $request->user->id]);
+            $stmtCheck->execute([$id, $userId]);
             if (!$stmtCheck->fetch()) {
                 $response->status(404)->json(['ok' => false, 'message' => 'Servicio no encontrado']);
                 return;
@@ -729,14 +1009,14 @@ class FinanceController
 
             // Eliminar propuesta de software asociada si existiese
             $delProp = $pdo->prepare("DELETE FROM finance_software_proposals WHERE service_id = ? AND user_id = ?");
-            $delProp->execute([$id, $request->user->id]);
+            $delProp->execute([$id, $userId]);
 
             $stmtDel = $pdo->prepare("DELETE FROM finance_services WHERE id = ? AND user_id = ?");
-            $stmtDel->execute([$id, $request->user->id]);
+            $stmtDel->execute([$id, $userId]);
             $response->json(['ok' => true, 'message' => 'Servicio eliminado']);
         } catch (\Throwable $error) {
             error_log('Error al eliminar servicio: ' . $error->getMessage());
-            $response->status(500)->json(['ok' => false, 'message' => 'Error al eliminar servicio: ' . $error->getMessage()]);
+            $response->status(500)->json(['ok' => false, 'message' => 'Error al eliminar servicio']);
         }
     }
 
@@ -745,56 +1025,68 @@ class FinanceController
     // ════════════════════════════════════════════════════════════
     public function getInvoices(Request $request, Response $response): void
     {
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
         try {
             $this->ensureInvoicePaymentColumns();
             $stmt = Database::query(
                 "SELECT i.*, COALESCE(c.name, 'Cliente') as client_name, c.company as company,
-                        COALESCE((SELECT SUM(p.amount) FROM finance_invoice_payments p WHERE p.invoice_id = i.id), 
+                        COALESCE((SELECT SUM(p.amount) FROM finance_invoice_payments p WHERE p.invoice_id = i.id AND p.user_id = i.user_id), 
                                  CASE WHEN i.status = 'PAGADA' THEN i.total_amount ELSE 0 END) AS paid_amount
                  FROM finance_invoices i
-                 LEFT JOIN finance_clients c ON i.client_id = c.id
+                 LEFT JOIN finance_clients c ON i.client_id = c.id AND c.user_id = i.user_id
                  WHERE i.user_id = $1 
                  ORDER BY i.created_at DESC",
-                [$request->user->id]
+                [$userId]
             );
             $invoices = $stmt->fetchAll();
+
+            // Pre-cargar todos los abonos del usuario en una sola consulta indexada por invoice_id
+            $paymentsByInvoice = [];
+            try {
+                $stmtAllPay = Database::query(
+                    "SELECT * FROM finance_invoice_payments WHERE user_id = $1 ORDER BY payment_date DESC, id DESC",
+                    [$userId]
+                );
+                foreach ($stmtAllPay->fetchAll() as $pRow) {
+                    $invKey = (int)($pRow['invoice_id'] ?? 0);
+                    $paymentsByInvoice[$invKey][] = self::decryptPaymentRow($pRow);
+                }
+            } catch (\Throwable $pe) {}
+
             foreach ($invoices as &$inv) {
                 $total = (float)($inv['total_amount'] ?? 0);
                 $paid = (float)($inv['paid_amount'] ?? 0);
                 $inv['paid_amount'] = $paid;
                 $inv['pending_amount'] = max(0, $total - $paid);
-                
-                try {
-                    $stmtPay = Database::query(
-                        "SELECT * FROM finance_invoice_payments WHERE invoice_id = $1 ORDER BY payment_date DESC, id DESC",
-                        [$inv['id']]
-                    );
-                    $inv['payments'] = $stmtPay->fetchAll();
-                } catch (\Throwable $pe) {
-                    $inv['payments'] = [];
-                }
+                $inv['payments'] = $paymentsByInvoice[(int)$inv['id']] ?? [];
+                $inv = self::decryptInvoiceRow($inv);
             }
 
             $response->json(['ok' => true, 'invoices' => $invoices]);
         } catch (\Throwable $error) {
             error_log('[Finance] getInvoices error: ' . $error->getMessage());
-            $response->status(500)->json(['ok' => false, 'message' => 'Error al obtener cuentas de cobro: ' . $error->getMessage()]);
+            $response->status(500)->json(['ok' => false, 'message' => 'Error al obtener cuentas de cobro']);
         }
     }
 
     public function getInvoiceDetails(Request $request, Response $response): void
     {
-        $id = $request->params['id'] ?? null;
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
+        $id = (int)($request->params['id'] ?? 0);
         try {
             $this->ensureInvoicePaymentColumns();
             $stmt = Database::query(
                 "SELECT i.*, COALESCE(c.name, 'Cliente') as client_name, c.email, c.phone, c.company, c.tax_id,
-                        COALESCE((SELECT SUM(p.amount) FROM finance_invoice_payments p WHERE p.invoice_id = i.id), 
+                        COALESCE((SELECT SUM(p.amount) FROM finance_invoice_payments p WHERE p.invoice_id = i.id AND p.user_id = i.user_id), 
                                  CASE WHEN i.status = 'PAGADA' THEN i.total_amount ELSE 0 END) AS paid_amount
                  FROM finance_invoices i
-                 LEFT JOIN finance_clients c ON i.client_id = c.id
+                 LEFT JOIN finance_clients c ON i.client_id = c.id AND c.user_id = i.user_id
                  WHERE i.id = $1 AND i.user_id = $2",
-                [$id, $request->user->id]
+                [$id, $userId]
             );
             $invoice = $stmt->fetch();
             if (!$invoice) {
@@ -809,10 +1101,10 @@ class FinanceController
 
             try {
                 $stmtPay = Database::query(
-                    "SELECT * FROM finance_invoice_payments WHERE invoice_id = $1 ORDER BY payment_date DESC, id DESC",
-                    [$invoice['id']]
+                    "SELECT * FROM finance_invoice_payments WHERE invoice_id = $1 AND user_id = $2 ORDER BY payment_date DESC, id DESC",
+                    [$invoice['id'], $userId]
                 );
-                $invoice['payments'] = $stmtPay->fetchAll();
+                $invoice['payments'] = array_map([self::class, 'decryptPaymentRow'], $stmtPay->fetchAll());
             } catch (\Throwable $pe) {
                 $invoice['payments'] = [];
             }
@@ -820,31 +1112,67 @@ class FinanceController
             $stmtItems = Database::query(
                 "SELECT it.*, COALESCE(s.name, it.description) as service_name
                  FROM finance_invoice_items it
-                 LEFT JOIN finance_services s ON it.service_id = s.id
+                 LEFT JOIN finance_services s ON it.service_id = s.id AND s.user_id = $2
                  WHERE it.invoice_id = $1",
-                [$id]
+                [$id, $userId]
             );
             $invoice['items'] = $stmtItems->fetchAll();
+            $invoice = self::decryptInvoiceRow($invoice);
 
             $response->json(['ok' => true, 'invoice' => $invoice]);
         } catch (Exception $error) {
+            error_log('[Finance] getInvoiceDetails error: ' . $error->getMessage());
             $response->status(500)->json(['ok' => false, 'message' => 'Error al obtener cuenta de cobro']);
         }
     }
 
     public function createInvoice(Request $request, Response $response): void
     {
-        $clientId = $request->body['client_id'] ?? null;
-        $invoiceNumber = $request->body['invoice_number'] ?? null;
-        $title = $request->body['title'] ?? null;
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
+        $clientId = !empty($request->body['client_id']) ? (int)$request->body['client_id'] : null;
+        $invoiceNumber = trim((string)($request->body['invoice_number'] ?? ''));
+        $title = isset($request->body['title']) ? trim((string)$request->body['title']) : null;
         $issueDate = $request->body['issue_date'] ?? null;
         $dueDate = $request->body['due_date'] ?? null;
-        $items = $request->body['items'] ?? [];
-        $notes = $request->body['notes'] ?? null;
+        $items = is_array($request->body['items'] ?? null) ? $request->body['items'] : [];
+        $notes = isset($request->body['notes']) ? (string)$request->body['notes'] : null;
         $status = $request->body['status'] ?? null;
         $paidAt = $request->body['paid_at'] ?? null;
-        $paymentMethod = $request->body['payment_method'] ?? null;
-        $paymentNotes = $request->body['payment_notes'] ?? null;
+        $paymentMethod = isset($request->body['payment_method']) ? trim((string)$request->body['payment_method']) : null;
+        $paymentNotes = isset($request->body['payment_notes']) ? (string)$request->body['payment_notes'] : null;
+        $taxAmount = (float)($request->body['tax_amount'] ?? 0);
+
+        if ($invoiceNumber === '') {
+            $invoiceNumber = 'PL-' . date('Y') . '-' . random_int(1000, 9999);
+        }
+
+        // 1. Validación Anti-IDOR de client_id y service_id
+        if ($clientId !== null && !$this->userOwnsClient($clientId, $userId)) {
+            $response->status(403)->json(['ok' => false, 'message' => 'El cliente seleccionado no existe o no pertenece a tu cuenta']);
+            return;
+        }
+        foreach ($items as $it) {
+            if (!empty($it['service_id'])) {
+                $srvId = (int)$it['service_id'];
+                if ($srvId > 0 && !$this->userOwnsService($srvId, $userId)) {
+                    $response->status(403)->json(['ok' => false, 'message' => 'Uno de los servicios seleccionados no pertenece a tu cuenta']);
+                    return;
+                }
+            }
+        }
+
+        // 2. Validación de integridad contable (cantidades, precios e impuestos)
+        $validation = self::validateInvoiceItemsAndAmounts($items, $taxAmount);
+        if (!$validation['ok']) {
+            $response->status(400)->json(['ok' => false, 'message' => $validation['message']]);
+            return;
+        }
+
+        $subtotal = $validation['subtotal'];
+        $taxAmount = $validation['tax_amount'];
+        $totalAmount = $validation['total_amount'];
 
         $this->ensureInvoicePaymentColumns();
         $pdo = Database::getConnection();
@@ -852,18 +1180,11 @@ class FinanceController
         try {
             $pdo->beginTransaction();
 
-            $subtotal = 0;
-            if (is_array($items) && count($items) > 0) {
-                foreach ($items as $item) {
-                    $subtotal += ((float)($item['quantity'] ?? 0) * (float)($item['unit_price'] ?? 0));
-                }
-            }
-
-            $taxAmount = (float)($request->body['tax_amount'] ?? 0);
-            $totalAmount = $subtotal + $taxAmount;
-
             $invoiceStatus = ($status === 'PAGADA' || $status === 'Pagada') ? 'PAGADA' : (($status === 'ENVIADA' || $status === 'Enviada') ? 'ENVIADA' : 'DRAFT');
             $paidAtVal = $invoiceStatus === 'PAGADA' ? ($paidAt ?: date('Y-m-d H:i:s')) : null;
+
+            $encNotes = self::encryptField($notes);
+            $encPaymentNotes = self::encryptField($paymentNotes);
 
             $stmtInsert = $pdo->prepare(
                 "INSERT INTO finance_invoices 
@@ -871,32 +1192,38 @@ class FinanceController
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
             );
             $stmtInsert->execute([
-                $request->user->id, $clientId, $invoiceNumber, $title ?: null, $issueDate, $dueDate, $invoiceStatus,
-                $subtotal, $taxAmount, $totalAmount, $notes ?: null, $paidAtVal, $paymentMethod ?: null, $paymentNotes ?: null
+                $userId, $clientId, $invoiceNumber, $title ?: null, $issueDate, $dueDate, $invoiceStatus,
+                $subtotal, $taxAmount, $totalAmount, $encNotes, $paidAtVal, $paymentMethod ?: null, $encPaymentNotes
             ]);
             $invoiceId = $pdo->lastInsertId();
 
-            if (is_array($items) && count($items) > 0) {
+            if (count($items) > 0) {
                 $stmtItem = $pdo->prepare(
                     "INSERT INTO finance_invoice_items (invoice_id, service_id, description, quantity, unit_price, total_price)
                      VALUES (?, ?, ?, ?, ?, ?)"
                 );
                 foreach ($items as $item) {
-                    $totalPrice = (float)($item['quantity'] ?? 0) * (float)($item['unit_price'] ?? 0);
+                    $qty = (float)($item['quantity'] ?? 1);
+                    $unitPrice = (float)($item['unit_price'] ?? 0);
+                    $totalPrice = round($qty * $unitPrice, 2);
+                    $srvId = !empty($item['service_id']) ? (int)$item['service_id'] : null;
                     $stmtItem->execute([
                         $invoiceId,
-                        $item['service_id'] ?? null,
+                        $srvId,
                         $item['description'] ?? null,
-                        $item['quantity'] ?? 0,
-                        $item['unit_price'] ?? 0,
+                        $qty,
+                        $unitPrice,
                         $totalPrice
                     ]);
                 }
             }
 
-            $stmtFetch = $pdo->prepare("SELECT * FROM finance_invoices WHERE id = ?");
-            $stmtFetch->execute([$invoiceId]);
+            $stmtFetch = $pdo->prepare("SELECT * FROM finance_invoices WHERE id = ? AND user_id = ?");
+            $stmtFetch->execute([$invoiceId, $userId]);
             $invoice = $stmtFetch->fetch(PDO::FETCH_ASSOC);
+            if ($invoice) {
+                $invoice = self::decryptInvoiceRow($invoice);
+            }
 
             $pdo->commit();
             $response->status(201)->json(['ok' => true, 'invoice' => $invoice]);
@@ -909,17 +1236,52 @@ class FinanceController
 
     public function updateInvoice(Request $request, Response $response): void
     {
-        $id = $request->params['id'] ?? null;
-        $clientId = $request->body['client_id'] ?? null;
-        $title = $request->body['title'] ?? null;
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
+        $id = (int)($request->params['id'] ?? 0);
+        $clientId = !empty($request->body['client_id']) ? (int)$request->body['client_id'] : null;
+        $title = isset($request->body['title']) ? trim((string)$request->body['title']) : null;
         $issueDate = $request->body['issue_date'] ?? null;
         $dueDate = $request->body['due_date'] ?? null;
-        $items = $request->body['items'] ?? [];
-        $notes = $request->body['notes'] ?? null;
+        $items = is_array($request->body['items'] ?? null) ? $request->body['items'] : [];
+        $notes = isset($request->body['notes']) ? (string)$request->body['notes'] : null;
         $status = $request->body['status'] ?? null;
         $paidAt = $request->body['paid_at'] ?? null;
-        $paymentMethod = $request->body['payment_method'] ?? null;
-        $paymentNotes = $request->body['payment_notes'] ?? null;
+        $paymentMethod = isset($request->body['payment_method']) ? trim((string)$request->body['payment_method']) : null;
+        $paymentNotes = isset($request->body['payment_notes']) ? (string)$request->body['payment_notes'] : null;
+        $taxAmount = (float)($request->body['tax_amount'] ?? 0);
+
+        if ($id <= 0) {
+            $response->status(400)->json(['ok' => false, 'message' => 'ID de cuenta de cobro inválido']);
+            return;
+        }
+
+        // 1. Validación Anti-IDOR de client_id y service_id
+        if ($clientId !== null && !$this->userOwnsClient($clientId, $userId)) {
+            $response->status(403)->json(['ok' => false, 'message' => 'El cliente seleccionado no existe o no pertenece a tu cuenta']);
+            return;
+        }
+        foreach ($items as $it) {
+            if (!empty($it['service_id'])) {
+                $srvId = (int)$it['service_id'];
+                if ($srvId > 0 && !$this->userOwnsService($srvId, $userId)) {
+                    $response->status(403)->json(['ok' => false, 'message' => 'Uno de los servicios seleccionados no pertenece a tu cuenta']);
+                    return;
+                }
+            }
+        }
+
+        // 2. Validación de integridad contable
+        $validation = self::validateInvoiceItemsAndAmounts($items, $taxAmount);
+        if (!$validation['ok']) {
+            $response->status(400)->json(['ok' => false, 'message' => $validation['message']]);
+            return;
+        }
+
+        $subtotal = $validation['subtotal'];
+        $taxAmount = $validation['tax_amount'];
+        $totalAmount = $validation['total_amount'];
 
         $this->ensureInvoicePaymentColumns();
         $pdo = Database::getConnection();
@@ -928,26 +1290,16 @@ class FinanceController
             $pdo->beginTransaction();
 
             $stmtCheck = $pdo->prepare("SELECT id FROM finance_invoices WHERE id = ? AND user_id = ?");
-            $stmtCheck->execute([$id, $request->user->id]);
+            $stmtCheck->execute([$id, $userId]);
             if (!$stmtCheck->fetch()) {
                 $pdo->rollBack();
                 $response->status(404)->json(['ok' => false, 'message' => 'Cuenta de cobro no encontrada']);
                 return;
             }
 
-            $subtotal = 0;
-            if (is_array($items) && count($items) > 0) {
-                foreach ($items as $item) {
-                    $subtotal += ((float)($item['quantity'] ?? 1) * (float)($item['unit_price'] ?? 0));
-                }
-            }
-
-            $taxAmount = (float)($request->body['tax_amount'] ?? 0);
-            $totalAmount = $subtotal + $taxAmount;
-
             // Recalcular estado conservando intactos todos los abonos realizados
-            $stmtPaid = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) AS paid_sum FROM finance_invoice_payments WHERE invoice_id = ?");
-            $stmtPaid->execute([$id]);
+            $stmtPaid = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) AS paid_sum FROM finance_invoice_payments WHERE invoice_id = ? AND user_id = ?");
+            $stmtPaid->execute([$id, $userId]);
             $paidSum = (float)($stmtPaid->fetch(PDO::FETCH_ASSOC)['paid_sum'] ?? 0);
 
             if ($paidSum >= $totalAmount - 0.01 && $totalAmount > 0) {
@@ -959,6 +1311,9 @@ class FinanceController
             }
             $paidAtVal = $invoiceStatus === 'PAGADA' ? ($paidAt ?: date('Y-m-d H:i:s')) : null;
 
+            $encNotes = self::encryptField($notes);
+            $encPaymentNotes = self::encryptField($paymentNotes);
+
             $stmtUpdate = $pdo->prepare(
                 "UPDATE finance_invoices 
                  SET client_id = ?, title = ?, issue_date = ?, due_date = ?, status = ?, subtotal = ?, tax_amount = ?, total_amount = ?, notes = ?, paid_at = ?, payment_method = ?, payment_notes = ?
@@ -966,66 +1321,87 @@ class FinanceController
             );
             $stmtUpdate->execute([
                 $clientId, $title ?: null, $issueDate, $dueDate, $invoiceStatus, $subtotal, $taxAmount, $totalAmount,
-                $notes ?: null, $paidAtVal, $paymentMethod ?: null, $paymentNotes ?: null, $id, $request->user->id
+                $encNotes, $paidAtVal, $paymentMethod ?: null, $encPaymentNotes, $id, $userId
             ]);
 
             $stmtDel = $pdo->prepare("DELETE FROM finance_invoice_items WHERE invoice_id = ?");
             $stmtDel->execute([$id]);
 
-            if (is_array($items) && count($items) > 0) {
+            if (count($items) > 0) {
                 $stmtItem = $pdo->prepare(
                     "INSERT INTO finance_invoice_items (invoice_id, service_id, description, quantity, unit_price, total_price)
                      VALUES (?, ?, ?, ?, ?, ?)"
                 );
                 foreach ($items as $item) {
-                    $totalPrice = ((float)($item['quantity'] ?? 1) * (float)($item['unit_price'] ?? 0));
+                    $qty = (float)($item['quantity'] ?? 1);
+                    $unitPrice = (float)($item['unit_price'] ?? 0);
+                    $totalPrice = round($qty * $unitPrice, 2);
                     $desc = $item['description'] ?? $item['service_name'] ?? 'Servicio';
+                    $srvId = !empty($item['service_id']) ? (int)$item['service_id'] : null;
                     $stmtItem->execute([
                         $id,
-                        $item['service_id'] ?? null,
+                        $srvId,
                         $desc,
-                        $item['quantity'] ?? 1,
-                        $item['unit_price'] ?? 0,
+                        $qty,
+                        $unitPrice,
                         $totalPrice
                     ]);
                 }
             }
 
-            $stmtFetch = $pdo->prepare("SELECT * FROM finance_invoices WHERE id = ?");
-            $stmtFetch->execute([$id]);
+            $stmtFetch = $pdo->prepare("SELECT * FROM finance_invoices WHERE id = ? AND user_id = ?");
+            $stmtFetch->execute([$id, $userId]);
             $invoice = $stmtFetch->fetch(PDO::FETCH_ASSOC);
+            if ($invoice) {
+                $invoice = self::decryptInvoiceRow($invoice);
+            }
 
             $pdo->commit();
             $response->json(['ok' => true, 'invoice' => $invoice]);
         } catch (Exception $error) {
             if ($pdo->inTransaction()) $pdo->rollBack();
             error_log('Error al actualizar cuenta de cobro: ' . $error->getMessage());
-            $response->status(500)->json(['ok' => false, 'message' => 'Error al actualizar cuenta de cobro: ' . $error->getMessage()]);
+            $response->status(500)->json(['ok' => false, 'message' => 'Error al actualizar cuenta de cobro']);
         }
     }
 
     public function updateInvoiceStatus(Request $request, Response $response): void
     {
-        $id = $request->params['id'] ?? null;
-        $status = $request->body['status'] ?? null;
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
+        $id = (int)($request->params['id'] ?? 0);
+        $status = strtoupper(trim((string)($request->body['status'] ?? '')));
         $paidAt = $request->body['paid_at'] ?? null;
-        $paymentMethod = $request->body['payment_method'] ?? null;
-        $paymentNotes = $request->body['payment_notes'] ?? null;
+        $paymentMethod = isset($request->body['payment_method']) ? trim((string)$request->body['payment_method']) : null;
+        $paymentNotes = isset($request->body['payment_notes']) ? (string)$request->body['payment_notes'] : null;
+
+        if ($id <= 0 || $status === '') {
+            $response->status(400)->json(['ok' => false, 'message' => 'Datos de estado inválidos']);
+            return;
+        }
 
         try {
             $this->ensureInvoicePaymentColumns();
 
-            if ($status === 'PAGADA' || $status === 'Pagada') {
+            if (!$this->userOwnsInvoice($id, $userId)) {
+                $response->status(404)->json(['ok' => false, 'message' => 'Factura no encontrada']);
+                return;
+            }
+
+            $encPaymentNotes = self::encryptField($paymentNotes);
+
+            if ($status === 'PAGADA') {
                 $query = "UPDATE finance_invoices 
                           SET status = $1, 
                               paid_at = COALESCE($4, NOW()), 
                               payment_method = $5, 
                               payment_notes = $6 
                           WHERE id = $2 AND user_id = $3 RETURNING *";
-                $params = [$status, $id, $request->user->id, $paidAt ?: date('Y-m-d H:i:s'), $paymentMethod ?: null, $paymentNotes ?: null];
+                $params = [$status, $id, $userId, $paidAt ?: date('Y-m-d H:i:s'), $paymentMethod ?: null, $encPaymentNotes];
             } else {
                 $query = "UPDATE finance_invoices SET status = $1 WHERE id = $2 AND user_id = $3 RETURNING *";
-                $params = [$status, $id, $request->user->id];
+                $params = [$status, $id, $userId];
             }
 
             $stmt = Database::query($query, $params);
@@ -1034,7 +1410,7 @@ class FinanceController
                 $response->status(404)->json(['ok' => false, 'message' => 'Factura no encontrada']);
                 return;
             }
-            $response->json(['ok' => true, 'invoice' => $invoice]);
+            $response->json(['ok' => true, 'invoice' => self::decryptInvoiceRow($invoice)]);
         } catch (Exception $error) {
             error_log('[Finance] updateInvoiceStatus error: ' . $error->getMessage());
             $response->status(500)->json(['ok' => false, 'message' => 'Error al cambiar el estado']);
@@ -1043,24 +1419,46 @@ class FinanceController
 
     public function deleteInvoice(Request $request, Response $response): void
     {
-        $id = $request->params['id'] ?? null;
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
+        $id = (int)($request->params['id'] ?? 0);
+        $this->ensureInvoicePaymentColumns();
+        $this->ensureTransactionsTable();
         $pdo = Database::getConnection();
 
         try {
             $pdo->beginTransaction();
             $stmtCheck = $pdo->prepare("SELECT id FROM finance_invoices WHERE id = ? AND user_id = ?");
-            $stmtCheck->execute([$id, $request->user->id]);
+            $stmtCheck->execute([$id, $userId]);
             if (!$stmtCheck->fetch()) {
                 $pdo->rollBack();
                 $response->status(404)->json(['ok' => false, 'message' => 'Factura no encontrada']);
                 return;
             }
 
+            // 1. Eliminar transacciones financieras asociadas a los abonos de esta factura
+            $stmtPayTx = $pdo->prepare("SELECT transaction_id FROM finance_invoice_payments WHERE invoice_id = ? AND user_id = ? AND transaction_id IS NOT NULL");
+            $stmtPayTx->execute([$id, $userId]);
+            $txIds = $stmtPayTx->fetchAll(PDO::FETCH_COLUMN);
+            if (!empty($txIds)) {
+                $stmtDelTx = $pdo->prepare("DELETE FROM finance_transactions WHERE id = ? AND user_id = ?");
+                foreach ($txIds as $txId) {
+                    $stmtDelTx->execute([(int)$txId, $userId]);
+                }
+            }
+
+            // 2. Eliminar abonos asociados a la factura
+            $stmtDelPayments = $pdo->prepare("DELETE FROM finance_invoice_payments WHERE invoice_id = ? AND user_id = ?");
+            $stmtDelPayments->execute([$id, $userId]);
+
+            // 3. Eliminar ítems de la factura
             $stmtDelItems = $pdo->prepare("DELETE FROM finance_invoice_items WHERE invoice_id = ?");
             $stmtDelItems->execute([$id]);
 
+            // 4. Eliminar factura
             $stmtDelInv = $pdo->prepare("DELETE FROM finance_invoices WHERE id = ? AND user_id = ?");
-            $stmtDelInv->execute([$id, $request->user->id]);
+            $stmtDelInv->execute([$id, $userId]);
 
             $pdo->commit();
             $response->json(['ok' => true, 'message' => 'Cuenta de cobro eliminada con éxito']);
@@ -1076,14 +1474,16 @@ class FinanceController
     // ════════════════════════════════════════════════════════════
     public function addInvoicePayment(Request $request, Response $response): void
     {
-        $invoiceId = $request->params['id'] ?? null;
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
+        $invoiceId = (int)($request->params['id'] ?? 0);
         $amount = (float)($request->body['amount'] ?? 0);
         $paymentDate = $request->body['payment_date'] ?? date('Y-m-d');
-        $paymentMethod = $request->body['payment_method'] ?? 'Transferencia Bancaria';
-        $notes = $request->body['notes'] ?? null;
-        $userId = $request->user->id;
+        $paymentMethod = trim((string)($request->body['payment_method'] ?? 'Transferencia Bancaria'));
+        $notes = isset($request->body['notes']) ? (string)$request->body['notes'] : null;
 
-        if ($amount <= 0) {
+        if ($invoiceId <= 0 || !is_finite($amount) || $amount <= 0) {
             $response->status(400)->json(['ok' => false, 'message' => 'El monto del abono debe ser mayor a 0']);
             return;
         }
@@ -1095,11 +1495,11 @@ class FinanceController
         try {
             $pdo->beginTransaction();
 
-            // 1. Fetch invoice & client
+            // 1. Fetch invoice & client belonging strictly to user
             $stmtInv = $pdo->prepare("
                 SELECT i.*, c.name as client_name 
                 FROM finance_invoices i
-                LEFT JOIN finance_clients c ON i.client_id = c.id
+                LEFT JOIN finance_clients c ON i.client_id = c.id AND c.user_id = i.user_id
                 WHERE i.id = ? AND i.user_id = ?
             ");
             $stmtInv->execute([$invoiceId, $userId]);
@@ -1112,8 +1512,8 @@ class FinanceController
             }
 
             // Calculate current paid sum
-            $stmtSum = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) as paid_sum FROM finance_invoice_payments WHERE invoice_id = ?");
-            $stmtSum->execute([$invoiceId]);
+            $stmtSum = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) as paid_sum FROM finance_invoice_payments WHERE invoice_id = ? AND user_id = ?");
+            $stmtSum->execute([$invoiceId, $userId]);
             $currentPaid = (float)($stmtSum->fetch(PDO::FETCH_ASSOC)['paid_sum'] ?? 0);
 
             if ($currentPaid == 0 && $invoice['status'] === 'PAGADA') {
@@ -1132,6 +1532,10 @@ class FinanceController
                 return;
             }
 
+            $encNotes = self::encryptField($notes);
+            $txRawNotes = $notes ?: ('Abono registrado para la cuenta de cobro ' . $invoice['invoice_number']);
+            $encTxNotes = self::encryptField($txRawNotes);
+
             // 2. Insert transaction into finance_transactions
             $concept = "Abono a Cuenta #" . ($invoice['invoice_number'] ?: $invoice['id']);
             $stmtTx = $pdo->prepare("
@@ -1146,7 +1550,7 @@ class FinanceController
                 $amount,
                 $paymentDate,
                 $paymentMethod,
-                $notes ?: ('Abono registrado para la cuenta de cobro ' . $invoice['invoice_number'])
+                $encTxNotes
             ]);
             $transactionId = $pdo->lastInsertId();
 
@@ -1162,7 +1566,7 @@ class FinanceController
                 $amount,
                 $paymentDate,
                 $paymentMethod,
-                $notes ?: null,
+                $encNotes,
                 $transactionId
             ]);
             $paymentId = $pdo->lastInsertId();
@@ -1206,18 +1610,26 @@ class FinanceController
 
     public function getInvoicePayments(Request $request, Response $response): void
     {
-        $invoiceId = $request->params['id'] ?? null;
-        $userId = $request->user->id;
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
+        $invoiceId = (int)($request->params['id'] ?? 0);
 
         try {
             $this->ensureInvoicePaymentColumns();
+            if (!$this->userOwnsInvoice($invoiceId, $userId)) {
+                $response->status(404)->json(['ok' => false, 'message' => 'Factura no encontrada']);
+                return;
+            }
+
             $stmt = Database::query("
                 SELECT * FROM finance_invoice_payments
                 WHERE invoice_id = $1 AND user_id = $2
                 ORDER BY payment_date DESC, id DESC
             ", [$invoiceId, $userId]);
 
-            $response->json(['ok' => true, 'payments' => $stmt->fetchAll()]);
+            $payments = array_map([self::class, 'decryptPaymentRow'], $stmt->fetchAll());
+            $response->json(['ok' => true, 'payments' => $payments]);
         } catch (Exception $error) {
             error_log('[Finance] getInvoicePayments error: ' . $error->getMessage());
             $response->status(500)->json(['ok' => false, 'message' => 'Error al obtener historial de abonos']);
@@ -1226,8 +1638,10 @@ class FinanceController
 
     public function deleteInvoicePayment(Request $request, Response $response): void
     {
-        $paymentId = $request->params['paymentId'] ?? null;
-        $userId = $request->user->id;
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
+        $paymentId = (int)($request->params['paymentId'] ?? 0);
         $pdo = Database::getConnection();
 
         try {
@@ -1243,12 +1657,12 @@ class FinanceController
                 return;
             }
 
-            $invoiceId = $payment['invoice_id'];
+            $invoiceId = (int)$payment['invoice_id'];
             $transactionId = $payment['transaction_id'];
 
             // 1. Delete payment record
-            $stmtDelP = $pdo->prepare("DELETE FROM finance_invoice_payments WHERE id = ?");
-            $stmtDelP->execute([$paymentId]);
+            $stmtDelP = $pdo->prepare("DELETE FROM finance_invoice_payments WHERE id = ? AND user_id = ?");
+            $stmtDelP->execute([$paymentId, $userId]);
 
             // 2. Delete transaction record if exists
             if ($transactionId) {
@@ -1262,8 +1676,8 @@ class FinanceController
             $invRow = $stmtInv->fetch(PDO::FETCH_ASSOC);
             $totalAmount = (float)($invRow['total_amount'] ?? 0);
 
-            $stmtSum = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) as paid_sum FROM finance_invoice_payments WHERE invoice_id = ?");
-            $stmtSum->execute([$invoiceId]);
+            $stmtSum = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) as paid_sum FROM finance_invoice_payments WHERE invoice_id = ? AND user_id = ?");
+            $stmtSum->execute([$invoiceId, $userId]);
             $newPaidTotal = (float)($stmtSum->fetch(PDO::FETCH_ASSOC)['paid_sum'] ?? 0);
 
             $newStatus = 'DRAFT';
@@ -1329,22 +1743,34 @@ class FinanceController
 
     public function getControlSummary(Request $request, Response $response): void
     {
-        try {
-            $this->ensureTransactionsTable();
-            $userId = $request->user->id;
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
 
-            // 1. Facturas Pagadas (Sincronizado)
+        try {
+            $this->ensureInvoicePaymentColumns();
+            $this->ensureTransactionsTable();
+
+            // 1. Recaudo Real de Facturas (Incluye facturas PAGADA y abonos parciales sin duplicar)
             $stmtFacturas = Database::query(
-                "SELECT COALESCE(SUM(total_amount), 0) AS total_pagado 
-                 FROM finance_invoices WHERE user_id = $1 AND status = 'PAGADA'",
+                "SELECT COALESCE(SUM(
+                    COALESCE((SELECT SUM(p.amount) FROM finance_invoice_payments p WHERE p.invoice_id = i.id AND p.user_id = i.user_id),
+                             CASE WHEN i.status = 'PAGADA' THEN i.total_amount ELSE 0 END)
+                 ), 0) AS total_pagado 
+                 FROM finance_invoices i WHERE i.user_id = $1",
                 [$userId]
             );
             $facturasPagadas = (float)($stmtFacturas->fetch()['total_pagado'] ?? 0);
 
-            // 2. Ingresos Manuales de Transacciones
+            // 2. Ingresos Manuales de Transacciones (excluyendo abonos automáticos de facturas para evitar doble contabilización)
             $stmtIngresos = Database::query(
-                "SELECT COALESCE(SUM(amount_cop), 0) AS total_ingresos 
-                 FROM finance_transactions WHERE user_id = $1 AND type = 'INGRESO'",
+                "SELECT COALESCE(SUM(t.amount_cop), 0) AS total_ingresos 
+                 FROM finance_transactions t
+                 WHERE t.user_id = $1 
+                   AND t.type = 'INGRESO'
+                   AND NOT EXISTS (
+                       SELECT 1 FROM finance_invoice_payments p 
+                       WHERE p.transaction_id = t.id AND p.user_id = t.user_id
+                   )",
                 [$userId]
             );
             $ingresosManuales = (float)($stmtIngresos->fetch()['total_ingresos'] ?? 0);
@@ -1365,7 +1791,7 @@ class FinanceController
             );
             $clientesActivos = (int)($stmtClients->fetch()['total_clientes'] ?? 0);
 
-            // Consolidado
+            // Consolidado exacto sin doble contabilidad
             $totalIngresos = $facturasPagadas + $ingresosManuales;
             $utilidadNeta = $totalIngresos - $egresosManuales;
             $margenNeto = $totalIngresos > 0 ? round(($utilidadNeta / $totalIngresos) * 100, 1) : 0;
@@ -1392,9 +1818,11 @@ class FinanceController
 
     public function getTransactions(Request $request, Response $response): void
     {
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
         try {
             $this->ensureTransactionsTable();
-            $userId = $request->user->id;
             $search = $request->query['search'] ?? null;
             $type = $request->query['type'] ?? null;
 
@@ -1417,13 +1845,13 @@ class FinanceController
             $query = "
                 SELECT t.*, c.name AS client_name 
                 FROM finance_transactions t
-                LEFT JOIN finance_clients c ON t.client_id = c.id
+                LEFT JOIN finance_clients c ON t.client_id = c.id AND c.user_id = t.user_id
                 WHERE {$whereClause}
                 ORDER BY t.transaction_date DESC, t.id DESC
                 LIMIT 100
             ";
             $stmt = Database::query($query, $params);
-            $transactions = $stmt->fetchAll();
+            $transactions = array_map([self::class, 'decryptTransactionRow'], $stmt->fetchAll());
 
             $response->json(['ok' => true, 'transactions' => $transactions]);
         } catch (Exception $error) {
@@ -1434,43 +1862,54 @@ class FinanceController
 
     public function createTransaction(Request $request, Response $response): void
     {
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
         try {
             $this->ensureTransactionsTable();
-            $userId = $request->user->id;
 
-            $type = strtoupper($request->body['type'] ?? 'INGRESO');
-            $concept = trim($request->body['concept'] ?? '');
-            $category = trim($request->body['category'] ?? 'General');
+            $type = strtoupper(trim((string)($request->body['type'] ?? 'INGRESO')));
+            $concept = trim((string)($request->body['concept'] ?? ''));
+            $category = trim((string)($request->body['category'] ?? 'General'));
             $clientId = !empty($request->body['client_id']) ? (int)$request->body['client_id'] : null;
             $amountCop = (float)($request->body['amount_cop'] ?? 0);
             $amountUsd = (float)($request->body['amount_usd'] ?? ($amountCop / 4000));
-            $currency = strtoupper($request->body['currency'] ?? 'COP');
+            $currency = strtoupper(trim((string)($request->body['currency'] ?? 'COP')));
             $transactionDate = $request->body['transaction_date'] ?? date('Y-m-d');
-            $status = strtoupper($request->body['status'] ?? 'COMPLETADO');
-            $paymentMethod = $request->body['payment_method'] ?? 'Transferencia';
-            $notes = $request->body['notes'] ?? null;
+            $status = strtoupper(trim((string)($request->body['status'] ?? 'COMPLETADO')));
+            $paymentMethod = trim((string)($request->body['payment_method'] ?? 'Transferencia'));
+            $notes = isset($request->body['notes']) ? (string)$request->body['notes'] : null;
 
             // Validaciones Estrictas Backend
-            if (empty($concept)) {
+            if ($concept === '') {
                 $response->status(400)->json(['ok' => false, 'message' => 'El concepto de la transacción es obligatorio']);
                 return;
             }
-            if ($amountCop <= 0) {
+            if (!is_finite($amountCop) || $amountCop <= 0 || $amountCop > 999999999999.99) {
                 $response->status(400)->json(['ok' => false, 'message' => 'El monto debe ser un valor numérico mayor a cero']);
                 return;
             }
-            if (!in_array($type, ['INGRESO', 'EGRESO'])) {
+            if (!in_array($type, ['INGRESO', 'EGRESO'], true)) {
                 $response->status(400)->json(['ok' => false, 'message' => 'El tipo de transacción debe ser INGRESO o EGRESO']);
                 return;
             }
+            if ($clientId !== null && !$this->userOwnsClient($clientId, $userId)) {
+                $response->status(403)->json(['ok' => false, 'message' => 'El cliente seleccionado no pertenece a tu cuenta']);
+                return;
+            }
+
+            $encNotes = self::encryptField($notes);
 
             $stmt = Database::query(
                 "INSERT INTO finance_transactions 
                  (user_id, type, concept, category, client_id, amount_cop, amount_usd, currency, transaction_date, status, payment_method, notes)
                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *",
-                [$userId, $type, $concept, $category, $clientId, $amountCop, $amountUsd, $currency, $transactionDate, $status, $paymentMethod, $notes]
+                [$userId, $type, $concept, $category, $clientId, $amountCop, $amountUsd, $currency, $transactionDate, $status, $paymentMethod, $encNotes]
             );
             $tx = $stmt->fetch();
+            if ($tx) {
+                $tx = self::decryptTransactionRow($tx);
+            }
 
             $response->status(201)->json(['ok' => true, 'message' => 'Transacción registrada exitosamente', 'transaction' => $tx]);
         } catch (Exception $error) {
@@ -1481,32 +1920,40 @@ class FinanceController
 
     public function updateTransaction(Request $request, Response $response): void
     {
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
         try {
             $id = (int)($request->params['id'] ?? 0);
-            $userId = $request->user->id;
 
-            $type = strtoupper($request->body['type'] ?? 'INGRESO');
-            $concept = trim($request->body['concept'] ?? '');
-            $category = trim($request->body['category'] ?? 'General');
+            $type = strtoupper(trim((string)($request->body['type'] ?? 'INGRESO')));
+            $concept = trim((string)($request->body['concept'] ?? ''));
+            $category = trim((string)($request->body['category'] ?? 'General'));
             $clientId = !empty($request->body['client_id']) ? (int)$request->body['client_id'] : null;
             $amountCop = (float)($request->body['amount_cop'] ?? 0);
             $amountUsd = (float)($request->body['amount_usd'] ?? ($amountCop / 4000));
-            $currency = strtoupper($request->body['currency'] ?? 'COP');
+            $currency = strtoupper(trim((string)($request->body['currency'] ?? 'COP')));
             $transactionDate = $request->body['transaction_date'] ?? date('Y-m-d');
-            $status = strtoupper($request->body['status'] ?? 'COMPLETADO');
-            $paymentMethod = $request->body['payment_method'] ?? 'Transferencia';
-            $notes = $request->body['notes'] ?? null;
+            $status = strtoupper(trim((string)($request->body['status'] ?? 'COMPLETADO')));
+            $paymentMethod = trim((string)($request->body['payment_method'] ?? 'Transferencia'));
+            $notes = isset($request->body['notes']) ? (string)$request->body['notes'] : null;
 
-            if ($amountCop <= 0) {
-                $response->status(400)->json(['ok' => false, 'message' => 'El monto debe ser mayor a cero']);
+            if ($id <= 0 || $concept === '' || !is_finite($amountCop) || $amountCop <= 0 || !in_array($type, ['INGRESO', 'EGRESO'], true)) {
+                $response->status(400)->json(['ok' => false, 'message' => 'Datos de transacción inválidos']);
                 return;
             }
+            if ($clientId !== null && !$this->userOwnsClient($clientId, $userId)) {
+                $response->status(403)->json(['ok' => false, 'message' => 'El cliente seleccionado no pertenece a tu cuenta']);
+                return;
+            }
+
+            $encNotes = self::encryptField($notes);
 
             $stmt = Database::query(
                 "UPDATE finance_transactions 
                  SET type = $1, concept = $2, category = $3, client_id = $4, amount_cop = $5, amount_usd = $6, currency = $7, transaction_date = $8, status = $9, payment_method = $10, notes = $11
                  WHERE id = $12 AND user_id = $13 RETURNING *",
-                [$type, $concept, $category, $clientId, $amountCop, $amountUsd, $currency, $transactionDate, $status, $paymentMethod, $notes, $id, $userId]
+                [$type, $concept, $category, $clientId, $amountCop, $amountUsd, $currency, $transactionDate, $status, $paymentMethod, $encNotes, $id, $userId]
             );
             $tx = $stmt->fetch();
             if (!$tx) {
@@ -1514,7 +1961,7 @@ class FinanceController
                 return;
             }
 
-            $response->json(['ok' => true, 'message' => 'Transacción actualizada', 'transaction' => $tx]);
+            $response->json(['ok' => true, 'message' => 'Transacción actualizada', 'transaction' => self::decryptTransactionRow($tx)]);
         } catch (Exception $error) {
             error_log('[Finance] updateTransaction error: ' . $error->getMessage());
             $response->status(500)->json(['ok' => false, 'message' => 'Error al actualizar transacción']);
@@ -1523,9 +1970,11 @@ class FinanceController
 
     public function deleteTransaction(Request $request, Response $response): void
     {
+        $userId = $this->requireAuthenticatedUser($request, $response);
+        if ($userId === null) return;
+
         try {
             $id = (int)($request->params['id'] ?? 0);
-            $userId = $request->user->id;
 
             $stmt = Database::query(
                 "DELETE FROM finance_transactions WHERE id = $1 AND user_id = $2 RETURNING id",

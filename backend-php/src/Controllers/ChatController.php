@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Database;
+use App\Core\VaultCrypto;
 use App\Config\Groq;
 use App\Config\Gemini;
 use Exception;
@@ -153,7 +154,8 @@ PROMPT;
     {
         $this->ensureSchema();
         try {
-            $message = $request->body['message'] ?? null;
+            $rawMessage = $request->body['message'] ?? null;
+            $message = is_string($rawMessage) ? VaultCrypto::redactSecretsForAi(trim($rawMessage)) : null;
             $sessionToken = $request->body['session_token'] ?? null;
             $user = $request->user;
 

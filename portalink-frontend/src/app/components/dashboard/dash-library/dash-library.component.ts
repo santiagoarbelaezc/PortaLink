@@ -1270,24 +1270,38 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   loadCopilotChatFromStorage() {
     if (typeof window === 'undefined') return;
     try {
-      const saved = localStorage.getItem('portalink_copilot_chat');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          this.copilotMessages = parsed;
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem('portalink_copilot_chat');
+      }
+      if (typeof sessionStorage !== 'undefined') {
+        const saved = sessionStorage.getItem('portalink_copilot_chat');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            this.copilotMessages = parsed;
+          }
         }
       }
     } catch (e) {
-      console.error('Error cargando chat copilot de localStorage:', e);
+      console.error('Error cargando chat copilot de sessionStorage:', e);
     }
   }
 
   saveCopilotChatToStorage() {
     if (typeof window === 'undefined') return;
     try {
-      localStorage.setItem('portalink_copilot_chat', JSON.stringify(this.copilotMessages));
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem('portalink_copilot_chat');
+      }
+      if (typeof sessionStorage !== 'undefined') {
+        const sanitized = this.copilotMessages.map(m => ({
+          role: m.role,
+          content: this.libraryAiService.redactSecretsClientSide(m.content)
+        }));
+        sessionStorage.setItem('portalink_copilot_chat', JSON.stringify(sanitized));
+      }
     } catch (e) {
-      console.error('Error guardando chat copilot en localStorage:', e);
+      console.error('Error guardando chat copilot en sessionStorage:', e);
     }
   }
 
@@ -3804,12 +3818,12 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     html = html.replace(/(<br\s*\/?>)+\s*(<h[1-3]>|<blockquote|<pre|<hr)/gim, '$2');
     html = html.replace(/(<br\s*\/?>){3,}/gim, '<br><br>');
 
-    // Restaurar código inline y bloques
+    // Restaurar código inline y bloques (con callback para evitar patrones $& o $')
     inlineCodes.forEach((code, i) => {
-      html = html.replace(`__FMT_INLINE_${i}__`, code);
+      html = html.replace(`__FMT_INLINE_${i}__`, () => code);
     });
     codeBlocks.forEach((code, i) => {
-      html = html.replace(`__FMT_CODEBLOCK_${i}__`, code);
+      html = html.replace(`__FMT_CODEBLOCK_${i}__`, () => code);
     });
 
     return html;

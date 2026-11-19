@@ -169,16 +169,25 @@ class VaultCrypto
         );
 
         // 2. Variables estilo .env y asignaciones de configuración con nombres sensibles
-        $envSecretPattern = '/\b([A-Z0-9_]*(?:PASS|PASSWORD|PWD|SECRET|KEY|TOKEN|AUTH|CREDENTIAL|PRIVATE|HASH|SALT|DSN|CLOUDINARY_URL|DATABASE_URL|SMTP_PASS)[A-Z0-9_]*)\s*([:=])\s*("[^"\r\n]*"|\'[^\'\r\n]*\'|[^\s#"\'\r\n]+)/i';
+        $envSecretPattern = '/\b([A-Z0-9_]*(?:PASS|PASSWORD|PWD|SECRET|KEY|TOKEN|AUTH|CREDENTIAL|PRIVATE|HASH|SALT|DSN|CLOUDINARY_URL|DATABASE_URL|SMTP_PASS|CONTRASENA|CLAVE)[A-Z0-9_]*)\s*([:=])\s*("[^"\r\n]*"|\'[^\'\r\n]*\'|[^\s#"\'\r\n,;]+)/iu';
         $redacted = preg_replace_callback($envSecretPattern, function (array $m) {
             $varName = $m[1];
             $sep = $m[2];
             $val = trim($m[3]);
-            if ($val === '' || $val === 'null' || $val === '""' || $val === "''" || str_contains($val, '[SECRET_REDACTED]')) {
+            $lowerVal = strtolower(trim($val, "\"'"));
+            // Preservar nombres de tipos o palabras pedagógicas vacías/booleanas
+            if ($val === '' || in_array($lowerVal, ['null', 'true', 'false', 'none', 'primary', 'foreign', 'unique', 'index'], true) || str_contains($val, '[SECRET_REDACTED]')) {
                 return $m[0];
             }
             return "{$varName}{$sep}[SECRET_REDACTED]";
         }, $redacted);
+
+        // 2b. Cabeceras de autorización y claves en comandos CLI (Bearer, xi-api-key, X-goog-api-key, sshpass -p)
+        $redacted = preg_replace(
+            '/\b(Authorization\s*:\s*Bearer|xi-api-key\s*:|X-goog-api-key\s*:|sshpass\s+-p)\s+([^\s"\'\r\n]+)/i',
+            '$1 [SECRET_REDACTED]',
+            $redacted
+        );
 
         // 3. URLs de conexión con usuario:contraseña@host (MySQL, Postgres, MongoDB, Redis, Cloudinary, etc.)
         $redacted = preg_replace(
@@ -194,13 +203,46 @@ class VaultCrypto
             $redacted
         );
 
-        // 5. Patrones estándar de API Keys (OpenAI sk-, Groq gsk_, Google AIza, GitHub ghp_/github_pat_, Slack xox, AWS AKIA)
+        // 5. Patrones estándar de API Keys (OpenAI sk-/sk-proj-, Anthropic sk-ant-, Stripe sk_live_/rk_live_, Groq gsk_, Google AIza, GitHub ghp_/github_pat_, GitLab glpat-, Slack xox)
         $redacted = preg_replace(
-            '/\b(?:sk-[A-Za-z0-9_-]{20,}|gsk_[A-Za-z0-9_-]{20,}|AIza[0-9A-Za-z_-]{30,}|gh[pousr]_[A-Za-z0-9]{25,}|github_pat_[A-Za-z0-9_]{25,}|xox[baprs]-[A-Za-z0-9-]{15,})\b/',
+            '/\b(?:sk-(?:proj-|ant-)?[A-Za-z0-9_-]{20,}|(?:sk|rk)_live_[A-Za-z0-9]{20,}|gsk_[A-Za-z0-9_-]{20,}|AIza[0-9A-Za-z_-]{30,}|gh[pousr]_[A-Za-z0-9]{25,}|github_pat_[A-Za-z0-9_]{25,}|glpat-[A-Za-z0-9_-]{20,}|xox[baprs]-[A-Za-z0-9-]{15,})\b/',
             '[API_KEY_REDACTED]',
             $redacted
         );
 
         return $redacted;
+    }
+
+    /**
+     * Sanitiza de forma integral el contenido de la pizarra (apunte) antes de ser leído por la IA:
+     *  1. Enmascara cualquier credencial, .env, token o llave (DLP).
+     *  2. Elimina binarios/imágenes Base64 incrustadas para evitar fuga o desbordamiento de tokens.
+     *  3. Neutraliza intentos de Prompt Injection indirecto o escape de delimitadores dentro de la pizarra.
+     */
+    public static function sanitizeWhiteboardForAi(?string $noteContent, int $maxLength = 15000): string
+    {
+        if ($noteContent === null || trim($noteContent) === '') {
+            return '';
+        }
+
+        // 1. Eliminar payloads Base64 pesados (data:image, data:audio, data:application)
+        $clean = preg_replace(
+            '/data:[a-zA-Z0-9\/+\-\.]+;base64,[A-Za-z0-9\/+=\r\n]+/',
+            '[ARCHIVO_MULTIMEDIA_OMITIDO]',
+            trim($noteContent)
+        );
+
+        // 2. Aplicar redactor DLP contra secretos, .env y credenciales
+        $clean = self::redactSecretsForAi($clean);
+
+        // 3. Neutralizar escapes de delimitadores de contexto de pizarra y directivas de inyección de prompt
+        $clean = str_replace(['"""', '</WHITEBOARD_DATA>', '<WHITEBOARD_DATA>'], ["'''", '[END_TAG]', '[START_TAG]'], $clean);
+
+        // 4. Truncar de forma segura si excede el límite máximo
+        if (mb_strlen($clean) > $maxLength) {
+            $clean = mb_substr($clean, 0, $maxLength) . "\n... [Contenido de pizarra truncado por seguridad]";
+        }
+
+        return $clean;
     }
 }

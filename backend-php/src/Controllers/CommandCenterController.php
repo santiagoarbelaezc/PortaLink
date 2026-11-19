@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Database;
+use App\Core\VaultCrypto;
 use Exception;
 
 class CommandCenterController
@@ -48,7 +49,7 @@ class CommandCenterController
         try {
             $this->ensureActivityTable();
             $data = $request->body;
-            $userQuery = trim($data['query'] ?? '');
+            $userQuery = VaultCrypto::redactSecretsForAi(trim($data['query'] ?? ''));
 
             if (empty($userQuery)) {
                 $response->status(400)->json([
@@ -85,8 +86,7 @@ class CommandCenterController
             error_log('[CommandCenter] Error: ' . $e->getMessage());
             $response->status(500)->json([
                 'ok' => false,
-                'message' => 'Error al procesar la consulta con IA',
-                'error' => $e->getMessage()
+                'message' => 'Error al procesar la consulta con IA'
             ]);
         }
     }
@@ -143,8 +143,7 @@ class CommandCenterController
             error_log('[CommandCenter] queryAudio error: ' . $e->getMessage());
             $response->status(500)->json([
                 'ok' => false,
-                'message' => 'Error al procesar audio con IA',
-                'error' => $e->getMessage()
+                'message' => 'Error al procesar audio con IA'
             ]);
         }
     }
@@ -158,7 +157,11 @@ class CommandCenterController
         try {
             $this->ensureActivityTable();
             $body = $request->body;
-            $userId = $request->user->id ?? null;
+            $userId = (int)($request->user->id ?? 0);
+            if ($userId <= 0) {
+                $response->status(401)->json(['ok' => false, 'message' => 'Autenticación requerida']);
+                return;
+            }
 
             $activityType = $body['activity_type'] ?? 'tab_view';
             $section = $body['section'] ?? 'dashboard';
@@ -192,45 +195,52 @@ class CommandCenterController
     {
         try {
             $this->ensureActivityTable();
+            $userId = (int)($request->user->id ?? 0);
             $suggestions = [];
 
-            // 1. Obtener sugerencias de las últimas actividades reales registradas
-            try {
-                $recentLogs = Database::query("
-                    SELECT DISTINCT suggested_prompt 
-                    FROM dashboard_activity_logs 
-                    WHERE suggested_prompt IS NOT NULL AND suggested_prompt != ''
-                    ORDER BY id DESC LIMIT 5
-                ")->fetchAll(\PDO::FETCH_ASSOC);
-                foreach ($recentLogs as $row) {
-                    if (!empty($row['suggested_prompt'])) {
-                        $suggestions[] = $row['suggested_prompt'];
+            // 1. Obtener sugerencias de las últimas actividades reales registradas del usuario
+            if ($userId > 0) {
+                try {
+                    $recentLogs = Database::query("
+                        SELECT DISTINCT suggested_prompt 
+                        FROM dashboard_activity_logs 
+                        WHERE user_id = $1 AND suggested_prompt IS NOT NULL AND suggested_prompt != ''
+                        ORDER BY id DESC LIMIT 5
+                    ", [$userId])->fetchAll(\PDO::FETCH_ASSOC);
+                    foreach ($recentLogs as $row) {
+                        if (!empty($row['suggested_prompt'])) {
+                            $suggestions[] = $row['suggested_prompt'];
+                        }
                     }
-                }
-            } catch (\Throwable $e) {}
+                } catch (\Throwable $e) {}
+            }
 
-            // 2. Si hay pocos registros, generar sugerencias dinámicas basadas en el estado real de la BD
-            if (count($suggestions) < 5) {
-                // Facturas pendientes
+            // 2. Si hay pocos registros, generar sugerencias dinámicas basadas en el estado real del usuario en BD
+            if (count($suggestions) < 5 && $userId > 0) {
+                // Facturas pendientes del usuario autenticado
                 try {
                     $pendingInvoices = Database::query("
                         SELECT i.title, c.name as client_name 
                         FROM finance_invoices i
-                        LEFT JOIN finance_clients c ON i.client_id = c.id
-                        WHERE i.status IN ('PENDING', 'PARCIAL', 'Pendiente')
+                        LEFT JOIN finance_clients c ON i.client_id = c.id AND c.user_id = i.user_id
+                        WHERE i.user_id = $1 AND i.status IN ('PENDING', 'PARCIAL', 'Pendiente', 'ENVIADA', 'Enviada')
                         ORDER BY i.id DESC LIMIT 2
-                    ")->fetchAll(\PDO::FETCH_ASSOC);
+                    ", [$userId])->fetchAll(\PDO::FETCH_ASSOC);
                     foreach ($pendingInvoices as $inv) {
                         $client = $inv['client_name'] ?? 'clientes';
                         $suggestions[] = "Ver pagos pendientes de {$client}";
                     }
                 } catch (\Throwable $e) {}
 
-                // Cuadernos de biblioteca
+                // Cuadernos de biblioteca del usuario autenticado
                 try {
                     $recentNotebooks = Database::query("
-                        SELECT title FROM notebook_modules ORDER BY id DESC LIMIT 2
-                    ")->fetchAll(\PDO::FETCH_ASSOC);
+                        SELECT m.title 
+                        FROM notebook_modules m
+                        JOIN notebook_folders f ON m.folder_id = f.id
+                        WHERE f.user_id = $1
+                        ORDER BY m.id DESC LIMIT 2
+                    ", [$userId])->fetchAll(\PDO::FETCH_ASSOC);
                     foreach ($recentNotebooks as $nb) {
                         $suggestions[] = "Abrir cuaderno de {$nb['title']}";
                     }
@@ -279,7 +289,7 @@ class CommandCenterController
             $invoices = $context['invoices'] ?? [];
             $clients = $context['clients'] ?? [];
             $tasks = $context['itinerary_tasks'] ?? [];
-            $pendingInvoices = array_filter($invoices, fn($i) => in_array($i['status'] ?? '', ['PENDING', 'PARCIAL', 'Pendiente']));
+            $pendingInvoices = array_values(array_filter($invoices, fn($i) => in_array($i['status'] ?? '', ['PENDING', 'PARCIAL', 'Pendiente', 'ENVIADA', 'Enviada'])));
             
             $healthScore = 96;
             if (count($pendingInvoices) > 5) $healthScore -= 8;
@@ -363,15 +373,18 @@ class CommandCenterController
                 ];
             }
 
-            // 3. Accesos y Actividades Recientes Formateadas
+            // 3. Accesos y Actividades Recientes Formateadas del usuario
             $recentLogs = [];
-            try {
-                $recentLogs = Database::query("
-                    SELECT id, activity_type, section, title, suggested_prompt, created_at 
-                    FROM dashboard_activity_logs 
-                    ORDER BY id DESC LIMIT 15
-                ")->fetchAll(\PDO::FETCH_ASSOC);
-            } catch (\Throwable $ex) {}
+            if ($userId > 0) {
+                try {
+                    $recentLogs = Database::query("
+                        SELECT id, activity_type, section, title, suggested_prompt, created_at 
+                        FROM dashboard_activity_logs 
+                        WHERE user_id = $1
+                        ORDER BY id DESC LIMIT 15
+                    ", [$userId])->fetchAll(\PDO::FETCH_ASSOC);
+                } catch (\Throwable $ex) {}
+            }
 
             // Normalizar y deduplicar por sección
             $seenSections = [];
@@ -425,8 +438,7 @@ class CommandCenterController
             error_log('[CommandCenter] getRadar error: ' . $e->getMessage());
             $response->status(500)->json([
                 'ok' => false,
-                'message' => 'Error al generar radar',
-                'error' => $e->getMessage()
+                'message' => 'Error al generar radar'
             ]);
         }
     }
@@ -439,27 +451,33 @@ class CommandCenterController
     {
         try {
             $this->ensureActivityTable();
+            $userId = (int)($request->user->id ?? 0);
+            if ($userId <= 0) {
+                $response->status(401)->json(['ok' => false, 'message' => 'Autenticación requerida']);
+                return;
+            }
             $activities = Database::query("
                 SELECT id, activity_type, section, title, details, suggested_prompt, created_at 
                 FROM dashboard_activity_logs 
+                WHERE user_id = $1
                 ORDER BY id DESC LIMIT 20
-            ")->fetchAll(\PDO::FETCH_ASSOC);
+            ", [$userId])->fetchAll(\PDO::FETCH_ASSOC);
 
             $response->json([
                 'ok' => true,
                 'activities' => $activities
             ]);
         } catch (\Throwable $e) {
+            error_log('[CommandCenter] getRecentActivities error: ' . $e->getMessage());
             $response->status(500)->json([
                 'ok' => false,
-                'message' => 'Error al obtener actividades recientes',
-                'error' => $e->getMessage()
+                'message' => 'Error al obtener actividades recientes'
             ]);
         }
     }
 
     /**
-     * Extrae información consolidada de la base de datos para todas las áreas del dashboard.
+     * Extrae información consolidada de la base de datos aislada estrictamente por usuario autenticado.
      */
     private function gatherSystemContext(int $userId = 0): array
     {
@@ -474,94 +492,109 @@ class CommandCenterController
             'analytics' => []
         ];
 
+        if ($userId <= 0) {
+            return $context;
+        }
+
         // 0. Últimas actividades y accesos del usuario
         try {
             $recentActs = Database::query("
                 SELECT activity_type, section, title, created_at 
                 FROM dashboard_activity_logs 
+                WHERE user_id = $1
                 ORDER BY id DESC LIMIT 10
-            ")->fetchAll(\PDO::FETCH_ASSOC);
+            ", [$userId])->fetchAll(\PDO::FETCH_ASSOC);
             $context['recent_user_activities'] = $recentActs;
         } catch (\Throwable $e) {}
 
-        // A. Clientes (Finanzas & Usuarios)
+        // A. Clientes (Finanzas — filtrado estrictamente por usuario)
         try {
             $clients = Database::query("
                 SELECT id, name, email, phone, company, created_at 
                 FROM finance_clients 
+                WHERE user_id = $1
                 ORDER BY id DESC LIMIT 25
-            ")->fetchAll(\PDO::FETCH_ASSOC);
+            ", [$userId])->fetchAll(\PDO::FETCH_ASSOC);
             $context['clients'] = $clients;
-        } catch (\Throwable $e) {
-            try {
-                $users = Database::query("SELECT id, name, email, created_at FROM users LIMIT 25")->fetchAll(\PDO::FETCH_ASSOC);
-                $context['clients'] = $users;
-            } catch (\Throwable $ex) {}
-        }
+        } catch (\Throwable $e) {}
 
-        // B. Facturas y Cuentas de Cobro
+        // B. Facturas y Cuentas de Cobro (filtrado estrictamente por usuario)
         try {
             $invoices = Database::query("
-                SELECT i.id, i.invoice_number, i.title, i.status, i.total_amount, i.paid_amount, i.pending_amount, i.due_date, c.name as client_name 
+                SELECT i.id, i.invoice_number, i.title, i.status, i.total_amount, i.due_date, c.name as client_name,
+                       COALESCE((SELECT SUM(p.amount) FROM finance_invoice_payments p WHERE p.invoice_id = i.id AND p.user_id = i.user_id),
+                                CASE WHEN i.status = 'PAGADA' THEN i.total_amount ELSE 0 END) as paid_amount
                 FROM finance_invoices i
-                LEFT JOIN finance_clients c ON i.client_id = c.id
+                LEFT JOIN finance_clients c ON i.client_id = c.id AND c.user_id = i.user_id
+                WHERE i.user_id = $1
                 ORDER BY i.id DESC LIMIT 25
-            ")->fetchAll(\PDO::FETCH_ASSOC);
+            ", [$userId])->fetchAll(\PDO::FETCH_ASSOC);
+
+            foreach ($invoices as &$inv) {
+                $total = (float)($inv['total_amount'] ?? 0);
+                $paid = (float)($inv['paid_amount'] ?? 0);
+                $inv['paid_amount'] = $paid;
+                $inv['pending_amount'] = max(0, $total - $paid);
+            }
             $context['invoices'] = $invoices;
 
             $finSummary = Database::query("
                 SELECT 
-                    SUM(total_amount) as total_billed,
-                    SUM(paid_amount) as total_paid,
-                    SUM(pending_amount) as total_pending,
+                    COALESCE(SUM(i.total_amount), 0) as total_billed,
+                    COALESCE(SUM(
+                        COALESCE((SELECT SUM(p.amount) FROM finance_invoice_payments p WHERE p.invoice_id = i.id AND p.user_id = i.user_id),
+                                 CASE WHEN i.status = 'PAGADA' THEN i.total_amount ELSE 0 END)
+                    ), 0) as total_paid,
                     COUNT(*) as total_invoices
-                FROM finance_invoices
-            ")->fetchAll(\PDO::FETCH_ASSOC);
+                FROM finance_invoices i
+                WHERE i.user_id = $1
+            ", [$userId])->fetchAll(\PDO::FETCH_ASSOC);
             if (!empty($finSummary)) {
+                $billed = (float)($finSummary[0]['total_billed'] ?? 0);
+                $paid = (float)($finSummary[0]['total_paid'] ?? 0);
+                $finSummary[0]['total_pending'] = max(0, $billed - $paid);
                 $context['financial_summary'] = $finSummary[0];
             }
         } catch (\Throwable $e) {}
 
         // C. Biblioteca (Cuadernos, Apuntes y Páginas — filtrado estrictamente por usuario)
         try {
-            if ($userId > 0) {
-                $notebooks = Database::query("
-                    SELECT m.id, m.title, m.description, f.name as folder_name,
-                           (SELECT COUNT(*) FROM notebook_pages p WHERE p.notebook_id = m.id) as pages_count
-                    FROM notebook_modules m
-                    JOIN notebook_folders f ON m.folder_id = f.id
-                    WHERE f.user_id = $1
-                    ORDER BY m.id DESC LIMIT 30
-                ", [$userId])->fetchAll(\PDO::FETCH_ASSOC);
-                $context['library_notebooks'] = $notebooks;
+            $notebooks = Database::query("
+                SELECT m.id, m.title, m.description, f.name as folder_name,
+                       (SELECT COUNT(*) FROM notebook_pages p WHERE p.notebook_id = m.id) as pages_count
+                FROM notebook_modules m
+                JOIN notebook_folders f ON m.folder_id = f.id
+                WHERE f.user_id = $1
+                ORDER BY m.id DESC LIMIT 30
+            ", [$userId])->fetchAll(\PDO::FETCH_ASSOC);
+            $context['library_notebooks'] = $notebooks;
 
-                $pages = Database::query("
-                    SELECT p.id, p.notebook_id, p.title, p.tags, p.is_pinned, p.created_at 
-                    FROM notebook_pages p
-                    JOIN notebook_modules m ON m.id = p.notebook_id
-                    JOIN notebook_folders f ON f.id = m.folder_id
-                    WHERE f.user_id = $1
-                    ORDER BY p.id DESC LIMIT 30
-                ", [$userId])->fetchAll(\PDO::FETCH_ASSOC);
-                $context['library_pages'] = $pages;
-            }
+            $pages = Database::query("
+                SELECT p.id, p.notebook_id, p.title, p.tags, p.is_pinned, p.created_at 
+                FROM notebook_pages p
+                JOIN notebook_modules m ON m.id = p.notebook_id
+                JOIN notebook_folders f ON f.id = m.folder_id
+                WHERE f.user_id = $1
+                ORDER BY p.id DESC LIMIT 30
+            ", [$userId])->fetchAll(\PDO::FETCH_ASSOC);
+            $context['library_pages'] = $pages;
         } catch (\Throwable $e) {}
 
-        // D. Itinerario / Tareas de Hoy
+        // D. Itinerario / Tareas de Hoy (filtrado estrictamente por usuario)
         try {
             $tasks = Database::query("
-                SELECT id, title, description, task_date, task_time, is_completed, priority 
+                SELECT id, title, description, task_date, task_time, completed AS is_completed, status AS priority 
                 FROM itinerary_tasks 
-                WHERE task_date >= CURDATE() OR is_completed = 0
+                WHERE user_id = $1 AND (task_date >= CURDATE() OR completed = 0)
                 ORDER BY task_date ASC, task_time ASC LIMIT 20
-            ")->fetchAll(\PDO::FETCH_ASSOC);
+            ", [$userId])->fetchAll(\PDO::FETCH_ASSOC);
             $context['itinerary_tasks'] = $tasks;
         } catch (\Throwable $e) {}
 
         // E. Mensajes Recibidos
         try {
             $messages = Database::query("
-                SELECT id, name, email, subject, message, is_read, created_at 
+                SELECT id, name, email, subject, message, status, created_at 
                 FROM contact_messages 
                 ORDER BY id DESC LIMIT 15
             ")->fetchAll(\PDO::FETCH_ASSOC);

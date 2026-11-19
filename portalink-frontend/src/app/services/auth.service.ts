@@ -146,10 +146,18 @@ export class AuthService {
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem(this.TOKEN_KEY);
       localStorage.removeItem(this.USER_KEY);
+      localStorage.removeItem('portalink_cached_finances');
+      localStorage.removeItem('portalink_copilot_chat');
+      localStorage.removeItem('portalink_lib_tabs');
+      localStorage.removeItem('portalink_lib_active_tab_id');
       localStorage.setItem('portalink_admin_theme', 'light');
       if (notify) {
         window.dispatchEvent(new CustomEvent('auth-change'));
       }
+    }
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.removeItem('portalink_cached_finances');
+      sessionStorage.removeItem('portalink_copilot_chat');
     }
     this.isAuthenticated.set(false);
     this.currentUser.set(null);

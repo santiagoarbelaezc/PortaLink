@@ -97,89 +97,30 @@ $router->get('/api/setup-db', function (Request $req, Response $res) {
         return;
     }
     $log = [];
-    $error = null;
 
-    // 1. Recopilar configuración del entorno
-    $dbConnection = $_ENV['DB_CONNECTION'] ?? getenv('DB_CONNECTION') ?? 'mysql';
-    $host = $_ENV['DB_HOST'] ?? getenv('DB_HOST') ?? 'srv1660.hstgr.io';
-    $port = $_ENV['DB_PORT'] ?? getenv('DB_PORT') ?? '3306';
-    $dbname = $_ENV['DB_NAME'] ?? getenv('DB_NAME') ?? $_ENV['DB_DATABASE'] ?? getenv('DB_DATABASE') ?? '';
-    $user = $_ENV['DB_USER'] ?? getenv('DB_USER') ?? $_ENV['DB_USERNAME'] ?? getenv('DB_USERNAME') ?? '';
-    $pass = $_ENV['DB_PASS'] ?? getenv('DB_PASS') ?? $_ENV['DB_PASSWORD'] ?? getenv('DB_PASSWORD') ?? '';
-
-    // Limpiar comillas del .env si las hay
-    $pass = trim($pass, '"\'');
-
-    $log[] = "📋 Configuración cargada desde .env:";
-    $log[] = "   DB_CONNECTION = {$dbConnection}";
-    $log[] = "   DB_HOST = {$host}";
-    $log[] = "   DB_PORT = {$port}";
-    $log[] = "   DB_DATABASE / DB_NAME = {$dbname}";
-    $log[] = "   DB_USERNAME / DB_USER = {$user}";
-    $log[] = "   DB_PASSWORD / DB_PASS = " . (strlen($pass) > 0 ? str_repeat('*', strlen($pass)) : '(vacía)');
-
-    // 2. Probar conexión
-    $pdo = null;
-    $hostsToTry = [$host, 'srv1660.hstgr.io', 'auth-db1660.hstgr.io', 'sql1660.main-hosting.eu'];
-    $hostsToTry = array_unique($hostsToTry);
-    $connectedHost = null;
-
-    $log[] = "";
-    $log[] = "🔌 Probando conexión a MySQL...";
-
-    foreach ($hostsToTry as $h) {
-        $log[] = "   → Intentando host: {$h}:{$port} ...";
-        try {
-            $dsn = "mysql:host={$h};port={$port};dbname={$dbname};charset=utf8mb4";
-            $pdo = new PDO($dsn, $user, $pass, [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            ]);
-            $connectedHost = $h;
-            $log[] = "   ✅ ¡CONEXIÓN EXITOSA con host: {$h}!";
-            break;
-        } catch (Exception $e) {
-            $log[] = "   ❌ Falló en {$h}: " . $e->getMessage();
-        }
-    }
-
-    if (!$pdo) {
+    try {
+        $pdo = \App\Core\Database::getConnection();
+        $log[] = "✅ Conexión establecida correctamente desde variables de entorno (.env).";
+    } catch (Exception $e) {
+        error_log('[SetupDB] Connection error: ' . $e->getMessage());
         $res->status(500)->json([
             'ok' => false,
-            'message' => 'No se pudo establecer conexión con MySQL de Hostinger.',
-            'log' => $log
+            'message' => 'No se pudo establecer conexión con la base de datos.'
         ]);
         return;
     }
 
-    // Actualizar DB_HOST en .env si el host que funcionó es diferente al configurado
-    if ($connectedHost !== $host) {
-        $log[] = "";
-        $log[] = "⚙️  Actualizando DB_HOST en .env a: {$connectedHost}";
-        $envPath = __DIR__ . '/.env';
-        if (file_exists($envPath)) {
-            $envContent = file_get_contents($envPath);
-            $envContent = preg_replace('/^DB_HOST=.*$/m', "DB_HOST={$connectedHost}", $envContent);
-            file_put_contents($envPath, $envContent);
-        }
-    }
-
-    // 3. Ejecutar schema_mysql.sql
+    // Ejecutar schema_mysql.sql
     $schemaPath = __DIR__ . '/schema_mysql.sql';
-    $log[] = "";
-    $log[] = "📄 Cargando schema_mysql.sql...";
-
     if (!file_exists($schemaPath)) {
         $res->status(500)->json([
             'ok' => false,
-            'message' => 'No se encontró el archivo schema_mysql.sql en ' . $schemaPath,
-            'log' => $log
+            'message' => 'No se encontró el archivo schema_mysql.sql'
         ]);
         return;
     }
 
     $sqlContent = file_get_contents($schemaPath);
-    $log[] = "   Archivo cargado (" . strlen($sqlContent) . " bytes). Ejecutando sentencias...";
 
     try {
         $pdo->exec("SET NAMES utf8mb4");
@@ -194,44 +135,24 @@ $router->get('/api/setup-db', function (Request $req, Response $res) {
                     $executed++;
                 } catch (PDOException $ex) {
                     if (!str_contains($ex->getMessage(), 'Query was empty')) {
-                        $log[] = "   ⚠️  Nota: " . $ex->getMessage();
+                        error_log('[SetupDB] Schema notice: ' . $ex->getMessage());
                     }
                 }
             }
         }
 
         $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
-        $log[] = "   ✅ Script ejecutado ({$executed} sentencias procesadas).";
+        $log[] = "✅ Script ejecutado ({$executed} sentencias procesadas).";
     } catch (Exception $e) {
-        $log[] = "   ❌ Error ejecutando schema: " . $e->getMessage();
+        error_log('[SetupDB] Schema error: ' . $e->getMessage());
+        $log[] = "❌ Error ejecutando schema.";
     }
-
-    // 4. Verificar tablas y usuario admin
-    $log[] = "";
-    $log[] = "🔍 Verificando resultado...";
 
     $tables = $pdo->query("SHOW TABLES")->fetchAll(PDO::FETCH_COLUMN);
-    $log[] = "   Tablas encontradas (" . count($tables) . "): " . implode(', ', $tables);
-
-    $adminStmt = $pdo->prepare("SELECT id, nombre, email, telefono, rol, verified FROM usuarios WHERE email = ?");
-    $adminStmt->execute(['santiarco2611@gmail.com']);
-    $admin = $adminStmt->fetch();
-
-    if ($admin) {
-        $log[] = "   ✅ Usuario admin verificado: [{$admin['rol']}] {$admin['nombre']} <{$admin['email']}>";
-    } else {
-        $log[] = "   ⚠️  Usuario administrador no encontrado en la tabla 'usuarios'.";
-    }
-
-    $log[] = "";
-    $log[] = "🎉 ¡Proceso completado exitosamente! Elimina /api/setup-db antes de producción.";
 
     $res->json([
         'ok' => true,
-        'host_conectado' => $connectedHost,
         'tablas_creadas' => count($tables),
-        'tablas' => $tables,
-        'admin' => $admin ?: null,
         'log' => $log
     ]);
 }, [AuthMiddleware::class]);
@@ -299,6 +220,7 @@ $router->get('/api/finance/invoices/:id', [FinanceController::class, 'getInvoice
 $router->post('/api/finance/invoices', [FinanceController::class, 'createInvoice'], [AuthMiddleware::class]);
 $router->put('/api/finance/invoices/:id', [FinanceController::class, 'updateInvoice'], [AuthMiddleware::class]);
 $router->patch('/api/finance/invoices/:id/status', [FinanceController::class, 'updateInvoiceStatus'], [AuthMiddleware::class]);
+$router->put('/api/finance/invoices/:id/status', [FinanceController::class, 'updateInvoiceStatus'], [AuthMiddleware::class]);
 $router->post('/api/finance/invoices/:id/payments', [FinanceController::class, 'addInvoicePayment'], [AuthMiddleware::class]);
 $router->get('/api/finance/invoices/:id/payments', [FinanceController::class, 'getInvoicePayments'], [AuthMiddleware::class]);
 $router->delete('/api/finance/invoices/payments/:paymentId', [FinanceController::class, 'deleteInvoicePayment'], [AuthMiddleware::class]);

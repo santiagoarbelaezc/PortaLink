@@ -132,6 +132,11 @@ export class SpanishTtsService {
     if (!rawText) return '';
 
     return rawText
+      .replace(/-----BEGIN [A-Z0-9\s]*PRIVATE KEY-----[\s\S]*?-----END [A-Z0-9\s]*PRIVATE KEY-----/gi, ' llave privada protegida ')
+      .replace(/\b([A-Z0-9_]*(?:PASS|PASSWORD|PWD|SECRET|KEY|TOKEN|AUTH|CREDENTIAL|PRIVATE|HASH|SALT|DSN|CLOUDINARY_URL|DATABASE_URL|SMTP_PASS|CONTRASENA|CLAVE)[A-Z0-9_]*)\s*[:=]\s*("[^"\r\n]*"|'[^'\r\n]*'|[^\s#"'\r\n,;]+)/gi, '$1 credencial protegida ')
+      .replace(/((?:mysql|pgsql|postgres|postgresql|mongodb(?:\+srv)?|redis|rediss|amqp|ftp|sftp|cloudinary):\/\/[^:\s/]+:)([^@\s/]+)(@)/gi, ' conexión con credencial protegida ')
+      .replace(/\beyJ[A-Za-z0-9_-]{8,}\.eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{16,}\b/g, ' token protegido ')
+      .replace(/\b(?:sk-(?:proj-|ant-)?[A-Za-z0-9_-]{20,}|(?:sk|rk)_live_[A-Za-z0-9]{20,}|gsk_[A-Za-z0-9_-]{20,}|AIza[0-9A-Za-z_-]{30,}|gh[pousr]_[A-Za-z0-9]{25,}|github_pat_[A-Za-z0-9_]{25,}|glpat-[A-Za-z0-9_-]{20,}|xox[baprs]-[A-Za-z0-9-]{15,})\b/g, ' clave de API protegida ')
       .replace(/<[^>]*>/g, ' ')
       .replace(/```[\s\S]*?```/g, ' bloque de código omitido ')
       .replace(/`([^`]+)`/g, '$1')

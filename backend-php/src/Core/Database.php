@@ -114,52 +114,86 @@ class Database
             // Si es un UPDATE
             if (preg_match('/^\s*UPDATE\s+([a-zA-Z0-9_`]+)\s+SET/i', $cleanSql, $tableMatch)) {
                 $table = trim($tableMatch[1], '`');
+                $matchedId = self::findMatchingIdForWhere($pdo, $table, $cleanSql, $params);
+
                 $stmt = $pdo->prepare($cleanSql);
                 $stmt->execute($params);
 
-                // Intentar extraer el ID para devolver el registro actualizado
-                $idVal = null;
-                if (preg_match('/WHERE\s+id\s*=\s*:?([a-zA-Z0-9_]+)/i', $cleanSql, $idMatch)) {
-                    $paramKey = $idMatch[1];
-                    $idVal = $params[$paramKey] ?? $params[':' . $paramKey] ?? null;
-                }
-                if (!$idVal) {
-                    $idVal = $params[':pg_param_2'] ?? $params[':pg_param_1'] ?? $params[1] ?? $params[0] ?? null;
-                }
-
-                if ($idVal) {
+                if ($matchedId !== null) {
                     $selStmt = $pdo->prepare("SELECT {$returningCols} FROM `{$table}` WHERE id = ?");
-                    $selStmt->execute([$idVal]);
+                    $selStmt->execute([$matchedId]);
                     return $selStmt;
                 }
-                return $stmt;
+
+                return $pdo->query("SELECT {$returningCols} FROM `{$table}` WHERE 1 = 0");
             }
 
             // Si es un DELETE
             if (preg_match('/^\s*DELETE\s+FROM\s+([a-zA-Z0-9_`]+)/i', $cleanSql, $tableMatch)) {
                 $table = trim($tableMatch[1], '`');
-                $idVal = null;
-                if (preg_match('/WHERE\s+id\s*=\s*:?([a-zA-Z0-9_]+)/i', $cleanSql, $idMatch)) {
-                    $paramKey = $idMatch[1];
-                    $idVal = $params[$paramKey] ?? $params[':' . $paramKey] ?? $params[':pg_param_1'] ?? $params[0] ?? null;
-                }
+                $matchedId = self::findMatchingIdForWhere($pdo, $table, $cleanSql, $params);
+
                 $stmt = $pdo->prepare($cleanSql);
                 $stmt->execute($params);
 
-                if ($idVal && (strtolower($returningCols) === 'id' || $returningCols === '*')) {
-                    $pdo->exec("CREATE TEMPORARY TABLE IF NOT EXISTS _tmp_ret (id INT)");
-                    $pdo->exec("TRUNCATE TABLE _tmp_ret");
+                $pdo->exec("CREATE TEMPORARY TABLE IF NOT EXISTS _tmp_ret (id INT)");
+                $pdo->exec("TRUNCATE TABLE _tmp_ret");
+
+                if ($matchedId !== null && $stmt->rowCount() > 0) {
                     $insTmp = $pdo->prepare("INSERT INTO _tmp_ret VALUES (?)");
-                    $insTmp->execute([$idVal]);
-                    return $pdo->query("SELECT * FROM _tmp_ret");
+                    $insTmp->execute([$matchedId]);
                 }
-                return $stmt;
+                return $pdo->query("SELECT * FROM _tmp_ret");
             }
         }
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt;
+    }
+
+    /**
+     * Extrae la cláusula WHERE y sus parámetros vinculados para verificar propiedad/existencia
+     * antes de emular RETURNING en MySQL (previene exfiltración IDOR cuando user_id no coincide).
+     */
+    public static function extractWhereClauseAndParams(string $cleanSql, array $params): ?array
+    {
+        if (!preg_match('/\s+WHERE\s+(.+)$/is', $cleanSql, $whereMatch)) {
+            return null;
+        }
+        $whereClause = trim($whereMatch[1]);
+        $whereParams = [];
+
+        if (preg_match_all('/:([a-zA-Z0-9_]+)/', $whereClause, $placeholderMatches)) {
+            foreach ($placeholderMatches[1] as $ph) {
+                if (array_key_exists(':' . $ph, $params)) {
+                    $whereParams[':' . $ph] = $params[':' . $ph];
+                } elseif (array_key_exists($ph, $params)) {
+                    $whereParams[':' . $ph] = $params[$ph];
+                }
+            }
+        } elseif (str_contains($whereClause, '?')) {
+            $qCount = substr_count($whereClause, '?');
+            $values = array_values($params);
+            $whereParams = array_slice($values, -$qCount);
+        }
+
+        return [
+            'where' => $whereClause,
+            'params' => $whereParams
+        ];
+    }
+
+    private static function findMatchingIdForWhere(PDO $pdo, string $table, string $cleanSql, array $params): mixed
+    {
+        $extracted = self::extractWhereClauseAndParams($cleanSql, $params);
+        if (!$extracted) {
+            return null;
+        }
+        $checkStmt = $pdo->prepare("SELECT id FROM `{$table}` WHERE {$extracted['where']} LIMIT 1");
+        $checkStmt->execute($extracted['params']);
+        $row = $checkStmt->fetch(PDO::FETCH_ASSOC);
+        return $row['id'] ?? null;
     }
 
     /**

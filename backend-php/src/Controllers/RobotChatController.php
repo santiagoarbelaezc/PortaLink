@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Core\Request;
 use App\Core\Response;
+use App\Core\VaultCrypto;
 use App\Config\Gemini;
 use App\Config\Groq;
 
@@ -17,8 +18,16 @@ class RobotChatController
     {
         @set_time_limit(120);
         $body = $request->body;
-        $userMessage = trim($body['message'] ?? '');
+        $userMessage = VaultCrypto::redactSecretsForAi(trim($body['message'] ?? ''));
         $history = $body['history'] ?? [];
+        if (is_array($history)) {
+            foreach ($history as &$h) {
+                if (isset($h['content']) && is_string($h['content'])) {
+                    $h['content'] = VaultCrypto::redactSecretsForAi($h['content']);
+                }
+            }
+            unset($h);
+        }
 
         if (empty($userMessage)) {
             $response->status(400)->json([
@@ -76,10 +85,10 @@ class RobotChatController
     {
         @set_time_limit(30);
         $body = $request->body;
-        $text = trim($body['text'] ?? '');
+        $rawText = trim($body['text'] ?? '');
         $lang = $body['lang'] ?? 'es';
 
-        if (empty($text)) {
+        if (empty($rawText)) {
             $response->status(400)->json([
                 'ok' => false,
                 'error' => 'El texto a pronunciar no puede estar vacío'
@@ -87,7 +96,15 @@ class RobotChatController
             return;
         }
 
-        $cleanText = $this->cleanTextForSpeech($text);
+        // Redactar cualquier credencial o secreto de la pizarra antes de enviarlo al motor externo de síntesis de voz
+        $redactedText = VaultCrypto::redactSecretsForAi($rawText);
+        $redactedText = str_replace(
+            ['[SECRET_REDACTED]', '[API_KEY_REDACTED]', '[PRIVATE_KEY_REDACTED]', '[JWT_TOKEN_REDACTED]'],
+            'credencial protegida',
+            $redactedText
+        );
+
+        $cleanText = $this->cleanTextForSpeech($redactedText);
         $audioBase64 = $this->callNeuralFallbackTTS($cleanText, $lang);
 
         if (!$audioBase64) {

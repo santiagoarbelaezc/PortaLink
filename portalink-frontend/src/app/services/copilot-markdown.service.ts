@@ -62,8 +62,11 @@ export class CopilotMarkdownService {
     formatted = formatted.replace(/(?<=^|[\s(])\*(?!\s)([^*\n]+?)(?<!\s)\*(?=[.,!?;:\s)]|$)/g, `<em class="italic ${italicTextClass}">$1</em>`);
     formatted = formatted.replace(/(?<=^|[\s(])_(?!\s|_)([^_\n]+?)(?<!\s|_)_(?=[.,!?;:\s)]|$)/g, `<em class="italic ${italicTextClass}">$1</em>`);
 
-    // Enlaces: [Texto](URL)
-    formatted = formatted.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-red-500 hover:text-red-600 dark:text-red-400 underline font-medium">$1</a>');
+    // Enlaces: [Texto](URL) — sanitizando comillas y caracteres de ruptura de atributo
+    formatted = formatted.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)"'<>]+)\)/g, (_m, label, url) => {
+      const safeUrl = url.replace(/&quot;|&#39;|&lt;|&gt;|["'<>]/g, '');
+      return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="text-red-500 hover:text-red-600 dark:text-red-400 underline font-medium">${label}</a>`;
+    });
 
     // Restaurar <br>
     formatted = formatted.replace(/__COPILOT_CELL_BR__/g, '<br>');
@@ -209,8 +212,11 @@ export class CopilotMarkdownService {
     text = text.replace(/(?<=^|[\s(])\*(?!\s)([^*\n]+?)(?<!\s)\*(?=[.,!?;:\s)]|$)/g, `<em class="italic ${darkTheme ? 'text-neutral-200' : 'text-neutral-800'}">$1</em>`);
     text = text.replace(/(?<=^|[\s(])_(?!\s)([^_\n]+?)(?<!\s)_(?=[.,!?;:\s)]|$)/g, `<em class="italic ${darkTheme ? 'text-neutral-200' : 'text-neutral-800'}">$1</em>`);
 
-    // 10. Enlaces [Texto](URL)
-    text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-red-500 hover:text-red-600 dark:text-red-400 underline font-medium">$1</a>');
+    // 10. Enlaces [Texto](URL) — sanitizando comillas y caracteres de ruptura de atributo
+    text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)"'<>]+)\)/g, (_m, label, url) => {
+      const safeUrl = url.replace(/&quot;|&#39;|&lt;|&gt;|["'<>]/g, '');
+      return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="text-red-500 hover:text-red-600 dark:text-red-400 underline font-medium">${label}</a>`;
+    });
 
     // 11. Listas desordenadas y numeradas
     const lines = text.split('\n');
@@ -259,19 +265,19 @@ export class CopilotMarkdownService {
     text = text.replace(/(?:<br\s*\/?>)+(__COPILOT_(?:CODEBLOCK|TABLE)_\d+__)/g, '$1');
     text = text.replace(/(__COPILOT_(?:CODEBLOCK|TABLE)_\d+__)(?:<br\s*\/?>)+/g, '$1');
 
-    // 13. Restaurar tablas
+    // 13. Restaurar tablas (usando callback para evitar expansión de patrones $& o $' en código)
     tables.forEach((tableHtml, index) => {
-      text = text.replace(`__COPILOT_TABLE_${index}__`, tableHtml);
+      text = text.replace(`__COPILOT_TABLE_${index}__`, () => tableHtml);
     });
 
     // 14. Restaurar código inline
     inlineCodes.forEach((inlineHtml, index) => {
-      text = text.replace(`__COPILOT_INLINE_${index}__`, inlineHtml);
+      text = text.replace(`__COPILOT_INLINE_${index}__`, () => inlineHtml);
     });
 
     // 15. Restaurar bloques de código
     codeBlocks.forEach((blockHtml, index) => {
-      text = text.replace(`__COPILOT_CODEBLOCK_${index}__`, blockHtml);
+      text = text.replace(`__COPILOT_CODEBLOCK_${index}__`, () => blockHtml);
     });
 
     return text.trim();
