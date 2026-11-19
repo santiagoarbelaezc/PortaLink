@@ -31,9 +31,6 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
     });
 }
 
-// Aplicar CORS estricto con lista blanca y cabeceras de seguridad
-\App\Core\Cors::handle();
-
 // Cargar variables de entorno si existe .env
 if (file_exists(__DIR__ . '/.env') && class_exists('Dotenv\Dotenv')) {
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
@@ -54,6 +51,9 @@ if (file_exists(__DIR__ . '/.env') && class_exists('Dotenv\Dotenv')) {
         }
     }
 }
+
+// Aplicar CORS estricto con lista blanca y cabeceras de seguridad (después de cargar .env para tomar FRONTEND_URL si aplica)
+\App\Core\Cors::handle();
 
 use App\Core\Request;
 use App\Core\Response;

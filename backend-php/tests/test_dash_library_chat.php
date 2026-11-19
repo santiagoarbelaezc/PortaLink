@@ -39,7 +39,8 @@ $payload = json_encode([
 ]);
 
 $start = microtime(true);
-$ch = curl_init('http://localhost:8000/api/admin/chat');
+$port = getenv('PORT') ?: '8081';
+$ch = curl_init("http://localhost:{$port}/api/admin/chat");
 curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_POST           => true,
@@ -98,7 +99,8 @@ $payload2 = json_encode([
 ]);
 
 $start = microtime(true);
-$ch = curl_init('http://localhost:8000/api/admin/chat');
+$port = getenv('PORT') ?: '8081';
+$ch = curl_init("http://localhost:{$port}/api/admin/chat");
 curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_POST           => true,
@@ -146,7 +148,8 @@ $payload3 = json_encode([
 ]);
 
 $start = microtime(true);
-$ch = curl_init('http://localhost:8000/api/admin/chat');
+$port = getenv('PORT') ?: '8081';
+$ch = curl_init("http://localhost:{$port}/api/admin/chat");
 curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_POST           => true,

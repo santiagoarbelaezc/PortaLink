@@ -14,6 +14,9 @@
       "App\\": "src/"
     }
   },
+  "scripts": {
+    "start": "php -S localhost:8081 index.php"
+  },
   "config": {
     "audit": {
       "ignore": ["PKSA-y2cr-5h3j-g3ys"]

@@ -212,10 +212,17 @@ class LibraryController
                 return;
             }
 
-            $sql = "INSERT INTO notebook_folders (user_id, name, description, color, icon) 
-                    VALUES ($1, $2, $3, $4, $5) RETURNING *";
+            $maxStmt = Database::query(
+                "SELECT COALESCE(MAX(order_index), -1) + 1 AS next_order FROM notebook_folders WHERE user_id = $1",
+                [$userId]
+            );
+            $maxRow = $maxStmt->fetch();
+            $nextOrder = (int)($maxRow['next_order'] ?? 0);
 
-            $stmt = Database::query($sql, [$userId, $name, $description, $color, $icon]);
+            $sql = "INSERT INTO notebook_folders (user_id, name, description, color, icon, order_index) 
+                    VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
+
+            $stmt = Database::query($sql, [$userId, $name, $description, $color, $icon, $nextOrder]);
             $folder = $stmt->fetch();
 
             $response->status(201)->json([
@@ -235,14 +242,31 @@ class LibraryController
             $userId = $this->requireAuthenticatedUser($request, $response);
             if ($userId === null) return;
 
-            $id = (int)($request->params['id'] ?? 0);
+            $rawId = (string)($request->params['id'] ?? '');
+            if ($rawId === 'reorder' || (isset($request->body['ordered_ids']) && is_array($request->body['ordered_ids']))) {
+                $orderedIds = array_values(array_filter(array_map('intval', $request->body['ordered_ids'] ?? []), fn($v) => $v > 0));
+                foreach ($orderedIds as $idx => $folderId) {
+                    Database::query(
+                        "UPDATE notebook_folders SET order_index = $1 WHERE id = $2 AND user_id = $3",
+                        [$idx, $folderId, $userId]
+                    );
+                }
+                $response->json([
+                    'ok' => true,
+                    'message' => 'Orden de carpetas actualizado exitosamente'
+                ]);
+                return;
+            }
+
+            $id = (int)$rawId;
             $name = trim($request->body['name'] ?? '');
             $description = trim($request->body['description'] ?? '');
             $color = trim($request->body['color'] ?? '#2563eb');
             $icon = trim($request->body['icon'] ?? 'folder');
+            $orderIndex = isset($request->body['order_index']) ? (int)$request->body['order_index'] : null;
 
-            if ($id <= 0 || empty($name)) {
-                $response->status(400)->json(['ok' => false, 'message' => 'ID y nombre son requeridos']);
+            if ($id <= 0) {
+                $response->status(400)->json(['ok' => false, 'message' => 'ID de carpeta requerido']);
                 return;
             }
 
@@ -251,11 +275,22 @@ class LibraryController
                 return;
             }
 
-            $sql = "UPDATE notebook_folders 
-                    SET name = $1, description = $2, color = $3, icon = $4, updated_at = NOW() 
-                    WHERE id = $5 AND user_id = $6 RETURNING *";
+            if ($orderIndex !== null && empty($name)) {
+                $stmt = Database::query(
+                    "UPDATE notebook_folders SET order_index = $1, updated_at = NOW() WHERE id = $2 AND user_id = $3 RETURNING *",
+                    [$orderIndex, $id, $userId]
+                );
+            } else {
+                if (empty($name)) {
+                    $response->status(400)->json(['ok' => false, 'message' => 'ID y nombre son requeridos']);
+                    return;
+                }
+                $sql = "UPDATE notebook_folders 
+                        SET name = $1, description = $2, color = $3, icon = $4, order_index = COALESCE($5, order_index), updated_at = NOW() 
+                        WHERE id = $6 AND user_id = $7 RETURNING *";
+                $stmt = Database::query($sql, [$name, $description, $color, $icon, $orderIndex, $id, $userId]);
+            }
 
-            $stmt = Database::query($sql, [$name, $description, $color, $icon, $id, $userId]);
             $folder = $stmt->fetch();
 
             $response->json([
@@ -326,7 +361,7 @@ class LibraryController
                 $params[] = $folderId;
             }
 
-            $sql .= " GROUP BY m.id ORDER BY m.is_favorite DESC, m.order_index ASC, m.created_at DESC";
+            $sql .= " GROUP BY m.id ORDER BY m.order_index ASC, m.is_favorite DESC, m.created_at DESC";
 
             $stmt = Database::query($sql, $params);
             $notebooks = $stmt->fetchAll();
@@ -360,10 +395,17 @@ class LibraryController
                 return;
             }
 
-            $sql = "INSERT INTO notebook_modules (folder_id, user_id, title, description, color, icon) 
-                    VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
+            $maxStmt = Database::query(
+                "SELECT COALESCE(MAX(order_index), -1) + 1 AS next_order FROM notebook_modules WHERE folder_id = $1",
+                [$folderId]
+            );
+            $maxRow = $maxStmt->fetch();
+            $nextOrder = (int)($maxRow['next_order'] ?? 0);
 
-            $stmt = Database::query($sql, [$folderId, $userId, $title, $description, $color, $icon]);
+            $sql = "INSERT INTO notebook_modules (folder_id, user_id, title, description, color, icon, order_index) 
+                    VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *";
+
+            $stmt = Database::query($sql, [$folderId, $userId, $title, $description, $color, $icon, $nextOrder]);
             $notebook = $stmt->fetch();
 
             $response->status(201)->json([
@@ -383,12 +425,31 @@ class LibraryController
             $userId = $this->requireAuthenticatedUser($request, $response);
             if ($userId === null) return;
 
-            $id = (int)($request->params['id'] ?? 0);
+            $rawId = (string)($request->params['id'] ?? '');
+            if ($rawId === 'reorder' || (isset($request->body['ordered_ids']) && is_array($request->body['ordered_ids']))) {
+                $orderedIds = array_values(array_filter(array_map('intval', $request->body['ordered_ids'] ?? []), fn($v) => $v > 0));
+                foreach ($orderedIds as $idx => $notebookId) {
+                    if ($this->userOwnsNotebook($notebookId, $userId)) {
+                        Database::query(
+                            "UPDATE notebook_modules SET order_index = $1 WHERE id = $2",
+                            [$idx, $notebookId]
+                        );
+                    }
+                }
+                $response->json([
+                    'ok' => true,
+                    'message' => 'Orden de cuadernos actualizado exitosamente'
+                ]);
+                return;
+            }
+
+            $id = (int)$rawId;
             $title = trim($request->body['title'] ?? '');
             $description = trim($request->body['description'] ?? '');
             $color = trim($request->body['color'] ?? '#3b82f6');
             $icon = trim($request->body['icon'] ?? 'book');
             $isFavorite = isset($request->body['is_favorite']) ? ($request->body['is_favorite'] ? 1 : 0) : null;
+            $orderIndex = isset($request->body['order_index']) ? (int)$request->body['order_index'] : null;
 
             if ($id <= 0) {
                 $response->status(400)->json(['ok' => false, 'message' => 'ID de cuaderno requerido']);
@@ -400,15 +461,15 @@ class LibraryController
                 return;
             }
 
-            if ($isFavorite !== null && empty($title)) {
+            if (($isFavorite !== null || $orderIndex !== null) && empty($title)) {
                 $stmt = Database::query(
-                    "UPDATE notebook_modules SET is_favorite = $1, updated_at = NOW() WHERE id = $2 RETURNING *",
-                    [$isFavorite, $id]
+                    "UPDATE notebook_modules SET is_favorite = COALESCE($1, is_favorite), order_index = COALESCE($2, order_index), updated_at = NOW() WHERE id = $3 RETURNING *",
+                    [$isFavorite, $orderIndex, $id]
                 );
             } else {
                 $stmt = Database::query(
-                    "UPDATE notebook_modules SET title = $1, description = $2, color = $3, icon = $4, is_favorite = COALESCE($5, is_favorite), updated_at = NOW() WHERE id = $6 RETURNING *",
-                    [$title, $description, $color, $icon, $isFavorite, $id]
+                    "UPDATE notebook_modules SET title = $1, description = $2, color = $3, icon = $4, is_favorite = COALESCE($5, is_favorite), order_index = COALESCE($6, order_index), updated_at = NOW() WHERE id = $7 RETURNING *",
+                    [$title, $description, $color, $icon, $isFavorite, $orderIndex, $id]
                 );
             }
 

@@ -156,7 +156,8 @@ $payload = json_encode([
     'study_plan' => ''
 ]);
 $start = microtime(true);
-$ch = curl_init('http://localhost:8000/api/robot/chat');
+$port = getenv('PORT') ?: '8081';
+$ch = curl_init("http://localhost:{$port}/api/robot/chat");
 curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_POST           => true,

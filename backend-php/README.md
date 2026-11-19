@@ -171,8 +171,8 @@ Crea un archivo `.env` en la raíz de `backend-php` tomando como plantilla el si
 
 ```env
 # Servidor
-PORT=8000
-FRONTEND_URL=http://localhost:4200
+PORT=8081
+FRONTEND_URL=http://localhost:4201
 
 # Base de Datos MySQL
 DB_CONNECTION=mysql
@@ -211,9 +211,16 @@ mysql -u root -p portalink_db < schema_mysql.sql
 
 ### 5. Iniciar el servidor local
 ```bash
-php -S localhost:8000 index.php
+# Opción 1: Usando el script dedicado
+start.bat
+
+# Opción 2: Usando PHP directamente
+php -S localhost:8081 index.php
+
+# Opción 3: Usando Composer
+composer start
 ```
-La API estará escuchando en `http://localhost:8000/`.
+La API estará escuchando en `http://localhost:8081/`.
 
 ---
 

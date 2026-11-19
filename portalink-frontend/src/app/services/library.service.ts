@@ -167,6 +167,10 @@ export class LibraryService {
     return this.http.delete<{ ok: boolean; message: string }>(`${this.apiUrl}/folders/${id}`);
   }
 
+  reorderFolders(orderedIds: number[]): Observable<{ ok: boolean; message: string }> {
+    return this.http.put<{ ok: boolean; message: string }>(`${this.apiUrl}/folders/reorder`, { ordered_ids: orderedIds });
+  }
+
   // ── Cuadernos (Nivel 2) ──────────────────────────────────
   getNotebooks(folderId?: number): Observable<{ ok: boolean; data: NotebookModule[] }> {
     let params = new HttpParams();
@@ -186,6 +190,10 @@ export class LibraryService {
 
   deleteNotebook(id: number): Observable<{ ok: boolean; message: string }> {
     return this.http.delete<{ ok: boolean; message: string }>(`${this.apiUrl}/notebooks/${id}`);
+  }
+
+  reorderNotebooks(orderedIds: number[]): Observable<{ ok: boolean; message: string }> {
+    return this.http.put<{ ok: boolean; message: string }>(`${this.apiUrl}/notebooks/reorder`, { ordered_ids: orderedIds });
   }
 
   // ── Apuntes / Páginas (Nivel 3) ──────────────────────────

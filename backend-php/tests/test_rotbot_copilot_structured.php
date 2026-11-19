@@ -68,7 +68,8 @@ function headerSection(string $num, string $title): void {
     echo c("----------------------------------------------------------------------", "gray") . "\n";
 }
 
-$BASE_URL = 'http://localhost:8000/api/admin/chat';
+$port = getenv('PORT') ?: '8081';
+$BASE_URL = "http://localhost:{$port}/api/admin/chat";
 
 /**
  * Función auxiliar para ejecutar llamadas HTTP cURL

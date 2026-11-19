@@ -544,7 +544,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   folderSearchQuery: string = '';
   folderFilterStatus: 'all' | 'with-notebooks' | 'empty' | 'with-notes' = 'all';
   folderFilterColor: string = 'all';
-  folderSortBy: 'name-asc' | 'name-desc' | 'notebooks-desc' | 'pages-desc' | 'recent' | 'oldest' = 'name-asc';
+  folderSortBy: 'custom' | 'name-asc' | 'name-desc' | 'notebooks-desc' | 'pages-desc' | 'recent' | 'oldest' = 'custom';
   folderViewLayout: 'grid' | 'list' = 'grid';
 
   get displayedFolders(): NotebookFolder[] {
@@ -576,6 +576,8 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     // 4. Sorting
     list.sort((a, b) => {
       switch (this.folderSortBy) {
+        case 'custom':
+          return Number(a.order_index ?? 0) - Number(b.order_index ?? 0);
         case 'name-asc':
           return (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' });
         case 'name-desc':
@@ -631,20 +633,21 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   get isFolderFilterActive(): boolean {
-    return !!this.folderSearchQuery.trim() || this.folderFilterStatus !== 'all' || this.folderFilterColor !== 'all' || this.folderSortBy !== 'name-asc';
+    return !!this.folderSearchQuery.trim() || this.folderFilterStatus !== 'all' || this.folderFilterColor !== 'all' || this.folderSortBy !== 'custom';
   }
 
   resetFolderFilters() {
     this.folderSearchQuery = '';
     this.folderFilterStatus = 'all';
     this.folderFilterColor = 'all';
-    this.folderSortBy = 'name-asc';
+    this.folderSortBy = 'custom';
     this.isSortDropdownOpen = false;
   }
 
   // ── Custom Dropdown Combobox Suite ──
   isSortDropdownOpen = false;
   sortOptions = [
+    { id: 'custom', label: 'Personalizado', desc: 'Orden manual con flechas', icon: 'custom' },
     { id: 'name-asc', label: 'Nombre (A - Z)', desc: 'Orden alfabético normal', icon: 'az' },
     { id: 'name-desc', label: 'Nombre (Z - A)', desc: 'Orden alfabético inverso', icon: 'za' },
     { id: 'notebooks-desc', label: 'Más Cuadernos', desc: 'Por cantidad de módulos', icon: 'notebooks' },
@@ -654,7 +657,7 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
 
   get currentSortLabel(): string {
-    return this.sortOptions.find(o => o.id === this.folderSortBy)?.label || 'Nombre (A - Z)';
+    return this.sortOptions.find(o => o.id === this.folderSortBy)?.label || 'Personalizado';
   }
 
   toggleSortDropdown(event?: MouseEvent) {
@@ -1841,12 +1844,15 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (folder) {
       this.selectedFolder = folder;
-      if (!targetNotebookId) return;
+      if (!targetNotebookId) {
+        this.loadNotebooks(targetFolderId);
+        return;
+      }
 
       this.libraryService.getNotebooks(targetFolderId).subscribe({
         next: (res) => {
           if (res.ok) {
-            this.notebooks = res.data;
+            this.notebooks = this.applySavedOrder(res.data, `portalink_library_notebooks_order_${targetFolderId}`);
             const nb = this.notebooks.find(n => n.id === targetNotebookId);
             if (nb) {
               this.selectedNotebook = nb;
@@ -1858,12 +1864,146 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  private saveLocalOrder(storageKey: string, orderedIds: number[]) {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(storageKey, JSON.stringify(orderedIds));
+      }
+    } catch {}
+  }
+
+  private applySavedOrder<T extends { id?: number; order_index?: number }>(items: T[], storageKey: string): T[] {
+    if (!items || items.length <= 1) return items || [];
+    try {
+      if (typeof localStorage !== 'undefined') {
+        const raw = localStorage.getItem(storageKey);
+        if (raw) {
+          const savedIds: number[] = JSON.parse(raw);
+          if (Array.isArray(savedIds) && savedIds.length > 0) {
+            const rankMap = new Map<number, number>();
+            savedIds.forEach((id, idx) => rankMap.set(Number(id), idx));
+            const copy = [...items];
+            copy.sort((a, b) => {
+              const rA = rankMap.has(Number(a.id)) ? rankMap.get(Number(a.id))! : (100000 + Number(a.order_index ?? 0));
+              const rB = rankMap.has(Number(b.id)) ? rankMap.get(Number(b.id))! : (100000 + Number(b.order_index ?? 0));
+              return rA - rB;
+            });
+            copy.forEach((item, idx) => {
+              item.order_index = idx;
+            });
+            return copy;
+          }
+        }
+      }
+    } catch {}
+
+    const hasDistinctBackendOrder = items.some(item => Number(item.order_index ?? 0) > 0);
+    if (hasDistinctBackendOrder) {
+      const copy = [...items];
+      copy.sort((a, b) => Number(a.order_index ?? 0) - Number(b.order_index ?? 0));
+      return copy;
+    }
+    return items;
+  }
+
+  isFirstFolder(folder: NotebookFolder): boolean {
+    const list = this.displayedFolders;
+    return list.length <= 1 || list[0]?.id === folder.id;
+  }
+
+  isLastFolder(folder: NotebookFolder): boolean {
+    const list = this.displayedFolders;
+    return list.length <= 1 || list[list.length - 1]?.id === folder.id;
+  }
+
+  moveFolder(folder: NotebookFolder, direction: -1 | 1, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    if (!folder || !folder.id) return;
+
+    const currentVisible = [...this.displayedFolders];
+    const currentIndex = currentVisible.findIndex(f => f.id === folder.id);
+    const targetIndex = currentIndex + direction;
+
+    if (currentIndex === -1 || targetIndex < 0 || targetIndex >= currentVisible.length) {
+      return;
+    }
+
+    const temp = currentVisible[currentIndex];
+    currentVisible[currentIndex] = currentVisible[targetIndex];
+    currentVisible[targetIndex] = temp;
+
+    const visibleIds = new Set(currentVisible.map(f => f.id));
+    const remaining = this.folders.filter(f => !visibleIds.has(f.id));
+    const reorderedAll = [...currentVisible, ...remaining];
+
+    reorderedAll.forEach((f, idx) => {
+      f.order_index = idx;
+    });
+
+    this.folders = reorderedAll;
+    this.folderSortBy = 'custom';
+
+    const orderedIds = this.folders.map(f => Number(f.id)).filter(id => id > 0);
+    this.saveLocalOrder('portalink_library_folders_order', orderedIds);
+
+    this.libraryService.reorderFolders(orderedIds).subscribe({
+      error: () => {
+        const itemA = currentVisible[currentIndex];
+        const itemB = currentVisible[targetIndex];
+        if (itemA?.id) this.libraryService.updateFolder(itemA.id, { ...itemA, order_index: itemA.order_index }).subscribe();
+        if (itemB?.id) this.libraryService.updateFolder(itemB.id, { ...itemB, order_index: itemB.order_index }).subscribe();
+      }
+    });
+  }
+
+  moveNotebook(nb: NotebookModule, direction: -1 | 1, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    if (!nb || !nb.id) return;
+
+    const currentIndex = this.notebooks.findIndex(n => n.id === nb.id);
+    const targetIndex = currentIndex + direction;
+
+    if (currentIndex === -1 || targetIndex < 0 || targetIndex >= this.notebooks.length) {
+      return;
+    }
+
+    const updated = [...this.notebooks];
+    const temp = updated[currentIndex];
+    updated[currentIndex] = updated[targetIndex];
+    updated[targetIndex] = temp;
+
+    updated.forEach((n, idx) => {
+      n.order_index = idx;
+    });
+
+    this.notebooks = updated;
+
+    const orderedIds = this.notebooks.map(n => Number(n.id)).filter(id => id > 0);
+    const folderId = nb.folder_id || this.selectedFolder?.id || 0;
+    this.saveLocalOrder(`portalink_library_notebooks_order_${folderId}`, orderedIds);
+
+    this.libraryService.reorderNotebooks(orderedIds).subscribe({
+      error: () => {
+        const itemA = updated[currentIndex];
+        const itemB = updated[targetIndex];
+        if (itemA?.id) this.libraryService.updateNotebook(itemA.id, { ...itemA, order_index: itemA.order_index }).subscribe();
+        if (itemB?.id) this.libraryService.updateNotebook(itemB.id, { ...itemB, order_index: itemB.order_index }).subscribe();
+      }
+    });
+  }
+
   loadFolders() {
     this.isLoading = true;
     this.libraryService.getFolders().subscribe({
       next: (res) => {
         if (res.ok) {
-          this.folders = res.data;
+          this.folders = this.applySavedOrder(res.data, 'portalink_library_folders_order');
           this.restoreSavedState();
         }
         this.isLoading = false;
@@ -1894,7 +2034,9 @@ export class DashLibraryComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isLoading = true;
     this.libraryService.getNotebooks(folderId).subscribe({
       next: (res) => {
-        if (res.ok) this.notebooks = res.data;
+        if (res.ok) {
+          this.notebooks = this.applySavedOrder(res.data, `portalink_library_notebooks_order_${folderId}`);
+        }
         this.isLoading = false;
       },
       error: () => {
